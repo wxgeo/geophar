@@ -1,9 +1,9 @@
 WxGeometrie
 ===========
 
-**Le couteau suisse du prof de maths. :)**
+**Le couteau suisse du prof de maths. :-)**
 
-http://wxgeo.free.fr/
+<http://wxgeo.free.fr/>
 
 License: GNU Public License version 2 or higher
 
@@ -16,11 +16,11 @@ La librairie Sympy ci-incluse est distribuée sous license BSD,
 par la Sympy Development Team:
 
 SymPy Development Team (2010). SymPy: Python library for symbolic mathematics
-URL http://www.sympy.org.
+URL <http://www.sympy.org>.
 
 
 Le module decorator est écrit et distribué par Michele Simionato (c) 2005.
-URL http://pypi.python.org/pypi/decorator
+URL <http://pypi.python.org/pypi/decorator>.
 
 
 
@@ -29,15 +29,15 @@ URL http://pypi.python.org/pypi/decorator
 
 La dernière version officiellement publiée se trouve sur :
 
-http://sourceforge.net/projects/wxgeometrie/
+<http://sourceforge.net/projects/wxgeometrie/>
 
 
 Pour télécharger la version en cours de développement :
 
-$ git clone git://github.com/wxgeo/wxgeometrie.git
+`$ git clone git://github.com/wxgeo/wxgeometrie.git`
 
 Derrière un firewall, vous pouvez également utiliser :
-$ git clone http://github.com/wxgeo/wxgeometrie.git
+`$ git clone http://github.com/wxgeo/wxgeometrie.git`
 (beaucoup plus lent !!)
 
 
@@ -48,7 +48,7 @@ $ git clone http://github.com/wxgeo/wxgeometrie.git
 
 Une documentation (hélas incomplète) se trouve à cette adresse :
 
-http://www.maths.ac-aix-marseille.fr/webphp/wiki/index.php/Accueil#Aide_WxG.C3.A9om.C3.A9trie
+<http://www.maths.ac-aix-marseille.fr/webphp/wiki/index.php/Accueil#Aide_WxG.C3.A9om.C3.A9trie>
 
 
 
