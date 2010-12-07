@@ -63,13 +63,16 @@ Une documentation (hélas incomplète) se trouve à cette adresse :
 ------------------
 
 En 2005, souhaitant apprendre la programmation orientée objet, je suis tombé
-sur un article d'un développeur ventant Python.
+sur un article d'un développeur vantant Python.
+
 Les logiciels de géométrie dynamique répandus étaient alors essentiellement
 propriétaires (hasard du sort, six mois plus tard, les choses avaient déjà bien
 changés).
+
 Après quelques essais de programmation en Python fin décembre 2004, je décidai
 d'écrire un prototype de logiciel de géométrie dynamique, m'inspirant de Cabri
 et Geoplan.
+
 De fil en aiguille, WxGéométrie a acquis successivement toute une panoplie d'outils
 au fur et à mesure de mes besoins d'enseignant : traceur de courbes, calculatrice,
 statistiques, arbre de probabilités, tableaux LaTeX...
