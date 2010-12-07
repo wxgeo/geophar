@@ -1,15 +1,13 @@
 WxGeometrie
 ===========
 
-**Le couteau suisse du prof de maths. :-)**
+*Le couteau suisse du prof de maths. :-)*
 
 <http://wxgeo.free.fr/>
 
 License: GNU Public License version 2 or higher
 
-Auteur: Nicolas Pourcelot (2005-2010)
-
-Courriel: wxgeo _arobase_ users.sourceforge.net
+Auteur: [Nicolas Pourcelot](wxgeo@users.sourceforge.net) (2005-2010)
 
 
 La librairie Sympy ci-incluse est distribuée sous license BSD,
@@ -52,21 +50,21 @@ Une documentation (hélas incomplète) se trouve à cette adresse :
 
 
 
-3. Tests
+2. Tests
 --------
 
 À venir.
 
 
 
-4. Bref historique
+3. Bref historique
 ------------------
 
 À venir
 
 
 
-5. Remerciements
+4. Remerciements
 ----------------
 
 Un grand merci à tous ceux qui ont pris la peine de rapporter des bugs, faire des
