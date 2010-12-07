@@ -1,0 +1,357 @@
+# -*- coding: iso-8859-1 -*-
+from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
+
+##--------------------------------------#######
+#                  Variable                   #
+##--------------------------------------#######
+#    WxGeometrie
+#    Dynamic geometry, graph plotter, and more for french mathematic teachers.
+#    Copyright (C) 2005-2010  Nicolas Pourcelot
+#
+#    This program is free software; you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation; either version 2 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program; if not, write to the Free Software
+#    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
+# version unicode
+
+from objet import *
+
+
+
+
+class Formule(object):
+
+    # Le caractère d'erreur doit être accepté par le parser de matplotlib en mode normal *ET* en mode math.
+    _caractere_erreur = "<.>"
+
+    def _get_feuille(self):
+        return self.__feuille
+
+    def _set_feuille(self, value):
+        self.__feuille = value
+        liste = self._contenu[:]
+        for i in xrange(1, len(liste), 2):
+            self._contenu[i].__feuille__ = value
+
+    __feuille__ = property(_get_feuille, _set_feuille)
+
+    def __init__(self, parent, chaine = ""):
+        if isinstance(chaine, Formule):
+            chaine = eval(repr(chaine))
+##        print "Initialisation formule:", chaine, type(chaine)
+        self._parent = weakref.ref(parent) # self._parent est une fonction qui renvoit parent si il existe encore. Cela permet de ne pas le maintenir en vie artificiellement (pas de référence circulaire).
+        #~ self._cache_repr = chaine
+        #~ self._cache_str = "<?>".join()
+        if "{" not in chaine:
+            liste = ["", "{" + chaine + "}", ""]
+        else:
+            liste = re.split("([{][^}]+[}])", chaine)
+        for i in xrange(1, len(liste), 2):
+            cache = liste[i][1:-1] # "{A.x}" -> "A.x"
+            var = liste[i] = Variable(cache)
+            var._cache_formule = cache
+##            # on va maintenant redéfinir la méthode affiche de toutes les variables de la formule : au lieu d'être inactive, la méthode affiche va actualiser l'affichage de l'objet contenant la formule.
+##            def affiche(self, actualiser = False, formule = self):
+##                formule.parent.creer_figure()
+##            var.affiche = new.instancemethod(affiche, var, var.__class__)
+        self._contenu = liste
+
+        # il faut faire un système de cache pour chaque variable :
+        # - si la variable est calculable, on renvoie la valeur de la variable (et on met à jour son cache)
+        # - sinon, on renvoie le cache s'il s'agit de repr, et <?> s'il s'agit de str.
+
+        self.__feuille__ = self.parent.__feuille__
+
+
+    @property
+    def parent(self):
+        return self._parent()
+
+    def supprimer(self):
+        for i in xrange(1, len(self._contenu), 2):
+            self._contenu[i].supprimer()
+
+
+    def __repr__(self):
+        liste = self._contenu[:]
+        for i in xrange(1, len(liste), 2):
+            if liste[i].val is not None:
+                liste[i]._cache_formule = str(liste[i])
+            liste[i] = "{" + liste[i]._cache_formule + "}"
+        return repr(uu("".join(liste)))
+        #~ return uu("".join(liste))
+
+
+    def __unicode__(self):
+        liste = self._contenu[:]
+        for i in xrange(1, len(liste), 2):
+            if liste[i].val is None:
+                s = self._caractere_erreur
+            else:
+                s = nice_display(liste[i])
+            #~ if s == "None":
+                #~ s = "<?>"
+            liste[i] = s
+        return uu("".join(liste))
+
+
+    def __str__(self):
+        return unicode(self).encode(param.encodage)
+
+
+
+
+
+
+class Variable(Objet_numerique):
+    u"""Une variable.
+
+    Une variable numérique ; l'argument peut être un nombre, ou une expression sous forme de chaine de caractères.
+    Exemple: Variable(17.5), Variable('AB.longeur+1').
+    Dans ce dernier cas, il est nécessaire qu'une feuille de travail soit définie.
+
+    Note : ne pas définir directement l'attribut __contenu !"""
+
+    _prefixe_nom = "k"
+    _style_defaut = param.variables
+
+    # RE correspondant à un nom de variable (mais pas d'attribut)
+    __re = re.compile('(' + parsers.VAR_NOT_ATTR + ')')
+
+    def _set_contenu(self, value):
+        if isinstance(value, Variable):
+            if value.__feuille__ is not None:
+                value.__feuille__ = self.__feuille__
+            if value._Variable__fonction is None:
+                return value.contenu
+            return value.val
+        elif isinstance(value, basestring):
+            value = value.replace(" ","")
+            # Si c'est un nombre:
+            if not "." in value and sympy is not None:
+                try:
+                    symp = sympy.sympify(value)
+                    if not symp.atoms(sympy.Symbol):
+                        value = symp
+                except AttributeError:
+                    pass
+            elif re.match(parsers.NBR_SIGNE + "$", value):
+                value = eval(value, {})
+        elif sympy is not None and isinstance(value, sympy.Basic):
+            if not value.is_real:
+                raise RuntimeError, "La variable doit etre reelle."
+        return value
+
+
+    __contenu = Argument(TYPES_REELS + (basestring,), None,  _set_contenu, defaut = 0)
+
+    def __init__(self, contenu = 0, **styles):
+        Objet.__init__(self,  **styles)
+        self.__liste = []
+        self.__fonction = None
+        self.__contenu = contenu = Ref(contenu)
+
+    def _test_dependance_circulaire(self, valeur):
+        u"""Provoque une erreur si l'objet se retrouve dépendre de lui-même avec la nouvelle valeur.
+
+        Retourne une liste composée alternativement d'instructions et d'objets de la feuille,
+        et un ensemble constitué des objets de la feuille mis en jeu dans le code.
+        (... à documenter ...)"""
+        if isinstance(valeur, basestring) and self.__feuille__ is not None:
+            liste = re.split(self.__re, valeur)
+            ensemble = set()
+            for i in xrange(1, len(liste), 2):
+                obj = self.__feuille__.objets[liste[i]]
+                if isinstance(obj, Objet):
+                    liste[i] = obj
+                    ensemble.add(obj)
+                    if self is obj or is_in(self, obj._tous_les_ancetres()):
+                        print self,
+                        raise RuntimeError, "Definition circulaire dans %s : l'objet %s se retrouve dependre de lui-meme." %(self, obj)
+            return liste, ensemble
+        return None, None
+
+
+    def _compile(self,  liste, ensemble):
+        u"""Compile l'expression stockée dans la variable ; les arguments sont les valeurs retournées par '_test_dependance_circulaire'.
+
+        La compilation doit toujours avoir lieu à la fin de la procédure de redéfinition de la variable,
+        car elle ne doit être exécutée que si la redéfinition de la variable va effectivement avoir lieu,
+        c'est-à-dire si tout le processus précédent s'est exécuté sans erreur."""
+        if self._type == "compose" and self.__feuille__ is not None:
+##            re.findall(self.__re,  self.valeur)
+            self.__liste = liste
+            self.__fonction = eval("lambda:" + self.__contenu, self.__feuille__.objets)
+            # on supprime la variable de la liste des vassaux pour les objets dont elle ne dépendra plus desormais:
+            for objet in self._ancetres:
+                objet.vassaux.remove(self)
+            self._ancetres = ensemble
+            self._modifier_hierarchie()
+            for objet in self._ancetres:   # l'objet est vassal de chacun des objets dont il depend
+                objet.vassaux.append(self)
+        else:
+            for objet in self._ancetres:
+                objet.vassaux.remove(self)
+            self._ancetres = set()
+            self._modifier_hierarchie()
+            self.__liste = []
+            self.__fonction = None
+
+
+    @property2
+    def contenu(self, value = None):
+        if value is None:
+            if self.__liste: # variable contenant une expression compilée
+                # On regénère l'expression à partir de l'expression compilée.
+                # C'est important, car certains objets de la feuille peuvent avoir changé de nom entre temps.
+                valeur = ""
+                for elt in self.__liste:
+                    if isinstance(elt, Objet):
+                        valeur += elt.nom
+                    else:
+                        valeur += elt
+                return valeur
+            else:
+                return self.__contenu
+        else:
+            args = self._test_dependance_circulaire(value)
+            self.__contenu = value
+            self._compile(*args)
+
+
+    def _get_valeur(self):
+        # cf. self._conditions_existence
+        return self.__val_cache if contexte['exact'] else self.__val_cache_approche
+
+
+
+    def _set_valeur(self, valeur):
+        self.contenu = valeur
+
+
+    def _set_feuille(self):
+        self._compile(*self._test_dependance_circulaire(self.__contenu))
+        self._heritiers_a_recalculer(self._heritiers())
+
+    @property
+    def _type(self):
+        return isinstance(self.__contenu, basestring) and "compose" or "simple"
+
+
+
+    def _recenser_les_ancetres(self):
+#        warning("'_recenser_les_ancetres' n'a aucun effet pour une variable.")
+        self._modifier_hierarchie()
+
+
+
+    def _conditions_existence(self): # conditions specifiques pour que l'objet existe, a definir pour chaque objet
+        if self._type == "compose":
+            try:
+                self.__val_cache = self.__fonction()
+                if isinstance(self.__val_cache, Variable):
+                    self.__val_cache = self.__val_cache.val
+            except Exception:
+                if param.verbose:
+                    print_error(u"Impossible de déterminer la valeur de la variable " + self.nom + repr(self))
+                return False
+        else:
+            self.__val_cache = self.contenu
+        try:
+            self.__val_cache_approche = float(self.__val_cache)
+        except TypeError:
+            print_error(u"Variable de type incorrect.")
+            return False
+        return True
+
+
+    def __str__(self):
+        return str(self.contenu)
+
+    def _definition(self):
+        if self._type == "compose":
+            return repr(self.contenu)
+        else:
+            return str(self.contenu)
+
+
+
+
+##    def affiche(self, actualiser = False):
+##        if actualiser and self.__feuille__ is not None:
+##            canvas = self.__canvas__
+##            if canvas:
+##                canvas.actualiser()
+##
+
+
+    @staticmethod
+    def _convertir(objet):
+        u"Convertit un objet en variable."
+##        if isinstance(objet, ALL.Variable):   #  Inutile (?)
+##            return objet.copy()
+        return ALL.Variable(objet)
+
+
+    def _update(self, objet):
+        if not isinstance(objet, Variable):
+            objet = self._convertir(objet)
+        if isinstance(objet, Variable):
+            if objet.__feuille__ is not None:
+                objet.__feuille__ = self.__feuille__
+            if objet._Variable__fonction is None:
+                self.contenu = objet.contenu
+            else:
+                self.val = objet.val
+        else:
+            raise TypeError, "l'objet n'est pas une variable."
+
+
+
+    def varier(self, debut = 0, fin = 1, pas = 0.02, periode = 0.03):
+        if self.__feuille__ is not None:
+            self.__feuille__.start()
+            for i in fullrange(debut, fin, pas):
+                t = time.clock()
+                self.val = i
+                while time.clock() < t + periode:
+                    souffler()
+                    if self.__feuille__._stop:
+                        break
+                souffler()
+                if self.__feuille__._stop:
+                    break
+
+
+# Addition et multiplication liées
+# ------------------------------------------------
+
+# Est-ce encore bien utile ?
+
+    def add(self, y):
+        u"Addition liée (le résultat est une variable qui reste toujours égale à la somme des 2 valeurs)."
+        if self._type == "simple":
+            if isinstance(y, ALL.TYPES_NUMERIQUES) or (isinstance(y, Variable) and y._type == "simple"):
+                return Variable(self + y)
+        var = Variable("(%s)+(%s)" %(self, y))
+        var.__feuille__ = self.__feuille__
+        return var
+
+    def mul(self, y):
+        u"Multiplication liée (le résultat est une variable qui reste toujours égale au produit des 2 valeurs)."
+        if self._type == "simple":
+           if isinstance(y, ALL.TYPES_NUMERIQUES) or (isinstance(y, Variable) and y._type == "simple"):
+                return Variable(self * y)
+        var = Variable("(%s)*(%s)" %(self, y))
+        var.__feuille__ = self.__feuille__
+        return var
