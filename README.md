@@ -7,7 +7,7 @@ WxGeometrie
 
 License: GNU Public License version 2 or higher
 
-Auteur: [Nicolas Pourcelot](wxgeo@users.sourceforge.net) (2005-2010)
+Auteur: Nicolas Pourcelot <wxgeo@users.sourceforge.net> (2005-2010)
 
 
 La librairie Sympy ci-incluse est distribuée sous license BSD,
