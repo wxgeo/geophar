@@ -1,7 +1,7 @@
 WxGeometrie
 ===========
 
-**Le couteau suisse du prof de maths.**
+**Le couteau suisse du prof de maths. :)**
 
 http://wxgeo.free.fr/
 
@@ -9,7 +9,7 @@ License: GNU Public License version 2 or higher
 
 Auteur: Nicolas Pourcelot (2005-2010)
 
-Mail: wxgeo@users.sourceforge.net
+Courriel: wxgeo _arobase_ users.sourceforge.net
 
 
 La librairie Sympy ci-incluse est distribuée sous license BSD,
@@ -20,7 +20,7 @@ URL http://www.sympy.org.
 
 
 Le module decorator est écrit et distribué par Michele Simionato (c) 2005.
-http://pypi.python.org/pypi/decorator
+URL http://pypi.python.org/pypi/decorator
 
 
 
