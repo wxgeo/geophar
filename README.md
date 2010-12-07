@@ -5,19 +5,19 @@ WxGeometrie
 
 <http://wxgeo.free.fr/>
 
-License: GNU Public License version 2 or higher
+**License :** GNU Public License version 2 or higher
 
-Auteur: Nicolas Pourcelot <wxgeo@users.sourceforge.net> (2005-2010)
+**Auteur :** Nicolas Pourcelot <wxgeo@users.sourceforge.net> (2005-2010)
 
 
-La librairie Sympy ci-incluse est distribuée sous license BSD,
+La librairie *Sympy* ci-incluse est distribuée sous license BSD,
 par la Sympy Development Team:
 
 SymPy Development Team (2010). SymPy: Python library for symbolic mathematics
 URL <http://www.sympy.org>.
 
 
-Le module decorator est écrit et distribué par Michele Simionato (c) 2005.
+Le module *decorator* est écrit et distribué par Michele Simionato (c) 2005.
 URL <http://pypi.python.org/pypi/decorator>.
 
 
@@ -44,6 +44,8 @@ Derrière un firewall, vous pouvez également utiliser :
 1. Documentation
 ----------------
 
+Pour l'installation, consultez le fichier *INSTALL*.
+
 Une documentation (hélas incomplète) se trouve à cette adresse :
 
 <http://www.maths.ac-aix-marseille.fr/webphp/wiki/index.php/Accueil#Aide_WxG.C3.A9om.C3.A9trie>
@@ -60,7 +62,17 @@ Une documentation (hélas incomplète) se trouve à cette adresse :
 3. Bref historique
 ------------------
 
-À venir
+En 2005, souhaitant apprendre la programmation orientée objet, je suis tombé
+sur un article d'un développeur ventant Python.
+Les logiciels de géométrie dynamique répandus étaient alors essentiellement
+propriétaires (hasard du sort, six mois plus tard, les choses avaient déjà bien
+changés).
+Après quelques essais de programmation en Python fin décembre 2004, je décidai
+d'écrire un prototype de logiciel de géométrie dynamique, m'inspirant de Cabri
+et Geoplan.
+De fil en aiguille, WxGéométrie a acquis successivement toute une panoplie d'outils
+au fur et à mesure de mes besoins d'enseignant : traceur de courbes, calculatrice,
+statistiques, arbre de probabilités, tableaux LaTeX...
 
 
 
