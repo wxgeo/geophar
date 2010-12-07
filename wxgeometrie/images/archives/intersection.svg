@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://web.resource.org/cc/"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://inkscape.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="210mm"
+   height="297mm"
+   id="svg1"
+   sodipodi:version="0.32"
+   inkscape:version="0.43"
+   sodipodi:docbase="C:\Documents and Settings\Nico\Bureau\version_0.105\images\archives"
+   sodipodi:docname="intersection.svg">
+  <defs
+     id="defs3">
+    <linearGradient
+       id="linearGradient2927">
+      <stop
+         style="stop-color:#7893d8;stop-opacity:1.0000000;"
+         offset="0.0000000"
+         id="stop2928" />
+      <stop
+         style="stop-color:#f1f5ff;stop-opacity:1.0000000;"
+         offset="0.50000000"
+         id="stop2931" />
+      <stop
+         style="stop-color:#a0b0da;stop-opacity:1.0000000;"
+         offset="1.0000000"
+         id="stop2929" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient2927"
+       id="linearGradient2930"
+       gradientTransform="scale(0.982638,1.017669)"
+       x1="220.35866"
+       y1="501.99014"
+       x2="220.93417"
+       y2="466.86563"
+       gradientUnits="userSpaceOnUse" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient2927"
+       id="linearGradient6731"
+       gradientTransform="scale(0.982638,1.017669)"
+       x1="202.22995"
+       y1="484.42773"
+       x2="237.91199"
+       y2="484.42773"
+       gradientUnits="userSpaceOnUse" />
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="7"
+     inkscape:cx="223.85917"
+     inkscape:cy="558.34429"
+     inkscape:current-layer="g1410"
+     inkscape:window-width="1024"
+     inkscape:window-height="721"
+     inkscape:window-x="-4"
+     inkscape:window-y="-4" />
+  <metadata
+     id="metadata4">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <rect
+       style="fill:url(#linearGradient2930);fill-opacity:1.0;fill-rule:nonzero;stroke:url(#linearGradient6731);stroke-width:2.5625000;stroke-miterlimit:4.0000000;stroke-opacity:1.0000000;"
+       id="rect1061"
+       width="32.500000"
+       height="33.750000"
+       x="200.00000"
+       y="476.11218"
+       rx="6.0000000"
+       inkscape:export-filename="C:\Documents and Settings\Nico\Bureau\version_0.105\images\intersection.png"
+       inkscape:export-xdpi="72"
+       inkscape:export-ydpi="72" />
+    <g
+       id="g5458"
+       transform="translate(127.9167,11.66657)">
+      <path
+         style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#da0019;stroke-width:2.50000453;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1"
+         d="M 69.386539,493.51639 L 107.54203,468.30381"
+         id="path1422"
+         inkscape:export-filename="C:\Documents and Settings\Nico\Bureau\version_0.105\images\intersection.png"
+         inkscape:export-xdpi="72"
+         inkscape:export-ydpi="72" />
+      <path
+         sodipodi:type="arc"
+         style="opacity:1;fill:none;fill-opacity:1;fill-rule:nonzero;stroke:#da0019;stroke-width:1.20971119;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         id="path1428"
+         sodipodi:cx="184"
+         sodipodi:cy="475.57648"
+         sodipodi:rx="9.8571424"
+         sodipodi:ry="11.214286"
+         d="M 174.3955,473.05381 A 9.8571424,11.214286 0 0 1 189.87707,466.57345"
+         transform="matrix(-1.904161,-1.081186,1.45055,-1.419291,-246.4843,1341.051)"
+         sodipodi:start="3.3684855"
+         sodipodi:end="5.3511795"
+         sodipodi:open="true"
+         inkscape:export-filename="C:\Documents and Settings\Nico\Bureau\version_0.105\images\intersection.png"
+         inkscape:export-xdpi="72"
+         inkscape:export-ydpi="72" />
+      <g
+         id="g1410"
+         transform="matrix(0.47109,0,0,0.47109,39.00983,272.0239)"
+         inkscape:export-filename="C:\Documents and Settings\Nico\Bureau\version_0.105\images\intersection.png"
+         inkscape:export-xdpi="72"
+         inkscape:export-ydpi="72">
+        <path
+           style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#1b8462;stroke-width:5.30683279;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1"
+           d="M 90.624969,444.34411 L 90.624969,459.96315"
+           id="path1412" />
+        <path
+           style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#1b8462;stroke-width:5.30683279;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1"
+           d="M 98.43449,452.15363 L 82.815447,452.15363"
+           id="path1414" />
+      </g>
+    </g>
+  </g>
+</svg>
