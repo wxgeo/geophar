@@ -13,7 +13,7 @@ wxgeometrie.e4*
 *.geo
 
 # Dossiers "poubelles"
-wxgeometrie/modules/OLD/
+OLD/
 BAZAR/
 sympy_OLD/
 tmp/
@@ -48,12 +48,17 @@ wxgeometrie/doc/*
 !wxgeometrie/doc/images/*
 !notes.txt
 !license.txt
+#!wxgeometrie/developpeurs/description.py
+#!wxgeometrie/developpeurs/README.txt
+#!wxgeometrie/developpeurs/documentation\ format\ de\ fichier.*
+#!wxgeometrie/developpeurs/documentation\ de\ l'API.*
+#!wxgeometrie/developpeurs/maths/distance_point_segment.*
+#!wxgeometrie/developpeurs/maths/distance_point_ellipse.*
 
 
 # À ne pas inclure **pour l'instant**
 ressources_annexes/
 tools/
-wxgeometrie/developpeurs/
 wxgeometrie/exemples/
 wxgeometrie/geolib/FICHIER param A CREER
 wxgeometrie/geolib/librairies.dia
