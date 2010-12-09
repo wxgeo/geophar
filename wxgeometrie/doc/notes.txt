@@ -1,0 +1,512 @@
+WxGeometrie
+_________________________
+
+Copyright 2005-2010 by Nicolas Pourcelot
+
+Ce programme est distribué selon les termes de la GNU Public License version 2.
+
+This program is distributed under the terms of the GNU Public License version 2.
+
+
+
+DESCRIPTION
+______________________
+
+Geometrie est un petit programme de géométrie dynamique écrit en WxPython (à partir de la version 0.3).
+
+Il a été testé avec les configurations suivantes (2008):
+
+Logicielles :
+Matplotlib version 0.99.1.1
+WxPython version 2.8.10.1
+Python version 2.6.5
+Windows XP SP2 ou Linux Ubuntu Lucid
+Numpy 1.3
+
+Il fonctionnera sans problème avec des versions ultérieures de Python.
+Attention, pour WxPython, certains bugs subsistent sous Windows avec les versions 2.7.x et 2.8.x !
+
+Materielles :
+Processeur AMD Sempron 3000+ (2 GHz)
+NVidia Geforce FX5200
+500 Mo RAM
+
+Il fonctionnera très probablement avec des configurations moindres.
+Je n'ai pas eu l'occasion d'essayer, veuillez donc m'en informer.
+
+Configuration minimale requise :
+Processeur : AMD Athlon 1,5 GHz ou équivalent
+RAM : 256 Mo
+Système d'exploitation : Windows 98, 2000, XP ou Linux ou tout autre "Unix-like" assez recent.
+Python : 2.5.x
+WxPython : 2.6.x
+Matplotlib : 0.99
+Numpy 1.2
+
+Non testé sous Windows Seven, ni sous MacOs X
+
+
+FEUILLE DE ROUTE
+______________________
+
+
+
+
+
+
+
+
+
+
+Versions 0.12x.x :
+------------------
+
+Buts de cette série :
+- intégration des courbes à geolib -> en cours
+- intégration de sympy -> ok
+- gestion complète des variables -> ok
+- refactorisation du code de geolib -> ok
+- refactorisation du code de wxgéométrie -> en cours
+- implémentation de tests unitaires -> en cours
+
+Éventuellement :
+- gestion des macros -> non
+- création d'un nouveau moteur graphique  -> en cours
+
+
+    Ameliorations :
+
+    Majeures :
+
+    version 0.120:
+    Intégration de sympy dans la calculatrice
+    Changements importants dans l'API de geolib (les méthodes orientées utilisateur-final on été remplacées par des attributs spéciaux).
+    Par exemple, pour changer l'abscisse d'un point A, on écrit désormais "A.x = 3" au lieu de "A.x(3)", ce qui est plus lisible :-)
+    Améliorations dans la console
+    La gestion des évènements est (enfin) correcte sous Linux
+    Implémentation de tests unitaires dans geolib... à terme, cela devrait réduire le nombre de bugs
+    Support de matplotlib 0.98+
+    Ajout d'une fonction 'resoudre' dans la calculatrice (équations, inéquations et systèmes)
+
+    version 0.125:
+    Résolution de plusieurs nouveaux types d'inéquations
+    Numeric et numarray ne sont plus supportés, et sont remplacés par numpy
+    (C'était déjà le cas pour les versions récentes de matplotlib)
+
+    version 0.126:
+    Support expérimental du calcul formel dans geolib
+    Python 2.4 n'est plus supporté, il faut impérativement utiliser Python 2.5
+
+
+
+    Mineures :
+
+    version 0.120:
+    Correction d'un petit bug dans la boîte de dialogue d'animation.
+    Inclusion d'un fichier .sh en guise de lanceur.
+    La méthode __call__ n'est plus systématiquement présente. Ceci permet de tester si les objets sont vraiment appelables ("callables").
+    Correction de bugs pour les classes Polygone_regulier et Polygone_regulier_centre
+    Le gestionnaire d'objets de la feuille utilise désormais un dictionnaire personnalisé. Ceci permet d'alléger le travail de la console en effectuant le travail en amont, et de manière (enfin !) systématique, lorsqu'on crée ou supprime des objets.
+    Plus d'ajout de __self__ au début de chaque commande (cela n'offrait que peu d'avantage au niveau sécurité, et bloquait des commandes type "for [] in []:" par exemple...)
+    La plupart des méthodes orientées utilisateur des objets ont été remplacées par des attributs spéciaux. Ceci rend la syntaxe plus intuitive dans la console (ex: 'A.x = 3' au lieu de 'A.x(3)', 'A.coordonnees = (1,2)' au lieu de 'A.coordonnees(1,2)'). Jusqu'à présent, 'A.x = 3' était susceptible de faire planter wxgéométrie.
+    Refonte du système de formules pour corriger plusieurs bugs. ex: 'o.B.label("{A.x}", formule = True);o.A(1,2);o.B.supprimer();o.A(1,3)'
+    Correction du comportement du focus.
+    Construction de points à partir de leur affixe (complexe).
+    Correction de bugs lorsqu'on reliait un point aux axes.
+    La gestion des options du programme adopte une syntaxe Unix
+    Changements dans le moteur d'affichage
+    Améliorations diverses et correction de bugs dans Tablatex
+    Les bases pour la gestion de filtres d'import sont posées
+    Définition dynamique des classes de geolib, suivant le type d'argument
+    L'environnement d'excéution du gestionnaire d'objets de la feuille s'enrichit progressivement (mots-clefs 'fenetre', 'objets'...)
+    Amélioration de l'historique de la ligne de commande
+    Support des styles de texte "famille", "epaisseur" et "style" quand param.latex == True.
+    Correction de bugs avec WxPython 2.8 sous Windows (ajout de style=TE_PROCESS_ENTER)
+    Correction de regression: 'del b' fonctionne de nouveau dans la calculatrice
+    Correction de regression: centre de gravité dans geometre
+    Meilleur gestion des arguments de WxGéométrie (utilisation de optparse)
+    Nouvelle gestion de la mise en valeur lors de la selection (modifications notamment pour le texte)
+    Factorisation dans R ou dans C des polynomes
+    Correction de regression: détection des objets Texte près de la souris
+    Droite_equation accepte des arguments style '2x+3y=0' (à améliorer)
+    Meilleur support de LaTeX dans la calculatrice
+    (0,2) créer un point dont le nom n'apparaît pas (cf Géogébra)
+    Regression corrigée: quand on crée (graphiquement au moins) une intersection, le nom apparaît par défaut.
+    Regression corrigée: construction d'un triangle avec l'icône spécifique triangle (idem parallelogramme).
+    Affichage des noms d'objets en mode LaTeX.
+    Régression corrigée: zoom automatique.
+    Régression corrigée: mauvais chargement des paramètres lorsque les préférences sont désactivées (option -d).
+    Régression corrigée: ans() renvoyait une chaine de caractère
+    Calculatrice: ~ est désormais interprété comme un espace en mode LaTeX
+    Calculatrie: amélioration de la précision par défaut des calculs approchés
+    Correction de bugs unicode : utilisation de unichr au lieu de chr
+    Correction d'un bug pour les étiquettes (attribut parametre manquant)
+    Support de numpy 1.1.* et 1.2.* (contournement d'un bug de numpy)
+    Il n'est plus possible de rentrer un code LaTeX erroné via la boite de dialogue dans l'onglet 'geometre'.
+    (Ceci évite de bloquer malencontreusement l'affichage).
+    Ajout d'une entrée dans les menus pour le zoom des textes.
+    Simplification des racines imbriquées lors des factorisations de polynomes.
+    Correction de plusieurs régressions liées à la création d'objets sans nom par ligne de commande (mais il en reste !).
+    Bug de geolib (detection des angles)
+    Ajout d'une vérification pour les textes LaTeX entrés, afin de ne pas bloquer l'affichage.
+    Correction de plusieurs bugs concernant le codage des segments, des angles et des côtés.
+    Correction d'une importante régression (dans une commande, '1,2' était converti systématiquement en 'Point(1,2)')
+    Correction d'un bug lorsque wxgeometrie était lancé avec le parametre -d
+    Calculatrice: possibilité de copier le code LaTeX automatiquement dans le presse-papier
+    Correction d'une régression (dans une commande, '(1,2)' était converti systématiquement en 'Point(1,2)')
+    Mise à jour de l'aide (help.htm)
+    Désactivation du module "surfaces" pour les versions récentes de matplotlib.
+    Correction d'une régression mineure (style par défaut des côtés)
+
+    version 0.120.1
+    Correction d'un bug pour la fenetre de dialogue Polygone_regulier_centre
+    Correction d'un bug dans le nommage automatique des cercles
+
+    version 0.120.2
+    Correction d'un bug dans l'utilitaire de rapport de bugs (sic !)
+    Correction d'un bug empêchant certaines sauvegardes de se charger
+    (Sauvegardes contenant des barycentres, des interpolations ou des polygones de plus de 9 côtés)
+    Amélioration de la version py2exe (le module param est cherché de préférence dans le répertoire de wxgeometrie.exe)
+    Correction de bugs pour la classe Interpolation (extémités de la courbe)
+    Amélioration du parser de la calculatrice (i sqrt(3) -> i*sqrt(3))
+
+    version 0.120.3
+    Calc. : Affichage des nombres complexes sous forme algébrique par défaut
+    Calc. : Ajout des commandes LaTeX \exp, \ln et \log
+
+    version 0.120.4
+    Correction d'un bug sur la copie de styles
+    Corrections de bugs sur les interpolations
+
+    version 0.120.5
+    Double-clic sur les boutons dans le module 'Geometre'
+    Correction d'un bug lors de la construction des parallèles et perpendiculaires
+    Calculatrice : conversion de 'resous' et 'solve' en 'resoudre'
+
+    version 0.120.6
+    Correction d'un bug concernant les intersections droites-cercles et les tangentes.
+    Contournement (partiel ?) d'un bug sous numpy 1.1 et 1.2 (cf. http://scipy.org/scipy/numpy/ticket/884)
+    En cas de bug lors d'une annulation/restauration, l'affichage n'est plus gelé
+    Ajout de boutons annuler et rétablir (pratiques pour le TBI)
+    Patch provisoire pour le TNI
+    Correction de bug: style des intersections
+
+    version 0.120.7
+    Correction de bugs: label des angles, conversion Variable -> Angle
+    Patch TNI
+
+    version 0.121
+    Support partiel du logarithme dans les inéquations
+    Calculatrice : gestion de 'NotImplementedError'
+    Refonte de la classe 'Intervalle', pour contourner un bug de sympy
+    Ajout du mot clef 'z' pour les points, vecteurs libres, et textes
+    Calculatrice: ajout de 'conjug()' (conjugué d'un nombre complexe)
+    Ajout des objets Triangle_rectangle, Triangle_isocele, et Triangle_isocele_rectangle
+    Meilleur gestion de la construction des tangentes
+    Construction graphique des translations, des homothéties, des rotations et des symétries (centrales ou axiales)
+    Correction d'un bug se produisant parfois lors de la recherche de mises à jour
+    Construction graphique des triangles isocèles, rectangles et équilatéraux
+    Construction graphique des carrés, rectangles et losanges
+    Meilleure prise en charge de LaTeX dans la calculatrice
+    Calculatrice : conversion j - h - min - s
+
+    version 0.122
+    Correction d'un bug sur les représentants de vecteurs.
+    Correction d'un bug sur certains cas particuliers d'intersections.
+    Correction de bug : conflit de nom de variable (objet.py-l150).
+    Réécriture plus souple des transformations.
+    La calculatrice accepte désormais f' et f" au lieu f` et de f``
+
+    version 0.123.1
+    Ajouts de nouvelles méthodes aux polygones (en interne pour l'instant)
+    Optimisations
+    'derive(f)' accepté à la place de 'derive(f(x))'
+    Syntaxe de ans() modifiée
+    Extension des options de zoom de l'affichage
+    Passage à sympy 0.6.4
+    Correction d'un bug sur les angles orientés
+    Calcul matriciel
+    Correction d'un bug dans la fonction 'point_dans_polygone'
+    Représentations en perspective cavalière (en ligne de commande pour l'instant)
+    Correction d'un bug dans l'affichage des demi-droites
+    La plupart des objets géométriques peuvent être construits sans arguments
+    (cela permet des constructions et des tests plus rapides)
+    Permutation des classes Cercle et Cercle_rayon
+    0.123 -> 0.123.1 (nécessaire du fait du changement d'API précédent)
+    Les noms d'objets peuvent être utilisés sans majuscule, et sans parenthèses en l'absence d'argument.
+    Nommage intelligent (ex: ABCD = carre -> les sommets s'appeleront A, B, C et D)
+    Correction d'un bug lors de l'utilisation de fonctions mathématiques dans geolib
+    Correction d'un bug dans l'objet Droite_equation
+    Génération d'une liste d'objets via la ligne de commande
+    Regression corrigée: Détection incorrecte des arcs de cercle
+    Bug corrigé: labels contenant des formules commençant par un chiffre
+    Bug corrigé: intersection entre une droite et un segment presque vertical
+    Orthonormalisation par "zoom out" plutôt que par "zoom in"
+    Régression corrigée: le zoom "intelligent" fonctionne de nouveau pour un repère orthonormé
+    Polygones par défaut non croisés
+    Régression corrigée: exécution d'un historique contenant un déplacement d'étiquette
+    Régression corrigée: chargement d'une feuille contenant un représentant de vecteur
+    Contournement d'un bug de WxGtk (titres de pop-up non affichés)
+    Changement du style par défaut des angles
+    Codage automatique des angles droits (désactivable)
+
+    Version 0.124
+    Correction d'un bug dans les perspectives cavalières
+    Les noms de vecteurs apparaissent avec une flêche.
+    Bug corrigé: une formule incorrecte entrée comme légende d'un objet géométrique est refusée proprement
+    Changement des polices par défaut en Stix Serif, et des polices mathématiques en Stix
+    Nom des cercles et des droites en caligraphie.
+    Changement du codage des ' dans les noms d'objets pour corriger une régression.
+    Régression corrigée: affichage incorrect des droites dans un repère orthonormé.
+    Bug corrigé: 'Relier aux axes' ne fonctionnait que pour les points libres.
+    Bug corrigé: résolution impossible de certains systèmes.
+    La copie de style ne copie plus le mode de légende (formule, nom, texte, etc.).
+    Régression corrigée: problèmes lors de la redéfinition des objets
+    Régression corrigée: un objet ayant mêmes coordonnées ou valeur qu'un objet en gras était affiché en gras lui aussi
+
+    Version 0.125
+    Régression corrigée: union d'un intervalle et d'un singleton
+    L'objet Courbe_fonction de geolib est désormais fonctionnel (reste à l'intégrer)
+    Bug corrigé: redéfinition d'un objet ayant un seul argument
+    Amélioration du système de déboguage
+    Patch provisoire de sympy, pour contourner plusieurs bugs
+    (Les patchs ont été soumis à l'équipe de développement de sympy)
+    Amélioration de la résolution des inéquations contenant des logarithmes
+    Amélioration de la factorisation dans R des polynômes de degrés 3 et 4
+    Factorisation en mode approché
+    Possibilité d'afficher les objets cachés
+    Mise en place d'un tracker de bugs (cf. http://wxgeo.free.fr/tracker)
+    Calculatrice: conversion décimal -> fraction
+    Nouveau système de gestion des feuilles (via un "classeur")
+    Calculatrice: développement décimal infini périodique
+    Geolib ne dépend plus de pylab, mais de numpy directement
+    Correction d'un bug de sympy sur les matrices
+    Correction d'un bug interne sur les dépendances d'objets
+
+    Version 0.126
+    Modification de l'API de geolib concernant les objets Variable et tous les angles
+    Les angles sont tous en radian en interne désormais
+    Nouvel algorithme (bien plus rapide) de détection des cercles en repère quelconque
+    Correction d'un bug de sympy sur l'évaluation de E
+    Affichage d'informations dans la barre de statut pour de nombreux objets
+    Régression corrigée: étiquettes impossibles à déplacer
+    Modifications internes dans le dictionnaire LocalDict
+    Gestionnaire de contextes
+    La classe Polygone_regulier est implémentée de manière bien plus efficace
+    Réécriture des intersections d'objets de manière plus concise et compatible avec sympy
+    Début de changement de l'API d'affichage
+
+
+
+
+
+
+
+
+Versions 0.13x.x :
+------------------
+
+Buts de cette série :
+- intégration des courbes à geolib -> ok
+- refactorisation du code de wxgéométrie -> en cours
+- implémentation de tests unitaires -> en cours
+- création d'un nouveau moteur graphique  -> ok
+- intégration du calcul formel dans geolib -> en cours
+- réécriture de Tablatex -> partielle
+
+
+    Améliorations :
+
+    Majeures :
+
+    Version 0.130
+    Réécriture de l'API d'affichage
+    Optimisation très importante de l'affichage
+    Réécriture du module Traceur en utilisant directement geolib
+    Contournement d'un vieux bug de WxGtk sous Linux
+    Contournement d'un bug de WxPython 2.8 sous Windows (enfin !)
+    Barre d'outils affichable pour le traceur
+    Nouvelle console dédiée aux objets géométriques
+    Réécriture complète de l'ancienne console
+    Réécriture de larges parties de TablaTex. Nouvelle syntaxe.
+    Génération automatique du tableau de signes/variations d'une fonction donnée.
+
+    Version 0.131
+    Support des sessions
+    Nécessite Matplotlib version 0.91 ou supérieure
+    Nouveau module "Surfaces"
+    Ajout d'une interface graphique pour gérer les options
+    Modules actifs modifiables sans redémarrer l'application
+
+    version 0.132
+    Nouveau style "hâchures" pour les polygones
+    Nécessite Matplotlib 0.99 ou supérieure
+    Le zoom est de nouveau fluide
+    Amélioration du module Statistiques
+    Nouveau module sur les graphes
+
+    Mineures :
+
+    Version 0.130
+    Utilisation de blit() et de deux buffers pour accélérer l'affichage
+    Gestion sécurisée du gel d'affichage (via 'with')
+    Régression corrigée: F5 exécute de nouveau l'historique
+    Bug corrigé: un objet renommé avec un nom réservé en python disparaissait
+    Amélioration et unification des lignes de commandes
+    Mise en cache de 4 listes des objets de la feuille selon différent critères de sélection
+    Suppression de l'historique des commandes
+    Nouvelle gestion des logs
+    -> Beta 1
+    Régression critique corrigée: export de la figure
+    Bug corrigé: bouton inactif dans le widget "LigneCommande"
+    Passage à sympy 0.6.5
+    Calculatrice: nouvelle fonction Rassemble() pour mettre sous une seule fraction.
+    Calculatrice: syntaxe LaTeX et OpenOffice.org des matrices acceptée
+    Calculatrice: copie du code LaTeX vers le presse-papier améliorée
+    Calculatrice: la syntaxe sin', cos', tan' etc. est maintenant acceptée.
+    Affichage: désélection lors de wx.EVT_LEAVE_WINDOW
+    Un grand nombre de paramètres graphiques sont désormais gérés directement par la feuille de travail
+    Geolib indique directement au moteur d'affichage le type de rafraichissement requis
+    En interne, les figures ne sont recrées qu'au moment où on en a besoin
+    Moteur d'affichage: optimisation en cas de rafraichissements rapides
+    [sympy 0.6.5] Bug corrigé pour solve(1/x,x)
+    [sympy 0.6.5] Bug corrigé pour solve(-(1 + x)/(2 + x)**2 + 1/(2 + x), x)
+    Calculatrice: simplification de l'affichage des racines et des produits
+    Régression corrigée: zoom automatique
+    Tests unitaires pour tablatex
+    Régression corrigée: affichage temporaire (zoomBox, etc.)
+    Amélioration du mode calcul approché (racines des polynômes)
+    Réintroduction d'une protection contre les plantages de l'affichage.
+    Bug corrigé: cercle ou droite nommé par une lettre grecque
+    Réflexion: possibilité d'utiliser un segment comme axe de symétrie
+    Correction d'un bug pour les ensembles de définition de fonctions rationnelles
+    Compression en temps réel de l'historique d'annulation
+    Régression corrigée: annulations parfois impossibles
+    Équation de droite plus lisible lorsque les coeffs sont petits.
+    Simplification du code des étiquettes (coordonnées en particulier)
+    Meilleur gestion de l'affichage des textes (moteur graphique)
+    Régression corrigée: impossible d'écrire dans un champs de texte sous Windows Vista
+    Gestion du focus améliorée lors des changements d'onglets
+    Calculatrice: [Maj] + [Entrée] pour une valeur approchée
+    Geolib: les noms "droites", "points", etc. permettent de traiter globalement les objets
+    dans la ligne de commande.
+    Régression corrigée: axes actualisé lors du changement de feuille
+    Adaptation du module de statistiques au nouveau moteur graphique
+    (au passage, les expériences sont désormais plus rapides)
+    Refonte partielle du système de log (stdout/stderr personnalisés)
+    Nouvelle fenêtre de contact non bloquante
+    Correction d'un bug d'affichage lors du redimensionnement de la fenêtre
+    Passage à Sympy 0.6.6
+    Documentation des arbres de probabilité
+    Mise à jour partielle de la documentation
+    Pointeur de la souris modifié lorsqu'on charge une feuille
+    Nouveau système de paquetage
+    Modification légère de l'initialisation, pour s'assurer que le fichier .log fonctionne.
+    Contournement d'un bug de wx.MiniFrame (Gtk) lorsque Compiz est activé.
+
+    Version 0.130.1
+    Correction d'un bug sous Windows Vista (export impossible)
+
+    Version 0.131
+    Changement de la précision de calcul pour la détection du cercle
+    Optimisation de l'affichage des cercles en cas de zoom important
+    Optimisation de la détection des arcs de cercle
+    Meilleur gestion des formules LaTeX incorrectes ou en cours d'édition
+    Correction d'un bug lorsque la légende du repère était vide
+    Optimisation de l'affichage des arcs de cercles en cas de zoom important
+    Nouvel objet : Demi-plan
+    Ajout d'un parametre '--modules' en ligne de commande
+    Mise à jour du code d'import des modules
+    Autre action: Supprimer les objets inutiles.
+    Calculatrice: meilleur gestion des matrices en LaTeX
+    Meilleur support des équations de droites
+    Calculatrice: ajout d'un menu 'Statistiques'
+    Calculatrice: ajout d'une fonction 'aide()'
+    Calculatrice: réorganisation des menus
+    Tablatex : support élargi des tableaux automatiques de variations/signes
+    Mathlib: meilleur factorisation des exponentielles
+    Calculatrice: support des mots-clés Python (if, for, else, etc.)
+    Nouvel éditeur interne de feuilles
+    Editeur de l'état interne de la calculatrice
+
+    version 0.131.1
+    Correction de regressions pour la sauvegarde des modules statistiques et probabilités
+    Sauvegarde automatique et récupération en cas de crash
+    Meilleur support des mots-clés Python dans la calculatrice
+
+    version 0.131.2
+    Amélioration notable de la sauvegarde de l'état de la calculatrice (quelques bugs subsistent cependant)
+    Ajout d'une fonction 'arrondir'
+    Correction d'un segfault à la fermeture lorsque le premier onglet n'est pas actif (sic !)
+
+    version 0.132
+    Matplotlib version 0.99+ est nécessaire
+    Support correct de l'export d'une partie de la figure
+    Les formats d'export supportés sont désormais ceux de matplotlib
+    -> JPEG, BMP et XPM ne sont plus suppportés (le support était trop mauvais)
+    -> EMF, SVGZ et RAW supportés désormais
+    Refactoring du code de la ligne de commande de débogage
+    Refactoring des librairies GUI et API
+    Ajout de nouveaux paramètres: echelle_cm et dpi_ecran
+    Nouvelles options d'export (non encore documentées)
+    Problème d'encodage corrigé lors de la sauvegarde de la session
+    (Régressions corrigées: export en image, boîtes de dialogue)
+    Bug corrigé: fonction dépendant de paramètres
+    Correction d'un bug de l'affichage des formules dans la partie géométrie
+    Patch de sympy.sympify
+    Bug corrigé dans l'interprète de la feuille (annulation impossible)
+    Plusieurs bugs (mineurs) corrigés concernant l'icône de sauvegarde
+    Optimisation de la sauvegarde automatique
+    Correction d'un bug dans le module de probas
+    Mise à jour de sympy
+    Mise à jour des filtres d'import pour le traceur
+    (l'ouverture d'anciens fichiers .geo ne fonctionnait plus)
+    Meilleur support de la syntaxe LaTeX dans le traceur
+    Patch de sympy concernant les limites
+    Adoption partielle du framework de test de Sympy
+    Réorganisation du code du module tablatex
+    Corrections de plusieurs bugs mineurs concernant l'édition de noms d'objets
+    Bug concernant le sablier (pointeur souris) sous Windows (module surfaces)
+    Correction d'un bug dans les menus de création d'objets géométriques
+    Détection des librairies manquantes dès le démarrage du logiciel
+
+
+    **Bugs connus / améliorations prévues**
+
+    http://wxgeo.free.fr/tracker
+
+
+
+
+
+
+
+version 1.0 :
+-------------
+
+    Mise a jour automatique style Firefox :)
+    Ajout d'une vraie rubrique d'aide.
+    Passage à PyQt ?
+
+
+
+version 2.0 :
+---------------
+
+    Geometrie 3-D
+
+
+
+
+
+
+Autres pistes de travail :
+--------------------------
+
+    Tirer partie de l'eventuelle presence de ImageMagick.
+    Outil pour calculer les moyennes trimestrielles et annuelles ?
+    Etendre les possibilites de l'API afin de creer des animations.
+    (système de diapos, export en gif anime ou mng, lecture de bande sonore, ...)
+    Support du format .ggb (Geogebra) en import et/ou export
+    Corriger les copies.
+    Faire le thé. Sans sucre pour moi svp.

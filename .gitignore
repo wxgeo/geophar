@@ -31,16 +31,29 @@ pyshell.pyw
 idle.pyw
 session_de_test.py
 startup_script.py
+
+# Fichiers temporaires.
 tmp.*
 temp.*
 tmp
 temp
+wxgeometrie.tar
+
+# Toute la doc n'est pas à jour ;
+# on n'inclut que ce qui est pertinent.
+wxgeometrie/doc/*
+
+# Fichiers de doc à inclure:
+!wxgeometrie/doc/help.htm
+!wxgeometrie/doc/images/*
+!notes.txt
+!license.txt
+
 
 # À ne pas inclure **pour l'instant**
 ressources_annexes/
 tools/
 wxgeometrie/developpeurs/
-wxgeometrie/doc/
 wxgeometrie/exemples/
 wxgeometrie/geolib/FICHIER param A CREER
 wxgeometrie/geolib/librairies.dia
