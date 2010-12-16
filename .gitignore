@@ -13,7 +13,7 @@ wxgeometrie.e4*
 *.geo
 
 # Dossiers "poubelles"
-OLD/
+wxgeometrie/modules/OLD/
 BAZAR/
 sympy_OLD/
 tmp/
@@ -31,34 +31,16 @@ pyshell.pyw
 idle.pyw
 session_de_test.py
 startup_script.py
-
-# Fichiers temporaires.
 tmp.*
 temp.*
 tmp
 temp
-wxgeometrie.tar
-
-# Toute la doc n'est pas à jour ;
-# on n'inclut que ce qui est pertinent.
-wxgeometrie/doc/*
-
-# Fichiers de doc à inclure:
-!wxgeometrie/doc/help.htm
-!wxgeometrie/doc/images/*
-!notes.txt
-!license.txt
-#!wxgeometrie/developpeurs/description.py
-#!wxgeometrie/developpeurs/README.txt
-#!wxgeometrie/developpeurs/documentation\ format\ de\ fichier.*
-#!wxgeometrie/developpeurs/documentation\ de\ l'API.*
-#!wxgeometrie/developpeurs/maths/distance_point_segment.*
-#!wxgeometrie/developpeurs/maths/distance_point_ellipse.*
-
 
 # À ne pas inclure **pour l'instant**
 ressources_annexes/
 tools/
+wxgeometrie/developpeurs/
+wxgeometrie/doc/
 wxgeometrie/exemples/
 wxgeometrie/geolib/FICHIER param A CREER
 wxgeometrie/geolib/librairies.dia

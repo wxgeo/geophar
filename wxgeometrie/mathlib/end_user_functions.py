@@ -42,6 +42,7 @@ __classement__ = OrderedDict((
 del OrderedDict
 
 from universal_functions import *
+from sympy import LambertW
 
 # Alias
 arcsin = asin
@@ -224,6 +225,3 @@ Graphe = Graph
 #~ i = ImaginaryUnit_bis()
 
 #~ del ImaginaryUnit_bis
-
-
-

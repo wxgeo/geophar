@@ -712,7 +712,10 @@ afficher_console_geolib = False
 try:
     from personnaliser import * # permet de générer un fichier personnaliser.py lors de l'installation, ou de la première utilisation, et dont les parametres remplaceront ceux-ci.
 except ImportError:
-    pass
+    try:
+        from personnaliser_ import *
+    except ImportError:
+        pass
 
 # Importe les options, de façon à ce qu'elles gardent une copie des valeurs par défaut
 try:
