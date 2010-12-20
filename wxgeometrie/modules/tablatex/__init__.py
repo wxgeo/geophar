@@ -87,6 +87,12 @@ class TabLaTeX(Panel_simple):
         self.sizer_type.AddSpacer((10,0))
         self.sizer_type.Add(self.derivee, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5)
 
+        self.limites =  wx.CheckBox(self, label = u"Limites.")
+        self.limites.SetValue(self._param_.limites)
+        self.limites.SetToolTipString(u"Afficher les limites dans le tableau de variations.")
+        self.sizer_type.AddSpacer((10,0))
+        self.sizer_type.Add(self.limites, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5)
+
         self.sizer.Add(self.sizer_type, 0, wx.ALL, 5)
 
         box = wx.StaticBox(self, -1, u"Code LaTeX permettant de de générer le tableau")
@@ -157,6 +163,9 @@ class TabLaTeX(Panel_simple):
             self._param_.derivee = self.derivee.GetValue()
         self.derivee.Bind(wx.EVT_CHECKBOX, regler_derivee)
 
+        def regler_limites(event = None):
+            self._param_.limites = self.limites.GetValue()
+        self.limites.Bind(wx.EVT_CHECKBOX, regler_limites)
 
     def activer(self):
         # Actions à effectuer lorsque l'onglet devient actif
@@ -173,9 +182,9 @@ class TabLaTeX(Panel_simple):
         self.modifie = True
         try:
             if self._param_.mode == 0:
-                code_latex = tabvar(commande, derivee = self._param_.derivee)
+                code_latex = tabvar(commande, derivee=self._param_.derivee, limites=self._param_.limites)
             elif self._param_.mode == 1:
-                code_latex = tabsign(commande, cellspace = self._param_.utiliser_cellspace)
+                code_latex = tabsign(commande, cellspace=self._param_.utiliser_cellspace)
             elif self._param_.mode == 2:
                 code_latex = tabval(commande)
             else:
@@ -204,9 +213,11 @@ class TabLaTeX(Panel_simple):
             self.entree.SetToolTipString(tabvar.__doc__)
             self.utiliser_cellspace.Disable()
             self.derivee.Enable()
+            self.limites.Enable()
         elif self._param_.mode == 1:
             self.utiliser_cellspace.Enable()
             self.derivee.Disable()
+            self.limites.Disable()
             self.entree.SetToolTipString(tabsign.__doc__)
             if self._param_.utiliser_cellspace:
                 self.code_entete.SetValue(u"\\usepackage{cellspace}")
@@ -215,6 +226,6 @@ class TabLaTeX(Panel_simple):
         elif self._param_.mode == 2:
             self.utiliser_cellspace.Disable()
             self.derivee.Disable()
+            self.limites.Disable()
             self.entree.SetToolTipString(tabval.__doc__)
             self.code_entete.SetValue(u"")
-

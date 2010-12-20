@@ -5,3 +5,4 @@ copie_automatique = False # copie automatique de chaque resultat dans le presse-
 mode = 0 # 0 -> Tableau de variation ; 1 -> Tableau de signe ; 2 -> Tableau de valeurs
 utiliser_cellspace = False
 derivee = True
+limites = True
