@@ -145,16 +145,16 @@ class MesureDegres(pylib.GenericWrapper):
     u"""Usage interne : destiné à être utilisé avec custom_functions.deg."""
 
     __slots__ = ('__val',)
-        
+
     def __str__(self):
         return str(self.__val) + '°'
-        
+
     def __repr__(self):
         return repr(self.__val) + '°'
-        
+
     def __unicode__(self):
         return unicode(self.__val) + u'°'
-   
+
 
 
 
@@ -182,6 +182,12 @@ class Temps(object):
 
 
 class CustomStrPrinter(StrPrinter):
+    def _print_str(self, expr):
+        return '"%s"' %expr.replace('"', r'\"')
+
+    def _print_unicode(self, expr):
+        return '"%s"' %expr.replace('"', r'\"')
+
     def _print_Exp1(self, expr):
         return 'e'
 
@@ -295,7 +301,9 @@ class CustomLatexPrinter(LatexPrinter):
         return tex
 
     def _print_Intervalle(self, expr):
-        if expr.inf_inclus and expr.sup_inclus and expr.inf == expr.sup:
+        if expr.vide:
+            return r"\varnothing"
+        elif expr.inf_inclus and expr.sup_inclus and expr.inf == expr.sup:
             return r"\{%s\}" % self._print(expr.inf)
         if expr.inf_inclus:
             left = "["
@@ -306,9 +314,6 @@ class CustomLatexPrinter(LatexPrinter):
         else:
             right = "["
         return r"%s%s;%s%s" % (left, self._print(expr.inf), self._print(expr.sup), right)
-
-    def _print_Vide(self, expr):
-        return r"\varnothing"
 
     def _print_Singleton(self, expr):
         return r"\{%s\}" % self._print(expr.inf)
@@ -380,23 +385,23 @@ class LocalDict(dict):
 
 
 class Interprete(object):
-    def __init__(self, calcul_exact = True,
-                                ecriture_scientifique = False,
-                                forme_algebrique = True,
-                                simplifier_ecriture_resultat = True,
-                                changer_separateurs = False,
-                                separateurs_personnels = (",", ";"),
-                                copie_automatique = False,
-                                formatage_OOo = True,
-                                formatage_LaTeX = True,
-                                ecriture_scientifique_decimales = 2,
-                                precision_calcul = 60,
-                                precision_affichage = 18,
-                                simpify = True,
-                                verbose = None,
-                                appliquer_au_resultat = None,
-                                inversion_addition_LaTeX = False,
-                                ):
+    def __init__(self,  calcul_exact = True,
+                        ecriture_scientifique = False,
+                        forme_algebrique = True,
+                        simplifier_ecriture_resultat = True,
+                        changer_separateurs = False,
+                        separateurs_personnels = (",", ";"),
+                        copie_automatique = False,
+                        formatage_OOo = True,
+                        formatage_LaTeX = True,
+                        ecriture_scientifique_decimales = 2,
+                        precision_calcul = 60,
+                        precision_affichage = 18,
+                        simpify = True,
+                        verbose = None,
+                        appliquer_au_resultat = None,
+                        inversion_addition_LaTeX = False,
+                        ):
         # Dictionnaire local (qui contiendra toutes les variables définies par l'utilisateur).
         self.locals = LocalDict()
         # Dictionnaire global (qui contient les fonctions, variables et constantes prédéfinies).
@@ -605,9 +610,6 @@ class Interprete(object):
         if self.changer_separateurs:
             resultat = resultat.replace(",", self.separateurs_personnels[1]).replace(".", self.separateurs_personnels[0])
             latex = latex.replace(",", self.separateurs_personnels[1]).replace(".", self.separateurs_personnels[0])
-
-##        if resultat == "oo":
-##            resultat = "+oo"
 
         self.latex_dernier_resultat = latex
         if self.simplifier_ecriture_resultat:
