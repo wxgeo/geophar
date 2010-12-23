@@ -104,6 +104,12 @@ def test_tous_modes():
     # Ne pas rajouter de * devant les parenthèses d'une méthode
     assert_all(u"A.transpose()", u"A.transpose()")
     assert_all(u"[j for j in liste]", u"[j for j in liste]")
+    # Texte entre guillemets "texte" ou """texte""" inchangé.
+    assert_all('"x(x+1)" x(x+1) """x(x+1) " """', '"x(x+1)"x*(x+1)"""x(x+1) " """')
+    assert_all(r'"\""', r'"\""')
+
+
+
 
 def test_mode_OOo():
     assert_OOo("2 times 3", "2*3")
@@ -163,4 +169,3 @@ def test_search_VAR_NOT_ATTR():
 def test_arguments_LaTeX():
     assert_arg_latex('2{x+1}+4', '2', '{x+1}', '+4')
     assert_arg_latex('{x+2}5+4x-17^{2+x}', '{x+2}', '5', '+4x-17^{2+x}')
-

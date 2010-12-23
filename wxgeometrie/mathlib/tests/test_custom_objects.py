@@ -112,8 +112,8 @@ def test_resoudre():
                         r']- \frac{1}{3};\frac{2}{3}]',  formatage_LaTeX = True)
     assert_resoudre('2exp(x)>3', ']ln(3/2);+oo[')
     assert_resoudre('x^3-30x^2+112=0', '{14 - 6 sqrt(7) ; 2 ; 14 + 6 sqrt(7)}', r'\{14 - 6 \sqrt{7}\,;\, 2\,;\, 14 + 6 \sqrt{7}\}')
-    
-#TODO: @SLOW wrapper should be defined, and the test only run in some circonstances 
+
+#TODO: @SLOW wrapper should be defined, and the test only run in some circonstances
 # (for ex, a 'slow' keyword in tools/tests.py arguments)
 def test_longs():
     # NB: Test très long (15-20 secondes) !
@@ -155,3 +155,6 @@ def test_session():
     i.evaluer('[j for j in range(7)]')
     assertDernier(i, '[0, 1, 2, 3, 4, 5, 6]')
 
+def test_issue_129():
+    assert_resultat('"x(x+1)" + """x!"""', '"x(x+1)x!"')
+    assert_resultat(r'""" "" """ + " \"\"\" "', r'" \"\"  \"\"\" "')

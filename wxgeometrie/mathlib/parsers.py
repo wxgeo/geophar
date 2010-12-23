@@ -26,7 +26,8 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 # from resolution import *
 
-import keyword, itertools
+import keyword
+from itertools import chain, izip_longest
 
 from pylib import *
 import sympy
@@ -221,8 +222,9 @@ def _extract_inner_str(s):
     start = end = 0
     morceaux = []
     subs = []
+    pos = None
     while start < len(s):
-        if end is not None:
+        if pos is None:
             # Start of a new substring.
             start = s.find('"', start)
             i = end
@@ -231,23 +233,29 @@ def _extract_inner_str(s):
             if start == -1:
                 break
             # Two types of substrings are recognised: "type 1", and """type 2""".
-            type = ('"' if s[start:start + 3] != '"""' else '"""')
-            end = None
+            marker = ('"' if s[start:start + 3] != '"""' else '"""')
+            n = len(marker)
+            pos = start + n
         else:
             # End of the substring.
-            end = s.find(type, start + len(type))
+            end = s.find(marker, pos)
+            if end > 0 and s[end - 1] == '\\':
+                # Use \" to escape " caracter.
+                pos = end + n
+                continue
             if end == -1:
                 raise SyntaxError, "String unclosed !"
-            end += len(type)
+            end += n
             subs.append(s[start:end])
             start = end
+            pos = None
     return '<@>'.join(morceaux), subs
 
 
 def _inject_inner_str(s, str_list):
     s_list = s.split('<@>')
     # Combine alternativement les 2 listes
-    i = filter(None, itertools.chain(*itertools.izip_longest(s_list, str_list)))
+    i = filter(None, chain.from_iterable(izip_longest(s_list, str_list)))
     return ''.join(i).replace('@@', '@')
 
 
