@@ -26,7 +26,7 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 # from resolution import *
 
-import keyword
+import keyword, itertools
 
 from pylib import *
 import sympy
@@ -158,7 +158,7 @@ def _ajouter_mult_manquants(formule, fonctions = (), verbose = None, mots_cles =
     # Le code qui suit remplace les expressions style 3x ou 2.5cos(x) par 3*x et 2.5*cos(x).
     formule = regsub(NBR + "[ ]?(?=[a-zA-Z_])", formule, lambda s: s.rstrip() + '*')
     # TODO: traiter le cas des mots-clés
-    
+
     # De meme, on rajoute les * entre deux parentheses...
     formule = formule.replace(")(",")*(")
 
@@ -215,9 +215,56 @@ def _ajouter_mult_manquants(formule, fonctions = (), verbose = None, mots_cles =
     return formule
 
 
+def _extract_inner_str(s):
+    # <@> is a marker for substring emplacements.
+    s = s.replace('@', '@@')
+    start = end = 0
+    morceaux = []
+    subs = []
+    while start < len(s):
+        if end is not None:
+            # Start of a new substring.
+            start = s.find('"', start)
+            i = end
+            j = (start if start != -1 else None)
+            morceaux.append(s[i:j])
+            if start == -1:
+                break
+            # Two types of substrings are recognised: "type 1", and """type 2""".
+            type = ('"' if s[start:start + 3] != '"""' else '"""')
+            end = None
+        else:
+            # End of the substring.
+            end = s.find(type, start + len(type))
+            if end == -1:
+                raise SyntaxError, "String unclosed !"
+            end += len(type)
+            subs.append(s[start:end])
+            start = end
+    return '<@>'.join(morceaux), subs
+
+
+def _inject_inner_str(s, str_list):
+    s_list = s.split('<@>')
+    # Combine alternativement les 2 listes
+    i = filter(None, itertools.chain(*itertools.izip_longest(s_list, str_list)))
+    return ''.join(i).replace('@@', '@')
+
 
 def traduire_formule(formule = "", fonctions = (), OOo = True, LaTeX = True, changer_separateurs = False, separateurs_personnels = (",", ";"), simpify = False, verbose = None, mots_cles = tuple(keyword.kwlist)):
 
+    # Les chaînes internes ne doivent pas être modifiées
+    # http://wxgeo.free.fr/tracker/index.php?do=details&task_id=129&project=1
+    # Algorithme pour le parser de mathlib:
+    # - remplacer @ par @@
+    # - détection des chaînes de textes, remplacées par <@>
+    # -> génération d'une liste de chaînes (ex: ["texte 1", """texte 2""", "texte 3", "texte 4"])
+    # On applique le parser...
+    #- remplacer <@> par les chaînes prélablement enregistrées
+    #-remplacer @@ par @
+
+
+    formule, substrings_list = _extract_inner_str(formule)
 
     # On peut choisir comme separateur decimal la virgule (convention francaise en particulier)
     if changer_separateurs:
@@ -341,34 +388,8 @@ def traduire_formule(formule = "", fonctions = (), OOo = True, LaTeX = True, cha
             formule = formule.replace(substr, repl)
         formule = _simplifier(formule)
 
-##        # '\dfrac{a}{b}' devient '(a)/(b)' (idem pour \frac et \tfrac)
-##        for substr in ("\\frac", "\\dfrac", "\\tfrac"):
-##            i = formule.find(substr)
-##            while i != -1:
-##                decoupe1 = split_around_parenthesis(formule, i + len(substr), "{")
-##                if len(decoupe1) == 3:
-##                    debut, arg1, reste = decoupe1
-##                else: # erreur de syntaxe
-##                    if param.debug:
-##                        print(u"Il manque l'argument 1 de \\dfrac")
-##                    break
-##                decoupe2 = split_around_parenthesis(reste, 0, "{")
-##                if len(decoupe2) == 3:
-##                    milieu, arg2, reste = decoupe2
-##                else: # erreur de syntaxe
-##                    if param.debug:
-##                        print(u"Il manque l'argument 2 de \\dfrac")
-##                    break
-##                formule = formule[:i] + arg1 + "/" + arg2 + reste # en principe milieu est vide.
-##                i = formule.find(substr)
         # '\dfrac{a}{b}' devient '(a)/(b)' (idem pour \frac et \tfrac)
         formule = _convertir_latex_frac(formule)
-##        for substr in (r"\frac", r"\dfrac", r"\tfrac"):
-##            i = formule.find(substr)
-##            while i != -1:
-##                arg1, arg2, reste = _arguments_latex(formule[i + len(substr):], 2)
-##                formule = formule[:i] + "(" + arg1 + "/" + arg2 + ")" + reste
-##                i = formule.find(substr, i)
 
         formule = formule.replace("{", "(").replace("}", ")")
 
@@ -400,7 +421,6 @@ def traduire_formule(formule = "", fonctions = (), OOo = True, LaTeX = True, cha
     if verbose:
         print '6', formule
 
-##    formule = formule.replace('"', "''")
     # f' devient derivee(f), f'' devient derivee(derivee(f)), etc.
     def prime2derivee(s):
         n = s.count("'") # nombre de '
@@ -421,7 +441,7 @@ def traduire_formule(formule = "", fonctions = (), OOo = True, LaTeX = True, cha
                 return "__sympify__(" + chaine + ")"
         formule = regsub(NBR, formule, transformer)
 
-
+    formule = _inject_inner_str(formule, substrings_list)
 
     if verbose is not False:
         debug(formule, "[formule transformee]")
