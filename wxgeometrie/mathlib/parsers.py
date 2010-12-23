@@ -279,49 +279,6 @@ def traduire_formule(formule = "", fonctions = (), OOo = True, LaTeX = True, cha
     # Différentes façons de rentrer les puissances :
     formule = formule.replace("^", "**").replace(u'²',"**2").replace(u'³',"**3")
 
-##    # Raccourcis pour les conversions :
-##    for s in ("frac", "hex", "oct", "bin", "deg", "rad"):
-##        if formule.endswith(">>%s" %s):
-##            formule = "%s(%s)" %(s, formule[:-len(s)-2])
-
-##    # Transforme les chaines pour pouvoir utiliser simplement factoriser(), ou un alias
-##    formule = mreplace(formule, ("factor ", "factoriser "), "factorise ")
-##    formule = mreplace(formule, ("factor(", "factoriser("), "factorise(")
-##    if formule.startswith("factorise "):
-##        formule = formule.replace("factorise ", "factorise(") + ")"
-##
-##    # Transforme les chaines pour pouvoir utiliser simplement resoudre(), ou un alias
-##    formule = mreplace(formule, ("solve ", "resoud "), "resoudre ")
-##    formule = mreplace(formule, ("solve(", "resoud("), "resoudre(")
-##    if formule.startswith("resoudre "):
-##        formule = formule.replace("resoudre ", "resoudre(") + ")"
-##
-##    print formule
-##    # les arguments de resoudre() sont formatés...
-##    def formatage_equations(chaine):
-##        def transformer(chaine):
-##            chaine = mreplace(chaine, (" et ", " and "), "&")
-##            chaine = mreplace(chaine, (" ou ", " or "), "|")
-##            chaine = mreplace(chaine, (" non ", " pas ", " not "), "~")
-##            chaine = regsub("[-A-Za-z0-9.+/* ()]+[>=<][>=]?[-A-Za-z0-9.+/* ()]+", chaine, lambda s: "(" + s + ")")
-##            # La variable doit s'appeler 'X'
-##            # Comme c'est un peu contraignant, s'il y a une seule variable, on la remplace par 'X'
-##            caracteres = re.findall("[A-Za-z]", chaine)
-##            if len(set(caracteres)) is 1:
-##                chaine = chaine.replace(set(caracteres).pop(), "X")
-##            return chaine
-##        position = chaine.find("resoudre(")
-##        if position is not -1:
-##            # On remplace "=" par "==" si nécessaire:
-##            chaine = regsub("[^=<>][=][^=]", chaine, lambda s: s.replace("=", "=="))
-##            liste = split_around_parenthesis(chaine, position)
-##            if len(liste) is 3:
-##                return liste[0] + transformer(liste[1]) + formatage_equations(liste[2])
-##            else:
-##                return transformer(liste[0])
-##        else:
-##            return chaine
-##    formule = formatage_equations(formule)
 
     # Conversion écriture décimale infinie périodique -> fraction
     def to_frac(reg):
@@ -454,8 +411,8 @@ def simplifier_ecriture(formule):
     formule = formule.replace('*(', '(')
     formule = formule.replace(')*', ')')
     formule = re.sub(r'[*](?![-+.0-9])', ' ', formule)
-##    formule = formule.replace(') (', ')(')
     return formule
+
 
 ##def simplifier_ecriture(formule):
 ##    # Simplification de l'écriture des puissances
