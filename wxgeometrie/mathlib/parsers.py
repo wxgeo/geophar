@@ -219,36 +219,36 @@ def _ajouter_mult_manquants(formule, fonctions = (), verbose = None, mots_cles =
 def _extract_inner_str(s):
     # <@> is a marker for substring emplacements.
     s = s.replace('@', '@@')
-    start = end = 0
+    start = end = None
     morceaux = []
     subs = []
-    pos = None
-    while start < len(s):
-        if pos is None:
+    pos = 0
+    while pos < len(s):
+        if start is None:
             # Start of a new substring.
-            start = s.find('"', start)
-            i = end
-            j = (start if start != -1 else None)
-            morceaux.append(s[i:j])
+            start = s.find('"', pos)
             if start == -1:
+                start = None
+            morceaux.append(s[end:start])
+            if start is None:
                 break
             # Two types of substrings are recognised: "type 1", and """type 2""".
-            marker = ('"' if s[start:start + 3] != '"""' else '"""')
+            marker = ('"""' if s.startswith('"""', start) else '"')
             n = len(marker)
             pos = start + n
         else:
             # End of the substring.
             end = s.find(marker, pos)
-            if end > 0 and s[end - 1] == '\\':
+            if s.endswith('\\', 0, end):
                 # Use \" to escape " caracter.
-                pos = end + n
+                pos = end + 1 # '"""\"+1\" ici, et non \"+n\""""'
                 continue
             if end == -1:
                 raise SyntaxError, "String unclosed !"
             end += n
             subs.append(s[start:end])
-            start = end
-            pos = None
+            pos = end
+            start = None
     return '<@>'.join(morceaux), subs
 
 

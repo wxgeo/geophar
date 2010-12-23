@@ -105,8 +105,10 @@ def test_tous_modes():
     assert_all(u"A.transpose()", u"A.transpose()")
     assert_all(u"[j for j in liste]", u"[j for j in liste]")
     # Texte entre guillemets "texte" ou """texte""" inchangé.
+    assert_all('"ok"', '"ok"')
     assert_all('"x(x+1)" x(x+1) """x(x+1) " """', '"x(x+1)"x*(x+1)"""x(x+1) " """')
     assert_all(r'"\""', r'"\""')
+    assert_all(r'"""\"+1\" ici, et non \"+n\""""', r'"""\"+1\" ici, et non \"+n\""""')
 
 
 
