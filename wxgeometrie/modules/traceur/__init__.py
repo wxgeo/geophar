@@ -22,6 +22,8 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
+from functools import partial
+
 from GUI import *
 
 import tableau, suites
@@ -65,36 +67,28 @@ class Traceur(Panel_API_graphique):
         for i in range(self.nombre_courbes):
                 ligne = wx.BoxSizer(wx.HORIZONTAL)
 
-                self.boites.append(wx.CheckBox(self))
+                self.boites.append(wx.CheckBox(self, label='f%s:'%(i+1)))
                 self.boites[-1].SetValue(True) # Par defaut, les cases sont cochees.
                 self.boites[i].Bind(wx.EVT_CHECKBOX, self.synchronise_et_affiche)
                 ligne.Add(self.boites[i], 0, wx.ALIGN_CENTRE|wx.ALL,5)
 
-                ligne.Add(wx.StaticText(self, -1, "f" + str(i+1) + ":  Y ="), 0, wx.ALIGN_CENTRE|wx.ALL,5)
-                self.equations.append(wx.TextCtrl(self, size = (120, -1), style = wx.TE_PROCESS_ENTER))
-                self.equations[i].Bind(wx.EVT_CHAR, self.EvtChar)
+                ligne.Add(wx.StaticText(self, -1, "Y ="), 0, wx.ALIGN_CENTRE|wx.ALL,5)
+                self.equations.append(wx.TextCtrl(self, size=(120, -1), style=wx.TE_PROCESS_ENTER))
+                self.equations[i].Bind(wx.EVT_CHAR, partial(self.EvtChar, i=i))
                 ligne.Add(self.equations[i], 0, wx.ALIGN_CENTRE|wx.ALL,5)
 
                 ligne.Add(wx.StaticText(self, -1, "sur"), 0, wx.ALIGN_CENTRE|wx.ALL,5)
                 self.intervalles.append(wx.TextCtrl(self, size = (100, -1), style = wx.TE_PROCESS_ENTER))
-                self.intervalles[i].Bind(wx.EVT_CHAR, self.EvtChar)
+                self.intervalles[i].Bind(wx.EVT_CHAR, partial(self.EvtChar, i=i))
                 ligne.Add(self.intervalles[i], 0, wx.ALIGN_CENTRE|wx.ALL,5)
 
                 self.entrees.Add(ligne, 0, wx.ALL, 5)
 
-
-
-        #self.dessiner = wx.Button(self, wx.ID_REFRESH)
-        #self.entrees.Add(self.dessiner, 0, wx.ALL, 5)
         self.sizer = wx.BoxSizer(wx.HORIZONTAL)
-##        i = 1
-##        if param.plateforme == "Linux":
-##            i = 0 # bug de WxGtk
-##            self.canvas.SetSize(wx.Size(470,400))
-##        self.sizer.Add(self.canvas, i, wx.LEFT | wx.TOP | wx.GROW, 0)
         self.sizer.Add(self.canvas, 1, wx.LEFT | wx.TOP | wx.GROW, 0)
         self.sizer.Add(self.entrees, 0, wx.ALL|wx.GROW, 5)
         self.finaliser(contenu = self.sizer)
+
 
     def activer(self):
         # Actions à effectuer lorsque l'onglet devient actif
@@ -162,11 +156,14 @@ class Traceur(Panel_API_graphique):
         # On synchronise le contenu des champs de texte avec les courbes *à la fin*.
         self._synchroniser_champs()
 
-    def EvtChar(self, event):
+    def EvtChar(self, event, i):
         code = event.GetKeyCode()
 
-        if code == 13:
+        if code in (wx.WXK_RETURN, wx.WXK_NUMPAD_ENTER):
             self.synchronise_et_affiche()
+            self.boites[i].SetValue(not event.ShiftDown())
+        elif code == wx.WXK_ESCAPE:
+            self.boites[i].SetValue(False)
         else:
             event.Skip()
 
@@ -184,13 +181,5 @@ class Traceur(Panel_API_graphique):
 
 
     def suite(self, event = None):
-        #self.parent.a_venir()
-        #return
         suite = suites.CreerSuite(self)
         suite.Show(True)
-
-
-
-
-
-
