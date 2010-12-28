@@ -160,15 +160,17 @@ class Traceur(Panel_API_graphique):
         code = event.GetKeyCode()
 
         if code in (wx.WXK_RETURN, wx.WXK_NUMPAD_ENTER):
-            self.synchronise_et_affiche()
             self.boites[i].SetValue(not event.ShiftDown())
+            self.synchronise_et_affiche()
         elif code == wx.WXK_ESCAPE:
             self.boites[i].SetValue(False)
+            self.synchronise_et_affiche()
         else:
             event.Skip()
 
     def synchronise_et_affiche(self, event = None):
         self._synchroniser_courbes()
+        self.action_effectuee(u'Courbes modifiées.')
         self.affiche()
 
     def tableau(self, event = None):
