@@ -1475,9 +1475,9 @@ class Objet(object):
 
 
     def supprimer(self):
-        if self.style('protege'):
-            self.cacher()
-            return
+#        if self.style('protege'):
+#            self.cacher()
+#            return
         # Le nom doit être récupéré AVANT la suppression.
         nom = self.nom_complet
         if self.protege:

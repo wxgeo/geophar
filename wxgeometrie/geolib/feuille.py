@@ -175,7 +175,7 @@ Attributs spéciaux:
         # NB: 'True = True' et 'False = False' : non compatible Py3k
 
         types = {'points': 'Point_generique', 'droites': 'Droite_generique', 'polygones': 'Polygone_generique',
-                 'segments': 'Segment', 'cercles': 'Cercle_generique', 'arcs': 'Arc_generique', 
+                 'segments': 'Segment', 'cercles': 'Cercle_generique', 'arcs': 'Arc_generique',
                  'textes': 'Texte_generique', 'vecteurs': 'Vecteur_generique', 'variables': 'Variable'}
         d = {}
         for typ in types:
@@ -509,6 +509,8 @@ class Interprete_feuille(object):
         self.feuille.canvas.redetecter = True
         if self.feuille.classeur is not None and self.feuille.classeur.parent is not None:
             self.feuille.classeur.parent.rafraichir_titre()
+        for action in self.feuille._actions:
+            action()
 
 
     def parser(self, commande):
@@ -723,12 +725,19 @@ class Feuille(object):
             "notes": "",
             }
 
+        # Actions à effectuer après qu'une commande ait été exécutée.
+        self._actions = []
+
 
 #        Objet.__feuille__ = self # les objets sont crees dans cette feuille par defaut
 
 # ---------------------------------------
 #    Gestion des paramètres du repère
 # ---------------------------------------
+
+    def lier(self, action):
+        if not is_in(action, self._actions):
+            self._actions.append(action)
 
     def affichage_perime(self):
         # NB: Utiliser une méthode au lieu d'un attribut permet de générer
@@ -1295,6 +1304,8 @@ class Feuille(object):
                         print u"Affichage de l'erreur impossible !"
                     self.erreur(u"Chargement incomplet de la feuille.")
                 finally:
+                    for action in self._actions:
+                        action()
                     if archiver:
                         self.historique.archiver()
 

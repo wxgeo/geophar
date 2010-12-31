@@ -88,6 +88,7 @@ class Traceur(Panel_API_graphique):
         self.sizer.Add(self.canvas, 1, wx.LEFT | wx.TOP | wx.GROW, 0)
         self.sizer.Add(self.entrees, 0, wx.ALL|wx.GROW, 5)
         self.finaliser(contenu = self.sizer)
+        self._changement_feuille()
 
 
     def activer(self):
@@ -96,7 +97,9 @@ class Traceur(Panel_API_graphique):
 
     def _changement_feuille(self):
         u"""Après tout changement de feuille."""
-        self._synchroniser_champs()
+        if hasattr(self, 'nombre_courbes'): # initialisation terminée
+            self._synchroniser_champs()
+            self.feuille_actuelle.lier(self._synchroniser_champs)
 
 
     def _synchroniser_champs(self):

@@ -48,23 +48,21 @@ class Classeur(list):
             list.append(self, feuille)
         else:
             list.insert(self, i + 1, feuille)
-        self.modifie = True
+        self._classeur_modifie()
 
     def _get_actuelle(self):
         return self[-1]
 
     def _set_actuelle(self, feuille):
         self[-1] = feuille
-        if self.parent is not None:
-            self.parent._changement_feuille()
-        self.modifie = True
+        self._classeur_modifie()
 
     def _del_actuelle(self):
         self.pop()
         if not self:
             # Il faut qu'il y ait toujours une feuille pour travailler
             self.nouvelle_feuille()
-        self.modifie = True
+        self._classeur_modifie()
 
     feuille_actuelle = property(_get_actuelle, _set_actuelle, _del_actuelle)
 
@@ -80,8 +78,13 @@ class Classeur(list):
                 i += 1
             nom = "Feuille " + str(i)
         self.append(Feuille(self, titre = nom, log = self.log, parametres = parametres))
-        self.modifie = True
+        self._classeur_modifie()
         return self[-1]
+
+    def _classeur_modifie(self):
+        self.modifie = True
+        if self.parent is not None:
+            self.parent._changement_feuille()
 
     def vider(self):
         while self:
@@ -92,4 +95,3 @@ class Classeur(list):
     @property
     def noms(self):
         return [feuille.nom for feuille in self]
-
