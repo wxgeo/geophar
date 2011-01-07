@@ -168,10 +168,13 @@ Attributs spéciaux:
 
 
         self.update(pause = self.__feuille__.pause, erreur = self.__feuille__.erreur,
-                    effacer = self.__feuille__.effacer, True = True, False = False,
+                    effacer = self.__feuille__.effacer,
                     coder = self.__feuille__.coder, effacer_codage = self.__feuille__.effacer_codage,
                     nettoyer = self.__feuille__.nettoyer,
                     )
+        dict.__setitem__(self, 'None', None)
+        dict.__setitem__(self, 'True', True)
+        dict.__setitem__(self, 'False', False)
         # NB: 'True = True' et 'False = False' : non compatible Py3k
 
         types = {'points': 'Point_generique', 'droites': 'Droite_generique', 'polygones': 'Polygone_generique',
