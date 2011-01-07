@@ -159,11 +159,12 @@ class Traceur(Panel_API_graphique):
         # On synchronise le contenu des champs de texte avec les courbes *à la fin*.
         self._synchroniser_champs()
 
-    def EvtChar(self, event, i):
-        code = event.GetKeyCode()
+    def EvtChar(self, event=None, i=None):
+        assert (i is not None)
+        code = (event.GetKeyCode() if event is not None else wx.WXK_RETURN)
 
         if code in (wx.WXK_RETURN, wx.WXK_NUMPAD_ENTER):
-            self.boites[i].SetValue(not event.ShiftDown())
+            self.boites[i].SetValue(event is None or not event.ShiftDown())
             self.synchronise_et_affiche()
         elif code == wx.WXK_ESCAPE:
             self.boites[i].SetValue(False)

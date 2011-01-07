@@ -102,13 +102,18 @@ class CreerSuite(MyMiniFrame):
         kw_lignes = {"style": style, "epaisseur": epaisseur}
 
         # Les suites s'enregistrent auprès du module traceur
-        if not hasattr(self.parent, "suites"):
-            self.parent.suites = {}
+#        if not hasattr(self.parent, "suites"):
+#            self.parent.suites = {}
 
         objets = self.parent.feuille_actuelle.objets
+        i=self.fonction.GetSelection()
+        nom_courbe = 'Cf' + str(i + 1)
 
-        nom_courbe = 'Cf' + str(self.fonction.GetSelection() + 1)
         if objets.has_key(nom_courbe):
+            courbe = objets[nom_courbe]
+            fonction = courbe.fonction
+        elif self.parent.boites[i].GetValue():
+            self.parent.EvtChar(i=i)
             courbe = objets[nom_courbe]
             fonction = courbe.fonction
         else:
@@ -120,9 +125,9 @@ class CreerSuite(MyMiniFrame):
             u0 = securite.eval_safe(self.un0.GetValue())
             n0 = self.n0.GetValue()
 
-            d = objets.suite_u_d = Droite(Point(0, 0), Point(1, 1), legende = geolib.TEXTE, label = "$y\ =\ x$")
-            M = objets.suite_u_M0 = Point(u0, 0, legende = geolib.TEXTE, label = "$u_%s$" %(n0))
-            self.parent.suites["u"] = [d, M]
+            d = objets.suiteDroited = Droite(Point(0, 0), Point(1, 1), legende = geolib.TEXTE, label = "$y\ =\ x$")
+            M = objets.suitePointM0 = Point(u0, 0, legende = geolib.TEXTE, label = "$u_%s$" %(n0))
+#            self.parent.suites["u"] = [d, M]
 
             for i in xrange(self.termes.GetValue() - 1):
                 # (Attention, ça ne va pas marcher pour les fonctions définies par morceau)
@@ -134,22 +139,22 @@ class CreerSuite(MyMiniFrame):
                 Q = Point(u1, u1, legende = geolib.RIEN, visible = self._param_.afficher_points_de_construction)
                 r = Segment(P, Q, **kw_lignes)
                 M = Point(u1, 0, legende = geolib.TEXTE, label = "$u_%s$" %(i + n0 + 1))
-                self.parent.suites[u"u"].append([M, N, P, s, t])
-                setattr(objets, "suites_u_N" + str(i), N)
-                setattr(objets, "suites_u_P" + str(i), P)
-                setattr(objets, "suites_u_Q" + str(i), Q)
-                setattr(objets, "suites_u_s" + str(i), s)
-                setattr(objets, "suites_u_t" + str(i), t)
-                setattr(objets, "suites_u_r" + str(i), r)
-                setattr(objets, "suites_u_M" + str(i + 1), M)
+                #self.parent.suites[u"u"].append([M, N, P, s, t])
+                setattr(objets, "SuitePointN" + str(i), N)
+                setattr(objets, "suitePointP" + str(i), P)
+                setattr(objets, "suitePointQ" + str(i), Q)
+                setattr(objets, "suiteSegments" + str(i), s)
+                setattr(objets, "suiteSegmentt" + str(i), t)
+                setattr(objets, "suiteSegmentr" + str(i), r)
+                setattr(objets, "suitePointM" + str(i + 1), M)
                 a = Segment(Q, M, **kw_lignes)
-                setattr(objets, "suites_u_a" + str(i),a)
+                setattr(objets, "suiteSegmenta" + str(i), a)
                 u0 = u1
             self.parent.canvas.zoom_auto()
 
         else:   # suites définies explicitement
             n0 = self.n0.GetValue()
-            self.parent.suites[u"u"] = []
+#            self.parent.suites[u"u"] = []
             for i in xrange(n0, n0 + self.termes.GetValue()):
                 yi = fonction(i)
                 M = Point(i, 0, legende = geolib.TEXTE, label = str(i))
@@ -157,11 +162,11 @@ class CreerSuite(MyMiniFrame):
                 P = Point(0, yi, legende = geolib.TEXTE, label = "$u_%s$" %i)
                 s = Segment(M, N, **kw_lignes)
                 t = Segment(N, P, **kw_lignes)
-                setattr(objets, "suites_u_M" + str(i), M)
-                setattr(objets, "suites_u_N" + str(i), N)
-                setattr(objets, "suites_u_P" + str(i), P)
-                setattr(objets, "suites_u_s" + str(i), s)
-                setattr(objets, "suites_u_t" + str(i), t)
+                setattr(objets, "suitePointM" + str(i), M)
+                setattr(objets, "suitePointN" + str(i), N)
+                setattr(objets, "suitePointP" + str(i), P)
+                setattr(objets, "suiteSegments" + str(i), s)
+                setattr(objets, "suiteSegmentt" + str(i), t)
             self.parent.canvas.zoom_auto()
 
 
