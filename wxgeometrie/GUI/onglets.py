@@ -436,9 +436,10 @@ class Onglets(wx.Notebook):
                         # Il est normal que des erreurs soient renvoyées
                         # si un objet dépendant d'un autre est déjà supprimé.
                         objet = selection.split()[1]
-                        canvas.executer("del " + objet)
+                        canvas.feuille_actuelle.objets[objet].supprimer()
                     except Exception:
                         print_error()
+                canvas.feuille_actuelle.interprete.commande_executee()
         dlg.Destroy()
 
 
