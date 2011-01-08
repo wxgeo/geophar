@@ -500,7 +500,8 @@ class Interprete_feuille(object):
             exec(commande + '\n', self.feuille.objets)
             # Le + '\n' final contourne un bug de Python 2.5 avec with_statement
             retour = u'Commande exécutée.'
-        self.commande_executee(signature = signature)
+        finally:
+            self.commande_executee(signature = signature)
         return retour
 
     def commande_executee(self, signature = None):
