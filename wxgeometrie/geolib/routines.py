@@ -318,6 +318,32 @@ def trigshift(t, a = 0):
     u"Retourne le représentant de t[2pi] situé dans l'intervalle [a; a+2pi[."
     return t + 2*math.pi*math.ceil((a - t)/(2*math.pi))
 
+
+def distance_segment(M, A, B, d):
+    u"""Teste si la distance entre le point M et le segment [AB] est inférieure à d.
+
+    M, A et B sont des couples de réels, et d un réel.
+    Cf. "distance_point_segment.odt" dans "developpeurs/maths/".
+    """
+    x, y = M
+    if A is None or B is None:
+        if A is None and B is None:
+            return False
+        A = B = A or B
+    xA, yA = A
+    xB, yB = B
+    x1 = min(xA, xB) - d; x2 = max(xA, xB) + d
+    y1 = min(yA, yB) - d; y2 = max(yA, yB) + d
+    if x1 < x < x2 and y1 < y < y2:
+        norme2 = ((xB - xA)**2 + (yB - yA)**2)
+        if norme2 > ALL.contexte['tolerance']:
+            return ((yA - yB)*(x - xA) + (xB - xA)*(y - yA))**2/norme2 < d**2
+        else:   # les extrémités du segment sont confondues
+            return (x - xA)**2 + (y - yA)**2 < d**2
+    else:
+        return False
+
+
 if not hasattr(cmath, 'phase'): # Python <= 2.5
     cmath.phase = lambda z: math.atan2(z.imag, z.real)
     cmath.rect = lambda r, phi: r*(math.cos(phi) + math.sin(phi)*1j)

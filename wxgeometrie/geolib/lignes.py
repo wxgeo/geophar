@@ -280,19 +280,7 @@ class Segment(Ligne_generique):
 
 
     def _distance_inf(self, x, y, d):
-        # cf. "distance_point_segment.odt" dans "doc/developpeurs/maths/"
-        xA, yA = self._pixel(self.__point1)
-        xB, yB = self._pixel(self.__point2)
-        x1 = min(xA, xB) - d; x2 = max(xA, xB) + d
-        y1 = min(yA, yB) - d; y2 = max(yA, yB) + d
-        if x1<x<x2 and y1<y<y2:
-            norme2 = ((xB-xA)**2+(yB-yA)**2)
-            if norme2 > contexte['tolerance']:
-                return ((yA-yB)*(x-xA)+(xB-xA)*(y-yA))**2/norme2 < d**2
-            else:   # les extrémités du segment sont confondues
-                return (x - xA)**2 + (y - yA)**2 < d**2
-        else:
-            return False
+        return distance_segment((x, y), self._pixel(self.__point1), self._pixel(self.__point2), d)
 
 
     def _contains(self, M):
@@ -322,7 +310,7 @@ class Segment(Ligne_generique):
     @property
     def extremites(self):
         return self.__point1, self.__point2
-    
+
     @property
     def info(self):
         return self.nom_complet + u' de longueur ' + nice_display(self.longueur)
@@ -1010,7 +998,3 @@ class Tangente_courbe(Droite_generique):
     Une tangente à une courbe de fonction."""
     def __init__(self, courbe, point):
         Droite_generique.__init__(self, )
-
-
-
-

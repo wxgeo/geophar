@@ -100,15 +100,15 @@ class Courbe(Courbe_generique):
                 if len(x):
 #TODO: cas où len(x) == 1 (et donc, x[1] n'existe pas)
                     y = fonction(x)
-                    
+
                     x0 = x[0]
                     xN = x[-1]
                     y0 = y[0]
                     yN = y[-1]
-                    
+
                     # Bug de wxAgg pour des valeurs trop importantes, ou pour NaN
                     x, y = self.supprimer_valeurs_extremes(x, y, fonction)
-                    
+
                     self._representation.append(self.rendu.ligne(x, y,
                         couleur = self.style("couleur"),
                         linestyle = self.style("style"),
@@ -128,7 +128,7 @@ class Courbe(Courbe_generique):
                             print intervalle, y[0], abs(y[0] - ancien_y[-1]), abs(x[0] - ancien_x[-1]), contexte['tolerance'] , pas
                             fusion = abs(x0 - ancien_xN) < contexte['tolerance'] \
                                     and (abs(y0 - ancien_yN) < contexte['tolerance']  or (isnan(y0) and isnan(ancien_yN)))
-                            if fusion:    
+                            if fusion:
                                 #Fusion
                                 print 'Fusion', y0
                                 if isnan(y0):
@@ -149,7 +149,7 @@ class Courbe(Courbe_generique):
                                 elif not(ancien_intervalle.sup_inclus or intervalle.inf_inclus):
                                     print 'Fusion classique'
                                     self._append_point(x[0], y[0], plein = False)
-                                    
+
                             if not fusion:
                                 self._creer_fin_morceau(ancien_x, ancien_y, ancien_intervalle, e_cach)
                                 self._creer_debut_morceau(x, y, intervalle, e_cach)
@@ -224,7 +224,7 @@ class Courbe(Courbe_generique):
                         y[i] = y0
                         break
             return x, y
-    
+
     def supprimer_valeurs_extremes(self, x, y, fonction):
             x, y = self._supprimer_valeurs_extremes(x, y, fonction, 0, 1)
             x, y = self._supprimer_valeurs_extremes(x, y, fonction, -1, -2)
@@ -241,6 +241,22 @@ class Courbe(Courbe_generique):
         return (xmin, xmax, min(self.yarray), max(self.yarray))
 
 
+    def _distance_inf(self, x, y, d):
+        P = x, y
+        xm = self.__canvas__.pix2coo(x - d, y)[0]
+        xM = self.__canvas__.pix2coo(x + d, y)[0]
+        xarray = self.xarray
+        filtre = (xm < xarray) & (xarray < xM)
+        xa, ya = self.__canvas__.coo2pix(xarray[filtre], self.yarray[filtre])
+        A = None
+        for x, y in zip(xa, ya):
+            B = A
+            A = x, y
+            if distance_segment(P, A, B, d):
+                return True
+        return False
+
+
     @staticmethod
     def _convertir(objet):
         u"Convertit un objet en fonction."
@@ -253,4 +269,3 @@ class Courbe(Courbe_generique):
             self.fonction = objet.fonction
         else:
             raise TypeError, "L'objet n'est pas une courbe."
-
