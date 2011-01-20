@@ -373,7 +373,7 @@ class Calculatrice(Panel_simple):
             self.initialiser()
             self.modifier_pp_texte(u"Calculatrice réinitialisée.")
             return
-        
+
         self.modifie = True
         try:
             try:
@@ -521,4 +521,3 @@ class Calculatrice(Panel_simple):
         contenu = self.interprete.save_state()
         h = FenCode(self, u"État interne de l'inteprète", contenu, self.interprete.load_state)
         h.Show(True)
-

@@ -62,8 +62,8 @@ class Union(Ensemble):
     "A in B".
 
     Note: pour des raisons pratiques, l'ensemble vide est considéré comme un intervalle (sic).
-    """        
-    
+    """
+
     def _initialiser(self, *intervalles):
         self.intervalles = []
 
@@ -211,8 +211,9 @@ class Union(Ensemble):
         Chaque extrémité est donnée sous la forme de couples (_float, _str),
         où _str peut prendre les valeurs ".", ")", "(" ou "o".
         Exemple :
-        >>> conversion_chaine_ensemble(]-oo;3[U]3;4]U[5;+oo[, 0, 10)
-        [(3, 'o'), (4, ')'), (5, '(')]
+        >>> E = conversion_chaine_ensemble("]-oo;3[U]3;4]U]5;+oo[")
+        >>> E.extremites(0, 10)
+        [(3, 'o'), (4, '.'), (5, ')')]
         """
 
         extremites = []
@@ -226,6 +227,11 @@ class Union(Ensemble):
                 extremites.append((intervalle.sup, intervalle.sup_inclus and "." or "("))
         return extremites
 
+    @property
+    def adherence(self):
+        u"L'adhérence de l'ensemble (ie. le plus petit ensemble fermé qui le contienne)."
+        return Union(Intervalle(intervalle.inf, intervalle.sup, True, True)
+                                for intervalle in self.intervalles)
 
     def asarray(self, _min, _max, pas):
         u"""Génère une liste d'objets 'array', correspondant à chaque intervalle.
@@ -314,7 +320,7 @@ class Intervalle(Union):
         u"intersection"
         if not isinstance(y, Union):
             y = Union(y)
-            
+
         if y.vide:
             return y
         elif isinstance(y, Intervalle): # il s'agit de 2 intervalles

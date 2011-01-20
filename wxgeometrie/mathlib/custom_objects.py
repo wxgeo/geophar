@@ -703,7 +703,7 @@ class Interprete(object):
             self.locals["_"] = "?"
         if self.forme_algebrique and isinstance(self.locals["_"], sympy.Basic) and hasattr(self.locals["_"], "is_number") and self.locals["_"].is_number:
             try:
-                real,  imag = self.locals["_"].as_real_imag()
+                real, imag = self.locals["_"].as_real_imag()
                 self.locals["_"] = real + sympy.I*imag
             except NotImplementedError:
                 pylib.print_error()
