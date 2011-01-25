@@ -164,7 +164,12 @@ class Courbe(Courbe_generique):
             self._creer_fin_morceau(ancien_x, ancien_y, ancien_intervalle, e_cach)
 
     def _creer_debut_morceau(self, x, y, intervalle, e_cach):
-# TODO: cas où len(y) < 2
+        if len(y) == 0:
+            return
+        elif len(y) == 1:
+            if not inf_or_nan(y[0]):
+                self._append_point(x[0], y[0])
+            return
         if x[0] in e_cach:
             return
         if not(inf_or_nan(y[0]) or inf_or_nan(y[1])):
@@ -180,9 +185,10 @@ class Courbe(Courbe_generique):
                     self._append_arc(x[1], y[1], vec)
 
     def _creer_fin_morceau(self, x, y, intervalle, e_cach):
+        if len(y) <= 1:
+            return
         if x[-1] in e_cach:
             return
-# TODO: cas où len(y) < 2
         if not(inf_or_nan(y[-1]) or inf_or_nan(y[-2])):
             if intervalle.sup_inclus:
                 self._append_point(x[-1], y[-1])

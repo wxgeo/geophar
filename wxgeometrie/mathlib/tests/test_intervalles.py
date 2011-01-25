@@ -38,3 +38,7 @@ def test_evalf():
     i = Intervalle(-sympy.sqrt(2), sympy.pi)
     assert(str(i.evalf()) == '[-1.41421356237310;3.14159265358979]')
     assert(str(i.evalf(n = 3)) == '[-1.41;3.14]')
+
+def test_asarray():
+    i = intervalles.Ensemble('{2}')
+    assert tuple(i.asarray(-10,10,.1)[0]) == (2,)

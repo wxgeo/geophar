@@ -242,7 +242,7 @@ class Union(Ensemble):
             inf = max(intervalle.inf, _min)
             sup = min(intervalle.sup, _max)
             a = numpy.arange(float(inf), float(sup), pas)
-            if inf < sup:
+            if inf < sup or (intervalle.inf_inclus and intervalle.sup_inclus):
                 a = numpy.append(a, sup)
             arrays.append(a)
         return arrays
