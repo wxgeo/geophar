@@ -206,24 +206,36 @@ class Courbe(Courbe_generique):
 
 
     def _supprimer_valeurs_extremes(self, x, y, fonction, i, j):
-            if inf_or_nan(y[i]):
-                for n in range(-20, -1):
-                    k = 2**n
-                    x0 = (1 - k)*x[i] + k*x[j]
-                    try:
-                        y0 = fonction(x0)
-                    except (ValueError, ArithmeticError):
-                        continue
-                    if not inf_or_nan(y0):
-                        # Bug de wxAgg pour des valeurs trop importantes
-                        xmin, xmax, ymin, ymax = self.__feuille__.fenetre
-                        decalage = 100*(ymax - ymin)
-                        y0 = min(y0, ymax + decalage)
-                        y0 = max(y0, ymin - decalage)
-                        x[i] = x0
-                        y[i] = y0
-                        break
-            return x, y
+        x0 = x[i]
+        y0 = self._rogner_valeur(y[i])
+        n = -20
+        while isnan(y0) and n:
+            k = 2**n
+            x0 = (1 - k)*x[i] + k*x[j]
+            try:
+                y0 = self._rogner_valeur(fonction(x0))
+            except (ValueError, ArithmeticError):
+                pass
+            n += 1
+        if x0 != x[i]:
+            x[i] = x0
+        if y0 != y[i]:
+            y[i] = y0
+        return x, y
+
+
+    def _rogner_valeur(self, y0):
+        u"Remplace -inf et +inf par des valeurs numériques dépassant la fenêtre."
+        if isnan(y0):
+            return y0
+        xmin, xmax, ymin, ymax = self.__feuille__.fenetre
+        decalage = 100*(ymax - ymin)
+        if isinf(y0):
+            return (ymin - decalage) if (y0 < 0) else (ymax + decalage)
+        # Bug de wxAgg pour des valeurs trop importantes
+        return max(min(y0, ymax + decalage), ymin - decalage)
+        # assert (ymin - decalage < y0 < ymax + decalage)
+
 
     def supprimer_valeurs_extremes(self, x, y, fonction):
             x, y = self._supprimer_valeurs_extremes(x, y, fonction, 0, 1)
