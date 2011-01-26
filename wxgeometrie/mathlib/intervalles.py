@@ -440,8 +440,13 @@ def preformatage_geolib_ensemble(chaine):
     ]1;2 -> afficher l'extrémité en 1 (arc), mais pas en 2.
     """
     chaine = chaine.replace(' ', '').replace(',', ';').replace('\\', '-')
+    def union_singletons(m):
+        return 'U'.join('{' + s + '}' for s in m.group(1).split(';'))
+    chaine = re.sub(r"\{([^};]+;[^}]+)\}", union_singletons, chaine)
+
     extremites_cachees = []
     parties = chaine.split('|')
+
     for i, partie in enumerate(parties):
         extremites_cachees.append([])
         if re.match(r"R-[^{]+$", partie):

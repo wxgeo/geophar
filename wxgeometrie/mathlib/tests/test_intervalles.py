@@ -22,11 +22,24 @@ def assert_intervalle_preformater(x, y):
 def test_preformater():
     assert_intervalle_preformater("R", "]-oo;+oo[")
     assert_intervalle_preformater("R+", "[0;+oo[")
+    assert_intervalle_preformater("R+*", "]0;+oo[")
+    assert_intervalle_preformater("R*-", "]-oo;0[")
     assert_intervalle_preformater("R*", "]-oo;+oo[-{0}")
     assert_intervalle_preformater("R-U{3}", "]-oo;0]+{3}")
     assert_intervalle_preformater("R-{3}", "]-oo;+oo[-{3}")
     assert_intervalle_preformater("R-{3}", "]-oo;+oo[-{3}")
     assert_intervalle_preformater("[0,1]U]1,2]", "[0;1]+]1;2]")
+
+def test_preformatage_geolib_ensemble():
+    p = intervalles.preformatage_geolib_ensemble
+    assertEqual(p('{2}'), ('{2}', ([],)))
+    assertEqual(p(']-3;4'), (']-3;4[', (['4'],)))
+    assertEqual(p('-5;'), (']-5;oo[', (['-5'],)))
+    assertEqual(p('R*'), (']-oo;+oo[-{0}', ([],)))
+    assertEqual(p('R+*'), (']0;+oo[', ([],)))
+    assertEqual(p('{2;5}'), ('{2}+{5}', ([],)))
+    assertEqual(p(']-1;1|2;3[U]4;6'), (']-1;1[|]2;3[+]4;6[', (['1'], ['2', '6'])))
+
 
 def test_intervalle():
     assert(str(Intervalle(8) + Intervalle(9)) == '[8;+oo[')
