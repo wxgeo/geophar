@@ -32,6 +32,7 @@ from GUI import *
 
 from GUI.ligne_commande import LigneCommande
 from GUI.wxlib import png
+from GUI.inspecteur import FenCode
 
 import mathlib
 import sympy
