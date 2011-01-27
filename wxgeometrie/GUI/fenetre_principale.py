@@ -52,7 +52,7 @@ class ReceptionDeFichiers(wx.FileDropTarget):
 
 class WxGeometrie(wx.Frame):
     def __init__(self, app, fichier_log = None):
-        wx.Frame.__init__(self, parent = None, title = u"WxGéométrie", pos=wx.DefaultPosition, size=wx.Size(*param.dimensions_fenetre), style=wx.DEFAULT_FRAME_STYLE)
+        wx.Frame.__init__(self, parent = None, title = u"WxGéométrie", pos=wx.DefaultPosition, style=wx.DEFAULT_FRAME_STYLE)
 
         self.SetBackgroundColour(wx.NamedColor(u"WHITE"))
 
@@ -85,6 +85,9 @@ class WxGeometrie(wx.Frame):
         self.__sizer_principal.Add(self.onglets, 1, wx.GROW)
         self.SetSizer(self.__sizer_principal)
         self.Fit()
+        x_fit, y_fit = self.GetSize()
+        x_param, y_param = param.dimensions_fenetre
+        self.SetSize(wx.Size(max(x_fit, x_param), max(y_fit, y_param)))
 
         self.console = Console(self)
 
@@ -234,8 +237,8 @@ class WxGeometrie(wx.Frame):
             self.onglets.ouvrir(fichier, en_arriere_plan = True)
         try:
             self.onglets.changer_onglet(session.infos['onglet_actif'])
-        except IndexError:
-            warning("Impossible de restaurer l'onglet actif.", IndexError)
+        except (IndexError, AttributeError):
+            warning("Impossible de restaurer l'onglet actif (%s)." %session.infos['onglet_actif'])
 
 #    def _auto_save(self, evt = None):
 #        self.sauver_session()
