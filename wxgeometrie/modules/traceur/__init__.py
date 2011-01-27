@@ -119,28 +119,17 @@ class Traceur(Panel_API_graphique):
                 self.boites[i].SetValue(objet.style('visible'))
                 self.equations[i].SetValue(objet.fonction.expression)
                 ensemble = objet.fonction.ensemble
-<<<<<<< HEAD
-                ensemble = re.sub(r"(?<=[][])\+(?=[][])", 'U', ensemble)
-=======
-                ensemble = re.sub(r"(?<=[][])\+(?=[][])", 'U', ensemble)
->>>>>>> origin/master
                 extremites_cachees = (str(e) for e in objet.fonction.style('extremites_cachees'))
                 parties = ensemble.split('|')
 
                 j = 0
                 for partie, extremites in zip(parties, extremites_cachees):
-<<<<<<< HEAD
-=======
->>>>>>> origin/master
                     def f(m):
                         a, b, c, d = m.groups()
                         return (a if b not in extremites else '') + b + ';' \
                                 + c + (d if c not in extremites else '')
                     parties[j] = re.sub(r"([][])([^][;]+);([^][;]+)([][])", f, partie)
                     j += 1
-<<<<<<< HEAD
-=======
->>>>>>> origin/master
 
                 self.intervalles[i].SetValue('|'.join(parties))
             else:
