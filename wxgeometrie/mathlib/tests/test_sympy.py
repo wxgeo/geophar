@@ -24,6 +24,10 @@ def test_sympy():
     assert sympy.limit(1 + 1/x, x, 0, dir='-') == -oo
     assert sympy.limit(1/x**2, x, 0, dir='-') == oo
 
+@XFAIL
+def test_sympy_1_div_0():
+    assert sympy.S.One/S.Zero in (S.NaN, S.ComplexInfinity)
+
 def test_sympy_files():
     sympy_dir = os.path.normpath(os.path.dirname(os.path.abspath(__file__)) + '/../../sympy')
     def tst(path):

@@ -37,9 +37,10 @@ def test_preformatage_geolib_ensemble():
     assertEqual(p('-5;'), (']-5;oo[', (['-5'],)))
     assertEqual(p('R*'), (']-oo;+oo[-{0}', ([],)))
     assertEqual(p('R+*'), (']0;+oo[', ([],)))
-    assertEqual(p('{2;5}'), ('{2}+{5}', ([],)))
+    assertEqual(p('{2;5}'), ('{2;5}', ([],)))
     assertEqual(p(']-1;1|2;3[U]4;6'), (']-1;1[|]2;3[+]4;6[', (['1'], ['2', '6'])))
-
+    assertEqual(p(']1;2[+]1;2['), (']1;2[+]1;2[', ([],)))
+    assertEqual(p('R-{1;2}'), (']-oo;+oo[-{1;2}', ([],)))
 
 def test_intervalle():
     assert(str(Intervalle(8) + Intervalle(9)) == '[8;+oo[')

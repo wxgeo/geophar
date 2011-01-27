@@ -242,8 +242,11 @@ class Union(Ensemble):
             inf = max(intervalle.inf, _min)
             sup = min(intervalle.sup, _max)
             a = numpy.arange(float(inf), float(sup), pas)
+            # Il faut convertir inf et sup en float du fait de bugs de sympy.
+            # En particulier, 1/0 == +oo (au lieu de NaN ou zoo) provoque des bugs
+            # dans l'affichage de courbes style 1/x sur ]-oo;0[.
             if inf < sup or (intervalle.inf_inclus and intervalle.sup_inclus):
-                a = numpy.append(a, sup)
+                a = numpy.append(a, float(sup))
             arrays.append(a)
         return arrays
 
@@ -439,38 +442,43 @@ def preformatage_geolib_ensemble(chaine):
     1;2] -> afficher l'extrémité en 2 (point), mais pas en 1.
     ]1;2 -> afficher l'extrémité en 1 (arc), mais pas en 2.
     """
-    chaine = chaine.replace(' ', '').replace(',', ';').replace('\\', '-')
-    def union_singletons(m):
-        return 'U'.join('{' + s + '}' for s in m.group(1).split(';'))
-    chaine = re.sub(r"\{([^};]+;[^}]+)\}", union_singletons, chaine)
+    chaine = re.sub('[ ]+', ' ', chaine)
+    chaine = chaine.replace(',', ';').replace('\\', '-')
+    chaine = re.sub(r"(?<=[][])\+(?=[][])", 'U', chaine)
 
     extremites_cachees = []
     parties = chaine.split('|')
 
     for i, partie in enumerate(parties):
         extremites_cachees.append([])
-        if re.match(r"R-[^{]+$", partie):
+        if re.match(r"R-[^][{}]+$", partie):
             partie = 'R-{' + partie[2:] + '}'
-        if partie.startswith(';'):
-            partie = ']' + partie
-        if partie.endswith(';'):
-            partie += '['
-        intervalles = partie.split('U')
+        intervalles = re.split(r'(?<=[][{} ])[U](?=[][{} ])', partie)
+
         for j, intervalle in enumerate(intervalles):
-            k = intervalle.find('-{')
-            if k == -1:
-                appendice = ''
-            else:
-                appendice = intervalle[k:]
-                intervalle = intervalle[:k]
-            if ';' in intervalle:
-                deb, fin = intervalle.split(';')
-                if deb and deb[0] not in '[]':
-                    extremites_cachees[-1].append(deb)
+            intervalle = intervalle.replace(' ', '')
+            appendice = ''
+            if not intervalle.startswith('{'):
+                # ie. intervalle != {1;2;3}
+                if intervalle.startswith(';'):
+                    # ]3; signifie ]3;+oo[
                     intervalle = ']' + intervalle
-                if fin and fin[-1] not in '[]':
-                    extremites_cachees[-1].append(fin)
+                if intervalle.endswith(';'):
+                    # ;3[ signifie ]-oo;3[
                     intervalle += '['
+                k = intervalle.find('-{')
+                if k != -1:
+                    appendice = intervalle[k:]
+                    intervalle = intervalle[:k]
+                    # ]-oo;+oo[-{1;2} est découpé en ]-oo;+oo[ (intervalle) et -{1;2} (appendice)
+                if ';' in intervalle:
+                    deb, fin = intervalle.split(';')
+                    if deb and deb[0] not in '[]':
+                        extremites_cachees[-1].append(deb)
+                        intervalle = ']' + intervalle
+                    if fin and fin[-1] not in '[]':
+                        extremites_cachees[-1].append(fin)
+                        intervalle += '['
             intervalles[j] = intervalle + appendice
         parties[i] = 'U'.join(intervalles)
 
