@@ -114,12 +114,29 @@ class Traceur(Panel_API_graphique):
         Lors de l'ouverture d'un fichier, ou d'un changement de feuille."""
         for i in xrange(self.nombre_courbes):
             nom_courbe = 'Cf' + str(i + 1)
-##            nom_fonction = 'f' + str(i + 1)
             if self.feuille_actuelle.objets.has_key(nom_courbe):
                 objet = self.feuille_actuelle.objets[nom_courbe]
                 self.boites[i].SetValue(objet.style('visible'))
                 self.equations[i].SetValue(objet.fonction.expression)
-                self.intervalles[i].SetValue(objet.fonction.ensemble)
+                ensemble = objet.fonction.ensemble
+                print 'Ensemble:', ensemble
+                ensemble = re.sub(r"(?<=[][])\+(?=[][])", 'U', ensemble)
+                print 'Ensemble (2):', ensemble
+                extremites_cachees = (str(e) for e in objet.fonction.style('extremites_cachees'))
+                parties = ensemble.split('|')
+
+                j = 0
+                for partie, extremites in zip(parties, extremites_cachees):
+                    print j, partie, extremites
+                    def f(m):
+                        a, b, c, d = m.groups()
+                        return (a if b not in extremites else '') + b + ';' \
+                                + c + (d if c not in extremites else '')
+                    parties[j] = re.sub(r"([][])([^][;]+);([^][;]+)([][])", f, partie)
+                    j += 1
+                print parties
+
+                self.intervalles[i].SetValue('|'.join(parties))
             else:
                 self.boites[i].SetValue(True)
                 self.equations[i].SetValue('')
