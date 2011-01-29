@@ -70,22 +70,24 @@ class Traceur(Panel_API_graphique):
                 self.boites.append(wx.CheckBox(self, label='f%s:'%(i+1)))
                 self.boites[-1].SetValue(True) # Par defaut, les cases sont cochees.
                 self.boites[i].Bind(wx.EVT_CHECKBOX, self.synchronise_et_affiche)
-                self.boites[i].Bind(wx.EVT_ENTER_WINDOW, partial(self.OnFocus, i=i))
-                self.boites[i].Bind(wx.EVT_LEAVE_WINDOW, self.OnFocus)
+                # Bug de WxGtk: on ne peut pas attacher simultanément une fonction
+                # aux évènements EVT_CHECKBOX et EVT_ENTER_WINDOW
+                #self.boites[i].Bind(wx.EVT_ENTER_WINDOW, partial(self.MouseOver, i=i))
+                self.boites[i].Bind(wx.EVT_LEAVE_WINDOW, self.MouseOver)
                 ligne.Add(self.boites[i], 0, wx.ALIGN_CENTRE|wx.ALL,5)
 
                 ligne.Add(wx.StaticText(self, -1, "Y ="), 0, wx.ALIGN_CENTRE|wx.ALL,5)
                 self.equations.append(wx.TextCtrl(self, size=(120, -1), style=wx.TE_PROCESS_ENTER))
                 self.equations[i].Bind(wx.EVT_CHAR, partial(self.EvtChar, i=i))
-                self.equations[i].Bind(wx.EVT_ENTER_WINDOW, partial(self.OnFocus, i=i))
-                self.equations[i].Bind(wx.EVT_LEAVE_WINDOW, self.OnFocus)
+                self.equations[i].Bind(wx.EVT_ENTER_WINDOW, partial(self.MouseOver, i=i))
+                self.equations[i].Bind(wx.EVT_LEAVE_WINDOW, self.MouseOver)
                 ligne.Add(self.equations[i], 0, wx.ALIGN_CENTRE|wx.ALL,5)
 
                 ligne.Add(wx.StaticText(self, -1, "sur"), 0, wx.ALIGN_CENTRE|wx.ALL,5)
                 self.intervalles.append(wx.TextCtrl(self, size = (100, -1), style = wx.TE_PROCESS_ENTER))
                 self.intervalles[i].Bind(wx.EVT_CHAR, partial(self.EvtChar, i=i))
-                self.intervalles[i].Bind(wx.EVT_ENTER_WINDOW, partial(self.OnFocus, i=i))
-                self.intervalles[i].Bind(wx.EVT_LEAVE_WINDOW, self.OnFocus)
+                self.intervalles[i].Bind(wx.EVT_ENTER_WINDOW, partial(self.MouseOver, i=i))
+                self.intervalles[i].Bind(wx.EVT_LEAVE_WINDOW, self.MouseOver)
                 ligne.Add(self.intervalles[i], 0, wx.ALIGN_CENTRE|wx.ALL,5)
 
                 self.entrees.Add(ligne, 0, wx.ALL, 5)
@@ -191,13 +193,14 @@ class Traceur(Panel_API_graphique):
         else:
             event.Skip()
 
-    def OnFocus(self, event=None, i=None):
+    def MouseOver(self, event=None, i=None):
         if i is None:
             self.canvas.select = None
         else:
             nom_courbe = 'Cf' + str(i + 1)
             self.canvas.select = self.feuille_actuelle.objets.get(nom_courbe, None)
         self.canvas.selection_en_gras()
+        event.Skip()
 
     def synchronise_et_affiche(self, event = None):
         self._synchroniser_courbes()
