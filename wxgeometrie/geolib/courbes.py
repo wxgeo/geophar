@@ -27,7 +27,8 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 from objet import *
 import numpy
-from numpy import isnan, isinf
+from numpy import isnan, isinf, sign, arange, inf
+from itertools import izip,chain
 
 def inf_or_nan(x):
     return isinf(x) or isnan(x)
@@ -92,7 +93,7 @@ class Courbe(Courbe_generique):
 #        derniere_fonction = None
 #        ancien_x = None
 #        ancien_y = None
-        for fonction, union, e_cach in zip(self.__fonction._Fonction__fonctions,
+        for fonction, union, e_cach in izip(self.__fonction._Fonction__fonctions,
                                                        self.__fonction._Fonction__unions,
                                                        self.__fonction.style('extremites_cachees')):
             for intervalle in union.intervalles:
@@ -212,21 +213,58 @@ class Courbe(Courbe_generique):
 
 
     def _supprimer_valeurs_extremes(self, x, y, fonction, i, j):
-        x0 = x[i]
-        y0 = self._rogner_valeur(y[i])
-        n = -20
-        while isnan(y0) and n:
-            k = 2**n
-            x0 = (1 - k)*x[i] + k*x[j]
-            try:
-                y0 = self._rogner_valeur(fonction(x0))
-            except (ValueError, ArithmeticError):
-                pass
-            n += 1
-        if x0 != x[i]:
-            x[i] = x0
-        if y0 != y[i]:
-            y[i] = y0
+        u"""Lorsque les valeurs aux bornes sont indéterminées (NaN), infinies (+/-Inf)
+        ou très éloignées de zéro (2e200), on cherche à les convertir en une valeur
+        raisonnable pour la fenêtre d'affichage.
+
+        La principale difficulté est de déterminer **numériquement** la limite probable.
+
+        On commence par regarder la valeur calculée par numpy à la borne considérée :
+
+        * Si la valeur est +/-Inf, il faut étudier son signe.
+          En effet, numpy ne peut généralement par faire la différence entre des calculs
+          du type 1/0+ et 1/0- (ex: 1/(x-3) en 3+ et 3-).
+          L'idée est la suivante : si les valeurs diminuent en se rapprochant de la borne,
+          alors la limite est -Inf. De même, si elles augmentent, la limite est +Inf.
+          On retourne alors une valeur en dehors de la fenêtre d'affichage, qui simule l'infini.
+
+        * Si le résultat est nombre très éloigné de zéro, on le tronque tout en restant en
+          dehors de la fenêtre d'affichage, de manière à simuler l'infini.
+          En effet, le traceur de matplotlib réagit mal aux valeurs "extrêmes".
+
+        * Enfin si le résultat est de type NaN, on s'éloigne légèrement (puis de plus en plus vite)
+          de la borne, et on reitère, dans une limite de 20 itérations.
+        """
+        x0 = x[i]; y0 = y[i]
+        x1 = x[j]; y1 = y[j]
+        k = 2**arange(-20., 0.)
+        entre = k*(x1 - x0) + x0 # (1 - k)*x0 + k*x1
+        xk = chain([x0], entre, [x1])
+        yk = chain([y0], fonction(entre), [y1])
+        y_finis = [] # dernières valeurs finies
+        infini = False
+        xi_infini = None
+
+        for xi, yi in izip(xk, yk):
+            if infini:
+                if not inf_or_nan(yi):
+                    y_finis.append(yi)
+                    if len(y_finis) == 2:
+                        x0 = xi_infini
+                        print x0, x1, y_finis[0], y_finis[1]
+                        print 'cas infini:', sign(x1 - x0)*sign(y_finis[0] - y_finis[1])*inf
+                        y0 = self._rogner_valeur(sign(y_finis[0] - y_finis[1])*inf)
+                        break
+            else:
+                if isinf(yi):
+                    infini = True
+                    xi_infini = xi
+                elif not isnan(yi):
+                    x0 = xi
+                    y0 = self._rogner_valeur(yi)
+                    break
+        x[i] = x0
+        y[i] = y0
         return x, y
 
 
@@ -267,7 +305,7 @@ class Courbe(Courbe_generique):
         filtre = (xm < xarray) & (xarray < xM)
         xa, ya = self.__canvas__.coo2pix(xarray[filtre], self.yarray[filtre])
         A = None
-        for x, y in zip(xa, ya):
+        for x, y in izip(xa, ya):
             B = A
             A = x, y
             if distance_segment(P, A, B, d):
