@@ -251,8 +251,6 @@ class Courbe(Courbe_generique):
                     y_finis.append(yi)
                     if len(y_finis) == 2:
                         x0 = xi_infini
-                        print x0, x1, y_finis[0], y_finis[1]
-                        print 'cas infini:', sign(x1 - x0)*sign(y_finis[0] - y_finis[1])*inf
                         y0 = self._rogner_valeur(sign(y_finis[0] - y_finis[1])*inf)
                         break
             else:

@@ -113,13 +113,20 @@ class Traceur(Panel_API_graphique):
     def _synchroniser_champs(self):
         u"""On synchronise le contenu des champs de texte avec les courbes.
 
-        Lors de l'ouverture d'un fichier, ou d'un changement de feuille."""
+        Lors de l'ouverture d'un fichier, ou d'un changement de feuille,
+        ou lorsqu'une commande est exécutée dans la feuille."""
+        print "Synchronisation des champs..."
         for i in xrange(self.nombre_courbes):
             nom_courbe = 'Cf' + str(i + 1)
             if self.feuille_actuelle.objets.has_key(nom_courbe):
                 objet = self.feuille_actuelle.objets[nom_courbe]
                 self.boites[i].SetValue(objet.style('visible'))
-                self.equations[i].SetValue(objet.fonction.expression)
+                expression = objet.fonction.expression
+                if expression.strip():
+                    self.equations[i].SetValue(expression)
+                    self.boites[i].Enable()
+                else:
+                    self.boites[i].Disable()
                 ensemble = objet.fonction.ensemble
                 ensemble = re.sub(r"(?<=[][])\+(?=[][])", 'U', ensemble)
                 extremites_cachees = (str(e) for e in objet.fonction.style('extremites_cachees'))
@@ -136,7 +143,7 @@ class Traceur(Panel_API_graphique):
 
                 self.intervalles[i].SetValue('|'.join(parties))
             else:
-                self.boites[i].SetValue(True)
+                self.boites[i].Disable()
                 self.equations[i].SetValue('')
                 self.intervalles[i].SetValue('')
 
@@ -153,6 +160,7 @@ class Traceur(Panel_API_graphique):
             visible = self.boites[i].GetValue()
             if not expr.strip():
                 visible = False
+#                self.boites[i].Disable()
             if self.feuille_actuelle.objets.has_key(nom_courbe):
                 objets[nom_courbe].style(visible = visible)
                 objets[nom_fonction].modifier_expression_et_ensemble(expression = expr, ensemble = ensemble)
@@ -206,6 +214,7 @@ class Traceur(Panel_API_graphique):
         self._synchroniser_courbes()
         self.action_effectuee(u'Courbes modifiées.')
         self.affiche()
+        #event.Skip()
 
     def tableau(self, event = None):
         self.parent.a_venir()
