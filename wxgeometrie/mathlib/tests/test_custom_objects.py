@@ -154,6 +154,12 @@ def test_session():
     assertDernier(i, '(0, 1, 2, 3, 4, 5, 6)')
     i.evaluer('[j for j in range(7)]')
     assertDernier(i, '[0, 1, 2, 3, 4, 5, 6]')
+    # _11 is an alias for ans(11)
+    i.evaluer('_11 == _')
+    assertDernier(i, 'True')
+    i.evaluer('_7')
+    assertDernier(i, "-7 + 2*x")
+
 
 def test_issue_129():
     assert_resultat('"x(x+1)" + """x!"""', '"x(x+1)x!"')

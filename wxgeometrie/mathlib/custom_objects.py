@@ -359,11 +359,14 @@ class LocalDict(dict):
 ##        return sympy.Symbol(name)
 
     def __missing__(self, key):
+        # _59 is an alias for ans(59)
+        if key.startswith('_') and key[1:].isalnum():
+            return self.globals['ans'](int(key[1:]))
         return self.globals.get(key, sympy.Symbol(key))
 
     def __setitem__(self, name, value):
         # Pour éviter que l'utilisateur redéfinisse pi, i, e, etc. par mégarde.
-        if self.globals.has_key(name):
+        if self.globals.has_key(name) or (name.startswith('_') and name[1:].isalnum()):
             raise NameError, "%s est un nom reserve" %name
         if isinstance(value, str):
             # exec/eval encodent les chaînes crées en utf8.
