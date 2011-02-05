@@ -338,8 +338,12 @@ class WxGeometrie(wx.Frame):
                         debug(u"Fermeture incorrecte de l'onglet : ", uu(str(onglet)))
                         raise
 
-            except:
-                wx.lib.dialogs.ScrolledMessageDialog(self, traceback.format_exc(), u"Erreur lors de la fermeture du programme").ShowModal()
+            except Exception:
+                try:
+                    print_error()
+                    wx.lib.dialogs.ScrolledMessageDialog(self, traceback.format_exc(), u"Erreur lors de la fermeture du programme").ShowModal()
+                except UnicodeError:
+                    wx.lib.dialogs.ScrolledMessageDialog(self, "Impossible d'afficher l'erreur.", u"Erreur lors de la fermeture du programme").ShowModal()
         sys.stdout = sys.__stdout__
         sys.stderr = sys.__stderr__
         if hasattr(self, "fenetre_sortie"):
