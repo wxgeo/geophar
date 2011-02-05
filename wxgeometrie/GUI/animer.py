@@ -33,7 +33,6 @@ class DialogueAnimation(MyMiniFrame):
         self.SetExtraStyle(wx.WS_EX_BLOCK_EVENTS )
         self.parent = parent
         self.feuille_actuelle = self.parent.onglet_actuel.feuille_actuelle
-        #self._param_ = self.parent._param_
         p = self.panel = wx.Panel(self, -1)
 
         self.sizer = sizer = wx.BoxSizer(wx.VERTICAL)
@@ -69,34 +68,34 @@ class DialogueAnimation(MyMiniFrame):
 
         sizer.Add(wx.StaticLine(p, -1, style=wx.LI_HORIZONTAL), 0, wx.GROW|wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5)
 
-        #p.SetSizer(sizer)
         boutons = wx.BoxSizer(wx.HORIZONTAL)
-        lancer = wx.Button(p, -1, u"Animer")
+        self.btn_lancer = lancer = wx.Button(p, -1, u"Animer")
         boutons.Add(lancer, 0, wx.ALL, 5)
-        stop = wx.Button(p, -1, u"Stop")
-        boutons.Add(stop, 0, wx.ALL, 5)
         fermer = wx.Button(p, -1, u"Fermer")
         boutons.Add(fermer, 0, wx.ALL, 5)
         self.Bind(wx.EVT_BUTTON, self.Animer, lancer)
-        self.Bind(wx.EVT_BUTTON, self.Stop, stop)
         self.Bind(wx.EVT_BUTTON, self.OnCloseMe, fermer)
         sizer.Add(boutons)
 
         p.SetSizerAndFit(sizer)
         self.SetClientSize(p.GetSize())
+        self.en_cours = False
 
 
 
 
 
     def Animer(self, event = None):
-        self.feuille_actuelle.stop()
-        self.feuille_actuelle.animer(nom = self.var.GetValue(), debut=eval(self.deb.GetValue()), fin=eval(self.fin.GetValue()), pas=eval(self.pas.GetValue()), periode=eval(self.periode.GetValue()))
-
-
-
-    def Stop(self, event = None):
-        self.feuille_actuelle.stop()
+        if self.en_cours:
+            self.feuille_actuelle.stop()
+        else:
+            self.en_cours = True
+            self.btn_lancer.SetLabel('Stop')
+            self.feuille_actuelle.animer(nom = self.var.GetValue(),
+                        debut=eval(self.deb.GetValue()), fin=eval(self.fin.GetValue()),
+                        pas=eval(self.pas.GetValue()), periode=eval(self.periode.GetValue()))
+        self.en_cours = False
+        self.btn_lancer.SetLabel('Animer')
 
     def Propositions(self, event = None):
         u"Liste des noms de variables de la feuille actuelle."
