@@ -38,14 +38,11 @@ class GenericWrapper(object):
 
     def __init__(self, val):
         object.__setattr__(self, '_GenericWrapper__val', val)
-    
+
     def __getattribute__(self, name):
-        val = object.__getattr__(self, '_GenericWrapper__val')
+        val = object.__getattribute__(self, '_GenericWrapper__val')
         return getattr(val, name)
-        
+
     def __setattr__(self, name, val):
-        val = object.__getattr__(self, '_GenericWrapper__val')
+        val = object.__getattribute__(self, '_GenericWrapper__val')
         return setattr(val, name, val)
-    
-
-

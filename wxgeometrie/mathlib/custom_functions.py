@@ -28,7 +28,7 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 ## Cette librairie contient les fonctions de haut niveau non inclues dans sympy.
 
 import sympy
-from sympy import exp, ln, Add, Mul
+from sympy import exp, ln, Add, Mul, pi
 
 import custom_objects
 import math
@@ -40,9 +40,13 @@ import param
 
 
 
+#def deg(x):
+#    u'Conversion radians -> degrés.'
+#    return custom_objects.MesureDegres(x)
+
 def deg(x):
     u'Conversion radians -> degrés.'
-    return custom_objects.MesureDegres(x)
+    return x*180/pi
 
 #def rad(x):
 #    u'Conversion degrés -> radians.'
