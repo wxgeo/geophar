@@ -33,4 +33,9 @@ def test_variables():
     assertAlmostEqual(g(4), a*4+b)
     assertAlmostEqual(g(_VAL0), a*_VAL0+b)
 
-
+def test_intervalle():
+    f = Feuille()
+    o = f.objets
+    g = o.g = Fonction('x^2+2x+1', ']0;5')
+    assert g.style('extremites_cachees') == ([5],)
+    assert g.ensemble == ']0;5['

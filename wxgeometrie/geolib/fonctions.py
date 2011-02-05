@@ -110,7 +110,10 @@ class Fonction(Objet_numerique):
             raise NotImplementedError
         # *Pré*formatage
         ensemble, extremites_cachees = intervalles.preformatage_geolib_ensemble(ensemble)
-        extremites_cachees = tuple([ALL.Variable(x) for x in partie] for partie in extremites_cachees)
+        if self.style("extremites_cachees"):
+            extremites_cachees = self.style("extremites_cachees")
+        else:
+            extremites_cachees = tuple([ALL.Variable(x) for x in partie] for partie in extremites_cachees)
         self.__liste_expression = []
         self.__liste_ensemble = []
         # Une fonction peut être définie par morceaux
@@ -255,4 +258,3 @@ class Fonction(Objet_numerique):
             self.modifier_expression_et_ensemble(objet.expression, objet.ensemble)
         else:
             raise TypeError, "l'objet n'est pas une fonction."
-
