@@ -44,7 +44,7 @@ def Intersection(objet1, objet2, **styles):
         return Intersection_droites(objet1, objet2, **styles)
     elif case(ALL.Ligne_generique, (ALL.Cercle_generique, ALL.Arc_generique)):
         return Intersection_droite_cercle(objet1, objet2, **styles)
-    elif case(ALL.Ligne_generique, (ALL.Cercle_generique, ALL.Arc_generique)):
+    elif case((ALL.Cercle_generique, ALL.Arc_generique), (ALL.Cercle_generique, ALL.Arc_generique)):
         return Intersection_cercles(objet1, objet2, **styles)
     else:
         raise TypeError, "Intersection d'objets non supportes."
@@ -177,7 +177,8 @@ class Intersection_droite_cercle(Intersection_generique): # ATTENTION, il y a de
     def __init__(self, droite, cercle, premier_point = None, **styles):
         # l'intersection de la droite et du cercle (si elle existe) est deux points (éventuellement confondus).
         # lorsque l'utilisateur créé deux fois deux suite un point d'intersection, ce ne doit pas être le même.
-
+        if isinstance(cercle, ALL.Ligne_generique):
+            droite, cercle = cercle, droite
         self.__droite = droite = Ref(droite)
         self.__cercle = cercle = Ref(cercle)
         self.__premier_point = premier_point = Ref(premier_point)
@@ -214,8 +215,8 @@ class Intersection_droite_cercle(Intersection_generique): # ATTENTION, il y a de
 
             if abs(b) > contexte['tolerance']: # La droite n'est pas verticale
                 m = -a/b; n = -c/b # equation de la droite : y = mx + n
-                sols = racines(m**2 + 1, 2*n*m + d + e*m, n**2 + e*n + f)
-                points_intersection = [(x, m*x+n) for x in sols]
+                sols = racines(m**2 + 1, 2*n*m + d + e*m, n**2 + e*n + f, exact=contexte['exact'])
+                points_intersection = [(x, m*x + n) for x in sols]
 
             elif abs(a) > contexte['tolerance']: # La droite est verticale
                 x = -c/a
