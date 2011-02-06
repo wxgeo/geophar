@@ -50,13 +50,13 @@ class Angle_generique(Objet_numerique):
     @property
     def degre(self):
         if self.existe:
-            return self.val*180/univ.pi
+            return self.val*180/pi_()
     deg = degre
 
     @property
     def grad(self):
         if self.existe:
-            return self.val*200/univ.pi
+            return self.val*200/pi_()
 
     @property
     def info(self):

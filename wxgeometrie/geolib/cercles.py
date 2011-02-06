@@ -947,7 +947,7 @@ class Disque(Cercle_generique):
 
     @property
     def aire(self):
-        return self.rayon**2*univ.pi
+        return self.rayon**2*pi_()
 
     @property
     def info(self):

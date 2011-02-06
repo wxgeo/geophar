@@ -311,6 +311,12 @@ contexte = Contexte(exact = True,
                     afficher_messages = param.afficher_messages,
                     )
 
+def pi_():
+    return sympy.pi if contexte['exact'] else math.pi
+
+def I_():
+    return sympy.I if contexte['exact'] else 1j
+
 
 
 class Ref(object):
@@ -1963,96 +1969,110 @@ class Objet_numerique(mathlib.Reel, Objet_avec_valeur):
         Objet.__init__(self, *args, **kw)
 
     def __float__(self):
-#        print "val::", self.val
         return float(self.val)
 
     def __int__(self):
         return int(self.val)
 
-    ## CODE GÉNÉRÉ AUTOMATIQUEMENT VIA creer_operations.py
+    ## -- code généré automatiquement -- (cf. creer_operations.py)
 
     def __add__(self, y):
+        if isinstance(y, Objet_numerique):
+            return self.val + y.val
         return self.val + y
 
     def __radd__(self, y):
         return y + self.val
 
     def __iadd__(self, y):
-        self.val = self.val + y
+        self.val = self.val + (y.val if isinstance(y, Objet_numerique) else y)
         return self
 
     def __sub__(self, y):
+        if isinstance(y, Objet_numerique):
+            return self.val - y.val
         return self.val - y
 
     def __rsub__(self, y):
         return y - self.val
 
     def __isub__(self, y):
-        self.val = self.val - y
+        self.val = self.val - (y.val if isinstance(y, Objet_numerique) else y)
         return self
 
     def __mul__(self, y):
+        if isinstance(y, Objet_numerique):
+            return self.val * y.val
         return self.val * y
 
     def __rmul__(self, y):
         return y * self.val
 
     def __imul__(self, y):
-        self.val = self.val * y
+        self.val = self.val * (y.val if isinstance(y, Objet_numerique) else y)
         return self
 
     def __div__(self, y):
+        if isinstance(y, Objet_numerique):
+            return self.val / y.val
         return self.val / y
 
     def __rdiv__(self, y):
         return y / self.val
 
     def __idiv__(self, y):
-        self.val = self.val / y
+        self.val = self.val / (y.val if isinstance(y, Objet_numerique) else y)
         return self
 
     def __truediv__(self, y):
+        if isinstance(y, Objet_numerique):
+            return self.val / y.val
         return self.val / y
 
     def __rtruediv__(self, y):
         return y / self.val
 
     def __itruediv__(self, y):
-        self.val = self.val / y
+        self.val = self.val / (y.val if isinstance(y, Objet_numerique) else y)
         return self
 
     def __pow__(self, y):
+        if isinstance(y, Objet_numerique):
+            return self.val ** y.val
         return self.val ** y
 
     def __rpow__(self, y):
         return y ** self.val
 
     def __ipow__(self, y):
-        self.val = self.val ** y
+        self.val = self.val ** (y.val if isinstance(y, Objet_numerique) else y)
         return self
 
     def __mod__(self, y):
+        if isinstance(y, Objet_numerique):
+            return self.val % y.val
         return self.val % y
 
     def __rmod__(self, y):
         return y % self.val
 
     def __imod__(self, y):
-        self.val = self.val % y
+        self.val = self.val % (y.val if isinstance(y, Objet_numerique) else y)
         return self
 
     def __floordiv__(self, y):
+        if isinstance(y, Objet_numerique):
+            return self.val // y.val
         return self.val // y
 
     def __rfloordiv__(self, y):
         return y // self.val
 
     def __ifloordiv__(self, y):
-        self.val = self.val // y
+        self.val = self.val // (y.val if isinstance(y, Objet_numerique) else y)
         return self
 
-
-    ## fin CODE GÉNÉRÉ AUTOMATIQUEMENT VIA creer_operations.py
+    ## -- fin du code généré automatiquement --
 
     def __abs__(self):
         return abs(self.val)
