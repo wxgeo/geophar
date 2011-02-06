@@ -173,6 +173,5 @@ def test_Tangente():
     assert(A not in d1)
     assert(not  Tangente(c, O).existe)
 
-
-
-
+def test_equation_formatee():
+    assert Droite('y=x').equation_formatee == '-x + y = 0'

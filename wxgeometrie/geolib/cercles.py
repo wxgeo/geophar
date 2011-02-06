@@ -118,7 +118,7 @@ class Arc_generique(Cercle_Arc_generique):
         a, b, c = (nice_display(coeff) for coeff in eq)
         # on ne garde que quelques chiffres après la virgule pour l'affichage
         xmin, xmax, ymin, ymax = (nice_display(extremum) for extremum in self._espace_vital())
-        return u"x² + y² + %s x + %s y + %s = 0 avec %s<x<%s et %s<y<%s" %(a, b, c, xmin, xmax, ymin, ymax)
+        return formatage(u"x² + y² + %s x + %s y + %s = 0 avec %s<x<%s et %s<y<%s" %(a, b, c, xmin, xmax, ymin, ymax))
 
     #~ def _distance_inf(self, x, y, d):
         #~ x0, y0 = self._pixel(self.__centre)
@@ -693,7 +693,7 @@ class Cercle_generique(Cercle_Arc_generique):
             return u"L'objet n'est pas défini."
         a, b, c = (nice_display(coeff) for coeff in eq)
         # on ne garde que quelques chiffres après la virgule pour l'affichage
-        return u"x² + y² + %s x + %s y + %s = 0" %(a, b, c)
+        return formatage(u"x² + y² + %s x + %s y + %s = 0" %(a, b, c))
 
 
     def _creer_nom_latex(self):
@@ -758,7 +758,8 @@ class Cercle(Cercle_generique):
             newclass = Cercle_equation
         elif len(args) == 1 and isinstance(args[0], ALL.Segment):
             newclass = Cercle_diametre
-        elif len(args) == 2 and isinstance(args[1], ALL.TYPES_REELS):
+        elif len(args) == 2 and (isinstance(args[1], ALL.TYPES_REELS)
+                                or isinstance(args[1], basestring)):
             newclass = Cercle_rayon
         elif len(args) == 3 and isinstance(args[0], ALL.Point_generique) \
                                       and isinstance(args[1], ALL.Point_generique) \
@@ -953,9 +954,6 @@ class Disque(Cercle_generique):
         return self.nom_complet + u" d'aire " + nice_display(self.aire)
 
 
-
-
-
     @property
     def equation_formatee(self):
         u"Equation sous forme lisible par l'utilisateur."
@@ -963,8 +961,7 @@ class Disque(Cercle_generique):
         if eq is None:
             return u"L'objet n'est pas défini."
         a, b, c = (nice_display(coeff) for coeff in eq)  # on ne garde que quelques chiffres après la virgule pour l'affichage
-        eq = u"x² + y² + %s x + %s y + %s <= 0" %(a, b, c)
-        return eq.replace("+ -", "-")
+        return formatage(u"x² + y² + %s x + %s y + %s <= 0" %(a, b, c))
 
     def image_par(self, transformation):
         return Disque(self.__cercle.image_par(transformation))

@@ -407,6 +407,7 @@ class Demidroite(Ligne_generique):
         if eq is None:
             return u"L'objet n'est pas défini."
         a, b, c = (nice_display(coeff) for coeff in eq)
+        # on ne garde que quelques chiffres après la virgule
         pente = self.pente(1) # "tendance" de la pente (verticale : 0, horizontale : 1)
         if pente:
             if (self.__point.ordonnee - self.__origine.ordonnee) > contexte['tolerance']:
@@ -422,8 +423,7 @@ class Demidroite(Ligne_generique):
                 ajout = "x < " + nice_display(self.__origine.abscisse)
             else:
                 return u"Précision insuffisante."
-
-        return "%s x + %s y + %s = 0 et %s" %(a, b, c, ajout) # on ne garde que quelques chiffres après la virgule
+        return formatage("%s x + %s y + %s = 0 et %s" %(a, b, c, ajout))
 
 
     @staticmethod
@@ -502,11 +502,8 @@ class Droite_generique(Ligne_generique):
         eq = self.equation
         if eq is None:
             return u"L'objet n'est pas défini."
-        a, b, c = (nice_display(coeff) for coeff in eq)
-        a = (a if a != '1' else '')
-        b = (b if b != '1' else '')
-        txt = "%s x + %s y + %s = 0" %(a, b, c) # on ne garde que quelques chiffres après la virgule pour l'affichage
-        return txt.replace("+ -", "- ").replace('-1 x', '-x').replace('-1 y', '- y')
+        a, b, c = (nice_display(coeff) for coeff in eq) # on ne garde que quelques chiffres après la virgule pour l'affichage
+        return formatage("%s x + %s y + %s = 0" %(a, b, c))
 
     @property
     def info(self):
@@ -948,12 +945,10 @@ class DemiPlan(Objet_avec_equation):
         else:
             return u"Le demi-plan n'est pas défini."
         a, b, c = (nice_display(coeff) for coeff in eq)
+        # on ne garde que quelques chiffres après la virgule pour l'affichage
         if self.__droite_incluse:
             symbole += '='
-        txt = "%s x + %s y + %s %s 0" %(a, b, c, symbole) # on ne garde que quelques chiffres après la virgule pour l'affichage
-        return txt.replace("+ -", "- ")
-
-        return "%s x + %s y + %s = 0 et %s" %(a, b, c, ajout) # on ne garde que quelques chiffres après la virgule
+        return formatage("%s x + %s y + %s %s 0" %(a, b, c, symbole))
 
     def _signe(self, xy = None):
         x, y = (xy if xy else self.__point.xy)

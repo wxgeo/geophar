@@ -27,11 +27,11 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ## Cette librairie contient des fonctions mathématiques à usage interne
 
-import math
+import math, re
 import cmath
 ##import pylab
 import numpy
-##import sympy
+import sympy
 from pylib import *
 ##import sympy_functions
 import mathlib.universal_functions as universal_functions
@@ -134,12 +134,12 @@ def array_zip(*args):
 def delta(a, b, c):
     return b**2 - 4*a*c
 
-def racines(a, b, c):
+def racines(a, b, c, exact=False):
     d = delta(a, b, c)
     if not d:
         return [-b/(2*a)]
     if d > 0:
-        rac = math.sqrt(d)
+        rac = (sympy.sqrt(d) if exact else math.sqrt(d))
         return [(-rac-b)/(2*a) , (rac-b)/(2*a)]
     return []
 
@@ -342,6 +342,28 @@ def distance_segment(M, A, B, d):
             return (x - xA)**2 + (y - yA)**2 < d**2
     else:
         return False
+
+
+def formatage(eqn):
+    u"""Améliore l'affichage des équations.
+
+    >>> formatage('1 x + -1/3 y + 1 = 0')
+    'x - 1/3 y + 1 = 0'
+    >>> formatage('-1 x + -1 y + -1 = 0')
+    '-x - y - 1 = 0'
+    >>> formatage(u'x\xb2 + y\xb2 + -1 x + -4/3 y + -47/36 = 0')
+    u'x\xb2 + y\xb2 - x - 4/3 y - 47/36 = 0'
+    >>> formatage('2 x + 0 y - 28 = 0')
+    '2 x - 28 = 0'
+    """
+    #FIXME: pour l'instant, ça ne marche qu'avec x et y (il ne faut
+    # pas qu'il y ait de xy dans l'équation, ni de t, etc.)
+    if eqn.startswith('1 '):
+        eqn = eqn[2:]
+    return eqn.replace("+ -1", "- 1").replace('-1 x', '-x').replace('-1 y', '-y')\
+              .replace("+ -", "- ").replace('- 1 x', '- x').replace('- 1 y', '- y')\
+              .replace('+ 1 x', '+ x').replace('+ 1 y', '+ y')\
+              .replace('+ 0 x ', '').replace('+ 0 y ', '').replace('+ 0 ', '')
 
 
 if not hasattr(cmath, 'phase'): # Python <= 2.5

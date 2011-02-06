@@ -70,7 +70,7 @@ def test_Cercle_rayon():
     assert(B in c2)
 
 @XFAIL
-def test_cercle_equation_formatee():
+def test_cercle_defini_par_equation():
     c = Cercle("x^2+y^2-2x+y-3=0")
 
 def test_Cercle():
@@ -133,3 +133,5 @@ def test_Disque():
     assert(d.centre in d)
     assert(Point(-500, -500) not in d)
 
+def test_equation_formatee():
+    assert Cercle((10, 0), (1, 5)).equation_formatee == u'x\xb2 + y\xb2 - 20 x - 6 = 0'
