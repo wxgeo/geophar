@@ -657,7 +657,7 @@ class Cercle_generique(Cercle_Arc_generique):
 
     def _longueur(self):
         rayon = self.rayon
-        return 2*rayon*(sympy.pi if issympy(rayon) else math.pi)
+        return 2*rayon*pi_()
 
     perimetre = property(_longueur)
 

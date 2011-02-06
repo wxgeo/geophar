@@ -51,8 +51,6 @@ def Intersection(objet1, objet2, **styles):
 
 
 
-
-
 class Intersection_generique(Point_generique):
     u"""Une intersection générique.
 
@@ -71,8 +69,6 @@ class Intersection_generique(Point_generique):
         return tuple(point for point in \
                      self._cache.get('intersections_possibles', self._intersections_possibles)\
                      if self._tester_solution(point))
-
-
 
     @property
     def intersections(self):
@@ -136,7 +132,6 @@ class Intersection_droites(Intersection_generique):
         self.__droite2 = droite2 = Ref(droite2)
         Intersection_generique.__init__(self, objet1 = droite1, objet2 = droite2, **styles)
 
-
     def _intersections_possibles(self):
         u"""Liste de coordonnées correspondant aux points d'intersections possibles.
 
@@ -154,7 +149,6 @@ class Intersection_droites(Intersection_generique):
         x = self.__x = (f*b - c*e)/determinant
         y = self.__y = (d*c - a*f)/determinant
         return (x, y), # liste (tuple) de couples
-
 
 
 
@@ -220,7 +214,7 @@ class Intersection_droite_cercle(Intersection_generique): # ATTENTION, il y a de
 
             elif abs(a) > contexte['tolerance']: # La droite est verticale
                 x = -c/a
-                sols = racines(1, e, x**2 + d*x + f)
+                sols = racines(1, e, x**2 + d*x + f, exact=contexte['exact'])
                 points_intersection = [(x, y) for y in sols]
 
             # Le dernier cas correspond à une droite d'équation ayant
@@ -302,17 +296,16 @@ class Intersection_cercles(Intersection_generique): # ATTENTION, il y a des modi
 
             if abs(b) > contexte['tolerance']: # La droite n'est pas verticale
                 m = -a/b; n = -c/b # equation de la droite : y = mx + n
-                sols = racines(m**2 + 1, 2*n*m + d + e*m, n**2 + e*n + f)
+                sols = racines(m**2 + 1, 2*n*m + d + e*m, n**2 + e*n + f, exact=contexte['exact'])
                 points_intersection = [(x, m*x+n) for x in sols]
 
             elif abs(a) > contexte['tolerance']: # La droite est verticale
                 x = -c/a
-                sols = racines(1, e, x**2 + d*x + f)
+                sols = racines(1, e, x**2 + d*x + f, exact=contexte['exact'])
                 points_intersection = [(x, y) for y in sols]
 
             # Dernier cas possible : la droite n'existe pas (cercles concentriques).
             # Pas d'intersection (ou alors, c'est tout le cercle -> non géré).
-
 
         if len(points_intersection) == 2:
             # Là encore, la partie la plus complexe consiste à distinguer
@@ -327,71 +320,3 @@ class Intersection_cercles(Intersection_generique): # ATTENTION, il y a des modi
                 points_intersection.reverse()
 
         return points_intersection
-
-
-
-
-
-
-##    def _conditions_existence(self):
-##        # Trouver les conditions d'existence revient pratiquement à chercher les coordonnées.
-##        # Tout le calcul de coordonnées se fait donc ici, pour simplifier.
-##
-##        a, b, c = self.cercle1.equation
-##        d, e, f = self.cercle2.equation
-##        #print a, b, c, d, e, f
-##        if (a, b, c) == (d, e, f):
-##            return None
-##
-##        # (a-d)x + (b-e)y + (c-f) = 0 : on soustrait les 2 equations de cercle -> equation d'une droite.
-##        # On se ramène donc au cas de l'intersection d'un cercle et d'une droite
-##        a, b, c = a - d, b - e, c - f
-##
-##        if abs(b) > contexte['tolerance']: # La droite n'est pas verticale
-##            m = -a/b; n = -c/b # equation de la droite : y = mx + n
-##
-##            #p = Polynome([m**2 + 1, 2*n*m + d + e*m, n**2 + e*n + f])
-##            sols = racines(m**2 + 1, 2*n*m + d + e*m, n**2 + e*n + f)
-##
-##            if len(sols) == 2: # 2 points d'intersection.
-##                x1, x2 = sols
-##                self.__sol1 = (x1, m*x1+n); self.__sol2 = (x2, m*x2+n)
-##            elif len(sols) == 1: # 1 seul point
-##                x = sols[0]
-##                self.__sol1 = self.__sol2 = (x, m*x+n)
-##            else:
-##                self.__sol1 = self.__sol2 = None
-##                return False # intersection vide.
-##
-##        elif abs(a) > contexte['tolerance']: # La droite est verticale
-##            x = -c/a
-##            #p = Polynome([1, e, x**2 + d*x + f])
-##            sols = racines(1, e, x**2 + d*x + f)
-##
-##            if len(sols) == 2: # 2 points d'intersection.
-##                y1, y2 = sols
-##                self.__sol1 = (x, y1); self.__sol2 = (x, y2)
-##            elif len(sols) == 1:
-##                y = sols[0]
-##                self.__sol1 = self.__sol2 = (x, y)
-##            else:
-##                self.__sol1 = self.__sol2 = None
-##                return False # intersection vide.
-##
-##        else: # La droite n'existe pas (cercles concentriques)
-##            self.__sol1 = self.__sol2 = None
-##            return False # intersection vide.
-##
-##        # Là encore, la partie la plus complexe consiste à distinguer les deux points d'intersection, à l'aide cette fois du signe de l'angle.
-##        # Pour comprendre ce qui s'y passe, il est conseillé de faire un dessin !
-##        A = self.cercle1.centre.coordonnees
-##        B = self.cercle2.centre.coordonnees
-##        M = self.__sol1
-##        a = angle_vectoriel(vect(A, B), vect(A, M))
-##
-##        if (a<0 and self.__angle_positif) or (a>0 and not self.__angle_positif):
-##            self.__sol1, self.__sol2 = self.__sol2, self.__sol1
-##        M = self.__sol1
-##
-##        return (isinstance(self.cercle1, ALL.Cercle_generique) or M in self.cercle1) and (isinstance(self.cercle2, ALL.Cercle_generique) or M in self.cercle2)
-##
