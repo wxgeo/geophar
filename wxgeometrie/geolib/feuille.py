@@ -423,6 +423,7 @@ Attributs spéciaux:
 
         if nom == '':
             return '_'
+        nom = self.__convertir_nom(nom)
         # Noms réservés en python (if, then, else, for, etc.):
         if keyword.iskeyword(nom):
             nom = err(u"Nom r\xe9serv\xe9 : " + nom)
@@ -444,7 +445,7 @@ Attributs spéciaux:
         if nom.startswith('Cf') and nom[2:].isdigit() and \
                 not(isinstance(objet, Objet) and objet.style('protege')):
             nom = err(u"Nom r\xe9serv\xe9 : " + nom)
-        return self.__convertir_nom(nom)
+        return nom
 
 
     def _objet_renommable(self, objet, nom):

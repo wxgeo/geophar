@@ -387,3 +387,9 @@ def test_feuille_modifiee():
     f.historique.annuler()
     assert(f.modifiee)
 
+
+def issue186():
+    f = Feuille()
+    f.executer("c=Cercle")
+    assertRaises(NameError, f.executer, "C_'=_")
+    assert(f.objets.has_key("c"))
