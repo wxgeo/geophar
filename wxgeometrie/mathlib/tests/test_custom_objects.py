@@ -164,3 +164,9 @@ def test_session():
 def test_issue_129():
     assert_resultat('"x(x+1)" + """x!"""', '"x(x+1)x!"')
     assert_resultat(r'""" "" """ + " \"\"\" "', r'" \"\"  \"\"\" "')
+
+def test_issue_185():
+    i = Interprete(verbose = VERBOSE)
+    i.evaluer("a=1+I")
+    i.evaluer("a z")
+    assertDernier(i, 'z*(1 + I)')

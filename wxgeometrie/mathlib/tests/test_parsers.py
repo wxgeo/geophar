@@ -80,6 +80,7 @@ def assert_not_NBR(chaine):
     assert_not_match(NBR, chaine)
 
 def test_tous_modes():
+    assert_all('a z', 'a*z')
     assert_all("2x+3", "2*x+3")
     assert_all("2(x+3)", "2*(x+3)")
     assert_all("(x+1)x(x+3)", "(x+1)*x*(x+3)")
@@ -109,6 +110,7 @@ def test_tous_modes():
     assert_all('"x(x+1)" x(x+1) """x(x+1) " """', '"x(x+1)"x*(x+1)"""x(x+1) " """')
     assert_all(r'"\""', r'"\""')
     assert_all(r'"""\"+1\" ici, et non \"+n\""""', r'"""\"+1\" ici, et non \"+n\""""')
+
 
 
 

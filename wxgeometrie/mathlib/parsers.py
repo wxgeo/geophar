@@ -151,7 +151,7 @@ def _ajouter_mult_manquants(formule, fonctions = (), verbose = None, mots_cles =
     if isinstance(fonctions, dict):
         # On récupère les fonctions de l'espace des noms
         # (tout objet 'callable' sauf certains objets Sympy).
-        fonctions = [key for key, val in fonctions.items() if hasattr(val, "__call__") and not isinstance(val, sympy.Atom)]
+        fonctions = [key for key, val in fonctions.items() if hasattr(val, "__call__") and not isinstance(val, sympy.Expr)]
 
     if verbose:
         print '1', formule
