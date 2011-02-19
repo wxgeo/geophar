@@ -496,7 +496,10 @@ class Interprete_feuille(object):
             self.erreur("Mots-clefs interdits : " + ", ".join(sorted(pylib.securite.keywords_interdits)))
         try:
             code = compile(commande, '<string>', 'eval')
-            retour = unicode(eval(code, self.feuille.objets))
+            val = eval(code, self.feuille.objets)
+            if isinstance(val, Variable):
+                val = val.val
+            retour = unicode(val)
         except SyntaxError:
             exec(commande + '\n', self.feuille.objets)
             # Le + '\n' final contourne un bug de Python 2.5 avec with_statement
