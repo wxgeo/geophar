@@ -3,16 +3,20 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 from geolib.tests.geotestlib import *
 from geolib import Point, Vecteur, Droite, Intersection, Cercle, Segment, Disque, \
+                    Homothetie, Rotation, Translation, Reflexion, Vecteur, Variable, \
                     contexte, TYPES_NUMERIQUES
 from sympy import S, Expr
+from numpy import array
 
 l = locals
 
 def allsym(val):
-    return isinstance(val, Expr) or all(isinstance(x, Expr) for x in val)
+    return (isinstance(val, Expr) or (isinstance(val, Variable) and allsym(val.contenu))
+            or all(isinstance(x, Expr) for x in val))
 
 def allnum(val):
-    return isinstance(val, TYPES_NUMERIQUES) or all(isinstance(x, TYPES_NUMERIQUES) for x in val)
+    return (isinstance(val, TYPES_NUMERIQUES) or (isinstance(val, Variable) and allnum(val.contenu))
+            or all(isinstance(x, TYPES_NUMERIQUES) for x in val))
 
 def assert_eq_num(*vals):
     for val in vals:
@@ -105,3 +109,15 @@ def test_Intersection():
                              '2671/1182 - 7*(212563/12348 + (913/1176 + 3*pi**2/98)**2'
                              '- 394*pi**2/343 - 197*(125/56 - 3*pi**2/14)**2/49)**(1/2)/197'
                              '- 42*pi**2/197)', l())
+
+def test_transformation():
+    c = Cercle(('1/5', '4/5'), '1/3')
+    h = Homothetie(('1', '1'), '5/7')
+    v = Vecteur(c.centre, h.centre)
+    c1 = h(c)
+    v1 = Vecteur(c1.centre, h.centre)
+    assert v1.coordonnees == tuple(h.rapport*array(v.coordonnees))
+    assert_eq('c1.centre.coordonnees', '(3/7, 6/7)', l())
+    assert_eq('c1.rayon', '5/21', l())
+    c.rayon = '2'
+    assert_eq('c1.rayon', '10/7', l())
