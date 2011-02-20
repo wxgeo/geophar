@@ -498,8 +498,12 @@ class Interprete_feuille(object):
             code = compile(commande, '<string>', 'eval')
             val = eval(code, self.feuille.objets)
             if isinstance(val, Variable):
-                val = val.val
-            retour = unicode(val)
+                if val._type == "simple":
+                    retour = unicode(val.val)
+                else:
+                    retour = '"' + val.contenu + '" : ' + unicode(val.val)
+            else:
+                retour = unicode(val)
         except SyntaxError:
             exec(commande + '\n', self.feuille.objets)
             # Le + '\n' final contourne un bug de Python 2.5 avec with_statement
