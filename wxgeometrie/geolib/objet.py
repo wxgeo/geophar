@@ -425,6 +425,8 @@ class BaseArgument(object):
                 else:
                     return __builtins__[chaine]
             self.types = tuple(convert(elt.strip()) for elt in self.types.split(","))
+        elif not hasattr(self.types, '__iter__'):
+            self.types = (self.types,)
 
     def _verifier_type(self, objet):
         if isinstance(objet, ALL.Variable):
