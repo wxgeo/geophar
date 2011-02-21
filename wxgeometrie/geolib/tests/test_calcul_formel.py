@@ -2,20 +2,22 @@
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 from geolib.tests.geotestlib import *
-from geolib import Point, Vecteur, Droite, Intersection, Cercle, Segment, Disque, \
-                    Homothetie, Rotation, Translation, Reflexion, Vecteur, Variable, \
+from geolib import (Point, Vecteur, Droite, Intersection, Cercle, Segment, Disque,
+                    Homothetie, Rotation, Translation, Reflexion, Vecteur, Variable,
+                    Variable_generique,
                     contexte, TYPES_NUMERIQUES
+                    )
 from sympy import S, Expr
 from numpy import array
 
 l = locals
 
 def allsym(val):
-    return (isinstance(val, Expr) or (isinstance(val, Variable) and allsym(val.contenu))
+    return (isinstance(val, Expr) or (isinstance(val, Variable_generique) and allsym(val.val))
             or all(isinstance(x, Expr) for x in val))
 
 def allnum(val):
-    return (isinstance(val, TYPES_NUMERIQUES) or (isinstance(val, Variable) and allnum(val.contenu))
+    return (isinstance(val, TYPES_NUMERIQUES) or (isinstance(val, Variable_generique) and allnum(val.val))
             or all(isinstance(x, TYPES_NUMERIQUES) for x in val))
 
 def assert_eq_num(*vals):

@@ -379,7 +379,7 @@ class Angle_libre(Angle_generique):
 
     Un angle défini par sa valeur numérique (en radian)."""
 
-    variable = __variable = Argument("Variable", defaut = lambda:module_random.uniform(0, 2*math.pi))
+    variable = __variable = Argument("Variable_generique", defaut = lambda:module_random.uniform(0, 2*math.pi))
 
     def __init__(self, variable = None, unite = None, **styles):
 

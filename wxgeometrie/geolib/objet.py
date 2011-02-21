@@ -1798,8 +1798,8 @@ class Objet_avec_coordonnees_modifiables(Objet_avec_coordonnees):
 
     _style_defaut = {}
 
-    abscisse = x = __x = Argument("Variable", defaut = 0)
-    ordonnee = y = __y = Argument("Variable", defaut = 0)
+    abscisse = x = __x = Argument("Variable_generique", defaut = 0)
+    ordonnee = y = __y = Argument("Variable_generique", defaut = 0)
 
     def __init__(self, x = None, y = None, **styles):
         self.__x = x = Ref(x)

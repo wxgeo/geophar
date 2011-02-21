@@ -265,7 +265,7 @@ class Interpolation_cubique(Interpolation_generique):
     points = __points = Arguments("Point_generique")
     debut = __fin = Argument("bool")
     fin = __debut = Argument("bool")
-    courbure = __courbure = Argument("Variable")
+    courbure = __courbure = Argument("Variable_generique")
 
     def __init__(self, *points, **styles):
         if styles.get("points", None):

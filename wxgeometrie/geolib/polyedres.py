@@ -414,7 +414,7 @@ class Sommet_cube(Point_generique):
     point1 = __point1 = Argument("Point_generique", defaut = ALL.Point)
     point2 = __point2 = Argument("Point_generique", defaut = ALL.Point)
     angle = __angle = Argument("Angle_generique", defaut = math.pi/6)
-    rapport = __rapport = Argument("Variable", defaut = 0.6)
+    rapport = __rapport = Argument("Variable_generique", defaut = 0.6)
 
     def __init__(self, point1, point2, angle, rapport, **styles):
         self.__point1 = point1 = Ref(point1)
@@ -454,7 +454,7 @@ class Cube(Polyedre_generique):
     point1 = __point1 = Argument("Point_generique", defaut = ALL.Point)
     point2 = __point2 = Argument("Point_generique", defaut = ALL.Point)
     angle = __angle = Argument("Angle_generique", defaut = math.pi/6)
-    rapport = __rapport = Argument("Variable", defaut = 0.6)
+    rapport = __rapport = Argument("Variable_generique", defaut = 0.6)
 
 
     def _tester_aretes(self):

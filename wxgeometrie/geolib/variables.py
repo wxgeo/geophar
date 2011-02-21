@@ -110,11 +110,27 @@ class Formule(object):
 
 
 
+class Variable_generique(Objet_numerique):
+    u"""Une variable générique.
+
+    Usage interne : la classe mère pour tous les types de variables."""
+
+    _prefixe_nom = "k"
+    _style_defaut = param.variables
+
+    def __init__(self, **styles):
+        Objet.__init__(self,  **styles)
+
+    @staticmethod
+    def _convertir(objet):
+        u"Convertit un objet en variable."
+##        if isinstance(objet, ALL.Variable):   #  Inutile (?)
+##            return objet.copy()
+        return ALL.Variable(objet)
 
 
-
-class Variable(Objet_numerique):
-    u"""Une variable.
+class Variable(Variable_generique):
+    u"""Une variable libre.
 
     Une variable numérique ; l'argument peut être un nombre, ou une expression sous forme de chaine de caractères.
     Exemple: Variable(17.5), Variable('AB.longeur+1').
@@ -122,8 +138,6 @@ class Variable(Objet_numerique):
 
     Note : ne pas définir directement l'attribut __contenu !"""
 
-    _prefixe_nom = "k"
-    _style_defaut = param.variables
 
     # RE correspondant à un nom de variable (mais pas d'attribut)
     __re = re.compile('(' + parsers.VAR_NOT_ATTR + ')')
@@ -156,7 +170,7 @@ class Variable(Objet_numerique):
     __contenu = Argument(TYPES_REELS + (basestring,), None,  _set_contenu, defaut = 0)
 
     def __init__(self, contenu = 0, **styles):
-        Objet.__init__(self,  **styles)
+        Variable_generique.__init__(self,  **styles)
         self.__liste = []
         self.__fonction = None
         self.__contenu = contenu = Ref(contenu)
@@ -286,23 +300,6 @@ class Variable(Objet_numerique):
 
 
 
-
-##    def affiche(self, actualiser = False):
-##        if actualiser and self.__feuille__ is not None:
-##            canvas = self.__canvas__
-##            if canvas:
-##                canvas.actualiser()
-##
-
-
-    @staticmethod
-    def _convertir(objet):
-        u"Convertit un objet en variable."
-##        if isinstance(objet, ALL.Variable):   #  Inutile (?)
-##            return objet.copy()
-        return ALL.Variable(objet)
-
-
     def _update(self, objet):
         if not isinstance(objet, Variable):
             objet = self._convertir(objet)
@@ -333,25 +330,81 @@ class Variable(Objet_numerique):
                     break
 
 
-# Addition et multiplication liées
-# ------------------------------------------------
+### Addition et multiplication liées
+### ------------------------------------------------
 
-# Est-ce encore bien utile ?
+### Est-ce encore bien utile ?
 
-    def add(self, y):
-        u"Addition liée (le résultat est une variable qui reste toujours égale à la somme des 2 valeurs)."
-        if self._type == "simple":
-            if isinstance(y, ALL.TYPES_NUMERIQUES) or (isinstance(y, Variable) and y._type == "simple"):
-                return Variable(self + y)
-        var = Variable("(%s)+(%s)" %(self, y))
-        var.__feuille__ = self.__feuille__
-        return var
+##    def add(self, y):
+##        u"Addition liée (le résultat est une variable qui reste toujours égale à la somme des 2 valeurs)."
+##        if self._type == "simple":
+##            if isinstance(y, ALL.TYPES_NUMERIQUES) or (isinstance(y, Variable) and y._type == "simple"):
+##                return Variable(self + y)
+##        var = Variable("(%s)+(%s)" %(self, y))
+##        var.__feuille__ = self.__feuille__
+##        return var
 
-    def mul(self, y):
-        u"Multiplication liée (le résultat est une variable qui reste toujours égale au produit des 2 valeurs)."
-        if self._type == "simple":
-           if isinstance(y, ALL.TYPES_NUMERIQUES) or (isinstance(y, Variable) and y._type == "simple"):
-                return Variable(self * y)
-        var = Variable("(%s)*(%s)" %(self, y))
-        var.__feuille__ = self.__feuille__
-        return var
+##    def mul(self, y):
+##        u"Multiplication liée (le résultat est une variable qui reste toujours égale au produit des 2 valeurs)."
+##        if self._type == "simple":
+##           if isinstance(y, ALL.TYPES_NUMERIQUES) or (isinstance(y, Variable) and y._type == "simple"):
+##                return Variable(self * y)
+##        var = Variable("(%s)*(%s)" %(self, y))
+##        var.__feuille__ = self.__feuille__
+##        return var
+
+
+class Rayon(Variable_generique):
+    u"""Le rayon d'un cercle.
+
+    >>> from geolib import Cercle, Rayon
+    >>> c = Cercle((0, 0), 1)
+    >>> c.rayon
+    1
+    >>> r = Rayon(c)
+    >>> r.val
+    2
+    >>> c.rayon = 2
+    >>> r.val
+    2
+    """
+
+    __cercle = cercle = Argument("Cercle_Arc_generique")
+
+    def __init__(self, cercle, **styles):
+        self.__cercle = cercle = Ref(cercle)
+        Variable_generique.__init__(self, **styles)
+
+    def _get_valeur(self):
+        return self.__cercle.rayon
+
+
+
+class Mul(Variable_generique):
+    u"""Le produit de deux variables."""
+
+    __var1 = var1 = Argument(Variable_generique)
+    __var2 = var2 = Argument(Variable_generique)
+
+    def __init__(self, var1, var2, **styles):
+        self.__var1 = var1 = Ref(var1)
+        self.__var2 = var2 = Ref(var2)
+        Variable_generique.__init__(self, **styles)
+
+    def _get_valeur(self):
+        return self.__var1.val*self.__var2.val
+
+
+class Add(Variable_generique):
+    u"""La somme de deux variables."""
+
+    __var1 = var1 = Argument(Variable_generique)
+    __var2 = var2 = Argument(Variable_generique)
+
+    def __init__(self, var1, var2, **styles):
+        self.__var1 = var1 = Ref(var1)
+        self.__var2 = var2 = Ref(var2)
+        Variable_generique.__init__(self, **styles)
+
+    def _get_valeur(self):
+        return self.__var1.val + self.__var2.val

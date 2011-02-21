@@ -208,7 +208,7 @@ class Homothetie(Transformation_generique):
     _Point_image = Point_homothetie
 
     centre = __centre = Argument("Point_generique", defaut = Point(0, 0))
-    rapport = __rapport = Argument("Variable")
+    rapport = __rapport = Argument("Variable_generique")
 
     def __init__(self, centre = None, rapport = 2, **styles):
         self.__centre = centre = Ref(centre)

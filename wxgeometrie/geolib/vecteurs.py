@@ -144,8 +144,8 @@ class Vecteur(Vecteur_generique):
     point2 = __point2 = Argument("Point_generique", defaut = Point)
 
     def __new__(cls, *args, **kw):
-        if len(args) == 2 and isinstance(args[0], ALL.TYPES_REELS + (ALL.Variable, basestring, )) \
-                                   and isinstance(args[1], ALL.TYPES_REELS + (ALL.Variable, basestring, )):
+        if len(args) == 2 and isinstance(args[0], ALL.TYPES_REELS + (ALL.Variable_generique, basestring, )) \
+                                   and isinstance(args[1], ALL.TYPES_REELS + (ALL.Variable_generique, basestring, )):
             vecteur_libre = Vecteur_libre.__new__(Vecteur_libre, *args, **kw)
             vecteur_libre.__init__(*args, **kw)
             return vecteur_libre
@@ -281,8 +281,8 @@ class Vecteur_libre(Objet_avec_coordonnees_modifiables, Vecteur_generique):
 
     Un vecteur défini par ses coordonnées."""
 
-    abscisse = x = __x = Argument("Variable", defaut = lambda:module_random.normalvariate(0,10))
-    ordonnee = y = __y = Argument("Variable", defaut = lambda:module_random.normalvariate(0,10))
+    abscisse = x = __x = Argument("Variable_generique", defaut = lambda:module_random.normalvariate(0,10))
+    ordonnee = y = __y = Argument("Variable_generique", defaut = lambda:module_random.normalvariate(0,10))
 
     def __init__(self, x = None, y = None, **styles):
         x, y, styles = self._recuperer_x_y(x, y, styles)
@@ -349,7 +349,7 @@ class Somme_vecteurs(Vecteur_generique):
     Exemple: Somme_vecteurs([u,v,A>B], [3,2,-5])."""
 
     vecteurs = __vecteurs = Arguments("Vecteur_generique")
-    coeffs = coefficients = __coefficients = Arguments("Variable")
+    coeffs = coefficients = __coefficients = Arguments("Variable_generique")
 
     def __init__(self, vecteurs, coefficients = None, **styles):
 

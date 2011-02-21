@@ -165,8 +165,8 @@ class Texte(Texte_generique, Objet_avec_coordonnees_modifiables):
         return self.style("label")
 
     texte = __texte = Argument("basestring", _get_texte, _set_texte)
-    abscisse = x = __x = Argument("Variable", defaut = lambda:module_random.normalvariate(0,10))
-    ordonnee = y = __y = Argument("Variable", defaut = lambda:module_random.normalvariate(0,10))
+    abscisse = x = __x = Argument("Variable_generique", defaut = lambda:module_random.normalvariate(0,10))
+    ordonnee = y = __y = Argument("Variable_generique", defaut = lambda:module_random.normalvariate(0,10))
 
     def __init__(self, texte = "", x = None, y = None, **styles):
         x, y, styles = self._recuperer_x_y(x, y, styles)

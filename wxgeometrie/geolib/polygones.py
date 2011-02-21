@@ -708,7 +708,7 @@ class Sommet_rectangle(Point_generique):
 
     point1 = __point1 = Argument("Point_generique", defaut = ALL.Point)
     point2 = __point2 = Argument("Point_generique", defaut = ALL.Point)
-    rapport = __rapport = Argument("Variable", defaut = lambda:module_random.uniform(.4, .8))
+    rapport = __rapport = Argument("Variable_generique", defaut = lambda:module_random.uniform(.4, .8))
 
     def __init__(self, point1, point2, rapport, **styles):
         self.__point1 = point1 = Ref(point1)
@@ -751,7 +751,7 @@ class Rectangle(Parallelogramme):
 
     point1 = __point1 = Argument("Point_generique", defaut = ALL.Point)
     point2 = __point2 = Argument("Point_generique", defaut = ALL.Point)
-    rapport = __rapport = Argument("Variable", defaut = lambda:module_random.uniform(.4, .8) + module_random.randint(0, 1))
+    rapport = __rapport = Argument("Variable_generique", defaut = lambda:module_random.uniform(.4, .8) + module_random.randint(0, 1))
 
     def __init__(self, point1 = None, point2 = None, rapport = None, **styles):
         self.__point1 = point1 = Ref(point1)

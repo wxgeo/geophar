@@ -26,7 +26,7 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 
 from objet import *
-
+from variables import Variable, Mul, Rayon
 
 
 
@@ -595,10 +595,6 @@ class Cercle_generique(Cercle_Arc_generique):
         Cercle_Arc_generique.__init__(self, centre, **styles)
         self.etiquette = ALL.Label_cercle(self)
 
-##    @property
-##    def centre(self):
-##        return self.__centre
-
 
     def _t(self):
         x, y = self.__centre.coordonnees
@@ -625,8 +621,6 @@ class Cercle_generique(Cercle_Arc_generique):
             return numpy.arange(min(a, b, c, d), max(a, b, c, d), self.__canvas__.pas())
 
 
-
-
     def _creer_figure(self):
         if not self._representation:
             self._representation = [self.rendu.ligne()]
@@ -642,37 +636,12 @@ class Cercle_generique(Cercle_Arc_generique):
         plot.zorder = self.style("niveau")
 
 
-#    def _creer_figure(self):
-#        if not self._representation:
-#            self._representation = [self.rendu.cercle()]
-
-#        cercle = self._representation[0]
-#        cercle.center = self.__centre.coordonnees
-#        cercle.radius = self.rayon
-#        cercle.set_edgecolor(self.style("couleur"))
-#        plot._linestyle = self.style("style")
-#        plot._linewidth = self.style("epaisseur")
-#        plot.zorder = self.style("niveau")
-
-
     def _longueur(self):
         rayon = self.rayon
         return 2*rayon*pi_()
 
     perimetre = property(_longueur)
 
-
-
-
-
-##    def _distance_inf(self, x, y, d):
-##        x0, y0 = self._pixel(self.__centre)
-##        t = numpy.arange(0, 2*math.pi, .003)
-##        rx, ry = self.__canvas__.dcoo2pix(self.rayon, self.rayon)
-##        u = x - x0 - rx*numpy.sin(t)
-##        v = y - y0 + ry*numpy.cos(t)
-##        m = min(u*u + v*v) # u*u est beaucoup plus rapide que u**2 (sic!)
-##        return m < d**2
 
     def _contains(self, M):
         O = self.__centre
@@ -718,7 +687,7 @@ class Cercle_rayon(Cercle_generique):
 
 
     centre = __centre = Argument("Point_generique", defaut = ALL.Point)
-    rayon = __rayon = Argument("Variable", defaut = 1)
+    rayon = __rayon = Argument("Variable_generique", defaut = 1)
 
     def __init__(self, centre = None, rayon = None, **styles):
         self.__centre = centre = Ref(centre)
@@ -726,6 +695,11 @@ class Cercle_rayon(Cercle_generique):
         Cercle_generique.__init__(self, centre, **styles)
 
     def image_par(self, transformation):
+        from transformations import Homothetie
+        if isinstance(transformation, Homothetie):
+            return Cercle_rayon(self.__centre.image_par(transformation), Mul(Rayon(self), transformation.rapport))
+        elif isinstance(transformation, (Rotation, Translation, Reflexion)):
+            return Cercle_rayon(self.__centre.image_par(transformation), Rayon(self))
         return Cercle(self.__centre.image_par(transformation), ALL.Glisseur_cercle(self).image_par(transformation))
 
     def _conditions_existence(self):
@@ -852,9 +826,9 @@ class Cercle_equation(Cercle_generique):
 
     Un cercle d'équation donnée sous forme d'un triplet (a, b, c). (x**2 + y**2 + ax + by + c = 0)"""
 
-    a = __a = Argument("Variable")
-    b = __b = Argument("Variable")
-    c = __c = Argument("Variable")
+    a = __a = Argument("Variable_generique")
+    b = __b = Argument("Variable_generique")
+    c = __c = Argument("Variable_generique")
 
     def __init__(self, a = 0, b = 0, c = -1, **styles):
         self.__a = a = Ref(a)

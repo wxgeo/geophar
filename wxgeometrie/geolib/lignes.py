@@ -718,9 +718,9 @@ class Droite_equation(Droite_generique):
 
     Une droite d'équation donnée sous forme d'un triplet (a, b, c). (ax + by + c = 0)"""
 
-    a = __a = Argument("Variable")
-    b = __b = Argument("Variable")
-    c = __c = Argument("Variable")
+    a = __a = Argument("Variable_generique")
+    b = __b = Argument("Variable_generique")
+    c = __c = Argument("Variable_generique")
 
     @staticmethod
     def __coeff(match_object):

@@ -188,8 +188,8 @@ class Point(Objet_avec_coordonnees_modifiables, Point_generique):
 
     _style_defaut = param.points_deplacables
 
-    abscisse = x = __x = Argument("Variable", defaut = lambda:module_random.normalvariate(0,10))
-    ordonnee = y = __y = Argument("Variable", defaut = lambda:module_random.normalvariate(0,10))
+    abscisse = x = __x = Argument("Variable_generique", defaut = lambda:module_random.normalvariate(0,10))
+    ordonnee = y = __y = Argument("Variable_generique", defaut = lambda:module_random.normalvariate(0,10))
 
     def __new__(cls, *args, **kw):
         if len(args) == 1:
@@ -253,7 +253,7 @@ class Point_pondere(Objet):
     Usage interne : les points pondérés sont utilisés dans la définition des barycentres."""
 
     point = __point = Argument("Point_generique", defaut = Point)
-    coefficient = __coefficient = Argument("Variable", defaut = 1)
+    coefficient = __coefficient = Argument("Variable_generique", defaut = 1)
 
     @staticmethod
     def _convertir(objet):
@@ -339,7 +339,7 @@ class Point_final(Point_generique):
 
     depart = __depart = Argument("Point_generique", defaut = Point)
     vecteurs = __vecteurs = Arguments("Vecteur_generique")
-    coeffs = coefficients = __coefficients = Arguments("Variable")
+    coeffs = coefficients = __coefficients = Arguments("Variable_generique")
 
     def __init__(self, depart = None, vecteurs = (), coefficients = None, **styles):
         if coefficients == None:
@@ -881,7 +881,7 @@ class Glisseur_generique(Point_generique):
     _style_defaut = param.points_deplacables
 
     objet = __objet = Argument("Objet")
-    k = __k = Argument("Variable")
+    k = __k = Argument("Variable_generique")
 
     def __init__(self, objet, k, **styles):
         self.__objet = objet = Ref(objet)
@@ -902,7 +902,7 @@ class Glisseur_vecteur(Glisseur_generique):
     u"""Un glisseur sur vecteur."""
 
     vecteur = __vecteur = Argument("Vecteur")
-    parametre = k = __k = Argument("Variable", None, lambda obj, value: max(min(value, 1), 0))
+    parametre = k = __k = Argument("Variable_generique", None, lambda obj, value: max(min(value, 1), 0))
 
     def __init__(self, vecteur, k = None, **styles):
         if k is None:
@@ -929,7 +929,7 @@ class Glisseur_ligne_generique(Glisseur_generique):
     Classe mère des différents types de glisseurs sur ligne (ie. droite, segment, demi-droite)"""
 
     ligne = __ligne = Argument("Ligne_generique")
-    k = __k = Argument("Variable")
+    k = __k = Argument("Variable_generique")
 
     def __init__(self, ligne, k, **styles):
         self.__ligne = ligne = Ref(ligne)
@@ -954,7 +954,7 @@ class Glisseur_droite(Glisseur_ligne_generique):
     les coordonnées du glisseur M seront determinées par la formule M = kA + (1-k)B."""
 
     droite = __droite = Argument("Droite_generique")
-    parametre = k = __k = Argument("Variable")
+    parametre = k = __k = Argument("Variable_generique")
 
     def __init__(self, droite, k = None, **styles):
         if k is None:
@@ -983,7 +983,7 @@ class Glisseur_segment(Glisseur_ligne_generique):
     les coordonnées du glisseur M seront determinées par la formule M = kA + (1-k)B."""
 
     segment = __segment = Argument("Segment")
-    parametre = k = __k = Argument("Variable", None, lambda obj, value: max(min(value, 1), 0))
+    parametre = k = __k = Argument("Variable_generique", None, lambda obj, value: max(min(value, 1), 0))
     # la valeur du parametre doit rester comprise entre 0 et 1 (segment)
 
     def __init__(self, segment, k = None, **styles):
@@ -1010,7 +1010,7 @@ class Glisseur_demidroite(Glisseur_ligne_generique):
     les coordonnées du glisseur M seront determinées par la formule M = kA + (1-k)B."""
 
     demidroite = __demidroite = Argument("Demidroite")
-    parametre = k = __k = Argument("Variable", None, lambda obj, value: max(value, 0))
+    parametre = k = __k = Argument("Variable_generique", None, lambda obj, value: max(value, 0))
 
     def __init__(self, demidroite, k = None, **styles):
         if k is None:
@@ -1035,7 +1035,7 @@ class Glisseur_cercle(Glisseur_generique):
     les coordonnées du glisseur M seront déterminées par la formule M = O + r*(cos(k), sin(k))."""
 
     cercle = __cercle = Argument("Cercle_generique")
-    parametre = k = __k = Argument("Variable")
+    parametre = k = __k = Argument("Variable_generique")
 
     def __init__(self, cercle, k = None, **styles):
         if k is None:
@@ -1081,7 +1081,7 @@ class Glisseur_arc_cercle(Glisseur_generique):
     si l'arc est de sens direct, et M = O + r*(cos(kb+(1-k)a), sin(kb+(1-k)a)) sinon."""
 
     arc = __arc = Argument("Arc_generique")
-    parametre = k = __k = Argument("Variable")
+    parametre = k = __k = Argument("Variable_generique")
 
     def __init__(self, arc, k = None, **styles):
         if k is None:
@@ -1130,13 +1130,13 @@ class Glisseur_arc_cercle(Glisseur_generique):
         else:
             return 0
 
-            
-            
+
+
 class Nuage_generique(Objet):
     u"""Un nuage de points generique.
-            
-    Usage interne : la classe mère de tous les nuages de points."""        
-    
+
+    Usage interne : la classe mère de tous les nuages de points."""
+
     _prefixe_nom = "n"
 
     def _distance_inf(self, x, y, d):
@@ -1145,24 +1145,24 @@ class Nuage_generique(Objet):
     @property
     def points(self):
         raise NotImplementedError
-         
+
     def style(self, nom_style = None, **kwargs):
         if kwargs:
             for point in self.__points:
                 point.style(**kwargs)
         else:
             Objet.style(self, nom_style, **kwargs)
-                
 
-            
+
+
 class Nuage(Nuage_generique):
     u"""Un nuage de points.
-    
+
     Le nuage est défini par la donnée de ses points.
     """
-    
+
     __points = points = Arguments('Point_generique')
-    
+
     #TODO: il n'est pas possible actuellement de modifier la taille du nuage de points
     # après création. C'est une limitation de la classe Arguments().
 
@@ -1171,22 +1171,21 @@ class Nuage(Nuage_generique):
             points = styles.pop("points")
         self.__points = points = tuple(Ref(obj) for obj in points)
         Nuage_generique.__init__(self, **styles)
-            
-            
-            
+
+
+
 class NuageFonction(Nuage_generique):
     u"""Un nuage de points de coordonnées (x; f(x)).
-    
+
     Le nuage est défini par la donnée de la fonction f,
     et d'une liste d'abscisses.
-    """  
-    
+    """
+
     __fonction = fonction = Argument('Fonction')
-    __abscisses = abscisses = Arguments('Variable')
-    
+    __abscisses = abscisses = Arguments('Variable_generique')
+
     def __init__(self, fonction, *abscisses, **styles):
         if styles.get('abscisses', None):
             points = styles.pop('abscisses')
         self.__points = points = tuple(Ref(obj) for obj in points)
         Nuage_generique.__init__(self, **styles)
-        
