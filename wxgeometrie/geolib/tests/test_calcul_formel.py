@@ -123,3 +123,16 @@ def test_transformation():
     assert_eq('c1.rayon', '5/21', l())
     c.rayon = '2'
     assert_eq('c1.rayon', '10/7', l())
+    r = Rotation(('0', '1'), 'pi/3')
+    c2 = r(c)
+    t = Translation(('2/3', '-1/3'))
+    c3 = t(c)
+    m = Reflexion(Droite('y=x'))
+    c4 = m(c)
+    c.rayon = '3/7'
+    assert_eq('c2.rayon', '3/7', l())
+    assert_eq('c2.centre.coordonnees', '(1/10 + 3**(1/2)/10, 9/10 + 3**(1/2)/10)', l())
+    assert_eq('c3.rayon', '3/7', l())
+    assert_eq('c3.centre.coordonnees', '(13/15, 7/15)', l())
+    assert_eq('c4.rayon', '3/7', l())
+    assert_eq('c4.centre.coordonnees', '(4/5, 1/5)', l())

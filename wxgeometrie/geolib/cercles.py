@@ -695,12 +695,13 @@ class Cercle_rayon(Cercle_generique):
         Cercle_generique.__init__(self, centre, **styles)
 
     def image_par(self, transformation):
-        from transformations import Homothetie
+        from transformations import Homothetie, Rotation, Translation, Reflexion
         if isinstance(transformation, Homothetie):
             return Cercle_rayon(self.__centre.image_par(transformation), Mul(Rayon(self), transformation.rapport))
         elif isinstance(transformation, (Rotation, Translation, Reflexion)):
             return Cercle_rayon(self.__centre.image_par(transformation), Rayon(self))
-        return Cercle(self.__centre.image_par(transformation), ALL.Glisseur_cercle(self).image_par(transformation))
+        raise NotImplementedError
+        #return Cercle(self.__centre.image_par(transformation), ALL.Glisseur_cercle(self).image_par(transformation))
 
     def _conditions_existence(self):
         return self.__rayon >= 0
