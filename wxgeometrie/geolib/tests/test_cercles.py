@@ -4,7 +4,7 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 from geolib.tests.geotestlib import *
 from geolib import (Cercle_points, Cercle_diametre, Cercle_rayon, Demicercle,
                                 Arc_oriente, Arc_points, Label_arc_cercle, Disque,
-                                Label_cercle,
+                                Label_cercle, Rayon,
                                 )
 
 def test_Arc_cercle():
@@ -135,3 +135,10 @@ def test_Disque():
 
 def test_equation_formatee():
     assert Cercle((10, 0), (1, 5)).equation_formatee == u'x\xb2 + y\xb2 - 20 x - 6 = 0'
+
+def test_Rayon():
+    c = Cercle((1, 1), (4, 5))
+    r = Rayon(c)
+    assertAlmostEqual(r.val, 5)
+    c.point.x = 1
+    assertAlmostEqual(r.val, 4)
