@@ -35,6 +35,7 @@ tmp.*
 temp.*
 tmp
 temp
+wxgeometrie/test.py
 
 # À ne pas inclure **pour l'instant**
 ressources_annexes/
