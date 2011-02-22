@@ -687,8 +687,11 @@ class Mediatrice(Perpendiculaire):
 
     La médiatrice d'un segment (ou d'un bipoint, ...)
 
-    >>> A=Point(1,2); B=Point(3,4); Mediatrice(A,B)
-    >>> A=Point(1,2); B=Point(3,4); s=Segment(A,B); Mediatrice(s)
+    >>> from geolib import Point, Mediatrice, Segment
+    >>> A=Point(1,2); B=Point(3,4)
+    >>> s=Segment(A,B)
+    >>> Mediatrice(A, B) == Mediatrice(s)
+    True
     """
 
     point1 = __point1 = Argument("Point_generique", defaut = Point)

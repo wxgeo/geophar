@@ -363,7 +363,7 @@ class Rayon(Variable_generique):
     1
     >>> r = Rayon(c)
     >>> r.val
-    2
+    1
     >>> c.rayon = 2
     >>> r.val
     2

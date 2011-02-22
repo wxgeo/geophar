@@ -106,10 +106,16 @@ class Nom(object):
     u"""Nom d'un objet.
 
     Affiche le nom de l'objet quand on le met sous forme de chaîne.
+
     Exemple :
-    >>> u = [Nom(A), Nom(B), Nom(C)]
-    >>> print u
-     ['A', 'B', 'C']
+    >>> from geolib import Nom, Feuille, Point
+    >>> M = Feuille().objets.M = Point(1, 2)
+    >>> nom = Nom(M)
+    >>> nom
+    'M'
+    >>> M.nom = 'A'
+    >>> nom
+    'A'
     """
 
     __slots__ = "__objet"
@@ -249,6 +255,7 @@ class Contexte(dict):
     u"""Gestionnaire de contexte.
 
     Exemple d'usage:
+    >>> from geolib.objet import Contexte
     >>> # Contexte global
     >>> contexte = Contexte(exact = False, decimales = 7)
     >>> # Contexte local
@@ -278,12 +285,11 @@ class Contexte(dict):
         u"""Cette méthode ne doit *JAMAIS* être appelée en dehors d'un contexte 'with'.
 
         Exemple d'usage:
+        >>> from geolib.objet import Contexte
         >>> contexte = Contexte(exact = False, decimales = 7)
         >>> with contexte(exact = True):
         ...     print contexte['exact']
         True
-        >>> print contexte['exact']
-        False
         """
         # On ajoute un contexte local
         self.__local_dicts.append(kw)
@@ -1113,8 +1119,10 @@ class Objet(object):
         Article peut être 'un', 'le', ou 'du', l'accord se faisant automatiquement.
         Le formatage est respecté (essayez 'un', 'UN', 'Un').
 
-        >>> u = Vecteur_libre();u.titre()
-        "un vecteur libre."
+        >>> from geolib.vecteurs import Vecteur_libre
+        >>> u = Vecteur_libre()
+        >>> print u.titre()
+        un vecteur libre.
         """
 
         titre = cls.__doc__.split("\n")[0].rstrip(".").lower()

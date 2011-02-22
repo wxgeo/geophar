@@ -71,7 +71,7 @@ import numpy
 types.ArrayType = type(numpy.array([])) # compense un manque de la librairie types.
 types.UfuncType = type(numpy.absolute)
 fonctions_maths = [key for key, val in math.__dict__.items() if type(val) == types.BuiltinFunctionType]
-fonctions_matplotlib = [key for key, val in pylab_.__dict__.items() if type(val) == types.UfuncType]
+fonctions_matplotlib = [key for key, val in pylab.__dict__.items() if type(val) == types.UfuncType]
 
 mathtext_parser = matplotlib.mathtext.MathTextParser("PS").parse
 
@@ -88,4 +88,3 @@ def fullrange(a, b, pas):
 
     Équivalent de numpy.append(numpy.arrange(a, b, pas), b).'''
     return numpy.append(numpy.arange(a, b, pas), b)
-

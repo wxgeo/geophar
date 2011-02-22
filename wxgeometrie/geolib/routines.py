@@ -347,14 +347,15 @@ def distance_segment(M, A, B, d):
 def formatage(eqn):
     u"""Améliore l'affichage des équations.
 
+    >>> from geolib.routines import formatage
     >>> formatage('1 x + -1/3 y + 1 = 0')
     'x - 1/3 y + 1 = 0'
     >>> formatage('-1 x + -1 y + -1 = 0')
     '-x - y - 1 = 0'
-    >>> formatage(u'x\xb2 + y\xb2 + -1 x + -4/3 y + -47/36 = 0')
-    u'x\xb2 + y\xb2 - x - 4/3 y - 47/36 = 0'
     >>> formatage('2 x + 0 y - 28 = 0')
     '2 x - 28 = 0'
+    >>> formatage(u'x\xb2 + y\xb2 + -1 x + -4/3 y + -47/36 = 0') == u'x\xb2 + y\xb2 - x - 4/3 y - 47/36 = 0'
+    True
     """
     #FIXME: pour l'instant, ça ne marche qu'avec x et y (il ne faut
     # pas qu'il y ait de xy dans l'équation, ni de t, etc.)

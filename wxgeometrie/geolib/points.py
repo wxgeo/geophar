@@ -182,8 +182,10 @@ class Point_generique(Objet_avec_coordonnees):
 class Point(Objet_avec_coordonnees_modifiables, Point_generique):
     u"""Un point libre.
 
-    >>> A = Point(7,3); print A
-    Point(x = 7.0, y = 3.0)
+    >>> from geolib import Point
+    >>> A = Point(7, 3)
+    >>> print A
+    Point(x = 7, y = 3)
     """
 
     _style_defaut = param.points_deplacables

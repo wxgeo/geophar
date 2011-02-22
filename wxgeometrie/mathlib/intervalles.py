@@ -211,6 +211,7 @@ class Union(Ensemble):
         Chaque extrémité est donnée sous la forme de couples (_float, _str),
         où _str peut prendre les valeurs ".", ")", "(" ou "o".
         Exemple :
+        >>> from mathlib.intervalles import conversion_chaine_ensemble
         >>> E = conversion_chaine_ensemble("]-oo;3[U]3;4]U]5;+oo[")
         >>> E.extremites(0, 10)
         [(3, 'o'), (4, '.'), (5, ')')]

@@ -66,13 +66,20 @@ def colors():
 class Graph(dict):
     u"""A graph representation.
 
-    >>> g = Graph("A>(B:1,C:2,D:3), B>(A:4,C:2)")
-    >>> h = Graph({'A': {'B':[1],'C':[2],'D':[3]}, 'B': {'A':[4],'C':[2]}}, 'C':{}, 'D':{})
+    Graph are stored as a dictionary:
+    >>> from mathlib.graphes import Graph
+    >>> g = Graph({'A': {'B':[1],'C':[2],'D':[3]}, 'B': {'A':[4],'C':[2]}, 'C':{}, 'D':{}}, oriented=True)
+
+    For convenience, they may be entered as a string:
+    >>> h = Graph("A>(B:1,C:2,D:3), B>(A:4,C:2), C, D", oriented=True)
     >>> g == h
     True
 
+    If the graph is not oriented (default), the graph must be symetric:
+    >>> k = Graph("A>(B:1,C:2,D:3), B>(A:4,C:2), C>(A:2,B:2), D>(A:3)")
+    >>> k.symetric
+    True
     """  #XXX: doctest fails !!!
-
 #    teintes = ('bleu', 'rouge', 'vert', 'jaune', 'orange', 'violet',
 #                        'marron', 'rose', 'turquoise', 'cyan', 'magenta', 'ocre',
 #                        'marine', 'indigo', 'pourpre')
@@ -90,7 +97,7 @@ class Graph(dict):
                 dictionary[key] = dict(val)
             for node in dictionary[key]:
                 if node not in dictionary:
-                    raise GraphError("Edge contain a unknown node.")
+                    raise GraphError("Edge contain a unknown node: %s." %repr(node))
         self.oriented = oriented
         dict.__init__(self, dictionary)
         if not oriented and not self.symetric:
@@ -112,15 +119,16 @@ class Graph(dict):
             edges = edges.strip()[1:-1]
             dic[node] = {}
             for edge in edges.split(','):
-                if ':' in edge:
-                    node2, distance = edge.split(':', 1)
-                else:
-                    node2, distance = edge, '1'
-                node2 = node2.strip()
-                if not dic[node].has_key(node2):
-                    dic[node][node2] = []
-                dic[node][node2].append(float(distance) if '.' in distance else int(distance))
-                #TODO: support exact calculus
+                if edge:
+                    if ':' in edge:
+                        node2, distance = edge.split(':', 1)
+                    else:
+                        node2, distance = edge, '1'
+                    node2 = node2.strip()
+                    if not dic[node].has_key(node2):
+                        dic[node][node2] = []
+                    dic[node][node2].append(float(distance) if '.' in distance else int(distance))
+                    #TODO: support exact calculus
         return dic
 
 

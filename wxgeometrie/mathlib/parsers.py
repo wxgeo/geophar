@@ -105,10 +105,11 @@ def _simplifier(formule):
 def _arguments_latex(chaine, nbr_arguments = 2):
     u"""Renvoie les arguments d'une commande LaTeX (ainsi que le reste de la chaîne).
 
+    >>> from mathlib.parsers import _arguments_latex
     >>> _arguments_latex('2{x+1}+4', 2)
-    ('2', '{x+1}', '+4')
+    ['2', '{x+1}', '+4']
     >>> _arguments_latex('{x+2}5+4x-17^{2+x}', 2)
-    ('{x+2}', '5', '+4x-17^{2+x}')
+    ['{x+2}', '5', '+4x-17^{2+x}']
    """
     liste = []
     while len(liste) < nbr_arguments:
@@ -130,6 +131,7 @@ def _arguments_latex(chaine, nbr_arguments = 2):
 def _convertir_latex_frac(chaine):
     u"""Convertit \frac{a}{b}, \dfrac{a}{b} et \tfrac{a}{b} en ((a)/(b)).
 
+    >>> from mathlib.parsers import _convertir_latex_frac
     >>> _convertir_latex_frac('3+\dfrac{1}{2x+1}+5x+1')
     '3+((1)/(2x+1))+5x+1'
     """

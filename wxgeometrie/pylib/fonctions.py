@@ -70,6 +70,7 @@ def recursive_replace(main_string, old_string, new_string = "", max_loops = 1000
     (C'est en particulier le cas si old_string est strictement inclus dans new_string)
 
     La différence avec replace est claire sur cette exemple :
+    >>> from pylib.fonctions import recursive_replace
     >>> "Hi HelloHello world world !".replace("Hello world", "")
     'Hi Hello world !'
     >>> recursive_replace("Hi HelloHello world world !", "Hello world", "")
@@ -102,12 +103,14 @@ def recursive_mreplace(main_string, list_of_strings, new_string = "", max_loops 
     Voir également recursive_replace() et mreplace().
 
     Remarque: recursive_mreplace n'est pas équivalent des appels successifs de recursive_replace().
-    >>> s="tbtbaoao"
+    >>> from pylib.fonctions import recursive_replace, recursive_mreplace
+    >>> s = "tbtbaoao"
     >>> s = recursive_mreplace(s, ("to", "ba"))
     >>> s
     ''
     >>> s="tbtbaoao"
-    >>> for i in ("to", "ba"):s = recursive_replace(s, i)
+    >>> for i in ("to", "ba"):
+    ...     s = recursive_replace(s, i)
     >>> s
     'tbtoao'
     """
@@ -248,6 +251,7 @@ def regsub(regular_exp, main_string, action = ""):
     u"""Transforme la chaine "main_string" :
     Il applique aux parties vérifiant "regular_exp" le traitement "action".
 
+    >>> from geolib.fonctions import regsub
     >>> regsub("[a-z]", "salut les amis !", "?")
     '????? ??? ???? !'
     >>> regsub("[a-z]+", "hello world !", lambda s: s[1:])
@@ -913,5 +917,3 @@ class OrderedDict(dict):
         key = self.__keys.pop()
         value = dict.pop(self, key)
         return key, value
-
-
