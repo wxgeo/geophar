@@ -37,9 +37,7 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 # - soit parce qu'il n'y aurait aucun sens à les sauver (__builtins__ par exemple)
 # - soit parce qu'elles doivent être générées dynamiquement
 
-# Numéro de version (et date de sa sortie)
-version = "0.132"
-date_version = (2010, 11, 23) # attention de ne pas faire commencer les nombres par un 0 !
+from version import version, date_version
 
 valeurs_a_ne_pas_sauver = (
 "valeurs_a_ne_pas_sauver",
