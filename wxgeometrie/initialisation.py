@@ -19,31 +19,42 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-#version unicode
-
 
 
 import sys, atexit, time, os, optparse, itertools, traceback, imp
 
 import param
 
-# Make sure I have the right Python version.
-if sys.version_info[:2] < param.python_min:
-    print u" ** Erreur fatale **\nWxGéométrie nécessite Python %d.%d au minimum. Python %d.%d détecté." % \
-          (param.python_min + sys.version_info[:2])
-    sys.exit(-1)
+if param.py2exe:
+    # cf. py2exe/boot_common.py
+    # Par défaut dans py2exe, sys.stdout redirige nul part,
+    # et sys.stderr redirige vers un fichier .log via un mécanisme assez élaboré
+    sys._py2exe_stderr = sys.stderr
+    sys._py2exe_stdout = sys.stdout
+    def msgbox(titre='Message', texte='', MB=sys._py2exe_stderr.write.func_defaults[0]):
+        MB(0, texte.encode(param.encodage), titre.encode(param.encodage))
+    # Outil de débogage avec py2exe
+    def _test(condition = True):
+        msgbox('** Test **', ('Success !' if condition else 'Failure.'))
 
-
-# Test for dependencies:
-dependances = {'wx': 'python-wxgtk2.8', 'matplotlib': 'python-matplotlib', 'numpy': 'python-numpy'}
-for module in dependances:
-    try:
-        imp.find_module(module)
-    except ImportError:
-        print(u'** Erreur fatale ** : le module %s doit être installé !' %module)
-        if sys.platform == 'linux2':
-            print("Sous Ubuntu/Debian, tapez 'sudo apt-get install %s' pour installer le module manquant." %dependances[module])
+else:
+    # Ne pas faire ces tests avec py2exe (non seulement inutiles, mais en plus ils échouent).
+    # Make sure I have the right Python version.
+    if sys.version_info[:2] < param.python_min:
+        print u" ** Erreur fatale **\nWxGéométrie nécessite Python %d.%d au minimum. Python %d.%d détecté." % \
+              (param.python_min + sys.version_info[:2])
         sys.exit(-1)
+
+    # Test for dependencies:
+    dependances = {'wx': 'python-wxgtk2.8', 'matplotlib': 'python-matplotlib', 'numpy': 'python-numpy'}
+    for module in dependances:
+        try:
+            imp.find_module(module)
+        except ImportError:
+            print(u'** Erreur fatale ** : le module %s doit être installé !' %module)
+            if sys.platform == 'linux2':
+                print("Sous Ubuntu/Debian, tapez 'sudo apt-get install %s' pour installer le module manquant." %dependances[module])
+            sys.exit(-1)
 
 
 def gerer_arguments():
@@ -251,19 +262,6 @@ for emplacement in param.emplacements:
 # PARTIE CRITIQUE (redirection des messages d'erreur)
 # Attention avant de modifier, c'est très difficile à déboguer ensuite (et pour cause !)
 # Réduire la taille de cette partie au minimum possible.
-
-if param.py2exe:
-    # cf. py2exe/boot_common.py
-    # Par défaut dans py2exe, sys.stdout redirige nul part,
-    # et sys.stderr redirige vers un fichier .log via un mécanisme assez élaboré
-    sys._py2exe_stderr = sys.stderr
-    sys._py2exe_stdout = sys.stdout
-    def msgbox(titre, texte, MB = sys._py2exe_stderr.write.func_defaults[0]):
-        MB(0, texte.encode(param.encodage), titre.encode(param.encodage))
-    # Outil de débogage avec py2exe
-    def _test(condition = True):
-        msgbox('** Test **', ('Success !' if condition else 'Failure.'))
-
 
 try:
     sorties = sys.stdout = sys.stderr = SortiesMultiples()
