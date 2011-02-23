@@ -343,7 +343,8 @@ Buts de cette série :
     Nécessite Matplotlib 0.99 ou supérieure
     Le zoom est de nouveau fluide
     Amélioration du module Statistiques
-    Nouveau module sur les graphes
+    Nouveau module sur les graphes (très incomplet)
+    Support (encore expérimental) du calcul formel dans geolib.
 
     Mineures :
 
@@ -469,6 +470,23 @@ Buts de cette série :
     Bug concernant le sablier (pointeur souris) sous Windows (module surfaces)
     Correction d'un bug dans les menus de création d'objets géométriques
     Détection des librairies manquantes dès le démarrage du logiciel
+    Fonction LambertW ajoutée dans la calculatrice.
+    Tablatex : limites optionnelles.
+    Calculatrice : amélioration du pretty print.
+    Ajout de fichiers README, INSTALL et LICENSE.
+    Amélioration de l'annulation après la suppression simultanée d'objets.
+    Régression corrigée : l'éditeur interne de code ne fonctionnait plus.
+    Bug corrigé concernant certaines configurations de wxgéométrie.
+    Calculatrice : _59 peut être utilisé au lieu de ans(59).
+    Bug corrigé concernant la fermeture de wxgéométrie dans certains cas (rares).
+    Fusion des boutons "Start" et "Stop" dans la fenêtre d'animation.
+    Formatage amélioré des équations dans geolib.
+    Correction de bugs concernant la fonction Intersection() (console de geolib).
+    Amélioration du parser de la calculatrice ("a b" est toujours converti en "a*b")
+    Améliorations mineures de la console de geolib.
+    Système de test refactorisé. Toutes les docstrings passent maintenant.
+    Meilleure gestion des guillemets (calculatrice, traceur, géométrie...)
+    Très nombreuses corrections de bugs et améliorations pour le traceur.
 
 
     **Bugs connus / améliorations prévues**
