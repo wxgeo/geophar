@@ -4,7 +4,7 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 from geolib.tests.geotestlib import *
 from geolib import (Point, Vecteur, Droite, Intersection, Cercle, Segment, Disque,
                     Homothetie, Rotation, Translation, Reflexion, Vecteur, Variable,
-                    Variable_generique,
+                    Variable_generique, Disque,
                     contexte, TYPES_NUMERIQUES
                     )
 from sympy import S, Expr
@@ -84,7 +84,7 @@ def test_eqn_formatee():
     assert e.equation_formatee == '-x - 1/3 y + 1 = 0'
 
 
-def test_Intersection():
+def test_intersections():
     c = Cercle(('1/2', '2/3'), 'sqrt(2)')
     assert_eq('c.diametre', '2*2**(1/2)', l())
     d = Droite(('0','0'),('1','1'))
@@ -112,7 +112,7 @@ def test_Intersection():
                              '- 394*pi**2/343 - 197*(125/56 - 3*pi**2/14)**2/49)**(1/2)/197'
                              '- 42*pi**2/197)', l())
 
-def test_transformation():
+def test_transformations():
     c = Cercle(('1/5', '4/5'), '1/3')
     h = Homothetie(('1', '1'), '5/7')
     v = Vecteur(c.centre, h.centre)
@@ -136,3 +136,14 @@ def test_transformation():
     assert_eq('c3.centre.coordonnees', '(13/15, 7/15)', l())
     assert_eq('c4.rayon', '3/7', l())
     assert_eq('c4.centre.coordonnees', '(4/5, 1/5)', l())
+
+
+def test_aire_diametre_perimetre():
+    p = Triangle(('0', '0'), ('0', '1/3'), ('1/3', '0'))
+    assert_eq('p.aire', '1/18', l())
+    c = Cercle(('0', '0'), '5/3')
+    assert_eq('c.rayon', '5/3', l())
+    assert_eq('c.diametre', '10/3', l())
+    assert_eq('c.perimetre', '10/3*pi', l())
+    D = Disque(c)
+    assert_eq('D.aire', 'pi*25/9', l())
