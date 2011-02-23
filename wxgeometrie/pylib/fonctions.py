@@ -359,6 +359,29 @@ def print_error(chaine = ''):
     print "Warning: this error was not raised."
 
 
+def rstrip_(s, end):
+    u"""Supprime récursivement 'end' de la fin de la chaîne 's'.
+
+    >>> from pylib.fonctions import rstrip_
+    >>> rstrip_('blabla_suffixe_fixe_suffixe_suffixe', '_suffixe')
+    'blabla_suffixe_fixe'
+
+    Nota :
+        * ne pas confondre avec str.rstrip() :
+        >>> 'blabla_suffixe_fixe_suffixe_suffixe'.rstrip('_suffixe')
+        'blabla'
+
+        * si end == '', la chaîne de départ est retournée :
+        >>> rstrip_('bonjour', '')
+        'bonjour'
+    """
+    if not end:
+        return s
+    i = -len(end)
+    while s.endswith(end):
+        s = s[:i]
+    return s
+
 
 def split_geoname(name):
     u"""Tente de décomposer un nom d'objet géométrique en plusieurs noms.

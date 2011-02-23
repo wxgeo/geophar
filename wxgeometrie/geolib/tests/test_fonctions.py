@@ -6,10 +6,15 @@ from geolib.tests.geotestlib import *
 _VAL0 = -5.156557933
 
 
+@XFAIL
+def test_sans_feuille():
+    g = Fonction('2x+7')
+    assert g(17) == 41
+    # La fonction n'est compilée que s'il y a une feuille.
+    # -> à tester lorsque chaque objet aura un feuille par défaut.
+
 
 def test_base():
-    #TODO: une fois que chaque objet aura une feuille par défaut,
-    # supprimer la feuille du test.
     f = Feuille()
     H = f.objets.H = Fonction("2*t**3+5", variable = 't')
     assertAlmostEqual(H(_VAL0), 2*_VAL0**3+5)

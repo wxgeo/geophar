@@ -33,7 +33,7 @@ import keyword
 from ALL import *
 import ALL
 from pseudo_canvas import _pseudocanvas
-import math
+import math, string, random
 import mathlib
 import sympy
 
@@ -252,7 +252,7 @@ Attributs spéciaux:
             except Exception:
                 print_error()
                 if self.__renommer_au_besoin:
-                    new = self.__feuille__.nom_aleatoire(nom)
+                    new = self.__feuille__.nom_aleatoire(valeur, prefixe=nom)
                     print("Warning: '%s' renommé en '%s'." %(nom, new))
                     nom = self.__tmp_dict[nom] = new
                 else:
@@ -356,12 +356,14 @@ Attributs spéciaux:
         except KeyError:
             self.erreur(u"Objet introuvable sur la feuille : " + nom, KeyError)
 
-    def get(self, nom, defaut = None):
+    def get(self, nom, defaut=None):
         try:
             return self.__getitem(nom)
         except:
             return defaut
 
+    def __contains__(self, nom):
+        return dict.__contains__(self, self.__convertir_nom(nom))
 
     def __delitem__(self, nom):
         if nom in self.__feuille__._parametres_repere:
@@ -410,13 +412,15 @@ Attributs spéciaux:
         return nom.replace('`', '_prime').replace('"', '_prime_prime').replace("'", "_prime")
 
 
-    def __verifier_syntaxe_nom(self, objet, nom):
+    def __verifier_syntaxe_nom(self, objet, nom, **kw):
         u"Vérifie que le nom est correct (ie. bien formé) et le modifie le cas échéant."
 
         def err(msg):
+            if kw.get('skip_err'):
+                return
             if self.__renommer_au_besoin:
-                new = self.__feuille__.nom_aleatoire()
-                print("Warning: '%s' renommé en '%s'." %(nom, new))
+                new = self.__feuille__.nom_aleatoire(objet)
+                print(u"Warning: '%s' renommé en '%s'." %(nom, new))
                 return new
             else:
                 self.erreur(msg, NameError)
@@ -426,25 +430,41 @@ Attributs spéciaux:
         nom = self.__convertir_nom(nom)
         # Noms réservés en python (if, then, else, for, etc.):
         if keyword.iskeyword(nom):
-            nom = err(u"Nom r\xe9serv\xe9 : " + nom)
+            return err(u"Nom r\xe9serv\xe9 : " + nom) # Pas d'accent dans le code ici a cause de Pyshell !
         # Les noms contenant '__' sont des noms réservés pour un usage futur éventuel (convention).
         if "__" in nom:
-            nom = err(u'Un nom ne peut pas contenir "__".')
+            return err(u'Un nom ne peut pas contenir "__".')
         # Vérifie que le nom n'est pas réservé.
         if nom in self.__class__.__dict__.keys():
-            nom = err(u"Nom réservé.")
+            return err(u"Nom r\xe9serv\xe9.")
         if not re.match("""[A-Za-z_][A-Za-z0-9_'"`]*$""", nom):
-            nom = err(u"'%s' n'est pas un nom d'objet valide." %nom)
+            return err(u"'%s' n'est pas un nom d'objet valide." %nom)
 
         # Certains noms sont réservés à des usages spécifiques.
         # Les noms f1, f2... sont réservés aux fonctions (cf. module Traceur).
-        if nom[0] == 'f' and nom[1:].isdigit() and not isinstance(objet, Fonction):
-            nom = err(u"Nom r\xe9serv\xe9 aux fonctions : " + nom)
+        if nom[0] == 'f' and not isinstance(objet, Fonction) and \
+                rstrip_(nom, '_prime')[1:].isdigit():
+            return err(u"Nom r\xe9serv\xe9 aux fonctions : " + nom)
 
         # Les noms Cf1, Cf2... sont réservés à l'usage du module Traceur.
         if nom.startswith('Cf') and nom[2:].isdigit() and \
                 not(isinstance(objet, Objet) and objet.style('protege')):
-            nom = err(u"Nom r\xe9serv\xe9 : " + nom)
+            return err(u"Nom r\xe9serv\xe9 : " + nom)
+
+        # Gestion des ' (qui servent pour les dérivées)
+        if nom.endswith('_prime'):
+            if isinstance(objet, Fonction):
+                return err(u'Nom interdit : %s est r\xe9serv\xe9 pour la d\xe9riv\xe9e.' %nom)
+            else:
+                base = rstrip_(nom, '_prime')
+                if isinstance(self.get(base, None), Fonction):
+                    return err(u'Nom interdit : %s d\xe9signe d\xe9j\xe0 la d\xe9riv\xe9e de %s.' %(nom, base))
+        elif isinstance(objet, Fonction):
+            # Si la fonction doit s'appeller f, on vérifie que f', f'', f''', etc. ne correspondent pas déjà à des objets.
+            for existant in self:
+                if existant.startswith(nom) and rstrip_(existant, '_prime') == nom:
+                    return err(u'Ambiguit\xe9 : un objet %s existe d\xe9j\xe0.' %existant)
+
         return nom
 
 
@@ -467,6 +487,9 @@ Attributs spéciaux:
     def __derniere_valeur(self):
         u"Dernier objet créé."
         return max(self.__feuille__.liste_objets(True), key = lambda obj:obj._timestamp)
+
+
+
 
 
 
@@ -1343,11 +1366,22 @@ class Feuille(object):
 
 
 
-    def nom_aleatoire(self, prefixe = ALL.Objet._prefixe_nom): # utilise pour la generation d'objets de noms toujours differents
-        #print self.objets.__noms__()
-        liste = [int(s[len(prefixe):]) for s in self.objets.noms if re.match(prefixe + "[0-9]+$", s)]
-        #print liste
-        return prefixe + str(max(liste or [0]) + 1)
+    def nom_aleatoire(self, objet, prefixe=None):
+        u"""Génère un nom d'objet non encore utilisé.
+
+        Si possible, le nom sera de la forme 'prefixe' + chiffres.
+        Sinon, un préfixe aléatoire est généré."""
+        prefixe = (prefixe if prefixe else objet._prefixe_nom)
+        existants = self.objets.noms
+        for i in xrange(1000):
+            n = len(prefixe)
+            numeros = [int(s[n:]) for s in existants if re.match(prefixe + "[0-9]+$", s)]
+            nom = prefixe + (str(max(numeros) + 1) if numeros else '1')
+            nom = self.objets._Dictionnaire_objets__verifier_syntaxe_nom(objet, nom, skip_err=True)
+            if nom is not None:
+                return nom
+            prefixe = ''.join(random.choice(string.letters) for i in xrange(8))
+        raise RuntimeError, "Impossible de trouver un nom convenable apres 1000 essais !"
 
 
 

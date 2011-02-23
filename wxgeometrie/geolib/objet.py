@@ -807,7 +807,7 @@ class Objet(object):
 
         Ex: M1 pour un point, s1 pour un segment, etc.
         """
-        return self.__feuille__.nom_aleatoire(self._prefixe_nom)
+        return self.__feuille__.nom_aleatoire(self)
 
 
 

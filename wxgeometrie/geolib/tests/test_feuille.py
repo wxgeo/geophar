@@ -2,6 +2,8 @@
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 from __future__ import with_statement
 
+import re
+
 from geolib.tests.geotestlib import *
 from geolib import (Triangle_rectangle, DescripteurFeuille,
                                 )
@@ -73,6 +75,29 @@ def test_nommage_automatique():
     f.objets._ = Segment(M1, M2)
     assert("s1" in f.objets)
 
+def test_noms_aleatoires():
+    f = Feuille()
+    f.executer('A1=(1,2)')
+    f.executer('A2=(1,0)')
+    M = Point()
+    s = Segment()
+    g = Fonction('2x+7')
+    assert f.nom_aleatoire(M) == 'M1'
+    assert f.nom_aleatoire(s) == 's1'
+    assert f.nom_aleatoire(M, prefixe='A') == 'A3'
+    # f0, f1, etc. sont réservés aux fonctions
+    nom = f.nom_aleatoire(M, prefixe='f')
+    assert re.match('[A-Za-z]{8}[0-9]+$', nom)
+
+def test_prime():
+    # Cf. issue 129
+    f = Feuille()
+    f.executer('F = Fonction("2x+7")')
+    assertRaises(NameError, f.executer, "F'' = (1, 4)")
+    f.executer("G''' = (-3, 6)")
+    assertRaises(NameError, f.executer, 'G = Fonction("3x+2")')
+    assertRaises(NameError, f.executer, '''H' = Fonction("2x-4")''')
+    assertRaises(NameError, f.executer, "f1' = (1, 2)")
 
 def test_nommage_intelligent():
     f = Feuille()
