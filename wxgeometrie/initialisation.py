@@ -331,7 +331,7 @@ try:
 
 
     def initialiser():
-        from API.parametres import actualiser_module, extraire_parametre
+        from API.parametres import actualiser_module
         # Récupération d'un crash éventuel
         path_lock = path2(param.emplacements['session'] + "/lock")
         crash = os.path.isfile(path_lock)
