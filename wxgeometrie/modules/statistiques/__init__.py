@@ -95,7 +95,6 @@ class StatMenuBar(MenuBar):
         self.ajouter("creer")
         self.ajouter("Affichage", ["onglet"], None, ["repere"], ["quadrillage"], ["orthonorme"], None, ["fenetre"], ["zoomer"], ["dezoomer"], ["orthonormaliser"])
         self.ajouter("Outils", [u"Expérience", u"Simuler une expérience.", "Alt+Ctrl+E", self.panel.creer_experience], [u"Lancers de dés", u"Simuler des lancers d'un ou de plusieurs dés.", "Ctrl+Shift+D", self.panel.creer_lancer_des], [u"Sondage", u"Simuler un sondage simple.", "Ctrl+Shift+S", self.panel.creer_sondage], None, ["options"])
-##        self.ajouter(u"Avancé", [u"historique"], [u"securise"], [u"ligne_commande"], [u"debug"])
         self.ajouter(u"avance1")
         self.ajouter("?")
 
@@ -117,7 +116,6 @@ class Statistiques(Panel_API_graphique):
 
         self._valeurs = {}
         self.classes = []
-        #self.valeur_unite = None
         self.legende_x = '' # axe des abscisses
         self.legende_y = '' # axe des ordonnees
         self.legende_a = '' # unite d'aire (histogramme)
@@ -128,7 +126,6 @@ class Statistiques(Panel_API_graphique):
         self.origine_y = ''
         self.donnees_valeurs = ''
         self.donnees_classes = ''
-        #self.mode_resultats = ["effectifs", "frequences"][0]
         self.graph = 'barres'
         self.intervalle_confiance = None
 
@@ -356,15 +353,6 @@ class Statistiques(Panel_API_graphique):
         self.affiche()
 
 
-    #~ def desactiver(self, *champs):
-        #~ gradu = self.onglets_bas.graduations
-        #~ legende = self.onglets_bas.legende
-        #~ donnees = self.onglets_bas.donnees
-        #~ for champ in ('gradu_x', 'gradu_y', 'gradu_a', 'legende_x', 'legende_y',
-                                #~ 'legende_a', 'origine_x', 'origine_y', 'classes'):
-                #~ activer = (champ not in champs)
-                #~ if champ == 'gradu_x':
-
 
     def axes(self, x=False, y=False, a=False, classes=False, legende_x=False):
 
@@ -390,10 +378,6 @@ class Statistiques(Panel_API_graphique):
 
 
     def _affiche(self):
-        # Pas de données suffisantes:
-        #if self.effectif_total() == 0 or (not self.classes and self.graph in ('histogramme', 'cumul_croissant', 'cumul_decroissant')):
-        #    self.axes()
-
         # ('barres', 'batons', 'histogramme', 'cumul_croissant', 'cumul_decroissant', 'bandes', 'circulaire', 'semi-circulaire', 'boite')
         if self.graph == 'barres':
             self.diagramme_barre()
@@ -656,8 +640,6 @@ class Statistiques(Panel_API_graphique):
 
         self.dessiner_intervalle_confiance()
 
-        #self.canvas.affiche()
-
 
     def diagramme_bande(self):
         u"""Diagramme en bande."""
@@ -713,7 +695,6 @@ class Statistiques(Panel_API_graphique):
         self.canvas.synchroniser_fenetre() # pour profiter du reglage effectue par matplotlib
         self.canvas.orthonormer() # pour avoir un vrai cercle
         # rafraichir produirait une recursion infinie !
-        #self.canvas.draw()
 
 
     def diagramme_boite(self, afficher_extrema = True):
@@ -731,7 +712,7 @@ class Statistiques(Panel_API_graphique):
         m = vals[0]
         M = vals[-1]
         if str in [type(i) for i in (med, q1, q3, d1, d9)]:
-            # self.mediane() ou self.decile() ou... renvoit "calcul impossible."
+            # self.mediane() ou self.decile() ou... renvoie "calcul impossible."
             return
 
         if int(m) == m:
@@ -893,18 +874,6 @@ class Statistiques(Panel_API_graphique):
 
 
 
-
-
-
-    #def effectifs_cumules_croissants(self):
-    #    vals = {}
-    #    effectif = 0
-    #    for valeur in self.liste_valeurs():
-    #        effectif += self.valeurs[valeur]
-    #        vals[valeur] = effectif
-    #    return vals
-
-
     def _sauvegarder(self, fgeo, feuille = None):
         Panel_API_graphique._sauvegarder(self, fgeo, feuille)
         fgeo.contenu["Diagramme"] = [{
@@ -931,8 +900,6 @@ class Statistiques(Panel_API_graphique):
             gradu_x = gradu['x'][0]
             gradu_y = gradu['y'][0]
             gradu_a = gradu['a'][0]
-            #~ valeur_unite = securite.eval_safe(legende["valeur_unite"][0])
-            #valeur_unite = legende["valeur_unite"][0]
             mode_graphique = diagramme["mode_graphique"][0]
 
             self.onglets_bas.legende.x.SetValue(legende_x)
