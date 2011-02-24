@@ -29,6 +29,14 @@ from GUI import *
 from experience import *
 from onglets_internes import OngletsStatistiques
 import __builtin__
+from math import isnan
+
+
+def tst(result):
+    if isnan(result):
+        return u"Calcul impossible."
+    return result
+
 
 class Classe(tuple):
     lien = None
@@ -326,9 +334,9 @@ class Statistiques(Panel_API_graphique):
         return valeurs
 
     def liste_valeurs_effectifs(self):
-        valeurs = self._valeurs.items()
-        valeurs.sort()
-        return valeurs
+        valeurs_effectifs = self._valeurs.items()
+        valeurs_effectifs.sort()
+        return valeurs_effectifs
 
 
 
@@ -358,7 +366,12 @@ class Statistiques(Panel_API_graphique):
                 #~ if champ == 'gradu_x':
 
 
-    def axes(self, x=False, y=False, a=False, classes=False):
+    def axes(self, x=False, y=False, a=False, classes=False, legende_x=False):
+
+        self.onglets_bas.enable(x, y, a, classes, legende_x)
+        vide = self.effectif_total() == 0 or (classes and not self.classes)
+        if vide:
+            x = y = a = 0
         self.canvas.afficher_axes = True
         self.canvas.utiliser_repere = False
         liste_axes = []
@@ -366,7 +379,6 @@ class Statistiques(Panel_API_graphique):
             liste_axes.append(0)
         if y:
             liste_axes.append(1)
-        self.onglets_bas.enable(x, y, a, classes)
 
         n = len(liste_axes)
         if n < 2:
@@ -374,15 +386,16 @@ class Statistiques(Panel_API_graphique):
             if n < 1:
                 self.canvas.afficher_axes = False
         self.canvas.liste_axes = tuple(liste_axes)
+        return vide
 
 
     def _affiche(self):
         # Pas de données suffisantes:
-        if self.effectif_total() == 0 or (not self.classes and self.graph in ('histogramme', 'cumul_croissant', 'cumul_decroissant')):
-            self.axes()
+        #if self.effectif_total() == 0 or (not self.classes and self.graph in ('histogramme', 'cumul_croissant', 'cumul_decroissant')):
+        #    self.axes()
 
         # ('barres', 'batons', 'histogramme', 'cumul_croissant', 'cumul_decroissant', 'bandes', 'circulaire', 'semi-circulaire', 'boite')
-        elif self.graph == 'barres':
+        if self.graph == 'barres':
             self.diagramme_barre()
         elif self.graph == 'bandes':
             self.diagramme_bande()
@@ -446,13 +459,15 @@ class Statistiques(Panel_API_graphique):
     def histogramme(self):
         u"Construit un histogramme (à ne pas confondre avec le diagramme en barres !)"
 
+        if self.axes(x=True, a=True, classes=True):
+            return
+
         m, M = self.intervalle_classes()
         l = min([classe[1] - classe[0] for classe in self.classes])
         hmax = max([classe.densite() for classe in self.classes])
 
         # Réglage de la fenêtre d'affichage
         self.fenetre(m - 0.1*(M-m), M + 0.4*(M-m), -0.1*hmax, 1.1*hmax)
-        self.axes(x = True, a=True)
         self.origine(m, 0)
         self.graduations(l, 0)
 
@@ -508,15 +523,16 @@ class Statistiques(Panel_API_graphique):
     def courbe_effectifs(self, mode=1):
         u"Courbe des effectifs cumulés croissants si mode = 1, décroissants si mode = -1."
 
-        valeurs = self.liste_valeurs()
+        if self.axes(x = True, y = True, classes=True):
+            return
 
+        valeurs = self.liste_valeurs()
 
         l = min([classe[1] - classe[0] for classe in self.classes])
         m, M = self.intervalle_classes()
         hmax = self.effectif_total()
         self.fenetre(m - 0.1*(M-m), M + 0.2*(M-m), -0.1*hmax, 1.1*hmax)
         self.graduations(l, arrondir(hmax/10))
-        self.axes(x = True, y = True, classes=True)
         self.origine(m, 0)
 
         for classe in self.classes:
@@ -544,16 +560,19 @@ class Statistiques(Panel_API_graphique):
          (nombre décimal entre 0 et 1).
          Essentiellement pertinent pour des séries qualitatives."""
 
+        if self.axes(y=True, legende_x=True):
+            return
+
         valeurs = self.liste_valeurs()
 
         lmax = 100./len(valeurs)
         l = ratio*lmax
         e = .5*(lmax - l)
         hmax = max(self.valeurs.values())
-        self.fenetre(-10, 110, -.2*hmax, 1.15*hmax)
+        self.fenetre(-10, 110, -.15*hmax, 1.15*hmax)
+        self.canvas.dessiner_ligne((0, 110), (0, 0), 'k')
 
         self.graduations(0, arrondir(hmax/10))
-        self.axes(x=True, y=True)
         self.origine(0, 0)
 
         n = 0
@@ -589,6 +608,9 @@ class Statistiques(Panel_API_graphique):
         u"""Diagramme en batons (séries quantitatives discrètes).
         'largeur' est la demi-largeur en pixel."""
 
+        if self.axes(x=True, y=True):
+            return
+
         valeurs = self.liste_valeurs()
 
         m, M = valeurs[0], valeurs[-1]
@@ -608,7 +630,6 @@ class Statistiques(Panel_API_graphique):
         if int(m) == m:
             m = int(m) # pour des raisons esthetiques
 
-        self.axes(x=True, y=True)
         self.origine(m, 0)
         self.graduations(l, arrondir(hmax/10))
 
@@ -641,6 +662,9 @@ class Statistiques(Panel_API_graphique):
     def diagramme_bande(self):
         u"""Diagramme en bande."""
 
+        if self.axes():
+            return
+
         valeurs = self.liste_valeurs()
 
         l_unite = 100./self.effectif_total()
@@ -648,7 +672,6 @@ class Statistiques(Panel_API_graphique):
         x = 0
 
         self.fenetre(-10, 110, -1, 2)
-        self.axes()
         self.graduations(0, 0)
 
 
@@ -665,7 +688,8 @@ class Statistiques(Panel_API_graphique):
 
 
     def diagramme_circulaire(self, angle = 360):
-        self.axes()
+        if self.axes():
+            return
 
         valeurs = self.liste_valeurs()
 
@@ -695,6 +719,9 @@ class Statistiques(Panel_API_graphique):
     def diagramme_boite(self, afficher_extrema = True):
         u"Appelé aussi diagramme à moustache."
 
+        if self.axes(x=True):
+            return
+
         med = self.mediane()
         q1 = self.quartile(1)
         q3 = self.quartile(3)
@@ -707,7 +734,6 @@ class Statistiques(Panel_API_graphique):
             # self.mediane() ou self.decile() ou... renvoit "calcul impossible."
             return
 
-        self.axes(x=True)
         if int(m) == m:
             m = int(m) # pour des raisons esthetiques
         self.origine(m, 0)
@@ -755,7 +781,7 @@ class Statistiques(Panel_API_graphique):
 
     def moyenne(self):
         try:
-            return 1.*sum([eff*val for val, eff in self.valeurs.items()])/self.effectif_total()
+            return tst(1.*sum([eff*val for val, eff in self.valeurs.items()])/self.effectif_total())
         except (ZeroDivisionError, TypeError):
             return u"Calcul impossible."
 
@@ -771,7 +797,7 @@ class Statistiques(Panel_API_graphique):
             m = self.moyenne()
             if isinstance(m, basestring):
                 raise TypeError
-            return 1.*sum([eff*(val - m)**2 for val, eff in self.valeurs.items()])/self.effectif_total()
+            return tst(1.*sum([eff*(val - m)**2 for val, eff in self.valeurs.items()])/self.effectif_total())
         except (ZeroDivisionError, TypeError):
             return u"Calcul impossible."
 
@@ -779,7 +805,7 @@ class Statistiques(Panel_API_graphique):
         v = self.variance()
         if isinstance(v, basestring):
             return u"Calcul impossible."
-        return math.sqrt(v)
+        return tst(math.sqrt(v))
 
     def mediane(self):
         u"""Correspond à la 'valeur du milieu' quand on ordonne les données.
@@ -804,6 +830,7 @@ class Statistiques(Panel_API_graphique):
                 return val
             old_val = val
             old_somme = somme
+        return u"Calcul impossible."
 
 
 

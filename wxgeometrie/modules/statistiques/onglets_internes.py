@@ -213,13 +213,13 @@ class OngletsStatistiques(wx.Notebook):
         self.AddPage(self.autres, u'Réglages')
 
 
-    def enable(self, x, y, a, classes=False):
+    def enable(self, x, y, a, classes=False, legende_x=False):
         self.donnees.classes.Enable(a or classes)
         self.donnees.sc.Enable(a or classes)
 
-        self.legende.Enable(x or y or a)
-        self.legende.x.Enable(x)
-        self.legende.sx.Enable(x)
+        self.legende.Enable(x or y or a or legende_x)
+        self.legende.x.Enable(x or legende_x)
+        self.legende.sx.Enable(x or legende_x)
         self.legende.y.Enable(y)
         self.legende.sy.Enable(y)
         self.legende.a.Enable(a)
