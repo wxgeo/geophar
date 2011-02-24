@@ -28,45 +28,33 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 from LIB import *
 import sauvegarde
-#import types, param, time, securite
+
 types_supportes = (int, long, str, unicode, float, bool, types.NoneType, list, tuple, dict)
-# TO DO :
+
+# TO DO (?) :
 # - rajouter le support des types array et complex dans securite.eval_safe
 # - gérer correctement l'encodage dans save.py
 #   (tout convertir en unicode, puis en utf-8)
 
 
-#~ def __sauvegarder_module_old(module, nom = "main"):
-    #~ u"Renvoie le contenu d'un module sous forme d'un fichier XML."
-    #~ dico = module.__dict__.copy()
-    #~ dico.pop("__builtins__", None)
-    #~ xml  = "<?xml version='1.0' encoding='utf-8'?>\n"
-    #~ xml += "<Document type='Options WxGeometrie' version='%s' module='%s'>\n" %(param.version, nom)
-    #~ xml += "<Meta>\n<notes>\n</notes>\n<date>\n%s\n</date>\n</Meta>\n<Parametres>\n" %time.strftime("%d/%m/%Y - %H:%M:%S",time.localtime())
-    #~ for key in dico:
-        #~ if key not in wxgeo.__dict__.keys() and not key.startswith("_") and isinstance(dico[key], types_supportes):
-            #~ xml += "<%s>\n%s\n</%s>\n " %(key, uu(dico[key]).encode("utf-8").replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;"), key)
-    #~ xml += "</Parametres>\n</Document>"
-
-    #~ return xml
-
-
 def sauvegarder_module(module, nom = "main"):
-    u"Renvoie le contenu d'un module sous forme d'un fichier XML."
-    dico = module.__dict__.copy()
+    u"""Renvoie le contenu d'un module sous forme d'un fichier XML.
+
+    Au lieu du module lui-même, 'module' peut être un dictionnaire
+    correspondant au dictionnaire du module (éventuellement modifié).
+    """
+    dico = module.__dict__.copy() if not isinstance(module, dict) else module
     for key in param.valeurs_a_ne_pas_sauver:
         dico.pop(key, None)
-    #for key in wxgeo.__dict__.keys():
-    #    dico.pop(key, None)
     f = sauvegarde.FichierGEO(type = 'Options WxGeometrie', module = nom)
     m = f.ajouter("Meta")
-    #~ f.ajouter("notes", m, "")
     f.ajouter("date", m, time.strftime("%d/%m/%Y - %H:%M:%S",time.localtime()))
     p = f.ajouter("Parametres")
     for key, value in dico.items():
         if not key.startswith("_") and isinstance(value, types_supportes):
             f.ajouter(key, p, repr(value))
     return f
+
 
 def actualiser_module(module, fichier):
     u"Rafraichit le contenu d'un module à partir d'un fichier XML."
@@ -86,35 +74,8 @@ def actualiser_module(module, fichier):
             print module, key
             print_error()
 
-#def sauvegarder_session(*fichiers):
-#    u"""Crée un fichier XML contenant tout le contenu de la session courante,
-#    à partir de la liste des fichiers ouverts."""
-#    fgeo = sauvegarde.FichierGEO(type = 'Session WxGeometrie', module = 'main')
-#    #~ M = fgeo.ajouter("Meta")
-#    #~ fgeo.ajouter("notes", M, "")
-#    #~ fgeo.ajouter("date", M, time.strftime("%d/%m/%Y - %H:%M:%S",time.localtime()))
-#    F = fgeo.ajouter('Fichiers')
-#    for fichier in fichiers:
-#        f = fgeo.ajouter('fichier', F, fichier.contenu)
-#        i = fgeo.ajouter('infos', f)
-#        for info, val in fichier.infos.items():
-#            i[info] = [val]
-#    return fgeo
 
-#def ouvrir_session(fichier):
-#    u"""Crée une liste de fichiers à ouvrir à partir du fichier de sauvegarde de la session courante.
-#    """
-#    if not isinstance(fichier, sauvegarde.FichierGEO):
-#        fichier, message = sauvegarde.ouvrir_fichierGEO(fichier)
-#    liste_fichiers = []
-#    try:
-#        for contenu in fichier.contenu['Fichiers'][0]['fichier']:
-#            infos = contenu.pop('infos')
-#            module = infos[0]['module'][0]
-#            fgeo = sauvegarde.FichierGEO(module = module)
-#            fgeo.contenu = contenu
-#            liste_fichiers.append(fgeo)
-#    except (KeyError, IndexError):
-#        #TODO: message d'erreur indiquant que le format de fichier de session est incorrect
-#        raise
-#    return liste_fichiers
+#def extraire_parametre(fichier, parametre):
+#    fgeo, msg = sauvegarde.ouvrir_fichierGEO(fichier)
+#    parametres = fgeo.contenu["Parametres"][-1]
+#    return parametres[parametre][-1]

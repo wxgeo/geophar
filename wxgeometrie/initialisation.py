@@ -307,9 +307,10 @@ try:
     # à faire avant d'importer API et LIB
     parametres_additionnels, arguments, options = gerer_arguments()
 
-    print 'parametres :', parametres_additionnels, arguments
-    if options.script:
-        print u"--- Mode script activé. ---"
+    if param.verbose:
+        print u'Arguments de la ligne de commande :', parametres_additionnels, arguments
+        if options.script:
+            print u"--- Mode script activé. ---"
 
     if param.py2exe:
         print sys.path
@@ -330,7 +331,7 @@ try:
 
 
     def initialiser():
-        from API.parametres import actualiser_module
+        from API.parametres import actualiser_module, extraire_parametre
         # Récupération d'un crash éventuel
         path_lock = path2(param.emplacements['session'] + "/lock")
         crash = os.path.isfile(path_lock)
@@ -346,17 +347,21 @@ try:
         # (NB: à faire avant d'importer modules.py, qui lui-même utilise param.modules_actifs)
         path = path2(param.emplacements['preferences'] + "/parametres.xml")
         try:
-            if param.charger_preferences and os.path.exists(path):
-                # on charge les préférences de l'utilisateur depuis parametres.xml
-                a_verifier = dict((dicname, getattr(param, dicname)) for dicname in param.a_mettre_a_jour)
-                actualiser_module(param, path)
-                # certains paramètres peuvent avoir besoin d'une mise à jour (en cas de changement de version de wxgéométrie par exemple)
-                # cela concerne en particulier les dictionnaires, qui peuvent gagner de nouvelles clés.
-                for dicname in param.a_mettre_a_jour:
-                    for key, val in a_verifier[dicname].iteritems():
-                        getattr(param, dicname).setdefault(key, val)
-            else:
-                actualiser_module(param, None)
+            if os.path.exists(path):
+                if param.charger_preferences:
+                    if param.verbose:
+                        print(u"Chargement des préférences...")
+                    # On charge les préférences de l'utilisateur depuis parametres.xml.
+                    a_verifier = dict((dicname, getattr(param, dicname)) for dicname in param.a_mettre_a_jour)
+                    actualiser_module(param, path)
+                    # Certains paramètres peuvent avoir besoin d'une mise à jour
+                    # (en cas de changement de version de wxgéométrie par exemple).
+                    # Cela concerne en particulier les dictionnaires, qui peuvent gagner de nouvelles clés.
+                    for dicname in param.a_mettre_a_jour:
+                        for key, val in a_verifier[dicname].iteritems():
+                            getattr(param, dicname).setdefault(key, val)
+                else:
+                    actualiser_module(param, None)
         except:
             sys.excepthook(*sys.exc_info())
 

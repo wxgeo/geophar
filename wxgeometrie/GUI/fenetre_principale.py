@@ -314,7 +314,7 @@ class WxGeometrie(wx.Frame):
                         self.closing = False
                         return
 
-                if param.sauvegarder_preferences:
+                if param.sauver_preferences:
                     fgeo = sauvegarder_module(param)
                     fgeo.ecrire(path2(param.emplacements['preferences'] + "/parametres.xml"))
                     for onglet in self.onglets:
@@ -323,6 +323,12 @@ class WxGeometrie(wx.Frame):
                         except:
                             debug(u"Fermeture incorrecte de l'onglet : ", uu(str(onglet)))
                             raise
+                else:
+                    # La préférence 'sauver_preferences' doit être sauvée dans tous les cas,
+                    # sinon il ne serait jamais possible de désactiver les préférences depuis WxGéométrie !
+                    fgeo = sauvegarder_module({'sauver_preferences': False})
+                    fgeo.ecrire(path2(param.emplacements['preferences'] + "/parametres.xml"))
+
 
                 if param.sauver_session:
                     self.sauver_session()

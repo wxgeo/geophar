@@ -65,6 +65,7 @@ valeurs_a_ne_pas_sauver = (
 "modules",
 "descriptions_modules",
 "ecriture_possible",
+"charger_preferences",
 "types_de_hachures",
 "styles_de_lignes",
 "styles_de_points",
@@ -85,7 +86,7 @@ from math import pi
 from time import mktime
 python_version = float(python_version[:3])
 
-python_min = (2, 5) # version minimale requise
+python_min = (2, 6) # version minimale requise
 
 time_version = mktime(date_version + (0, 0, 0) + (0, 0, 0))
 
@@ -292,13 +293,18 @@ utilisateur = "" # nom de l'utilisateur, pour inclure dans les documents créés
 dimensions_fenetre = (890, 630)
 confirmer_quitter = True
 nbr_annulations = 50
-historique_log = True # cree un fichier .log (conseille)
-historique_log_continu = False # modifier ce fichier en temps reel (peu utile)
-enregistrer_messages = True # enregistre les messages (notamment d'erreur) dans messages.log
-sauvegarder_preferences = True # sauvegarder automatiquement les préférences à la fermeture du programme
-charger_preferences = True # charger les préférences précédemment enregistrées au démarrage du programme
-
+# Créer un fichier .log (conseillé)
+historique_log = True
+# Modifier ce fichier en temps réel (peu utile)
+historique_log_continu = False
+# Enregistrer les messages (notamment d'erreur) dans messages.log
+enregistrer_messages = True
+# Sauver les préférences à la fermeture du programme, pour les restaurer au prochain démarrage
+sauver_preferences = True
+# Sauver la session en cours à la fermeture du programme, pour la restaurer au prochain démarrage
 sauver_session = True
+# Paramètre utilisé essentiellement en interne (quand on lance WxGéometrie avec l'option --defaut)
+charger_preferences = True
 
 # Intervalle de temps (en dizaines de secondes) entre 2 sauvegardes automatiques
 sauvegarde_automatique = 2

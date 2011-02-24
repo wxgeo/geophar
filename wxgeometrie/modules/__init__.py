@@ -32,6 +32,8 @@ from API.parametres import actualiser_module
 def importer_module(nom_module, forcer = False):
     u"Retourne le module si l'import a réussi, None sinon."
     if param.modules_actifs[nom_module] or forcer:
+        if param.verbose:
+            print("Import du module '%s'..." %nom_module)
         try:
             module = __import__("modules.%s" %nom_module, fromlist=[''])
             if hasattr(module, '_menu_'):
@@ -60,7 +62,7 @@ def importer_module(nom_module, forcer = False):
                 _param = __import__('modules.%s._param_' %nom_module, fromlist=[''])
                 panel._param_ = _param
                 path = path2(param.emplacements['preferences'] + "/" + nom_module + "/parametres.xml")
-                if param.charger_preferences and os.path.exists(path):
+                if param.sauver_preferences and param.charger_preferences and os.path.exists(path):
                     try:
                         a_verifier = dict((dicname, getattr(param, dicname)) for dicname in param.a_mettre_a_jour)
                         actualiser_module(panel._param_, path)
@@ -88,7 +90,3 @@ def importer_module(nom_module, forcer = False):
             param.modules_actifs[nom_module] = False
         else:
             return module
-
-
-
-

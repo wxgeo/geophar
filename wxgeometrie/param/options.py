@@ -94,7 +94,7 @@ general.add(P(u"Nombre maximal d'annulations", nbr_annulations = (0, 1000)))
 
 fermeture = general.add(Section(u'À la fermeture'))
 fermeture.add(P(u'Demander confirmation avant de quitter.', confirmer_quitter = bool))
-fermeture.add(P(u'Sauvegarder les préférences.', sauvegarder_preferences = bool))
+fermeture.add(P(u'Sauvegarder les préférences.', sauver_preferences = bool))
 fermeture.add(P(u'Sauvegarder la session en cours.', sauver_session = bool))
 auto = general.add(Section(u'Sauvegarde automatique'))
 auto.add(P(u'Intervalle entre deux sauvegardes', sauvegarde_automatique = (0, 10000)))
@@ -135,5 +135,3 @@ empl_pref = avance.add(Section(u"Répertoires d'enregistrement"))
 empl_pref.add(P(u"Préférences", emplacements__preferences = file))
 empl_pref.add(P(u"Session", emplacements__session = file))
 empl_pref.add(P(u"Rapports d'erreur", emplacements__log = file))
-
-
