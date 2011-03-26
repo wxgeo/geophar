@@ -78,7 +78,11 @@ def factor(expression, variable = None, ensemble = None, decomposer_entiers = Tr
             # polynôme à plusieurs variables
             return sympy.factor(expression)
         else:
-            return internal_functions.poly_factor(expression, variable, ensemble)
+            try:
+                return internal_functions.poly_factor(expression, variable, ensemble)
+            except NotImplementedError:
+                print_error()
+                return expression
     resultat = sympy.together(expression)
     if resultat.is_rational_function():
         num, den = resultat.as_numer_denom()
