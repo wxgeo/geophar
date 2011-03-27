@@ -320,7 +320,7 @@ def _simplify(expr):
 
 def _is_num(val):
     return isinstance(val,  (float, sympy.Real))
-        
+
 def poly_factor(polynome, variable, corps = None, approchee = None):
     u"""Factorise un polynome à une variable.
 
@@ -330,16 +330,16 @@ def poly_factor(polynome, variable, corps = None, approchee = None):
         # Paramètre utilisé en interne par 'l'interpreteur' de commandes
         # (cf. méth. evaluer() de la classe Interprete(), dans custom_objects.py)
         approchee = getattr(param, 'calcul_approche', False)
-    
+
     if polynome.is_Mul:
         return reduce(lambda x,y:x*y, [poly_factor(fact, variable, corps = corps) for fact in polynome.args], 1)
     sym_poly = polynome.as_poly(variable)
     coeffs = sym_poly.all_coeffs()
-    
+
     if any(_is_num(coeff) for coeff in coeffs):
         approchee = True
         racines_brutes = {}.fromkeys(numpy.roots(coeffs),  1)
-    else:    
+    else:
         if corps == "R":
             if not all(coeff.is_real for coeff in coeffs):
                 raise ValueError, "factorisation dans 'R' impossible."
@@ -372,6 +372,8 @@ def poly_factor(polynome, variable, corps = None, approchee = None):
         racines_en_stock = []
         multiplicites_en_stock = []
         for racine, multiplicite in racines:
+            if not isinstance(racine, sympy.Basic):
+                racine = sympy.sympify(racine)
             reel = racine.is_real
             if not reel:
                 # is_real n'est pas fiable (26/11/2009)

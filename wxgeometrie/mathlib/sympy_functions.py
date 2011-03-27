@@ -36,6 +36,7 @@ import custom_objects
 import internal_functions
 import custom_functions
 import param
+from pylib import print_error
 
 def expand(expression, variable = None):
     expression = sympy.expand(expression)
@@ -81,7 +82,8 @@ def factor(expression, variable = None, ensemble = None, decomposer_entiers = Tr
             try:
                 return internal_functions.poly_factor(expression, variable, ensemble)
             except NotImplementedError:
-                print_error()
+                if param.debug:
+                    print_error()
                 return expression
     resultat = sympy.together(expression)
     if resultat.is_rational_function():
