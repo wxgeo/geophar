@@ -110,3 +110,20 @@ def screen_dpi(diagonale,  ratio = (16, 10), pixels = None):
     x *= k
     y *= k
     return (l/x, h/y)
+
+
+class MyFont(wx.Font):
+    u"""Créé une nouvelle police, héritant par défaut ses attributs de 'widget'."""
+    def __init__(self, widget, size=None, family=None, style=None, weight=None, underline=None):
+        font = widget.GetFont()
+        if size is None:
+            size = font.GetPointSize()
+        if family is None:
+            family = font.GetFamily()
+        if style is None:
+            style = font.GetStyle()
+        if weight is None:
+            weight = font.GetWeight()
+        if underline is None:
+            underline = font.GetUnderlined()
+        wx.Font.__init__(self, size, family, style, weight, underline)
