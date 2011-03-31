@@ -354,10 +354,7 @@ class Calculatrice(Panel_simple):
     def vers_presse_papier(self, event = None, texte = None):
         if texte is None:
             texte = self.dernier_resultat
-        self.clipBoard=wx.TheClipboard
-        if self.clipBoard.Open():
-            self.clipBoard.AddData(wx.TextDataObject(texte))
-        self.clipBoard.Close()
+        Panel_simple.vers_presse_papier(texte)
 
     def copier_latex(self, event = None):
         self.vers_presse_papier(texte = self.interprete.latex_dernier_resultat.strip("$"))
