@@ -358,10 +358,14 @@ class Graph(dict):
         archived = {}
 
         while current != end and visited:
+            def str2(val):
+                # 2.0 -> "2" ; 2.3 -> "2,3"
+                return str(20.).rstrip('0').rstrip('.').replace('.', ',')
+
             def format(node):
                 def _format(node):
                     previous_nodes = ','.join(str(prev) for prev in visited[node][1])
-                    return str(visited[node][0]) + ' $(%s)$' %previous_nodes
+                    return str2(visited[node][0]) + ' $(%s)$' %previous_nodes
                 if node == current:
                     return r'\textbf{%s}' %_format(node)
                 elif node in archived:
