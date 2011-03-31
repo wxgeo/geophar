@@ -31,6 +31,8 @@ from itertools import cycle, izip
 from random import shuffle
 import re
 
+from GUI.wxlib import MyFont
+
 dict_accents = {
 u"é": "E",
 u"É": "E",
@@ -64,7 +66,7 @@ class CryptographieMenuBar(MenuBar):
                         [u"Coder un message", u"Code le message par substitution mono-alphabétique.",
                                 "Ctrl+K", panel.coder],
                         [u"Coder avec espaces", u"Code le message en conservant les espaces (substitution mono-alphabétique).",
-                                "Ctrl+Shift+K", partial(panel.coder, espaces=False)],
+                                "Ctrl+Shift+K", partial(panel.coder, espaces=True)],
                         [u"Générer une nouvelle clé", u"Générer une nouvelle permutation de l'alphabet.", None, panel.generer_cle],
                         [u"Modifier la clé", u"Générer une nouvelle permutation de l'alphabet.", None, panel.DlgModifierCle],
                         None,
@@ -84,6 +86,9 @@ class Cryptographie(Panel_simple):
         # La clé est la permutation de l'alphabet actuellement utilisée
         self.cle = self.generer_cle()
 
+        # Signe indiquant un caractère non déchiffré
+        self.symbole = '-' # '.'
+
         self.sizer = wx.BoxSizer(wx.VERTICAL)
 
         font = self.GetFont()
@@ -91,19 +96,27 @@ class Cryptographie(Panel_simple):
         bold = wx.Font(font.GetPointSize(), font.GetFamily(), wx.NORMAL, wx.BOLD)
 
         self.textes = wx.GridBagSizer(5, 5)
-        size = (300, 200)
+        size = (400, 300)
+
+        TE_STYLE = wx.TE_MULTILINE|wx.TE_RICH2#|wx.TE_CHARWRAP
 
         txt_clair = wx.StaticText(self, -1, u"Texte en clair")
         txt_clair.SetFont(bold)
-        self.clair = wx.TextCtrl(self, style=wx.TE_MULTILINE, size=size)
-        self.clair.Bind(wx.EVT_LEFT_UP, self.clairLeft)
+        self.clair = wx.TextCtrl(self, style=TE_STYLE, size=size)
+        # self.clair.Bind(wx.EVT_LEFT_UP, self.clairLeft)
+        self.clair.Bind(wx.EVT_TEXT, partial(self.formater, widget=self.clair))
+        self.clair.Bind(wx.EVT_LEFT_UP, partial(self.formater, widget=self.clair))
+        self.clair.Bind(wx.EVT_KEY_DOWN, partial(self.formater, widget=self.clair))
         self.copier_clair = wx.Button(self, label=u'Copier le texte en clair')
         self.copier_clair.Bind(wx.EVT_BUTTON, partial(self.copier, widget=self.clair))
 
         txt_code = wx.StaticText(self, -1, u"Texte codé")
         txt_code.SetFont(bold)
-        self.code = wx.TextCtrl(self, style=wx.TE_MULTILINE, size=size)
-        self.code.Bind(wx.EVT_LEFT_UP, self.codeLeft)
+        self.code = wx.TextCtrl(self, style=TE_STYLE, size=size)
+        # self.code.Bind(wx.EVT_LEFT_UP, self.codeLeft)
+        self.code.Bind(wx.EVT_LEFT_UP, partial(self.formater, widget=self.code))
+        self.code.Bind(wx.EVT_TEXT, self.code_modifie)
+        self.code.Bind(wx.EVT_KEY_DOWN, partial(self.formater, widget=self.code))
         self.copier_code = wx.Button(self, label=u'Copier le texte codé')
         self.copier_code.Bind(wx.EVT_BUTTON, partial(self.copier, widget=self.code))
 
@@ -138,15 +151,20 @@ class Cryptographie(Panel_simple):
         self.SetSizer(self.sizer)
         self.Fit()
 
+        couleur_position = wx.Color(255, 205, 179)
+        couleur1 = wx.Color(90, 40, 190)
+        couleur2 = wx.Color(200, 100, 0)
+        self.special = wx.TextAttr(wx.NullColour, couleur_position)
+        self.fond = wx.TextAttr(couleur1, wx.NullColour) #"sky blue"
+        self.fond2 = wx.TextAttr(couleur2, wx.NullColour) # "Lime Green"
+        self.defaut = wx.TextAttr(wx.NullColour, wx.NullColour, MyFont(self.clair))
+
         # DEBUG:
         self.code.SetValue('WR IRAMXPZRHRDZ IK HRYYOVR AL IRYYBKY RYZ NOALWLZR POM WR NOLZ FKR W BD O VOMIR WRY YLVDRY IR PBDAZKOZLBD RZ WRY RYPOARY RDZMR WRY HBZY OWBMY FKR I QOELZKIR BD VMBKPR WRY WRZZMRY ALDF POM ALDF')
 
 
     def copier(self, evt=None, widget=None):
-        self.clipBoard=wx.TheClipboard
-        if self.clipBoard.Open():
-            self.clipBoard.AddData(wx.TextDataObject(widget.GetValue()))
-        self.clipBoard.Close()
+        self.vers_presse_papier(widget.GetValue())
 
 
     def DlgModifierCle(self, evt=None):
@@ -212,7 +230,7 @@ class Cryptographie(Panel_simple):
         code = self.code.GetValue().upper()
         def f(s):
             if s in majuscules:
-                return self.cases[s].GetValue() or '-'
+                return self.cases[s].GetValue() or self.symbole
             return s
 
         clair = ''.join(f(s) for s in code)
@@ -236,14 +254,30 @@ class Cryptographie(Panel_simple):
             self.cases[l].SetValue(c)
         else:
             evt.Skip()
-#        self.decoder()
 
-    def codeLeft(self, evt):
-        pos = self.code.GetInsertionPoint()
-        self.clair.SetSelection(pos, pos + 1)
-        evt.Skip()
+    def code_modifie(self, evt):
+        self.decoder(evt)
+        self.formater(evt, widget=self.code)
 
-    def clairLeft(self, evt):
-        pos = self.clair.GetInsertionPoint()
-        self.code.SetSelection(pos, pos + 1)
+    def formater(self, evt, widget=None):
         evt.Skip()
+        wx.CallAfter(self._formater, widget)
+
+    def _formater(self, widget):
+        txt = widget.GetValue()
+        pos = widget.GetInsertionPoint()
+        for w in (self.code, self.clair):
+            last = w.GetLastPosition()
+            w.SetStyle(0, last, self.defaut)
+            if ' ' in txt:
+                i = 0
+                fond = self.fond
+                fond2 = self.fond2
+                while i < last:
+                    j = txt.find(' ', i)
+                    if j == -1:
+                        j = last
+                    w.SetStyle(i, j, fond)
+                    fond, fond2 = fond2, fond
+                    i = j + 1
+            w.SetStyle(pos, pos + 1, self.special)
