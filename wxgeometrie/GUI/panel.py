@@ -204,6 +204,20 @@ class Panel_simple(wx.Panel):
         pass
 
 
+    @staticmethod
+    def vers_presse_papier(texte):
+        u"""Copie le texte dans le presse-papier.
+
+        Retourne True si la copie a réussi, False sinon."""
+        clipBoard=wx.TheClipboard
+        if clipBoard.Open():
+            clipBoard.AddData(wx.TextDataObject(texte))
+            clipBoard.Close()
+            return True
+        return False
+
+
+
 class Panel_API_graphique(Panel_simple):
     u"""Pour les modules ayant besoin de TOUTE l'API de WxGéométrie (canvas, historique, gestion des commandes, etc...)
     et pas seulement des bibliothèques, mieux vaut utiliser cette classe.
@@ -508,5 +522,3 @@ class Panel_API_graphique(Panel_simple):
         if self.param("afficher_console_geolib"):
         #if gettattr(self._param_, "afficher_console_geolib", False):
             self.console_geolib.SetFocus()
-
-
