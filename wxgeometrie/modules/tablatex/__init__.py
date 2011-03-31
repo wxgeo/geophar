@@ -172,10 +172,7 @@ class TabLaTeX(Panel_simple):
         self.entree.SetFocus()
 
     def vers_presse_papier(self, event = None, texte = ""):
-        self.clipBoard=wx.TheClipboard
-        if self.clipBoard.Open():
-            self.clipBoard.AddData(wx.TextDataObject(texte))
-        self.clipBoard.Close()
+        Panel_simple.vers_presse_papier(texte)
 
 
     def generer_code(self, commande, **kw):
