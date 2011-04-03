@@ -124,3 +124,12 @@ class Graphes(Panel_API_graphique):
             for sommet in sommets:
                 self.feuille_actuelle.objets[sommet].style(couleur=rgb(*couleur), style=symbs[i%len(symbs)])
         self.feuille_actuelle.interprete.commande_executee()
+
+    def latex_Dijkstra(self, event=None, start=None, end=None):
+        self.creer_graphe()
+        if start is None:
+            start = min(self.graph.nodes)
+        if end is None:
+            end = max(self.graph.nodes)
+        latex = self.graph.latex_Dijkstra(start, end)
+        self.vers_presse_papier(latex)
