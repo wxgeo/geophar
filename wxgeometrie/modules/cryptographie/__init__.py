@@ -30,6 +30,7 @@ from functools import partial
 from itertools import cycle, izip
 from random import shuffle
 import re
+import wx.richtext as rt
 
 from GUI.wxlib import MyFont
 
@@ -98,11 +99,11 @@ class Cryptographie(Panel_simple):
         self.textes = wx.GridBagSizer(5, 5)
         size = (400, 300)
 
-        TE_STYLE = wx.TE_MULTILINE|wx.TE_RICH2#|wx.TE_CHARWRAP
+        #TE_STYLE = wx.TE_MULTILINE|wx.TE_RICH2#|wx.TE_CHARWRAP
 
         txt_clair = wx.StaticText(self, -1, u"Texte en clair")
         txt_clair.SetFont(bold)
-        self.clair = wx.TextCtrl(self, style=TE_STYLE, size=size)
+        self.clair = rt.RichTextCtrl(self, size=size)
         # self.clair.Bind(wx.EVT_LEFT_UP, self.clairLeft)
         self.clair.Bind(wx.EVT_TEXT, partial(self.formater, widget=self.clair))
         self.clair.Bind(wx.EVT_LEFT_UP, partial(self.formater, widget=self.clair))
@@ -112,7 +113,7 @@ class Cryptographie(Panel_simple):
 
         txt_code = wx.StaticText(self, -1, u"Texte codé")
         txt_code.SetFont(bold)
-        self.code = wx.TextCtrl(self, style=TE_STYLE, size=size)
+        self.code = rt.RichTextCtrl(self, size=size)
         # self.code.Bind(wx.EVT_LEFT_UP, self.codeLeft)
         self.code.Bind(wx.EVT_LEFT_UP, partial(self.formater, widget=self.code))
         self.code.Bind(wx.EVT_TEXT, self.code_modifie)
@@ -154,10 +155,17 @@ class Cryptographie(Panel_simple):
         couleur_position = wx.Color(255, 205, 179)
         couleur1 = wx.Color(90, 40, 190)
         couleur2 = wx.Color(200, 100, 0)
-        self.special = wx.TextAttr(wx.NullColour, couleur_position)
-        self.fond = wx.TextAttr(couleur1, wx.NullColour) #"sky blue"
-        self.fond2 = wx.TextAttr(couleur2, wx.NullColour) # "Lime Green"
-        self.defaut = wx.TextAttr(wx.NullColour, wx.NullColour, MyFont(self.clair))
+        self.special = rt.TextAttrEx()
+        self.special.SetBackgroundColour(couleur_position)
+        self.fond = rt.TextAttrEx()
+        self.fond.SetTextColour(couleur1)
+        self.fond.SetBackgroundColour("WHITE")
+        self.fond2 = rt.TextAttrEx()
+        self.fond2.SetTextColour(couleur2)
+        self.fond2.SetBackgroundColour("WHITE")
+        self.defaut = rt.TextAttrEx()
+        self.defaut.SetTextColour("BLACK")
+        self.defaut.SetBackgroundColour("WHITE")
 
         # DEBUG:
         self.code.SetValue('WR IRAMXPZRHRDZ IK HRYYOVR AL IRYYBKY RYZ NOALWLZR POM WR NOLZ FKR W BD O VOMIR WRY YLVDRY IR PBDAZKOZLBD RZ WRY RYPOARY RDZMR WRY HBZY OWBMY FKR I QOELZKIR BD VMBKPR WRY WRZZMRY ALDF POM ALDF')
@@ -263,12 +271,15 @@ class Cryptographie(Panel_simple):
         evt.Skip()
         wx.CallAfter(self._formater, widget)
 
-    def _formater(self, widget):
+    def _formater(self, widget, _=[0]):
+        print 'Formatage...', _[0]
+        _[0] += 1
         txt = widget.GetValue()
         pos = widget.GetInsertionPoint()
         for w in (self.code, self.clair):
+            w.Freeze()
             last = w.GetLastPosition()
-            w.SetStyle(0, last, self.defaut)
+            w.SetStyle((0, last), self.defaut)
             if ' ' in txt:
                 i = 0
                 fond = self.fond
@@ -277,7 +288,9 @@ class Cryptographie(Panel_simple):
                     j = txt.find(' ', i)
                     if j == -1:
                         j = last
-                    w.SetStyle(i, j, fond)
+                    w.SetStyle((i, j), fond)
                     fond, fond2 = fond2, fond
                     i = j + 1
-            w.SetStyle(pos, pos + 1, self.special)
+            w.SetStyle((pos, pos + 1), self.special)
+            w.Thaw()
+        print 'Fin formatage.'
