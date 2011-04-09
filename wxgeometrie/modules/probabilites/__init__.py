@@ -94,7 +94,7 @@ omega
 
 
     def Appliquer(self, event):
-        with self.canvas.geler_affichage(actualiser = True):
+        with self.canvas.geler_affichage(actualiser=True, sablier=True):
             self.creer_feuille()
             instructions = [instruction for instruction in self.instructions.GetValue().split("\n") if instruction]
             nbr_colonnes = 0

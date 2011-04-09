@@ -198,6 +198,15 @@ class WxCanvas(FigureCanvasWxAgg, Canvas):
     def message(self, txt, lieu = 0):
         self.parent.parent.parent.message(txt, lieu) # cf. geometrie.py
 
+    def _curseur(self, sablier):
+        if sablier:
+            wx.BeginBusyCursor()
+        else:
+            wx.EndBusyCursor()
+            if wx.Platform == '__WXMSW__':
+                # Le curseur disparaît sinon sous Windows !!
+                wx.SetCursor(wx.StockCursor(wx.CURSOR_DEFAULT))
+
     @property
     def dimensions(self):
         if self._dimensions is None:

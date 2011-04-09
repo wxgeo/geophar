@@ -430,7 +430,7 @@ class Onglets(wx.Notebook):
         canvas = self.onglet_actuel.canvas
         dlg = SupprimerObjet(self)
         if (dlg.ShowModal() == wx.ID_OK):
-            with canvas.geler_affichage(actualiser = True):
+            with canvas.geler_affichage(actualiser=True, sablier=True):
                 for selection in dlg.GetValueString():
                     try:
                         # Il est normal que des erreurs soient renvoyées

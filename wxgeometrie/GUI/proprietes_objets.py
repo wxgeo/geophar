@@ -402,7 +402,7 @@ class ProprietesAffichage(wx.Panel):
         self.EvtAnnuler(event)
 
     def EvtAppliquer(self, event):
-        with self.canvas.geler_affichage(actualiser = True):
+        with self.canvas.geler_affichage(actualiser=True, sablier=True):
             try:
                 for objet in self.objets:
                     changements = self.changements.copy()
@@ -418,7 +418,7 @@ class ProprietesAffichage(wx.Panel):
 
 
     def EvtSupprimer(self, event):
-        with self.canvas.geler_affichage(actualiser = True):
+        with self.canvas.geler_affichage(actualiser=True, sablier=True):
             for objet in self.objets:
                 self.canvas.executer(u"del %s" %objet.nom)
         self.EvtAnnuler(event)
@@ -644,7 +644,3 @@ class Proprietes(MyMiniFrame):
         self.SetExtraStyle(wx.WS_EX_BLOCK_EVENTS )
         self.onglets = OngletsProprietes(self)
         self.SetSize(wx.Size(*(max(dimensions) + 50 for dimensions in zip(self.dim1, self.dim2, self.dim3))))
-
-
-
-

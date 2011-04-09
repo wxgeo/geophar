@@ -1324,7 +1324,7 @@ class Feuille(object):
         f.effacer()
         f.charger(commandes)
         """
-        with self.canvas.geler_affichage(actualiser = rafraichir):
+        with self.canvas.geler_affichage(actualiser=rafraichir, sablier=rafraichir):
             with ModeTolerant(self, mode_tolerant):
                 try:
                     exec(commandes, self.objets)

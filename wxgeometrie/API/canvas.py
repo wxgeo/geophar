@@ -31,7 +31,8 @@ from matplotlib.figure import Figure
 
 
 class GelAffichage(object):
-    def __init__(self, canvas, geler = True, actualiser = False, seulement_en_apparence = False):
+    def __init__(self, canvas, geler=True, actualiser=False, seulement_en_apparence=False, sablier=False):
+        self.sablier = sablier
         self.canvas = canvas
         self.geler = geler
         self.actualiser = actualiser
@@ -41,11 +42,15 @@ class GelAffichage(object):
         self._ancienne_valeur = getattr(self.canvas, self.attribut)
         if self.geler is not None:
             setattr(self.canvas, self.attribut, self.geler)
+        if self.sablier:
+            self.canvas._curseur(sablier=True)
 
     def __exit__(self, type, value, traceback):
         setattr(self.canvas, self.attribut, self._ancienne_valeur)
         if self.actualiser:
             self.canvas.rafraichir_affichage()
+        if self.sablier:
+            self.canvas._curseur(sablier=False)
 
 
 # Garde une trace dans les logs de chaque appel de la méthode pour débogage.
@@ -277,7 +282,7 @@ class Canvas(FigureCanvasAgg):
         u"Affichage spécifique au module en cours. (À surclasser.)"
         pass
 
-    def geler_affichage(self, geler = True, actualiser = False, seulement_en_apparence = False):
+    def geler_affichage(self, geler=True, actualiser=False, seulement_en_apparence=False, sablier=False):
         u"""À utiliser au sein d'un contexte 'with':
         with self.geler_affichage():
             ...
@@ -285,9 +290,16 @@ class Canvas(FigureCanvasAgg):
         Si seulement_en_apparence = True, l'affichage n'est pas gelé en interne, mais les modifications
         ne s'affichent pas à l'écran (le gain de vitesse est alors négligeable, mais esthétiquement ça évite
         que des modifications successives apparaissent à l'écran).
-        """
-        return GelAffichage(self, geler = geler, actualiser = actualiser)
 
+        Si sablier = True, le pointeur de la souris est remplacé temporairement par un sablier.
+        """
+        return GelAffichage(self, geler=geler, actualiser=actualiser, sablier=sablier)
+
+    def _curseur(self, sablier):
+        u"""Changer le curseur en sablier.
+
+        À surclasser."""
+        raise NotImplementedError
 
     @property
     def affichage_gele(self):
