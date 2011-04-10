@@ -151,6 +151,10 @@ class Secteur_angulaire(Angle_generique):
 
     def _creer_figure(self):
         codage = self.style("codage")
+        niveau = self.style("niveau")
+        couleur = self.style("couleur")
+        epaisseur = self.style("epaisseur")
+        style = self.style("style")
         if param.codage_automatique_angle_droits and not codage:
             if abs(abs(self.radian) - math.pi/2) < contexte['tolerance']:
                 codage = "^"
@@ -176,7 +180,6 @@ class Secteur_angulaire(Angle_generique):
         r = param.codage["rayon"]
         x0, y0 = self._pixel(self.__point)
         t = fullrange(a, b, self.__canvas__.pas())
-        niveau = self.style("niveau")
 
 
         if not codage:
@@ -190,19 +193,13 @@ class Secteur_angulaire(Angle_generique):
                 v = .5*r/math.hypot(*v)*numpy.array(v)
                 plot = self._representation[1]
                 x, y = self.__canvas__.pix2coo( numpy.array((x0 + u[0], x0 + u[0] + v[0], x0 + v[0])),
-                                                                numpy.array((y0 + u[1], y0 + u[1] + v[1], y0 + v[1]))
-                                                                )
+                                                numpy.array((y0 + u[1], y0 + u[1] + v[1], y0 + v[1]))
+                                              )
                 plot.set_data(x, y)
-                plot.set_color(self.style("couleur"))
-                plot.set_linestyle(self.style("style"))
-                plot.set_linewidth(self.style("epaisseur"))
-                plot.set_marker('None')
+                plot.set(color=couleur, linestyle=style, linewidth=epaisseur, marker='None')
                 for plot in self._representation[2:]:
-                    plot.set_visible(False)
-                    plot.set_marker('None')
-                    plot.set_color(self.style("couleur"))
-                    plot.set_linestyle(self.style("style"))
-                    plot.set_linewidth(self.style("epaisseur"))
+                    plot.set(visible=False, marker='None', color=couleur,
+                             linestyle=style, linewidth=epaisseur)
             else:
                 n = len(codage)
                 for i in xrange(n):
@@ -212,16 +209,10 @@ class Secteur_angulaire(Angle_generique):
                     else:
                         x, y = self.__canvas__.pix2coo(x0 + (r-3*i)*numpy.cos(t), y0 + (r-3*i)*numpy.sin(t))
                     plot.set_data(x, y)
-                    plot.set_color(self.style("couleur"))
-                    plot.set_linestyle(self.style("style"))
-                    plot.set_linewidth(self.style("epaisseur"))
-                    plot.set_marker('None')
+                    plot.set(color=couleur, linestyle=style, linewidth=epaisseur, marker='None')
                 for plot in self._representation[1+n:]:
-                    plot.set_visible(False)
-                    plot.set_marker('None')
-                    plot.set_color(self.style("couleur"))
-                    plot.set_linestyle(self.style("style"))
-                    plot.set_linewidth(self.style("epaisseur"))
+                    plot.set(visible=False, marker='None', color=couleur,
+                             linestyle=style, linewidth=epaisseur)
 
                 if codage in ("/", "x", "o"):
                     c = .5*(a+b)
@@ -232,8 +223,8 @@ class Secteur_angulaire(Angle_generique):
                         plot.set_marker("o")
                         plot.set_markersize(taille)
                         plot.set_markerfacecolor("None") # matplotlib 0.91.2
-                        plot.set_markeredgecolor(self.style("couleur"))
-                        plot.set_markeredgewidth(self.style("epaisseur"))
+                        plot.set_markeredgecolor(couleur)
+                        plot.set_markeredgewidth(epaisseur)
                         plot.set_visible(True)
                         xo, yo = self.__canvas__.pix2coo(xc, yc)
                         plot.set_data([xo], [yo])
@@ -267,10 +258,8 @@ class Secteur_angulaire(Angle_generique):
 
         fill = self._representation[0]
         fill.xy = zip(x, y) + [(xx, yy)]
-        fill._alpha = self.style("alpha")
-        fill._facecolor = self.style("couleur")
-        fill._linestyle = ALL.FILL_STYLES.get(self.style("style"), 'solid')
-        fill._linewidth = self.style("epaisseur")
+        fill.set(alpha = self.style("alpha"), facecolor = couleur,
+                 linestyle = ALL.FILL_STYLES.get(style, 'solid'), linewidth = epaisseur)
         fill.zorder = niveau - 0.01
 
 
