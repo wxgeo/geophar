@@ -545,7 +545,7 @@ class ProprietesAvance(wx.Panel):
             self.objet = self.objets[0]
             box = wx.StaticBoxSizer(wx.StaticBox(self, -1, u"Style de l'objet"), wx.VERTICAL)
             box.Add(wx.StaticText(self, label = u"Attention, ne modifiez ce contenu que si vous savez ce que vous faites."), 0, wx.ALL, 5)
-            self.avance = wx.TextCtrl(self, value = self.objets[0].style("label"), size=wx.Size(350, 200), style = wx.TE_MULTILINE)
+            self.avance = wx.TextCtrl(self, size=wx.Size(350, 200), style = wx.TE_MULTILINE)
             self.actualiser()
             box.Add(self.avance, 0, wx.ALL, 5)
             self.sizer.Add(box, 0, wx.ALL, 5)
@@ -584,7 +584,8 @@ class ProprietesAvance(wx.Panel):
             self.canvas.executer(u"%s.style(**%s)" %(self.objet.nom, dico))
 
     def actualiser(self, event = None):
-        self.avance.SetValue("\n".join([key.strip()[1:-1] + ":" + value for key, value in [txt.split(":", 1) for txt in advanced_split(str(self.objet.style())[1:-1], ",")]]))
+        items = (txt.split(':', 1) for txt in advanced_split(str(self.objet.style())[1:-1], ","))
+        self.avance.SetValue('\n'.join(sorted(key.strip()[1:-1] + ':' + value for key, value in items)))
 
 
 
