@@ -488,6 +488,12 @@ Buts de cette série :
     Meilleure gestion des guillemets (calculatrice, traceur, géométrie...)
     Très nombreuses corrections de bugs et améliorations pour le traceur.
 
+    version 0.132.4
+    Correction d'une regression importante avec matplotlib 1.0 (points non affichés)
+    Affichage du sablier lors d'un certain nombre d'opérations potentiellement longues
+    Module expérimental de cryptographie (attention, ne fonctionne *PAS* sous Windows pour l'instant !)
+
+
 
     **Bugs connus / améliorations prévues**
 
