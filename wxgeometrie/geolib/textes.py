@@ -42,25 +42,30 @@ class Texte_generique(Objet_avec_coordonnees):
 
 
     def _creer_figure(self):
-        #self.__canvas__.Texte(self.texte, self.coo())
         if not self._representation:
             self._representation = [self.rendu.texte(), self.rendu.polygone()]
-            #~ self._representation[0]._fontproperties = module_copy.copy(self.__empty_font__)
-##            self._representation[0]._fontproperties = matplotlib.font_manager.FontProperties()
         text = self._representation[0]
         fill = self._representation[1]
         texte = (self.label() if self.label_temporaire is None else self.label_temporaire + '...')
         if not texte:
-            text._visible = False
-            fill._visible = False
+            text.set_visible(False)
+            fill.set_visible(False)
             return
         else:
-            text._visible = True
+            text.set_visible(True)
         x, y = self.coordonnees
+        fond = self.style("fond")
+        niveau = self.style("niveau")
+        av = self.style("alignement_vertical")
+        ah = self.style("alignement_horizontal")
+        if av not in ('center', 'top', 'bottom', 'baseline'):
+            av = 'bottom'
+        if ah not in ('center', 'right', 'left'):
+            ah = 'left'
         text.set_x(x)
         text.set_y(y)
-        text._color = self.style("couleur")
-        font = text._fontproperties
+        text.set_color(self.style("couleur"))
+        font = text.get_fontproperties()
         font.set_size(self.style("taille"))
         #font.set_stretch(self.style("largeur"))  # mal gere par matploltib (version 0.87)
 
@@ -88,31 +93,32 @@ class Texte_generique(Objet_avec_coordonnees):
             font.set_family(self.style("famille"))
         text._text = texte
 
-        text._rotation = self.style("angle")
-        text._verticalalignment = self.style("alignement_vertical")
-        text._horizontalalignment = self.style("alignement_horizontal")
-        text.zorder = self.style("niveau") + .001
-        if self.style("fond") is None:
-            fill._visible = False
+        text.set_rotation(self.style("angle"))
+        print type(av), type(ah), av, ah
+        text.set_verticalalignment(av)
+        text.set_horizontalalignment(ah)
+        text.zorder = niveau + .001
+        if fond is None:
+            fill.set_visible(False)
         else:
-            fill._visible = True
+            fill.set_visible(True)
             can = self.__canvas__
             box = text.get_window_extent(can.get_renderer())
             w, h = can.dpix2coo(.5*box.width, .5*box.height)
-            if text._verticalalignment == "left":
+            if av == "left":
                 x += w
-            elif text._verticalalignment == "right":
+            elif av == "right":
                 x -= w
-            if text._horizontalalignment == "top":
+            if ah == "top":
                 y -= h
-            elif text._horizontalalignment == "bottom":
+            elif ah == "bottom":
                 y += h
             mx, my = can.dpix2coo(2, 2) # marge verticale et horizontale (en pixels)
             w += mx
             h += my
             fill.xy = [(x - w, y - h), (x - w, y + h), (x + w, y + h), (x + w, y - h)]
-            fill._facecolor = fill._edgecolor = self.style("fond")
-            fill.zorder = self.style("niveau")
+            fill.set(facecolor=fond, edgecolor=fond)
+            fill.zorder = niveau
         #debug(font.__dict__)
 
     def _boite(self):

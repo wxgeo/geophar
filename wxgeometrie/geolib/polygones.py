@@ -56,15 +56,7 @@ class Cote(Segment):
     def __init__(self, polygone, n, **styles):
         self.__polygone = polygone
         self.__n = n
-#        _styles = styles
-#        styles = dict(polygone.style())
-#        styles.update(_styles)
         Segment.__init__(self, polygone._Polygone_generique__sommets[n], polygone._Polygone_generique__sommets[(n + 1)%len(polygone._Polygone_generique__sommets)], **styles)
-#        Segment.__init__(self, polygone._Polygone_generique__sommets[n], polygone._Polygone_generique__sommets[(n + 1)%len(polygone._Polygone_generique__sommets)], **polygone.style())
-#        self._enregistrer = False # l'objet ne doit pas être sauvegardé
-
-#    def supprimer(self):
-#        self.__polygone.supprimer()
 
     def _modifier_hierarchie(self, valeur = None):
         # Voir commentaires pour Sommet._modifier_hierarchie
@@ -92,7 +84,6 @@ class Sommet(Point_generique):
     L'objet est créé automatiquement lors de la création du polygone.
     De plus, si l'objet est supprimé, le polygone est automatiquement supprimé."""
 
-#    _style_defaut = {"legende" : wxgeo.RIEN}
     _prefixe_nom = "S"
 
     # Un sommet peut-être lié à un point, c'est-à-dire avoir toujours les mêmes coordonnées que ce point
@@ -105,11 +96,6 @@ class Sommet(Point_generique):
         self.__polygone = polygone
         self.__n = n
         Point_generique.__init__(self, **styles)
-#        self.__point = polygone.points[n]
-#        self._enregistrer = False
-
-#    def supprimer(self):
-#        self.__polygone.supprimer()
 
     def _get_coordonnees(self):
         return self.__polygone._Polygone_generique__points[self.__n].coordonnees
@@ -117,9 +103,6 @@ class Sommet(Point_generique):
     def _set_coordonnees(self, x, y):
         if self._point_lie is not None:
             self._point_lie._set_coordonnees(x, y)
-
-#    def _conditions_existence(self):
-#        return [self.__polygone._Polygone__points[n].existe]
 
     def _modifier_hierarchie(self, valeur = None):
         # Pour les sauvegardes par exemple, il est préférable que les sommets, puis les cotés,
@@ -326,19 +309,20 @@ class Polygone_generique(Objet):
         fill = self._representation[0]
         plot = self._representation[1]
         niveau = self.style("niveau")
+        hachures = self.style("hachures")
+        alpha = self.style("alpha")
+        couleur = self.style("couleur")
+        style = self.style("style")
+        epaisseur = self.style("epaisseur")
         points = self.__points + (self.__points[0],)
         xy = [pt.coordonnees for pt in points]
         x, y = zip(*xy)
         fill.xy = xy
         plot.set_data(x, y)
-        fill._alpha = self.style("alpha")
-        hachures = self.style("hachures")
-        fill._hatch = hachures
-        fill._edgecolor = fill._facecolor = plot._color = self.style("couleur")
+        fill.set(alpha=alpha, hatch=hachures, edgecolor=couleur, facecolor=couleur, linewidth=epaisseur)
+        plot.set(color=couleur, linestyle=style, linewidth=epaisseur)
+        fill.set_linestyle(ALL.FILL_STYLES.get(self.style("style"), "solid"))
         fill.zorder = niveau - 0.01
-        plot._linestyle = self.style("style")
-        fill._linestyle = ALL.FILL_STYLES.get(self.style("style"), "solid")
-        plot._linewidth = fill._linewidth = self.style("epaisseur")
         plot.zorder = niveau
 
 
@@ -683,22 +667,6 @@ class Parallelogramme(Quadrilatere):
 
 
 
-##class OldRectangle(Parallelogramme):
-##    u"""Un rectangle."""
-##
-##    point1 = __point1 = Argument("Point_generique", defaut = ALL.Point)
-##    point2 = __point2 = Argument("Point_generique", defaut = ALL.Point)
-##    angle = __angle = Argument("Angle_generique", defaut = lambda:module_random.uniform(math.pi/7, math.pi/5))
-##
-##    def __init__(self, point1 = None, point2 = None, angle = None, **styles):
-##        self.__point1 = point1 = Ref(point1)
-##        self.__point2 = point2 = Ref(point2)
-##        self.__angle = angle = Ref(angle)
-##        Parallelogramme.__init__(self, point2, Sommet_triangle_rectangle(point1, point2, angle), point1, **styles)
-##        # Hack infâme, pour lier le 3e sommet à l'objet 'Sommet_triangle_rectangle'
-##        self._Polygone_generique__sommets[1]._lier_sommet(self._Quadrilatere__point2)
-
-
 class Sommet_rectangle(Point_generique):
     u"""Un sommet d'un rectangle.
 
@@ -881,23 +849,6 @@ class Polygone_regulier(Polygone_generique):
     point1 = __point1 = Argument("Point_generique", defaut = ALL.Point)
     point2 = __point2 = Argument("Point_generique", defaut = ALL.Point)
     n = __n = ArgumentNonModifiable("int")
-
-##    def __init__(self, point1 = None, point2 = None, n = 6, **styles):
-##        self.__point1 = point1 = Ref(point1)
-##        self.__point2 = point2 = Ref(point2)
-##        if n is None:
-##            n = 3 + abs(int(module_random.normalvariate(0,4)))
-##        # il ne faut pas utiliser de référence (Ref), car n n'est pas modifiable :
-##        self.__n = n
-##        points = [point1, point2]
-##        for i in xrange(n - 2):
-##            # on ajoute l'image d'un sommet par une rotation de centre le sommet suivant
-##            angle = '(2-' + str(n) + ')*pi/' + str(n)
-##            angle = -(n - 2)*math.pi/n
-##            points.append(ALL.Rotation(points[-1], angle)(points[-2]))
-##            # points.append(ALL.Rotation(points[-1], -(n - 2)*math.pi/n)(points[-2]))
-##        Polygone_generique.__init__(self, *points, **styles)
-##
 
 
     def __init__(self, point1 = None, point2 = None, n = 6, **styles):
@@ -1103,42 +1054,6 @@ class Triangle_isocele_rectangle(Triangle):
 
 
 
-##class PrevisualisationPolygone(Polygone):
-##    u"""Une forme de polygone utilisée pour la prévisualisation.
-##
-##    Usage interne."""
-##
-##    points = __points = None # On ne veut pas passer par un objet 'Arguments' ici (le but étant d'être rapide).
-##
-##    def __init__(self, *points):
-##        self.points = points
-##        self._representation = [self.rendu.polygone(), self.rendu.ligne(zorder = 1)]
-##
-##    def style(self, nom):
-##        return param.polygones.get(nom, None)
-##
-##    def refresh(self):
-##        u"Version (très) raccourcie optimisée pour la prévisualisation."
-##        self._affiche()
-##        self.__canvas__.actualiser()
-##
-##    def _creer_figure(self):
-##        fill = self._representation[0]
-##        plot = self._representation[1]
-##        niveau = self.style("niveau")
-##        xy = [pt.coordonnees for pt in self.points]
-##        x, y = zip(*xy)
-##        xy.append(self.points[0].coordonnees)
-##        fill.xy = xy
-##        plot._x = x; plot._y = y
-##        fill._alpha = self.style("alpha")
-##        fill._facecolor = plot._color = self.style("couleur")
-##        fill.zorder = niveau - 0.01
-##        plot._linestyle = self.style("style")
-##        plot._linewidth = self.style("epaisseur")
-##        fill._linewidth = 0
-##        plot.zorder = niveau
-
 
 class PrevisualisationPolygone(Polygone_generique):
     u"""Une forme de polygone utilisée uniquement pour la prévisualisation.
@@ -1167,30 +1082,12 @@ class PrevisualisationPolygone(Polygone_generique):
 
     def __init__(self, *points):
         Objet.__init__(self)
-#        self.vassaux = ()
         self.__points = ()
-#        self.etiquette = None
         self.points = points
 
     def style(self, nom):
         return param.polygones.get(nom, None)
 
-##    def refresh(self):
-##        u"Version (très) raccourcie optimisée pour la prévisualisation."
-##        self._creer_figure()
-##        self.__canvas__.actualiser()
-
-##    def _creer_figure(self):
-##        if not hasattr(self,  "__fill__"):
-##            self.__fill__ = self.rendu.polygone()
-##        fill = self.__fill__
-##        xy = [pt.coordonnees for pt in self.__points]
-##        xy.append(self.__points[0].coordonnees)
-##        fill.xy = xy
-##        fill._alpha = self.style("alpha")
-##        fill._facecolor = self.style("couleur")
-##        fill.zorder = self.style("niveau")
-##        fill._linewidth = self.style("epaisseur")
 
     def _creer_figure(self):
         if not self._representation:
@@ -1215,7 +1112,3 @@ class PrevisualisationPolygone(Polygone_generique):
 
     def __repr__(self):
         return "PrevisualisationPolygone(%s)" %repr(self.__points)
-
-
-
-#class PrevisualisationTriangle_rectangle(PrevisualisationPolygone):

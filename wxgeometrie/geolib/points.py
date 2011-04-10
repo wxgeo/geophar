@@ -59,11 +59,13 @@ class Point_generique(Objet_avec_coordonnees):
             self._representation = [self.rendu.ligne()]
         x, y = self.coordonnees
         plot = self._representation[0]
-        plot.set_data(numpy.array([x]), numpy.array([y]))
-        plot._markeredgecolor = plot._markerfacecolor= self.style("couleur")
-        plot._marker = self.style("style")
-        plot._markersize = self.style("taille")
-        plot._markeredgewidth = self.style("epaisseur")
+        plot.set_data([x], [y])
+        couleur = self.style("couleur")
+        plot.set_markeredgecolor(couleur)
+        plot.set_markerfacecolor(couleur)
+        plot.set_marker(self.style("style"))
+        plot.set_markersize(self.style("taille"))
+        plot.set_markeredgewidth(self.style("epaisseur"))
         plot.zorder = self.style("niveau")
 
 

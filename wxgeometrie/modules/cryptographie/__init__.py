@@ -267,6 +267,7 @@ class Cryptographie(Panel_simple):
         txt = widget.GetValue()
         pos = widget.GetInsertionPoint()
         for w in (self.code, self.clair):
+            w.Freeze()
             last = w.GetLastPosition()
             w.SetStyle(0, last, self.defaut)
             if ' ' in txt:
@@ -281,3 +282,5 @@ class Cryptographie(Panel_simple):
                     fond, fond2 = fond2, fond
                     i = j + 1
             w.SetStyle(pos, pos + 1, self.special)
+            w.Thaw()
+        widget.SetFocusFromKbd()

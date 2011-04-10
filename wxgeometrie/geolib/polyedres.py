@@ -132,11 +132,6 @@ class Sommet_polyedre(Point_generique):
         self.__polyedre = polyedre
         self.__n = n
         Point_generique.__init__(self, **styles)
-#        self.__point = polyedre.points[n]
-#        self._enregistrer = False
-
-#    def supprimer(self):
-#        self.__polyedre.supprimer()
 
     def _get_coordonnees(self):
         return self.__polyedre._Polyedre_generique__points[self.__n].coordonnees
@@ -144,9 +139,6 @@ class Sommet_polyedre(Point_generique):
     def _set_coordonnees(self, x, y):
         if self._point_lie is not None:
             self._point_lie._set_coordonnees(x, y)
-
-#    def _conditions_existence(self):
-#        return [self.__polyedre._Polyedre__points[n].existe]
 
     def _modifier_hierarchie(self, valeur = None):
         # Pour les sauvegardes par exemple, il est préférable que les sommets, puis les arêtes,
@@ -316,17 +308,18 @@ class Polyedre_generique(Objet):
         for face, fill in zip(self.__faces,  self._representation):
             xy = [self.__points[n].coordonnees for n in face + (face[0],)]
             niveau = self.style("niveau")
+            couleur = self.style("couleur")
             fill.xy = xy
             if face in self.__faces_principales:
-                fill._alpha = min(2*self.style("alpha"), 1.)
+                fill.set_alpha(min(2*self.style("alpha"), 1.))
             else:
-                fill._alpha = self.style("alpha")
+                fill.set_alpha(self.style("alpha"))
             hachures = self.style("hachures")
             if hachures is not None:
-                fill._hatch = hachures
-            fill._edgecolor = fill._facecolor = self.style("couleur")
+                fill.set_hatch(hachures)
+            fill.set(edgecolor=couleur, facecolor=couleur)
             fill.zorder = niveau - 0.01
-            fill._linestyle = ALL.FILL_STYLES.get(self.style("style"), "solid")
+            fill.set_linestyle(ALL.FILL_STYLES.get(self.style("style"), "solid"))
 
 
 ##    def image_par(self, transformation):

@@ -173,6 +173,13 @@ class Vecteur(Vecteur_generique):
         A = numpy.array(self.__canvas__.coo2pix(x1, y1))
         B = numpy.array(self.__canvas__.coo2pix(x2, y2))
         k = self.style("position")
+        couleur = self.style("couleur")
+        epaisseur = self.style("epaisseur")
+        niveau = self.style("niveau")
+        style = self.style("style")
+        r = self.style("taille")*param.zoom_ligne
+        a = self.style("angle")*math.pi/360 # degrés -> radians
+
         G = k*B + (1-k)*A   # par défaut, k = 1, et la flêche est positionnée à l'extrémité du vecteur (point B)
 
         #                                                 M
@@ -181,8 +188,6 @@ class Vecteur(Vecteur_generique):
         #                                                 N
         # On calcule les coordonnees de C, puis par rotation autour de G, celles de M et N.
 
-        r = self.style("taille")*param.zoom_ligne
-        a = self.style("angle")*math.pi/360
         C = G + r*(A - B)/math.hypot(*(A - B)) # prendre B et non G, au cas où G = A !
         M = (numpy.dot([[math.cos(a), -math.sin(a)], [math.sin(a), math.cos(a)]], numpy.transpose([C - G])) + numpy.transpose([G]))[:,0]
         N = (numpy.dot([[math.cos(a), math.sin(a)], [-math.sin(a), math.cos(a)]], numpy.transpose([C - G])) + numpy.transpose([G]))[:,0]
@@ -191,7 +196,7 @@ class Vecteur(Vecteur_generique):
         plot2.set_data(numpy.array(x), numpy.array(y))
 
         if self.style("double_fleche"):
-            plot3._visible = True
+            plot3.set_visible(True)
             G = k*A + (1-k)*B   # par défaut, k = 1, et la flêche est positionnée à l'extrémité du vecteur (point B)
 
             #                                                 M
@@ -200,20 +205,18 @@ class Vecteur(Vecteur_generique):
             #                                                 N
             # On calcule les coordonnees de C, puis par rotation autour de G, celles de M et N.
 
-            r = self.style("taille")*param.zoom_ligne
-            a = self.style("angle")*math.pi/360
             C = G + r*(B - A)/math.hypot(*(B - A)) # prendre B et non G, au cas où G = A !
             M = (numpy.dot([[math.cos(a), -math.sin(a)], [math.sin(a), math.cos(a)]], numpy.transpose([C - G])) + numpy.transpose([G]))[:,0]
             N = (numpy.dot([[math.cos(a), math.sin(a)], [-math.sin(a), math.cos(a)]], numpy.transpose([C - G])) + numpy.transpose([G]))[:,0]
             x, y = self.__canvas__.pix2coo(*array_zip(M, G, N))
             plot3.set_data(numpy.array(x), numpy.array(y))
         else:
-            plot3._visible = False
+            plot3.set_visible(False)
 
-        plot1._color = plot2._color = plot3._color = self.style("couleur")
-        plot1._linestyle = plot2._linestyle = plot3._linestyle = self.style("style")
-        plot1._linewidth = plot2._linewidth = plot3._linewidth = self.style("epaisseur")
-        plot1.zorder = plot2.zorder = plot3.zorder = self.style("niveau")
+        plot1.set(linestyle=style, color=couleur, linewidth=epaisseur)
+        plot2.set(linestyle=style, color=couleur, linewidth=epaisseur)
+        plot3.set(linestyle=style, color=couleur, linewidth=epaisseur)
+        plot1.zorder = plot2.zorder = plot3.zorder = niveau
 
 
     def _get_coordonnees(self):
@@ -376,33 +379,6 @@ class Somme_vecteurs(Vecteur_generique):
     def _get_coordonnees(self):
         return sum(coeff*vecteur.x for coeff, vecteur in zip(self.__coefficients, self.__vecteurs)), \
                     sum(coeff*vecteur.y for coeff, vecteur in zip(self.__coefficients, self.__vecteurs))
-
-
-
-
-# Le code suivant est erroné (la rotation s'appliquait à l'extrémité du vecteur seulement), et est inutile de toute façon.
-
-#class Vecteur_rotation(Point_rotation, Vecteur_generique): # en pratique, c'est presque un alias de Point_rotation...
-#    u"""Une image d'un vecteur par une rotation.
-#
-#    Vecteur construit à partir d'un autre via une rotation d'angle et de centre donné."""
-#
-#    def __init__(self, vecteur, rotation, **styles):
-#        self.__args = GestionnaireArguments()
-#        self.__vecteur = vecteur = Argument(vecteur)
-#        self.__rotation = rotation = Argument(rotation)
-#        self._initialiser(vecteur = Vecteur_generique, rotation = ALL.Rotation)
-#        Point_rotation.__init__(self, point = vecteur, rotation = rotation)
-#        #Vecteur_generique.__init__(self, **styles)
-#
-#
-#    def _espace_vital(self):
-#        pass
-#
-#    def _creer_figure(self):  # pour que le vecteur ne soit pas affiché comme point
-#        pass
-
-
 
 
 

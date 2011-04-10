@@ -526,8 +526,8 @@ labels = {
     "fixe": False,
     "categorie": "textes",
     "niveau": 7,
-    "alignement_vertical": "left",
-    "alignement_horizontal": "bottom",
+    "alignement_vertical": "bottom",
+    "alignement_horizontal": "left",
     }
 angles = {
     "couleur": "b",

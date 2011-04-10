@@ -82,22 +82,16 @@ class Interpolation_generique(Courbe_generique):
         if vec_deb is None:
             vec_deb = (x-a, y-b)
         if self.__debut == True:
-            plot._visible = True
             plot.set_data((x,), (y,))
-            plot._color = couleur
-            plot._marker = "o"
-            plot._markeredgecolor = couleur
-            plot._markersize = 2*self.__canvas__.taille["o"]
-            plot._linewidth = epaisseur
+            plot.set(visible=True, color=couleur, marker="o", markeredgecolor=couleur,
+                     markersize=2*self.__canvas__.taille["o"], linewidth=epaisseur)
             plot.zorder = niveau
         elif self.__debut == False:
-            plot._visible = True
             plot.set_data(*self._extremite_arc(x, y, vec_deb))
-            plot._color = couleur
-            plot._linewidth = epaisseur
+            plot.set(visible=True, color=couleur, linewidth=epaisseur)
             plot.zorder = niveau
         else:
-            plot._visible = False
+            plot.set_visible(False)
 
         # Fin de la courbe
         plot = self._representation[-1]
@@ -106,24 +100,17 @@ class Interpolation_generique(Courbe_generique):
         if vec_fin is None:
             vec_fin = (x-a, y-b)
         if self.__fin == True:
-            plot._visible = True
             plot.set_data((x,), (y,))
-            plot._color = couleur
-            plot._marker = "o"
-            plot._markeredgecolor = couleur
-            plot._markersize = 2*self.__canvas__.taille["o"]
-            plot._linewidth = epaisseur
+            plot.set(visible=True, color=couleur, marker="o", markeredgecolor=couleur,
+                     markersize=2*self.__canvas__.taille["o"], linewidth=epaisseur)
             plot.zorder = niveau
         elif self.__fin == False:
-            plot._visible = True
-##            plot._x, plot._y = self._extremite_arc(x, y, vec_fin)
             arc = self.rendu.arc(x, y, vec_fin)
             plot.set_data(arc._x.data, arc._y.data) # À TESTER !!
-            plot._color = couleur
-            plot._linewidth = epaisseur
+            plot.set(visible=True, color=couleur, linewidth=epaisseur)
             plot.zorder = niveau
         else:
-            plot._visible = False
+            plot.set_visible(False)
 
 
 
@@ -174,9 +161,7 @@ class Interpolation_lineaire(Interpolation_generique):
             x1, y1 = self.__points[i].coordonnees
             x2, y2 = self.__points[i+1].coordonnees
             plot.set_data(numpy.array((x1, x2)), numpy.array((y1, y2)))
-            plot._color = couleur
-            plot._linestyle = style
-            plot._linewidth = epaisseur
+            plot.set(color=couleur, linestyle=style, linewidth=epaisseur)
             plot.zorder = niveau
             self._xarray = numpy.append(self._xarray, numpy.arange(x1, x2, pas))
             self._xarray = numpy.append(self._xarray, numpy.arange(x1, x2, pas))
@@ -237,9 +222,7 @@ class Interpolation_quadratique(Interpolation_generique):
             u = (a*t + b)*t + c
             v = (d*t + e)*t + f
             plot.set_data(u, v)
-            plot._color = couleur
-            plot._linestyle = style
-            plot._linewidth = epaisseur
+            plot.set(color=couleur, linestyle=style, linewidth=epaisseur)
             plot.zorder = niveau
 
             dx0 = 2*a + b
@@ -333,9 +316,7 @@ class Interpolation_cubique(Interpolation_generique):
             u = ((a*t + b)*t + c)*t + d
             v = ((e*t + f)*t + g)*t + h
             plot.set_data(u, v)
-            plot._color = couleur
-            plot._linestyle = style
-            plot._linewidth = epaisseur
+            plot.set(color=couleur, linestyle=style, linewidth=epaisseur)
             plot.zorder = niveau
 
             self._xarray = numpy.append(self._xarray, u)

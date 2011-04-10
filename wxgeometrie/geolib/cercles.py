@@ -228,39 +228,11 @@ class Arc_generique(Cercle_Arc_generique):
 
     def _creer_figure(self):
         if not self._representation:
-            self._representation = [self.rendu.ligne()]
-
-        plot = self._representation[0]
-        x, y = self.__centre.coordonnees
-        r = self.rayon
-        t = self._t()
-        plot.set_data(x + r*numpy.cos(t), y + r*numpy.sin(t))
-        plot._color = self.style("couleur")
-        plot._linestyle = self.style("style")
-        plot._linewidth = self.style("epaisseur")
-        plot.zorder = self.style("niveau")
-
-
-
-    def _creer_figure(self):
-        if not self._representation:
             self._representation = [self.rendu.ligne(), self.rendu.ligne(), self.rendu.ligne(), self.rendu.ligne(), self.rendu.ligne()]
             # les 2 premières lignes servent à afficher l'arc lui-même ; les autres servent pour le codage.
 
-        #~ plot = self._representation[0]
-        #~ x, y = self._Arc_generique__centre.coordonnees
-        #~ r = self.rayon
-        #~ a, b = self._intervalle()
-        #~ t = numpy.concatenate((numpy.arange(a, b, self.__canvas__.pas()), [b]))
-        #~ plot.set_data(x + r*numpy.cos(t), y + r*numpy.sin(t))
-        #~ plot._color = self.style("couleur")
-        #~ plot._linestyle = self.style("style")
-        #~ plot._linewidth = self.style("epaisseur")
-        #~ niveau = self.style("niveau")
-        #~ plot.zorder = niveau
-
         for plot in self._representation[1:]:
-            plot._visible = False
+            plot.set_visible(False)
 
         x, y = self._Arc_generique__centre.coordonnees
         r = self.rayon
@@ -273,7 +245,7 @@ class Arc_generique(Cercle_Arc_generique):
         for i, t in enumerate(self._t()):
             plot = self._representation[i]
             plot.set_data(x + r*numpy.cos(t), y + r*numpy.sin(t))
-            plot.set(color = couleur, linestyle = style, linewidth = epaisseur, zorder = niveau, visible = True)
+            plot.set(color=couleur, linestyle=style, linewidth=epaisseur, zorder=niveau, visible=True)
 
 
         # Gestion du codage des arcs de cercle (utilisé pour indiquer les arcs de cercles de même longeur)
@@ -286,8 +258,8 @@ class Arc_generique(Cercle_Arc_generique):
             plot1, plot2, plot3 = self._representation[2:]
 
             if codage == "o":
-                plot1.set(marker = "o", markersize = taille, markerfacecolor = None, markeredgecolor = couleur, \
-                            markeredgewidth = epaisseur, visible = True)
+                plot1.set(marker="o", markersize=taille, markerfacecolor=None, markeredgecolor=couleur, \
+                            markeredgewidth=epaisseur, visible=True)
                 plot1.set_data([x0], [y0])
 
             else:
@@ -418,7 +390,6 @@ class Arc_points(Arc_generique):
         self.__point2 = point2 = Ref(point2)
         self.__point3 = point3 = Ref(point3)
         Arc_generique.__init__(self, ALL.Point_equidistant(point1, point2, point3), point1, **styles)
-#        self.centre = centre = self._Arc_generique__centre
         centre = self._Arc_generique__centre
         self._angle1 = ALL.Angle_vectoriel(ALL._vecteur_unite, ALL.Vecteur(centre, point1))
         self._angle2 = ALL.Angle_vectoriel(ALL._vecteur_unite, ALL.Vecteur(centre, point2))
@@ -630,9 +601,8 @@ class Cercle_generique(Cercle_Arc_generique):
         r = self.rayon
         t = self._t()
         plot.set_data(x + r*numpy.cos(t), y + r*numpy.sin(t))
-        plot._color = self.style("couleur")
-        plot._linestyle = self.style("style")
-        plot._linewidth = self.style("epaisseur")
+        plot.set(color=self.style("couleur"), linestyle = self.style("style"),
+                 linewidth=self.style("epaisseur"))
         plot.zorder = self.style("niveau")
 
 

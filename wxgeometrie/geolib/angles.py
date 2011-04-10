@@ -181,7 +181,7 @@ class Secteur_angulaire(Angle_generique):
 
         if not codage:
             for plot in self._representation[1:]:
-                plot._visible = False
+                plot.set_visible(False)
                 plot.zorder = niveau
             x, y = self.__canvas__.pix2coo(x0 + r*numpy.cos(t), y0 + r*numpy.sin(t))
         else:
@@ -193,16 +193,16 @@ class Secteur_angulaire(Angle_generique):
                                                                 numpy.array((y0 + u[1], y0 + u[1] + v[1], y0 + v[1]))
                                                                 )
                 plot.set_data(x, y)
-                plot._color = self.style("couleur")
-                plot._linestyle = self.style("style")
-                plot._linewidth = self.style("epaisseur")
-                plot._marker = 'None'
+                plot.set_color(self.style("couleur"))
+                plot.set_linestyle(self.style("style"))
+                plot.set_linewidth(self.style("epaisseur"))
+                plot.set_marker('None')
                 for plot in self._representation[2:]:
-                    plot._visible = False
-                    plot._marker = 'None'
-                    plot._color = self.style("couleur")
-                    plot._linestyle = self.style("style")
-                    plot._linewidth = self.style("epaisseur")
+                    plot.set_visible(False)
+                    plot.set_marker('None')
+                    plot.set_color(self.style("couleur"))
+                    plot.set_linestyle(self.style("style"))
+                    plot.set_linewidth(self.style("epaisseur"))
             else:
                 n = len(codage)
                 for i in xrange(n):
@@ -212,16 +212,16 @@ class Secteur_angulaire(Angle_generique):
                     else:
                         x, y = self.__canvas__.pix2coo(x0 + (r-3*i)*numpy.cos(t), y0 + (r-3*i)*numpy.sin(t))
                     plot.set_data(x, y)
-                    plot._color = self.style("couleur")
-                    plot._linestyle = self.style("style")
-                    plot._linewidth = self.style("epaisseur")
-                    plot._marker = 'None'
+                    plot.set_color(self.style("couleur"))
+                    plot.set_linestyle(self.style("style"))
+                    plot.set_linewidth(self.style("epaisseur"))
+                    plot.set_marker('None')
                 for plot in self._representation[1+n:]:
-                    plot._visible = False
-                    plot._marker = 'None'
-                    plot._color = self.style("couleur")
-                    plot._linestyle = self.style("style")
-                    plot._linewidth = self.style("epaisseur")
+                    plot.set_visible(False)
+                    plot.set_marker('None')
+                    plot.set_color(self.style("couleur"))
+                    plot.set_linestyle(self.style("style"))
+                    plot.set_linewidth(self.style("epaisseur"))
 
                 if codage in ("/", "x", "o"):
                     c = .5*(a+b)
@@ -229,12 +229,12 @@ class Secteur_angulaire(Angle_generique):
                     taille = param.codage["taille"]
                     if codage == "o":
                         plot = self._representation[2]
-                        plot._marker = "o"
-                        plot._markersize = taille
-                        plot._markerfacecolor = "None" # matplotlib 0.91.2
-                        plot._markeredgecolor = self.style("couleur")
-                        plot._markeredgewidth = self.style("epaisseur")
-                        plot._visible = True
+                        plot.set_marker("o")
+                        plot.set_markersize(taille)
+                        plot.set_markerfacecolor("None") # matplotlib 0.91.2
+                        plot.set_markeredgecolor(self.style("couleur"))
+                        plot.set_markeredgewidth(self.style("epaisseur"))
+                        plot.set_visible(True)
                         xo, yo = self.__canvas__.pix2coo(xc, yc)
                         plot.set_data([xo], [yo])
                     else:
@@ -244,7 +244,7 @@ class Secteur_angulaire(Angle_generique):
                             xa, ya = self.__canvas__.pix2coo(xc + u[0], yc + u[1])
                             xb, yb = self.__canvas__.pix2coo(xc - u[0], yc - u[1])
                             plot.set_data([xa, xb], [ya, yb])
-                            plot._visible = True
+                            plot.set_visible(True)
                         elif codage == "x":
                             a = param.codage["angle"]
                             plot1 = self._representation[2]
@@ -261,7 +261,7 @@ class Secteur_angulaire(Angle_generique):
                             plot1._visible = True
                             _x2, _y2 = zip(N, 2*G-N)
                             plot2.set_data(*self.__canvas__.pix2coo(numpy.array(_x2), numpy.array(_y2)))
-                            plot2._visible = True
+                            plot2.set_visible(True)
 
 
 

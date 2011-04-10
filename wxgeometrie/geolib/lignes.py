@@ -189,34 +189,33 @@ class Segment(Ligne_generique):
             self._representation = [self.rendu.ligne(), self.rendu.ligne(), self.rendu.ligne(), self.rendu.ligne()]
         x1, y1 = self.__point1.coordonnees
         x2, y2 = self.__point2.coordonnees
+        couleur = self.style("couleur")
+        epaisseur = self.style("epaisseur")
+        niveau = self.style("niveau")
+        style = self.style("style")
 
         for elt_graphique in self._representation:
-            elt_graphique._visible = True
+            elt_graphique.set_visible(True)
 
         plot = self._representation[0]
         plot.set_data(numpy.array([x1, x2]), numpy.array([y1, y2]))
-        plot._color = self.style("couleur")
-        plot._linestyle = self.style("style")
-        plot._linewidth = self.style("epaisseur")
-        niveau = self.style("niveau")
+        plot.set(color=couleur, linestyle=style,
+                 linewidth=epaisseur)
         plot.zorder = niveau
 
         # Toute la suite concerne les codages utilisés pour indiquer les segments de même longueur
         if not self.style("codage"):
             for plot in self._representation[1:]:
-                plot._visible = False
+                plot.set_visible(False)
                 plot.zorder = niveau + 0.01
 
         elif self.style("codage") == "o":
             plot = self._representation[1]
-            plot._marker = "o"
-            plot._markersize = param.codage["taille"]
-            plot._markerfacecolor = 'None' # matplotlib 0.91.2
-            plot._markeredgecolor = self.style("couleur")
-            plot._markeredgewidth = self.style("epaisseur")
+            plot.set(marker="o", markersize=param.codage["taille"], markerfacecolor='None', # matplotlib 0.91.2
+                     markeredgecolor=couleur, markeredgewidth=epaisseur)
             plot.set_data([.5*(x1 + x2)], [.5*(y1 + y2)])
             for plot in self._representation[2:]:
-                plot._visible = False
+                plot.set_visible(False)
 
         else:
             A = numpy.array(self.__canvas__.coo2pix(x1, y1))
@@ -229,49 +228,41 @@ class Segment(Ligne_generique):
             if self.style("codage") == "x":
                 M = (numpy.dot([[math.cos(a), -math.sin(a)], [math.sin(a), math.cos(a)]], numpy.transpose([C - G])) + numpy.transpose([G]))[:,0]
                 N = (numpy.dot([[math.cos(a), math.sin(a)], [-math.sin(a), math.cos(a)]], numpy.transpose([C - G])) + numpy.transpose([G]))[:,0]
-                plot1 = self._representation[1]
-                plot2 = self._representation[2]
+                plot1, plot2 = self._representation[1:3]
                 plot1.set_data(*self.__canvas__.pix2coo(*array_zip(M, 2*G-M)))
                 plot2.set_data(*self.__canvas__.pix2coo(*array_zip(N, 2*G-N)))
-                plot1._marker = plot2._marker = 'None'
-                plot1._color = plot2._color = self.style("couleur")
-                plot1._linewidth = plot2._linewidth = self.style("epaisseur")
-                self._representation[3]._visible = False
+                plot1.set(marker='None', color=couleur, linewidth=epaisseur)
+                plot2.set(marker='None', color=couleur, linewidth=epaisseur)
+                self._representation[3].set_visible(False)
 
             elif self.style("codage") == "/":
                 M = (numpy.dot([[math.cos(a), math.sin(a)], [-math.sin(a), math.cos(a)]], numpy.transpose([C - G])) + numpy.transpose([G]))[:,0]
                 plot1 = self._representation[1]
                 plot1.set_data(*self.__canvas__.pix2coo(*array_zip(M, 2*G-M)))
-                plot1._marker = 'None'
-                plot1._color = self.style("couleur")
-                plot1._linewidth = self.style("epaisseur")
+                plot1.set(marker='None', color=couleur, linewidth=epaisseur)
                 for plot in self._representation[2:]:
-                    plot._visible = False
+                    plot.set_visible(False)
 
             elif self.style("codage") == "//":
                 M = (numpy.dot([[math.cos(a), math.sin(a)], [-math.sin(a), math.cos(a)]], numpy.transpose([C - G])) + numpy.transpose([G]))[:,0]
-                plot1 = self._representation[1]
-                plot2 = self._representation[2]
+                plot1, plot2 = self._representation[1:3]
                 vec = 2*vec
                 plot1.set_data(*self.__canvas__.pix2coo(*array_zip(M + vec, 2*G - M + vec)))
                 plot2.set_data(*self.__canvas__.pix2coo(*array_zip(M - vec, 2*G - M - vec)))
-                plot1._marker = plot2._marker = 'None'
-                plot1._color = plot2._color = self.style("couleur")
-                plot1._linewidth = plot2._linewidth = self.style("epaisseur")
-                self._representation[3]._visible = False
+                plot1.set(marker='None', color=couleur, linewidth=epaisseur)
+                plot2.set(marker='None', color=couleur, linewidth=epaisseur)
+                self._representation[3].set_visible(False)
 
             elif self.style("codage") == "///":
                 M = (numpy.dot([[math.cos(a), math.sin(a)], [-math.sin(a), math.cos(a)]], numpy.transpose([C - G])) + numpy.transpose([G]))[:,0]
-                plot1 = self._representation[1]
-                plot2 = self._representation[2]
-                plot3 = self._representation[3]
+                plot1, plot2, plot3 = self._representation[1:4]
                 vec = 3*vec
                 plot1.set_data(*self.__canvas__.pix2coo(*array_zip(M, 2*G - M)))
                 plot2.set_data(*self.__canvas__.pix2coo(*array_zip(M + vec, 2*G - M + vec)))
                 plot3.set_data(*self.__canvas__.pix2coo(*array_zip(M - vec, 2*G - M - vec)))
-                plot1._marker = plot2._marker = plot3._marker = 'None'
-                plot1._color = plot2._color = plot3._color = self.style("couleur")
-                plot1._linewidth = plot2._linewidth = plot3._linewidth = self.style("epaisseur")
+                plot1.set(marker='None', color=couleur, linewidth=epaisseur)
+                plot2.set(marker='None', color=couleur, linewidth=epaisseur)
+                plot3.set(marker='None', color=couleur, linewidth=epaisseur)
 
 
 
