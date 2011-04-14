@@ -1006,12 +1006,12 @@ class Feuille(object):
                         self.erreur(u"Définition circulaire dans %s : l'objet %s se retrouve dépendre de lui-même." %(valeur, nom))
                         #raise RuntimeError, "Definition circulaire dans %s : l'objet %s se retrouve dependre de lui-meme." %(valeur, nom)
         actuel = self.sauvegarder()
-        if isinstance(objet, Texte):
-            nouveau = actuel.replace("\n" + nom + "=" + objet.__repr__(False), "\n" + nom + "=" + valeur)
-        else:
-            valeur += "\n" + nom + ".copier_style(" + repr(objet) + ")"
-            nouveau = actuel.replace("\n" + nom + "=" + repr(objet), "\n" + nom + "=" + valeur)
-        print nouveau
+        valeur += "\n" + nom + ".copier_style(" + repr(objet) + ")"
+        old = "\n" + nom + " = " + repr(objet)
+        assert old in actuel
+        nouveau = actuel.replace(old, "\n" + nom + "=" + valeur)
+        if param.debug:
+            print(nouveau)
         try:
             self.historique.restaurer(nouveau)
         except Exception:

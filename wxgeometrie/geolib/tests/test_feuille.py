@@ -5,7 +5,8 @@ from __future__ import with_statement
 import re
 
 from geolib.tests.geotestlib import *
-from geolib import (Triangle_rectangle, DescripteurFeuille,
+from geolib import (Triangle_rectangle, DescripteurFeuille, Point, Segment,
+                    Vecteur,
                                 )
 
 def test_abreviations():
@@ -418,3 +419,17 @@ def issue186():
     f.executer("c=Cercle")
     assertRaises(NameError, f.executer, "C_'=_")
     assert(f.objets.has_key("c"))
+
+def test_redefinir():
+    f = Feuille()
+    A = f.objets.A = Point()
+    B = f.objets.B = Point()
+    f.objets.AB = Segment(A, B)
+    f.objets.AB.redefinir('Vecteur(A, B)')
+    assert isinstance(f.objets.AB, Vecteur)
+    assert f.objets.AB == Vecteur(A, B)
+    f.objets.txt = Texte('Hello', 2, 3)
+    f.objets.txt.redefinir("Texte('Bonjour', 1, 4)")
+    assert isinstance(f.objets.txt, Texte)
+    assert f.objets.txt.texte == 'Bonjour'
+    assert f.objets.txt.coordonnees == (1, 4)
