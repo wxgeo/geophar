@@ -360,8 +360,12 @@ class LocalDict(dict):
 
     def __missing__(self, key):
         # _59 is an alias for ans(59)
-        if key.startswith('_') and key[1:].isalnum():
-            return self.globals['ans'](int(key[1:]))
+        if key.startswith('_'):
+            if key[1:].isalnum():
+                return self.globals['ans'](int(key[1:]))
+            else:
+                if key == len(key)*'_':
+                    return self.globals['ans'](-len(key))
         return self.globals.get(key, sympy.Symbol(key))
 
     def __setitem__(self, name, value):

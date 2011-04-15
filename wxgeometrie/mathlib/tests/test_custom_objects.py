@@ -159,6 +159,13 @@ def test_session():
     assertDernier(i, 'True')
     i.evaluer('_7')
     assertDernier(i, "-7 + 2*x")
+    # _ is an alias for ans(-1), __ is an alias for ans(-2), and so on.
+    i.evaluer('_ == -7 + 2*x')
+    assertDernier(i, 'True')
+    i.evaluer('__')
+    assertDernier(i, "-7 + 2*x")
+    i.evaluer('______') # ans(-6)
+    assertDernier(i, '(0, 1, 2, 3, 4, 5, 6)')
 
 
 def test_issue_129():
