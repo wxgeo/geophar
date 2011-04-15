@@ -47,7 +47,7 @@ $g(x)$          &           &  +  &       0        & $-$ &       0       & + &  
 \hline
 \end{tabular}
 \end{center}
-% x:-oo;+oo// x-7/2: -- 7/2 ++ // x+7/2: -- -7/2 ++ // g(x)
+% x: -oo;+oo// x-7/2: -- 7/2 ++ // x+7/2: -- -7/2 ++ // g(x)
 % g(x)=(x-7/2)(x+7/2)
 '''
     assert_tabsign(s, tab)
@@ -65,7 +65,7 @@ $f(x)$               &           & $-$ &         0         & + &  0  & $-$ &    
 \hline
 \end{tabular}
 \end{center}
-% x:-oo;+oo// x^3-30 x^2+112: -- 14 - 6*sqrt(7) ++ 2 -- 14 + 6*sqrt(7) ++ // f(x)
+% x: -oo;+oo// x^3-30 x^2+112: -- 14 - 6*sqrt(7) ++ 2 -- 14 + 6*sqrt(7) ++ // f(x)
 % f(x)=x^3-30x^2+112
 """
     assert_tabsign(s, tab)
@@ -81,7 +81,7 @@ $- 6 x^{2} - 12 x + 4$ &           & $-$ &             0              & + &     
 \hline
 \end{tabular}
 \end{center}
-% x:-oo;+oo// -6 x^(2)-12 x+4: -- -1 - sqrt(15)/3 ++ -1 + sqrt(15)/3 -- // - 6 x^{2} - 12 x + 4
+% x: -oo;+oo// -6 x^(2)-12 x+4: -- -1 - sqrt(15)/3 ++ -1 + sqrt(15)/3 -- // - 6 x^{2} - 12 x + 4
 % - 6 x^{2} - 12 x + 4
 '''
     assert_tabsign(s, tab)
@@ -103,7 +103,7 @@ $\frac{3x-2}{(x-1)^{2}}$ &           & $-$ &       0       & + &  || & + &      
 \hline
 \end{tabular}
 \end{center}
-% x:-oo;+oo// 3 x-2: -- 2/3 ++ // !(x-1)^2: ++ 1 ++ // (3x-2)/((x-1)^2)
+% x: -oo;!1: !1;+oo// 3 x-2: -- 2/3 ++ // !(x-1)^2: ++ 1 ++ // (3x-2)/((x-1)^2)
 % (3x-2)/((x-1)^2)
 '''
     assert_tabsign(s, tab)
@@ -123,7 +123,7 @@ $\frac{3x-2}{(x-1)^{2}}$ &           & $-$ &       0       & + &  || & + &      
 \hline
 \end{tabular}
 \end{center}
-% x:-oo;+oo// 3 x-2: -- 2/3 ++ // !(x-1)^2: ++ 1 ++ // (3x-2)/(x-1)^2
+% x: -oo;!1: !1;+oo// 3 x-2: -- 2/3 ++ // !(x-1)^2: ++ 1 ++ // (3x-2)/(x-1)^2
 % (3x-2)/(x-1)^2
 '''
     assert_tabsign(s, tab)
@@ -145,12 +145,12 @@ $\dfrac{3x-2}{(x-1)^{2}}$ &           & $-$ &       0       & + &  || & + &     
 \hline
 \end{tabular}
 \end{center}
-% x:-oo;+oo// 3 x-2: -- 2/3 ++ // !(x-1)^2: ++ 1 ++ // \dfrac{3x-2}{(x-1)^2}
+% x: -oo;!1: !1;+oo// 3 x-2: -- 2/3 ++ // !(x-1)^2: ++ 1 ++ // \dfrac{3x-2}{(x-1)^2}
 % \dfrac{3x-2}{(x-1)^2}
 '''
     assert_tabsign(s, tab)
 
-    s= "g(x)=\dfrac{-x+1}{\e^{x}}"
+    s = "g(x)=\dfrac{-x+1}{\e^{x}}"
     tab = \
 r'''\begin{center}
 \begin{tabular}{|c|ccccc|}
@@ -165,7 +165,7 @@ $g(x)$   &     ||    & + &  0  & $-$ &           \\
 \hline
 \end{tabular}
 \end{center}
-% x:-oo;+oo// -x+1: ++ 1 -- // !e^(x):-oo ++ // g(x)
+% x: -oo;+oo// -x+1: ++ 1 -- // !e^(x):-oo ++ // g(x)
 % g(x)=\dfrac{-x+1}{\e^{x}}
 '''
     assert_tabsign(s, tab)
@@ -181,14 +181,14 @@ $f'(x)$       &           & $-$ &  0  & + &           \\
 \hline
 \end{tabular}
 \end{center}
-% x:-oo;+oo// 1-e^(-x+2): -- 2 ++ // f'(x)
+% x: -oo;+oo// 1-e^(-x+2): -- 2 ++ // f'(x)
 % f'(x)=1-\e^{-x+2}
 '''
     assert_tabsign(s, tab)
 
 
 def test_intervalle():
-    s= "x^2 sur [1;+oo["
+    s = "x^2 sur [1;+oo["
     tab = \
 r'''\begin{center}
 \begin{tabular}{|c|ccc|}
@@ -199,12 +199,66 @@ $x^{2}$ &     & + &           \\
 \hline
 \end{tabular}
 \end{center}
-% x:1;+oo// x^2: ++ // x^2
+% x: 1;+oo// x^2: ++ // x^2
 % x^2 sur [1;+\infty[
 '''
     assert_tabsign(s, tab)
 
+    s = "u(x)=1-x sur ]0;+oo["
+    tab = \
+r'''\begin{center}
+\begin{tabular}{|c|ccccc|}
+\hline
+$x$    & $0$ &   & $1$ &     & $+\infty$ \\
+\hline
+$u(x)$ &  || & + &  0  & $-$ &           \\
+\hline
+\end{tabular}
+\end{center}
+% x: !0;+oo// 1-x: ++ 1 -- // u(x)
+% u(x)=1-x sur ]0;+\infty[
+'''
+    assert_tabsign(s, tab)
+
+    s = "u(x)=x(1-x) sur ]-1;0[U]0;4["
+    tab = \
+r'''\begin{center}
+\begin{tabular}{|c|ccccccc|}
+\hline
+$x$    & $-1$ &     & $0$ &   & $1$ &     & $4$ \\
+\hline
+$x$    &      & $-$ &  0  & + &     &  +  &     \\
+\hline
+$1-x$  &      &  +  &     & + &  0  & $-$ &     \\
+\hline
+$u(x)$ &  ||  & $-$ &  || & + &  0  & $-$ &  || \\
+\hline
+\end{tabular}
+\end{center}
+% x: !-1;!0: !0;!4// !x: -- 0 ++ // 1-x: ++ 1 -- // u(x)
+% u(x)=x(1-x) sur ]-1;0[U]0;4[
+'''
+    assert_tabsign(s, tab)
 
 
-
-
+    s = "u(x)=(1+x)(1-x)/x sur ]-3;2[U]2;4]"
+    tab = \
+r'''\begin{center}
+\begin{tabular}{|c|ccccccccccc|}
+\hline
+$x$    & $-3$ &     & $-1$ &     & $0$ &   & $1$ &     & $2$ &     & $4$ \\
+\hline
+$1+x$  &      & $-$ &  0   &  +  &     & + &     &  +  &     &  +  &     \\
+\hline
+$1-x$  &      &  +  &      &  +  &     & + &  0  & $-$ &     & $-$ &     \\
+\hline
+$x$    &      & $-$ &      & $-$ &  0  & + &     &  +  &     &  +  &     \\
+\hline
+$u(x)$ &  ||  &  +  &  0   & $-$ &  || & + &  0  & $-$ &  || & $-$ &     \\
+\hline
+\end{tabular}
+\end{center}
+% x: !-3;!0: !0;!2: !2;4// 1+x: -- -1 ++ // 1-x: ++ 1 -- // !x: -- 0 ++ // u(x)
+% u(x)=(1+x)(1-x)/x sur ]-3;2[U]2;4]
+'''
+    assert_tabsign(s, tab)

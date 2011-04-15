@@ -67,6 +67,8 @@ def _auto_tabsign(chaine, cellspace = False):
     ens_def *= mathlib.custom_functions.ensemble_definition(expr, var)
     if param.debug and param.verbose:
         print '-> Ensemble de definition:', ens_def
+
+    code = str(var) # chaîne retournée, respectant la syntaxe de tabsign()
     valeurs_interdites = []
     xmin = ens_def.intervalles[0].inf
     if not ens_def.intervalles[0].inf_inclus:
@@ -80,10 +82,10 @@ def _auto_tabsign(chaine, cellspace = False):
         sup = intervalle.sup
         if not intervalle.sup_inclus:
             valeurs_interdites.append(sup)
+        code += ': ' + ('' if (intervalle.inf_inclus or inf == -oo) else '!') + str(inf) + ';' \
+                     + ('' if (intervalle.sup_inclus or sup == oo) else '!') + str(sup)
     xmax = sup
 
-    # Première ligne du tableau
-    code = str(var) + ':' + str(xmin) + ';' + str(xmax)
 
     # Étude du signe de chaque facteur
     for facteur in facteurs:
@@ -98,7 +100,6 @@ def _auto_tabsign(chaine, cellspace = False):
             if val not in f_ens_def and val not in (-oo, oo):
                 valeurs[val] = nan
         liste_valeurs = sorted(valeurs)
-        #print liste_valeurs
         # On génère le code de la ligne
         code += '// '
         #print solutions, valeurs_interdites
@@ -163,7 +164,7 @@ Le point d'exclamation avant une expression signifie qu'elle correspond à un dén
     ligne_variable = lignes.pop(0)
     #print lignes
     if ":" in ligne_variable:
-        variable, donnees_variable = ligne_variable.split(":")
+        variable, donnees_variable = ligne_variable.split(":", 1)
     elif ";" in ligne_variable:
         variable = ""
         donnees_variable = ligne_variable
@@ -175,10 +176,17 @@ Le point d'exclamation avant une expression signifie qu'elle correspond à un dén
     if ';' not in donnees_variable:
         donnees_variable += ';'
 
-    xmin, xmax = donnees_variable.split(';')
-    # Par défaut, la variable varie entre -oo et +oo
-    xmin = xmin.strip() if xmin.strip() else r'-\infty'
-    xmax = xmax.strip() if xmax.strip() else r'+\infty'
+    def _inter2tuple(s):
+        inf, sup = s.split(';')
+        inf = inf.strip()
+        sup = sup.strip()
+        if not inf:
+            inf = '-oo'
+        if not sup:
+            sup = '+oo'
+        return (inf, sup)
+
+    intervalles = [_inter2tuple(inter) for inter in donnees_variable.split(':')]
 
     # Séparation de la légende et des autres données pour chaque ligne
     expressions = []
@@ -235,11 +243,19 @@ Le point d'exclamation avant une expression signifie qu'elle correspond à un dén
     valeurs = set() # va contenir toutes les valeurs numeriques
     correspondances = {} # servira à retrouver le code (LaTeX notamment) à partir de la valeur numérique.
 
-    # On convertit xmin et xmax en valeurs numériques
-    for xm in (xmin, xmax):
-        xm_num = eval(traduire_latex(xm), maths.__dict__)
-        valeurs.add(xm_num)
-        correspondances[xm_num] = xm
+    valeurs_interdites = set()
+
+    # On convertit les bornes du domaine en valeurs numériques
+    for intervalle in intervalles:
+        for borne in intervalle:
+            exclue = (borne[0] == '!')
+            if exclue:
+                borne = borne[1:]
+            num = eval(traduire_latex(borne), maths.__dict__)
+            if exclue:
+                valeurs_interdites.add(num)
+            valeurs.add(num)
+            correspondances[num] = borne
 
     # Idem pour toutes les autres valeurs
     for i, donnees in enumerate(donnees_expressions):
@@ -272,8 +288,11 @@ Le point d'exclamation avant une expression signifie qu'elle correspond à un dén
         #print donnees
         donnees_expressions[i] = donnees
 
-    valeurs = sorted(valeurs)
+    # 'donnees_expressions' est désormais une liste de liste.
+    # Pour chaque ligne du tableau, 'donnees_expressions' contient une liste
+    # du genre [(-5, "0"), "+", (1, "|"), "-", (4, "0")].
 
+    valeurs = sorted(valeurs)
 
     indices_denominateurs = []
     # indique que les lignes correspondantes se trouvent au denominateur
@@ -297,6 +316,7 @@ Le point d'exclamation avant une expression signifie qu'elle correspond à un dén
         lignes[i] = ligne.ljust(n)
 
     def latex_signe(val, co):
+        u"Retourne le signe à afficher dans le tableau, selon la valeur (et la colonne)."
         if val == nan:
             return '||'
         elif val > 0:
@@ -315,6 +335,9 @@ Le point d'exclamation avant une expression signifie qu'elle correspond à un dén
     for co in xrange(1, nbr_colonnes):
         colonne = ['' for i in xrange(len(donnees_expressions) + 2)]
 
+        signe = 1
+        # (1 pour positif, -1 pour négatif, nan pour valeur interdite -> cf. latex_signe())
+
         # Première ligne (valeurs de la variable)
         if co%2:
             # Il s'agit d'une valeur (et non d'un signe + ou -)
@@ -324,17 +347,18 @@ Le point d'exclamation avant une expression signifie qu'elle correspond à un dén
             # On applique un formatage LaTeX à certaines expressions :
             colonne[0] = convertir_en_latex(valeur)
 
-        signe = 1
-        # (1 pour positif, -1 pour négatif, nan pour valeur interdite -> cf. latex_signe())
+            if valeur_num in valeurs_interdites:
+                signe = nan
+
 
         # Autres lignes
         for li, donnees in enumerate(donnees_expressions):
-            # À quel endroit de la ligne sommes-nous ?
+            # À quel endroit de la ligne sommes-nous ? (3 cas)
             valeurs_precedentes = [k for k, val in enumerate(donnees) if not isinstance(val, basestring) and val[0]<=valeur_num]
             if valeurs_precedentes:
                 # position de la dernière valeur de la ligne
                 position = valeurs_precedentes[-1]
-                if co%2: # on est au niveau d'une valeur
+                if co%2: # 1er cas: on est au niveau d'une valeur
                     if donnees[position][0] == valeur_num:
                         if donnees[position][1] == '|':
                             colonne[li + 1] = '||'
@@ -344,12 +368,12 @@ Le point d'exclamation avant une expression signifie qu'elle correspond à un dén
                             signe *= 0
                         if li + 1 in indices_denominateurs:
                             signe = nan
-                else: # on est entre deux valeurs
+                else: # 2e cas: on est entre deux valeurs
                     assert position + 1 < len(donnees), "Verifiez que les valeurs de la ligne sont bien rangees dans l'ordre croissant."
                     signe_ = dict_signes[donnees[position + 1]]
                     colonne[li + 1] += latex_signe(signe_, co) # le signe qui est juste apres la derniere valeur
                     signe *= signe_
-            else: # on est au debut
+            else: # 3e cas: on est en début de ligne
                 if co%2 == 0: # on est entre deux valeurs
                     signe_ = dict_signes[donnees[1]]
                     colonne[li + 1] += latex_signe(signe_, co)
@@ -386,8 +410,3 @@ Le point d'exclamation avant une expression signifie qu'elle correspond à un dén
         code += ligne + "\\\\\n\\hline\n"
     code += "\\end{tabular}\n\\end{center}\n% " + chaine_originale + "\n"
     return code
-
-
-
-
-
