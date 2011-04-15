@@ -262,3 +262,25 @@ $u(x)$ &  ||  &  +  &  0   & $-$ &  || & + &  0  & $-$ &  || & $-$ &     \\
 % u(x)=(1+x)(1-x)/x sur ]-3;2[U]2;4]
 '''
     assert_tabsign(s, tab)
+
+
+def test_issue_173():
+    s = "(1 - x)\e^{ 2x}"
+    tab = \
+r'''\begin{center}
+\begin{tabular}{|c|ccccc|}
+\hline
+$x$               & $-\infty$ &   & $1$ &     & $+\infty$ \\
+\hline
+$1-x$             &           & + &  0  & $-$ &           \\
+\hline
+$\e^{2 x}$        &     0     & + &     &  +  &           \\
+\hline
+$(1 - x)\e^{ 2x}$ &     ||    & + &  0  & $-$ &           \\
+\hline
+\end{tabular}
+\end{center}
+% x: -oo;+oo// 1-x: ++ 1 -- // !e^(2 x):-oo ++ // (1 - x)\e^{ 2x}
+% (1 - x)\e^{ 2x}
+'''
+    assert_tabsign(s, tab)
