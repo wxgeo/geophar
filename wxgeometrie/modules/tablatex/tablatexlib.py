@@ -87,7 +87,7 @@ def convertir_en_latex(chaine):
             raise RuntimeError, "Boucle probablement infinie."
         i = chaine.find("/")
 
-        # analyse des caractères précédants, pour localiser le numérateur
+        # analyse des caractères précédents, pour localiser le numérateur
         k = i
         parentheses = 0
         # indices correspondants au début et à la fin du numérateur
@@ -165,7 +165,7 @@ def convertir_en_latex(chaine):
 
         assert debut_denominateur is not None, "Denominateur introuvable"
 
-        denominateur = chaine[debut_denominateur : fin_denominateur+1].strip()
+        denominateur = chaine[i + 1:fin_denominateur + 1].strip()
         if chaine[fin_denominateur+1:].startswith('^'):
             m = re.match('[(][A-Za-z0-9.]+[)]|[A-Za-z0-9.]+', chaine[fin_denominateur + 2:])
             if m is not None:
@@ -278,5 +278,3 @@ def extraire_facteurs(chaine):
     # Pour faciliter la décomposition en produit,
     # il est important que la puissance ne soit pas notée '**'.
     return [mathlib.parsers.simplifier_ecriture(facteur) for facteur in _extraire_facteurs(chaine)]
-
-

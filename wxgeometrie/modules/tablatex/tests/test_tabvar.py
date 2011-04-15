@@ -174,3 +174,18 @@ f'(x)                                &              &-       &0     &+     & \\
     assert_tabvar(s, tab)
 
 
+def test_issue_194():
+    s = "<< -1/ln(2) >>"
+    tab = \
+r"""\[\begin{tabvar}{|C|CCCCC|}
+\hline
+x                                 &-\infty      &      &-\frac{1}{\ln{2}}&        &+\infty\\
+\hline
+f'(x)                             &             &+     &0                &-       & \\
+\hline
+\niveau{1}{2}\raisebox{0.5em}{$f$}&\niveau{1}{2}&\croit&                 &\decroit&\\
+\hline
+\end{tabvar}\]
+% << -1/ln(2) >>
+"""
+    assert_tabvar(s, tab)
