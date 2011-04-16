@@ -372,7 +372,11 @@ Attributs spéciaux:
         elif nom == "_":
             self.__derniere_valeur().supprimer()
         else:
-            self[nom].supprimer()
+            try:
+                self[nom].supprimer()
+            except KeyError:
+                if param.debug:
+                    print_error()
         self.__feuille__._actualiser_liste_objets = True
         self.__feuille__.affichage_perime()
 

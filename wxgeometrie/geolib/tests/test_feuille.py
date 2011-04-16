@@ -414,7 +414,7 @@ def test_feuille_modifiee():
     assert(f.modifiee)
 
 
-def issue186():
+def test_issue_186():
     f = Feuille()
     f.executer("c=Cercle")
     assertRaises(NameError, f.executer, "C_'=_")
@@ -433,3 +433,11 @@ def test_redefinir():
     assert isinstance(f.objets.txt, Texte)
     assert f.objets.txt.texte == 'Bonjour'
     assert f.objets.txt.coordonnees == (1, 4)
+
+def test_issue_176():
+    f = Feuille()
+    A = f.objets.A = Point()
+    B = f.objets.B = Point()
+    s = f.objets.s = Segment(A, B)
+    del f.objets.A, f.objets.B, f.objets.s
+    assert set(('A', 'B', 's')).isdisjoint(f.objets.noms)
