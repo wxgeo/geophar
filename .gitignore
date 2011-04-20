@@ -11,6 +11,7 @@
 *.pyc
 wxgeometrie.e4*
 *.geo
+*.tar.gz
 
 # Dossiers "poubelles"
 wxgeometrie/modules/OLD/
