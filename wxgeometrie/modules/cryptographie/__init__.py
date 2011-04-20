@@ -83,6 +83,9 @@ class Cryptographie(Panel_simple):
     def __init__(self, *args, **kw):
         Panel_simple.__init__(self, *args, **kw)
 
+        self._freeze = False
+        self._actualiser = None
+
         # La clé est la permutation de l'alphabet actuellement utilisée
         self.cle = self.generer_cle()
 
@@ -120,7 +123,6 @@ class Cryptographie(Panel_simple):
         self.copier_code = wx.Button(self, label=u'Copier le texte codé')
         self.copier_code.Bind(wx.EVT_BUTTON, partial(self.copier, widget=self.code))
 
-
         self.textes.Add(txt_clair, (0, 0), flag=wx.ALIGN_CENTER)
         self.textes.AddSpacer((50, 1), (0, 1))
         self.textes.Add(txt_code, (0, 2), flag=wx.ALIGN_CENTER)
@@ -154,14 +156,17 @@ class Cryptographie(Panel_simple):
         couleur_position = wx.Color(255, 205, 179)
         couleur1 = wx.Color(90, 40, 190)
         couleur2 = wx.Color(200, 100, 0)
+        black = wx.Color(0, 0, 0)
+        white = wx.Color(255, 255, 255)
         self.special = wx.TextAttr(wx.NullColour, couleur_position)
         self.fond = wx.TextAttr(couleur1, wx.NullColour) #"sky blue"
         self.fond2 = wx.TextAttr(couleur2, wx.NullColour) # "Lime Green"
-        self.defaut = wx.TextAttr(wx.NullColour, wx.NullColour, MyFont(self.clair))
+        self.defaut = wx.TextAttr(black, white)
+
+        self.Bind(wx.EVT_IDLE, self.OnIdle)
 
         # DEBUG:
-        self.code.SetValue('WR IRAMXPZRHRDZ IK HRYYOVR AL IRYYBKY RYZ NOALWLZR POM WR NOLZ FKR W BD O VOMIR WRY YLVDRY IR PBDAZKOZLBD RZ WRY RYPOARY RDZMR WRY HBZY OWBMY FKR I QOELZKIR BD VMBKPR WRY WRZZMRY ALDF POM ALDF')
-
+        # self.code.SetValue('WR IRAMXPZRHRDZ IK HRYYOVR AL IRYYBKY RYZ NOALWLZR POM WR NOLZ FKR W BD O VOMIR WRY YLVDRY IR PBDAZKOZLBD RZ WRY RYPOARY RDZMR WRY HBZY OWBMY FKR I QOELZKIR BD VMBKPR WRY WRZZMRY ALDF POM ALDF')
 
     def copier(self, evt=None, widget=None):
         self.vers_presse_papier(widget.GetValue())
@@ -261,11 +266,17 @@ class Cryptographie(Panel_simple):
 
     def formater(self, evt, widget=None):
         evt.Skip()
-        wx.CallAfter(self._formater, widget)
+        if self._freeze:
+            return
+        self._actualiser = widget
+
 
     def _formater(self, widget):
+        self._freeze = True
         txt = widget.GetValue()
         pos = widget.GetInsertionPoint()
+        if param.plateforme == "Windows":
+            self.copier_clair.SetFocusFromKbd()
         for w in (self.code, self.clair):
             w.Freeze()
             last = w.GetLastPosition()
@@ -282,5 +293,15 @@ class Cryptographie(Panel_simple):
                     fond, fond2 = fond2, fond
                     i = j + 1
             w.SetStyle(pos, pos + 1, self.special)
-            w.Thaw()
+            if param.plateforme == "Windows":
+                wx.CallAfter(w.SetSelection, pos, pos)
+                wx.CallAfter(w.Thaw)
+            else:
+                w.Thaw()
         widget.SetFocusFromKbd()
+        self._freeze = False
+        self._actualiser = None
+
+    def OnIdle(self, evt):
+        if self._actualiser is not None and not self.parent.parent.closing:
+            self._formater(self._actualiser)
