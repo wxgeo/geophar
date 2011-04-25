@@ -140,8 +140,6 @@ class AjusterEchelle(object):
 class Moteur_graphique(object):
     def __init__(self, canvas):
         self.canvas = canvas
-##        # Éléments en attente d'être dessinés
-##        self._queue = []
         self._dernier_objet_deplace = None
         self.axes = self.canvas.axes
         # Légère optimisation :
@@ -150,7 +148,9 @@ class Moteur_graphique(object):
         self.__empty_fill = self.axes.fill([0, 1, 1, 0], [1, 0, 0, 1])[0]
         self.__empty_text = self.axes.text(0, 0, '')
         self.__empty_text._fontproperties.set_family('serif')
-        self.__empty_arrow = self.axes.arrow(0, 0, 1, 1)
+        self.__empty_arrow = self.axes.annotate('', (0, 0), (1, 1), arrowprops={'arrowstyle': '->'})
+        # TODO: utiliser FancyArrowPatch au lieu de Annotate
+        # (changer coord. avec FancyArrowPatch.set_position)
         self._effacer_artistes()
         # Buffer contenant la dernière image.
         self._dernier_dessin = None
@@ -290,11 +290,16 @@ class Moteur_graphique(object):
         self._ajouter_objet(self.point(x, y, couleur, plein, **kw))
 
 
-    def fleche(self, x0, y0, x1, y1, **kw):
+    def fleche(self, x0, y0, x1, y1, size=None, **kw):
         arrow = module_copy.copy(self.__empty_arrow)
         #TODO: continuer code (matplotlib 0.99+ requis)
         # cf. matplotlib.patches.ArrowStyle.get_styles() pour les
         # styles de flêches.
+        arrow.xytext = (x0, y0)
+        arrow.xy = (x1, y1)
+        if size is not None:
+            arrow.set_size(size)
+        arrow.arrowprops.update(kw)
         return arrow
 
     def ajouter_fleche(self, x0, y0, x1, y1, **kw):
@@ -734,6 +739,54 @@ class Moteur_graphique(object):
                     print '  * ' + self._info_artiste(artiste)
         print "---------------"
 
+    # TESTS pour débogage
+    # TODO: avoir une image de référence pour comparer
+
+    def _test(self):
+        u"""Test 1.
+
+        Barre rouge en travers reliant 2 croix (+)."""
+        self.axes.viewLim.set_points(pylab.array([[0, 0], [1, 1]]))
+        matplotlib.axes.Axes.clear(self.canvas.axes)
+        matplotlib.axes.Axes.plot(self.canvas.axes, [0.1, 0.9], [0.1, 0.9], 'r+-')
+        self.canvas.draw()
+
+    def _test2(self):
+        u"""Test 2.
+
+        Barre bleue en travers. Un point vert et un rouge (croix +).
+        Un point vert en forme de rond (plein).
+        """
+        self.axes.viewLim.set_points(pylab.array([[0, 0], [1, 1]]))
+        matplotlib.axes.Axes.clear(self.canvas.axes)
+        pt = self.point(.5, .5, couleur="g")
+        pt2 = self.ligne([.4], [.5], couleur="g")
+        pt2._marker = "+"
+        pt3 = self.ligne([.4], [.6], couleur="r")
+        pt3.set_marker("+")
+        l = self.ligne([0.1, 0.9], [0.1, 0.9], couleur="b")
+        self.canvas.axes.lines.extend([pt, l, pt2, pt3])
+        self.canvas.draw()
+
+    def _test3(self):
+        u"""Test les flêches de matplotlib.
+
+        Une flêche verte, et une flêche double rouge, croisées.
+        """
+        self.axes.viewLim.set_points(pylab.array([[0, 0], [1, 1]]))
+        FancyArrowPatch = matplotlib.patches.FancyArrowPatch
+        matplotlib.axes.Axes.clear(self.canvas.axes)
+        f1 = self.fleche(0.2, 0.2, 0.6, 0.6, size=20, color='g')
+        f2 = FancyArrowPatch((0.6, 0.2), (0.2, 0.6), arrowstyle='<->', mutation_scale=25, color='r')
+        #f2.set_figure(self.canvas.figure)
+        #f2.set_axes(self.canvas.axes)
+        #f2.set_clip_path(self.axes.patch)
+        self.canvas.axes.add_artist(f2)
+        #self.canvas.axes.add_patch(f2)
+        self.canvas.axes.patches.extend([f1])
+        self.canvas.draw()
+
+
 
 class ConvertisseurBase(object):
     u"""Classe générique dont dérivent tous les convertisseurs d'objets matplotlib."""
@@ -844,4 +897,3 @@ class ConvertisseurTikz(ConvertisseurBase):
         if s.endswith('.0'):
             s = s[:-2]
         return s
-
