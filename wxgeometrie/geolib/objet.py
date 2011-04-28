@@ -176,6 +176,11 @@ class Rendu(object):
         artiste._cree_par = self.parent
         return artiste
 
+    def fleche(self, *args, **kw):
+        artiste = self.canvas.fleche(*args, **kw)
+        artiste._cree_par = self.parent
+        return artiste
+
 
     def _pixel(self, point = None):
         if point is None:
