@@ -22,13 +22,12 @@ from __future__ import with_statement
 
 
 from LIB import *
-
 import matplotlib
 from matplotlib.transforms import Bbox
+
+
 from matplotlib.backends.backend_wxagg import FigureCanvasAgg
-from matplotlib.lines import Line2D
-from matplotlib.patches import Polygon, Circle, FancyArrowPatch
-from matplotlib.text import Text
+
 
 class ZoomArtistes(object):
     def __init__(self, axes, zoom_texte, zoom_ligne):
@@ -143,13 +142,27 @@ class Moteur_graphique(object):
         self.canvas = canvas
         self._dernier_objet_deplace = None
         self.axes = self.canvas.axes
+        # Légère optimisation :
+        # les objets sont copiés et modifiés plutôt que recréés
+        self.__empty_plot = self.axes.plot([0,1], [1,0])[0]
+        self.__empty_fill = self.axes.fill([0, 1, 1, 0], [1, 0, 0, 1])[0]
+        self.__empty_text = self.axes.text(0, 0, '')
+        self.__empty_text._fontproperties.set_family('serif')
+        self.__empty_arrow = self.axes.annotate('', (0, 0), (1, 1), arrowprops={'arrowstyle': '->'})
+        # TODO: utiliser FancyArrowPatch au lieu de Annotate
+        # (changer coord. avec FancyArrowPatch.set_position)
         self._effacer_artistes()
         # Buffer contenant la dernière image.
         self._dernier_dessin = None
+##        self.mise_en_cache_axes = [[],[], [], []] # plot, fill, text, artist
+        #if self.canvas.transformation is not None:
+            #self.__empty_plot.set_transform(self.canvas.transformation)
+            #self.__empty_fill.set_transform(self.canvas.transformation)
+            #self.__empty_text.set_transform(self.canvas.transformation)
 
-#   +---------------------+
-#   | Fonctions de dessin |
-#   +---------------------+
+    # -------------------
+    # Fonctions de dessin
+    # -------------------
 
     @property
     def zoom_ligne(self):
@@ -160,11 +173,10 @@ class Moteur_graphique(object):
         return self.canvas.zoom_texte
 
     def _ajouter_objet(self, artiste):
-        self.axes.add_artist(artiste)
+        self.axes.artists.append(artiste)
 
     def _ajouter_objets(self, liste_artistes):
-        for artiste in liste_artistes:
-            self.axes.add_artist(artiste)
+        self.axes.artists.extend(liste_artistes)
 
     def ajouter(self, artiste):
         u"""Ajoute un artiste (objet graphique de matplotlib) à dessiner.
@@ -177,43 +189,61 @@ class Moteur_graphique(object):
             self._ajouter_objet(artiste)
 
 
-    def ligne(self, x = (0, 1), y = (1, 0), couleur = 'b', pixel = False, **kw):
-        if pixel:
-            x, y = self.canvas.pix2coo(x, y)
-#        if self.canvas.transformation is not None:
-#            x, y = zip(*(zip(x, y)*self.canvas.transformation).array)
-        ligne = Line2D(x, y, color=couleur, **kw)
+    def ligne(self, x = None, y = None, couleur = None, pixel = False, **kw):
+        ligne = module_copy.copy(self.__empty_plot)
+        if x is not None and y is not None:
+            if pixel:
+                x, y = self.canvas.pix2coo(x, y)
+            if self.canvas.transformation is not None:
+                x, y = zip(*(zip(x, y)*self.canvas.transformation).array)
+            ligne.set_data(x, y)
+        if couleur is not None:
+            ligne.set_color(couleur)
+        if kw:
+            ligne.set(**kw)
         return ligne
 
-    def ajouter_ligne(self, x = (0, 1), y = (1, 0), couleur = 'b', pixel = False, **kw):
+    def ajouter_ligne(self, x = None, y = None, couleur = None, pixel = False, **kw):
         self._ajouter_objet(self.ligne(x, y, couleur, pixel, **kw))
 
 
-    def polygone(self, x = (0, 1, 1, 0), y = (1, 0, 0, 1), couleur = 'b', pixel = False, **kw):
-        if pixel:
-            x, y = self.canvas.pix2coo(x, y)
-        polygone = Polygon(zip(x, y), color=couleur, **kw)
-#        if self.canvas.transformation is not None:
-#            x, y = zip(*(zip(x, y)*self.canvas.transformation).array)
+    def polygone(self, x = None, y = None, couleur = None, pixel = False, **kw):
+        polygone = module_copy.copy(self.__empty_fill)
+        if x is not None and y is not None:
+            if pixel:
+                x, y = self.canvas.pix2coo(x, y)
+            if self.canvas.transformation is not None:
+                x, y = zip(*(zip(x, y)*self.canvas.transformation).array)
+            polygone.xy = zip(x, y)
+        if couleur is not None:
+            polygone.set_facecolor(couleur)
+        if kw:
+            polygone.set(**kw)
         return polygone
 
-    def ajouter_polygone(self, x = (0, 1, 1, 0), y = (1, 0, 0, 1), couleur = 'b', pixel = False, **kw):
+    def ajouter_polygone(self, x = None, y = None, couleur = None, pixel = False, **kw):
         self._ajouter_objet(self.polygone(x, y, couleur, pixel, **kw))
 
 
-    def texte(self, x=0, y=0, txt=u'hello !', pixel=False, **kw):
-        if pixel:
-            x, y = self.canvas.pix2coo(x, y)
-        if not isinstance(txt, unicode):
-            txt = unicode(txt, param.encodage)
-        kw.setdefault('family', 'serif')
-        texte = Text(x, y, txt, **kw)
-        texte.figure = self.canvas.figure # texte must have access to figure.dpi
-#        if self.canvas.transformation is not None:
-#            x, y = ((x, y)*self.canvas.transformation).array[0]
+    def texte(self, x = None, y = None, txt = None, pixel = False, **kw):
+        texte = module_copy.copy(self.__empty_text)
+        texte._fontproperties = matplotlib.font_manager.FontProperties()
+        if x is not None and y is not None:
+            if pixel:
+                x, y = self.canvas.pix2coo(x, y)
+            if self.canvas.transformation is not None:
+                x, y = ((x, y)*self.canvas.transformation).array[0]
+            texte.set_x(x)
+            texte.set_y(y)
+        if txt is not None:
+            if not isinstance(txt, unicode):
+                txt = unicode(txt, param.encodage)
+            texte.set_text(txt)
+        if kw:
+            texte.set(**kw)
         return texte
 
-    def ajouter_texte(self, x=0, y=0, txt=u'hello !', pixel=False, **kw):
+    def ajouter_texte(self, x = None, y = None, txt = None, pixel = False, **kw):
         self._ajouter_objet(self.texte(x, y, txt, pixel, **kw))
 
 
@@ -260,29 +290,34 @@ class Moteur_graphique(object):
         self._ajouter_objet(self.point(x, y, couleur, plein, **kw))
 
 
-    def fleche(self, x0=0, y0=0, x1=1, y1=1, **kw):
-        kw.setdefault(mutation_scale=25)
-        arrow = FancyArrowPatch((x0, y0), (x1, y1), **kw)
+    def fleche(self, x0, y0, x1, y1, size=None, **kw):
+        arrow = module_copy.copy(self.__empty_arrow)
+        #TODO: continuer code (matplotlib 0.99+ requis)
         # cf. matplotlib.patches.ArrowStyle.get_styles() pour les
         # styles de flêches.
-        # Changer coord. avec FancyArrowPatch.set_position().
+        arrow.xytext = (x0, y0)
+        arrow.xy = (x1, y1)
+        if size is not None:
+            arrow.set_size(size)
+        arrow.arrowprops.update(kw)
         return arrow
 
-    def ajouter_fleche(self, x0=0, y0=0, x1=1, y1=1, **kw):
+    def ajouter_fleche(self, x0, y0, x1, y1, **kw):
         self._ajouter_objet(self.fleche(x0, y0, x1, y1, **kw))
 
-    def cercle(self, xy=(0, 0), r=1, **kw):
-        circle = Circle(xy, r, **kw)
+    def cercle(self, xy, r, **kwargs):
+        circle = matplotlib.patches.Circle(xy, r, **kwargs)
         return circle
 
-    def ajouter_cercle(self, xy=(0, 0), r=1, **kw):
-        self._ajouter_objet(self.cercle(xy, r, **kw))
+    def ajouter_cercle(self, xy, r, **kwargs):
+        self._ajouter_objet(self.cercle(xy, r, **kwargs))
 
 
 
-#   +------------------------+
-#   | Gestion de l'affichage |
-#   +------------------------+
+    # ----------------------
+    # Gestion de l'affichage
+    # ----------------------
+
 
 
     def _creer_arriere_plan(self, rafraichir_axes):
@@ -651,11 +686,6 @@ class Moteur_graphique(object):
                     self._quadriller(None, *quadrillage)
             elif self.canvas.afficher_axes:
                 self._quadriller()   # simples graduations
-
-
-#   +---------------------+
-#   |  Aides au débogage  |
-#   +---------------------+
 
 
     def _info_artiste(self, artiste):
