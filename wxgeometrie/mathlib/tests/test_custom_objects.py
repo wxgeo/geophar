@@ -166,6 +166,22 @@ def test_session():
     assertDernier(i, "-7 + 2*x")
     i.evaluer('______') # ans(-6)
     assertDernier(i, '(0, 1, 2, 3, 4, 5, 6)')
+    # Affichage des chaînes en mode text (et non math)
+    i.evaluer('"Bonjour !"')
+    assert i.latex_dernier_resultat == u'\u201CBonjour !\u201D'
+    i.changer_separateurs = True
+    resultat, latex = i.evaluer('1,2')
+    assert resultat == '1,2'
+    assertAlmostEqual(i.derniers_resultats[-1], 1.2)
+    resultat, latex = i.evaluer('"1,2"')
+    assert resultat == '"1,2"'
+    i.evaluer('?aide')
+    i.evaluer('aide?')
+    i.evaluer('aide(aide)')
+    msg_aide = u"\n== Aide sur aide ==\nRetourne (si possible) de l'aide sur la fonction saisie."
+    resultats = i.derniers_resultats
+    assert resultats[-3:] == [msg_aide, msg_aide, msg_aide]
+
 
 
 def test_issue_129():

@@ -524,6 +524,11 @@ class Interprete(object):
         if self.verbose:
             print "Traitement >> :  ", calcul
 
+        if calcul.startswith('?'):
+            calcul = 'aide(%s)' %calcul[1:]
+        elif calcul.endswith('?'):
+            calcul = 'aide(%s)' %calcul[:-1]
+
         try:
             param.calcul_approche = not self.calcul_exact
             # utilisé en particulier dans la factorisation des polynômes
@@ -614,9 +619,13 @@ class Interprete(object):
 ##            if resultat.endswith("."):
 ##                resultat += "0"
 ##            latex = "$" + resultat + "$"
-        if self.changer_separateurs:
+        if self.changer_separateurs and not isinstance(valeur, basestring):
             resultat = resultat.replace(",", self.separateurs_personnels[1]).replace(".", self.separateurs_personnels[0])
             latex = latex.replace(",", self.separateurs_personnels[1]).replace(".", self.separateurs_personnels[0])
+            # TODO: utiliser un parser, pour détecter les chaînes, et ne pas remplacer à l'intérieur.
+
+        if isinstance(valeur, basestring):
+            latex = u'\u201C%s\u201D' %valeur
 
         self.latex_dernier_resultat = latex
         if self.simplifier_ecriture_resultat:
