@@ -29,6 +29,8 @@ from matplotlib.transforms import Bbox
 from matplotlib.backends.backend_wxagg import FigureCanvasAgg
 
 
+from math import cos, sin, atan2
+
 class ZoomArtistes(object):
     def __init__(self, axes, zoom_texte, zoom_ligne):
         self.zoom_texte = zoom_texte
@@ -188,41 +190,40 @@ class Moteur_graphique(object):
         else:
             self._ajouter_objet(artiste)
 
+    def _temp_warning_color(self, kw):
+        u"À supprimer après quelques temps (01/05/2011)."
+        if 'couleur' in kw:
+            kw['color'] = kw.pop('couleur')
+            warning("Utiliser desormais 'color' au lieu de 'couleur'.")
 
-    def ligne(self, x = None, y = None, couleur = None, pixel = False, **kw):
-        ligne = module_copy.copy(self.__empty_plot)
-        if x is not None and y is not None:
-            if pixel:
-                x, y = self.canvas.pix2coo(x, y)
-            if self.canvas.transformation is not None:
-                x, y = zip(*(zip(x, y)*self.canvas.transformation).array)
-            ligne.set_data(x, y)
-        if couleur is not None:
-            ligne.set_color(couleur)
-        if kw:
-            ligne.set(**kw)
+
+    def ligne(self, x = (0, 1), y = (1, 0), pixel = False, **kw):
+        self._temp_warning_color(kw)
+        if pixel:
+            x, y = self.canvas.pix2coo(x, y)
+#        if self.canvas.transformation is not None:
+#            x, y = zip(*(zip(x, y)*self.canvas.transformation).array)
+        ligne = Line2D(x, y, **kw)
         return ligne
 
-    def ajouter_ligne(self, x = None, y = None, couleur = None, pixel = False, **kw):
-        self._ajouter_objet(self.ligne(x, y, couleur, pixel, **kw))
+    def ajouter_ligne(self, x = (0, 1), y = (1, 0), color = 'b', pixel = False, **kw):
+        self._ajouter_objet(self.ligne(x, y, pixel, color=color, **kw))
 
 
-    def polygone(self, x = None, y = None, couleur = None, pixel = False, **kw):
-        polygone = module_copy.copy(self.__empty_fill)
-        if x is not None and y is not None:
-            if pixel:
-                x, y = self.canvas.pix2coo(x, y)
-            if self.canvas.transformation is not None:
-                x, y = zip(*(zip(x, y)*self.canvas.transformation).array)
-            polygone.xy = zip(x, y)
-        if couleur is not None:
-            polygone.set_facecolor(couleur)
-        if kw:
-            polygone.set(**kw)
+    def polygone(self, x = (0, 1, 1, 0), y = (1, 0, 0, 1), pixel = False, **kw):
+        self._temp_warning_color(kw)
+        if pixel:
+            x, y = self.canvas.pix2coo(x, y)
+        polygone = Polygon(zip(x, y), **kw)
+#        if self.canvas.transformation is not None:
+#            x, y = zip(*(zip(x, y)*self.canvas.transformation).array)
         return polygone
 
-    def ajouter_polygone(self, x = None, y = None, couleur = None, pixel = False, **kw):
-        self._ajouter_objet(self.polygone(x, y, couleur, pixel, **kw))
+    def ajouter_polygone(self, x = (0, 1, 1, 0), y = (1, 0, 0, 1), facecolor = 'b', pixel = False, **kw):
+        if kw.pop('color', None):
+            warning("Utiliser desormais 'facecolor' ou 'edgecolor' au lieu de 'couleur'.")
+            facecolor = color
+        self._ajouter_objet(self.polygone(x, y, pixel, facecolor=facecolor, **kw))
 
 
     def texte(self, x = None, y = None, txt = None, pixel = False, **kw):
@@ -248,11 +249,13 @@ class Moteur_graphique(object):
 
 
     def arc(self, x, y, vecteur, couleur = "k", **kw):
-        # affiche un petit demi-cercle d'orientation choisie
-        # Par ex, pour le vecteur (1,0), ie. ->, l'arc est orienté comme ci: (
-        # Pour le vecteur (-1,0), ie. <-, l'arc est orienté comme ci: ).
-        # On travaille sur les pixels pour faire de la trigonometrie plus simplement
-        # (le repere devient ainsi orthonorme)
+        u"""Affiche un petit demi-cercle d'orientation choisie.
+
+        Par ex, pour le vecteur (1,0), ie. ->, l'arc est orienté comme ceci: (
+        Pour le vecteur (-1,0), ie. <-, l'arc est orienté comme ceci: ).
+        On travaille sur les pixels pour faire de la trigonometrie plus simplement
+        (le repere devient ainsi orthonorme)"""
+        self._temp_warning_color(kw)
         vecteur = self.canvas.dcoo2pix(*vecteur)
         if vecteur[0] == 0:
             if vecteur[1] > 0:
@@ -278,6 +281,9 @@ class Moteur_graphique(object):
 
 
     def point(self, x, y, couleur = 'k', plein = True, **kw):
+        u"Un petit cercle, vide ou plein."
+        self._temp_warning_color(kw)
+        couleur = kw.pop('color')
         kw.setdefault('zorder', 2.1)
         kw.setdefault('markeredgecolor', couleur)
         kw.setdefault('markeredgewidth', 1)
@@ -311,6 +317,34 @@ class Moteur_graphique(object):
 
     def ajouter_cercle(self, xy, r, **kwargs):
         self._ajouter_objet(self.cercle(xy, r, **kwargs))
+
+    def pointe(self, x=0, y=0, dx=1, dy=1, angle=60, taille=10, **kw):
+        u"""Une pointe de flêche.
+
+        angle: ouverture de la flêche (en degrés)
+        x, y: emplacement de l'extrémité de la pointe
+        dx, dy: direction de la flêche
+        """
+        a = angle*math.pi/360 # degrés -> radians
+        #                                    M +
+        #                                 C     \
+        # Schéma:         A +--------------+-----+ B    --> direction
+        #                                       /
+        #                                    N +
+        # On calcule les coordonnées de C, puis par rotation autour de B, celles de M et N.
+        xB, yB = self.canvas.coo2pix(x, y)
+        alpha = atan2(*self.canvas.dcoo2pix(dx, dy))
+        xM = xB + taille*cos(alpha + a)
+        yM = yB + taille*sin(alpha + a)
+        xN = xB + taille*cos(alpha - a)
+        yN = yB + taille*sin(alpha - a)
+        xx, yy = self.canvas.pix2coo((xM, xB, xN), (yM, yB, yN))
+
+
+        C = G + r*(A - B)/math.hypot(*(A - B)) # prendre B et non G, au cas où G = A !
+        M = (numpy.dot([[math.cos(a), -math.sin(a)], [math.sin(a), math.cos(a)]], numpy.transpose([C - G])) + numpy.transpose([G]))[:,0]
+        N = (numpy.dot([[math.cos(a), math.sin(a)], [-math.sin(a), math.cos(a)]], numpy.transpose([C - G])) + numpy.transpose([G]))[:,0]
+        x, y = self.__canvas__.pix2coo(*array_zip(M, G, N))
 
 
 
