@@ -207,8 +207,11 @@ class Moteur_graphique(object):
 #            x, y = zip(*(zip(x, y)*self.canvas.transformation).array)
         return polygone
 
-    def ajouter_polygone(self, x = (0, 1, 1, 0), y = (1, 0, 0, 1), color = 'b', pixel = False, **kw):
-        self._ajouter_objet(self.polygone(x, y, pixel, color=color, **kw))
+    def ajouter_polygone(self, x = (0, 1, 1, 0), y = (1, 0, 0, 1), facecolor = 'b', pixel = False, **kw):
+        if kw.pop('color', None):
+            warning("Utiliser desormais 'facecolor' ou 'edgecolor' au lieu de 'couleur'.")
+            facecolor = color
+        self._ajouter_objet(self.polygone(x, y, pixel, facecolor=facecolor, **kw))
 
 
     def texte(self, x=0, y=0, txt=u'hello !', pixel=False, **kw):
