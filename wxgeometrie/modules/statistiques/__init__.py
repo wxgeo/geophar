@@ -291,6 +291,9 @@ class Statistiques(Panel_API_graphique):
     def valeurs(self):
         mode = self.param('mode_effectifs')
         valeurs = self._valeurs
+        # mode = 0: valeurs
+        # mode = 1: fréquences
+        # mode = 2: pourcentages
         if mode:
             k = (100 if mode == 1 else 1)
             valeurs = valeurs.copy()
@@ -379,26 +382,29 @@ class Statistiques(Panel_API_graphique):
 
     def _affiche(self):
         # ('barres', 'batons', 'histogramme', 'cumul_croissant', 'cumul_decroissant', 'bandes', 'circulaire', 'semi-circulaire', 'boite')
+        msg = ''
         if self.graph == 'barres':
-            self.diagramme_barre()
+            msg = self.diagramme_barre()
         elif self.graph == 'bandes':
-            self.diagramme_bande()
+            msg = self.diagramme_bande()
         elif self.graph == 'batons':
-            self.diagramme_baton(2)
+            msg = self.diagramme_baton(2)
         elif self.graph == 'circulaire':
-            self.diagramme_circulaire()
+            msg = self.diagramme_circulaire()
         elif self.graph == 'semi-circulaire':
-            self.diagramme_circulaire(180)
+            msg = self.diagramme_circulaire(180)
         elif self.graph == 'boite':
-            self.diagramme_boite(True)
+            msg = self.diagramme_boite(True)
 
         # Graphiques utilisant les classes :
         elif self.graph == 'histogramme':
-            self.histogramme()
+            msg = self.histogramme()
         elif self.graph == 'cumul_croissant':
-            self.courbe_effectifs()
+            msg = self.courbe_effectifs()
         elif self.graph == 'cumul_decroissant':
-            self.courbe_effectifs(-1)
+            msg = self.courbe_effectifs(-1)
+        if msg:
+            self.afficher_message(msg)
 
 
     def creer_experience(self, event = None):
@@ -427,11 +433,17 @@ class Statistiques(Panel_API_graphique):
         y0 = self.canvas.fenetre[2] + 4*self.canvas.coeff(1)
         y1 = self.canvas.fenetre[3] - 6*self.canvas.coeff(1)
         if self.param('hachures'):
-            self.canvas.dessiner_polygone(pylab.array([x0,x0,x1,x1]), pylab.array([y0,y1,y1,y0]), facecolor='w', edgecolor='k',alpha = .3, hatch = '/')
-            self.canvas.dessiner_ligne([x0,x0,x1,x1,x0], [y0,y1,y1,y0,y0], 'k', alpha = 1)
+            self.canvas.dessiner_polygone([x0, x0, x1, x1], [y0, y1, y1, y0], facecolor='w', edgecolor='k',alpha = .3, hatch = '/')
+            self.canvas.dessiner_ligne([x0, x0, x1, x1, x0], [y0, y1, y1, y0, y0], 'k', alpha = 1)
         else:
-            self.canvas.dessiner_polygone(pylab.array([x0,x0,x1,x1]), pylab.array([y0,y1,y1,y0]), facecolor='y', edgecolor='y',alpha = .3)
-            self.canvas.dessiner_ligne([x0,x0,x1,x1,x0], [y0,y1,y1,y0,y0], 'y', alpha = 1)
+            self.canvas.dessiner_polygone([x0, x0, x1, x1], [y0, y1, y1, y0], facecolor='y', edgecolor='y',alpha = .3)
+            self.canvas.dessiner_ligne([x0, x0, x1, x1, x0], [y0, y1, y1, y0, y0], 'y', alpha = 1)
+
+
+    def afficher_message(self, msg):
+        u"Affichage un message précisant pourquoi le graphique ne s'affiche pas."
+        self.canvas.dessiner_texte(0, 0, msg, va='center', ha='center')
+        self.fenetre(-1, 1, -1, 1)
 
 #------------------------------------
 #   Differents types de diagrammes.
@@ -444,7 +456,7 @@ class Statistiques(Panel_API_graphique):
         u"Construit un histogramme (à ne pas confondre avec le diagramme en barres !)"
 
         if self.axes(x=True, a=True, classes=True):
-            return
+            return u"Définissez des classes.\nExemple : [0;10[ [10;20["
 
         m, M = self.intervalle_classes()
         l = min([classe[1] - classe[0] for classe in self.classes])
@@ -508,13 +520,13 @@ class Statistiques(Panel_API_graphique):
         u"Courbe des effectifs cumulés croissants si mode = 1, décroissants si mode = -1."
 
         if self.axes(x = True, y = True, classes=True):
-            return
+            return u"Définissez des classes.\nExemple : [0;10[ [10;20["
 
         valeurs = self.liste_valeurs()
 
         l = min([classe[1] - classe[0] for classe in self.classes])
         m, M = self.intervalle_classes()
-        hmax = self.effectif_total()
+        hmax = self.total()
         self.fenetre(m - 0.1*(M-m), M + 0.2*(M-m), -0.1*hmax, 1.1*hmax)
         self.graduations(l, arrondir(hmax/10))
         self.origine(m, 0)
@@ -649,7 +661,7 @@ class Statistiques(Panel_API_graphique):
 
         valeurs = self.liste_valeurs()
 
-        l_unite = 100./self.effectif_total()
+        l_unite = 100./self.total()
         n = 0
         x = 0
 
@@ -730,16 +742,16 @@ class Statistiques(Panel_API_graphique):
 
         w = 1 if self.param('hachures') else 1.5
 
-        self.canvas.dessiner_ligne(pylab.array([d1, d1]), pylab.array([.4, .6]), linewidth = w, color = col('g'))
-        self.canvas.dessiner_ligne(pylab.array([d9, d9]), pylab.array([.4, .6]), linewidth = w, color = col('g'))
-        self.canvas.dessiner_ligne(pylab.array([q1, q1]), pylab.array([.2, .8]), linewidth = w, color = col('b'))
-        self.canvas.dessiner_ligne(pylab.array([q3, q3]), pylab.array([.2, .8]), linewidth = w, color = col('b'))
-        self.canvas.dessiner_ligne(pylab.array([med, med]), pylab.array([.2, .8]), linewidth = w, color = col('r'))
-        self.canvas.dessiner_ligne(pylab.array([d1, q1]), pylab.array([.5, .5]), color = "k")
-        self.canvas.dessiner_ligne(pylab.array([q3, d9]), pylab.array([.5, .5]), color = "k")
-        self.canvas.dessiner_ligne(pylab.array([q3, q1]), pylab.array([.2, .2]), color = "k")
-        self.canvas.dessiner_ligne(pylab.array([q3, q1]), pylab.array([.8, .8]), color = "k")
-        self.canvas.dessiner_ligne(pylab.array([m, M]), pylab.array([.5, .5]), linestyle = "None", marker = "o", color="k", markerfacecolor = "w")
+        self.canvas.dessiner_ligne([d1, d1], [.4, .6], linewidth = w, color = col('g'))
+        self.canvas.dessiner_ligne([d9, d9], [.4, .6], linewidth = w, color = col('g'))
+        self.canvas.dessiner_ligne([q1, q1], [.2, .8], linewidth = w, color = col('b'))
+        self.canvas.dessiner_ligne([q3, q3], [.2, .8], linewidth = w, color = col('b'))
+        self.canvas.dessiner_ligne([med, med], [.2, .8], linewidth = w, color = col('r'))
+        self.canvas.dessiner_ligne([d1, q1], [.5, .5], color = "k")
+        self.canvas.dessiner_ligne([q3, d9], [.5, .5], color = "k")
+        self.canvas.dessiner_ligne([q3, q1], [.2, .2], color = "k")
+        self.canvas.dessiner_ligne([q3, q1], [.8, .8], color = "k")
+        self.canvas.dessiner_ligne([m, M], [.5, .5], linestyle = "None", marker = "o", color="k", markerfacecolor = "w")
 
 
 #------------------------------------------------------------
@@ -749,6 +761,11 @@ class Statistiques(Panel_API_graphique):
 
 
     def effectif_total(self):
+        # self._valeurs : effectifs bruts (non convertis en fréquences)
+        return __builtin__.sum(self._valeurs.itervalues())
+
+    def total(self):
+        u"Retourne soit l'effectif total, soit 100, soit 1, selon les paramètres en cours."
         return __builtin__.sum(self.valeurs.itervalues())
 
     def mode(self):
@@ -762,7 +779,7 @@ class Statistiques(Panel_API_graphique):
 
     def moyenne(self):
         try:
-            return tst(1.*sum([eff*val for val, eff in self.valeurs.items()])/self.effectif_total())
+            return tst(1.*sum([eff*val for val, eff in self.valeurs.items()])/self.total())
         except (ZeroDivisionError, TypeError):
             return u"Calcul impossible."
 
@@ -778,7 +795,7 @@ class Statistiques(Panel_API_graphique):
             m = self.moyenne()
             if isinstance(m, basestring):
                 raise TypeError
-            return tst(1.*sum([eff*(val - m)**2 for val, eff in self.valeurs.items()])/self.effectif_total())
+            return tst(1.*sum([eff*(val - m)**2 for val, eff in self.valeurs.items()])/self.total())
         except (ZeroDivisionError, TypeError):
             return u"Calcul impossible."
 
@@ -802,7 +819,7 @@ class Statistiques(Panel_API_graphique):
         for val, effectif in self.liste_valeurs_effectifs():
             somme += effectif
             if somme > objectif:
-                if old_somme == objectif: # la mediane est a cheval sur 2 valeurs
+                if old_somme == objectif: # la mediane est à cheval sur 2 valeurs
                     try:
                         return (old_val + val)/2
                     except TypeError:
