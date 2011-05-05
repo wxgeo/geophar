@@ -94,7 +94,6 @@ class Texte_generique(Objet_avec_coordonnees):
         text._text = texte
 
         text.set_rotation(self.style("angle"))
-        print type(av), type(ah), av, ah
         text.set_verticalalignment(av)
         text.set_horizontalalignment(ah)
         text.zorder = niveau + .001
