@@ -514,11 +514,10 @@ class Statistiques(Panel_API_graphique):
         self.canvas.dessiner_texte(x, .5*hmax - 15*self.canvas.coeff(1), legende, va = "top")
 
 
-
-
     def courbe_effectifs(self, mode=1):
-        u"Courbe des effectifs cumulés croissants si mode = 1, décroissants si mode = -1."
-
+        u"""
+        Courbe des effectifs cumulés croissants si mode = 1, décroissants si mode = -1.
+        """
         if self.axes(x = True, y = True, classes=True):
             return u"Définissez des classes.\nExemple : [0;10[ [10;20["
 
@@ -531,13 +530,23 @@ class Statistiques(Panel_API_graphique):
         self.graduations(l, arrondir(hmax/10))
         self.origine(m, 0)
 
+        #classe with cumulatives eff or freq 2-uple list: y_cum
+        y_cum=[]
         for classe in self.classes:
             couleur = 'k' if self.param('hachures') else 'b'
-            self.canvas.dessiner_ligne(classe, [sum([self.valeurs[valeur] for valeur in valeurs if mode*valeur <= mode*classe[i]]) for i in (0, 1)], color = couleur)
-
+            y_value = [sum([self.valeurs[valeur] for valeur in valeurs if mode*valeur <= mode*classe[i]]) for i in (0, 1)]
+            self.canvas.dessiner_ligne(classe, y_value, color = couleur)
+            y_cum.append((classe, y_value))
         dx, dy = self.canvas.dpix2coo(-5, -18)
         self.canvas.dessiner_texte(M + 0.2*(M-m) + dx, dy, self.legende_x, ha = "right")
         dx, dy = self.canvas.dpix2coo(15, -5)
+        #ajout des quartiles
+        freq = [0.25, 0.5, 0.75]
+        for a in freq:
+            (c, y) = self.select_classe(y_cum, a, mode)
+            # fonctionne seulement en fcc.
+            self.quantile_plot(c, y, a)
+        #legende
         legende_y = self.legende_y
         if not legende_y:
             mode = self.param('mode_effectifs')
@@ -550,6 +559,43 @@ class Statistiques(Panel_API_graphique):
         self.canvas.dessiner_texte(m + dx, 1.1*hmax + dy, legende_y, va='top')
 
 
+    def quantile_plot(self, classe, y, a):
+        u"""
+        plot the a-quantile.
+        
+        @type classe: classe
+        @param classe: la classe dans laquelle tombe le a-quantile.
+        @type y: list
+        @param y: bornes des eff ou freq cumulés de classe.
+        """
+        a_reel = a*self.total()
+        m = (y[1]-y[0])/(classe[1]-classe[0])
+        x_reg = (a_reel-y[0])/m + classe[0]
+        # plot the segment in red
+        self.canvas.dessiner_ligne([0,x_reg], [a_reel, a_reel], color = 'r')
+        self.canvas.dessiner_ligne([x_reg, x_reg], [a_reel, 0], color = 'r')
+
+
+    def select_classe(self, liste, a, mode=1):
+        u"""
+        selectionne la classe contenant le a-quantile
+        
+        @type a: real
+
+        @param a: le paramètre dans [0.1[. Ne pas mettre a=1.0 pour éviter un
+        dépassement
+        @type liste: list of 2-uple classe, list
+        @param liste: contient les classes couplées à leurs effectifs cumulés.
+        @type mode: int
+        @param mode: 1 or -1 for increasing or decreasing cumulative eff/freq
+        return a 2-uple classe, [y_0, y_1]
+        """
+        eff_total = self.total()
+        if mode in [0, 1]: #0 inutile en principe
+            chosen_s = [(c,v) for (c,v) in liste if v[0]/eff_total <= a < v[1]/eff_total]
+        elif mode == -1:
+            chosen_s = [(c,v) for (c,v) in liste if v[1]/eff_total <= a < v[0]/eff_total]
+        return chosen_s[0]
 
     def diagramme_barre(self, ratio=.7):
         u"""Diagramme en barres ; ratio mesure le quotient largeur d'une barre sur largeur maximale possible.
