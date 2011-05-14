@@ -543,9 +543,13 @@ class Statistiques(Panel_API_graphique):
         #ajout des quartiles
         freq = [0.25, 0.5, 0.75]
         for a in freq:
-            (c, y) = self.select_classe(y_cum, a, mode)
-            # fonctionne seulement en fcc.
-            self.quantile_plot(c, y, a)
+            try:
+                (c, y) = self.select_classe(y_cum, a, mode)
+                self.quantile_plot(c, y, a)
+            except TypeError:
+                # c peut être vide si les classes commencent à une 
+                # fcc trop grande.
+                pass
         #legende
         legende_y = self.legende_y
         if not legende_y:
@@ -561,19 +565,24 @@ class Statistiques(Panel_API_graphique):
 
     def quantile_plot(self, classe, y, a):
         u"""
-        plot the a-quantile.
+        Trace le a-quantile
         
         @type classe: classe
         @param classe: la classe dans laquelle tombe le a-quantile.
         @type y: list
         @param y: bornes des eff ou freq cumulés de classe.
+
+        @rtype
         """
         a_reel = a*self.total()
         m = (y[1]-y[0])/(classe[1]-classe[0])
         x_reg = (a_reel-y[0])/m + classe[0]
-        # plot the segment in red
-        self.canvas.dessiner_ligne([0,x_reg], [a_reel, a_reel], color = 'r')
-        self.canvas.dessiner_ligne([x_reg, x_reg], [a_reel, 0], color = 'r')
+
+        # coordonnées de l'origine
+        x0, y0 = self.canvas.origine_axes
+        # trace le segment en rouge
+        self.canvas.dessiner_ligne([x0, x_reg], [a_reel, a_reel], color = 'r')
+        self.canvas.dessiner_ligne([x_reg, x_reg], [a_reel, y0], color = 'r')
 
 
     def select_classe(self, liste, a, mode=1):
@@ -588,14 +597,23 @@ class Statistiques(Panel_API_graphique):
         @param liste: contient les classes couplées à leurs effectifs cumulés.
         @type mode: int
         @param mode: 1 or -1 for increasing or decreasing cumulative eff/freq
-        return a 2-uple classe, [y_0, y_1]
+
+        @rtype: 2-uple
+        renvoie un 2-uple:  classe, [y_0, y_1] ou rien si la recherche échoue.
         """
         eff_total = self.total()
-        if mode in [0, 1]: #0 inutile en principe
-            chosen_s = [(c,v) for (c,v) in liste if v[0]/eff_total <= a < v[1]/eff_total]
+        if mode == 1:
+            # chosen_s = [(c,v) for (c,v) in liste if \
+            # v[0]/eff_total <= a < v[1]/eff_total]
+            for (c, v) in liste:
+                if v[0]/eff_total <= a < v[1]/eff_total:
+                    return (c, v)
         elif mode == -1:
-            chosen_s = [(c,v) for (c,v) in liste if v[1]/eff_total <= a < v[0]/eff_total]
-        return chosen_s[0]
+            # chosen_s = [(c,v) for (c,v) in liste if v[1]/eff_total \
+            # <= a < v[0]/eff_total]
+            for (c, v) in liste:
+                if v[1]/eff_total <= a < v[0]/eff_total:
+                    return (c, v)
 
     def diagramme_barre(self, ratio=.7):
         u"""Diagramme en barres ; ratio mesure le quotient largeur d'une barre sur largeur maximale possible.
