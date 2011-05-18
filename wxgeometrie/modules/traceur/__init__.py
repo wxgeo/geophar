@@ -161,12 +161,16 @@ class Traceur(Panel_API_graphique):
             if not expr.strip():
                 visible = False
 #                self.boites[i].Disable()
-            if self.feuille_actuelle.objets.has_key(nom_courbe):
-                objets[nom_courbe].style(visible = visible)
+            if self.feuille_actuelle.objets.has_key(nom_fonction):
                 objets[nom_fonction].modifier_expression_et_ensemble(expression = expr, ensemble = ensemble)
             else:
-                f = objets[nom_fonction] = Fonction(expr, ensemble, 'x')
+                objets[nom_fonction] = Fonction(expr, ensemble, 'x')
+            if self.feuille_actuelle.objets.has_key(nom_courbe):
+                objets[nom_courbe].style(visible = visible)
+            else:
+                f = objets[nom_fonction]
                 objets[nom_courbe] = Courbe(f, protege = True, visible = visible, couleur = self.couleurs[i%len(self.couleurs)])
+
 ##            self.canvas.regenerer_liste = True
 
 ##    def _sauvegarder(self, fgeo):
