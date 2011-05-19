@@ -27,10 +27,71 @@ import matplotlib
 from matplotlib.transforms import Bbox
 from matplotlib.backends.backend_wxagg import FigureCanvasAgg
 from matplotlib.lines import Line2D
+from matplotlib.collections import LineCollection
 from matplotlib.patches import Polygon, Circle, FancyArrowPatch
 from matplotlib.text import Text
+from numpy import array
 
 from math import cos, sin, atan2
+
+
+class Pointe(Line2D):
+    pass
+
+
+
+class Fleche(LineCollection):
+    _parametres = ('xy0', 'xy1', 'taille', 'double', 'position', 'angle')
+    taille = 10
+    double = False
+    position = 1
+    angle = 60
+    xy0 = (0, 0)
+    xy1 = (1, 1)
+
+    def __init__(self, **kw):
+        LineCollection.__init__(self, ())
+        if kw:
+            self.set(**kw)
+
+    def set(self, **kw):
+        for nom in self._parametres:
+            if kw.has_key(nom):
+                setattr(self, nom, kw.pop(nom))
+        LineCollection.set(self, **kw)
+        self._maj_data()
+
+    def _maj_data(self):
+        lignes = []
+        xy0 = array(self.xy0)
+        xy1 = array(self.xy1)
+        k = self.position
+        dxdy = self.xy1 - self.xy0
+        lignes.append(zip(self._pointe((1 - k)*xy0 + k*xy1, dxdy)))
+        if self.double:
+            lignes.append(zip(self._pointe(k*xy0 + (1 - k)*xy1, -dxdy)))
+        lignes.append((xy0, xy1))
+        self.set_segments(lignes)
+
+    def _pointe(self, xy, dxdy):
+        a = self.angle*math.pi/360 # degrés -> radians
+        taille = self.taille
+        #                                    M +
+        #                                 C     \
+        # Schéma:         A +--------------+-----+ B    --> direction
+        #                                       /
+        #                                    N +
+        # On calcule les coordonnées de C, puis par rotation autour de B, celles de M et N.
+        xB, yB = self.canvas.coo2pix(*xy)
+        alpha = atan2(*self.canvas.dcoo2pix(*dxdy))
+        xM = xB + taille*cos(alpha + a)
+        yM = yB + taille*sin(alpha + a)
+        xN = xB + taille*cos(alpha - a)
+        yN = yB + taille*sin(alpha - a)
+        xx, yy = self.canvas.pix2coo((xM, xB, xN), (yM, yB, yN))
+        return xx, yy
+
+
 
 class ZoomArtistes(object):
     def __init__(self, axes, zoom_texte, zoom_ligne):
@@ -40,6 +101,7 @@ class ZoomArtistes(object):
         self.linewidth = {}
         self.markersize = {}
         self.markeredgewidth = {}
+        self.data = {}
         self.artistes = list(itertools.chain(axes.artists, axes.lines, axes.patches, axes.texts, axes.tables, axes.collections))
 
     def __enter__(self):
@@ -48,20 +110,27 @@ class ZoomArtistes(object):
         if self.regler_textes or self.regler_lignes:
             for artiste in self.artistes:
                 if artiste._visible:
+                    ID = id(artiste)
                     if self.regler_textes:
-                         if isinstance(artiste, matplotlib.text.Text):
-                            size = self.size[id(artiste)] = artiste.get_size()
+                         if isinstance(artiste, Text):
+                            size = self.size[ID] = artiste.get_size()
                             artiste.set_size(size*self.zoom_texte)
                     if self.regler_lignes:
-                        if isinstance(artiste, matplotlib.lines.Line2D):
-                            lw = self.linewidth[id(artiste)] = artiste.get_linewidth()
+                        if isinstance(artiste, Line2D):
+                            lw = self.linewidth[] = artiste.get_linewidth()
                             artiste.set_linewidth(lw*self.zoom_ligne)
-                            ms = self.markersize[id(artiste)] = artiste.get_markersize()
+                            ms = self.markersize[ID] = artiste.get_markersize()
                             artiste.set_markersize(ms*self.zoom_ligne)
-                            mw = self.markeredgewidth[id(artiste)] = artiste.get_markeredgewidth()
+                            mw = self.markeredgewidth[ID] = artiste.get_markeredgewidth()
                             artiste.set_markeredgewidth(mw*self.zoom_ligne)
-                        elif isinstance(artiste, matplotlib.collections.LineCollection):
-                            lws = self.linewidth[id(artiste)] = artiste.get_linewidth()
+                            if isinstance(artiste, Pointe):
+                                self.data[ID] = artiste.get_data()
+                                a, b, c = artiste.get_xydata()
+                                a = a + self.zoom_ligne*(a - b)
+                                c = c + self.zoom_ligne*(c - b)
+                                artiste.set_data(zip(a, b, c))
+                        elif isinstance(artiste, LineCollection):
+                            lws = self.linewidth[ID] = artiste.get_linewidth()
                             artiste.set_linewidth(tuple(lw*self.zoom_ligne for lw in lws))
         return self.artistes
 
@@ -69,16 +138,19 @@ class ZoomArtistes(object):
         if self.regler_textes or self.regler_lignes:
             for artiste in self.artistes:
                 if artiste._visible:
+                    ID = id(artiste)
                     if self.regler_textes:
-                        if isinstance(artiste, matplotlib.text.Text):
-                            artiste.set_size(self.size[id(artiste)])
+                        if isinstance(artiste, Text):
+                            artiste.set_size(self.size[ID])
                     if self.regler_lignes:
-                        if isinstance(artiste, matplotlib.lines.Line2D):
-                            artiste.set_linewidth(self.linewidth[id(artiste)])
-                            artiste.set_markersize(self.markersize[id(artiste)])
-                            artiste.set_markeredgewidth(self.markeredgewidth[id(artiste)])
-                        elif isinstance(artiste, matplotlib.collections.LineCollection):
-                            artiste.set_linewidth(self.linewidth[id(artiste)])
+                        if isinstance(artiste, Line2D):
+                            artiste.set_linewidth(self.linewidth[ID])
+                            artiste.set_markersize(self.markersize[ID])
+                            artiste.set_markeredgewidth(self.markeredgewidth[ID])
+                            if isinstance(artiste, Pointe):
+                                artiste.set_data(self.data[ID])
+                        elif isinstance(artiste, LineCollection):
+                            artiste.set_linewidth(self.linewidth[ID])
 
 
 class CollecterArtistes(object):
@@ -278,13 +350,20 @@ class Moteur_graphique(object):
         self._ajouter_objet(self.point(x, y, couleur, plein, **kw))
 
 
-    def fleche(self, x0=0, y0=0, x1=1, y1=1, **kw):
+    def _fleche_matplotlib(self, x0=0, y0=0, x1=1, y1=1, **kw):
         kw.setdefault(mutation_scale=25)
         arrow = FancyArrowPatch((x0, y0), (x1, y1), **kw)
         # cf. matplotlib.patches.ArrowStyle.get_styles() pour les
         # styles de flêches.
         # Changer coord. avec FancyArrowPatch.set_position().
+        # FIXME: il n'y a aucun moyen de changer la position de la flêche
+        # sur la ligne (au milieu, au début, au bout...)
         return arrow
+
+    def fleche(self, x0=0, y0=0, x1=1, y1=1, **kw):
+        xx, yy = self._pointe(x0, y0, x1 - x0, y1 - y0)
+        return LineCollection([((x0, y0), (x1, y1)), zip(xx, yy)], **kw)
+
 
     def ajouter_fleche(self, x0=0, y0=0, x1=1, y1=1, **kw):
         self._ajouter_objet(self.fleche(x0, y0, x1, y1, **kw))
@@ -296,13 +375,7 @@ class Moteur_graphique(object):
     def ajouter_cercle(self, xy=(0, 0), r=1, **kw):
         self._ajouter_objet(self.cercle(xy, r, **kw))
 
-    def pointe(self, x=0, y=0, dx=1, dy=1, angle=60, taille=10, **kw):
-        u"""Une pointe de flêche.
-
-        angle: ouverture de la flêche (en degrés)
-        x, y: emplacement de l'extrémité de la pointe
-        dx, dy: direction de la flêche
-        """
+    def _pointe(self, x=0, y=0, dx=1, dy=1, angle=60, taille=10):
         a = angle*math.pi/360 # degrés -> radians
         #                                    M +
         #                                 C     \
@@ -317,12 +390,18 @@ class Moteur_graphique(object):
         xN = xB + taille*cos(alpha - a)
         yN = yB + taille*sin(alpha - a)
         xx, yy = self.canvas.pix2coo((xM, xB, xN), (yM, yB, yN))
+        return xx, yy
 
 
-        C = G + r*(A - B)/math.hypot(*(A - B)) # prendre B et non G, au cas où G = A !
-        M = (numpy.dot([[math.cos(a), -math.sin(a)], [math.sin(a), math.cos(a)]], numpy.transpose([C - G])) + numpy.transpose([G]))[:,0]
-        N = (numpy.dot([[math.cos(a), math.sin(a)], [-math.sin(a), math.cos(a)]], numpy.transpose([C - G])) + numpy.transpose([G]))[:,0]
-        x, y = self.__canvas__.pix2coo(*array_zip(M, G, N))
+    def pointe(self, x=0, y=0, dx=1, dy=1, angle=60, taille=10, **kw):
+        u"""Une pointe de flêche.
+
+        angle: ouverture de la flêche (en degrés)
+        x, y: emplacement de l'extrémité de la pointe
+        dx, dy: direction de la flêche
+        """
+        return Pointe(*self._pointe(x, y, dx, dy, angle, taille), **kw)
+
 
 
 
@@ -650,7 +729,7 @@ class Moteur_graphique(object):
 ##        #type_ligne = couleur + style
 
         # Format de 'segments': [[(x0,y0), (x1,y1), ...], [...], [...], ...]
-        # cf. matplotlib.collections.LineCollection
+        # cf. LineCollection
         segments = []
 
         for n in (0, 1):
@@ -681,7 +760,7 @@ class Moteur_graphique(object):
         couleur = matplotlib.colors.colorConverter.to_rgba(couleur)
         style_dict = {':': 'dotted', '--': 'dashed', '-.': 'dashdot', '-': 'solid'}
         style = style_dict.get(style, style)
-        collection = matplotlib.collections.LineCollection(segments, linewidths = epaisseur, colors = couleur,  linestyle = style)
+        collection = LineCollection(segments, linewidths = epaisseur, colors = couleur,  linestyle = style)
         self.axes.add_collection(collection)
 
 
@@ -709,18 +788,18 @@ class Moteur_graphique(object):
         repérer visuellement l'artiste."""
         infos = {}
         infos['parent'] = getattr(getattr(artiste, '_cree_par', None), 'info', None)
-        if isinstance(artiste, matplotlib.text.Text):
+        if isinstance(artiste, Text):
             infos['text'] = artiste.get_text()
             infos['color'] = artiste.get_color()
             infos['size'] = artiste.get_size()
-        elif isinstance(artiste, matplotlib.lines.Line2D):
+        elif isinstance(artiste, Line2D):
             infos['xy'] = zip(artiste.get_xdata(), artiste.get_ydata())
             if len(infos['xy']) > 1:
                 infos['color'] = artiste.get_color()
             else:
                 infos['edge-color'] = artiste.get_markeredgecolor()
                 infos['face-color'] = artiste.get_markerfacecolor()
-        elif isinstance(artiste, matplotlib.collections.LineCollection):
+        elif isinstance(artiste, LineCollection):
             infos['color'] = artiste.get_color()
         elif isinstance(artiste, matplotlib.patches.Polygon):
             infos['xy'] = artiste.get_verts()
