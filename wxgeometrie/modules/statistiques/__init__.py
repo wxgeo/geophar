@@ -128,6 +128,10 @@ class Statistiques(Panel_API_graphique):
         self.donnees_classes = ''
         self.graph = 'barres'
         self.intervalle_confiance = None
+        #test dico quantiles
+        self.choix_quantiles = {"mediane": [True, [0.5], 'r'], \
+                                    "quartiles": [True, [0.25, 0.75], 'b'],\
+                                    "deciles": [True, [0.1, 0.9], 'g']}
 
         self.entrees = wx.BoxSizer(wx.VERTICAL)
 
@@ -217,6 +221,11 @@ class Statistiques(Panel_API_graphique):
             self.origine_y = self.onglets_bas.graduation.origine_y.GetValue()
             self.donnees_valeurs = self.onglets_bas.donnees.valeurs.GetValue()
             self.onglets_classes = self.onglets_bas.donnees.classes.GetValue()
+
+            # test choix quantiles
+            self.choix_quantiles["mediane"][0] = self.onglets_bas.autresq.mediane.GetValue()
+            self.choix_quantiles["quartiles"][0] = self.onglets_bas.autresq.quartiles.GetValue()
+            self.choix_quantiles["deciles"][0] = self.onglets_bas.autresq.deciles.GetValue()
 
             self.classes = []
             self._valeurs = {}
@@ -540,16 +549,19 @@ class Statistiques(Panel_API_graphique):
         dx, dy = self.canvas.dpix2coo(-5, -18)
         self.canvas.dessiner_texte(M + 0.2*(M-m) + dx, dy, self.legende_x, ha = "right")
         dx, dy = self.canvas.dpix2coo(15, -5)
-        #ajout des quartiles
-        freq = [0.25, 0.5, 0.75]
-        for a in freq:
-            try:
-                (c, y) = self.select_classe(y_cum, a, mode)
-                self.quantile_plot(c, y, a)
-            except TypeError:
-                # c peut être vide si les classes commencent à une 
-                # fcc trop grande.
-                pass
+        #ajout des quantiles
+        for  q in ["mediane", "quartiles", "deciles"]:
+            # tracer si les quantiles sont activés
+            if self.choix_quantiles[q][0]:
+                freq = self.choix_quantiles[q][1]
+                for a in freq:
+                    try:
+                        (c, y) = self.select_classe(y_cum, a, mode)
+                        self.quantile_plot(c, y, a, couleur = self.choix_quantiles[q][2])
+                    except TypeError:
+                        # c peut être vide si les classes commencent à une 
+                        # fcc trop grande.
+                        pass
         #legende
         legende_y = self.legende_y
         if not legende_y:
@@ -563,7 +575,7 @@ class Statistiques(Panel_API_graphique):
         self.canvas.dessiner_texte(m + dx, 1.1*hmax + dy, legende_y, va='top')
 
 
-    def quantile_plot(self, classe, y, a):
+    def quantile_plot(self, classe, y, a, couleur ='r'):
         u"""
         Trace le a-quantile
         
@@ -571,8 +583,10 @@ class Statistiques(Panel_API_graphique):
         @param classe: la classe dans laquelle tombe le a-quantile.
         @type y: list
         @param y: bornes des eff ou freq cumulés de classe.
+        @type couleur: char
+        @param couleur: couleur du tracé, rouge par défaut
 
-        @rtype
+        @rtype: None
         """
         a_reel = a*self.total()
         m = (y[1]-y[0])/(classe[1]-classe[0])
@@ -581,8 +595,8 @@ class Statistiques(Panel_API_graphique):
         # coordonnées de l'origine
         x0, y0 = self.canvas.origine_axes
         # trace le segment en rouge
-        self.canvas.dessiner_ligne([x0, x_reg], [a_reel, a_reel], color = 'r')
-        self.canvas.dessiner_ligne([x_reg, x_reg], [a_reel, y0], color = 'r')
+        self.canvas.dessiner_ligne([x0, x_reg], [a_reel, a_reel], color = couleur)
+        self.canvas.dessiner_ligne([x_reg, x_reg], [a_reel, y0], color = couleur)
 
 
     def select_classe(self, liste, a, mode=1):
@@ -599,7 +613,7 @@ class Statistiques(Panel_API_graphique):
         @param mode: 1 or -1 for increasing or decreasing cumulative eff/freq
 
         @rtype: 2-uple
-        renvoie un 2-uple:  classe, [y_0, y_1] ou rien si la recherche échoue.
+        renvoie un 2-uple:  classe, [y_0, y_1] ou **None** si la recherche échoue.
         """
         eff_total = self.total()
         if mode == 1:
