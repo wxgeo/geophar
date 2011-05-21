@@ -110,6 +110,8 @@ def test_tous_modes():
     assert_all('"x(x+1)" x(x+1) """x(x+1) " """', '"x(x+1)"x*(x+1)"""x(x+1) " """')
     assert_all(r'"\""', r'"\""')
     assert_all(r'"""\"+1\" ici, et non \"+n\""""', r'"""\"+1\" ici, et non \"+n\""""')
+    # Caractères unicode
+    assert_all(u"\u2013x\u22123", "-x-3")
 
 
 

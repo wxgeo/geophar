@@ -289,6 +289,10 @@ def traduire_formule(formule = "", fonctions = (), OOo = True, LaTeX = True, cha
     # Différentes façons de rentrer les puissances :
     formule = formule.replace("^", "**").replace(u'²',"**2").replace(u'³',"**3")
 
+    # Caractères unicode
+    # remplace le tiret long en '-'
+    formule = formule.replace(u'\u2013', "-").replace(u'\u2212', "-")
+
 
     # Conversion écriture décimale infinie périodique -> fraction
     def to_frac(reg):
@@ -369,8 +373,6 @@ def traduire_formule(formule = "", fonctions = (), OOo = True, LaTeX = True, cha
         formule = regsub("\Wtimes\W", formule, lambda s: (s[0] + '*' + s[-1]).strip())
         formule = regsub("\Wover\W", formule, lambda s: (s[0] + '/' + s[-1]).strip())
         formule = regsub("\Wsup\W", formule, lambda s: (s[0] + '**' + s[-1]).strip())
-        # remplace le tiret long en '-'
-        formule = formule.replace(u'\u2013', "-")
         formule = formule.replace('infinity', 'oo')
 
     formule = _ajouter_mult_manquants(formule, fonctions = fonctions, verbose = verbose, mots_cles = mots_cles)
