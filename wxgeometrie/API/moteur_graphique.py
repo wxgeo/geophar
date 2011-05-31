@@ -35,10 +35,6 @@ from numpy import array
 from math import cos, sin, atan2
 
 
-class Pointe(Line2D):
-    pass
-
-
 
 class Fleche(LineCollection):
     _parametres = ('xy0', 'xy1', 'taille', 'double', 'position', 'angle')
@@ -49,8 +45,9 @@ class Fleche(LineCollection):
     xy0 = (0, 0)
     xy1 = (1, 1)
 
-    def __init__(self, **kw):
+    def __init__(self, canvas, **kw):
         LineCollection.__init__(self, ())
+        self.canvas = canvas
         if kw:
             self.set(**kw)
 
@@ -58,7 +55,8 @@ class Fleche(LineCollection):
         for nom in self._parametres:
             if kw.has_key(nom):
                 setattr(self, nom, kw.pop(nom))
-        LineCollection.set(self, **kw)
+        if kw:
+            LineCollection.set(self, **kw)
         self._maj_data()
 
     def _maj_data(self):
@@ -66,11 +64,12 @@ class Fleche(LineCollection):
         xy0 = array(self.xy0)
         xy1 = array(self.xy1)
         k = self.position
-        dxdy = self.xy1 - self.xy0
-        lignes.append(zip(self._pointe((1 - k)*xy0 + k*xy1, dxdy)))
+        dxdy = xy1 - xy0
+        lignes.append(zip(*self._pointe((1 - k)*xy0 + k*xy1, dxdy)))
         if self.double:
-            lignes.append(zip(self._pointe(k*xy0 + (1 - k)*xy1, -dxdy)))
+            lignes.append(zip(*self._pointe(k*xy0 + (1 - k)*xy1, -dxdy)))
         lignes.append((xy0, xy1))
+        print(lignes)
         self.set_segments(lignes)
 
     def _pointe(self, xy, dxdy):
@@ -101,7 +100,7 @@ class ZoomArtistes(object):
         self.linewidth = {}
         self.markersize = {}
         self.markeredgewidth = {}
-        self.data = {}
+        self.taille = {}
         self.artistes = list(itertools.chain(axes.artists, axes.lines, axes.patches, axes.texts, axes.tables, axes.collections))
 
     def __enter__(self):
@@ -117,21 +116,18 @@ class ZoomArtistes(object):
                             artiste.set_size(size*self.zoom_texte)
                     if self.regler_lignes:
                         if isinstance(artiste, Line2D):
-                            lw = self.linewidth[] = artiste.get_linewidth()
+                            lw = self.linewidth[ID] = artiste.get_linewidth()
                             artiste.set_linewidth(lw*self.zoom_ligne)
                             ms = self.markersize[ID] = artiste.get_markersize()
                             artiste.set_markersize(ms*self.zoom_ligne)
                             mw = self.markeredgewidth[ID] = artiste.get_markeredgewidth()
                             artiste.set_markeredgewidth(mw*self.zoom_ligne)
-                            if isinstance(artiste, Pointe):
-                                self.data[ID] = artiste.get_data()
-                                a, b, c = artiste.get_xydata()
-                                a = a + self.zoom_ligne*(a - b)
-                                c = c + self.zoom_ligne*(c - b)
-                                artiste.set_data(zip(a, b, c))
                         elif isinstance(artiste, LineCollection):
                             lws = self.linewidth[ID] = artiste.get_linewidth()
                             artiste.set_linewidth(tuple(lw*self.zoom_ligne for lw in lws))
+                            if isinstance(artiste, Fleche):
+                                taille = self.taille[ID] = artiste.taille
+                                artiste.set(taille=self.zoom_ligne*taille)
         return self.artistes
 
     def __exit__(self, type, value, traceback):
@@ -151,6 +147,8 @@ class ZoomArtistes(object):
                                 artiste.set_data(self.data[ID])
                         elif isinstance(artiste, LineCollection):
                             artiste.set_linewidth(self.linewidth[ID])
+                            if isinstance(artiste, Fleche):
+                                artiste.set(taille=self.taille[ID])
 
 
 class CollecterArtistes(object):
@@ -350,20 +348,18 @@ class Moteur_graphique(object):
         self._ajouter_objet(self.point(x, y, couleur, plein, **kw))
 
 
-    def _fleche_matplotlib(self, x0=0, y0=0, x1=1, y1=1, **kw):
-        kw.setdefault(mutation_scale=25)
-        arrow = FancyArrowPatch((x0, y0), (x1, y1), **kw)
-        # cf. matplotlib.patches.ArrowStyle.get_styles() pour les
-        # styles de flêches.
-        # Changer coord. avec FancyArrowPatch.set_position().
-        # FIXME: il n'y a aucun moyen de changer la position de la flêche
-        # sur la ligne (au milieu, au début, au bout...)
-        return arrow
+#    def _fleche_matplotlib(self, x0=0, y0=0, x1=1, y1=1, **kw):
+#        kw.setdefault(mutation_scale=25)
+#        arrow = FancyArrowPatch((x0, y0), (x1, y1), **kw)
+#        # cf. matplotlib.patches.ArrowStyle.get_styles() pour les
+#        # styles de flêches.
+#        # Changer coord. avec FancyArrowPatch.set_position().
+#        # FIXME: il n'y a aucun moyen de changer la position de la flêche
+#        # sur la ligne (au milieu, au début, au bout...)
+#        return arrow
 
-    def fleche(self, x0=0, y0=0, x1=1, y1=1, **kw):
-        xx, yy = self._pointe(x0, y0, x1 - x0, y1 - y0)
-        return LineCollection([((x0, y0), (x1, y1)), zip(xx, yy)], **kw)
-
+    def fleche(self, xy0=(0, 0), xy1=(1, 1), **kw):
+        return Fleche(xy0=xy0, xy1=xy1, canvas=self.canvas, **kw)
 
     def ajouter_fleche(self, x0=0, y0=0, x1=1, y1=1, **kw):
         self._ajouter_objet(self.fleche(x0, y0, x1, y1, **kw))
@@ -375,32 +371,6 @@ class Moteur_graphique(object):
     def ajouter_cercle(self, xy=(0, 0), r=1, **kw):
         self._ajouter_objet(self.cercle(xy, r, **kw))
 
-    def _pointe(self, x=0, y=0, dx=1, dy=1, angle=60, taille=10):
-        a = angle*math.pi/360 # degrés -> radians
-        #                                    M +
-        #                                 C     \
-        # Schéma:         A +--------------+-----+ B    --> direction
-        #                                       /
-        #                                    N +
-        # On calcule les coordonnées de C, puis par rotation autour de B, celles de M et N.
-        xB, yB = self.canvas.coo2pix(x, y)
-        alpha = atan2(*self.canvas.dcoo2pix(dx, dy))
-        xM = xB + taille*cos(alpha + a)
-        yM = yB + taille*sin(alpha + a)
-        xN = xB + taille*cos(alpha - a)
-        yN = yB + taille*sin(alpha - a)
-        xx, yy = self.canvas.pix2coo((xM, xB, xN), (yM, yB, yN))
-        return xx, yy
-
-
-    def pointe(self, x=0, y=0, dx=1, dy=1, angle=60, taille=10, **kw):
-        u"""Une pointe de flêche.
-
-        angle: ouverture de la flêche (en degrés)
-        x, y: emplacement de l'extrémité de la pointe
-        dx, dy: direction de la flêche
-        """
-        return Pointe(*self._pointe(x, y, dx, dy, angle, taille), **kw)
 
 
 
@@ -871,7 +841,7 @@ class Moteur_graphique(object):
         self.axes.viewLim.set_points(pylab.array([[0, 0], [1, 1]]))
         FancyArrowPatch = matplotlib.patches.FancyArrowPatch
         matplotlib.axes.Axes.clear(self.canvas.axes)
-        f1 = self.fleche(0.2, 0.2, 0.6, 0.6, size=20, color='g')
+        f1 = self.fleche((0.2, 0.2), (0.6, 0.6), color='g')
         f2 = FancyArrowPatch((0.6, 0.2), (0.2, 0.6), arrowstyle='<->', mutation_scale=25, color='r')
         #f2.set_figure(self.canvas.figure)
         #f2.set_axes(self.canvas.axes)
