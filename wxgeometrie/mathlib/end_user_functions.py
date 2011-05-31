@@ -42,7 +42,7 @@ __classement__ = OrderedDict((
 del OrderedDict
 
 from universal_functions import *
-from sympy import LambertW
+from sympy import LambertW, gamma
 
 # Alias
 arcsin = asin
@@ -158,8 +158,8 @@ from sympy import ff
 arrangements = nAr = nA = ff
 __classement__[u"Arithmétique"].append((u"Arrangements", "nAr", u"Nombre d'arrangements."))
 
-from sympy import binomial
-combinaisons = binome = nCr = nC = binomial
+from sympy import Binomial
+combinaisons = binome = nCr = nC = binomial = Binomial
 __classement__[u"Arithmétique"].append((u"Combinaisons", "nCr", u"Nombre de combinaisons."))
 
 from sympy_functions import limit

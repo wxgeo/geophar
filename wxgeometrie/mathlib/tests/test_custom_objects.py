@@ -181,6 +181,10 @@ def test_session():
     msg_aide = u"\n== Aide sur aide ==\nRetourne (si possible) de l'aide sur la fonction saisie."
     resultats = i.derniers_resultats
     assert resultats[-3:] == [msg_aide, msg_aide, msg_aide]
+    # LaTeX
+    latex = i.evaluer("gamma(x)")[1]
+    assert latex == r'$\mathrm{\Gamma}\left(x\right)$'
+
 
 
 
