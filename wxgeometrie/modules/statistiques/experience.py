@@ -194,8 +194,7 @@ class LancerDes(MyMiniFrame):
     def actualiser(self, event = None):
         if not self.cb.GetValue():
             self.parent.actualiser(False)
-        self.parent.graph = 0
-        self.parent.choix.SetSelection(self.parent.graph)
+        self.parent.graph = 'batons'
         n = self.sc.GetValue()
         des = self.experience.GetValue()
         for val in range(des, 6*des + 1):
@@ -330,8 +329,7 @@ class Sondage(MyMiniFrame):
 
     def actualiser(self, event = None):
         self.parent.actualiser(False)
-        self.parent.graph = 1
-        self.parent.choix.SetSelection(self.parent.graph)
+        self.parent.graph = 'batons'
         echantillon = self.sc1.GetValue()
         n = self.sc2.GetValue()
         esperance = self.experience.GetValue()
