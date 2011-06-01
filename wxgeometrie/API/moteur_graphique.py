@@ -265,7 +265,7 @@ class Moteur_graphique(object):
     def point(self, x, y, couleur = 'k', plein = True, **kw):
         u"Un petit cercle, vide ou plein."
         self._temp_warning_color(kw)
-        couleur = kw.pop('color')
+        couleur = kw.pop('color', 'k')
         kw.setdefault('zorder', 2.1)
         kw.setdefault('markeredgecolor', couleur)
         kw.setdefault('markeredgewidth', 1)
