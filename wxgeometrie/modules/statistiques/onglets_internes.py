@@ -201,43 +201,29 @@ class Autres(CstmPanel):
 class Autres_quantile(CstmPanel):
     def __init__(self, parent):
         CstmPanel.__init__(self, parent)
-        sizer = wx.BoxSizer(wx.HORIZONTAL)
-        vsizer = wx.BoxSizer(wx.VERTICAL)
 
-
-        hsizer = wx.BoxSizer(wx.HORIZONTAL)
-        self.sm = wx.StaticText(self, -1, u'Construction de quantiles:  ')
-        hsizer.Add(self.sm, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 0)
-        #self.mode = wx.Choice(self, -1, (100, 50), choices = (u'aucun', u'Q1, Me, Q3', u'D1, Q1, Me, Q3'))
-        #self.mode.SetSelection(self.main.param("mode_quantiles"))
-        #self.mode.Bind(wx.EVT_CHOICE, self.main.EvtCheck)
-        #hsizer.Add(self.mode, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 0)
-
-        #vsizer.Add(hsizer, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 7)
-        #sizer.Add(vsizer, 0, wx.ALL, 0)
-
-        vsizer = wx.BoxSizer(wx.VERTICAL)
+        box = wx.StaticBox(self, -1, u"Construction de quantiles")
+        sizer = wx.StaticBoxSizer(box, wx.HORIZONTAL)
 
         self.mediane = wx.CheckBox(self, label = u'Construire la médiane')
         self.mediane.SetValue(self.main.choix_quantiles["mediane"][0])
         self.mediane.Bind(wx.EVT_CHECKBOX, self.main.EvtCheck)
-        vsizer.Add(self.mediane, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 7)
-        vsizer.Add(hsizer, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 7)
 
+        sizer.Add(self.mediane, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 7)
+        sizer.AddSpacer(10) # valeur à ajuster
 
         self.quartiles = wx.CheckBox(self, label = u'Construire les quartiles')
         self.quartiles.SetValue(self.main.choix_quantiles["quartiles"][0])
         self.quartiles.Bind(wx.EVT_CHECKBOX, self.main.EvtCheck)
-        vsizer.Add(self.quartiles, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 7)
-        vsizer.Add(hsizer, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 7)
-
+        sizer.Add(self.quartiles, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 7)
+        sizer.AddSpacer(10) # valeur à ajuster
 
         self.deciles = wx.CheckBox(self, label = u'Construire les déciles')
         self.deciles.SetValue(self.main.choix_quantiles["deciles"][0])
         self.deciles.Bind(wx.EVT_CHECKBOX, self.main.EvtCheck)
-        vsizer.Add(self.deciles, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 7)
-    
-        sizer.Add(vsizer, 0, wx.LEFT, 7)
+        sizer.Add(self.deciles, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 7)
+        sizer.AddSpacer(10) # valeur à ajuster
+
         self.add(sizer)
 
         self.finaliser()
@@ -251,14 +237,12 @@ class OngletsStatistiques(wx.Notebook):
         self.legende = Legende(self)
         self.graduation = Graduation(self)
         self.autres = Autres(self)
-        # en test
         self.autresq = Autres_quantile(self)
 
         self.AddPage(self.donnees, u'Données')
         self.AddPage(self.legende, u'Légende')
         self.AddPage(self.graduation, u'Graduation')
         self.AddPage(self.autres, u'Réglages')
-        # onglet pour choisir les quantiles
         self.AddPage(self.autresq, u'Quantiles')
 
 
