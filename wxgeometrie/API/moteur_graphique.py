@@ -231,7 +231,7 @@ class Moteur_graphique(object):
         self._ajouter_objet(self.texte(x, y, txt, pixel, **kw))
 
 
-    def arc(self, x, y, vecteur, couleur = "k", **kw):
+    def arc(self, x, y, vecteur, **kw):
         u"""Affiche un petit demi-cercle d'orientation choisie.
 
         Par ex, pour le vecteur (1,0), ie. ->, l'arc est orienté comme ceci: (
@@ -254,29 +254,32 @@ class Moteur_graphique(object):
         R = self.canvas.taille["("]*self.zoom_ligne
 
         x, y = self.canvas.coo2pix(x, y)
-        return self.ligne(x + R*(numpy.cos(t) - math.cos(angle)), \
-                                     y + R*(numpy.sin(t) - math.sin(angle)), \
-                                     couleur = couleur, pixel = True, **kw)
+        return self.ligne(x + R*(numpy.cos(t) - math.cos(angle)),
+                          y + R*(numpy.sin(t) - math.sin(angle)),
+                          pixel=True, **kw)
 
-    def ajouter_arc(self, x, y, vecteur, couleur = "k", **kw):
-        self._ajouter_objet(self.arc(x, y, vecteur, couleur, **kw))
+    def ajouter_arc(self, x, y, vecteur, color='k', **kw):
+        self._ajouter_objet(self.arc(x, y, vecteur, color, **kw))
 
 
 
-    def point(self, x, y, couleur = 'k', plein = True, **kw):
+    def point(self, x, y, plein=True, **kw):
         u"Un petit cercle, vide ou plein."
+        assert isinstance(plein, bool), str(type(pixel)) # Changement d'API
         self._temp_warning_color(kw)
         couleur = kw.pop('color', 'k')
         kw.setdefault('zorder', 2.1)
         kw.setdefault('markeredgecolor', couleur)
+        kw.setdefault('markerfacecolor', couleur if plein else 'w')
         kw.setdefault('markeredgewidth', 1)
-        return self.ligne([x], [y], markerfacecolor=(couleur if plein else 'w'),
-                      markersize = 2*self.canvas.taille["o"], marker = "o", **kw)
+        kw.setdefault('markersize', 2*self.canvas.taille["o"])
+        kw.setdefault('marker', 'o')
+        return self.ligne([x], [y], **kw)
         # Le zorder doit être supérieur à celui d'une courbe (2 par défaut),
         # et la largeur du trait doit être celle d'une courbe (1 par défaut).
 
-    def ajouter_point(self, x, y, couleur = 'k', plein = True, **kw):
-        self._ajouter_objet(self.point(x, y, couleur, plein, **kw))
+    def ajouter_point(self, x, y, plein=True, **kw):
+        self._ajouter_objet(self.point(x, y, plein, **kw))
 
 
     def fleche(self, x0=0, y0=0, x1=1, y1=1, **kw):
