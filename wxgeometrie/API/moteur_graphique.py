@@ -186,6 +186,7 @@ class Moteur_graphique(object):
 
 
     def ligne(self, x = (0, 1), y = (1, 0), pixel = False, **kw):
+        assert isinstance(pixel, bool), str(type(pixel)) # Changement d'API
         self._temp_warning_color(kw)
         if pixel:
             x, y = self.canvas.pix2coo(x, y)
@@ -269,7 +270,7 @@ class Moteur_graphique(object):
         kw.setdefault('zorder', 2.1)
         kw.setdefault('markeredgecolor', couleur)
         kw.setdefault('markeredgewidth', 1)
-        return self.ligne([x], [y], couleur if plein else 'w', \
+        return self.ligne([x], [y], markerfacecolor=(couleur if plein else 'w'),
                       markersize = 2*self.canvas.taille["o"], marker = "o", **kw)
         # Le zorder doit être supérieur à celui d'une courbe (2 par défaut),
         # et la largeur du trait doit être celle d'une courbe (1 par défaut).

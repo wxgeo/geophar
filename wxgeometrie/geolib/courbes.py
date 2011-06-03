@@ -205,11 +205,11 @@ class Courbe(Courbe_generique):
 
     def _append_arc(self, x0, y0, vec):
         if self.style("extremites"):
-            self._representation.append(self.rendu.arc(x0, y0, vec, couleur = self.style("couleur"), linewidth = self.style("epaisseur")))
+            self._representation.append(self.rendu.arc(x0, y0, vec, color=self.style("couleur"), linewidth=self.style("epaisseur")))
 
     def _append_point(self, x0, y0, plein = True):
         if self.style("extremites"):
-            self._representation.append(self.rendu.point(x0, y0, plein = plein, couleur = self.style("couleur"), markeredgewidth = self.style("epaisseur")))
+            self._representation.append(self.rendu.point(x0, y0, plein=plein, color=self.style("couleur"), markeredgewidth=self.style("epaisseur")))
 
 
     def _supprimer_valeurs_extremes(self, x, y, fonction, i, j):
