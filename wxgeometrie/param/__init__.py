@@ -256,30 +256,7 @@ emplacements["session"] = "%/session" # dans session/ par défaut
 #emplacements["log"] = "~/.wxgeometrie/log"
 #emplacements["preferences"] = "~/.wxgeometrie/preferences"
 #emplacements["macros"] = "~/.wxgeometrie/macros"
-
-
-## % se réfère au dossier contenant WxGeometrie (indiqué par param.EMPLACEMENT)
-## ~ se réfère au répertoire de l'utilisateur (ex: /home/BillG/ sous Linux, ou C:\Documents and Settings\LTorvald\ sous Windows)
-#emplacement_log = "%/log" # dans log/ par défaut
-#emplacement_preferences = "%/preferences" # dans preferences/ par défaut
-#emplacement_macros = "%/macros" # dans macros/ par défaut
-#emplacement_session = "%/session" # dans session/ par défaut
-## Activer les lignes suivantes pour que les preferences, fichiers log, etc... soient stockés dans le dossier de l'utilisateur.
-##emplacement_log = "~/.wxgeometrie/log"
-##emplacement_preferences = "~/.wxgeometrie/preferences"
-##emplacement_macros = "~/.wxgeometrie/macros"
-
-#emplacements = ('emplacement_log', 'emplacement_preferences', 'emplacement_macros', 'emplacement_session')
-
-## % se réfère au dossier contenant WxGeometrie (indiqué par param.EMPLACEMENT)
-## ~ se réfère au répertoire de l'utilisateur (ex: /home/Bill/ sous Linux, ou C:\Documents and Settings\Torvald\ sous Windows)
-##emplacement_log = "%/log" # dans log/ par défaut
-##emplacement_preferences = "%/preferences" # dans preferences/ par défaut
-##emplacement_macros_construction = "%/macros" # dans macros/ par défaut
-## Activer les lignes suivantes pour que les preferences, fichiers log, etc... soient stockés dans le dossier de l'utilisateur.
-##emplacement_log = "~/.wxgeometrie/log"
-##emplacement_preferences = "~/.wxgeometrie/preferences"
-##emplacement_macros_construction = "~/.wxgeometrie/macros"
+#emplacements["session"] = "~/.wxgeometrie/session"
 
 taille_max_log = 10000 # taille max du fichier de log (en Ko)
 

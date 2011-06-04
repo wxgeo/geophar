@@ -348,6 +348,12 @@ class CustomLatexPrinter(LatexPrinter):
         return r"\mathrm{Fonction}\, " + expr.func_name
 
 
+    def doprint(self, expr):
+        tex = LatexPrinter.doprint(self, expr)
+        return tex.replace(r'\operatorname{', r'\mathrm{')
+
+
+
 class LocalDict(dict):
     globals = {}
 ##    def __getitem__(self, name):

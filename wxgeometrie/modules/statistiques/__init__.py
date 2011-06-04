@@ -107,6 +107,7 @@ class Statistiques(Panel_API_graphique):
 
     types_diagrammes = ('barres', 'batons', 'histogramme', 'cumul_croissant', 'cumul_decroissant', 'bandes', 'circulaire', 'semi-circulaire', 'boite')
     noms_diagrammes = [u"diagramme en barres", u"diagramme en batons", u"histogramme", u"effectifs cumulés croissants", u"effectifs cumulés décroissants", u"diagramme en bandes", u"diagramme circulaire", u"diagramme semi-circulaire", u"diagramme en boite"]
+    _graph = None
 
     def __init__(self, *args, **kw):
         Panel_API_graphique.__init__(self, *args, **kw)
@@ -126,7 +127,6 @@ class Statistiques(Panel_API_graphique):
         self.origine_y = ''
         self.donnees_valeurs = ''
         self.donnees_classes = ''
-        self.graph = 'barres'
         self.intervalle_confiance = None
 
         self.entrees = wx.BoxSizer(wx.VERTICAL)
@@ -134,7 +134,8 @@ class Statistiques(Panel_API_graphique):
         self.entrees.Add(wx.StaticText(self, -1, u" Mode graphique :"), 0, wx.ALL,5)
 
         self.choix = wx.Choice(self, -1, (100, 50), choices = self.noms_diagrammes)
-        self.choix.SetSelection(self.types_diagrammes.index(self.graph))
+        self.graph = 'barres' # *APRES* que self.choix soit défini.
+
         self.Bind(wx.EVT_CHOICE, self.EvtChoice, self.choix)
         self.entrees.Add(self.choix, 0, wx.ALL, 5)
 
@@ -185,9 +186,18 @@ class Statistiques(Panel_API_graphique):
         #~ self.actualiser()
         #################
 
+    @property2
+    def graph(self, val=None):
+        if val is not None:
+            assert val in self.types_diagrammes, "Type de diagramme incorrect."
+            self._graph = val
+            self.choix.SetSelection(self.types_diagrammes.index(self._graph))
+        return self._graph
+
+
 
     def EvtChoice(self, event):
-        self.graph = self.types_diagrammes[event.GetSelection()]
+        self._graph = self.types_diagrammes[event.GetSelection()]
         self.actualiser()
 
 
@@ -927,7 +937,7 @@ class Statistiques(Panel_API_graphique):
             self.onglets_bas.graduation.a.SetValue(gradu_a)
             self.onglets_bas.donnees.valeurs.SetValue(valeurs)
             self.onglets_bas.donnees.classes.SetValue(classes)
-            self.choix.SetSelection(self.types_diagrammes.index(mode_graphique))
+            print('mode_graphique', mode_graphique)
             self.graph = mode_graphique
 
         self.actualiser()

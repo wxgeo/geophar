@@ -12,6 +12,7 @@
 wxgeometrie.e4*
 *.geo
 *.tar.gz
+*.exe
 
 # Dossiers "poubelles"
 wxgeometrie/modules/OLD/
@@ -19,6 +20,7 @@ BAZAR/
 sympy_OLD/
 tmp/
 temp/
+tools/OLD
 
 # Paramètres personnels
 session/
@@ -39,8 +41,15 @@ temp
 wxgeometrie/test.py
 
 # À ne pas inclure **pour l'instant**
+tools/isympy
+tools/others/
+tools/pytest.py
+tools/runtests.py
+tools/strip_whitespace.py
+tools/test.py
+tools/testlib.py
+wxgeometrie/tests/
 ressources_annexes/
-tools/
 wxgeometrie/developpeurs/
 wxgeometrie/doc/
 wxgeometrie/exemples/
