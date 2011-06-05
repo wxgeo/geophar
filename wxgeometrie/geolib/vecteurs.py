@@ -183,7 +183,8 @@ class Vecteur(Vecteur_generique):
         G = k*B + (1-k)*A   # par défaut, k = 1, et la flêche est positionnée à l'extrémité du vecteur (point B)
 
         #                                                 M
-        #                                               C +--        # l'ideal est ici un dessin:   A +---------------+----+ G=B
+        #                                               C +--
+        # l'ideal est ici un dessin:   A +---------------+----+ G=B
         #                                                 +--/
         #                                                 N
         # On calcule les coordonnees de C, puis par rotation autour de G, celles de M et N.
