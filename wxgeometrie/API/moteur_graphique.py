@@ -72,16 +72,18 @@ class Fleche(LineCollection):
         self._maj_data()
 
     def _maj_data(self):
-        lignes = []
         xy0 = array(self.xy0)
         xy1 = array(self.xy1)
+        lignes = [(xy0, xy1)]
         k = self.position
         dxdy = xy1 - xy0
         lignes.append(zip(*self._pointe((1 - k)*xy0 + k*xy1, -dxdy)))
         if self.double:
             lignes.append(zip(*self._pointe(k*xy0 + (1 - k)*xy1, dxdy)))
-        lignes.append((xy0, xy1))
         self.set_segments(lignes)
+        # Le style de ligne (pointillés, etc.) ne doit pas s'appliquer aux flêches
+        ls = self.get_linestyles()[0]
+        self.set_linestyles([ls, '-', '-'])
 
     def _pointe(self, xy, dxdy):
         a = self.angle*math.pi/360 # angle/2, puis degrés -> radians

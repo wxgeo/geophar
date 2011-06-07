@@ -407,6 +407,18 @@ vecteurs = {
     "position": FIN,
     "double_fleche": False,
     }
+axes = {
+    "couleur": "k",
+    "epaisseur": 1.,
+    "style": "-",
+    "taille": 10,
+    "visible": True,
+    "niveau": 4,
+    "categorie": "lignes",
+    "angle": 60,
+    "position": FIN,
+    "double_fleche": False,
+    }
 cercles = {
     "couleur": "b",
     "epaisseur": 1.,

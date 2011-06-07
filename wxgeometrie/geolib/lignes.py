@@ -29,9 +29,6 @@ from points import *
 
 
 
-
-
-
 ##########################################################################################
 
 ## LIGNES
@@ -126,41 +123,76 @@ class Ligne_generique(Objet_avec_equation):
             nom = self.latex_police_cursive(nom)
             self.nom_latex = "$" + nom + "$"
 
-    def pente(self, _type = False):
-         # si flag = 1, retourne la "tendance" de la pente (verticale : 0, horizontale : 1)
+    def xy(self, x = None, y = None):
+        u"""Retourne les coordonnées du point de la droite d'abscisse ou d'ordonnée donnée.
+
+        x ou y doivent être définis, mais bien sûr pas les deux.
+
+        Nota:
+        Si x est donné pour une droite verticale, un point d'abscisse infinie
+        est retourné. À l'inverse, si y est donné pour une droite horizontale,
+        un point d'ordonnée infinie est retourné.
+        """
         x1, y1 = self.__point1.coordonnees
         x2, y2 = self.__point2.coordonnees
-        if _type:
-            return 1 if (abs(x2 - x1) > abs(y2 - y1)) else 0
-        try:
-            return (y2 - y1)/(x2 - x1)
-        except ZeroDivisionError:
-            return
 
-    def _x_y(self, nbr = 0, _flag = 1):
-        # si flag = 1, donne le point (x,y) sur la droite en fonction de x.
-        # si flag = 0, donne le point (x,y) sur la droite en fonction de y.
-        [x1, y1], [x2, y2] = self.__point1.coordonnees, self.__point2.coordonnees
+        if y is None and x is not None:
+            a = self.pente
+            return (x, a*(x - x1) + y1)
+        elif x is None and y is not None:
+            a = self.copente
+            return (a*(y - y1) + x1, y)
+        raise TypeError, 'x ou y doivent etre definis.'
 
-        # si la pente est presque verticale et que flag = 1, ou presque horizontale et que flag = 0, le calcul peut exploser... l'option flag = 2 adapte flag a la pente.
-        if _flag == 2:
-            _flag = self.pente(1)
+    @property
+    def pente(self):
+        x1, y1 = self.__point1.coordonnees
+        x2, y2 = self.__point2.coordonnees
+        return (y2 - y1)/(x2 - x1) if (x2 - x1) else numpy.inf
 
-        # dans le cas d'une droite horizontale ou verticale, flag est ignore et prend la seule valeur correcte :
-        _flag = not (y1 - y2) and 1 or ((x1 - x2) and _flag or 0)
-
-        if _flag:
-            return (nbr,((y1-y2)*(nbr-x1)+(x1-x2)*y1)/(x1-x2))
-        else:
-            return (((x1-x2)*(nbr-y1)+(y1-y2)*x1)/(y1-y2),nbr)
+    @property
+    def copente(self):
+        x1, y1 = self.__point1.coordonnees
+        x2, y2 = self.__point2.coordonnees
+        return (x2 - x1)/(y2 - y1) if (y2 - y1) else numpy.inf
 
     def _points(self):
-        p = self.pente(1) # "tendance" de la pente (verticale : 0, horizontale : 1)
-        fen = self.__canvas__.fenetre # il faut tracer depuis le bord de fenetre
-        # Attention, la fenetre doit être récupérée depuis le canevas, et pas depuis la feuille (si le repère est orthonormé)
-        x1, y1 = self._x_y((fen[2], fen[0])[p], p)
-        x2, y2 = self._x_y((fen[3], fen[1])[p], p)
-        return (x1, y1), (x2, y2)
+        u"Donne les points d'intersection de la droite avec les bords de la fenêtre."
+        # Attention, il faut impérativement récupérer la fenêtre sur le canevas,
+        # dans le cas d'un repère orthonormé.
+        xmin, xmax, ymin, ymax = self.__canvas__.fenetre
+        eps = contexte['tolerance']
+        dx = eps*(xmax - xmin)
+        dy = eps*(ymax - ymin)
+        # points contient les intersections de la droite avec les bords de la fenêtre.
+        points = []
+        Mxmin = self.xy(x=xmin)
+        if ymin - dy <= Mxmin[1] <= ymax + dy:
+            points.append(Mxmin)
+        Mxmax = self.xy(x=xmax)
+        if ymin - dy <= Mxmax[1] <= ymax + dy:
+            points.append(Mxmax)
+        Mymin = self.xy(y=ymin)
+        if xmin - dx <= Mymin[0] <= xmax + dx:
+            points.append(Mymin)
+        Mymax = self.xy(y=ymax)
+        if xmin - dx <= Mymax[0] <= xmax + dx:
+            points.append(Mymax)
+        print Mxmin, Mxmax, Mymin, Mymax
+        # En principe, points ne contient que deux éléments.
+        # Il peut éventuellement en contenir 3 ou 4, dans le cas limite où la droite
+        # coupe la fenêtre dans un coin. Dans ce cas, on peut trouver
+        # deux points d'intersection (quasi) confondus.
+        # Il faut alors bien s'assurer de ne pas retourner 2 points confondus.
+        if len(points) == 4:
+            return points[:2] # Mxmin et Mxmax ne peuvent être confondus.
+        elif len(points) == 3:
+            if points[1] == Mxmax:
+                return points[:2] # Mxmin et Mxmax ne peuvent être confondus.
+            return points[1:] # Mymin et Mymax non plus.
+        else:
+            assert len(points) == 2
+            return points
 
 
 
@@ -281,7 +313,7 @@ class Segment(Ligne_generique):
         B = self.__point2
         xu, yu = vect(A, B)
         xv, yv = vect(A, M)
-        if abs(xu*yv-xv*yu) > contexte['tolerance']:
+        if abs(xu*yv - xv*yu) > contexte['tolerance']:
             return False
         if abs(xu)  > abs(yu):
             k = xv/xu
@@ -367,7 +399,7 @@ class Demidroite(Ligne_generique):
         xB, yB = self._pixel(self.__point)
         x1 = min(xA, xB); x2 = max(xA, xB)
         y1 = min(yA, yB); y2 = max(yA, yB)
-        if (xA == x1 and x>x1-d or xA == x2 and x<x2+d) and (yA == y1 and y>y1-d or yA == y2 and y<y2+d):
+        if (xA == x1 and x > x1 - d or xA == x2 and x < x2 + d) and (yA == y1 and y > y1 - d or yA == y2 and y < y2 + d):
             return ((yA - yB)*(x - xA)+(xB - xA)*(y - yA))**2/((xB - xA)**2+(yB - yA)**2) < d**2
         else:
             return False
@@ -397,20 +429,20 @@ class Demidroite(Ligne_generique):
         eq = self.equation
         if eq is None:
             return u"L'objet n'est pas défini."
-        a, b, c = (nice_display(coeff) for coeff in eq)
         # on ne garde que quelques chiffres après la virgule
-        pente = self.pente(1) # "tendance" de la pente (verticale : 0, horizontale : 1)
-        if pente:
-            if (self.__point.ordonnee - self.__origine.ordonnee) > contexte['tolerance']:
+        a, b, c = (nice_display(coeff) for coeff in eq)
+        eps = contexte['tolerance']
+        if abs(a) < abs(b): # droite plutôt horizontale
+            if (self.__point.ordonnee - self.__origine.ordonnee) > eps:
                 ajout = "y > " + nice_display(self.__origine.ordonnee)
-            elif (self.__point.ordonnee - self.__origine.ordonnee) < contexte['tolerance']:
+            elif (self.__point.ordonnee - self.__origine.ordonnee) < eps:
                 ajout = "y < " + nice_display(self.__origine.ordonnee)
             else:
                 return u"Précision insuffisante."
-        else:
-            if (self.__point.abscisse - self.__origine.abscisse) > contexte['tolerance']:
+        else: # droite plutôt verticale
+            if (self.__point.abscisse - self.__origine.abscisse) > eps:
                 ajout = "x > " + nice_display(self.__origine.abscisse)
-            elif (self.__point.abscisse - self.__origine.abscisse) < contexte['tolerance']:
+            elif (self.__point.abscisse - self.__origine.abscisse) < eps:
                 ajout = "x < " + nice_display(self.__origine.abscisse)
             else:
                 return u"Précision insuffisante."
@@ -451,8 +483,6 @@ class Droite_generique(Ligne_generique):
         return carre_distance(self.__point1, self.__point2) > contexte['tolerance']**2
 
 
-
-
     def _creer_figure(self):
         if not self._representation:
             self._representation = [self.rendu.ligne()]
@@ -461,14 +491,6 @@ class Droite_generique(Ligne_generique):
         plot.set_data((x1, x2), (y1, y2))
         plot.set(color = self.style("couleur"), linestyle = self.style("style"), linewidth = self.style("epaisseur"), zorder = self.style("niveau"))
 
-
-
-
-#    def _creer_figure(self):
-#        fen = self.__canvas__.fenetre # il faut tracer depuis le bord de fenetre
-#        p = self.pente(1)
-#        A, B = self.x_y((fen[2], fen[0])[p],p), self.x_y((fen[3], fen[1])[p],p)
-#        self.__canvas__.Ligne(A, B, self.style("couleur"))
 
     def _distance_inf(self, x, y, d):
         # cf. "distance_point_segment.odt" dans "doc/developpeurs/maths/"
@@ -976,6 +998,41 @@ class DemiPlan(Objet_avec_equation):
 
 
 
+class Axe(Droite):
+    u"""Un axe orienté.
+
+    Un axe orienté servant au repérage.
+    Cette classe sert essentiellement à construire les axes (Ox) et (Oy).
+    """
+
+    _style_defaut = param.axes
+    point1 = __point1 = Argument("Point_generique")
+    point2 = __point2 = Argument("Point_generique")
+
+    def __init__(self, point1, point2, **styles):
+        self.__point1 = point1 = Ref(point1)
+        self.__point2 = point2 = Ref(point2)
+        Droite.__init__(self, point1, point2, **styles)
+
+    def _creer_figure(self):
+        if not self._representation:
+            self._representation = [self.rendu.fleche()]
+        fleche = self._representation[0]
+        xy0, xy1 = self._points()
+        x1, y1 = self.__point1
+        x2, y2 = self.__point2
+        # On s'assure que l'axe soit bien orienté
+        if abs(x2 - x1) > contexte['tolerance']:
+            if (xy1[0] - xy0[0])*(x2 - x1) < 0:
+                xy0, xy1 = xy1, xy0
+        else:
+            if (xy1[1] - xy0[1])*(y2 - y1) < 0:
+                xy0, xy1 = xy1, xy0
+        fleche.set(xy0=xy0, xy1=xy1, linewidth=self.style("epaisseur"),
+                   angle=self.style("angle"), taille=self.style("taille"),
+                    color=self.style("couleur"), linestyle=self.style("style"),
+                   zorder=self.style("niveau"),
+                   )
 
 ##########################################################################################
 ## EN TRAVAUX :
