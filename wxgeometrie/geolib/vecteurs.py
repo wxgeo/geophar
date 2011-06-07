@@ -166,58 +166,14 @@ class Vecteur(Vecteur_generique):
 
     def _creer_figure(self):
         if not self._representation:
-            self._representation = [self.rendu.ligne(), self.rendu.ligne(), self.rendu.ligne()]
-        plot1, plot2, plot3 = self._representation
-        x1, y1 = self.__point1.coordonnees
-        x2, y2 = self.__point2.coordonnees
-        A = numpy.array(self.__canvas__.coo2pix(x1, y1))
-        B = numpy.array(self.__canvas__.coo2pix(x2, y2))
-        k = self.style("position")
-        couleur = self.style("couleur")
-        epaisseur = self.style("epaisseur")
-        niveau = self.style("niveau")
-        style = self.style("style")
-        r = self.style("taille")*param.zoom_ligne
-        a = self.style("angle")*math.pi/360 # degrés -> radians
-
-        G = k*B + (1-k)*A   # par défaut, k = 1, et la flêche est positionnée à l'extrémité du vecteur (point B)
-
-        #                                                 M
-        #                                               C +--
-        # l'ideal est ici un dessin:   A +---------------+----+ G=B
-        #                                                 +--/
-        #                                                 N
-        # On calcule les coordonnees de C, puis par rotation autour de G, celles de M et N.
-
-        C = G + r*(A - B)/math.hypot(*(A - B)) # prendre B et non G, au cas où G = A !
-        M = (numpy.dot([[math.cos(a), -math.sin(a)], [math.sin(a), math.cos(a)]], numpy.transpose([C - G])) + numpy.transpose([G]))[:,0]
-        N = (numpy.dot([[math.cos(a), math.sin(a)], [-math.sin(a), math.cos(a)]], numpy.transpose([C - G])) + numpy.transpose([G]))[:,0]
-        x, y = self.__canvas__.pix2coo(*array_zip(M, G, N))
-        plot1.set_data(numpy.array([x1, x2]), numpy.array([y1, y2]))
-        plot2.set_data(numpy.array(x), numpy.array(y))
-
-        if self.style("double_fleche"):
-            plot3.set_visible(True)
-            G = k*A + (1-k)*B   # par défaut, k = 1, et la flêche est positionnée à l'extrémité du vecteur (point B)
-
-            #                                                 M
-            #                                               C +--            # l'ideal est ici un dessin:   B +---------------+----+ G=A
-            #                                                 +--/
-            #                                                 N
-            # On calcule les coordonnees de C, puis par rotation autour de G, celles de M et N.
-
-            C = G + r*(B - A)/math.hypot(*(B - A)) # prendre B et non G, au cas où G = A !
-            M = (numpy.dot([[math.cos(a), -math.sin(a)], [math.sin(a), math.cos(a)]], numpy.transpose([C - G])) + numpy.transpose([G]))[:,0]
-            N = (numpy.dot([[math.cos(a), math.sin(a)], [-math.sin(a), math.cos(a)]], numpy.transpose([C - G])) + numpy.transpose([G]))[:,0]
-            x, y = self.__canvas__.pix2coo(*array_zip(M, G, N))
-            plot3.set_data(numpy.array(x), numpy.array(y))
-        else:
-            plot3.set_visible(False)
-
-        plot1.set(linestyle=style, color=couleur, linewidth=epaisseur)
-        plot2.set(linestyle=style, color=couleur, linewidth=epaisseur)
-        plot3.set(linestyle=style, color=couleur, linewidth=epaisseur)
-        plot1.zorder = plot2.zorder = plot3.zorder = niveau
+            self._representation = [self.rendu.fleche()]
+        fleche = self._representation[0]
+        fleche.set(xy0=self.__point1.coordonnees, xy1=self.__point2.coordonnees,
+                   taille=self.style("taille"), angle=self.style("angle"),
+                   position=self.style("position"), double=self.style("double_fleche"),
+                   linewidth=self.style("epaisseur"), color=self.style("couleur"),
+                   zorder=self.style("niveau"), linestyle=self.style("style"),
+                   )
 
 
     def _get_coordonnees(self):

@@ -46,6 +46,18 @@ class Fleche(LineCollection):
     xy1 = (1, 1)
 
     def __init__(self, canvas, **kw):
+        u"""Une flêche (éventuellement double).
+
+        En plus des styles de matplotlib.collections.LineCollection,
+        les styles suivants sont définis:
+        - taille: la longueur de la pointe (en pixels) ;
+        - double: flêche double ou non ;
+        - position: position (entre 0 et 1) de la pointe sur la flêche.
+          ex: 1 pour l'extrémité finale, 0.5 pour le milieu, 0 pour le début.
+        - angle: l'ouverture de la pointe (en degrés)
+        - xy0: début de la flêche (tuple)
+        - xy1: fin de la flêche (tuple)
+        """
         LineCollection.__init__(self, ())
         self.canvas = canvas
         if kw:
