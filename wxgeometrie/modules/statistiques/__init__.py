@@ -129,9 +129,9 @@ class Statistiques(Panel_API_graphique):
         self.graph = 'barres'
         self.intervalle_confiance = None
         #test dico quantiles
-        self.choix_quantiles = {"mediane": [True, [0.5], 'r'], \
-                                    "quartiles": [True, [0.25, 0.75], 'b'],\
-                                    "deciles": [True, [0.1, 0.9], 'g']}
+        self.choix_quantiles = {"mediane": [True, [0.5], 'r', '-'], \
+                                    "quartiles": [True, [0.25, 0.75], 'b', '--'],\
+                                    "deciles": [True, [0.1, 0.9], 'g', ':']}
 
         self.entrees = wx.BoxSizer(wx.VERTICAL)
 
@@ -541,8 +541,8 @@ class Statistiques(Panel_API_graphique):
 
         #classe with cumulatives eff or freq 2-uple list: y_cum
         y_cum=[]
+        couleur = 'k' if self.param('hachures') else 'b'
         for classe in self.classes:
-            couleur = 'k' if self.param('hachures') else 'b'
             y_value = [sum([self.valeurs[valeur] for valeur in valeurs if mode*valeur <= mode*classe[i]]) for i in (0, 1)]
             self.canvas.dessiner_ligne(classe, y_value, color = couleur)
             y_cum.append((classe, y_value))
@@ -557,7 +557,7 @@ class Statistiques(Panel_API_graphique):
                 for a in freq:
                     try:
                         (c, y) = self.select_classe(y_cum, a, mode)
-                        self.quantile_plot(c, y, a, couleur = self.choix_quantiles[q][2])
+                        self.quantile_plot(c, y, a, couleur = self.choix_quantiles[q][2], style = self.choix_quantiles[q][3])
                     except TypeError:
                         # c peut être vide si les classes commencent à une 
                         # fcc trop grande.
@@ -575,7 +575,7 @@ class Statistiques(Panel_API_graphique):
         self.canvas.dessiner_texte(m + dx, 1.1*hmax + dy, legende_y, va='top')
 
 
-    def quantile_plot(self, classe, y, a, couleur ='r'):
+    def quantile_plot(self, classe, y, a, couleur ='r', style ='-'):
         u"""
         Trace le a-quantile
         
@@ -585,18 +585,24 @@ class Statistiques(Panel_API_graphique):
         @param y: bornes des eff ou freq cumulés de classe.
         @type couleur: char
         @param couleur: couleur du tracé, rouge par défaut
+        @type style: char
+        @param style: style de ligne réglé en cas de N&B
 
         @rtype: None
         """
         a_reel = a*self.total()
         m = (y[1]-y[0])/(classe[1]-classe[0])
         x_reg = (a_reel-y[0])/m + classe[0]
-
         # coordonnées de l'origine
         x0, y0 = self.canvas.origine_axes
-        # trace le segment en rouge
-        self.canvas.dessiner_ligne([x0, x_reg], [a_reel, a_reel], color = couleur)
-        self.canvas.dessiner_ligne([x_reg, x_reg], [a_reel, y0], color = couleur)
+        dx, dy = self.canvas.dpix2coo(-5, -18)
+        # tenir compte du mode N&B
+        col = 'k' if self.param('hachures') else couleur
+        st = style if self.param('hachures') else '-' 
+
+        self.canvas.dessiner_ligne([x0, x_reg], [a_reel, a_reel], color = col, linestyle = st)
+        self.canvas.dessiner_ligne([x_reg, x_reg], [a_reel, y0], color = col, linestyle = st)
+        self.canvas.dessiner_texte(x_reg, y0+dy, str(x_reg), color = col)
 
 
     def select_classe(self, liste, a, mode=1):
