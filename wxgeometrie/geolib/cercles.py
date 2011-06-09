@@ -465,66 +465,16 @@ class Arc_oriente(Arc_points):
 
     def _creer_figure(self):
         if not self._representation:
-            self._representation = [self.rendu.ligne(), self.rendu.ligne(), self.rendu.ligne()]
-        plot1, plot2, plot3 = self._representation
+            self._representation = [self.rendu.fleche_courbe()]
+        fleche = self._representation[0]
 
-        x, y = self._Arc_generique__centre.coordonnees
-        r = self.rayon
-        a, b = self._intervalle()
-        t = fullrange(a, b, self.__canvas__.pas())
-        plot1.set_data(x + r*numpy.cos(t), y + r*numpy.sin(t))
-
-        # Dessin de la flêche (cf. le code pour la classe Vecteur, et les explications qui y sont données)
-        k = self.style("position")
-        coeff0, coeff1 = self.__canvas__.coeffs()
-        if self._sens() is 1: # vecteur donnant le sens de la flêche (orthogonal au rayon)
-            c = k*b + (1-k)*a
-            x0 = x + r*math.cos(c); y0 = y + r*math.sin(c)
-            vec = numpy.array(((y0 - y)/coeff0, (x0 - x)/coeff1))
-        else:
-            c = (1-k)*b + k*a
-            x0 = x + r*math.cos(c); y0 = y + r*math.sin(c)
-            vec = numpy.array(((y - y0)/coeff0, (x - x0)/coeff1))
-
-        taille = self.style("taille")
-        ang = self.style("angle")*math.pi/360
-        G = numpy.array(self.__canvas__.coo2pix(x0, y0))
-        C = G + taille*vec/math.hypot(*vec)
-        M = (numpy.dot([[math.cos(ang), -math.sin(ang)], [math.sin(ang), math.cos(ang)]], numpy.transpose([C - G])) + numpy.transpose([G]))[:,0]
-        N = (numpy.dot([[math.cos(ang), math.sin(ang)], [-math.sin(ang), math.cos(ang)]], numpy.transpose([C - G])) + numpy.transpose([G]))[:,0]
-        xx, yy = self.__canvas__.pix2coo(*array_zip(M, G, N))
-        plot2.set_data(numpy.array(xx), numpy.array(yy))
-
-        if self.style("double_fleche"):
-            plot3._visible = True
-            if self._sens() is 1: # vecteur donnant le sens de la flêche (orthogonal au rayon)
-                c = (1-k)*b + k*a
-                x0 = x + r*math.cos(c); y0 = y + r*math.sin(c)
-                vec = numpy.array(((y - y0)/coeff0, (x - x0)/coeff1))
-            else:
-                c = k*b + (1-k)*a
-                x0 = x + r*math.cos(c); y0 = y + r*math.sin(c)
-                vec = numpy.array(((y0 - y)/coeff0, (x0 - x)/coeff1))
-
-            G = numpy.array(self.__canvas__.coo2pix(x0, y0))
-            C = G + taille*vec/math.hypot(*vec)
-            M = (numpy.dot([[math.cos(ang), -math.sin(ang)], [math.sin(ang), math.cos(ang)]], numpy.transpose([C - G])) + numpy.transpose([G]))[:,0]
-            N = (numpy.dot([[math.cos(ang), math.sin(ang)], [-math.sin(ang), math.cos(ang)]], numpy.transpose([C - G])) + numpy.transpose([G]))[:,0]
-            xx, yy = self.__canvas__.pix2coo(*array_zip(M, G, N))
-            plot3.set_data(numpy.array(xx), numpy.array(yy))
-        else:
-            plot3._visible = False
-
-        plot1._color = plot2._color = plot3._color = self.style("couleur")
-        plot1._linestyle = plot2._linestyle = plot3._linestyle = self.style("style")
-        plot1._linewidth = plot2._linewidth = plot3._linewidth = self.style("epaisseur")
-        plot1.zorder = plot2.zorder = plot3.zorder = self.style("niveau")
-
-
-
-
-
-
+        fleche.set(centre=self._Arc_generique__centre.coordonnees, rayon=self.rayon,
+                   intervalle = self._intervalle(), position=self.style("position"),
+                   double=self.style("double_fleche"), taille=self.style("taille"),
+                   angle=self.style("angle"), zorder=self.style("niveau"),
+                   color=self.style("couleur"), linewidth = self.style("epaisseur"),
+                   linestyle = self.style("style"), sens=self._sens(),
+                   )
 
 
 
@@ -542,10 +492,6 @@ class Demicercle(Arc_cercle):
         self.__point1 = point1 = Ref(point1)
         self.__point2 = point2 = Ref(point2)
         Arc_cercle.__init__(self, ALL.Milieu(point1, point2), point1, point2, **styles)
-#        self.centre = centre = self._Arc_generique__centre
-
-
-
 
 
 

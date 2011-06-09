@@ -31,59 +31,34 @@ from matplotlib.collections import LineCollection
 from matplotlib.patches import Polygon, Circle, FancyArrowPatch
 from matplotlib.text import Text
 from numpy import array
+from math import cos, sin, atan2, pi
 
-from math import cos, sin, atan2
+from pylib import fullrange
 
 
+class LigneDecoree(LineCollection):
+    taille = NotImplemented
 
-class Fleche(LineCollection):
-    _parametres = ('xy0', 'xy1', 'taille', 'double', 'position', 'angle')
+    def _maj(self, lignes):
+        self.set_segments(lignes)
+        # Le style de ligne (pointillés, etc.) ne doit pas s'appliquer
+        # aux décorations (pointes de flêches, etc.)
+        ls = self.get_linestyles()[0]
+        self.set_linestyles([ls, '-', '-'])
+
+
+class FlecheGenerique(LigneDecoree):
+    angle = 60
     taille = 10
     double = False
     position = 1
     angle = 60
-    xy0 = (0, 0)
-    xy1 = (1, 1)
 
     def __init__(self, canvas, **kw):
-        u"""Une flêche (éventuellement double).
-
-        En plus des styles de matplotlib.collections.LineCollection,
-        les styles suivants sont définis:
-        - taille: la longueur de la pointe (en pixels) ;
-        - double: flêche double ou non ;
-        - position: position (entre 0 et 1) de la pointe sur la flêche.
-          ex: 1 pour l'extrémité finale, 0.5 pour le milieu, 0 pour le début.
-        - angle: l'ouverture de la pointe (en degrés)
-        - xy0: début de la flêche (tuple)
-        - xy1: fin de la flêche (tuple)
-        """
         LineCollection.__init__(self, ())
         self.canvas = canvas
         if kw:
             self.set(**kw)
-
-    def set(self, **kw):
-        for nom in self._parametres:
-            if kw.has_key(nom):
-                setattr(self, nom, kw.pop(nom))
-        if kw:
-            LineCollection.set(self, **kw)
-        self._maj_data()
-
-    def _maj_data(self):
-        xy0 = array(self.xy0)
-        xy1 = array(self.xy1)
-        lignes = [(xy0, xy1)]
-        k = self.position
-        dxdy = xy1 - xy0
-        lignes.append(zip(*self._pointe((1 - k)*xy0 + k*xy1, -dxdy)))
-        if self.double:
-            lignes.append(zip(*self._pointe(k*xy0 + (1 - k)*xy1, dxdy)))
-        self.set_segments(lignes)
-        # Le style de ligne (pointillés, etc.) ne doit pas s'appliquer aux flêches
-        ls = self.get_linestyles()[0]
-        self.set_linestyles([ls, '-', '-'])
 
     def _pointe(self, xy, dxdy):
         a = self.angle*math.pi/360 # angle/2, puis degrés -> radians
@@ -102,6 +77,112 @@ class Fleche(LineCollection):
         xN = xB + taille*cos(alpha + a)
         yN = yB + taille*sin(alpha + a)
         return self.canvas.pix2coo((xM, xB, xN), (yM, yB, yN))
+
+
+class Fleche(FlecheGenerique):
+    _parametres = ('xy0', 'xy1', 'taille', 'double', 'position', 'angle')
+    xy0 = (0, 0)
+    xy1 = (1, 1)
+
+    def __init__(self, canvas, **kw):
+        u"""Une flêche (éventuellement double).
+
+        En plus des styles de matplotlib.collections.LineCollection,
+        les styles suivants sont définis:
+        - taille: la longueur de la pointe (en pixels) ;
+        - double: flêche double ou non ;
+        - position: position (entre 0 et 1) de la pointe sur la flêche.
+          ex: 1 pour l'extrémité finale, 0.5 pour le milieu, 0 pour le début.
+        - angle: l'ouverture de la pointe (en degrés)
+        - xy0: début de la flêche (tuple)
+        - xy1: fin de la flêche (tuple)
+        """
+        FlecheGenerique.__init__(self, canvas, **kw)
+
+    def set(self, **kw):
+        for nom in self._parametres:
+            if kw.has_key(nom):
+                setattr(self, nom, kw.pop(nom))
+        if kw:
+            LineCollection.set(self, **kw)
+        self._maj_data()
+
+    def _maj_data(self):
+        xy0 = array(self.xy0)
+        xy1 = array(self.xy1)
+        lignes = [(xy0, xy1)]
+        k = self.position
+        dxdy = xy1 - xy0
+        lignes.append(zip(*self._pointe((1 - k)*xy0 + k*xy1, -dxdy)))
+        if self.double:
+            lignes.append(zip(*self._pointe(k*xy0 + (1 - k)*xy1, dxdy)))
+        self._maj(lignes)
+
+
+
+
+class FlecheCourbe(FlecheGenerique):
+    _parametres = ('taille', 'double', 'position', 'angle', 'intervalle',
+                   'centre', 'rayon', 'sens')
+    intervalle = (0, pi)
+    centre = (0, 0)
+    sens = 1
+    rayon = 1
+
+    def __init__(self, canvas, **kw):
+        u"""Une flêche (éventuellement double) en forme d'arc de cercle.
+
+        En plus des styles de matplotlib.collections.LineCollection,
+        les styles suivants sont définis:
+        - taille: la longueur de la pointe (en pixels) ;
+        - double: flêche double ou non ;
+        - position: position (entre 0 et 1) de la pointe sur la flêche.
+          ex: 1 pour l'extrémité finale, 0.5 pour le milieu, 0 pour le début.
+        - angle: l'ouverture de la pointe (en degrés) ;
+        - intervalle: angle de début et de fin de l'arc (radians) ;
+        - centre: centre du cercle contenant l'arc ;
+        - rayon: rayon du cercle contenant l'arc ;
+        - sens: orientation de l'arc (1 ou -1).
+        """
+        FlecheGenerique.__init__(self, canvas, **kw)
+
+    def set(self, **kw):
+        for nom in self._parametres:
+            if kw.has_key(nom):
+                setattr(self, nom, kw.pop(nom))
+        if kw:
+            LineCollection.set(self, **kw)
+        self._maj_data()
+
+    def _maj_data(self):
+        x, y = self.centre
+        r = self.rayon
+        a, b = self.intervalle
+        t = fullrange(a, b, self.canvas.pas())
+        lignes = [zip(x + r*numpy.cos(t), y + r*numpy.sin(t))]
+
+        k = self.position
+        sens = self.sens
+        if sens == -1:
+            a, b = b, a
+        c = k*b + (1 - k)*a
+        # Point de l'arc
+        x0 = x + r*cos(c)
+        y0 = y + r*sin(c)
+        # Vecteur normal au rayon
+        dxdy = ((y0 - y, x - x0) if sens == 1 else (y - y0, x0 - x))
+        lignes.append(zip(*self._pointe((x0, y0), dxdy)))
+
+        if self.double:
+            c = k*a + (1 - k)*b
+            # Point de l'arc
+            x0 = x + r*cos(c)
+            y0 = y + r*sin(c)
+            # Vecteur normal au rayon
+            dxdy = ((y - y0, x0 - x) if sens == 1 else (y0 - y, x - x0))
+            lignes.append(zip(*self._pointe((x0, y0), dxdy)))
+
+        self._maj(lignes)
 
 
 
@@ -138,7 +219,7 @@ class ZoomArtistes(object):
                         elif isinstance(artiste, LineCollection):
                             lws = self.linewidth[ID] = artiste.get_linewidth()
                             artiste.set_linewidth(tuple(lw*self.zoom_ligne for lw in lws))
-                            if isinstance(artiste, Fleche):
+                            if isinstance(artiste, LigneDecoree):
                                 taille = self.taille[ID] = artiste.taille
                                 artiste.set(taille=self.zoom_ligne*taille)
         return self.artistes
@@ -158,7 +239,7 @@ class ZoomArtistes(object):
                             artiste.set_markeredgewidth(self.markeredgewidth[ID])
                         elif isinstance(artiste, LineCollection):
                             artiste.set_linewidth(self.linewidth[ID])
-                            if isinstance(artiste, Fleche):
+                            if isinstance(artiste, LigneDecoree):
                                 artiste.set(taille=self.taille[ID])
 
 
@@ -378,6 +459,12 @@ class Moteur_graphique(object):
 
     def ajouter_fleche(self, x0=0, y0=0, x1=1, y1=1, **kw):
         self._ajouter_objet(self.fleche(x0, y0, x1, y1, **kw))
+
+    def fleche_courbe(self, **kw):
+        return FlecheCourbe(canvas=self.canvas, **kw)
+
+    def ajouter_fleche_courbe(self, **kw):
+        self._ajouter_objet(self.fleche(**kw))
 
     def cercle(self, xy=(0, 0), r=1, **kw):
         circle = Circle(xy, r, **kw)

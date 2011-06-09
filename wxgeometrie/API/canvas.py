@@ -209,6 +209,9 @@ class Canvas(FigureCanvasAgg):
     def fleche(self, *args, **kw):
         return self.graph.fleche(*args, **kw)
 
+    def fleche_courbe(self, **kw):
+        return self.graph.fleche_courbe(**kw)
+
     def dessiner(self, objet):
         self.graph.ajouter(objet)
 
