@@ -598,11 +598,10 @@ class Statistiques(Panel_API_graphique):
         dx, dy = self.canvas.dpix2coo(-5, -18)
         # tenir compte du mode N&B
         col = 'k' if self.param('hachures') else couleur
-        st = style if self.param('hachures') else '-' 
 
-        self.canvas.dessiner_ligne([x0, x_reg], [a_reel, a_reel], color = col, linestyle = st)
-        self.canvas.dessiner_ligne([x_reg, x_reg], [a_reel, y0], color = col, linestyle = st)
-        self.canvas.dessiner_texte(x_reg, y0+dy, str(x_reg), color = col)
+        self.canvas.dessiner_ligne([x0, x_reg], [a_reel, a_reel], color = col, linestyle = style)
+        self.canvas.dessiner_ligne([x_reg, x_reg], [a_reel, y0], color = col, linestyle = style)
+        self.canvas.dessiner_texte(x_reg, y0+dy, format(x_reg, ".4g"), color = col)
 
 
     def select_classe(self, liste, a, mode=1):
