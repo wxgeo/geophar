@@ -198,6 +198,36 @@ class Autres(CstmPanel):
 
         self.finaliser()
 
+class Autres_quantile(CstmPanel):
+    def __init__(self, parent):
+        CstmPanel.__init__(self, parent)
+
+        box = wx.StaticBox(self, -1, u"Construction de quantiles")
+        sizer = wx.StaticBoxSizer(box, wx.HORIZONTAL)
+
+        self.mediane = wx.CheckBox(self, label = u'Construire la médiane')
+        self.mediane.SetValue(self.main.choix_quantiles["mediane"][0])
+        self.mediane.Bind(wx.EVT_CHECKBOX, self.main.EvtCheck)
+
+        sizer.Add(self.mediane, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 7)
+        sizer.AddSpacer(10) # valeur à ajuster
+
+        self.quartiles = wx.CheckBox(self, label = u'Construire les quartiles')
+        self.quartiles.SetValue(self.main.choix_quantiles["quartiles"][0])
+        self.quartiles.Bind(wx.EVT_CHECKBOX, self.main.EvtCheck)
+        sizer.Add(self.quartiles, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 7)
+        sizer.AddSpacer(10) # valeur à ajuster
+
+        self.deciles = wx.CheckBox(self, label = u'Construire les déciles')
+        self.deciles.SetValue(self.main.choix_quantiles["deciles"][0])
+        self.deciles.Bind(wx.EVT_CHECKBOX, self.main.EvtCheck)
+        sizer.Add(self.deciles, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 7)
+        sizer.AddSpacer(10) # valeur à ajuster
+
+        self.add(sizer)
+
+        self.finaliser()
+
 
 class OngletsStatistiques(wx.Notebook):
     def __init__(self, parent):
@@ -207,10 +237,13 @@ class OngletsStatistiques(wx.Notebook):
         self.legende = Legende(self)
         self.graduation = Graduation(self)
         self.autres = Autres(self)
+        self.autresq = Autres_quantile(self)
+
         self.AddPage(self.donnees, u'Données')
         self.AddPage(self.legende, u'Légende')
         self.AddPage(self.graduation, u'Graduation')
         self.AddPage(self.autres, u'Réglages')
+        self.AddPage(self.autresq, u'Quantiles')
 
 
     def enable(self, x, y, a, classes=False, legende_x=False):

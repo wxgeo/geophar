@@ -128,6 +128,10 @@ class Statistiques(Panel_API_graphique):
         self.donnees_valeurs = ''
         self.donnees_classes = ''
         self.intervalle_confiance = None
+        #test dico quantiles
+        self.choix_quantiles = {"mediane": [True, [0.5], 'r', '-'], \
+                                    "quartiles": [True, [0.25, 0.75], 'b', '--'],\
+                                    "deciles": [True, [0.1, 0.9], 'g', ':']}
 
         self.entrees = wx.BoxSizer(wx.VERTICAL)
 
@@ -227,6 +231,11 @@ class Statistiques(Panel_API_graphique):
             self.origine_y = self.onglets_bas.graduation.origine_y.GetValue()
             self.donnees_valeurs = self.onglets_bas.donnees.valeurs.GetValue()
             self.onglets_classes = self.onglets_bas.donnees.classes.GetValue()
+
+            # test choix quantiles
+            self.choix_quantiles["mediane"][0] = self.onglets_bas.autresq.mediane.GetValue()
+            self.choix_quantiles["quartiles"][0] = self.onglets_bas.autresq.quartiles.GetValue()
+            self.choix_quantiles["deciles"][0] = self.onglets_bas.autresq.deciles.GetValue()
 
             self.classes = []
             self._valeurs = {}
@@ -524,11 +533,10 @@ class Statistiques(Panel_API_graphique):
         self.canvas.dessiner_texte(x, .5*hmax - 15*self.canvas.coeff(1), legende, va = "top")
 
 
-
-
     def courbe_effectifs(self, mode=1):
-        u"Courbe des effectifs cumulés croissants si mode = 1, décroissants si mode = -1."
-
+        u"""
+        Courbe des effectifs cumulés croissants si mode = 1, décroissants si mode = -1.
+        """
         if self.axes(x = True, y = True, classes=True):
             return u"Définissez des classes.\nExemple : [0;10[ [10;20["
 
@@ -541,13 +549,30 @@ class Statistiques(Panel_API_graphique):
         self.graduations(l, arrondir(hmax/10))
         self.origine(m, 0)
 
+        #classe with cumulatives eff or freq 2-uple list: y_cum
+        y_cum=[]
+        couleur = 'k' if self.param('hachures') else 'b'
         for classe in self.classes:
-            couleur = 'k' if self.param('hachures') else 'b'
-            self.canvas.dessiner_ligne(classe, [sum([self.valeurs[valeur] for valeur in valeurs if mode*valeur <= mode*classe[i]]) for i in (0, 1)], color = couleur)
-
+            y_value = [sum([self.valeurs[valeur] for valeur in valeurs if mode*valeur <= mode*classe[i]]) for i in (0, 1)]
+            self.canvas.dessiner_ligne(classe, y_value, color = couleur)
+            y_cum.append((classe, y_value))
         dx, dy = self.canvas.dpix2coo(-5, -18)
         self.canvas.dessiner_texte(M + 0.2*(M-m) + dx, dy, self.legende_x, ha = "right")
         dx, dy = self.canvas.dpix2coo(15, -5)
+        #ajout des quantiles
+        for  q in ["mediane", "quartiles", "deciles"]:
+            # tracer si les quantiles sont activés
+            if self.choix_quantiles[q][0]:
+                freq = self.choix_quantiles[q][1]
+                for a in freq:
+                    try:
+                        (c, y) = self.select_classe(y_cum, a, mode)
+                        self.quantile_plot(c, y, a, couleur = self.choix_quantiles[q][2], style = self.choix_quantiles[q][3])
+                    except TypeError:
+                        # c peut être vide si les classes commencent à une 
+                        # fcc trop grande.
+                        pass
+        #legende
         legende_y = self.legende_y
         if not legende_y:
             mode = self.param('mode_effectifs')
@@ -560,6 +585,64 @@ class Statistiques(Panel_API_graphique):
         self.canvas.dessiner_texte(m + dx, 1.1*hmax + dy, legende_y, va='top')
 
 
+    def quantile_plot(self, classe, y, a, couleur ='r', style ='-'):
+        u"""
+        Trace le a-quantile
+        
+        @type classe: classe
+        @param classe: la classe dans laquelle tombe le a-quantile.
+        @type y: list
+        @param y: bornes des eff ou freq cumulés de classe.
+        @type couleur: char
+        @param couleur: couleur du tracé, rouge par défaut
+        @type style: char
+        @param style: style de ligne réglé en cas de N&B
+
+        @rtype: None
+        """
+        a_reel = a*self.total()
+        m = (y[1]-y[0])/(classe[1]-classe[0])
+        x_reg = (a_reel-y[0])/m + classe[0]
+        # coordonnées de l'origine
+        x0, y0 = self.canvas.origine_axes
+        dx, dy = self.canvas.dpix2coo(-5, -18)
+        # tenir compte du mode N&B
+        col = 'k' if self.param('hachures') else couleur
+
+        self.canvas.dessiner_ligne([x0, x_reg], [a_reel, a_reel], color = col, linestyle = style)
+        self.canvas.dessiner_ligne([x_reg, x_reg], [a_reel, y0], color = col, linestyle = style)
+        self.canvas.dessiner_texte(x_reg, y0+dy, format(x_reg, ".4g"), color = col)
+
+
+    def select_classe(self, liste, a, mode=1):
+        u"""
+        selectionne la classe contenant le a-quantile
+        
+        @type a: real
+
+        @param a: le paramètre dans [0.1[. Ne pas mettre a=1.0 pour éviter un
+        dépassement
+        @type liste: list of 2-uple classe, list
+        @param liste: contient les classes couplées à leurs effectifs cumulés.
+        @type mode: int
+        @param mode: 1 or -1 for increasing or decreasing cumulative eff/freq
+
+        @rtype: 2-uple
+        renvoie un 2-uple:  classe, [y_0, y_1] ou **None** si la recherche échoue.
+        """
+        eff_total = self.total()
+        if mode == 1:
+            # chosen_s = [(c,v) for (c,v) in liste if \
+            # v[0]/eff_total <= a < v[1]/eff_total]
+            for (c, v) in liste:
+                if v[0]/eff_total <= a < v[1]/eff_total:
+                    return (c, v)
+        elif mode == -1:
+            # chosen_s = [(c,v) for (c,v) in liste if v[1]/eff_total \
+            # <= a < v[0]/eff_total]
+            for (c, v) in liste:
+                if v[1]/eff_total <= a < v[0]/eff_total:
+                    return (c, v)
 
     def diagramme_barre(self, ratio=.7):
         u"""Diagramme en barres ; ratio mesure le quotient largeur d'une barre sur largeur maximale possible.
