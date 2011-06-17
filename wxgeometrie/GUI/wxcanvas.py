@@ -311,6 +311,9 @@ class WxCanvas(FigureCanvasWxAgg, Canvas):
                 position = self.ScreenToClient(wx.GetMousePosition())
             if param.afficher_coordonnees: # affichage des coordonnees dans la barre d'etat
                 self.message(str(self.pix2coo(*position)), 1)
+            elif param.afficher_pixels:
+                # pour débogage
+                self.message(str(position) + ' -> ' + str(self.pix2coo(*position)), 1)
             x, y = position
             # on place les objets 'modifiables' en premier (points libres, glisseurs, textes)
             self.sel = actuelle.liste_objets(tri = True)

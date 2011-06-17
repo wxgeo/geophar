@@ -30,8 +30,8 @@ from matplotlib.lines import Line2D
 from matplotlib.collections import LineCollection
 from matplotlib.patches import Polygon, Circle, FancyArrowPatch
 from matplotlib.text import Text
-from numpy import array
-from math import cos, sin, atan2, pi
+from numpy import array, cos as ncos, sin as nsin
+from math import cos, sin, atan2, pi, hypot
 
 from pylib import fullrange
 
@@ -39,12 +39,20 @@ from pylib import fullrange
 class LigneDecoree(LineCollection):
     taille = NotImplemented
 
-    def _maj(self, lignes):
-        self.set_segments(lignes)
-        # Le style de ligne (pointillés, etc.) ne doit pas s'appliquer
-        # aux décorations (pointes de flêches, etc.)
-        ls = self.get_linestyles()[0]
-        self.set_linestyles([ls, '-', '-'])
+    def __init__(self, canvas, **kw):
+        LineCollection.__init__(self, ())
+        self.canvas = canvas
+        if kw:
+            self.set(**kw)
+
+    def set(self, **kw):
+        for nom in self._parametres:
+            if kw.has_key(nom):
+                setattr(self, nom, kw.pop(nom))
+        if kw:
+            LineCollection.set(self, **kw)
+        self._maj_data()
+
 
 
 class FlecheGenerique(LigneDecoree):
@@ -54,14 +62,15 @@ class FlecheGenerique(LigneDecoree):
     position = 1
     angle = 60
 
-    def __init__(self, canvas, **kw):
-        LineCollection.__init__(self, ())
-        self.canvas = canvas
-        if kw:
-            self.set(**kw)
+    def _maj(self, lignes):
+        self.set_segments(lignes)
+        # Le style de ligne (pointillés, etc.) ne doit pas s'appliquer
+        # aux décorations (pointes de flêches, etc.)
+        ls = self.get_linestyles()[0]
+        self.set_linestyles([ls, '-', '-'])
 
     def _pointe(self, xy, dxdy):
-        a = self.angle*math.pi/360 # angle/2, puis degrés -> radians
+        a = self.angle*pi/360 # angle/2, puis degrés -> radians
         taille = self.taille
         #                                    M +
         #                                 C     \
@@ -77,6 +86,7 @@ class FlecheGenerique(LigneDecoree):
         xN = xB + taille*cos(alpha + a)
         yN = yB + taille*sin(alpha + a)
         return self.canvas.pix2coo((xM, xB, xN), (yM, yB, yN))
+
 
 
 class Fleche(FlecheGenerique):
@@ -99,14 +109,6 @@ class Fleche(FlecheGenerique):
         """
         FlecheGenerique.__init__(self, canvas, **kw)
 
-    def set(self, **kw):
-        for nom in self._parametres:
-            if kw.has_key(nom):
-                setattr(self, nom, kw.pop(nom))
-        if kw:
-            LineCollection.set(self, **kw)
-        self._maj_data()
-
     def _maj_data(self):
         xy0 = array(self.xy0)
         xy1 = array(self.xy1)
@@ -117,7 +119,6 @@ class Fleche(FlecheGenerique):
         if self.double:
             lignes.append(zip(*self._pointe(k*xy0 + (1 - k)*xy1, dxdy)))
         self._maj(lignes)
-
 
 
 
@@ -145,14 +146,6 @@ class FlecheCourbe(FlecheGenerique):
         - sens: orientation de l'arc (1 ou -1).
         """
         FlecheGenerique.__init__(self, canvas, **kw)
-
-    def set(self, **kw):
-        for nom in self._parametres:
-            if kw.has_key(nom):
-                setattr(self, nom, kw.pop(nom))
-        if kw:
-            LineCollection.set(self, **kw)
-        self._maj_data()
 
     def _maj_data(self):
         x, y = self.centre
@@ -183,6 +176,93 @@ class FlecheCourbe(FlecheGenerique):
             lignes.append(zip(*self._pointe((x0, y0), dxdy)))
 
         self._maj(lignes)
+
+
+
+class Codage(LigneDecoree):
+    u'''Objet graphique servant à coder les segments et arcs de même longueur.
+
+    Paramètres:
+    - taille: taille du symbole (en pixels).
+    - angle: angle relatif au segment, en degrés, pour les symboles / et X.
+    - position: position du symbole (couple de coordonnées).
+    - direction: couple (dx, dy) donnant l'orientation du segment.
+      Ce couple est exprimé en coordonnées (et non en pixels).
+    - marge: si la longueur en pixels correspondant à (dx, dy) est inférieure
+      à la marge + la taille du codage, le codage n'est pas affiché.
+    '''
+    style = '/'
+    taille = 10
+    position = (0, 0)
+    direction = (1, 0)
+    marge = 0
+    angle = 60
+    _parametres = ('style', 'taille', 'position', 'direction', 'angle')
+
+    def set(self, **kw):
+        if 'position' in kw:
+            self.position = self.canvas.coo2pix(*kw.pop('position'))
+        if 'direction' in kw:
+            self.direction = self.canvas.dcoo2pix(*kw.pop('direction'))
+            self.hyp = hypot(*self.direction)
+        LigneDecoree.set(self, **kw)
+
+    def _maj_data(self):
+        lignes = []
+        style = self.style
+
+        if style and self.taille:
+            if style == 'o':
+                # On vérifie qu'il y a assez de place sur le segment pour afficher le cercle
+                if self.hyp > self.taille + self.marge:
+                    x, y = self.position
+                    t = fullrange(0, 2*pi, 2./self.taille)
+                    r = .7*self.taille
+                    lignes.append(zip(*self.canvas.pix2coo(x + r*ncos(t), y + r*nsin(t))))
+            elif style.count('/') == len(style):
+                lignes.extend(self._oblique(self.position, self.direction, n=len(style)))
+            elif style in ('x', 'X'):
+                lignes.extend(self._oblique(self.position, self.direction))
+                lignes.extend(self._oblique(self.position, self.direction, sens=-1))
+
+        self.set_segments(lignes)
+
+    def _oblique(self, xy, dxdy, n=1, sens=1):
+        u'''Retourne les coordonnées de n barres obliques, à la position xy.
+
+        dxdy définit l'orientation des barres.
+        S'il y a plusieurs barres, elles seront espacées de 1 épaisseur de ligne.
+        '''
+        a = sens*self.angle*pi/180 # degrés -> radians
+        r = self.taille
+        #                              + M
+        #                           I /
+        # Schéma:         A +--------+--------+ B    --> direction
+        #                           /
+        #                        N +
+        # On calcule les coordonnées de C, puis par rotation autour de B, celles de M et N.
+        dx, dy = dxdy
+        lw = self.get_linewidth()[0]
+        # S'il n'y a pas assez d'espace sur le segment, on n'affiche pas le codage.
+        # TODO: affiner l'algorithme (pour l'instant, on fait comme si les lignes
+        # étaient verticales, et non obliques).
+        if self.hyp < self.marge + lw*(2*n + 2):
+            return []
+        alpha = atan2(dy, dx)
+        xI, yI = xy
+        xM = xI + r*cos(alpha - a)
+        yM = yI + r*sin(alpha - a)
+        xN = 2*xI - xM
+        yN = 2*yI - yM
+        obliques = []
+        xu = dx/self.hyp
+        yu = dy/self.hyp
+        for i in xrange(-n + 1, n, 2):
+            k = (.5*lw + 1.5)*i
+            M = self.canvas.pix2coo(xM + k*xu, yM + k*yu)
+            N = self.canvas.pix2coo(xN + k*xu, yN + k*yu)
+            obliques.append((M, N))
+        return obliques
 
 
 
@@ -404,15 +484,15 @@ class Moteur_graphique(object):
         vecteur = self.canvas.dcoo2pix(*vecteur)
         if vecteur[0] == 0:
             if vecteur[1] > 0:
-                angle = math.pi/2
+                angle = pi/2
             else:
-                angle = -math.pi/2
+                angle = -pi/2
         else:
             angle = math.atan(vecteur[1]/vecteur[0])
             if vecteur[0] < 0:
-                angle += math.pi
+                angle += pi
         # donne l'angle d'incidence à l'extrémité
-        t = numpy.arange(angle - math.pi/2, angle + math.pi/2, 0.05)
+        t = numpy.arange(angle - pi/2, angle + pi/2, 0.05)
         R = self.canvas.taille["("]*self.zoom_ligne
 
         x, y = self.canvas.coo2pix(x, y)
@@ -464,7 +544,13 @@ class Moteur_graphique(object):
         return FlecheCourbe(canvas=self.canvas, **kw)
 
     def ajouter_fleche_courbe(self, **kw):
-        self._ajouter_objet(self.fleche(**kw))
+        self._ajouter_objet(self.fleche_courbe(**kw))
+
+    def codage(self, **kw):
+        return Codage(canvas=self.canvas, **kw)
+
+    def ajouter_codage(self, **kw):
+        self._ajouter_objet(self.codage(**kw))
 
     def cercle(self, xy=(0, 0), r=1, **kw):
         circle = Circle(xy, r, **kw)

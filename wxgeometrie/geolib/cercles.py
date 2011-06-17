@@ -84,6 +84,7 @@ class Arc_generique(Cercle_Arc_generique):
 
     _style_defaut = param.arcs
     _prefixe_nom = "a"
+    _affichage_depend_de_la_fenetre = True # codage
 
     centre = __centre = Argument("Point_generique")
     point = __point = Argument("Point_generique")
@@ -228,83 +229,34 @@ class Arc_generique(Cercle_Arc_generique):
 
     def _creer_figure(self):
         if not self._representation:
-            self._representation = [self.rendu.ligne(), self.rendu.ligne(), self.rendu.ligne(), self.rendu.ligne(), self.rendu.ligne()]
-            # les 2 premières lignes servent à afficher l'arc lui-même ; les autres servent pour le codage.
+            self._representation = [self.rendu.ligne(), self.rendu.ligne(), self.rendu.codage()]
+            # 2 lignes pour afficher l'arc lui-même
 
         for plot in self._representation[1:]:
             plot.set_visible(False)
 
         x, y = self._Arc_generique__centre.coordonnees
         r = self.rayon
-        niveau, couleur, style, epaisseur, codage = self.style(('niveau', 'couleur', 'style', 'epaisseur', 'codage'))
-        taille = param.codage["taille"]
-        a = param.codage["angle"]
-
-
+        niveau, couleur, style, epaisseur = self.style(('niveau', 'couleur', 'style', 'epaisseur'))
 
         for i, t in enumerate(self._t()):
             plot = self._representation[i]
             plot.set_data(x + r*numpy.cos(t), y + r*numpy.sin(t))
             plot.set(color=couleur, linestyle=style, linewidth=epaisseur, zorder=niveau, visible=True)
 
-
         # Gestion du codage des arcs de cercle (utilisé pour indiquer les arcs de cercles de même longeur)
-        if codage:
+        if self.style("codage"):
+            a, b = self._intervalle()
             c = .5*(a + b)
-            x0 = x + r*math.cos(c); y0 = y + r*math.sin(c)
-            for plot in self._representation[2:]:
-                plot.zorder = niveau + 0.01
-
-            plot1, plot2, plot3 = self._representation[2:]
-
-            if codage == "o":
-                plot1.set(marker="o", markersize=taille, markerfacecolor=None, markeredgecolor=couleur, \
-                            markeredgewidth=epaisseur, visible=True)
-                plot1.set_data([x0], [y0])
-
-            else:
-                r = taille*param.zoom_ligne
-                G = numpy.array(self.__canvas__.coo2pix(x0, y0))
-                coeff0, coeff1 = self.__canvas__.coeffs()
-                vecteur = numpy.array(((y0 - y)/coeff0, (x0 - x)/coeff1)) # vecteur orthogonal au rayon
-                vec = vecteur/math.hypot(*vecteur)
-                C = G + r*vec
-
-                if codage == "x":
-                    M = (numpy.dot([[math.cos(a), -math.sin(a)], [math.sin(a), math.cos(a)]],
-                            numpy.transpose([C - G])) + numpy.transpose([G]))[:,0]
-                    N = (numpy.dot([[math.cos(a), math.sin(a)], [-math.sin(a), math.cos(a)]],
-                            numpy.transpose([C - G])) + numpy.transpose([G]))[:,0]
-                    plot1.set_data(*self.__canvas__.pix2coo(*array_zip(M, 2*G-M)))
-                    plot1.set(marker = 'None', color = couleur, linewidth = epaisseur, visible = True)
-                    plot2.set_data(*self.__canvas__.pix2coo(*array_zip(N, 2*G-N)))
-                    plot2.set(marker = 'None', color = couleur, linewidth = epaisseur, visible = True)
-
-                elif codage == "/":
-                    M = (numpy.dot([[math.cos(a), math.sin(a)], [-math.sin(a), math.cos(a)]],
-                            numpy.transpose([C - G])) + numpy.transpose([G]))[:,0]
-                    plot1.set_data(*self.__canvas__.pix2coo(*array_zip(M, 2*G - M)))
-                    plot1.set(marker = 'None', color = couleur, linewidth = epaisseur, visible = True)
-
-                elif codage == "//":
-                    M = (numpy.dot([[math.cos(a), math.sin(a)], [-math.sin(a), math.cos(a)]],
-                            numpy.transpose([C - G])) + numpy.transpose([G]))[:,0]
-                    vec = 2*vec
-                    plot1.set_data(*self.__canvas__.pix2coo(*array_zip(M + vec, 2*G - M + vec)))
-                    plot2.set_data(*self.__canvas__.pix2coo(*array_zip(M - vec, 2*G - M - vec)))
-                    plot1.set(marker = 'None', color = couleur, linewidth = epaisseur, visible = True)
-                    plot2.set(marker = 'None', color = couleur, linewidth = epaisseur, visible = True)
-
-                elif codage == "///":
-                    M = (numpy.dot([[math.cos(a), math.sin(a)], [-math.sin(a), math.cos(a)]],
-                            numpy.transpose([C - G])) + numpy.transpose([G]))[:,0]
-                    vec = 3*vec
-                    plot1.set_data(*self.__canvas__.pix2coo(*array_zip(M, 2*G - M)))
-                    plot2.set_data(*self.__canvas__.pix2coo(*array_zip(M + vec, 2*G - M + vec)))
-                    plot3.set_data(*self.__canvas__.pix2coo(*array_zip(M - vec, 2*G - M - vec)))
-                    plot1.set(marker = 'None', color = couleur, linewidth = epaisseur, visible = True)
-                    plot2.set(marker = 'None', color = couleur, linewidth = epaisseur, visible = True)
-                    plot3.set(marker = 'None', color = couleur, linewidth = epaisseur, visible = True)
+            x0 = x + r*math.cos(c)
+            y0 = y + r*math.sin(c)
+            self._representation[2].set(visible=True, style=self.style('codage'),
+                       position=(x0, y0),
+                       direction=(y0 - y, x - x0), # vecteur orthogonal au rayon
+                       taille=param.codage["taille"], angle=param.codage["angle"],
+                       color=couleur, linewidth=epaisseur,
+                       zorder=niveau + 0.01,
+                      )
 
 
     def _espace_vital(self):

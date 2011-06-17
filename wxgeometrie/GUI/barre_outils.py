@@ -835,7 +835,6 @@ class BarreOutils(wx.Panel):
             self.interagir(self.rotation, u"Choisissez ou créez un objet, puis indiquez le centre de la rotation, et l'angle.")
         elif self.test(**kw):
             selection = kw["selection"]
-            position = kw["position"]
             if len(self.cache) == 0:
                 if isinstance(selection, Objet):
                     self.cache.append(selection)
@@ -869,7 +868,6 @@ class BarreOutils(wx.Panel):
             self.interagir(self.homothetie, u"Choisissez ou créez un objet, puis indiquez le centre de l'homothétie, et son rapport.")
         elif self.test(**kw):
             selection = kw["selection"]
-            position = kw["position"]
             if len(self.cache) == 0:
                 if isinstance(selection, Objet):
                     self.cache.append(selection)
@@ -962,7 +960,6 @@ class BarreOutils(wx.Panel):
             self.interagir(self.triangle_rectangle, u"Choisissez ou créez deux points.")
         elif self.test(True, **kw):
             selection = kw["selection"]
-            position = kw["position"]
 
             if isinstance(selection, Point_generique):
                 self.cache.append(selection)
@@ -986,7 +983,6 @@ class BarreOutils(wx.Panel):
             self.interagir(self.triangle_isocele, u"Choisissez ou créez deux points.")
         elif self.test(True, **kw):
             selection = kw["selection"]
-            position = kw["position"]
 
             if isinstance(selection, Point_generique):
                 self.cache.append(selection)
@@ -1009,7 +1005,6 @@ class BarreOutils(wx.Panel):
             self.interagir(self.triangle_isocele_rectangle, u"Choisissez ou créez deux points.")
         elif self.test(True, **kw):
             selection = kw["selection"]
-            position = kw["position"]
 
             if isinstance(selection, Point_generique):
                 self.cache.append(selection)
@@ -1033,7 +1028,6 @@ class BarreOutils(wx.Panel):
             self.interagir(self.triangle_equilateral, u"Choisissez ou créez deux points.")
         elif self.test(True, **kw):
             selection = kw["selection"]
-            position = kw["position"]
 
             if isinstance(selection, Point_generique):
                 self.cache.append(selection)
@@ -1056,7 +1050,6 @@ class BarreOutils(wx.Panel):
             self.interagir(self.rectangle, u"Choisissez ou créez deux points.")
         elif self.test(True, **kw):
             selection = kw["selection"]
-            position = kw["position"]
 
             if isinstance(selection, Point_generique):
                 self.cache.append(selection)
@@ -1081,7 +1074,6 @@ class BarreOutils(wx.Panel):
             self.interagir(self.losange, u"Choisissez ou créez deux points.")
         elif self.test(True, **kw):
             selection = kw["selection"]
-            position = kw["position"]
 
             if isinstance(selection, Point_generique):
                 self.cache.append(selection)
@@ -1106,7 +1098,6 @@ class BarreOutils(wx.Panel):
             self.interagir(self.carre, u"Choisissez ou créez deux points.")
         elif self.test(True, **kw):
             selection = kw["selection"]
-            position = kw["position"]
 
             if isinstance(selection, Point_generique):
                 self.cache.append(selection)
@@ -1129,7 +1120,6 @@ class BarreOutils(wx.Panel):
             self.interagir(self.triangle, u"Choisissez ou créez trois points.")
         elif self.test(True, **kw):
             selection = kw["selection"]
-            position = kw["position"]
 
             if isinstance(selection, Point_generique):
                 self.cache.append(selection)
@@ -1152,7 +1142,6 @@ class BarreOutils(wx.Panel):
             self.interagir(self.parallelogramme, u"Choisissez ou créez trois points.")
         elif self.test(True, **kw):
             selection = kw["selection"]
-            position = kw["position"]
 
             if isinstance(selection, Point_generique):
                 self.cache.append(selection)
@@ -1174,7 +1163,6 @@ class BarreOutils(wx.Panel):
         elif self.test(True, **kw):
             #self.cache = [obj for obj in self.cache if obj.nom and obj.__feuille__ == self.feuille_actuelle]
             selection = kw["selection"]
-            position = kw["position"]
 
             if isinstance(selection, Point_generique):
                 self.cache.append(selection)

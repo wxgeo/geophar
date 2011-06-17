@@ -554,7 +554,7 @@ del NOM, FORMULE, TEXTE, RIEN, DEBUT, MILIEU, FIN
 # 'extra' est un dictionnaire d'options de matplotlib
 # attention, ces options seront appliquees a toutes les composantes (plot, fill, text) de la representation graphique
 
-codage = {"angle": pi/3, "taille": 6, "rayon": 20}
+codage = {"angle": 60, "taille": 6, "rayon": 20}
 codage_automatique_angle_droits = True
 
 ##class _Dict_codage(dict):
@@ -676,6 +676,7 @@ dpi_export = 200 # resolution utilisee lors de l'exportation des images
 compresser_geo = False # compresser les fichiers .geo par défaut
 
 afficher_coordonnees = True # affiche en permanence les coordonnees
+afficher_pixels = False # pour débogage (mettre afficher_coordonnes à False précédemment)
 
 afficher_objets_caches = False # affiche en grisé les objets masqués
 

@@ -186,6 +186,11 @@ class Rendu(object):
         artiste._cree_par = self.parent
         return artiste
 
+    def codage(self, *args, **kw):
+        artiste = self.canvas.codage(*args, **kw)
+        artiste._cree_par = self.parent
+        return artiste
+
     def _pixel(self, point = None):
         if point is None:
             point = self.parent

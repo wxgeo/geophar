@@ -201,7 +201,7 @@ class Segment(Ligne_generique):
 
     Un segment défini par deux points"""
 
-    _affichage_depend_de_la_fenetre = False
+    _affichage_depend_de_la_fenetre = True # codage
     _style_defaut = param.segments
     _prefixe_nom = "s"
     _marqueurs = "[]"
@@ -218,7 +218,7 @@ class Segment(Ligne_generique):
 
     def _creer_figure(self):
         if not self._representation:
-            self._representation = [self.rendu.ligne(), self.rendu.ligne(), self.rendu.ligne(), self.rendu.ligne()]
+            self._representation = [self.rendu.ligne(), self.rendu.codage()]
         x1, y1 = self.__point1.coordonnees
         x2, y2 = self.__point2.coordonnees
         couleur = self.style("couleur")
@@ -229,73 +229,22 @@ class Segment(Ligne_generique):
         for elt_graphique in self._representation:
             elt_graphique.set_visible(True)
 
-        plot = self._representation[0]
-        plot.set_data(numpy.array([x1, x2]), numpy.array([y1, y2]))
-        plot.set(color=couleur, linestyle=style,
-                 linewidth=epaisseur)
+        plot, codage = self._representation
+        plot.set_data(((x1, x2), (y1, y2)))
+        plot.set(color=couleur, linestyle=style, linewidth=epaisseur)
         plot.zorder = niveau
 
-        # Toute la suite concerne les codages utilisés pour indiquer les segments de même longueur
+        # Codages utilisés pour indiquer les segments de même longueur
         if not self.style("codage"):
-            for plot in self._representation[1:]:
-                plot.set_visible(False)
-                plot.zorder = niveau + 0.01
-
-        elif self.style("codage") == "o":
-            plot = self._representation[1]
-            plot.set(marker="o", markersize=param.codage["taille"], markerfacecolor='None', # matplotlib 0.91.2
-                     markeredgecolor=couleur, markeredgewidth=epaisseur)
-            plot.set_data([.5*(x1 + x2)], [.5*(y1 + y2)])
-            for plot in self._representation[2:]:
-                plot.set_visible(False)
-
+            codage.set_visible(False)
         else:
-            A = numpy.array(self.__canvas__.coo2pix(x1, y1))
-            B = numpy.array(self.__canvas__.coo2pix(x2, y2))
-            G = .5*(B + A)
-            r = param.codage["taille"]*param.zoom_ligne
-            a = param.codage["angle"]
-            vec = (A - B)/math.hypot(*(A - B))
-            C = G + r*vec
-            if self.style("codage") == "x":
-                M = (numpy.dot([[math.cos(a), -math.sin(a)], [math.sin(a), math.cos(a)]], numpy.transpose([C - G])) + numpy.transpose([G]))[:,0]
-                N = (numpy.dot([[math.cos(a), math.sin(a)], [-math.sin(a), math.cos(a)]], numpy.transpose([C - G])) + numpy.transpose([G]))[:,0]
-                plot1, plot2 = self._representation[1:3]
-                plot1.set_data(*self.__canvas__.pix2coo(*array_zip(M, 2*G-M)))
-                plot2.set_data(*self.__canvas__.pix2coo(*array_zip(N, 2*G-N)))
-                plot1.set(marker='None', color=couleur, linewidth=epaisseur)
-                plot2.set(marker='None', color=couleur, linewidth=epaisseur)
-                self._representation[3].set_visible(False)
-
-            elif self.style("codage") == "/":
-                M = (numpy.dot([[math.cos(a), math.sin(a)], [-math.sin(a), math.cos(a)]], numpy.transpose([C - G])) + numpy.transpose([G]))[:,0]
-                plot1 = self._representation[1]
-                plot1.set_data(*self.__canvas__.pix2coo(*array_zip(M, 2*G-M)))
-                plot1.set(marker='None', color=couleur, linewidth=epaisseur)
-                for plot in self._representation[2:]:
-                    plot.set_visible(False)
-
-            elif self.style("codage") == "//":
-                M = (numpy.dot([[math.cos(a), math.sin(a)], [-math.sin(a), math.cos(a)]], numpy.transpose([C - G])) + numpy.transpose([G]))[:,0]
-                plot1, plot2 = self._representation[1:3]
-                vec = 2*vec
-                plot1.set_data(*self.__canvas__.pix2coo(*array_zip(M + vec, 2*G - M + vec)))
-                plot2.set_data(*self.__canvas__.pix2coo(*array_zip(M - vec, 2*G - M - vec)))
-                plot1.set(marker='None', color=couleur, linewidth=epaisseur)
-                plot2.set(marker='None', color=couleur, linewidth=epaisseur)
-                self._representation[3].set_visible(False)
-
-            elif self.style("codage") == "///":
-                M = (numpy.dot([[math.cos(a), math.sin(a)], [-math.sin(a), math.cos(a)]], numpy.transpose([C - G])) + numpy.transpose([G]))[:,0]
-                plot1, plot2, plot3 = self._representation[1:4]
-                vec = 3*vec
-                plot1.set_data(*self.__canvas__.pix2coo(*array_zip(M, 2*G - M)))
-                plot2.set_data(*self.__canvas__.pix2coo(*array_zip(M + vec, 2*G - M + vec)))
-                plot3.set_data(*self.__canvas__.pix2coo(*array_zip(M - vec, 2*G - M - vec)))
-                plot1.set(marker='None', color=couleur, linewidth=epaisseur)
-                plot2.set(marker='None', color=couleur, linewidth=epaisseur)
-                plot3.set(marker='None', color=couleur, linewidth=epaisseur)
-
+            codage.set(visible=True, style=self.style('codage'),
+                       position=(.5*(x1 + x2), .5*(y1 + y2)),
+                       direction=(x2 - x1, y2 - y1),
+                       taille=param.codage["taille"], angle=param.codage["angle"],
+                       color=couleur, linewidth=epaisseur,
+                       zorder=niveau + 0.01,
+                      )
 
 
     def image_par(self, transformation):

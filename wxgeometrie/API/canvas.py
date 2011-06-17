@@ -212,6 +212,9 @@ class Canvas(FigureCanvasAgg):
     def fleche_courbe(self, **kw):
         return self.graph.fleche_courbe(**kw)
 
+    def codage(self, **kw):
+        return self.graph.codage(**kw)
+
     def dessiner(self, objet):
         self.graph.ajouter(objet)
 
