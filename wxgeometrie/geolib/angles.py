@@ -159,108 +159,32 @@ class Secteur_angulaire(Angle_generique):
             if abs(abs(self.radian) - math.pi/2) < contexte['tolerance']:
                 codage = "^"
         if not self._representation:
-            self._representation = [self.rendu.polygone(), self.rendu.ligne(), self.rendu.ligne(), self.rendu.ligne()]
+            ang = self.rendu.angle()
+            self._representation = [ang, self.rendu.codage_angle(angle_associe=ang)]
 
-        for elt_graphique in self._representation:
-            elt_graphique._visible = True
-
-        x1, y1 = self.__vecteur1.coordonnees
-        xx, yy = self.__point.coordonnees
-        x2, y2 = self.__vecteur2.coordonnees
-        coeff0, coeff1 = self.__canvas__.coeffs()
-        u = self.__canvas__.dcoo2pix(x1, y1)
-        v = self.__canvas__.dcoo2pix(x2, y2)
+        u = self.__canvas__.dcoo2pix(*self.__vecteur1)
+        v = self.__canvas__.dcoo2pix(*self.__vecteur2)
         i = (1, 0)
         a = angle_vectoriel(i, v)
         b = angle_vectoriel(i, u)
         if isinstance(self, ALL.Angle) and self._sens() < 0:
             a, b = b, a
-        if b<a:
+        if b < a:
             b += 2*math.pi
-        r = param.codage["rayon"]
-        x0, y0 = self._pixel(self.__point)
-        t = fullrange(a, b, self.__canvas__.pas())
 
+        angle, codage_angle = self._representation
 
-        if not codage:
-            for plot in self._representation[1:]:
-                plot.set_visible(False)
-                plot.zorder = niveau
-            x, y = self.__canvas__.pix2coo(x0 + r*numpy.cos(t), y0 + r*numpy.sin(t))
-        else:
-            if codage == "^":
-                u = .5*r/math.hypot(*u)*numpy.array(u)
-                v = .5*r/math.hypot(*v)*numpy.array(v)
-                plot = self._representation[1]
-                x, y = self.__canvas__.pix2coo( numpy.array((x0 + u[0], x0 + u[0] + v[0], x0 + v[0])),
-                                                numpy.array((y0 + u[1], y0 + u[1] + v[1], y0 + v[1]))
-                                              )
-                plot.set_data(x, y)
-                plot.set(color=couleur, linestyle=style, linewidth=epaisseur, marker='None')
-                for plot in self._representation[2:]:
-                    plot.set(visible=False, marker='None', color=couleur,
-                             linestyle=style, linewidth=epaisseur)
-            else:
-                n = len(codage)
-                for i in xrange(n):
-                    plot = self._representation[1+i]
-                    if i == 0:
-                        x, y = self.__canvas__.pix2coo(x0 + (r-3*i)*numpy.cos(t), y0 + (r-3*i)*numpy.sin(t))
-                    else:
-                        x, y = self.__canvas__.pix2coo(x0 + (r-3*i)*numpy.cos(t), y0 + (r-3*i)*numpy.sin(t))
-                    plot.set_data(x, y)
-                    plot.set(color=couleur, linestyle=style, linewidth=epaisseur, marker='None')
-                for plot in self._representation[1+n:]:
-                    plot.set(visible=False, marker='None', color=couleur,
-                             linestyle=style, linewidth=epaisseur)
+        angle.set(rayon=param.codage['rayon'], position=self.__point.xy,
+                  taille=param.codage['taille'], intervalle=(a, b),
+                  angle=param.codage['angle'], style=codage,
+                  zorder=niveau - 0.01, alpha=self.style('alpha'),
+                  linewidth=self.style('epaisseur'), facecolor=self.style('couleur'),
+                  linestyle = ALL.FILL_STYLES.get(style, 'solid'),
+                  )
 
-                if codage in ("/", "x", "o"):
-                    c = .5*(a+b)
-                    xc, yc = x0 + r*math.cos(c), y0 + r*math.sin(c)
-                    taille = param.codage["taille"]
-                    if codage == "o":
-                        plot = self._representation[2]
-                        plot.set_marker("o")
-                        plot.set_markersize(taille)
-                        plot.set_markerfacecolor("None") # matplotlib 0.91.2
-                        plot.set_markeredgecolor(couleur)
-                        plot.set_markeredgewidth(epaisseur)
-                        plot.set_visible(True)
-                        xo, yo = self.__canvas__.pix2coo(xc, yc)
-                        plot.set_data([xo], [yo])
-                    else:
-                        u = taille*param.zoom_ligne*(xc - x0)/r, taille*(yc- y0)/r
-                        if codage == "/":
-                            plot = self._representation[2]
-                            xa, ya = self.__canvas__.pix2coo(xc + u[0], yc + u[1])
-                            xb, yb = self.__canvas__.pix2coo(xc - u[0], yc - u[1])
-                            plot.set_data([xa, xb], [ya, yb])
-                            plot.set_visible(True)
-                        elif codage == "x":
-                            a = param.codage["angle"]
-                            plot1 = self._representation[2]
-                            plot2 = self._representation[3]
-                            u = numpy.array(u)
-                            G = numpy.array((xc, yc))
-                            C = G + u
-                            M = (numpy.dot([[math.sin(a), -math.cos(a)], [math.cos(a), math.sin(a)]],
-                                    numpy.transpose([C - G])) + numpy.transpose([G]))[:,0]
-                            N = (numpy.dot([[math.sin(a), math.cos(a)], [-math.cos(a), math.sin(a)]],
-                                    numpy.transpose([C - G])) + numpy.transpose([G]))[:,0]
-                            _x1, _y1 = zip(M, 2*G-M)
-                            plot1.set_data(*self.__canvas__.pix2coo(numpy.array(_x1), numpy.array(_y1)))
-                            plot1._visible = True
-                            _x2, _y2 = zip(N, 2*G-N)
-                            plot2.set_data(*self.__canvas__.pix2coo(numpy.array(_x2), numpy.array(_y2)))
-                            plot2.set_visible(True)
-
-
-
-        fill = self._representation[0]
-        fill.xy = zip(x, y) + [(xx, yy)]
-        fill.set(alpha = self.style("alpha"), facecolor = couleur,
-                 linestyle = ALL.FILL_STYLES.get(style, 'solid'), linewidth = epaisseur)
-        fill.zorder = niveau - 0.01
+        codage_angle.set(visible=bool(codage), linewidth=self.style('epaisseur'),
+                         linestyle = ALL.FILL_STYLES.get(style, 'solid'),
+                        )
 
 
 

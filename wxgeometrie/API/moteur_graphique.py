@@ -36,6 +36,7 @@ from math import cos, sin, atan2, pi, hypot
 from pylib import fullrange
 
 
+
 class LigneDecoree(LineCollection):
     taille = NotImplemented
 
@@ -46,12 +47,14 @@ class LigneDecoree(LineCollection):
             self.set(**kw)
 
     def set(self, **kw):
+        maj = kw.pop('maj', True)
         for nom in self._parametres:
             if kw.has_key(nom):
                 setattr(self, nom, kw.pop(nom))
         if kw:
             LineCollection.set(self, **kw)
-        self._maj_data()
+        if maj:
+            self._maj_data()
 
 
 
@@ -123,29 +126,27 @@ class Fleche(FlecheGenerique):
 
 
 class FlecheCourbe(FlecheGenerique):
-    _parametres = ('taille', 'double', 'position', 'angle', 'intervalle',
-                   'centre', 'rayon', 'sens')
+    u"""Une flêche (éventuellement double) en forme d'arc de cercle.
+
+    En plus des styles de matplotlib.collections.LineCollection,
+    les styles suivants sont définis:
+    - taille: la longueur de la pointe (en pixels) ;
+    - double: flêche double ou non ;
+    - position: position (entre 0 et 1) de la pointe sur la flêche.
+      ex: 1 pour l'extrémité finale, 0.5 pour le milieu, 0 pour le début.
+    - angle: l'ouverture de la pointe (en degrés) ;
+    - intervalle: angle de début et de fin de l'arc (radians) ;
+    - centre: centre du cercle contenant l'arc ;
+    - rayon: rayon du cercle contenant l'arc ;
+    - sens: orientation de l'arc (1 ou -1).
+    """
+
     intervalle = (0, pi)
     centre = (0, 0)
     sens = 1
     rayon = 1
-
-    def __init__(self, canvas, **kw):
-        u"""Une flêche (éventuellement double) en forme d'arc de cercle.
-
-        En plus des styles de matplotlib.collections.LineCollection,
-        les styles suivants sont définis:
-        - taille: la longueur de la pointe (en pixels) ;
-        - double: flêche double ou non ;
-        - position: position (entre 0 et 1) de la pointe sur la flêche.
-          ex: 1 pour l'extrémité finale, 0.5 pour le milieu, 0 pour le début.
-        - angle: l'ouverture de la pointe (en degrés) ;
-        - intervalle: angle de début et de fin de l'arc (radians) ;
-        - centre: centre du cercle contenant l'arc ;
-        - rayon: rayon du cercle contenant l'arc ;
-        - sens: orientation de l'arc (1 ou -1).
-        """
-        FlecheGenerique.__init__(self, canvas, **kw)
+    _parametres = ('taille', 'double', 'position', 'angle', 'intervalle',
+                   'centre', 'rayon', 'sens')
 
     def _maj_data(self):
         x, y = self.centre
@@ -200,14 +201,20 @@ class Codage(LigneDecoree):
     _parametres = ('style', 'taille', 'position', 'direction', 'angle')
 
     def set(self, **kw):
+        pixel = kw.pop('pixel', False)
         if 'position' in kw:
-            self.position = self.canvas.coo2pix(*kw.pop('position'))
+            pos = kw.pop('position')
+            self.position = (pos if pixel else self.canvas.coo2pix(*pos))
         if 'direction' in kw:
-            self.direction = self.canvas.dcoo2pix(*kw.pop('direction'))
+            dir = kw.pop('direction')
+            self.direction = (dir if pixel else self.canvas.dcoo2pix(*dir))
             self.hyp = hypot(*self.direction)
         LigneDecoree.set(self, **kw)
 
     def _maj_data(self):
+        self.set_segments(self._codage())
+
+    def _codage(self):
         lignes = []
         style = self.style
 
@@ -221,19 +228,22 @@ class Codage(LigneDecoree):
                     lignes.append(zip(*self.canvas.pix2coo(x + r*ncos(t), y + r*nsin(t))))
             elif style.count('/') == len(style):
                 lignes.extend(self._oblique(self.position, self.direction, n=len(style)))
+            elif style.count('|') == len(style):
+                lignes.extend(self._oblique(self.position, self.direction, n=len(style), angle=pi/2))
+            elif style.count('\\') == len(style):
+                lignes.extend(self._oblique(self.position, self.direction, n=len(style), sens=-1))
             elif style in ('x', 'X'):
                 lignes.extend(self._oblique(self.position, self.direction))
                 lignes.extend(self._oblique(self.position, self.direction, sens=-1))
+        return lignes
 
-        self.set_segments(lignes)
-
-    def _oblique(self, xy, dxdy, n=1, sens=1):
+    def _oblique(self, xy, dxdy, n=1, sens=1, angle=None):
         u'''Retourne les coordonnées de n barres obliques, à la position xy.
 
         dxdy définit l'orientation des barres.
         S'il y a plusieurs barres, elles seront espacées de 1 épaisseur de ligne.
         '''
-        a = sens*self.angle*pi/180 # degrés -> radians
+        a = (sens*self.angle*pi/180 if angle is None else angle)# degrés -> radians
         r = self.taille
         #                              + M
         #                           I /
@@ -266,6 +276,94 @@ class Codage(LigneDecoree):
 
 
 
+class Angle(Polygon):
+    _parametres = ('intervalle', 'style', 'taille', 'rayon', 'angle', 'position')
+
+    def __init__(self, canvas, **kw):
+        Polygon.__init__(self, ((0,0),))
+        self.canvas = canvas
+        if kw:
+            self.set(**kw)
+
+    def set(self, **kw):
+        maj = kw.pop('maj', True)
+        for nom in self._parametres:
+            if kw.has_key(nom):
+                setattr(self, nom, kw.pop(nom))
+        if kw:
+            Polygon.set(self, **kw)
+        if maj:
+            self._maj_data()
+
+    def _maj_data(self):
+        xy = [self.position]
+        x0, y0 = self.P = self.canvas.coo2pix(*self.position)
+        a, b = self.intervalle
+        t = fullrange(a, b, .3*(b - a)/self.taille)
+
+        if self.style == '^':
+            r = self.rayon
+            #    P     M       Angle droit au point P(x0, y0)
+            #    +-----+-------
+            #    |     |
+            #    |     |
+            #  N +-----+ I     On a donc PM-> + PN-> = PI->
+            #    |             D'où "I = M + N - P"
+            #    |
+            M = x0 + .5*r*cos(a), y0 + .5*r*sin(a)
+            N = x0 + .5*r*cos(b), y0 + .5*r*sin(b)
+            I = M[0] + N[0] - x0, M[1] + N[1] - y0
+            # Pixels -> coordonnées
+            xy.append(self.canvas.pix2coo(*M))
+            xy.append(self.canvas.pix2coo(*I))
+            xy.append(self.canvas.pix2coo(*N))
+        else:
+            # cost et sint sont mis en cache pour être réutilisés par CodageAngle()
+            cost = self.cost = ncos(t)
+            sint = self.sint = nsin(t)
+            xy.extend(self.arc_angle(i=max(0, self.style.count(')') - 1)))
+        self.xy = xy
+
+    def arc_angle(self, i=0):
+        r = self.rayon
+        x0, y0 = self.P
+        return zip(*self.canvas.pix2coo(x0 + (r - 3*i)*self.cost, y0 + (r - 3*i)*self.sint))
+
+
+
+class CodageAngle(Codage):
+    u'''Objet graphique servant à coder des angles de même mesure.
+
+    L'objet CodageAngle doit être associé à un objet graphique Angle préexistant.
+    Il en partage les propriétés.
+    '''
+    def __init__(self, canvas, angle_associe, **kw):
+        self.angle_associe = angle_associe
+        Codage.__init__(self, canvas, **kw)
+
+    def _maj_data(self):
+        lignes = [self.angle_associe.xy[1:]]
+        a, b = self.angle_associe.intervalle
+        r = self.angle_associe.rayon
+        x0, y0 = self.angle_associe.P # pixels
+        c = .5*(a + b)
+        self.set(direction=(.5*r*(cos(b) - cos(a)), .5*r*(sin(b) - sin(a))),
+                 position=(x0 + r*cos(c), y0 + r*sin(c)),
+                 taille=.8*self.angle_associe.taille,
+                 angle=self.angle_associe.angle,
+                 style=self.angle_associe.style.replace('/', '|'), # patch temporaire
+                 maj=False,
+                 pixel=True,
+                 )
+        n = self.style.count(')')
+        if n > 1:
+            for i in xrange(0, n - 1):
+                lignes.append(self.angle_associe.arc_angle(i=i))
+        lignes.extend(self._codage())
+        self.set_segments(lignes)
+
+
+
 class ZoomArtistes(object):
     def __init__(self, axes, zoom_texte, zoom_ligne):
         self.zoom_texte = zoom_texte
@@ -275,7 +373,8 @@ class ZoomArtistes(object):
         self.markersize = {}
         self.markeredgewidth = {}
         self.taille = {}
-        self.artistes = list(itertools.chain(axes.artists, axes.lines, axes.patches, axes.texts, axes.tables, axes.collections))
+        self.rayon = {}
+        self.artistes = list(itertools.chain(axes.artists, axes.patches, axes.lines, axes.texts, axes.tables, axes.collections))
 
     def __enter__(self):
         self.regler_textes = abs(self.zoom_texte - 1) > 0.05
@@ -299,7 +398,14 @@ class ZoomArtistes(object):
                         elif isinstance(artiste, LineCollection):
                             lws = self.linewidth[ID] = artiste.get_linewidth()
                             artiste.set_linewidth(tuple(lw*self.zoom_ligne for lw in lws))
-                            if isinstance(artiste, LigneDecoree):
+                            if isinstance(artiste, CodageAngle):
+                                angle = artiste.angle_associe
+                                taille = self.taille[ID] = angle.taille
+                                rayon = self.rayon[ID] = angle.rayon
+                                angle.set(taille=self.zoom_ligne*taille,
+                                        rayon=self.zoom_ligne*rayon)
+                                artiste._maj_data()
+                            elif isinstance(artiste, LigneDecoree):
                                 taille = self.taille[ID] = artiste.taille
                                 artiste.set(taille=self.zoom_ligne*taille)
         return self.artistes
@@ -319,7 +425,12 @@ class ZoomArtistes(object):
                             artiste.set_markeredgewidth(self.markeredgewidth[ID])
                         elif isinstance(artiste, LineCollection):
                             artiste.set_linewidth(self.linewidth[ID])
-                            if isinstance(artiste, LigneDecoree):
+                            if isinstance(artiste, CodageAngle):
+                                angle = artiste.angle_associe
+                                angle.set(taille=self.taille[ID],
+                                        rayon=self.rayon[ID])
+                                artiste._maj_data()
+                            elif isinstance(artiste, LigneDecoree):
                                 artiste.set(taille=self.taille[ID])
 
 
@@ -558,6 +669,18 @@ class Moteur_graphique(object):
 
     def ajouter_cercle(self, xy=(0, 0), r=1, **kw):
         self._ajouter_objet(self.cercle(xy, r, **kw))
+
+    def angle(self, **kw):
+        return Angle(canvas=self.canvas, **kw)
+
+    def ajouter_angle(self, **kw):
+        self._ajouter_objet(self.angle(**kw))
+
+    def codage_angle(self, **kw):
+        return CodageAngle(canvas=self.canvas, **kw)
+
+    def ajouter_codage_angle(self, **kw):
+        self._ajouter_objet(self.codage_angle(**kw))
 
 
 

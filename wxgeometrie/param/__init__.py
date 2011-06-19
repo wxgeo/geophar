@@ -327,7 +327,7 @@ styles_de_textes = ["normal", "italic", "oblique"]
 styles_de_angles = ['-', '--', '-.', ':', 'steps', 'None']
 familles_de_textes = ["sans-serif", "serif", "cursive", "fantasy", "monospace"]
 codage_des_lignes = ['', '/', '//', '///', 'x', 'o']
-codage_des_angles = ['', '^', ')', '))', ')))', '/', 'x', 'o']
+codage_des_angles = ['', '^', ')', '))', ')))', '|', '||', 'x', 'o']
 
 # Enumère les styles 'variables' :
 # - soit parce qu'ils ont des significations assez différentes selon les objets

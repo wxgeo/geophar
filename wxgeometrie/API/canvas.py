@@ -215,6 +215,12 @@ class Canvas(FigureCanvasAgg):
     def codage(self, **kw):
         return self.graph.codage(**kw)
 
+    def angle(self, **kw):
+        return self.graph.angle(**kw)
+
+    def codage_angle(self, **kw):
+        return self.graph.codage_angle(**kw)
+
     def dessiner(self, objet):
         self.graph.ajouter(objet)
 
