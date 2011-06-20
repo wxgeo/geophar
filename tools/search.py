@@ -109,13 +109,13 @@ def gs(chaine = '', case = True, exclude_comments = True, extensions = (".py", "
     return u"%s occurence(s) trouvée(s)." %occurences
 
 
-def gr(chaine, chaine_bis, exceptions = (), extensions = (".py", ".pyw")):
+def gr(chaine, chaine_bis, exceptions = (), extensions = (".py", ".pyw"), fake=False):
     u"""Remplace 'chaine' par 'chaine_bis' dans tous les fichiers dont l'extension (.txt, .bat, ...)
     est comprise dans 'extensions', et n'est pas comprise dans 'exceptions'.
     """
     y = yes = True
     n = no = False
-    txt_exceptions = exceptions and "but " + ", ".join(exceptions) + " " or ""
+    txt_exceptions = ("but " + ", ".join(exceptions) + " " if exceptions else "")
     b = input("Warning: Replace string '%s' by string '%s' in ALL files %s[y/n] ?" %(chaine, chaine_bis, txt_exceptions))
     if b is not True:
         return "Nothing done."
@@ -129,10 +129,12 @@ def gr(chaine, chaine_bis, exceptions = (), extensions = (".py", ".pyw")):
         fichier = open(f, "r")
         s = fichier.read()
         fichier.close()
-        fichier = open(f, "w")
-        occurences += s.count(chaine)
-        s = fichier.write(s.replace(chaine, chaine_bis))
-        fichier.close()
+        k = s.count(chaine)
+        occurences += k
+        if k and not fake:
+            fichier = open(f, "w")
+            s = fichier.write(s.replace(chaine, chaine_bis))
+            fichier.close()
     return u"%s remplacement(s) effectué(s)." %occurences
 
 
