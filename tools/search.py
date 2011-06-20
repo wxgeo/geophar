@@ -28,7 +28,7 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 import os
 import sys
 
-def gs(chaine = '', case = True, exclude_comments = True, extensions = (".py", ".pyw"), exclude_prefixe = ("tmp_", "Copie"), exclude_suffixe = ("_OLD", "(copie)"), exclude_dir = ('sympy', 'tools', 'BAZAR', 'OLD'), maximum = 100, codec="latin1", statistiques = False):
+def gs(chaine = '', case = True, exclude_comments = True, extensions = (".py", ".pyw"), exclude_prefixe = ("tmp_", "Copie"), exclude_suffixe = ("_OLD", "(copie)"), exclude_dir = ('sympy', 'tools', 'BAZAR', 'OLD'), maximum = 100, codec="latin1", statistiques = False, replace=None):
     u"""Parcourt le répertoire courant et les sous-répertoire, à la recherche des fichiers dont l'extension
     est comprise dans 'extensions', mais passe les répertoires et les fichiers dont le nom commence par un préfixe
     de 'exclude_prefixe', ou finit par un suffixe de 'exclude_suffixe'.
@@ -41,6 +41,8 @@ def gs(chaine = '', case = True, exclude_comments = True, extensions = (".py", "
         statistiques = True
     if not case:
         chaine = chaine.lower()
+    if replace is not None:
+        assert case
     repertoires = os.walk(os.getcwd())
     fichiers = []
     for root, dirs, files in repertoires:
@@ -73,45 +75,55 @@ def gs(chaine = '', case = True, exclude_comments = True, extensions = (".py", "
     occurences = 0
     for f in fichiers:
         F += 1
-        fichier = open(f, "r")
-        # n° de la ligne analysée à l'intérieur du fichier
-        n = 0
-        for s in fichier:
-            n += 1
-            if statistiques:
-                s = s.strip()
-                if s:
-                    if s[0] != '#':
-                        N += 1
-                    elif s.strip('#'):
-                        C += 1
+        with open(f, "r") as fichier:
+            lignes = []
+            found = False
+            for n, s in enumerate(fichier):
+                if statistiques:
+                    s = s.strip()
+                    if s:
+                        if s[0] != '#':
+                            N += 1
+                        elif s.strip('#'):
+                            C += 1
+                        else:
+                            B += 1
                     else:
                         B += 1
-                else:
-                    B += 1
-                continue
-            if (exclude_comments and s.lstrip().startswith("#")):
-                continue
-            if not case:
-                s = s.lower()
-            if s.find(chaine) != -1:
-                occurences += 1
-                print u"in %s " %f
-                print u"line " + unicode(n) + ":   " + s.decode(codec)
-                n_lignes += 1
-                if n_lignes > maximum:
-                    print "Maximum output exceeded...!"
-                    return False
-        fichier.close()
+                    continue
+                if (exclude_comments and s.lstrip().startswith("#")):
+                    continue
+                if not case:
+                    s = s.lower()
+                if s.find(chaine) != -1:
+                    found = True
+                    occurences += 1
+                    if replace is not None:
+                        lignes.append(s.replace(chaine, replace))
+                    print u"in %s " %f
+                    print u"line " + unicode(n + 1) + ":   " + s.decode(codec)
+                    n_lignes += 1
+                    if replace is None and (n_lignes > maximum):
+                        print "Maximum output exceeded...!"
+                        return False
+                elif replace is not None:
+                    lignes.append(s)
+        if replace is not None and found:
+            with open(f, 'w') as fichier:
+                for i, l in enumerate(lignes):
+                    f.write('\n' + l if i else l)
+
     if statistiques:
         # C - 20*F : on décompte les préambules de tous les fichiers
         return str(N) + " lignes de code\n" + str(C) + " lignes de commentaires (" + str(C - 20*F) + " hors licence)\n" + str(B) + " lignes vides\n" + str(F) + " fichiers"
     return u"%s occurence(s) trouvée(s)." %occurences
 
 
-def gr(chaine, chaine_bis, exceptions = (), extensions = (".py", ".pyw"), fake=False):
+def gr(chaine, chaine_bis, exceptions = (), extensions = (".py", ".pyw"), fake=True):
     u"""Remplace 'chaine' par 'chaine_bis' dans tous les fichiers dont l'extension (.txt, .bat, ...)
     est comprise dans 'extensions', et n'est pas comprise dans 'exceptions'.
+
+    Deprecated. Use gs() instead.
     """
     y = yes = True
     n = no = False
