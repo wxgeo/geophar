@@ -701,8 +701,8 @@ class Sommet_rectangle(Point_generique):
             # vecteur normal à A>B (sens direct)
             zn = zAB*1j
             if issympy(zAB):
-                p = ((z - zB)*zn.conjugate()).as_real_imag()[1]
-                self.__rapport = p/((zAB*zAB.conjugate()).as_real_imag()[1])
+                p = ((z - zB)*zn.conjugate()).expand(complex=True).as_real_imag()[1]
+                self.__rapport = p/((zAB*zAB.conjugate()).expand(complex=True).as_real_imag()[1])
             else:
                 # produit scalaire
                 p = ((z - zB)*zn.conjugate()).real
@@ -934,7 +934,7 @@ class Sommet_triangle_isocele(Point_generique):
         zB = self.__point2.z
         if contexte['exact'] and issympy(a, zA, zB):
             zC = (zB - zA)*sympy.exp(1j*a) + zA
-            return zC.as_real_imag()
+            return zC.expand(complex=True).as_real_imag()
         else:
             zC = (zB - zA)*cmath.exp(1j*a) + zA
             return zC.real, zC.imag
@@ -997,7 +997,7 @@ class Sommet_triangle_rectangle(Point_generique):
         zI = (zA + zB)/2
         if contexte['exact'] and issympy(a, zI):
             zC = (zB - zI)*sympy.exp(sympy.I*2*a) + zI
-            return zC.as_real_imag()
+            return zC.expand(complex=True).as_real_imag()
         else:
             zC = (zB - zI)*cmath.exp(1j*2*a) + zI
             return zC.real, zC.imag

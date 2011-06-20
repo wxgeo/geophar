@@ -35,7 +35,7 @@ def assert_factor(poly, *args, **kw):
     assert(TEST2)
 
 def test__factor():
-    from sympy import sqrt, sin, cos
+    from sympy import sqrt, sin, cos, S
     from sympy import pi
     from sympy import E as e
     from sympy import I as i
@@ -44,5 +44,5 @@ def test__factor():
     assert_factor(2*x**2 - 2, 2, x-1, x+1)
     assert_factor(1 + 2*x + 2*x**2 + x**3, x+1, x**2+x+1)
     assert_factor(2*x, 2, x)
-    assert_factor(x**2-i, x+sqrt(2)/2+i*sqrt(2)/2, x-sqrt(2)/2-i*sqrt(2)/2)
-
+    # assert_factor(x**2-i, x+sqrt(2)/2+i*sqrt(2)/2, x-sqrt(2)/2-i*sqrt(2)/2)
+    assert_factor(x**2-i, x + (-1)**(S(1)/4), x - (-1)**(S(1)/4))

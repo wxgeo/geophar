@@ -477,7 +477,7 @@ class Point_reflexion(Point_generique):
         z = x1 - x0 + (y1 - y0)*1j
         M = (x - x0 + (y0 - y)*1j)*z/z.conjugate() + x0 + y0*1j
         if contexte['exact'] and issympy(M):
-            return M.as_real_imag()
+            return M.expand(complex=True).as_real_imag()
         return M.real, M.imag
 
 

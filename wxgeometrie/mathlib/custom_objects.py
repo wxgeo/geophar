@@ -191,6 +191,9 @@ class CustomStrPrinter(StrPrinter):
     def _print_Exp1(self, expr):
         return 'e'
 
+    def _print_Abs(self, expr):
+        return 'abs(%s)'%self._print(expr.args[0])
+
     def _print_ImaginaryUnit(self, expr):
         return 'i'
 
@@ -225,7 +228,6 @@ class CustomLatexPrinter(LatexPrinter):
         _profile = {
             "mat_str" : "pmatrix",
             "mat_delim" : "",
-            "descending": True,
             "mode": "inline",
         }
         if profile is not None:
@@ -241,6 +243,9 @@ class CustomLatexPrinter(LatexPrinter):
 
     def _print_Exp1(self, expr):
         return r"\mathrm{e}"
+
+    def _print_Abs(self, expr):
+        return r'\left|{%s}\right|'%self._print(expr.args[0])
 
     def _print_ImaginaryUnit(self, expr):
         return r"\mathrm{i}"
@@ -328,22 +333,6 @@ class CustomLatexPrinter(LatexPrinter):
             tex = r"\ln\left(%s\right)" % self._print(expr.args[0])
         return self._do_exponent(tex, exp)
 
-
-    def _print_Add(self, expr):
-        if self._settings["descending"]:
-            args = list(expr.args)
-            args.sort(sympy.Basic._compare_pretty, reverse = True)
-            tex = str(self._print(args[0]))
-            for term in args[1:]:
-                coeff = term.as_coeff_terms()[0]
-                if coeff.is_negative:
-                    tex += r" %s" % self._print(term)
-                else:
-                    tex += r" + %s" % self._print(term)
-            return tex
-
-        return LatexPrinter._print_Add(self, expr)
-
     def _print_function(self, expr):
         return r"\mathrm{Fonction}\, " + expr.func_name
 
@@ -398,22 +387,22 @@ class LocalDict(dict):
 
 
 class Interprete(object):
-    def __init__(self,  calcul_exact = True,
-                        ecriture_scientifique = False,
-                        forme_algebrique = True,
-                        simplifier_ecriture_resultat = True,
-                        changer_separateurs = False,
-                        separateurs_personnels = (",", ";"),
-                        copie_automatique = False,
-                        formatage_OOo = True,
-                        formatage_LaTeX = True,
-                        ecriture_scientifique_decimales = 2,
-                        precision_calcul = 60,
-                        precision_affichage = 18,
-                        simpify = True,
-                        verbose = None,
-                        appliquer_au_resultat = None,
-                        inversion_addition_LaTeX = False,
+    def __init__(self,  calcul_exact=True,
+                        ecriture_scientifique=False,
+                        forme_algebrique=True,
+                        simplifier_ecriture_resultat=True,
+                        changer_separateurs=False,
+                        separateurs_personnels=(",", ";"),
+                        copie_automatique=False,
+                        formatage_OOo=True,
+                        formatage_LaTeX=True,
+                        ecriture_scientifique_decimales=2,
+                        precision_calcul=60,
+                        precision_affichage=18,
+                        simpify=True,
+                        verbose=None,
+                        appliquer_au_resultat=None,
+                        adapter_separateur=False,
                         ):
         # Dictionnaire local (qui contiendra toutes les variables définies par l'utilisateur).
         self.locals = LocalDict()
@@ -474,8 +463,7 @@ class Interprete(object):
         self.simpify = simpify
         # une fonction à appliquer à tous les résultats
         self.appliquer_au_resultat = appliquer_au_resultat
-        # inverser l'ordre d'affichage des termes d'une somme
-        self.inversion_addition_LaTeX = inversion_addition_LaTeX
+        self.adapter_separateur = adapter_separateur
         self.latex_dernier_resultat = ''
         self.initialiser()
 
@@ -539,7 +527,9 @@ class Interprete(object):
             param.calcul_approche = not self.calcul_exact
             # utilisé en particulier dans la factorisation des polynômes
             self._executer(calcul)
-        except Exception:
+        except Exception as err:
+            if not self.adapter_separateur:
+                raise
             # Si le calcul échoue, c'est peut-être que l'utilisateur a utilisé une virgule pour les décimaux
             sep = self.separateurs_personnels[0]
             _raise = True
@@ -550,10 +540,13 @@ class Interprete(object):
                     self._executer(calcul)
                     self.warning += u" Attention: séparateur décimal incorrect."
                     _raise = False
+                except Exception:
+                    # C'est l'erreur **initiale** qui nous intéresse, pas celle-ci !
+                    pass
                 finally:
                     self.changer_separateurs = False
             if _raise:
-                raise
+                raise err # Erreur initiale (c-à-d. avant de changer les séparateurs).
         finally:
             param.calcul_approche = False
 
@@ -602,9 +595,8 @@ class Interprete(object):
         if valeur is None:
             latex = ""
         else:
-            profile = {'descending': self.inversion_addition_LaTeX}
             try:
-                latex = mathlib.custom_functions.custom_latex(valeur, profile)
+                latex = mathlib.custom_functions.custom_latex(valeur)
             except Exception:
                 pylib.print_error()
                 latex = ''
@@ -725,8 +717,7 @@ class Interprete(object):
             self.locals["_"] = "?"
         if self.forme_algebrique and isinstance(self.locals["_"], sympy.Basic) and hasattr(self.locals["_"], "is_number") and self.locals["_"].is_number:
             try:
-                real, imag = self.locals["_"].as_real_imag()
-                self.locals["_"] = real + sympy.I*imag
+                self.locals["_"] = self.locals["_"].expand(complex=True)
             except NotImplementedError:
                 pylib.print_error()
         if self.appliquer_au_resultat is not None:

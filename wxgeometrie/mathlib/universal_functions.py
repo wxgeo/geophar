@@ -117,7 +117,7 @@ _sympy.log10 = lambda x: _sympy.log(x, 10)
 
 _cmath.floor = _math.floor # afin de renvoyer une erreur si floor est appelé avec un complexe
 
-_math.abs = _cmath.abs = abs
+_math.abs = _cmath.abs = _sympy.abs = abs
 
 # Le code suivant est généré automatiquement (voir plus haut)
 

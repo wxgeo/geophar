@@ -55,9 +55,9 @@ class CalculatriceMenuBar(MenuBar):
         self.ajouter(u"Outils",
                         [u"Mémoriser le résultat", u"Copie le resultat du calcul dans le presse-papier, afin de pouvoir l'utiliser ailleurs.", "Ctrl+M", self.panel.vers_presse_papier],
                         [u"Réinitialiser", u"Réinitialiser la calculatrice.", "Ctrl+I", self.panel.initialiser],
-                        [u"LaTeX",
-                            [u"Inverser les sommes", "Inverser l'ordre d'affichage des termes des sommes.", None, self.panel.inverser_sommes_LaTeX, self.panel.inverser_sommes_LaTeX]
-                            ],
+#                        [u"LaTeX",
+#                            [u"Inverser les sommes", "Inverser l'ordre d'affichage des termes des sommes.", None, self.panel.inverser_sommes_LaTeX, self.panel.inverser_sommes_LaTeX]
+#                            ],
                         [u"options"],
                         )
         self.ajouter(u"Avancé",
@@ -119,7 +119,6 @@ class Calculatrice(Panel_simple):
                                 ecriture_scientifique_decimales = self.param("ecriture_scientifique_decimales"),
                                 precision_calcul = self.param("precision_calcul"),
                                 precision_affichage = self.param("precision_affichage"),
-                                inversion_addition_LaTeX = self.param("inversion_addition_LaTeX"),
                                 simpify = True,
                                 )
 
@@ -509,11 +508,6 @@ class Calculatrice(Panel_simple):
 
     def EvtCopieAutomatiqueLatex(self, event = None):
         self.param("copie_automatique_LaTeX", self.cb_copie_automatique_LaTeX.GetValue())
-
-    def inverser_sommes_LaTeX(self, event = None):
-        if event is not None:
-            return self.param("inversion_addition_LaTeX", not self.param("inversion_addition_LaTeX"))
-        return self.param("inversion_addition_LaTeX")
 
     def EtatInterne(self, event):
         contenu = self.interprete.save_state()

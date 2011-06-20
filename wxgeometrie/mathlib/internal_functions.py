@@ -31,6 +31,7 @@ import math
 import cmath
 import pylab
 import sympy
+from sympy import Mul
 from pylib import *
 import sympy_functions
 import universal_functions
@@ -378,7 +379,7 @@ def poly_factor(polynome, variable, corps = None, approchee = None):
             if not reel:
                 # is_real n'est pas fiable (26/11/2009)
                 # cf. ((54*6**(1/3)*93**(1/2) - 162*I*6**(1/3)*31**(1/2) - 522*6**(1/3) + 6*6**(2/3)*(-522 + 54*93**(1/2))**(1/3) + 522*I*3**(1/2)*6**(1/3) + 6*I*3**(1/2)*6**(2/3)*(-522 + 54*93**(1/2))**(1/3) - 24*(-522 + 54*93**(1/2))**(2/3))/(36*(-522 + 54*93**(1/2))**(2/3))).is_real
-                re, im = racine.as_real_imag()
+                re, im = racine.expand(complex=True).as_real_imag()
                 reel = im.is_zero or im.evalf(80).epsilon_eq(0,'10e-80')
                 if reel:
                     racine = re
@@ -410,7 +411,11 @@ def poly_factor(polynome, variable, corps = None, approchee = None):
     quotient, reste = sympy.div(polynome, coefficient*produit, variable)
     if reste != 0 and not approchee:
         raise NotImplementedError
-    return coefficient*produit*quotient
+    poly_factorise = coefficient*produit*quotient
+    if isinstance(poly_factorise, Mul) and poly_factorise.args[0] == 1.:
+        poly_factorise = Mul(*poly_factorise.args[1:])
+        # sinon, poly_factor(x**2+2.5*x+1,x) donne 1.0*(x + 0.5)*(x + 2.0)
+    return poly_factorise
 
 def syms(expression):
     u"""Retourne la liste des symboles utilisés par l'expression."""
@@ -431,7 +436,7 @@ def extract_var(expression):
 
 def count_syms(expression, symbole):
     u"""Compte le nombre d'occurence de la variable dans l'expression."""
-    if expression.has_any_symbols(symbole):
+    if expression.has(symbole):
         if expression.is_Atom:
             return 1
         else:

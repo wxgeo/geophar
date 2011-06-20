@@ -17,4 +17,3 @@ precision_affichage = 18
 forme_affichage_complexe = ("algebrique", "exponentielle")[0]
 # Fonction à appliquer à tout résultat avant de le renvoyer :
 appliquer_au_resultat = None
-inversion_addition_LaTeX = False

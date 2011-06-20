@@ -182,7 +182,7 @@ def _Pow2list(expression):
     if puissance.is_integer:
         return int(puissance)*[base]
     elif base == sympy.E:
-        coeff = puissance.as_coeff_terms()[0]
+        coeff = puissance.as_coeff_mul()[0]
         if coeff.is_integer:
             return int(abs(coeff))*[base**(puissance/abs(coeff))]
     return [expression]
@@ -306,7 +306,7 @@ def _is_neg(expr):
     return getattr(expr, "is_negative", float(expr) < 0)
 
 def _is_var(expression, variable):
-    return hasattr(expression, "has_any_symbols") and expression.has_any_symbols(variable)
+    return hasattr(expression, "has_any_symbols") and expression.has(variable)
 
 def positif(expression, variable = None, strict = False):
     u"""Retourne l'ensemble sur lequel une expression à variable réelle est positive (resp. strictement positive)."""
@@ -461,9 +461,9 @@ def positif(expression, variable = None, strict = False):
 ##        print "Resultat 1er passage:", expression
         # Deuxième passage : ln(X1)+ln(X2)+b>0 <=> X1*X2-exp(-b)>0
         for arg in args:
-            if isinstance(arg, sympy.ln) and hasattr(arg, "has_any_symbols") and arg.has_any_symbols(variable):
+            if isinstance(arg, sympy.ln) and hasattr(arg, "has_any_symbols") and arg.has(variable):
                 liste_ln.append(arg)
-            elif not hasattr(arg, "has_any_symbols") or not arg.has_any_symbols(variable):
+            elif not hasattr(arg, "has_any_symbols") or not arg.has(variable):
                 liste_constantes.append(arg)
 
         if liste_ln and len(liste_ln) + len(liste_constantes) == len(args):
@@ -485,7 +485,7 @@ def positif(expression, variable = None, strict = False):
             a = match[a_]
             b = match[b_]
             X = match[X_]
-            if  a != 0 and not a.has_any_symbols(variable) and not b.has_any_symbols(variable):
+            if  a != 0 and not a.has(variable) and not b.has(variable):
                 if _is_pos(b):
                     if _is_pos(a):
                         return ens_def

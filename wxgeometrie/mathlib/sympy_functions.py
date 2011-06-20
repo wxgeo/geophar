@@ -95,7 +95,8 @@ def factor(expression, variable = None, ensemble = None, decomposer_entiers = Tr
         if resultat.is_Mul:
             produit = 1
             for facteur in resultat.args:
-                produit *= factor(facteur, variable, ensemble, decomposer_entiers)
+                if facteur != 1:
+                    produit *= factor(facteur, variable, ensemble, decomposer_entiers)
             return produit
         return resultat
 
@@ -166,17 +167,17 @@ def sum(expression, *args):
                                and isinstance(args[1], sympy.Basic) \
                                and not isinstance(args[2], sympy.Symbol) \
                                and isinstance(args[2], sympy.Basic):
-        return sympy.sum(expression, (args[0], args[1], args[2]))
+        args = (args[0], args[1], args[2])
     elif len(args) == 2 and len(internal_functions.syms(expression)) <= 1 \
                                and not isinstance(args[0], sympy.Symbol) \
                                and isinstance(args[0], sympy.Basic) \
                                and not isinstance(args[1], sympy.Symbol) \
                                and isinstance(args[1], sympy.Basic):
         if internal_functions.syms(expression):
-            return sympy.sum(expression, (internal_functions.syms(expression)[0], args[0], args[1]))
+            args = (internal_functions.syms(expression)[0], args[0], args[1])
         else:
-            return sympy.sum(expression, (sympy.Symbol("x"), args[0], args[1]))
-    return sympy.sum(expression, *args)
+            args = (sympy.Symbol("x"), args[0], args[1])
+    return sympy.Sum(expression, args).doit()
 
 def product(expression, *args):
     if len(args) == 3 and isinstance(args[0], sympy.Symbol) \

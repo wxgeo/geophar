@@ -54,9 +54,8 @@ def test_positif():
 @XFAIL
 def test_positif2():
     x = sympy.Symbol("x")
-    assert_positif(x -1 + exp(x), "[0;+oo[")
+    assert_positif(x - 1 + exp(x), "[0;+oo[")
 
 def test_ensemble_definition():
     x = sympy.Symbol("x")
     assert_ens_def((2 - x)/(6 - 5*x + x**2), ']-oo;2[U]2;3[U]3;+oo[')
-

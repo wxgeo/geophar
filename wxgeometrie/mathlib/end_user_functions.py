@@ -42,7 +42,7 @@ __classement__ = OrderedDict((
 del OrderedDict
 
 from universal_functions import *
-from sympy import LambertW, gamma
+from sympy import LambertW, gamma, Sum, Integral
 
 # Alias
 arcsin = asin
