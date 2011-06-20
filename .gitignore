@@ -22,6 +22,9 @@ tmp/
 temp/
 tools/OLD
 
+# Conflits Dropbox
+*conflicted\ copy*
+
 # Paramètres personnels
 session/
 log/
