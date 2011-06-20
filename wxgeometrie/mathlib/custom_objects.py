@@ -211,8 +211,8 @@ class CustomStrPrinter(StrPrinter):
             return '%s^%s'%(self.parenthesize(expr.base, PREC),
                              self.parenthesize(expr.exp, PREC))
 
-    def _print_Real(self, expr):
-        string = StrPrinter._print_Real(self, expr)
+    def _print_Float(self, expr):
+        string = StrPrinter._print_Float(self, expr)
         return string.replace('e+', '*10^').replace('e-', '*10^-')
 
     def doprint(self, expr):
@@ -272,7 +272,7 @@ class CustomLatexPrinter(LatexPrinter):
             return "^" + str(exposant)
         return "\\times ".join((str(entier) + formater(exposant)) for entier, exposant in expr.couples)
 
-    def _print_Real(self, expr):
+    def _print_Float(self, expr):
         s = str(expr)
         if "e" in s:
             nombre,  exposant = s.split("e")
@@ -482,7 +482,7 @@ class Interprete(object):
     def _decimal(self, nbr, prec = None):
         if prec is None:
             prec = self.precision_calcul
-        return sympy.Real(nbr, prec)
+        return sympy.Float(nbr, prec)
 
     def initialiser(self):
         self.locals.clear()
@@ -585,7 +585,7 @@ class Interprete(object):
 
     def _formater_decimaux(self, chaine):
         if "." in chaine:
-            chaine = str(sympy.Real(str(chaine), self.precision_calcul).evalf(self.precision_affichage))
+            chaine = str(sympy.Float(str(chaine), self.precision_calcul).evalf(self.precision_affichage))
             chaine = chaine.rstrip('0')
             if chaine.endswith("."):
                 chaine = chaine[:-1]

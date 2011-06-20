@@ -319,7 +319,7 @@ def _simplify(expr):
 
 
 def _is_num(val):
-    return isinstance(val,  (float, sympy.Real))
+    return isinstance(val, (float, sympy.Float))
 
 def poly_factor(polynome, variable, corps = None, approchee = None):
     u"""Factorise un polynome à une variable.
