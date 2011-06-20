@@ -79,6 +79,8 @@ def gs(chaine = '', case = True, exclude_comments = True, extensions = (".py", "
             lignes = []
             found = False
             for n, s in enumerate(fichier):
+                if replace is not None:
+                    lignes.append(s)
                 if statistiques:
                     s = s.strip()
                     if s:
@@ -99,24 +101,25 @@ def gs(chaine = '', case = True, exclude_comments = True, extensions = (".py", "
                     found = True
                     occurences += 1
                     if replace is not None:
-                        lignes.append(s.replace(chaine, replace))
+                        lignes[-1] = s.replace(chaine, replace)
                     print u"in %s " %f
                     print u"line " + unicode(n + 1) + ":   " + s.decode(codec)
                     n_lignes += 1
-                    if replace is None and (n_lignes > maximum):
+                    if n_lignes > maximum:
                         print "Maximum output exceeded...!"
                         return False
-                elif replace is not None:
-                    lignes.append(s)
         if replace is not None and found:
             with open(f, 'w') as fichier:
-                for i, l in enumerate(lignes):
-                    f.write('\n' + l if i else l)
+                for l in lignes:
+                    fichier.write(l)
 
     if statistiques:
         # C - 20*F : on décompte les préambules de tous les fichiers
         return str(N) + " lignes de code\n" + str(C) + " lignes de commentaires (" + str(C - 20*F) + " hors licence)\n" + str(B) + " lignes vides\n" + str(F) + " fichiers"
-    return u"%s occurence(s) trouvée(s)." %occurences
+    if replace is None:
+        return u"%s occurence(s) trouvée(s)." %occurences
+    else:
+        return u"%s occurence(s) de %s remplacée(s) par %s." %(occurences, repr(chaine), repr(replace))
 
 
 def gr(chaine, chaine_bis, exceptions = (), extensions = (".py", ".pyw"), fake=True):
