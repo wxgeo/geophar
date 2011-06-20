@@ -158,8 +158,8 @@ from sympy import ff
 arrangements = nAr = nA = ff
 __classement__[u"Arithmétique"].append((u"Arrangements", "nAr", u"Nombre d'arrangements."))
 
-from sympy import Binomial
-combinaisons = binome = nCr = nC = binomial = Binomial
+from sympy import binomial
+combinaisons = binome = nCr = nC = Binomial = binomial
 __classement__[u"Arithmétique"].append((u"Combinaisons", "nCr", u"Nombre de combinaisons."))
 
 from sympy_functions import limit
