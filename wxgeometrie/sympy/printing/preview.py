@@ -24,7 +24,7 @@ def preview(expr, output='png', viewer=None, euler=True):
        To use viewer auto-detection, lets say for 'png' output, issue::
 
            >> from sympy import *
-           >> x, y = symbols("xy")
+           >> x, y = symbols("x,y")
 
            >> preview(x + y, output='png')
 
@@ -111,7 +111,7 @@ def preview(expr, output='png', viewer=None, euler=True):
     tmp = tempfile.mktemp()
 
     tex = open(tmp + ".tex", "w")
-    tex.write(format % latex(expr, inline=True))
+    tex.write(format % latex(expr, mode='inline'))
     tex.close()
 
     cwd = os.getcwd()
