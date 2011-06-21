@@ -59,13 +59,13 @@ def test_polynomes():
 r"""\begin{center}
 \begin{tabular}{|c|ccccccccc|}
 \hline
-$x$                  & $-\infty$ &     & $14 - 6 \sqrt{7}$ &   & $2$ &     & $14 + 6 \sqrt{7}$ &   & $+\infty$ \\
+$x$                  & $-\infty$ &     & $-6 \sqrt{7} + 14$ &   & $2$ &     & $14 + 6 \sqrt{7}$ &   & $+\infty$ \\
 \hline
-$f(x)$               &           & $-$ &         0         & + &  0  & $-$ &         0         & + &           \\
+$f(x)$               &           & $-$ &         0          & + &  0  & $-$ &         0         & + &           \\
 \hline
 \end{tabular}
 \end{center}
-% x: -oo;+oo// x^3-30 x^2+112: -- 14 - 6*sqrt(7) ++ 2 -- 14 + 6*sqrt(7) ++ // f(x)
+% x: -oo;+oo// x^3-30 x^2+112: -- -6*sqrt(7) + 14 ++ 2 -- 14 + 6*sqrt(7) ++ // f(x)
 % f(x)=x^3-30x^2+112
 """
     assert_tabsign(s, tab)
@@ -75,13 +75,13 @@ $f(x)$               &           & $-$ &         0         & + &  0  & $-$ &    
 r'''\begin{center}
 \begin{tabular}{|c|ccccccc|}
 \hline
-$x$                    & $-\infty$ &     & $-1 - \frac{\sqrt{15}}{3}$ &   & $-1 + \frac{\sqrt{15}}{3}$ &     & $+\infty$ \\
+$x$                    & $-\infty$ &     & $-\frac{\sqrt{15}}{3} - 1$ &   & $-1 + \frac{\sqrt{15}}{3}$ &     & $+\infty$ \\
 \hline
 $- 6 x^{2} - 12 x + 4$ &           & $-$ &             0              & + &             0              & $-$ &           \\
 \hline
 \end{tabular}
 \end{center}
-% x: -oo;+oo// -6 x^(2)-12 x+4: -- -1 - sqrt(15)/3 ++ -1 + sqrt(15)/3 -- // - 6 x^{2} - 12 x + 4
+% x: -oo;+oo// -6 x^(2)-12 x+4: -- -sqrt(15)/3 - 1 ++ -1 + sqrt(15)/3 -- // - 6 x^{2} - 12 x + 4
 % - 6 x^{2} - 12 x + 4
 '''
     assert_tabsign(s, tab)
@@ -159,13 +159,13 @@ $x$      & $-\infty$ &   & $1$ &     & $+\infty$ \\
 \hline
 $-x+1$   &           & + &  0  & $-$ &           \\
 \hline
-$\e^{x}$ &     0     & + &     &  +  &           \\
+$\e^{x}$ &           & + &     &  +  &           \\
 \hline
-$g(x)$   &     ||    & + &  0  & $-$ &           \\
+$g(x)$   &           & + &  0  & $-$ &           \\
 \hline
 \end{tabular}
 \end{center}
-% x: -oo;+oo// -x+1: ++ 1 -- // !e^(x):-oo ++ // g(x)
+% x: -oo;+oo// -x+1: ++ 1 -- // e^(x): ++ // g(x)
 % g(x)=\dfrac{-x+1}{\e^{x}}
 '''
     assert_tabsign(s, tab)
@@ -274,13 +274,31 @@ $x$               & $-\infty$ &   & $1$ &     & $+\infty$ \\
 \hline
 $1-x$             &           & + &  0  & $-$ &           \\
 \hline
-$\e^{2 x}$        &     0     & + &     &  +  &           \\
+$\e^{2 x}$        &           & + &     &  +  &           \\
 \hline
-$(1 - x)\e^{ 2x}$ &     ||    & + &  0  & $-$ &           \\
+$(1 - x)\e^{ 2x}$ &           & + &  0  & $-$ &           \\
 \hline
 \end{tabular}
 \end{center}
-% x: -oo;+oo// 1-x: ++ 1 -- // !e^(2 x):-oo ++ // (1 - x)\e^{ 2x}
+% x: -oo;+oo// 1-x: ++ 1 -- // e^(2 x): ++ // (1 - x)\e^{ 2x}
 % (1 - x)\e^{ 2x}
+'''
+    assert_tabsign(s, tab)
+
+
+def test_issue_200():
+    s = 'f(x)=x^2-3'
+    tab = \
+r'''\begin{center}
+\begin{tabular}{|c|ccccccc|}
+\hline
+$x$       & $-\infty$ &   & $-\sqrt{3}$ &     & $\sqrt{3}$ &   & $+\infty$ \\
+\hline
+$f(x)$    &           & + &      0      & $-$ &     0      & + &           \\
+\hline
+\end{tabular}
+\end{center}
+% x: -oo;+oo// x^2-3: ++ -sqrt(3) -- sqrt(3) ++ // f(x)
+% f(x)=x^2-3
 '''
     assert_tabsign(s, tab)

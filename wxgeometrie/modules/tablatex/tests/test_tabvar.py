@@ -129,10 +129,10 @@ x                                    & &0&                                      
 \hline
 f'(x)                                &&\dbarre&                                 &+     &0             &-       & \\
 \hline
-\niveau{1}{2}\raisebox{0.5em}{$f(x)$}&\niveau{1}{2}&\dbarre&\niveau{1}{2}-\infty&\croit&3 + 5 \exp{-1}&\decroit&3\\
+\niveau{1}{2}\raisebox{0.5em}{$f(x)$}&\niveau{1}{2}&\dbarre&\niveau{1}{2}-\infty&\croit&5 \exp{-1} + 3&\decroit&3\\
 \hline
 \end{tabvar}\]
-% x;f(x):(0;|-oo;|) << (e;3 + 5*exp(-1)) >> (+oo;3)
+% x;f(x):(0;|-oo;|) << (e;5*exp(-1) + 3) >> (+oo;3)
 % f(x)=5*ln(x)/x+3
 """
     assert_tabvar(s, tab)
