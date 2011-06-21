@@ -402,7 +402,7 @@ class Interprete(object):
                         simpify=True,
                         verbose=None,
                         appliquer_au_resultat=None,
-                        adapter_separateur=False,
+                        adapter_separateur=None,
                         ):
         # Dictionnaire local (qui contiendra toutes les variables définies par l'utilisateur).
         self.locals = LocalDict()
@@ -463,7 +463,8 @@ class Interprete(object):
         self.simpify = simpify
         # une fonction à appliquer à tous les résultats
         self.appliquer_au_resultat = appliquer_au_resultat
-        self.adapter_separateur = adapter_separateur
+        self.adapter_separateur = (param.adapter_separateur if adapter_separateur is None
+                                                            else adapter_separateur)
         self.latex_dernier_resultat = ''
         self.initialiser()
 

@@ -702,6 +702,9 @@ transformation = None
 afficher_barre_outils = False
 afficher_console_geolib = False
 
+# Tenter la virgule comme séparateur si le point a échoué, et vice-versa.
+# (À désactiver pour faciliter le débogage.)
+adapter_separateur = True
 
 try:
     from personnaliser import * # permet de générer un fichier personnaliser.py lors de l'installation, ou de la première utilisation, et dont les parametres remplaceront ceux-ci.
