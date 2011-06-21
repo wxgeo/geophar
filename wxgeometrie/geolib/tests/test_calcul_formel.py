@@ -72,7 +72,7 @@ def test_Segment():
     assert_eq("A.coordonnees", "C.coordonnees", "(1/2, 3/4)", l())
     assert_eq('B.coordonnees', '(pi, pi)', l())
     s = Segment(A, B)
-    assert_eq('s.longueur', '((1/2 - pi)**2 + (3/4 - pi)**2)**(1/2)', l())
+    assert_eq('s.longueur', '((pi - 1/2)**2 + (pi - 3/4)**2)**(1/2)', l())
 
 
 def test_eqn_formatee():
@@ -105,12 +105,13 @@ def test_intersections():
     assert_eq_num(I.coordonnees_approchees, (-0.41318839525844997, -0.41318839525844997))
     # Cercle/cercle
     J = Intersection(c, c1)
-    assert_eq('J.coordonnees', '(913/2364 - 98*(212563/12348 + (913/1176 + 3*pi**2/98)**2'
+    assert_eq('J.coordonnees', '(913/2364 - 98*(212563/12348 + (-913/1176 - 3*pi**2/98)**2'
                             '- 394*pi**2/343 - 197*(125/56 - 3*pi**2/14)**2/49)**(1/2)/197'
                              '+ 3*pi**2/197,'
-                             '2671/1182 - 7*(212563/12348 + (913/1176 + 3*pi**2/98)**2'
+                             '2671/1182 - 7*(212563/12348 + (-913/1176 - 3*pi**2/98)**2'
                              '- 394*pi**2/343 - 197*(125/56 - 3*pi**2/14)**2/49)**(1/2)/197'
                              '- 42*pi**2/197)', l())
+
 
 def test_transformations():
     c = Cercle(('1/5', '4/5'), '1/3')
