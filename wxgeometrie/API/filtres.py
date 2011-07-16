@@ -22,16 +22,12 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-# version unicode
-
 __doc__ = u"""Gère l'import de fichiers de versions antérieures de WxGéométrie.
 
 À terme, on devrait aussi pouvoir importer ou exporter des fichiers Géogébra par exemple.
 """
 
-# importation des librairies classiques
-from LIB import *
-import API
+import re
 
 
 def filtre_versions_anterieures(fgeo):
@@ -64,13 +60,13 @@ def filtre_versions_anterieures(fgeo):
                 figures[i] = figures[i].replace("set_fenetre(",  "fenetre = (")
                 figures[i] = figures[i].replace(" 'noms': {'point_final'",  " '_noms_': {'extremite'")
                 figures[i] = figures[i].replace(" 'noms': {'",  " '_noms_': {'")
-                def corrige(match_obj):
+                def corrige1(match_obj):
                     pt = match_obj.group("pt")
                     dte = match_obj.group("dte")
                     cer = match_obj.group("cer")
                     deb = match_obj.group("deb")
                     return deb + dte + "," + cer + "," + dte + ".point1 is " + pt
-                figures[i] = re.sub("(?P<deb>Intersection_droite_cercle[(])(?P<dte>[a-zA-Z_]\w*)[,](?P<cer>[A-Za-z_]\w*)[,](?P<pt>[a-zA-Z_]\w*)", corrige, figures[i])
+                figures[i] = re.sub("(?P<deb>Intersection_droite_cercle[(])(?P<dte>[a-zA-Z_]\w*)[,](?P<cer>[A-Za-z_]\w*)[,](?P<pt>[a-zA-Z_]\w*)", corrige1, figures[i])
                 figures[i] = figures[i].replace(".ordonnee()", ".ordonnee")\
                                                 .replace(".abscisse()", ".abscisse")\
                                                 .replace(".x()", ".x")\
@@ -81,26 +77,27 @@ def filtre_versions_anterieures(fgeo):
                                                 .replace(".val()", ".val")\
                                                 .replace(".norme()", ".norme")\
                                                 .replace(".coordonnees()", ".coordonnees")
-                def corrige(match_obj): #Droite_vectorielle
+                def corrige2(match_obj): #Droite_vectorielle
+                    deb = match_obj.group("deb")
                     vec = match_obj.group("vec")
                     pt = match_obj.group("pt")
                     return deb + pt + "," + vec
-                figures[i] = re.sub("(?P<deb>Droite_vectorielle[(])(?P<vec>[a-zA-Z_]\w*)[,](?P<pt>[A-Za-z_]\w*)", corrige, figures[i])
-                def corrige(match_obj): #Mediatrice
+                figures[i] = re.sub("(?P<deb>Droite_vectorielle[(])(?P<vec>[a-zA-Z_]\w*)[,](?P<pt>[A-Za-z_]\w*)", corrige2, figures[i])
+                def corrige3(match_obj): #Mediatrice
                     return match_obj.group().replace("objet1=", "point1=")\
                                                             .replace("objet2=", "point2=")\
                                                             .replace("objet1 =", "point1 =")\
                                                             .replace("objet2 =", "point2 =")
-                figures[i] = re.sub("Mediatrice[(].*$", corrige, figures[i])
-                def corrige(match_obj): #Bissectrice
+                figures[i] = re.sub("Mediatrice[(].*$", corrige3, figures[i])
+                def corrige4(match_obj): #Bissectrice
                     return match_obj.group().replace("pt1==", "point1=")\
                                                             .replace("pt2=", "point2=")\
                                                             .replace("pt3=", "point3=")\
                                                             .replace("pt1 =", "pt1 =")\
                                                             .replace("pt2 =", "pt2 =")\
                                                             .replace("pt3 =", "p3 =")
-                figures[i] = re.sub("Bissectrice[(].*$", corrige, figures[i])
-                def corrige(match_obj): #Barycentre
+                figures[i] = re.sub("Bissectrice[(].*$", corrige4, figures[i])
+                def corrige5(match_obj): #Barycentre
                     s = match_obj.group().replace(" ", "")
                     if "points=" in s:
                         s = s.replace("points=", "'points':").replace("coeffs=", "'coeffs':")
@@ -109,7 +106,7 @@ def filtre_versions_anterieures(fgeo):
                     else:
                         m = re.search("(?P<deb>Barycentre[()])(?P<milieu>.*)(?P<fin>[,][*][*].*)", s)
                         return m.group("deb") + "*zip(" + m.group("milieu") + ")" + m.group("fin")
-                figures[i] = re.sub("Barycentre[(].*", corrige, figures[i])
+                figures[i] = re.sub("Barycentre[(].*", corrige5, figures[i])
 
             # 0.120 beta 6
             # t, x, y sont maintenant des noms réservés pour un usage futur.
@@ -157,18 +154,16 @@ def filtre_versions_anterieures(fgeo):
             if version < [0, 130, -1, 1]:
                 if fgeo.module == 'probabilites':
                     figures[i] = figures[i].replace("'$$", "'$").replace("$$'", "$'")
-                    
+
     if fgeo.contenu.has_key("Courbe") and fgeo.module == 'traceur':
         courbes = fgeo.contenu["Courbe"]
         figures = fgeo.contenu["Figure"]
         for i, courbe in enumerate(courbes):
             n = i + 1
-            Y = courbe['Y'][0] 
+            Y = courbe['Y'][0]
             intervalle = courbe['intervalle'][0]
             visible = courbe['active'][0]
             couleur = 'brgmcyk'[i%7]
             code = "\nf%(n)s = Fonction(expression=u'%(Y)s',ensemble='%(intervalle)s',variable='x')\n" %locals()
             code += "Cf%(n)s = Courbe(fonction=f%(n)s, **{'couleur': u'%(couleur)s', 'visible': %(visible)s, 'protege': True})\n" %locals()
             figures[0] += code
-            
-

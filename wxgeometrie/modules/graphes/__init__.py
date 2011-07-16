@@ -27,9 +27,13 @@ from collections import defaultdict
 from random import randint
 from itertools import count
 
-from GUI import *
-from mathlib.graphes import Graph, colors, colors_dict
-from barre_outils_graphes import BarreOutilsGraphes
+from ...sympy import latex
+
+from ...GUI import MenuBar, Panel_API_graphique
+from ...mathlib.graphes import Graph, colors, colors_dict
+from .barre_outils_graphes import BarreOutilsGraphes
+from ...geolib import Arc_oriente
+
 
 class GraphesMenuBar(MenuBar):
     def __init__(self, panel):
@@ -40,19 +44,18 @@ class GraphesMenuBar(MenuBar):
         self.ajouter("affichage")
         self.ajouter("autres")
         self.ajouter(u"Outils",
-                        [u"Créer le graphe", u"(Entrée à supprimer).", "Ctrl+E", self.panel.creer_graphe],
+#                        [u"Créer le graphe", u"(Entrée à supprimer).", "Ctrl+E", self.panel.creer_graphe],
                         [u"Colorier le graphe", u"Coloriage par l'algorithme de Welsh & Powell.", None, self.panel.colorier],
+                        [u"Latex -> Presse-papier",
+                            [u"Dijkstra", u"Recherche d'un trajet minimal entre deux points.", None, self.panel.latex_Dijkstra],
+                            [u"Welsh & Powell", u"Coloriage par l'algorithme de Welsh & Powell.", None, self.panel.latex_WelshPowell],
+                            [u"Matrice", u"Matrice du graphe.", None, self.panel.latex_Matrix],
+                            ],
                         [u"options"],
                         )
 ##        self.ajouter(u"Avancé", [u"historique"], [u"securise"], [u"ligne_commande"], [u"debug"])
         self.ajouter(u"avance1")
         self.ajouter(u"?")
-
-
-
-
-
-
 
 
 
@@ -100,8 +103,9 @@ class Graphes(Panel_API_graphique):
 
         self.graph = Graph(dic, oriented=bool(aretes_orientees))
 
-    def matrice(self, event=None):
-        self.creer_graphe()
+    def matrice(self, event=None, creer=True):
+        if creer:
+            self.creer_graphe()
         return self.graph.matrix
 
     def chaine_eulerienne(self, event=None, chaine=None):
@@ -124,12 +128,23 @@ class Graphes(Panel_API_graphique):
             for sommet in sommets:
                 self.feuille_actuelle.objets[sommet].style(couleur=rgb(*couleur), style=symbs[i%len(symbs)])
         self.feuille_actuelle.interprete.commande_executee()
+        self.latex_WelshPowell(creer=False)
 
-    def latex_Dijkstra(self, event=None, start=None, end=None):
-        self.creer_graphe()
+    def latex_Dijkstra(self, event=None, creer=True, start=None, end=None):
+        if creer:
+            self.creer_graphe()
         if start is None:
             start = min(self.graph.nodes)
         if end is None:
             end = max(self.graph.nodes)
-        latex = self.graph.latex_Dijkstra(start, end)
-        self.vers_presse_papier(latex)
+        latex_ = self.graph.latex_Dijkstra(start, end)
+        self.vers_presse_papier(latex_)
+
+    def latex_WelshPowell(self, event=None, creer=True, first_nodes=()):
+        if creer:
+            self.creer_graph()
+        latex_ = self.graph.latex_WelshPowell(*first_nodes)
+        self.vers_presse_papier(latex_)
+
+    def latex_Matrix(self, event=None, creer=True):
+        self.vers_presse_papier(latex(self.matrice(creer=creer)))

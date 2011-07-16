@@ -23,10 +23,13 @@ from __future__ import with_statement
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-# version unicode
+import re
+import wx
+from ...GUI import MenuBar, Panel_API_graphique
+from ...GUI.proprietes_objets import Proprietes
 
-
-from GUI import *
+from ...geolib import Segment, Texte, Point, TEXTE
+from ... import param
 
 
 class ProbaMenuBar(MenuBar):
@@ -177,14 +180,14 @@ omega
 
             def creer_point(x, y, texte):
                 texte = formater_texte(texte)
-                M = Point(x, y, legende = geolib.TEXTE, label = texte, style = "o", couleur = "w", taille = 0)
+                M = Point(x, y, legende = TEXTE, label = texte, style = "o", couleur = "w", taille = 0)
                 M.etiquette.style(_rayon_ = 0, niveau = 15, alignement_vertical = "center", alignement_horizontal = "center", fond = "w")
                 return M
 
 
             def creer_segment(point1, point2, texte):
                 texte = formater_texte(texte)
-                s = Segment(point1, point2, legende = geolib.TEXTE, label = texte)
+                s = Segment(point1, point2, legende = TEXTE, label = texte)
                 s.etiquette.style(_rayon_ = 0, niveau = 15, alignement_vertical = "center", alignement_horizontal = "center", fond = "w")
                 return s
 
@@ -240,7 +243,6 @@ omega
         if not objets:
             self.info_proprietes(u'Aucun sommet.')
             return
-        from GUI.proprietes_objets import Proprietes
         win = Proprietes(self, objets)
         win.Show(True)
 
@@ -251,7 +253,6 @@ omega
         if not objets:
             self.info_proprietes(u'Aucune arête.')
             return
-        from GUI.proprietes_objets import Proprietes
         win = Proprietes(self, objets)
         win.Show(True)
 
@@ -261,7 +262,6 @@ omega
         if not objets:
             self.info_proprietes(u'Aucun titre.')
             return
-        from GUI.proprietes_objets import Proprietes
         win = Proprietes(self, objets)
         win.Show(True)
 

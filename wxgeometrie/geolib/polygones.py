@@ -22,8 +22,25 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
+import re
+from random import uniform, normalvariate, randint
+from math import pi, cos, sin
+from cmath import log as clog, exp as cexp
 
-from lignes import *
+from sympy import arg as sarg, exp as sexp, I
+
+from .intersections import Intersection_droites
+from .labels import Label_polygone
+from .lignes import Segment, Perpendiculaire, Bissectrice, Droite
+from .objet import Arguments, Argument, ArgumentNonModifiable, Ref, Objet, \
+                   contexte, issympy, FILL_STYLES, RE_NOM_OBJET, TYPES_ENTIERS
+from .points import Point_generique, Point, Point_equidistant, Point_pondere, \
+                    Barycentre
+from .transformations import Rotation
+from .routines import point_dans_polygone, distance
+
+from ..pylib import is_in, print_error
+from .. import param
 
 
 
@@ -31,12 +48,6 @@ from lignes import *
 ##########################################################################################
 
 # Polygones
-
-
-
-
-
-
 
 
 class Cote(Segment):
@@ -149,11 +160,11 @@ class Polygone_generique(Objet):
     def __init__(self, *points, **styles):
         n = len(points)
         self.__points = points = tuple(Ref(obj) for obj in points)
-        self.__centre = ALL.Barycentre(*(ALL.Point_pondere(point, 1) for point in points))
+        self.__centre = Barycentre(*(Point_pondere(point, 1) for point in points))
         Objet.__init__(self, **styles)
-        self.etiquette = ALL.Label_polygone(self)
-        self.__sommets = tuple(ALL.Sommet(self, i) for i in xrange(n))
-        self.__cotes = tuple(ALL.Cote(self, i) for i in xrange(n))
+        self.etiquette = Label_polygone(self)
+        self.__sommets = tuple(Sommet(self, i) for i in xrange(n))
+        self.__cotes = tuple(Cote(self, i) for i in xrange(n))
 
 
 
@@ -168,24 +179,24 @@ class Polygone_generique(Objet):
         rx = (xmax - xmin)/2
         ry = (ymax - ymin)/2
         r = min(rx, ry)
-        liste_k = [module_random.uniform(0.5*r, 1*r) for pt in points]
+        liste_k = [uniform(0.5*r, 1*r) for pt in points]
         # Par défaut, pour éviter les polygones croisés, on construit les sommets successifs
         # en rayonnant dans le sens direct à partir du centre de la fenêtre.
         # Nota: si toutes les valeurs de liste_t étaient regroupées sur un intervalle
         # d'amplitude < pi, il se pourrait que le polygone soit malgré tout croisé, d'où l'algorithme suivant :
         if len(points) == 3:
-            liste_t = [module_random.uniform(0, math.pi/3),
-                            module_random.uniform(2*math.pi/3, math.pi),
-                            module_random.uniform(4*math.pi/3, 5*math.pi/3)]
+            liste_t = [uniform(0, pi/3),
+                            uniform(2*pi/3, pi),
+                            uniform(4*pi/3, 5*pi/3)]
         else:
-            liste_t = [module_random.uniform(0, math.pi/2),
-                            module_random.uniform(math.pi/2, math.pi),
-                            module_random.uniform(math.pi, 3*math.pi/2),
-                            module_random.uniform(3*math.pi/2, 2*math.pi)]
-            liste_t += [module_random.uniform(0, 2*math.pi) for i in xrange(len(points) - 4)]
+            liste_t = [uniform(0, pi/2),
+                            uniform(pi/2, pi),
+                            uniform(pi, 3*pi/2),
+                            uniform(3*pi/2, 2*pi)]
+            liste_t += [uniform(0, 2*pi) for i in xrange(len(points) - 4)]
         for (k, t, pt) in zip(liste_k, liste_t, points):
-            pt._Point__x = x0 + k*math.cos(t)
-            pt._Point__y = y0 + k*math.sin(t)
+            pt._Point__x = x0 + k*cos(t)
+            pt._Point__y = y0 + k*sin(t)
 
 
     def _set_feuille(self):
@@ -233,7 +244,7 @@ class Polygone_generique(Objet):
 
         # On référence automatiquement tous les côtés et sommets du polygone dans la feuille.
         # (En particulier, en mode graphique, cela permet de faire apparaitre tous les sommets du polygone lorsque celui-ci est créé)
-        points_feuille = self.__feuille__.objets.lister(ALL.Point_generique)
+        points_feuille = self.__feuille__.objets.lister(Point_generique)
         noms = self._style.get("_noms_", {"sommets": n*("", ), "cotes": n*("", )})
         for i in xrange(n):
             # On exclue les sommets qui seraient déjà dans la feuille :
@@ -321,7 +332,7 @@ class Polygone_generique(Objet):
         plot.set_data(x, y)
         fill.set(alpha=alpha, hatch=hachures, edgecolor=couleur, facecolor=couleur, linewidth=epaisseur)
         plot.set(color=couleur, linestyle=style, linewidth=epaisseur)
-        fill.set_linestyle(ALL.FILL_STYLES.get(self.style("style"), "solid"))
+        fill.set_linestyle(FILL_STYLES.get(self.style("style"), "solid"))
         fill.zorder = niveau - 0.01
         plot.zorder = niveau
 
@@ -387,7 +398,7 @@ class Polygone(Polygone_generique):
             points = styles.pop("points")
         n = len(points)
         if not n:
-            n = styles.pop("n", 3+abs(int(module_random.normalvariate(0,4))))
+            n = styles.pop("n", 3+abs(int(normalvariate(0,4))))
         if n == 1:
             if isinstance(points[0], (list, tuple)):
                 points = tuple(points[0])
@@ -397,7 +408,7 @@ class Polygone(Polygone_generique):
                 points = ()
         # Attention, pas de 'elif' ici, 'n' a pu changer de valeur !
         if n == 2:
-            newclass = ALL.Segment
+            newclass = Segment
         elif n == 3:
             newclass = Triangle
         elif n == 4:
@@ -425,12 +436,12 @@ class Polygone(Polygone_generique):
         if styles.get("points", None):
             points = styles.pop("points")
         if not points:
-            points = (styles.pop("n", 3 + abs(int(module_random.normalvariate(0,4)))), )
+            points = (styles.pop("n", 3 + abs(int(normalvariate(0,4)))), )
         if len(points) == 1:
             if isinstance(points[0], (list, tuple)):
                 points = tuple(points[0])
             elif isinstance(points[0], TYPES_ENTIERS):
-                points = tuple(ALL.Point() for i in xrange(points[0]))
+                points = tuple(Point() for i in xrange(points[0]))
                 self._points_crees_automatiquement = True
         self.__points = points = tuple(Ref(obj) for obj in points)
         Polygone_generique.__init__(self, *points, **styles)
@@ -462,9 +473,9 @@ class Polygone(Polygone_generique):
 class Triangle(Polygone_generique):
     u"""Un triangle."""
 
-    point1 = __point1 = Argument("Point_generique", defaut = ALL.Point)
-    point2 = __point2 = Argument("Point_generique", defaut = ALL.Point)
-    point3 = __point3 = Argument("Point_generique", defaut = ALL.Point)
+    point1 = __point1 = Argument("Point_generique", defaut = Point)
+    point2 = __point2 = Argument("Point_generique", defaut = Point)
+    point3 = __point3 = Argument("Point_generique", defaut = Point)
 
     def __init__(self, point1 = None, point2 = None, point3 = None, **styles):
         self.__point1 = point1 = Ref(point1)
@@ -473,11 +484,11 @@ class Triangle(Polygone_generique):
         Polygone_generique.__init__(self, point1, point2, point3, **styles)
         d1 = Perpendiculaire(Droite(point1, point2), point3)
         d2 = Perpendiculaire(Droite(point2, point3), point1)
-        self.orthocentre = ALL.Intersection_droites(d1, d2)
+        self.orthocentre = Intersection_droites(d1, d2)
         self.centre_cercle_circonscrit = Point_equidistant(point1, point2, point3)
         d1 = Bissectrice(point1, point2, point3)
         d2 = Bissectrice(point3, point1, point2)
-        self.centre_cercle_inscrit = ALL.Intersection_droites(d1, d2)
+        self.centre_cercle_inscrit = Intersection_droites(d1, d2)
 
     @property
     def rectangle(self):
@@ -508,10 +519,10 @@ class Triangle(Polygone_generique):
 class Quadrilatere(Polygone_generique):
     u"""Un quadrilatère."""
 
-    point1 = __point1 = Argument("Point_generique", defaut = ALL.Point)
-    point2 = __point2 = Argument("Point_generique", defaut = ALL.Point)
-    point3 = __point3 = Argument("Point_generique", defaut = ALL.Point)
-    point4 = __point4 = Argument("Point_generique", defaut = ALL.Point)
+    point1 = __point1 = Argument("Point_generique", defaut = Point)
+    point2 = __point2 = Argument("Point_generique", defaut = Point)
+    point3 = __point3 = Argument("Point_generique", defaut = Point)
+    point4 = __point4 = Argument("Point_generique", defaut = Point)
 
     def __init__(self, point1 = None, point2 = None, point3 = None, point4 = None, **styles):
         self.__point1 = point1 = Ref(point1)
@@ -561,11 +572,11 @@ class Quadrilatere(Polygone_generique):
 class Pentagone(Polygone_generique):
     u"""Un pentagone."""
 
-    point1 = __point1 = Argument("Point_generique", defaut = ALL.Point)
-    point2 = __point2 = Argument("Point_generique", defaut = ALL.Point)
-    point3 = __point3 = Argument("Point_generique", defaut = ALL.Point)
-    point4 = __point4 = Argument("Point_generique", defaut = ALL.Point)
-    point5 = __point5 = Argument("Point_generique", defaut = ALL.Point)
+    point1 = __point1 = Argument("Point_generique", defaut = Point)
+    point2 = __point2 = Argument("Point_generique", defaut = Point)
+    point3 = __point3 = Argument("Point_generique", defaut = Point)
+    point4 = __point4 = Argument("Point_generique", defaut = Point)
+    point5 = __point5 = Argument("Point_generique", defaut = Point)
 
     def __init__(self, point1 = None, point2 = None, point3 = None, point4 = None, point5 = None, **styles):
         self.__point1 = point1 = Ref(point1)
@@ -581,12 +592,12 @@ class Pentagone(Polygone_generique):
 class Hexagone(Polygone_generique):
     u"""Un hexagone."""
 
-    point1 = __point1 = Argument("Point_generique", defaut = ALL.Point)
-    point2 = __point2 = Argument("Point_generique", defaut = ALL.Point)
-    point3 = __point3 = Argument("Point_generique", defaut = ALL.Point)
-    point4 = __point4 = Argument("Point_generique", defaut = ALL.Point)
-    point5 = __point5 = Argument("Point_generique", defaut = ALL.Point)
-    point6 = __point6 = Argument("Point_generique", defaut = ALL.Point)
+    point1 = __point1 = Argument("Point_generique", defaut = Point)
+    point2 = __point2 = Argument("Point_generique", defaut = Point)
+    point3 = __point3 = Argument("Point_generique", defaut = Point)
+    point4 = __point4 = Argument("Point_generique", defaut = Point)
+    point5 = __point5 = Argument("Point_generique", defaut = Point)
+    point6 = __point6 = Argument("Point_generique", defaut = Point)
 
     def __init__(self, point1 = None, point2 = None, point3 = None, point4 = None, point5 = None, point6 = None, **styles):
         self.__point1 = point1 = Ref(point1)
@@ -603,13 +614,13 @@ class Hexagone(Polygone_generique):
 class Heptagone(Polygone_generique):
     u"""Un heptagone."""
 
-    point1 = __point1 = Argument("Point_generique", defaut = ALL.Point)
-    point2 = __point2 = Argument("Point_generique", defaut = ALL.Point)
-    point3 = __point3 = Argument("Point_generique", defaut = ALL.Point)
-    point4 = __point4 = Argument("Point_generique", defaut = ALL.Point)
-    point5 = __point5 = Argument("Point_generique", defaut = ALL.Point)
-    point6 = __point6 = Argument("Point_generique", defaut = ALL.Point)
-    point7 = __point7 = Argument("Point_generique", defaut = ALL.Point)
+    point1 = __point1 = Argument("Point_generique", defaut = Point)
+    point2 = __point2 = Argument("Point_generique", defaut = Point)
+    point3 = __point3 = Argument("Point_generique", defaut = Point)
+    point4 = __point4 = Argument("Point_generique", defaut = Point)
+    point5 = __point5 = Argument("Point_generique", defaut = Point)
+    point6 = __point6 = Argument("Point_generique", defaut = Point)
+    point7 = __point7 = Argument("Point_generique", defaut = Point)
 
     def __init__(self, point1 = None, point2 = None, point3 = None, point4 = None, point5 = None, point6 = None, point7 = None, **styles):
         self.__point1 = point1 = Ref(point1)
@@ -627,14 +638,14 @@ class Heptagone(Polygone_generique):
 class Octogone(Polygone_generique):
     u"""Un octogone."""
 
-    point1 = __point1 = Argument("Point_generique", defaut = ALL.Point)
-    point2 = __point2 = Argument("Point_generique", defaut = ALL.Point)
-    point3 = __point3 = Argument("Point_generique", defaut = ALL.Point)
-    point4 = __point4 = Argument("Point_generique", defaut = ALL.Point)
-    point5 = __point5 = Argument("Point_generique", defaut = ALL.Point)
-    point6 = __point6 = Argument("Point_generique", defaut = ALL.Point)
-    point7 = __point7 = Argument("Point_generique", defaut = ALL.Point)
-    point8 = __point8 = Argument("Point_generique", defaut = ALL.Point)
+    point1 = __point1 = Argument("Point_generique", defaut = Point)
+    point2 = __point2 = Argument("Point_generique", defaut = Point)
+    point3 = __point3 = Argument("Point_generique", defaut = Point)
+    point4 = __point4 = Argument("Point_generique", defaut = Point)
+    point5 = __point5 = Argument("Point_generique", defaut = Point)
+    point6 = __point6 = Argument("Point_generique", defaut = Point)
+    point7 = __point7 = Argument("Point_generique", defaut = Point)
+    point8 = __point8 = Argument("Point_generique", defaut = Point)
 
     def __init__(self, point1 = None, point2 = None, point3 = None, point4 = None, point5 = None, point6 = None, point7 = None, point8 = None, **styles):
         self.__point1 = point1 = Ref(point1)
@@ -653,15 +664,15 @@ class Octogone(Polygone_generique):
 class Parallelogramme(Quadrilatere):
     u"""Un parallélogramme."""
 
-    point1 = __point1 = Argument("Point_generique", defaut = ALL.Point)
-    point2 = __point2 = Argument("Point_generique", defaut = ALL.Point)
-    point3 = __point3 = Argument("Point_generique", defaut = ALL.Point)
+    point1 = __point1 = Argument("Point_generique", defaut = Point)
+    point2 = __point2 = Argument("Point_generique", defaut = Point)
+    point3 = __point3 = Argument("Point_generique", defaut = Point)
 
     def __init__(self, point1 = None, point2 = None, point3 = None, **styles):
         self.__point1 = point1 = Ref(point1)
         self.__point2 = point2 = Ref(point2)
         self.__point3 = point3 = Ref(point3)
-        Quadrilatere.__init__(self, point1, point2, point3, ALL.Barycentre(ALL.Point_pondere(point1, 1), ALL.Point_pondere(point2, -1), ALL.Point_pondere(point3, 1)), **styles)
+        Quadrilatere.__init__(self, point1, point2, point3, Barycentre(Point_pondere(point1, 1), Point_pondere(point2, -1), Point_pondere(point3, 1)), **styles)
 
 
 
@@ -674,9 +685,9 @@ class Sommet_rectangle(Point_generique):
 
     _style_defaut = param.points_deplacables
 
-    point1 = __point1 = Argument("Point_generique", defaut = ALL.Point)
-    point2 = __point2 = Argument("Point_generique", defaut = ALL.Point)
-    rapport = __rapport = Argument("Variable_generique", defaut = lambda:module_random.uniform(.4, .8))
+    point1 = __point1 = Argument("Point_generique", defaut = Point)
+    point2 = __point2 = Argument("Point_generique", defaut = Point)
+    rapport = __rapport = Argument("Variable_generique", defaut = lambda:uniform(.4, .8))
 
     def __init__(self, point1, point2, rapport, **styles):
         self.__point1 = point1 = Ref(point1)
@@ -710,16 +721,16 @@ class Sommet_rectangle(Point_generique):
                 self.__rapport = p/((zAB*zAB.conjugate()).real)
         except (OverflowError, ZeroDivisionError):
             if param.debug:
-                pylib.print_error()
+                print_error()
 
 
 
 class Rectangle(Parallelogramme):
     u"""Un rectangle."""
 
-    point1 = __point1 = Argument("Point_generique", defaut = ALL.Point)
-    point2 = __point2 = Argument("Point_generique", defaut = ALL.Point)
-    rapport = __rapport = Argument("Variable_generique", defaut = lambda:module_random.uniform(.4, .8) + module_random.randint(0, 1))
+    point1 = __point1 = Argument("Point_generique", defaut = Point)
+    point2 = __point2 = Argument("Point_generique", defaut = Point)
+    rapport = __rapport = Argument("Variable_generique", defaut = lambda:uniform(.4, .8) + randint(0, 1))
 
     def __init__(self, point1 = None, point2 = None, rapport = None, **styles):
         self.__point1 = point1 = Ref(point1)
@@ -733,9 +744,9 @@ class Rectangle(Parallelogramme):
 class Losange(Parallelogramme):
     u"""Un losange."""
 
-    point1 = __point1 = Argument("Point_generique", defaut = ALL.Point)
-    point2 = __point2 = Argument("Point_generique", defaut = ALL.Point)
-    angle = __angle = Argument("Angle_generique", defaut = lambda:module_random.uniform(math.pi/6, math.pi/4) + module_random.randint(0, 1)*math.pi/2)
+    point1 = __point1 = Argument("Point_generique", defaut = Point)
+    point2 = __point2 = Argument("Point_generique", defaut = Point)
+    angle = __angle = Argument("Angle_generique", defaut = lambda:uniform(pi/6, pi/4) + randint(0, 1)*pi/2)
 
     def __init__(self, point1 = None, point2 = None, angle = None, **styles):
         self.__point1 = point1 = Ref(point1)
@@ -758,7 +769,7 @@ class Polygone_regulier_centre(Polygone_generique):
 
     def __new__(cls, centre = None, sommet = None, n = None, **styles):
         if n is None:
-            n = 3 + abs(int(module_random.normalvariate(0,4)))
+            n = 3 + abs(int(normalvariate(0,4)))
         if n == 3:
             newclass = Triangle_equilateral_centre
         elif n == 4:
@@ -769,18 +780,18 @@ class Polygone_regulier_centre(Polygone_generique):
         objet.__init__(centre, sommet, **styles)
         return objet
 
-    centre = __centre = Argument("Point_generique", defaut = ALL.Point)
-    sommet = __sommet = Argument("Point_generique", defaut = ALL.Point)
+    centre = __centre = Argument("Point_generique", defaut = Point)
+    sommet = __sommet = Argument("Point_generique", defaut = Point)
     n = __n = ArgumentNonModifiable("int")
 
     def __init__(self, centre = None, sommet = None, n = None, **styles):
         self.__centre = centre = Ref(centre)
         self.__sommet = sommet = Ref(sommet)
         if n is None:
-            n = 3 + abs(int(module_random.normalvariate(0,4)))
+            n = 3 + abs(int(normalvariate(0,4)))
         # il ne faut pas utiliser de référence (Ref), car n n'est pas modifiable :
         self.__n = n
-        points = (ALL.Rotation(centre, '2*pi*' + str(i) + '/' + str(n))(sommet) for i in xrange(1, n))
+        points = (Rotation(centre, '2*pi*' + str(i) + '/' + str(n))(sommet) for i in xrange(1, n))
         Polygone_generique.__init__(self, sommet, *points, **styles)
 
 
@@ -794,13 +805,13 @@ class Triangle_equilateral_centre(Triangle):
 
     Un triangle équilatéral défini par son centre et un sommet."""
 
-    centre = __centre = Argument("Point_generique", defaut = ALL.Point)
-    sommet = __sommet = Argument("Point_generique", defaut = ALL.Point)
+    centre = __centre = Argument("Point_generique", defaut = Point)
+    sommet = __sommet = Argument("Point_generique", defaut = Point)
 
     def __init__(self, centre = None, sommet = None, **styles):
         self.__centre = centre = Ref(centre)
         self.__sommet = sommet = Ref(sommet)
-        Triangle.__init__(self, sommet, ALL.Rotation(centre, '2*pi/3')(sommet), ALL.Rotation(centre, '4*pi/3')(sommet), **styles)
+        Triangle.__init__(self, sommet, Rotation(centre, '2*pi/3')(sommet), Rotation(centre, '4*pi/3')(sommet), **styles)
 
 
 
@@ -812,13 +823,13 @@ class Carre_centre(Quadrilatere):
 
     Un carré défini par son centre et un sommet."""
 
-    centre = __centre = Argument("Point_generique", defaut = ALL.Point)
-    sommet = __sommet = Argument("Point_generique", defaut = ALL.Point)
+    centre = __centre = Argument("Point_generique", defaut = Point)
+    sommet = __sommet = Argument("Point_generique", defaut = Point)
 
     def __init__(self, centre = None, sommet = None, **styles):
         self.__centre = centre = Ref(centre)
         self.__sommet = sommet = Ref(sommet)
-        Quadrilatere.__init__(self, sommet, ALL.Rotation(centre, 'pi/2')(sommet), ALL.Rotation(centre, 'pi')(sommet), ALL.Rotation(centre, '3*pi/2')(sommet), **styles)
+        Quadrilatere.__init__(self, sommet, Rotation(centre, 'pi/2')(sommet), Rotation(centre, 'pi')(sommet), Rotation(centre, '3*pi/2')(sommet), **styles)
 
 
 
@@ -835,7 +846,7 @@ class Polygone_regulier(Polygone_generique):
 
     def __new__(cls, point1 = None, point2 = None, n = None,  **styles):
         if n is None:
-            n = 3 + abs(int(module_random.normalvariate(0,4)))
+            n = 3 + abs(int(normalvariate(0,4)))
         if n == 3:
             newclass = Triangle_equilateral
         elif n == 4:
@@ -846,8 +857,8 @@ class Polygone_regulier(Polygone_generique):
         objet.__init__(point1, point2, **styles)
         return objet
 
-    point1 = __point1 = Argument("Point_generique", defaut = ALL.Point)
-    point2 = __point2 = Argument("Point_generique", defaut = ALL.Point)
+    point1 = __point1 = Argument("Point_generique", defaut = Point)
+    point2 = __point2 = Argument("Point_generique", defaut = Point)
     n = __n = ArgumentNonModifiable("int")
 
 
@@ -855,11 +866,11 @@ class Polygone_regulier(Polygone_generique):
         self.__point1 = point1 = Ref(point1)
         self.__point2 = point2 = Ref(point2)
         if n is None:
-            n = 3 + abs(int(module_random.normalvariate(0,4)))
+            n = 3 + abs(int(normalvariate(0,4)))
         # il ne faut pas utiliser de référence (Ref), car n n'est pas modifiable :
         self.__n = n
         angle = '(2-' + str(n) + ')*pi/' + str(n)
-        point3 = ALL.Rotation(point2, angle)(point1)
+        point3 = Rotation(point2, angle)(point1)
         # Auparavant, tous les sommets étaient construits ainsi récursivement
         # mais la taille de str(Polygone_regulier.points[i])
         # croissait alors exponentiellement avec i (elle doublait à chaque itération) !
@@ -867,7 +878,7 @@ class Polygone_regulier(Polygone_generique):
         self.__centre = centre = Point_equidistant(point1, point2, point3)
         for i in xrange(3, n):
             angle = '2*pi*' + str(i) + '/' + str(n)
-            points.append(ALL.Rotation(centre, angle)(point1))
+            points.append(Rotation(centre, angle)(point1))
         Polygone_generique.__init__(self, *points, **styles)
 
     @property
@@ -881,13 +892,13 @@ class Triangle_equilateral(Triangle):
 
     Un triangle équilatéral défini par deux points consécutif (sens direct)."""
 
-    point1 = __point1 = Argument("Point_generique", defaut = ALL.Point)
-    point2 = __point2 = Argument("Point_generique", defaut = ALL.Point)
+    point1 = __point1 = Argument("Point_generique", defaut = Point)
+    point2 = __point2 = Argument("Point_generique", defaut = Point)
 
     def __init__(self, point1 = None, point2 = None, **styles):
         self.__point1 = point1 = Ref(point1)
         self.__point2 = point2 = Ref(point2)
-        Triangle.__init__(self, point1, point2, ALL.Rotation(point1, 'pi/3')(point2), **styles)
+        Triangle.__init__(self, point1, point2, Rotation(point1, 'pi/3')(point2), **styles)
 
 
 
@@ -899,14 +910,14 @@ class Carre(Quadrilatere):
 
     Un carré défini par deux points consécutif (sens direct)."""
 
-    point1 = __point1 = Argument("Point_generique", defaut = ALL.Point)
-    point2 = __point2 = Argument("Point_generique", defaut = ALL.Point)
+    point1 = __point1 = Argument("Point_generique", defaut = Point)
+    point2 = __point2 = Argument("Point_generique", defaut = Point)
 
     def __init__(self, point1 = None, point2 = None, **styles):
         self.__point1 = point1 = Ref(point1)
         self.__point2 = point2 = Ref(point2)
-        point3 = ALL.Rotation(point2, '-pi/2')(point1)
-        Quadrilatere.__init__(self, point1, point2, point3, ALL.Rotation(point1, 'pi/2')(point2), **styles)
+        point3 = Rotation(point2, '-pi/2')(point1)
+        Quadrilatere.__init__(self, point1, point2, point3, Rotation(point1, 'pi/2')(point2), **styles)
 
 
 
@@ -918,9 +929,9 @@ class Sommet_triangle_isocele(Point_generique):
 
     _style_defaut = param.points_deplacables
 
-    sommet_principal = __sommet_principal = Argument("Point_generique", defaut = ALL.Point)
-    point2 = __point2 = Argument("Point_generique", defaut = ALL.Point)
-    angle = __angle = Argument("Angle_generique", defaut = lambda:module_random.uniform(math.pi/6, math.pi/4) + module_random.randint(0, 1)*math.pi/2)
+    sommet_principal = __sommet_principal = Argument("Point_generique", defaut = Point)
+    point2 = __point2 = Argument("Point_generique", defaut = Point)
+    angle = __angle = Argument("Angle_generique", defaut = lambda:uniform(pi/6, pi/4) + randint(0, 1)*pi/2)
 
     def __init__(self, sommet_principal, point2, angle, **styles):
         self.__sommet_principal = sommet_principal = Ref(sommet_principal)
@@ -933,10 +944,10 @@ class Sommet_triangle_isocele(Point_generique):
         zA = self.__sommet_principal.z
         zB = self.__point2.z
         if contexte['exact'] and issympy(a, zA, zB):
-            zC = (zB - zA)*sympy.exp(1j*a) + zA
+            zC = (zB - zA)*sexp(1j*a) + zA
             return zC.expand(complex=True).as_real_imag()
         else:
-            zC = (zB - zA)*cmath.exp(1j*a) + zA
+            zC = (zB - zA)*cexp(1j*a) + zA
             return zC.real, zC.imag
 
     def _set_coordonnees(self, x, y):
@@ -945,12 +956,12 @@ class Sommet_triangle_isocele(Point_generique):
         z = x + 1j*y
         try:
             if issympy(zA, zB):
-                self.__angle = sympy.arg((z - zA)/(zB - zA))
+                self.__angle = sarg((z - zA)/(zB - zA))
             else:
-                self.__angle = cmath.log((z - zA)/(zB - zA)).imag
+                self.__angle = clog((z - zA)/(zB - zA)).imag
         except (OverflowError, ZeroDivisionError):
             if param.debug:
-                pylib.print_error()
+                print_error()
 
 
 
@@ -959,9 +970,9 @@ class Triangle_isocele(Triangle):
 
     Un triangle isocèle défini par son sommet principal, un autre sommet, et son angle principal (sens direct)."""
 
-    sommet_principal = __sommet_principal = Argument("Point_generique", defaut = ALL.Point)
-    point2 = __point2 = Argument("Point_generique", defaut = ALL.Point)
-    angle = __angle = Argument("Angle_generique", defaut = lambda:module_random.uniform(math.pi/6, math.pi/4) + module_random.randint(0, 1)*math.pi/2)
+    sommet_principal = __sommet_principal = Argument("Point_generique", defaut = Point)
+    point2 = __point2 = Argument("Point_generique", defaut = Point)
+    angle = __angle = Argument("Angle_generique", defaut = lambda:uniform(pi/6, pi/4) + randint(0, 1)*pi/2)
 
     def __init__(self, sommet_principal = None, point2 = None, angle = None, **styles):
         self.__sommet_principal = sommet_principal = Ref(sommet_principal)
@@ -980,9 +991,9 @@ class Sommet_triangle_rectangle(Point_generique):
 
     _style_defaut = param.points_deplacables
 
-    point1 = __point1 = Argument("Point_generique", defaut = ALL.Point)
-    point2 = __point2 = Argument("Point_generique", defaut = ALL.Point)
-    angle = __angle = Argument("Angle_generique", defaut = lambda:module_random.uniform(math.pi/6, math.pi/3))
+    point1 = __point1 = Argument("Point_generique", defaut = Point)
+    point2 = __point2 = Argument("Point_generique", defaut = Point)
+    angle = __angle = Argument("Angle_generique", defaut = lambda:uniform(pi/6, pi/3))
 
     def __init__(self, point1, point2, angle, **styles):
         self.__point1 = point1 = Ref(point1)
@@ -996,10 +1007,10 @@ class Sommet_triangle_rectangle(Point_generique):
         zB = self.__point2.z
         zI = (zA + zB)/2
         if contexte['exact'] and issympy(a, zI):
-            zC = (zB - zI)*sympy.exp(sympy.I*2*a) + zI
+            zC = (zB - zI)*sexp(I*2*a) + zI
             return zC.expand(complex=True).as_real_imag()
         else:
-            zC = (zB - zI)*cmath.exp(1j*2*a) + zI
+            zC = (zB - zI)*cexp(1j*2*a) + zI
             return zC.real, zC.imag
 
     def _set_coordonnees(self, x, y):
@@ -1009,12 +1020,12 @@ class Sommet_triangle_rectangle(Point_generique):
         z = x + 1j*y
         try:
             if issympy(zI):
-                self.__angle = sympy.arg((z - zI)/(zB - zI))/2
+                self.__angle = sarg((z - zI)/(zB - zI))/2
             else:
-                self.__angle = cmath.log((z - zI)/(zB - zI)).imag/2
+                self.__angle = clog((z - zI)/(zB - zI)).imag/2
         except (OverflowError, ZeroDivisionError):
             if param.debug:
-                pylib.print_error()
+                print_error()
 
 
 
@@ -1023,9 +1034,9 @@ class Triangle_rectangle(Triangle):
 
     Un triangle rectangle défini par les extrémités de son hypothénuse (sens direct), et un de ses angles aigus."""
 
-    point1 = __point1 = Argument("Point_generique", defaut = ALL.Point)
-    point2 = __point2 = Argument("Point_generique", defaut = ALL.Point)
-    angle = __angle = Argument("Angle_generique", defaut = lambda:module_random.uniform(math.pi/7, math.pi/5))
+    point1 = __point1 = Argument("Point_generique", defaut = Point)
+    point2 = __point2 = Argument("Point_generique", defaut = Point)
+    angle = __angle = Argument("Angle_generique", defaut = lambda:uniform(pi/7, pi/5))
 
     def __init__(self, point1 = None, point2 = None, angle = None, **styles):
         self.__point1 = point1 = Ref(point1)
@@ -1044,8 +1055,8 @@ class Triangle_isocele_rectangle(Triangle):
 
     Un triangle isocèle rectangle défini par les extrémités de son hypothénuse (sens direct)."""
 
-    point1 = __point1 = Argument("Point_generique", defaut = ALL.Point)
-    point2 = __point2 = Argument("Point_generique", defaut = ALL.Point)
+    point1 = __point1 = Argument("Point_generique", defaut = Point)
+    point2 = __point2 = Argument("Point_generique", defaut = Point)
 
     def __init__(self, point1 = None, point2 = None, **styles):
         self.__point1 = point1 = Ref(point1)
@@ -1106,7 +1117,7 @@ class PrevisualisationPolygone(Polygone_generique):
         fill._edgecolor = fill._facecolor = plot._color = self.style("couleur")
         fill.zorder = niveau - 0.01
         plot._linestyle = self.style("style")
-        fill._linestyle = ALL.FILL_STYLES.get(self.style("style"), "solid")
+        fill._linestyle = FILL_STYLES.get(self.style("style"), "solid")
         plot._linewidth = fill._linewidth = self.style("epaisseur")
         plot.zorder = niveau
 

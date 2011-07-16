@@ -1,9 +1,12 @@
 # -*- coding: iso-8859-1 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
-from geolib.tests.geotestlib import *
-from geolib import (Intersection_droite_cercle, Intersection_cercles, Intersection_droite_cercle,
-                                Intersection_droites, Parallele
+#from tools.testlib import assertAlmostEqual
+from wxgeometrie.geolib.tests.geotestlib import rand_dte, rand_pt
+from wxgeometrie.geolib import (Intersection_droite_cercle, Intersection_cercles,
+                                Point, Droite,
+                                Intersection_droites, Parallele, Feuille, Cercle,
+                                Mediatrice, Segment,
                                 )
 
 def test_Intersection_droites():
@@ -66,4 +69,3 @@ def test_intersection_et_feuille():
     f.objets._ = Intersection_droite_cercle(f.objets.d1, f.objets.c1)
     # On vérifie qu'on a bien obtenu le 2e point d'intersection (et non deux fois de suite le même)
     assert(f.objets.M6.premier_point == False)
-

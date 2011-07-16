@@ -1,9 +1,16 @@
 # -*- coding: iso-8859-1 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
-from geolib.tests.geotestlib import *
-from geolib import (Tangente, Perpendiculaire, Parallele, Mediatrice, Droite_vectorielle,
-                                Bissectrice, Label_droite, Label_demidroite, Label_segment,
+from math import sqrt
+from random import random
+
+from tools.testlib import assertAlmostEqual, assertEqual, assertRaises, randint
+from wxgeometrie.geolib.tests.geotestlib import rand_pt
+from wxgeometrie.geolib import (Tangente, Perpendiculaire, Parallele, Mediatrice,
+                                Droite_vectorielle, Point, Cercle, Droite,
+                                Bissectrice, Label_droite, Label_demidroite,
+                                Label_segment, Droite_equation, Milieu, Segment,
+                                Barycentre, Vecteur_libre, RIEN, Demidroite, DemiPlan,
                                 )
 
 
@@ -12,7 +19,7 @@ def test_Segment():
     B = Point(4,  2.1)
     s = Segment(A,  B)
     assert(isinstance(s.etiquette, Label_segment))
-    assertAlmostEqual(s.longueur, math.sqrt((B.x - A.x)**2 + (B.y - A.y)**2))
+    assertAlmostEqual(s.longueur, sqrt((B.x - A.x)**2 + (B.y - A.y)**2))
     I = Milieu(s.point1,  s.point2)
     assertEqual(I.coordonnees,  ((A.x+B.x)/2, (A.y+B.y)/2))
     M = Barycentre((A,  1),  (B,  -2))
@@ -175,3 +182,12 @@ def test_Tangente():
 
 def test_equation_formatee():
     assert Droite('y=x').equation_formatee == '-x + y = 0'
+
+def test_DemiPlan():
+    d = Droite('y=-x+1')
+    P1 = DemiPlan(d, Point(0, 0), True)
+    P2 = DemiPlan(d, Point(0, 0), False)
+    assert Point(0, 0) in P1
+    assert Point(1, 0) in P1
+    assert Point(0, 0) in P2
+    assert Point(1, 0) not in P2

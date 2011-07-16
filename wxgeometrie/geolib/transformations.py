@@ -22,12 +22,13 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-# version unicode
+from math import pi
 
-
-from points import *
-
-
+from .objet import Ref, Argument, contexte, Objet, G
+from .points import Point_generique, Point, Point_rotation, Point_translation,\
+                    Point_homothetie, Point_reflexion
+from .angles import Angle_generique, Angle_libre
+from .vecteurs import Vecteur_generique, Vecteur_libre
 
 
 
@@ -61,9 +62,9 @@ from points import *
 ##                return self.__call__(objet.__objet__)
 ##        elif isinstance(objet, Point_generique):
 ##            return self._Point_image(objet, self)
-##        elif isinstance(objet, ALL.Polygone_generique):
+##        elif isinstance(objet, Polygone_generique):
 ##            # PATCH: problème avec les polygones ayant des sommets déplacables (le sommet image serait déplaçable)
-##            return ALL.Polygone(*(self(point) for point in objet._Polygone_generique__points))
+##            return Polygone(*(self(point) for point in objet._Polygone_generique__points))
 ##        elif isinstance(objet, Objet) and not isinstance(objet, (Objet_numerique, Transformation_generique)):
 ##            return objet.__class__(**dict((key,  self(value)) for key, value in objet._iter_arguments))
 ##        else:
@@ -103,14 +104,14 @@ class Rotation(Transformation_generique):
 
     _Point_image = Point_rotation
 
-    centre = __centre = Argument("Point_generique", defaut = Point(0, 0))
+    centre = __centre = Argument("Point_generique", defaut='Point(0, 0)')
     angle = __angle = Argument("Angle_generique")
 
-    def __init__(self, centre = None, angle = math.pi/6, unite = None, **styles):
+    def __init__(self, centre = None, angle = pi/6, unite = None, **styles):
         if unite is None:
             unite = contexte['unite_angle']
-        if not isinstance(angle, ALL.Angle_generique):
-            angle = ALL.Angle_libre(angle, unite = unite)
+        if not isinstance(angle, Angle_generique):
+            angle = Angle_libre(angle, unite = unite)
         self.__centre = centre = Ref(centre)
         self.__angle = angle = Ref(angle)
         Transformation_generique.__init__(self, **styles)
@@ -164,7 +165,7 @@ class Translation(Transformation_generique):
 
     _Point_image = Point_translation
 
-    vecteur = __vecteur = Argument("Vecteur_generique", defaut = ALL.Vecteur_libre)
+    vecteur = __vecteur = Argument("Vecteur_generique", defaut=Vecteur_libre)
 
     def __init__(self, vecteur = None, **styles):
         self.__vecteur = vecteur = Ref(vecteur)
@@ -172,7 +173,7 @@ class Translation(Transformation_generique):
 
     @staticmethod
     def _convertir(objet):
-        if isinstance(objet, ALL.Vecteur_generique):
+        if isinstance(objet, Vecteur_generique):
             return Translation(objet)
         raise TypeError, "%s must be of type 'Vecteur_generique'." %objet
 
@@ -186,7 +187,7 @@ class Reflexion(Transformation_generique):
 
     _Point_image = Point_reflexion
 
-    droite = __droite = Argument("Ligne_generique", defaut = ALL.Droite)
+    droite = __droite = Argument("Ligne_generique", defaut='Droite')
 
     def __init__(self, droite = None, **styles):
         self.__droite = droite = Ref(droite)
@@ -207,7 +208,7 @@ class Homothetie(Transformation_generique):
 
     _Point_image = Point_homothetie
 
-    centre = __centre = Argument("Point_generique", defaut = Point(0, 0))
+    centre = __centre = Argument("Point_generique", defaut='Point(0, 0)')
     rapport = __rapport = Argument("Variable_generique")
 
     def __init__(self, centre = None, rapport = 2, **styles):
@@ -229,11 +230,8 @@ class Symetrie_centrale(Homothetie):
 
     Une symétrie centrale définie par un point."""
 
-    centre = __centre = Argument("Point_generique", defaut = Point(0, 0))
+    centre = __centre = Argument("Point_generique", defaut='Point(0, 0)')
 
     def __init__(self, centre = None, **styles):
         self.__centre = centre = Ref(centre)
         Homothetie.__init__(self, centre, -1, **styles)
-
-
-

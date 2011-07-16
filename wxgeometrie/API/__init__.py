@@ -18,20 +18,3 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    You should have received a copy of the GNU General Public License
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-
-# version unicode
-
-from LIB import *
-
-#~ from console_geolib import *
-#~ from barre_outils import *
-
-#~ from affichage import *
-#~ ##from historique import *
-#~ from console import *
-#~ from menu import *
-#~ from panel import *
-#~ from filtres import *
-#~ from sauvegarde import *
-#~ from parametres import *
-#~ from ligne_commande import *

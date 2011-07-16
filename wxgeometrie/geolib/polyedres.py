@@ -22,13 +22,19 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-# version unicode
+import re
+from cmath import exp as cexp, log as clog
+from math import pi
 
-
-##from points import *
-from lignes import *
-
-
+from .objet import Ref, Argument, Arguments, ArgumentNonModifiable, Objet, \
+                   RE_NOM_OBJET, FILL_STYLES
+from .points import Point_generique, Point, Barycentre, Point_pondere
+from .lignes import Segment
+from .routines import point_dans_enveloppe_convexe, segments_secants, point_dans_polygone
+from .transformations import Translation, Rotation
+from .vecteurs import Vecteur
+from ..pylib import is_in, print_error
+from .. import param
 
 
 ##########################################################################################
@@ -185,14 +191,14 @@ class Polyedre_generique(Objet):
     def __init__(self, *points, **styles):
         n = len(points)
         self.__points = points = tuple(Ref(obj) for obj in points)
-        self.__centre = ALL.Barycentre(*(ALL.Point_pondere(point, 1) for point in points))
+        self.__centre = Barycentre(*(Point_pondere(point, 1) for point in points))
         Objet.__init__(self, **styles)
-#        self.etiquette = ALL.Label_polyedre(self)
-        self.__sommets = tuple(ALL.Sommet_polyedre(self, i) for i in xrange(n))
+#        self.etiquette = Label_polyedre(self)
+        self.__sommets = tuple(Sommet_polyedre(self, i) for i in xrange(n))
         # 'aretes' contient la liste des arêtes sous la forme de couples de numéros de sommets.
         # ex: [(0, 1), (0, 2), (0,3), (1, 2), (1, 3), (2, 3)] pour un tétraèdre.
         aretes = styles.pop("aretes", [])
-        self.__aretes = tuple(ALL.Arete(self, i, j) for i, j in aretes)
+        self.__aretes = tuple(Arete(self, i, j) for i, j in aretes)
         # 'faces' contient la liste des faces sous la forme de tuples de numéros de sommets.
         # ex: [(0, 1, 2), (0, 1, 3), (0, 2, 3), (1, 2, 3)] pour un tétraèdre.
         faces = styles.pop("faces", [])
@@ -245,7 +251,7 @@ class Polyedre_generique(Objet):
 
         # On référence automatiquement tous les côtés et sommets du polyèdre dans la feuille.
         # (En particulier, en mode graphique, cela permet de faire apparaitre tous les sommets du polyèdre lorsque celui-ci est créé)
-        points_feuille = self.__feuille__.objets.lister(ALL.Point_generique)
+        points_feuille = self.__feuille__.objets.lister(Point_generique)
         noms = self._style.get("_noms_", {"sommets": n*("", ), "aretes": p*("", )})
         for i in xrange(n):
             # On exclue les sommets qui seraient déjà dans la feuille :
@@ -264,7 +270,7 @@ class Polyedre_generique(Objet):
 ##        Objet._set_feuille(self)
 ##        n = len(self.__points)
 ##        p = len(self.__aretes)
-##        points_feuille = self.__feuille__.objets(ALL.Point_generique)
+##        points_feuille = self.__feuille__.objets(Point_generique)
 ##        noms = self._style.get("_noms_", {"sommets": n*("", ), "aretes": p*("", )})
 ##        for i in xrange(n):
 ##            # On exclue les sommets qui seraient déjà dans la feuille :
@@ -319,7 +325,7 @@ class Polyedre_generique(Objet):
                 fill.set_hatch(hachures)
             fill.set(edgecolor=couleur, facecolor=couleur)
             fill.zorder = niveau - 0.01
-            fill.set_linestyle(ALL.FILL_STYLES.get(self.style("style"), "solid"))
+            fill.set_linestyle(FILL_STYLES.get(self.style("style"), "solid"))
 
 
 ##    def image_par(self, transformation):
@@ -357,10 +363,10 @@ class Tetraedre(Polyedre_generique):
 
     La projection d'un tétraèdre."""
 
-    point1 = __point1 = Argument("Point_generique", defaut = lambda:ALL.Point())
-    point2 = __point2 = Argument("Point_generique", defaut = lambda:ALL.Point())
-    point3 = __point3 = Argument("Point_generique", defaut = lambda:ALL.Point())
-    point4 = __point4 = Argument("Point_generique", defaut = lambda:ALL.Point())
+    point1 = __point1 = Argument("Point_generique", defaut = lambda:Point())
+    point2 = __point2 = Argument("Point_generique", defaut = lambda:Point())
+    point3 = __point3 = Argument("Point_generique", defaut = lambda:Point())
+    point4 = __point4 = Argument("Point_generique", defaut = lambda:Point())
 
     def __init__(self, point1 = None, point2 = None, point3 = None, point4 = None, **styles):
         self.__point1 = point1 = Ref(point1)
@@ -404,9 +410,9 @@ class Sommet_cube(Point_generique):
 
     _style_defaut = param.points_deplacables
 
-    point1 = __point1 = Argument("Point_generique", defaut = ALL.Point)
-    point2 = __point2 = Argument("Point_generique", defaut = ALL.Point)
-    angle = __angle = Argument("Angle_generique", defaut = math.pi/6)
+    point1 = __point1 = Argument("Point_generique", defaut = Point)
+    point2 = __point2 = Argument("Point_generique", defaut = Point)
+    angle = __angle = Argument("Angle_generique", defaut = pi/6)
     rapport = __rapport = Argument("Variable_generique", defaut = 0.6)
 
     def __init__(self, point1, point2, angle, rapport, **styles):
@@ -421,8 +427,8 @@ class Sommet_cube(Point_generique):
         a = self.__angle.radian
         zA = self.__point1.z
         zB = self.__point2.z
-        zE = k*cmath.exp(1j*a)*(zB - zA) + zA
-        print "HHeLiBeBCNOFNe", k*cmath.exp(1j*a), (zB - zA), zA, zE
+        zE = k*cexp(1j*a)*(zB - zA) + zA
+        print "HHeLiBeBCNOFNe", k*cexp(1j*a), (zB - zA), zA, zE
         return zE.real, zE.imag
 
     def _set_coordonnees(self, x, y):
@@ -432,10 +438,10 @@ class Sommet_cube(Point_generique):
         try:
             if abs(zB - zA) > param.tolerance:
            # TODO: cas où l'angle n'est pas en radian
-                self.__angle.val = cmath.log((z - zA)/(zB - zA)).imag
+                self.__angle.val = clog((z - zA)/(zB - zA)).imag
         except (OverflowError, ZeroDivisionError):
             if param.debug:
-                pylib.print_error()
+                print_error()
 
 
 
@@ -444,9 +450,9 @@ class Cube(Polyedre_generique):
 
     La projection d'un cube."""
 
-    point1 = __point1 = Argument("Point_generique", defaut = ALL.Point)
-    point2 = __point2 = Argument("Point_generique", defaut = ALL.Point)
-    angle = __angle = Argument("Angle_generique", defaut = math.pi/6)
+    point1 = __point1 = Argument("Point_generique", defaut = Point)
+    point2 = __point2 = Argument("Point_generique", defaut = Point)
+    angle = __angle = Argument("Angle_generique", defaut = pi/6)
     rapport = __rapport = Argument("Variable_generique", defaut = 0.6)
 
 
@@ -486,10 +492,10 @@ class Cube(Polyedre_generique):
                             (0, 4), (1, 5), (2, 6), (3, 7)]
         styles["faces"] = [(0, 1, 2, 3), (4, 5, 6, 7), (0, 1, 5, 4), (1, 2, 6, 5), (2, 3, 7, 6), (3, 0, 4, 7)]
         styles["faces_principales"] = [(0, 1, 2, 3)]
-        point3 = ALL.Rotation(point2, -math.pi/2)(point1)
-        point4 = ALL.Rotation(point1, math.pi/2)(point2)
-        point5 = ALL.Sommet_cube(point1, point2, angle, rapport)
-        t = ALL.Translation(ALL.Vecteur(point1, point5))
+        point3 = Rotation(point2, -pi/2)(point1)
+        point4 = Rotation(point1, pi/2)(point2)
+        point5 = Sommet_cube(point1, point2, angle, rapport)
+        t = Translation(Vecteur(point1, point5))
         point6 = t(point2)
         point7 = t(point3)
         point8 = t(point4)

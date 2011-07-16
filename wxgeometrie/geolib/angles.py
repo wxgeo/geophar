@@ -24,11 +24,17 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 # version unicode
 
-from pylib import *
-from mathlib import *
+from random import uniform
+from math import pi
+from sympy import pi as PI
 
-from objet import *
-
+from .labels import Label_angle
+from .objet import Objet_numerique, Objet, Ref, Argument, issympy, contexte, pi_, FILL_STYLES
+from .points import Point
+from .routines import nice_display, angle_vectoriel
+from .variables import Variable
+from .vecteurs import Vecteur_libre, Vecteur
+from .. import param
 
 
 
@@ -94,9 +100,9 @@ class Angle_generique(Objet_numerique):
 ##    unite = property(_changer_unite, _changer_unite)
 
 
-##    _conversion = {  "r": {"r":1., "d":180./math.pi, "g":200./math.pi},
-##                    "g": {"r":math.pi/200., "d":180./200., "g":1.},
-##                    "d": {"r":math.pi/180., "d":1., "g":200./180.}}
+##    _conversion = {  "r": {"r":1., "d":180./pi, "g":200./pi},
+##                    "g": {"r":pi/200., "d":180./200., "g":1.},
+##                    "d": {"r":pi/180., "d":1., "g":200./180.}}
 ##    # utilisation: t*conversation["r"]["d"] pour convertir t de radian en degré.
 
     @staticmethod
@@ -105,8 +111,8 @@ class Angle_generique(Objet_numerique):
         if isinstance(objet, basestring) and objet[-1]  == u'\u00B0':
             objet = objet[:-1]
             unite = 'd'
-        if not isinstance(objet, ALL.Variable):
-            objet = ALL.Variable._convertir(objet)
+        if not isinstance(objet, Variable):
+            objet = Variable._convertir(objet)
         return Angle_libre(objet, unite = unite)
 ##        raise TypeError, "%s must be of type 'Variable'" %objet
 
@@ -124,16 +130,16 @@ class Secteur_angulaire(Angle_generique):
     _style_defaut = param.angles
     _affichage_depend_de_la_fenetre = True
 
-    point = __point = Argument("Point_generique", defaut = ALL.Point)
-    vecteur1 = __vecteur1 = Argument("Vecteur_generique", defaut = ALL.Vecteur_libre)
-    vecteur2 = __vecteur2 = Argument("Vecteur_generique", defaut = ALL.Vecteur_libre)
+    point = __point = Argument("Point_generique", defaut = Point)
+    vecteur1 = __vecteur1 = Argument("Vecteur_generique", defaut = Vecteur_libre)
+    vecteur2 = __vecteur2 = Argument("Vecteur_generique", defaut = Vecteur_libre)
 
     def __init__(self, point = None, vecteur1 = None, vecteur2 = None, **styles):
         self.__point = point = Ref(point)
         self.__vecteur1 = vecteur1 = Ref(vecteur1)
         self.__vecteur2 = vecteur2 = Ref(vecteur2)
         Angle_generique.__init__(self, **styles)
-        self.etiquette = ALL.Label_angle(self)
+        self.etiquette = Label_angle(self)
 
     def _get_valeur(self):
         return angle_vectoriel(self.__vecteur1, self.__vecteur2)
@@ -152,11 +158,9 @@ class Secteur_angulaire(Angle_generique):
     def _creer_figure(self):
         codage = self.style("codage")
         niveau = self.style("niveau")
-        couleur = self.style("couleur")
-        epaisseur = self.style("epaisseur")
         style = self.style("style")
         if param.codage_automatique_angle_droits and not codage:
-            if abs(abs(self.radian) - math.pi/2) < contexte['tolerance']:
+            if abs(abs(self.radian) - pi/2) < contexte['tolerance']:
                 codage = "^"
         if not self._representation:
             ang = self.rendu.angle()
@@ -167,10 +171,10 @@ class Secteur_angulaire(Angle_generique):
         i = (1, 0)
         a = angle_vectoriel(i, v)
         b = angle_vectoriel(i, u)
-        if isinstance(self, ALL.Angle) and self._sens() < 0:
+        if isinstance(self, Angle) and self._sens() < 0:
             a, b = b, a
         if b < a:
-            b += 2*math.pi
+            b += 2*pi
 
         angle, codage_angle = self._representation
 
@@ -179,11 +183,11 @@ class Secteur_angulaire(Angle_generique):
                   angle=param.codage['angle'], style=codage,
                   zorder=niveau - 0.01, alpha=self.style('alpha'),
                   linewidth=self.style('epaisseur'), facecolor=self.style('couleur'),
-                  linestyle = ALL.FILL_STYLES.get(style, 'solid'),
+                  linestyle = FILL_STYLES.get(style, 'solid'),
                   )
 
         codage_angle.set(visible=bool(codage), linewidth=self.style('epaisseur'),
-                         linestyle = ALL.FILL_STYLES.get(style, 'solid'),
+                         linestyle = FILL_STYLES.get(style, 'solid'),
                         )
 
 
@@ -212,7 +216,7 @@ class Secteur_angulaire(Angle_generique):
         if abs(u[0]) + abs(u[1]) < contexte['tolerance']:
             # Vecteur inexistant (le pointeur de la souris est au sommet de l'angle)
             return True
-        elif isinstance(self, ALL.Angle) and self._sens() < 0:
+        elif isinstance(self, Angle) and self._sens() < 0:
             a = angle_vectoriel(self.__vecteur2, self.__vecteur1)
             b = angle_vectoriel(self.__vecteur2, u)
         else:
@@ -240,15 +244,15 @@ class Angle_oriente(Secteur_angulaire):
 
     Un angle orienté défini par 3 points A, B, C -> angle (BA>, BC>)."""
 
-    point1 = __point1 = Argument("Point_generique", defaut = ALL.Point)
-    point2 = __point2 = Argument("Point_generique", defaut = ALL.Point)
-    point3 = __point3 = Argument("Point_generique", defaut = ALL.Point)
+    point1 = __point1 = Argument("Point_generique", defaut = Point)
+    point2 = __point2 = Argument("Point_generique", defaut = Point)
+    point3 = __point3 = Argument("Point_generique", defaut = Point)
 
     def __init__(self, point1 = None, point2 = None, point3 = None, **styles):
         self.__point1 = point1 = Ref(point1)
         self.__point2 = point2 = Ref(point2)
         self.__point3 = point3 = Ref(point3)
-        Secteur_angulaire.__init__(self, point2, ALL.Vecteur(point2, point1), ALL.Vecteur(point2, point3), **styles)
+        Secteur_angulaire.__init__(self, point2, Vecteur(point2, point1), Vecteur(point2, point3), **styles)
 
 
 
@@ -262,15 +266,15 @@ class Angle(Secteur_angulaire):
 
     Un angle non orienté, défini par 3 points A, B, C -> angle /ABC\."""
 
-    point1 = __point1 = Argument("Point_generique", defaut = ALL.Point)
-    point2 = __point2 = Argument("Point_generique", defaut = ALL.Point)
-    point3 = __point3 = Argument("Point_generique", defaut = ALL.Point)
+    point1 = __point1 = Argument("Point_generique", defaut = Point)
+    point2 = __point2 = Argument("Point_generique", defaut = Point)
+    point3 = __point3 = Argument("Point_generique", defaut = Point)
 
     def __init__(self, point1 = None, point2 = None, point3 = None, **styles):
         self.__point1 = point1 = Ref(point1)
         self.__point2 = point2 = Ref(point2)
         self.__point3 = point3 = Ref(point3)
-        Secteur_angulaire.__init__(self, point2, ALL.Vecteur(point2, point1), ALL.Vecteur(point2, point3), **styles)
+        Secteur_angulaire.__init__(self, point2, Vecteur(point2, point1), Vecteur(point2, point3), **styles)
 
     def _get_valeur(self):
         return abs(Secteur_angulaire._get_valeur(self))
@@ -292,7 +296,7 @@ class Angle_libre(Angle_generique):
 
     Un angle défini par sa valeur numérique (en radian)."""
 
-    variable = __variable = Argument("Variable_generique", defaut = lambda:module_random.uniform(0, 2*math.pi))
+    variable = __variable = Argument("Variable_generique", defaut = lambda: uniform(0, 2*pi))
 
     def __init__(self, variable = None, unite = None, **styles):
 
@@ -313,14 +317,14 @@ class Angle_libre(Angle_generique):
 
         if unite in ('d', 'g'):
             coeff = 180 if unite == 'd' else 200
-            if isinstance(variable, ALL.Variable):
+            if isinstance(variable, Variable):
                 variable = variable.contenu
             if isinstance(variable, basestring):
                 variable = '(' + variable + ')*pi/%s' %coeff
             elif issympy(variable):
-                variable *= sympy.pi/coeff
+                variable *= PI/coeff
             else:
-                variable *= math.pi/coeff
+                variable *= pi/coeff
 
         self.__variable = variable = Ref(variable)
         Angle_generique.__init__(self)
@@ -341,8 +345,8 @@ class Angle_vectoriel(Angle_generique):
     u"""Un angle défini par des vecteurs.
 
     Un angle orienté défini par deux vecteurs (non affiché)."""
-    vecteur1 = __vecteur1 = Argument("Vecteur_generique", defaut = ALL.Vecteur_libre)
-    vecteur2 = __vecteur2 = Argument("Vecteur_generique", defaut = ALL.Vecteur_libre)
+    vecteur1 = __vecteur1 = Argument("Vecteur_generique", defaut = Vecteur_libre)
+    vecteur2 = __vecteur2 = Argument("Vecteur_generique", defaut = Vecteur_libre)
 
     def __init__(self, vecteur1 = None, vecteur2 = None, **styles):
         self.__vecteur1 = vecteur1 = Ref(vecteur1)

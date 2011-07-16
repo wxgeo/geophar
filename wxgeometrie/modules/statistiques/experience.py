@@ -22,14 +22,13 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-# version unicode
-
+import wx
 from numpy.random import rand
 from numpy import sum
 # NB: numpy.sum est 100 fois plus rapide que __builtin__.sum !
 
-from LIB import *
-from GUI.wxlib import MyMiniFrame
+from ...GUI.wxlib import MyMiniFrame
+from ...pylib import msplit
 
 ent = int
 

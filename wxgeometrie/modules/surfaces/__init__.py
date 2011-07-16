@@ -23,15 +23,20 @@ from __future__ import with_statement
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-# version unicode
-
-
-from GUI import *
-from GUI.wxlib import BusyCursor
-
+import wx
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib import cm
 from matplotlib.axes import Axes
+from matplotlib.colors import LinearSegmentedColormap
+from numpy import max as nmax, min as nmin, meshgrid
+
+from ...GUI.wxlib import BusyCursor
+from ...GUI import MenuBar, Panel_API_graphique
+from ...pylib import fullrange, eval_safe
+from ...pylib.securite import dictionnaire_builtins
+from ...mathlib import end_user_functions
+from ...mathlib.parsers import traduire_formule
+
 
 class SurfacesMenuBar(MenuBar):
     def __init__(self, panel):
@@ -251,16 +256,16 @@ class Surfaces(Panel_API_graphique):
 #                return
         if not self.equation.GetValue().strip():
             return
-        xmin = securite.eval_safe(self.xmin.GetValue().strip())
-        xmax = securite.eval_safe(self.xmax.GetValue().strip())
-        ymin = securite.eval_safe(self.ymin.GetValue().strip())
-        ymax = securite.eval_safe(self.ymax.GetValue().strip())
+        xmin = eval_safe(self.xmin.GetValue().strip())
+        xmax = eval_safe(self.xmax.GetValue().strip())
+        ymin = eval_safe(self.ymin.GetValue().strip())
+        ymax = eval_safe(self.ymax.GetValue().strip())
 
         pasX = self.pasX.GetValue().strip()
         if not pasX:
             pasX = self._param_.resolution*(xmax - xmin)
         else:
-            pasX = securite.eval_safe(pasX)
+            pasX = eval_safe(pasX)
         if pasX < self._param_.resolution_minimale*max(xmax - xmin, ymax - ymin):
             pasX = self._param_.resolution_minimale*max(xmax - xmin, ymax - ymin)
             self.canvas.message(u"Attention, le pas est trop petit !")
@@ -268,18 +273,18 @@ class Surfaces(Panel_API_graphique):
         if not pasY:
             pasY = self._param_.resolution*(xmax - xmin)
         else:
-            pasY = securite.eval_safe(pasY)
+            pasY = eval_safe(pasY)
         if pasY < self._param_.resolution_minimale*max(xmax - xmin, ymax - ymin):
             pasY = self._param_.resolution_minimale*max(xmax - xmin, ymax - ymin)
             self.canvas.message(u"Attention, le pas est trop petit !")
         with BusyCursor():
             X = fullrange(xmin, xmax, pasX)
             Y = fullrange(ymin, ymax, pasY)
-            X, Y = numpy.meshgrid(X, Y)
-            dico = vars(mathlib.end_user_functions).copy()
+            X, Y = meshgrid(X, Y)
+            dico = vars(end_user_functions).copy()
             dico.update({'x': X, 'X': X, 'Y': Y, 'y': Y})
-            dico.update(securite.dictionnaire_builtins)
-            formule = parsers.traduire_formule(self.equation.GetValue(), dico)
+            dico.update(dictionnaire_builtins)
+            formule = traduire_formule(self.equation.GetValue(), dico)
             self._Z = Z = eval(formule, dico) + 0*X # conversion des constantes en numpy.ndarray
 
             seuils_txt = self.seuils.GetValue().strip()
@@ -302,8 +307,8 @@ class Surfaces(Panel_API_graphique):
 
 
     def _creer_cmap(self, seuils):
-        zmax = numpy.max(self._Z)
-        zmin = numpy.min(self._Z)
+        zmax = nmax(self._Z)
+        zmin = nmin(self._Z)
         delta = zmax - zmin
         # On les ramène entre 0 et 1 par transformation affine
         if delta:
@@ -320,7 +325,7 @@ class Surfaces(Panel_API_graphique):
         n = len(self.couleurs)
         for i, seuil in enumerate(seuils):
             add_col(seuil, self.couleurs[(i - 1)%n], self.couleurs[i%n])
-        return matplotlib.colors.LinearSegmentedColormap('seuils', cdict, 256)
+        return LinearSegmentedColormap('seuils', cdict, 256)
 
 
 

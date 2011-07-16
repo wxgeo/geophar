@@ -24,9 +24,15 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 # version unicode
 
-from objet import *
+from random import uniform, normalvariate
+from math import cos, sin
 
+from .objet import Objet_avec_coordonnees, Argument, Ref, Objet, \
+                   Objet_avec_coordonnees_modifiables
+from .constantes import RIEN, TEXTE
 
+from ..pylib import uu, warning
+from .. import param
 
 
 class Texte_generique(Objet_avec_coordonnees):
@@ -170,8 +176,8 @@ class Texte(Texte_generique, Objet_avec_coordonnees_modifiables):
         return self.style("label")
 
     texte = __texte = Argument("basestring", _get_texte, _set_texte)
-    abscisse = x = __x = Argument("Variable_generique", defaut = lambda:module_random.normalvariate(0,10))
-    ordonnee = y = __y = Argument("Variable_generique", defaut = lambda:module_random.normalvariate(0,10))
+    abscisse = x = __x = Argument("Variable_generique", defaut = lambda: normalvariate(0,10))
+    ordonnee = y = __y = Argument("Variable_generique", defaut = lambda: normalvariate(0,10))
 
     def __init__(self, texte = "", x = None, y = None, **styles):
         x, y, styles = self._recuperer_x_y(x, y, styles)
@@ -219,10 +225,10 @@ class Texte(Texte_generique, Objet_avec_coordonnees_modifiables):
     def _set_feuille(self):
         xmin, xmax, ymin, ymax = self.__feuille__.fenetre
         if "_Texte__x" in self._valeurs_par_defaut:
-            self.__x = module_random.uniform(xmin, xmax)
+            self.__x = uniform(xmin, xmax)
 #            self._valeurs_par_defaut.discard("_Point__x")
         if "_Texte__y" in self._valeurs_par_defaut:
-            self.__y = module_random.uniform(ymin, ymax)
+            self.__y = uniform(ymin, ymax)
 #            self._valeurs_par_defaut.discard("_Point__x")
         Objet._set_feuille(self)
 
@@ -234,13 +240,14 @@ class Texte(Texte_generique, Objet_avec_coordonnees_modifiables):
 
 
     def image_par(self, transformation):
-        if isinstance(transformation, ALL.Rotation):
+        from .transformations import Rotation, Translation, Homothetie, Reflexion
+        if isinstance(transformation, Rotation):
             return Texte_rotation(self, transformation)
-        elif isinstance(transformation, ALL.Translation):
+        elif isinstance(transformation, Translation):
             return Texte_translation(self, transformation)
-        elif isinstance(transformation, ALL.Homothetie):
+        elif isinstance(transformation, Homothetie):
             return Texte_homothetie(self, transformation)
-        elif isinstance(transformation, ALL.Reflexion):
+        elif isinstance(transformation, Reflexion):
             return Texte_reflexion(self, transformation)
         raise NotImplementedError
 
@@ -285,7 +292,7 @@ class Texte_rotation(Texte_transformation_generique):
         x0, y0 = self.__rotation.centre.coordonnees
         xA, yA = self.__texte.coordonnees
         a = self.__rotation.radian
-        sina = math.sin(a) ; cosa = math.cos(a)
+        sina = sin(a) ; cosa = cos(a)
         return (-sina*(yA - y0) + x0 + cosa*(xA - x0), y0 + cosa*(yA - y0) + sina*(xA - x0))
 
 ##    def style(self, *args, **kw):

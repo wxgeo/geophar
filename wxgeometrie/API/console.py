@@ -23,8 +23,6 @@ from __future__ import with_statement
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-# version unicode
-
 # NOTES :
 # Un fichier .geo est essentiellement un fichier python (structure par du XML).
 # C'est potentiellement dangereux (en particulier sous Windows), car certains modules python (comme os, sys, ...), et certaines fonctions (write...) peuvent endommager le systeme d'exploitation.
@@ -36,9 +34,7 @@ from __future__ import with_statement
 
 #  Il faudra donner a l'utilisateur la possibilite d'autoriser la macro ponctuellement, ou meme de changer le parametre de securite
 
-
-from LIB import *
-
+from .. import param
 
 
 

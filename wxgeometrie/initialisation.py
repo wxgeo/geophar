@@ -21,9 +21,9 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 
 
-import sys, atexit, time, os, optparse, itertools, traceback, imp
+import sys, time, os, optparse, itertools, traceback, imp
 
-import param
+from . import param
 
 if param.py2exe:
     # cf. py2exe/boot_common.py
@@ -268,7 +268,7 @@ try:
     # Tester sys.stdout/stderr (les plantages de sys.stderr sont très pénibles à tracer !)
     sorties.write('')
 except:
-    if py2exe:
+    if param.py2exe:
         sys.stderr = sys._py2exe_stderr
         sys.stdout = sys._py2exe_stdout
     else:
@@ -317,7 +317,8 @@ try:
         sys.path.extend(('library.zip\\matplotlib', 'library.zip\\wx'))
 
     #Test des imports
-    from GUI import *
+    from . import GUI
+    import wx # après GUI (wxversion.select() must be called before wxPython is imported)
 
     if param.charger_psyco is not False:
         try:
@@ -331,7 +332,8 @@ try:
 
 
     def initialiser():
-        from API.parametres import actualiser_module
+        from .API.parametres import actualiser_module
+        from .pylib import print_error
         # Récupération d'un crash éventuel
         path_lock = path2(param.emplacements['session'] + "/lock")
         crash = os.path.isfile(path_lock)
@@ -368,7 +370,7 @@ try:
         param.__dict__.update(parametres_additionnels)
 
         if options.script:
-            from GUI.mode_script import wxgeometrie_mode_script
+            from .GUI.mode_script import wxgeometrie_mode_script
             msg = wxgeometrie_mode_script(options.input, options.output)
             if msg:
                 print msg
@@ -377,7 +379,7 @@ try:
             app = wx.PySimpleApp()
             app.SetAppName(u"WxGéométrie")
 
-            from GUI.fenetre_principale import WxGeometrie
+            from .GUI.fenetre_principale import WxGeometrie
             frame = WxGeometrie(app, fichier_log = fichier_log)
             if isinstance(sys.stdout, SortiesMultiples):
                 if param.debug:

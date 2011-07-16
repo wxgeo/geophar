@@ -23,15 +23,16 @@ from __future__ import with_statement
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-# version unicode
+import wx
+from  wx.lib.colourselect import EVT_COLOURSELECT, ColourSelect
+from matplotlib.colors import colorConverter as colorConverter
 
-# importation des librairies classiques
-from LIB import *
-from wxlib import MyMiniFrame
 
-import  wx.lib.colourselect as  __csel__
-from matplotlib.colors import colorConverter as __colorConverter__
-
+from .wxlib import MyMiniFrame
+from .. import param
+from ..pylib import print_error, debug, advanced_split
+from ..geolib.constantes import NOM, FORMULE, TEXTE, RIEN
+from ..geolib.routines import nice_display
 
 class ProprietesAffichage(wx.Panel):
     def __init__(self, parent):
@@ -119,13 +120,13 @@ class ProprietesAffichage(wx.Panel):
                 self.radio_aucun = wx.RadioButton(self, -1, u"Aucun")
                 self.radio_aucun.SetValue(0)
                 if all(objet.style("legende") == leg for objet in objets):
-                    if leg == geolib.NOM:
+                    if leg == NOM:
                         self.radio_nom.SetValue(1)
-                    elif leg == geolib.TEXTE:
+                    elif leg == TEXTE:
                         self.radio_etiquette.SetValue(1)
-                    elif leg == geolib.FORMULE:
+                    elif leg == FORMULE:
                         self.radio_formule.SetValue(1)
-                    elif leg == geolib.RIEN:
+                    elif leg == RIEN:
                         self.radio_aucun.SetValue(1)
 
                 self.Bind(wx.EVT_RADIOBUTTON, self.EvtLegende, self.radio_nom)
@@ -208,12 +209,12 @@ class ProprietesAffichage(wx.Panel):
             choix = wx.BoxSizer(wx.HORIZONTAL)
             choix.Add(wx.StaticText(self, -1, u"Couleur de l'objet : "), 0, wx.ALL,5)
             if all(objet.style("couleur") == couleur for objet in objets):
-                couleur = __colorConverter__.to_rgb(couleur)
+                couleur = colorConverter.to_rgb(couleur)
                 couleur = tuple(int(255*i) for i in couleur) # conversion du format matplotlib au format wx
             else:
                 couleur = self.GetBackgroundColour()
-            b = __csel__.ColourSelect(self, -1, colour = couleur)
-            b.Bind(__csel__.EVT_COLOURSELECT, self.OnSelectColour)
+            b = ColourSelect(self, -1, colour = couleur)
+            b.Bind(EVT_COLOURSELECT, self.OnSelectColour)
             choix.Add(b, 0, wx.ALL, 5)
             encadre2.Add(choix, 0, wx.ALL, 5)
 
@@ -358,13 +359,13 @@ class ProprietesAffichage(wx.Panel):
     def EvtLegende(self, event):
         radio = event.GetEventObject()
         if radio is self.radio_nom:
-            self.changements["legende"] = geolib.NOM
+            self.changements["legende"] = NOM
         elif radio is self.radio_etiquette:
-            self.changements["legende"] = geolib.TEXTE
+            self.changements["legende"] = TEXTE
         elif radio is self.radio_formule:
-            self.changements["legende"] = geolib.FORMULE
+            self.changements["legende"] = FORMULE
         else:
-            self.changements["legende"] = geolib.RIEN
+            self.changements["legende"] = RIEN
 
     def EvtFixe(self, event):
         self.changements["fixe"] = event.IsChecked()
@@ -591,7 +592,6 @@ class ProprietesAvance(wx.Panel):
 
 class OngletsProprietes(wx.Notebook):
     def __init__(self, parent):
-        style = wx.NB_TOP
         self.parent = parent
         self.objets = parent.objets
         wx.Notebook.__init__(self, parent)

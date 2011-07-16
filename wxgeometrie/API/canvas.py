@@ -21,13 +21,14 @@ from __future__ import with_statement
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 
-from LIB import *
-import matplotlib, numpy
+import numpy
 from matplotlib.backends.backend_agg import FigureCanvasAgg
-from moteur_graphique import Moteur_graphique
-
 from matplotlib.figure import Figure
 
+from .moteur_graphique import Moteur_graphique
+from ..pylib import decorator, property2, print_error, WeakList, str2, no_argument
+from ..geolib import Feuille
+from .. import param
 
 
 class GelAffichage(object):
@@ -67,8 +68,8 @@ def track(meth, self, *args, **kw):
 @decorator
 def partial_track(meth, self, *args, **kw):
     if param.debug:
-        s = "%s - Args: %s, %s" % (f.func_name, args, kw)
-        self.parent.action_effectuee(s, signature = f.func_name)
+        s = "%s - Args: %s, %s" % (meth.func_name, args, kw)
+        self.parent.action_effectuee(s, signature = meth.func_name)
     return meth(self, *args, **kw)
 
 
@@ -348,7 +349,7 @@ class Canvas(FigureCanvasAgg):
     ('afficher_objets_caches', u"Indique si les objets cachés sont affichés ou non."),
     ('grille_aimantee', u"Indique si les points doivent se placer sur le quadrillage."),
     ):
-        exec_('''@track
+        exec('''@track
 def gerer_parametre_%(_nom_)s(self, afficher = None):
     """%(_doc_)s"""
     if afficher is not None:
@@ -362,7 +363,7 @@ def gerer_parametre_%(_nom_)s(self, afficher = None):
 
     # Paramètres gérés directement par la feuille
     for _nom_ in Feuille._parametres_repere:
-        exec_('''assert "%(_nom_)s" not in locals(), "Erreur: %(_nom_)s est deja defini !"
+        exec('''assert "%(_nom_)s" not in locals(), "Erreur: %(_nom_)s est deja defini !"
 @property2
 def %(_nom_)s(self, valeur = no_argument):
     if valeur is no_argument:

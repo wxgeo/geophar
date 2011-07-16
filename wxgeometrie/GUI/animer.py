@@ -22,10 +22,12 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-# version unicode
+import wx
+from operator import attrgetter
 
-from LIB import *
-from wxlib import MyMiniFrame
+from .wxlib import MyMiniFrame
+from ..geolib.variables import Variable
+
 
 class DialogueAnimation(MyMiniFrame):
     def __init__(self, parent):
@@ -101,7 +103,7 @@ class DialogueAnimation(MyMiniFrame):
         u"Liste des noms de variables de la feuille actuelle."
         self.var.SetFocus()
         liste_objets = self.feuille_actuelle.objets.lister(False, type = Variable)
-        liste_objets.sort(key = operator.attrgetter('nom')) # ordre alphabétique
+        liste_objets.sort(key=attrgetter('nom')) # ordre alphabétique
         if not liste_objets:
             return
         ids = [wx.NewId() for obj in liste_objets]

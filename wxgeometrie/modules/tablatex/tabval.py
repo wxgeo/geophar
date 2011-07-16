@@ -23,7 +23,11 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-from tablatexlib import *
+import re
+from numpy import arange
+
+from .tablatexlib import traduire_latex, maths
+from ...pylib import print_error
 
 
 def tabval(chaine = "", icomma = True):
@@ -88,7 +92,7 @@ un retour à la ligne (si le tableau est trop long).
                 else:
                     next_val = float(eval(suivant, maths.__dict__))
                     pas = next_val - first_val
-                ensemble_valeurs.update(numpy.arange(first_val, last_val, pas))
+                ensemble_valeurs.update(arange(first_val, last_val, pas))
                 ensemble_valeurs.add(last_val)
             else:
                 ensemble_valeurs.add(float(eval(intervalle, maths.__dict__)))
@@ -127,7 +131,7 @@ un retour à la ligne (si le tableau est trop long).
                 else:
                     code_expression += '&' + formater(precision*round(evaluation/precision))
             except:
-                LIB.print_error()
+                print_error()
                 code_expression += "& $\\times$ "
 
         code += "\n\\begin{tabular}{|" + nbr_colonnes*"c|" + "}\n\\hline\n"
@@ -137,6 +141,3 @@ un retour à la ligne (si le tableau est trop long).
         code += "\\hline\n\\end{tabular}\n"
 
     return code + "\\end{center}\n% " + chaine_originale + "\n"
-
-
-

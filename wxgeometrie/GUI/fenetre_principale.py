@@ -23,17 +23,17 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-# version unicode
+import sys, os, thread, traceback
+import wx
 
-# importation des librairies specifiques et des composantes du programme
-
-from LIB import *
-from GUI import Panel_API_graphique
-from GUI.ligne_commande import LigneCommande
-from GUI.onglets import Onglets
-from API.console import Console
-from API.sauvegarde import FichierSession
-from API.parametres import sauvegarder_module
+from ..pylib import uu, print_error, path2, debug, warning
+from . import Panel_API_graphique
+from .ligne_commande import LigneCommande
+from .onglets import Onglets
+from ..API.console import Console
+from ..API.sauvegarde import FichierSession
+from ..API.parametres import sauvegarder_module
+from .. import param
 
 ######################################################
 

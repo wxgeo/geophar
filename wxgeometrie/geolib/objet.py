@@ -23,22 +23,24 @@ from __future__ import with_statement
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-# version unicode
+import re, math
+from types import FunctionType, BuiltinFunctionType, TypeType
 
 import numpy
-try:
-    import sympy
-except ImportError:
-    sympy = None
+from matplotlib.pyparsing import ParseFatalException
 
-from pylib import * # à supprimer ??
-import mathlib
+from sympy import I, pi as PI, Basic, Integer
+
+from ..mathlib.internal_objects import Reel
 # à intégrer dans geolib ??
-from routines import *
-from constantes import FORMULE, TEXTE, NOM, RIEN
-import mathlib.parsers as parsers
-import mathlib.universal_functions as univ
-import mathlib.intervalles as intervalles
+from ..pylib import property2, no_twin, uu, str2, print_error, mathtext_parser, \
+                    is_in, WeakList, CustomWeakKeyDictionary, warning
+from .routines import nice_display
+from .constantes import FORMULE, TEXTE, NOM
+from .formules import Formule
+from .contexte import contexte
+from .. import param
+
 
 try:
     import wx
@@ -48,7 +50,11 @@ except ImportError:
     def souffler():
         pass
 
-import ALL
+
+class _(object):
+    pass
+# G contient tous les objets de geolib à la fin de l'initialisation.
+G = _()
 
 
 ###########################################################################
@@ -61,13 +67,9 @@ import ALL
 #    en effet, les objets geometriques intermediaires introduits pour construire un objet ne sont pas systematiquement detruits quand l'objet est supprime.
 
 
-TYPES_ENTIERS = (long, int)
-if sympy is not None:
-    TYPES_ENTIERS += (sympy.Integer,)
-
-TYPES_REELS = TYPES_ENTIERS + (float, )
-if sympy is not None:
-    TYPES_REELS += (sympy.Basic, )
+TYPES_ENTIERS = (long, int, Integer,)
+TYPES_REELS = TYPES_ENTIERS + (float, Basic, )
+# XXX: Basic n'est pas forcément réel
 
 TYPES_NUMERIQUES = TYPES_REELS + (complex, )
 
@@ -95,7 +97,7 @@ RE_NOM_DE_POINT="[A-Z]((_[{][0-9]+[}])|(_[0-9]+)|([']+))?"
 ##    PI = sympy.pi
 
 def issympy(*expressions):
-    return sympy is not None and all(isinstance(e, sympy.Basic) for e in expressions)
+    return all(isinstance(e, Basic) for e in expressions)
 
 
 
@@ -105,10 +107,10 @@ def issympy(*expressions):
 class Nom(object):
     u"""Nom d'un objet.
 
-    Affiche le nom de l'objet quand on le met sous forme de chaîne.
+    Affiche le nom de l'objet quand on le met sous forme dAe chaîne.
 
     Exemple :
-    >>> from geolib import Nom, Feuille, Point
+    >>> from wxgeometrie.geolib import Nom, Feuille, Point
     >>> M = Feuille().objets.M = Point(1, 2)
     >>> nom = Nom(M)
     >>> nom
@@ -256,96 +258,12 @@ class Cache(object):
         self.__approche.clear()
         self.__exact.clear()
 
-##contexte = {'exact': True}
-
-##class Contexte(dict):
-##    def __init__(self, **kw):
-##        self.update(contexte)
-##        self.__change = kw
-##
-##    def __enter__(self):
-##        for key in self.__change:
-##            self[key], self.__change[key] = self.__change[key], self[key]
-##
-##    def __exit__(self, type, value, traceback):
-##        for key in self._revert:
-##            self[key] = self.__change[key]
-
-
-
-
-
-class Contexte(dict):
-    u"""Gestionnaire de contexte.
-
-    Exemple d'usage:
-    >>> from geolib.objet import Contexte
-    >>> # Contexte global
-    >>> contexte = Contexte(exact = False, decimales = 7)
-    >>> # Contexte local
-    >>> with contexte(exact = True):
-    ...     print contexte['exact']
-    True
-    >>> print contexte['exact']
-    False
-    """
-
-    __slots__ = '__local_dicts', '__no_direct_call'
-
-    def __init__(self, **kw):
-        dict.__init__(self, **kw)
-        self.__local_dicts = []
-        # Surveille que la méthode .__call__() ne soit jamais appelée directement
-        self.__no_direct_call = True
-
-    def __getitem__(self, key):
-        # On cherche d'abord dans les contextes locaux (en commençant par le dernier)
-        for dico in reversed(self.__local_dicts):
-            if dico.has_key(key):
-                return dico[key]
-        return dict.__getitem__(self, key)
-
-    def __call__(self, **kw):
-        u"""Cette méthode ne doit *JAMAIS* être appelée en dehors d'un contexte 'with'.
-
-        Exemple d'usage:
-        >>> from geolib.objet import Contexte
-        >>> contexte = Contexte(exact = False, decimales = 7)
-        >>> with contexte(exact = True):
-        ...     print contexte['exact']
-        True
-        """
-        # On ajoute un contexte local
-        self.__local_dicts.append(kw)
-        # On surveille que la méthode .__call__() ne soit jamais appelée directement
-        # Cela conduirait à des memory leaks (empilement de contextes locaux jamais effacés)
-        assert self.__no_direct_call, "Utilisation precedente en dehors d'un contexte 'with'."
-        self.__no_direct_call = False
-        return self
-
-    def __enter__(self):
-        # La méthode __enter__() est appelée juste après la méthode __call__()
-        self.__no_direct_call = True
-
-    def __exit__(self, type, value, traceback):
-        # On supprime le dernier contexte local
-        self.__local_dicts.pop()
-
-
-
-
-contexte = Contexte(exact = True,
-                    decimales = param.decimales,
-                    unite_angle = param.unite_angle,
-                    tolerance = param.tolerance,
-                    afficher_messages = param.afficher_messages,
-                    )
 
 def pi_():
-    return sympy.pi if contexte['exact'] else math.pi
+    return PI if contexte['exact'] else math.pi
 
 def I_():
-    return sympy.I if contexte['exact'] else 1j
+    return I if contexte['exact'] else 1j
 
 
 
@@ -419,11 +337,11 @@ class Ref(object):
 
 
 class BaseArgument(object):
-    u"""Classe mère des descripteurs 'Argument' et 'Arguments'."""
+    u"""Classe mère des descripteurs 'Argument', 'ArgumentNonModifiable' et 'Arguments'."""
 
     __compteur__ = 0
 
-    def __init__(self, types, get_method = None, set_method = None, defaut = None):
+    def __init__(self, types, get_method=None, set_method=None, defaut=None):
         self.__contenu__ = CustomWeakKeyDictionary()
         BaseArgument.__compteur__ += 1
         self.__compteur__ = BaseArgument.__compteur__
@@ -435,11 +353,8 @@ class BaseArgument(object):
         # cf. Objet.__init__()
         self.rattachement = None
         # Le nom est de la forme '_NomDeClasse__NomDArgument', et est complété dynamiquement
-        # cf. ALL.py
+        # cf. geolib/__init__.py
         self.nom = None
-
-
-
 
 
     def _definir_type(self):
@@ -450,8 +365,8 @@ class BaseArgument(object):
         # on transforme la chaîne "Ma_classe" en la classe Ma_classe elle-même.
         if isinstance(self.types, str):
             def convert(chaine):
-                if hasattr(ALL, chaine):
-                    return getattr(ALL, chaine)
+                if hasattr(G, chaine):
+                    return getattr(G, chaine)
                 else:
                     return __builtins__[chaine]
             self.types = tuple(convert(elt.strip()) for elt in self.types.split(","))
@@ -459,7 +374,7 @@ class BaseArgument(object):
             self.types = (self.types,)
 
     def _verifier_type(self, objet):
-        if isinstance(objet, ALL.Variable):
+        if isinstance(objet, G.Variable):
             objet = objet.copy()
         if not isinstance(objet, self.types):
             for _type in self.types:
@@ -486,7 +401,11 @@ class BaseArgument(object):
         if not isinstance(value, Ref):
             raise TypeError, "l'argument doit etre encapsule dans un objet 'Ref' lors d'une premiere definition."
         if value.objet is None and self.defaut is not None:
-            if isinstance(self.defaut, (types.FunctionType, types.BuiltinFunctionType, types.TypeType)):
+            # Du fait des dépendances circulaires, self.defaut est parfois rentré
+            # sous forme de chaine. À la première utilisation, il est converti.
+            if isinstance(self.defaut, basestring):
+                self.defaut = eval(self.defaut, G)
+            if isinstance(self.defaut, (FunctionType, BuiltinFunctionType, TypeType)):
                 value._Ref__objet = self.defaut()
             else:
                 value._Ref__objet = self.defaut
@@ -556,7 +475,7 @@ class Argument(BaseArgument):
         # 1er cas : Redéfinition d'un argument (self.__contenu__ contient déjà une référence à l'instance.
         if is_in(obj, self.__contenu__):
             value = self._set(obj, value)
-            if isinstance(self.__contenu__[obj].objet, ALL.Variable):
+            if isinstance(self.__contenu__[obj].objet, G.Variable):
                 # Optimisation : par exemple, on effectue A.x = 2 où A est un Point.
                 # Il est bien plus rapide de modifier la valeur de la variable A.x (A.x.val = 2),
                 # que de créer une nouvelle Variable de valeur 2,
@@ -696,7 +615,7 @@ class DescripteurFeuille(object):
                 ancetre.__feuille__ = value
         label = obj._style.get("label")
 
-        if isinstance(label, ALL.Formule):
+        if isinstance(label, Formule):
             label.__feuille__ = value
 
         if hasattr(obj, "_set_feuille") and value is not None:
@@ -716,7 +635,7 @@ class Objet(object):
     Note : elle n'est pas utilisable en l'état, mais doit être surclassée.
     """
 
-    __arguments__ = () # cf. ALL.py
+    __arguments__ = () # cf. geolib/__init__.py
     __feuille__ = DescripteurFeuille()
     __compteur_hierarchie__ = 0
     _prefixe_nom = "objet"
@@ -739,11 +658,6 @@ class Objet(object):
     def contexte(self):
         return self.__contexte
 
-##    __trace = [[], []]
-##    @property
-##    def trace(self):
-##        return self.__trace
-
     # NOTES:
     # Apres l'importation du module, on peut ainsi changer la __feuille__ utilisee par defaut par les objets crees.
     # Pour changer la feuille par defaut, il suffit donc de modifier l'attribut de classe.
@@ -752,12 +666,11 @@ class Objet(object):
 
     _style_defaut = param.defaut_objets
 
-    #~ def __new__(cls, *args, **kw):
-        #~ cls.__feuille__ = feuille_courante # ainsi, self.__feuille__ renvoie immédiatement la feuille courante, avant que l'objet ne commence à être créé, pour peu que __feuille__ soit préalablement correctement défini
-        #~ return object.__new__(cls, *args, **kw)
-
     # Un objet protégé ne peut pas être supprimé
     protege = False
+
+    # Les labels ont une initialisation minimale
+    _initialisation_minimale = False
 
     def __init__(self, **styles):
         # ---------------------------------------------------------------------
@@ -807,7 +720,7 @@ class Objet(object):
             # C'est un comportement normal ; en cas de déréférencement de l'objet comme vassal, il ne doit être déréférencé
             # qu'une fois si un seul argument est changé !
 
-            if isinstance(self, ALL.Label_generique):
+            if self._initialisation_minimale:
                 return # les labels ont une initialisation minimaliste
 
 
@@ -863,39 +776,13 @@ class Objet(object):
 
 
     def _set_feuille(self):
-        objets_a_enregistrer_dans_la_feuille = []
-        for nom_arg in self.__arguments__:
-            nom_arg = "_" + self.__class__.__name__ + "__" + nom_arg
-            arg = getattr(self, nom_arg)
-            if hasattr(arg, "_enregistrer_sur_la_feuille_par_defaut") \
-                    and arg._enregistrer_sur_la_feuille_par_defaut\
-                    and hasattr(self,  "_valeurs_par_defaut")\
-                    and nom_arg in self._valeurs_par_defaut:
-                objets_a_enregistrer_dans_la_feuille.append(arg)
-        if objets_a_enregistrer_dans_la_feuille:
-            # On tente de détecter via le nom  de l'objet le nom que doit prendre chacun de ses arguments.
-            # Par exemple, si un rectangle s'appelle ABCD, alors les points qui le constituent
-            # doivent prendre pour noms A, B, C et D.
-            noms = re.findall(RE_NOM_OBJET, self._nom)
-            if len(objets_a_enregistrer_dans_la_feuille) == len(noms):
-                for arg, nom in zip(objets_a_enregistrer_dans_la_feuille, noms):
-                    if self.__feuille__.objets.has_key(nom):
-                        nom = ''
-                    self.__feuille__.objets[nom] = arg
-            else:
-                for arg in objets_a_enregistrer_dans_la_feuille:
-                    self.__feuille__.objets[''] = arg
-        self._valeurs_par_defaut = []
-
-
-    def _set_feuille(self):
         if hasattr(self,  "_valeurs_par_defaut") and self._valeurs_par_defaut:
             noms_args, args = zip(*self._iter_arguments)
             correspondance = False
             # On tente de détecter via le nom  de l'objet le nom que doit prendre chacun de ses arguments.
             # Par exemple, si un rectangle s'appelle ABCD, alors les points qui le constituent
             # doivent prendre pour noms A, B, C et D.
-            if all(isinstance(arg, ALL.Point_generique) for arg in args):
+            if all(isinstance(arg, G.Point_generique) for arg in args):
                 noms = re.findall(RE_NOM_OBJET, self._nom)
                 if len(args) == len(noms):
                     correspondance = True
@@ -989,18 +876,18 @@ class Objet(object):
             if kwargs.has_key("label") or kwargs.has_key("legende"):
                 # il faudra tester le label
                 self._label_correct = None
-                if isinstance(self._style["label"], ALL.Formule):
+                if isinstance(self._style["label"], Formule):
                     label = self._style["label"]
                     self._style["label"] = ""
                     label.supprimer()
                 # si la légende passe en mode formule, ou si elle reste en mode formule :
                 if kwargs.get("legende", None) == FORMULE or (not kwargs.has_key("legende") and self._style["legende"] == FORMULE):
                     if kwargs.has_key("label"):
-                        kwargs["label"] = ALL.Formule(self, kwargs["label"])
+                        kwargs["label"] = Formule(self, kwargs["label"])
                     else:
-                        self._style["label"] = ALL.Formule(self, self._style["label"])
+                        self._style["label"] = Formule(self, self._style["label"])
                 # sinon, si elle n'est plus en mode formule :
-                elif isinstance(self._style["label"], ALL.Formule):
+                elif isinstance(self._style["label"], Formule):
                     self._style["label"] = eval(repr(label))
 
             self._style.update(kwargs)
@@ -1096,7 +983,7 @@ class Objet(object):
         # Test de nom_latex :
         try:
             mathtext_parser(self.nom_latex)
-        except matplotlib.pyparsing.ParseFatalException:
+        except ParseFatalException:
             warning('"%s" can not be parsed by mathtext.' %self.nom_latex)
             self.nom_latex = self.nom
         except Exception:
@@ -1143,7 +1030,7 @@ class Objet(object):
         Article peut être 'un', 'le', ou 'du', l'accord se faisant automatiquement.
         Le formatage est respecté (essayez 'un', 'UN', 'Un').
 
-        >>> from geolib.vecteurs import Vecteur_libre
+        >>> from wxgeometrie.geolib.vecteurs import Vecteur_libre
         >>> u = Vecteur_libre()
         >>> print u.titre()
         un vecteur libre.
@@ -1546,7 +1433,7 @@ class Objet(object):
 ##                self.__canvas__.graph.supprimer(self._representation)
 ##                if self.etiquette is not None:
 ##                    self.__canvas__.graph.supprimer(self.etiquette._representation)
-        if isinstance(self._style["label"], ALL.Formule):
+        if isinstance(self._style["label"], Formule):
             # il faut supprimer proprement la formule.
             self._style["label"].supprimer()
 
@@ -1956,6 +1843,9 @@ class Objet_avec_valeur(Objet):
     def _get_valeur(self):
         raise NotImplementedError
 
+    def _set_valeur(self):
+        raise NotImplementedError
+
 ##    def _get_valeur_approchee(self):
 ##        return self._get_valeur()
 
@@ -1994,7 +1884,7 @@ class Objet_avec_valeur(Objet):
 
 
 
-class Objet_numerique(mathlib.Reel, Objet_avec_valeur):
+class Objet_numerique(Reel, Objet_avec_valeur):
     u"Ensemble de méthodes propres aux angles, aux variables, et autres objets numériques."
 
     _style_defaut = {} # en cas d'héritage multiple, cela évite que le style de Objet efface d'autres styles

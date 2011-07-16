@@ -22,20 +22,14 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-# version unicode
+import re, math
+import numpy
 
-from pylib import *
-
-#~ from objets import *
-import sympy
+from sympy import oo, sympify
 from sympy.core.sympify import SympifyError
-try:
-    import numpy
-except ImportError:
-    print("Avertissement: la librairie 'numpy' n'a pas été trouvée.")
-oo = sympy.oo
 
-import parsers
+from ..pylib import print_error, str2
+from .parsers import _convertir_latex_frac
 
 
 class Ensemble(object):
@@ -154,11 +148,7 @@ class Union(Ensemble):
         self.intervalles = [intervalle for intervalle in ints if intervalle is not None]
 
     def __str__(self):
-        try:
-            import mathlib.custom_functions
-            str = mathlib.custom_functions.custom_str
-        except ImportError:
-            str = lambda x: str(x) if x != 'oo' else '+oo'
+        from .custom_functions import custom_str as str
         return "U".join(str(intervalle) for intervalle in self.intervalles).replace("}U{", " ; ")
 
     def __repr__(self):
@@ -282,7 +272,7 @@ class Intervalle(Union):
     - le complémentaire : symbole -A
     """
 
-    def _initialiser(self, inf = -sympy.oo, sup = sympy.oo, inf_inclus = True, sup_inclus = True):
+    def _initialiser(self, inf = -oo, sup = oo, inf_inclus = True, sup_inclus = True):
         self.inf = inf
         self.sup = sup
         self._inf_inclus = inf_inclus
@@ -291,13 +281,13 @@ class Intervalle(Union):
 
     @property
     def inf_inclus(self):
-        if self.inf == -sympy.oo:
+        if self.inf == -oo:
             return False
         return self._inf_inclus
 
     @property
     def sup_inclus(self):
-        if self.sup == sympy.oo:
+        if self.sup == oo:
             return False
         return self._sup_inclus
 
@@ -364,15 +354,11 @@ class Intervalle(Union):
     def __neg__(self):
         if self.vide:
             return Intervalle()
-        return Intervalle(-sympy.oo, self.inf, False, not self.inf_inclus) + Intervalle(self.sup, sympy.oo, not self.sup_inclus)
+        return Intervalle(-oo, self.inf, False, not self.inf_inclus) + Intervalle(self.sup, oo, not self.sup_inclus)
 
 
     def __str__(self):
-        try:
-            import mathlib.custom_functions
-            str = mathlib.custom_functions.custom_str
-        except ImportError:
-            str = lambda x: str(x) if x != 'oo' else '+oo'
+        from .custom_functions import custom_str as str
         if self.vide:
             return "{}"
         elif self.inf == self.sup:
@@ -412,7 +398,7 @@ def preformatage_ensemble(chaine):
     # On enlève le \ devant les commandes latex mathématiques usuelles
     chaine = re.sub(r"\\(infty|e|pi|sin|cos|tan|ln|exp)", lambda m:m.group()[1:], chaine)
     # conversion de \frac, \dfrac et \tfrac
-    chaine = parsers._convertir_latex_frac(chaine)
+    chaine = _convertir_latex_frac(chaine)
     # TODO: tests unitaires pour le LaTeX
 
     chaine = chaine.replace('infty', 'oo').replace('inf', 'oo')
@@ -495,17 +481,17 @@ def formatage_ensemble(chaine, preformatage = True, utiliser_sympy = False):
     if preformatage:
         chaine = preformatage_ensemble(chaine)
 
-    def f(matchobject): # conversion ]-2;sqrt(3)] -> Intervalle(-2, sqrt(3), False, True)
+    def f1(matchobject): # conversion ]-2;sqrt(3)] -> Intervalle(-2, sqrt(3), False, True)
         chaine = matchobject.group()
         sep = chaine.find(";")
         return "Intervalle(%s,%s,%s,%s)" %(chaine[1:sep],chaine[sep+1:-1],chaine[0]=="[",chaine[-1]=="]")
-    chaine = re.sub("[][][-+*/0-9.A-Za-z_)( ]+[;][-+*/0-9.A-Za-z_)( ]+[][]", f, chaine)
+    chaine = re.sub("[][][-+*/0-9.A-Za-z_)( ]+[;][-+*/0-9.A-Za-z_)( ]+[][]", f1, chaine)
 
-    def f(matchobject): # conversion {-1;2;sqrt(3)} -> Union(-1, 2, sqrt(3))
+    def f2(matchobject): # conversion {-1;2;sqrt(3)} -> Union(-1, 2, sqrt(3))
         chaine = matchobject.group()
         liste = chaine[1:-1].split(";")
         return "Union(%s)" %",".join(liste)
-    chaine = re.sub("[{][-+*/0-9.A-Za-z)(;]+[}]", f, chaine)
+    chaine = re.sub("[{][-+*/0-9.A-Za-z)(;]+[}]", f2, chaine)
 
     return chaine
 
@@ -519,7 +505,7 @@ def conversion_chaine_ensemble(chaine, utiliser_sympy = False):
 #            "Frac": Frac,
             "Intervalle": Intervalle,
             "Union": Union,
-            "oo": sympy.oo,
+            "oo": oo,
             "False": False,
             "True": True,
             }
@@ -527,7 +513,7 @@ def conversion_chaine_ensemble(chaine, utiliser_sympy = False):
     if utiliser_sympy:
         try:
             #print str2(chaine), dico
-            return sympy.sympify(str2(chaine), dico)
+            return sympify(str2(chaine), dico)
         except SympifyError:
             print "Warning: SympifyError in " + str2(chaine)
     return eval(str2(chaine), dico, dico)

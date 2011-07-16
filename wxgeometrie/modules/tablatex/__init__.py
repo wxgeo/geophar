@@ -23,12 +23,16 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
+import wx
 
-from GUI import *
-from GUI.ligne_commande import LigneCommande
-from tabvar import tabvar
-from tabsign import tabsign
-from tabval import tabval
+from ...GUI.ligne_commande import LigneCommande
+from ...GUI import MenuBar, Panel_simple
+from ... import param
+from ...pylib import warning
+from ...pylib.erreurs import message
+from .tabsign import tabsign
+from .tabval import tabval
+from .tabvar import tabvar
 
 
 
@@ -193,7 +197,7 @@ class TabLaTeX(Panel_simple):
             self.entree.SetFocus()
             self.message(u"Le code LaTeX a bien été généré.")
         except BaseException, erreur:
-            self.message(u"Impossible de générer le code LaTeX. " + pylib.erreurs.message(erreur))
+            self.message(u"Impossible de générer le code LaTeX. " + message(erreur))
             self.entree.SetFocus()
             if param.debug:
                 raise

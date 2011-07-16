@@ -28,22 +28,25 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 ## Cette librairie est une interface pour sympy :
 ## Elle modifie si nécessaire le comportement de fonctions sympy.
 
-import types
+from types import FunctionType
 
-import sympy, numpy
+from sympy import Basic, expand as expand_, apart, Function, Integer, factorint, Symbol,\
+                    diff as diff_, divisors as divisors_, cancel, together as together_,\
+                    limit as limit_, factor as factor_, integrate as integrate_, Sum,\
+                    sqrtdenest, solve as solve_, product as product_
 
-import custom_objects
-import internal_functions
-import custom_functions
-import param
-from pylib import print_error
+from .custom_objects import Matrice, Fonction, ProduitEntiers
+from .internal_functions import extract_var, poly_factor, syms
+from .custom_functions import auto_collect, derivee
+from ..pylib import print_error
+from .. import param
 
 def expand(expression, variable = None):
-    expression = sympy.expand(expression)
-    if isinstance(expression, sympy.Basic) and expression.is_rational_function():
+    expression = expand_(expression)
+    if isinstance(expression, Basic) and expression.is_rational_function():
         if variable is None:
-           variable = internal_functions.extract_var(expression)
-        return sympy.apart(expression, variable)
+           variable = extract_var(expression)
+        return apart(expression, variable)
     return expression
 
 
@@ -52,46 +55,46 @@ def evalf(expression, precision = 60):
 
     Par exemple, un polynôme factorisé reste factorisé après évaluation.
     """
-    if not isinstance(expression, sympy.Basic):
+    if not isinstance(expression, Basic):
         if hasattr(expression, 'evalf'):
             return expression.evalf(precision)
         elif hasattr(expression, '__float__'):
             return float(expression)
         return expression
-    elif expression.is_Atom or isinstance(expression, sympy.Function):
+    elif expression.is_Atom or isinstance(expression, Function):
         return expression.evalf(precision)
     else:
         return expression.func(*(evalf(arg) for arg in expression.args))
 
 
 def factor(expression, variable = None, ensemble = None, decomposer_entiers = True):
-    if isinstance(expression, (int, long, sympy.Integer)):
+    if isinstance(expression, (int, long, Integer)):
         if decomposer_entiers:
-            return custom_objects.ProduitEntiers(*sympy.factorint(expression).iteritems())
+            return ProduitEntiers(*factorint(expression).iteritems())
         else:
             return expression
 
 
-    elif isinstance(expression, sympy.Basic) and expression.is_polynomial():
+    elif isinstance(expression, Basic) and expression.is_polynomial():
         if variable is None:
-            variable = internal_functions.extract_var(expression)
+            variable = extract_var(expression)
         if variable is None:
             # polynôme à plusieurs variables
-            return sympy.factor(expression)
+            return factor_(expression)
         else:
             try:
-                return internal_functions.poly_factor(expression, variable, ensemble)
+                return poly_factor(expression, variable, ensemble)
             except NotImplementedError:
                 if param.debug:
                     print_error()
                 return expression
-    resultat = sympy.together(expression)
+    resultat = together_(expression)
     if resultat.is_rational_function():
         num, den = resultat.as_numer_denom()
         if den != 1:
             return factor(num, variable, ensemble, decomposer_entiers)/factor(den, variable, ensemble, decomposer_entiers)
     else:
-        resultat = custom_functions.auto_collect(resultat)
+        resultat = auto_collect(resultat)
         if resultat.is_Mul:
             produit = 1
             for facteur in resultat.args:
@@ -107,23 +110,23 @@ def cfactor(expression, variable = None):
 
 def series(expression, variable = None, point = 0, ordre = 5):
     if variable is None:
-        if internal_functions.syms(expression):
-            variable = internal_functions.syms(expression)[0]
+        if syms(expression):
+            variable = syms(expression)[0]
         else:
-            variable = sympy.Symbol("x")
+            variable = Symbol("x")
     return getattr(expression, "series")(variable, point, ordre)
 
 
 def diff(expression, variable = None, n = 1):
-    if isinstance(expression, custom_objects.Fonction):
-        return custom_functions.derivee(expression)
-    if variable is None and hasattr(expression, "atoms") and len(expression.atoms(sympy.Symbol)) == 1:
-        variable = expression.atoms(sympy.Symbol).pop()
-    return sympy.diff(expression, variable, n)
+    if isinstance(expression, Fonction):
+        return derivee(expression)
+    if variable is None and hasattr(expression, "atoms") and len(expression.atoms(Symbol)) == 1:
+        variable = expression.atoms(Symbol).pop()
+    return diff_(expression, variable, n)
 
 
 def divisors(n):
-    return sympy.divisors(int(n))
+    return divisors_(int(n))
 
 
 def limit(expression, *args):
@@ -132,77 +135,78 @@ def limit(expression, *args):
         dir = args.pop()
     else:
         dir = None
-    if len(args) == 1 and len(expression.atoms(sympy.Symbol)) == 1:
-        args = [expression.atoms(sympy.Symbol).pop()] + args
+    if len(args) == 1 and len(expression.atoms(Symbol)) == 1:
+        args = [expression.atoms(Symbol).pop()] + args
     if dir is None:
-        limite_gauche = sympy.limit(expression, args[0], args[1], "-")
-        limite_droite = sympy.limit(expression, args[0], args[1], "+")
-        if limite_gauche == limite_droite:
+        limite_gauche = limit_(expression, args[0], args[1], "-")
+        limite_droite = limit_(expression, args[0], args[1], "+")
+        if limite_gauche is limite_droite:
             return limite_gauche
         return limite_gauche, limite_droite
     else:
-        return  sympy.limit(expression, args[0], args[1], dir)
+        return  limit_(expression, args[0], args[1], dir)
 
 def integrate(expression, *args):
-    if len(args) == 3 and isinstance(args[0], sympy.Symbol) \
-                               and not isinstance(args[1], sympy.Symbol) \
-                               and isinstance(args[1], sympy.Basic) \
-                               and not isinstance(args[2], sympy.Symbol) \
-                               and isinstance(args[2], sympy.Basic):
-        return sympy.integrate(expression, (args[0], args[1], args[2]))
-    elif len(args) == 2 and len(internal_functions.syms(expression)) <= 1 \
-                               and not isinstance(args[0], sympy.Symbol) \
-                               and isinstance(args[0], sympy.Basic) \
-                               and not isinstance(args[1], sympy.Symbol) \
-                               and isinstance(args[1], sympy.Basic):
-        if internal_functions.syms(expression):
-            return sympy.integrate(expression, (internal_functions.syms(expression)[0], args[0], args[1]))
+    if len(args) == 3 and isinstance(args[0], Symbol) \
+                               and not isinstance(args[1], Symbol) \
+                               and isinstance(args[1], Basic) \
+                               and not isinstance(args[2], Symbol) \
+                               and isinstance(args[2], Basic):
+        return integrate_(expression, (args[0], args[1], args[2]))
+    elif len(args) == 2 and len(syms(expression)) <= 1 \
+                               and not isinstance(args[0], Symbol) \
+                               and isinstance(args[0], Basic) \
+                               and not isinstance(args[1], Symbol) \
+                               and isinstance(args[1], Basic):
+        if syms(expression):
+            return integrate_(expression, (syms(expression)[0], args[0], args[1]))
         else:
-            return sympy.integrate(expression, (sympy.Symbol("x"), args[0], args[1]))
-    return sympy.integrate(expression, *args)
+            return integrate_(expression, (Symbol("x"), args[0], args[1]))
+    return integrate_(expression, *args)
 
 def sum(expression, *args):
-    if len(args) == 3 and isinstance(args[0], sympy.Symbol) \
-                               and not isinstance(args[1], sympy.Symbol) \
-                               and isinstance(args[1], sympy.Basic) \
-                               and not isinstance(args[2], sympy.Symbol) \
-                               and isinstance(args[2], sympy.Basic):
+    if len(args) == 3 and isinstance(args[0], Symbol) \
+                               and not isinstance(args[1], Symbol) \
+                               and isinstance(args[1], Basic) \
+                               and not isinstance(args[2], Symbol) \
+                               and isinstance(args[2], Basic):
         args = (args[0], args[1], args[2])
-    elif len(args) == 2 and len(internal_functions.syms(expression)) <= 1 \
-                               and not isinstance(args[0], sympy.Symbol) \
-                               and isinstance(args[0], sympy.Basic) \
-                               and not isinstance(args[1], sympy.Symbol) \
-                               and isinstance(args[1], sympy.Basic):
-        if internal_functions.syms(expression):
-            args = (internal_functions.syms(expression)[0], args[0], args[1])
+    elif len(args) == 2 and len(syms(expression)) <= 1 \
+                               and not isinstance(args[0], Symbol) \
+                               and isinstance(args[0], Basic) \
+                               and not isinstance(args[1], Symbol) \
+                               and isinstance(args[1], Basic):
+        if syms(expression):
+            args = (syms(expression)[0], args[0], args[1])
         else:
-            args = (sympy.Symbol("x"), args[0], args[1])
-    return sympy.Sum(expression, args).doit()
+            args = (Symbol("x"), args[0], args[1])
+    return Sum(expression, args).doit()
 
-def product(expression, *args):
-    if len(args) == 3 and isinstance(args[0], sympy.Symbol) \
-                               and not isinstance(args[1], sympy.Symbol) \
-                               and isinstance(args[1], sympy.Basic) \
-                               and not isinstance(args[2], sympy.Symbol) \
-                               and isinstance(args[2], sympy.Basic):
-        return sympy.product(expression, (args[0], args[1], args[2]))
-    elif len(args) == 2 and len(internal_functions.syms(expression)) <= 1 \
-                               and not isinstance(args[0], sympy.Symbol) \
-                               and isinstance(args[0], sympy.Basic) \
-                               and not isinstance(args[1], sympy.Symbol) \
-                               and isinstance(args[1], sympy.Basic):
-        if internal_functions.syms(expression):
-            return sympy.product(expression, (internal_functions.syms(expression)[0], args[0], args[1]))
+def product(expression,
+*args):
+    if len(args) == 3 and isinstance(args[0], Symbol) \
+                               and not isinstance(args[1], Symbol) \
+                               and isinstance(args[1], Basic) \
+                               and not isinstance(args[2], Symbol) \
+                               and isinstance(args[2], Basic):
+        return product_(expression, (args[0], args[1], args[2]))
+    elif len(args) == 2 and len(syms(expression)) <= 1 \
+                               and not isinstance(args[0], Symbol) \
+                               and isinstance(args[0], Basic) \
+                               and not isinstance(args[1], Symbol) \
+                               and isinstance(args[1], Basic):
+        if syms(expression):
+            return product_(expression, (syms(expression)[0], args[0], args[1]))
         else:
-            return sympy.product(expression, (sympy.Symbol("x"), args[0], args[1]))
-    return sympy.product(expression, *args)
+            return product_(expression, (Symbol("x"), args[0], args[1]))
+    return product_(expression, *args)
 
 def solve(expression, *variables, **kw):
     ensemble = kw.get("ensemble", "R")
     if not variables:
-        variables = internal_functions.syms(expression)
+        variables = syms(expression)
     if len(variables) == 1:
-        solutions = sympy.solve(expression, variables[0])
+        solutions = solve_(expression, variables[0])
         if ensemble == "R":
             return tuple(solution for solution in solutions if solution.is_real)
         elif ensemble == "Q":
@@ -212,21 +216,21 @@ def solve(expression, *variables, **kw):
         else:
             return solutions
     else:
-        return sympy.solve(expression, variables)
+        return solve_(expression, variables)
 
 def csolve(expression, *variables):
-    return solve(expression, *variables, **{ensemble: "C"})
+    return solve(expression, *variables, **{'ensemble': "C"})
 
 def qsolve(expression, *variables):
-    return solve(expression, *variables, **{ensemble: "Q"})
+    return solve(expression, *variables, **{'ensemble': "Q"})
 
 def nsolve(expression, *variables):
-    return solve(expression, *variables, **{ensemble: "N"})
+    return solve(expression, *variables, **{'ensemble': "N"})
 
 def simplifier_racines(expression):
     try:
         if getattr(expression, "is_Pow", False):
-            return sympy.sqrtdenest(expression)
+            return sqrtdenest(expression)
         elif getattr(expression, "is_Mul", False):
             return reduce(lambda x,y:x*y, [simplifier_racines(fact) for fact in expression.args], 1)
         elif getattr(expression, "is_Add", False):
@@ -244,15 +248,15 @@ def mat(*args):
         args[1] = int(args[1])
         if len(args) == 2:
             args.append(lambda i,j:i==j,)
-        elif not isinstance(args[2], types.FunctionType):
-            if isinstance(args[2], sympy.Basic):
-                li = sympy.Symbol("li")
-                co = sympy.Symbol("co")
+        elif not isinstance(args[2], FunctionType):
+            if isinstance(args[2], Basic):
+                li = Symbol("li")
+                co = Symbol("co")
                 args = [[args[2].subs({co: j+1, li: i+1}) for j in xrange(args[1])] for i in xrange(args[0])]
             else:
                 args[2] = lambda i, j, val = args[2]: val
 #    print args, [type(arg) for arg in args], args[2](1, 1), type(args[2](1, 1))
-    return custom_objects.Matrice(*args)
+    return Matrice(*args)
 
 def together(expression):
-    return sympy.cancel(sympy.together(expression))
+    return cancel(together_(expression))

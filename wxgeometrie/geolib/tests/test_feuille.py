@@ -3,11 +3,15 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 from __future__ import with_statement
 
 import re
+from math import cos, pi, e, sqrt
 
-from geolib.tests.geotestlib import *
-from geolib import (Triangle_rectangle, DescripteurFeuille, Point, Segment,
-                    Vecteur,
-                                )
+from tools.testlib import assertAlmostEqual, assertRaises
+from wxgeometrie.geolib.tests.geotestlib import rand_pt
+from wxgeometrie.geolib import (Triangle_rectangle, DescripteurFeuille, Point, Segment,
+                    Vecteur, Fonction, Variable, Feuille, Angle, contexte, Arc_cercle,
+                    Texte, Droite, Carre, Triangle, Polygone, Cercle, Parallelogramme,
+                    NOM,
+                    )
 
 def test_abreviations():
     f = Feuille(titre = u"Feuille de travail n°1")
@@ -37,8 +41,8 @@ def test_abreviations():
     o.h = "A.x-10"
     assert(o.h == 5)
     assert(o.h - 3 == 2)
-    o.h = math.pi/3
-    assertAlmostEqual(math.cos(o.h), 1/2)
+    o.h = pi/3
+    assertAlmostEqual(cos(o.h), 1/2)
     o.B = (-1, 3)
     o.u = o.A>o.B
     assert(isinstance(o.u, Vecteur))
@@ -85,6 +89,7 @@ def test_noms_aleatoires():
     g = Fonction('2x+7')
     assert f.nom_aleatoire(M) == 'M1'
     assert f.nom_aleatoire(s) == 's1'
+    assert f.nom_aleatoire(g) == 'f1'
     assert f.nom_aleatoire(M, prefixe='A') == 'A3'
     # f0, f1, etc. sont réservés aux fonctions
     nom = f.nom_aleatoire(M, prefixe='f')
@@ -284,7 +289,7 @@ def test_noms_latex():
 def test_formules():
     f = Feuille()
     o = f.objets
-    o.A = Point(math.e, 3)
+    o.A = Point(e, 3)
     o.M = Point()
     o.M.label(u'{1/ln(A.x)}', True)
     assert(eval(o.M.label()) == 1)
@@ -356,10 +361,10 @@ def test_executer():
     f.executer("C = _")
     assert(o.C.x == 5)
     f.executer("=((i,sqrt(i)) for i in (3,4,5,6))")
-    assert(o.M2.xy == (3, math.sqrt(3)))
-    assert(o.M3.xy == (4, math.sqrt(4)))
-    assert(o.M4.xy == (5, math.sqrt(5)))
-    assert(o.M5.xy == (6, math.sqrt(6)))
+    assert(o.M2.xy == (3, sqrt(3)))
+    assert(o.M3.xy == (4, sqrt(4)))
+    assert(o.M4.xy == (5, sqrt(5)))
+    assert(o.M5.xy == (6, sqrt(6)))
 
 
 def test_nettoyer():
@@ -438,6 +443,6 @@ def test_issue_176():
     f = Feuille()
     A = f.objets.A = Point()
     B = f.objets.B = Point()
-    s = f.objets.s = Segment(A, B)
+    f.objets.s = Segment(A, B)
     del f.objets.A, f.objets.B, f.objets.s
     assert set(('A', 'B', 's')).isdisjoint(f.objets.noms)

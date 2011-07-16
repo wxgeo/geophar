@@ -1,13 +1,20 @@
 # -*- coding: iso-8859-1 -*-
 from __future__ import division, absolute_import # 1/2 == .5 (par defaut, 1/2 == 0)
 
-from geolib.tests.geotestlib import *
+from math import pi, sin, cos
+from random import random
 
-from geolib import (Point, Polygone, Milieu, Label_polygone, Barycentre, Segment, Droite, Triangle,
-                                Quadrilatere, Pentagone, Hexagone, Heptagone, Octogone, Segment, Parallelogramme,
-                                Triangle_isocele, Triangle_equilateral, Rectangle, Carre, Polygone_regulier, Carre_centre,
-                                Triangle_equilateral_centre, Polygone_regulier_centre, Losange,
-                                Arc_cercle, Glisseur_cercle,
+from tools.testlib import assertAlmostEqual, assertEqual, randint
+from wxgeometrie.geolib.tests.geotestlib import rand_pt
+from wxgeometrie.geolib import (Point, Polygone, Milieu, Label_polygone, Barycentre,
+                                Droite, Triangle, Angle, Vecteur,
+                                Quadrilatere, Pentagone, Hexagone, Heptagone,
+                                Octogone, Segment, Parallelogramme,
+                                Triangle_isocele, Triangle_equilateral, Rectangle,
+                                Carre, Polygone_regulier, Carre_centre,
+                                Triangle_equilateral_centre, Polygone_regulier_centre,
+                                Losange, Mediatrice, Triangle_isocele_rectangle,
+                                Triangle_rectangle,
                                 )
 
 # def test_Cote():
@@ -148,7 +155,6 @@ def test_Rectangle():
     cote_oppose = Droite(O, P)
     assert(cote.parallele(cote_oppose))
 
-
 def test_Losange():
     A = rand_pt()
     B = rand_pt()
@@ -191,6 +197,11 @@ def test_Triangle_equilateral_centre():
     assert(p.centre_cercle_inscrit.existe)
     assert(p.orthocentre.existe)
     assert(p.orthocentre == p.centre == p.centre_cercle_circonscrit == p.centre_cercle_inscrit)
+
+def test_Triangle_isocele_rectangle():
+    t = Triangle_isocele_rectangle((0, 0), (1, 1))
+    assertAlmostEqual(t.point3.xy, (0, 1))
+    assertAlmostEqual(t.aire, .5)
 
 def test_Carre_centre():
     O = rand_pt()
@@ -245,12 +256,20 @@ def test_Carre():
     assertAlmostEqual(c.aire, 49)
     assertAlmostEqual(c.point4.coordonnees, (0, 9))
 
-
-def test_Triangle_Isocele():
+def test_Triangle_isocele():
     A = rand_pt()
     B = rand_pt()
-    tri = Triangle_isocele(A, B, 2*math.pi/13)
+    tri = Triangle_isocele(A, B, 2*pi/13)
     C = tri.point3
     a = Angle(B, A, C)
-    assertAlmostEqual(a.radian, 2*math.pi/13)
+    assertAlmostEqual(a.radian, 2*pi/13)
     assertAlmostEqual(Segment(A, B).longueur, Segment(A, C).longueur)
+    t1 = Triangle_isocele((0, 0), (1, 1), u'90°')
+    assertAlmostEqual(t1.point3.xy, (-1, 1))
+    t2 = Triangle_isocele((0, 0), (2, 0), pi/3)
+    assertAlmostEqual(t2.point3.xy, (2*cos(pi/3), 2*sin(pi/3)))
+
+def test_Triangle_rectangle():
+    t = Triangle_rectangle(rand_pt(), rand_pt(), pi/7)
+    a = Angle(t.point1, t.point3, t.point2)
+    assertAlmostEqual(a.degre, 90)

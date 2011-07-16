@@ -22,15 +22,12 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-# version unicode
 
-
-from points import *
-
-
-
-
-
+from .lignes import Ligne_generique, Droite_generique, Tangente
+from .cercles import Cercle_generique, Arc_generique
+from .objet import Ref, Argument, contexte, Objet
+from .routines import vect, angle_vectoriel, produit_scalaire, racines
+from .points import Point_generique
 
 ##########################################################################################
 
@@ -40,11 +37,11 @@ def Intersection(objet1, objet2, **styles):
     def case(type1, type2):
         return (isinstance(objet1, type1) and isinstance(objet2, type2))\
                     or (isinstance(objet2, type1) and isinstance(objet1, type2))
-    if case(ALL.Ligne_generique, ALL.Ligne_generique):
+    if case(Ligne_generique, Ligne_generique):
         return Intersection_droites(objet1, objet2, **styles)
-    elif case(ALL.Ligne_generique, (ALL.Cercle_generique, ALL.Arc_generique)):
+    elif case(Ligne_generique, (Cercle_generique, Arc_generique)):
         return Intersection_droite_cercle(objet1, objet2, **styles)
-    elif case((ALL.Cercle_generique, ALL.Arc_generique), (ALL.Cercle_generique, ALL.Arc_generique)):
+    elif case((Cercle_generique, Arc_generique), (Cercle_generique, Arc_generique)):
         return Intersection_cercles(objet1, objet2, **styles)
     else:
         raise TypeError, "Intersection d'objets non supportes."
@@ -99,7 +96,7 @@ class Intersection_generique(Point_generique):
         au segment et à l'arc de cercle, à l'aide de cette méthode.
         """
         def appartient(sol, ens):
-            if isinstance(sol, (ALL.Cercle_generique, ALL.Droite_generique)):
+            if isinstance(sol, (Cercle_generique, Droite_generique)):
                 # aucun test n'est pratiqué
                 return True
             return sol in ens
@@ -171,7 +168,7 @@ class Intersection_droite_cercle(Intersection_generique): # ATTENTION, il y a de
     def __init__(self, droite, cercle, premier_point = None, **styles):
         # l'intersection de la droite et du cercle (si elle existe) est deux points (éventuellement confondus).
         # lorsque l'utilisateur créé deux fois deux suite un point d'intersection, ce ne doit pas être le même.
-        if isinstance(cercle, ALL.Ligne_generique):
+        if isinstance(cercle, Ligne_generique):
             droite, cercle = cercle, droite
         self.__droite = droite = Ref(droite)
         self.__cercle = cercle = Ref(cercle)
@@ -201,7 +198,7 @@ class Intersection_droite_cercle(Intersection_generique): # ATTENTION, il y a de
 
         # Cas de l'intersection d'une tangente à un cercle avec "son" cercle :
         # TODO: détecter la tangence de manière générale
-        if isinstance(self.__droite, ALL.Tangente) and self.__droite.cercle is self.__cercle:
+        if isinstance(self.__droite, Tangente) and self.__droite.cercle is self.__cercle:
             points_intersection = [self.__droite.point_tangence.coordonnees]
         else:
             a, b, c = self.__droite.equation

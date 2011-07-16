@@ -23,13 +23,13 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 from functools import partial
+import re
+import wx
 
-from GUI import *
+from ...GUI import MenuBar, Panel_API_graphique
+from ...geolib import Courbe, Fonction
+from . import suites
 
-import tableau, suites
-from mathlib.parsers import traduire_formule
-import mathlib.universal_functions
-from mathlib.universal_functions import _fonctions_mathematiques
 
 class TraceurMenuBar(MenuBar):
     def __init__(self, panel):
@@ -40,7 +40,10 @@ class TraceurMenuBar(MenuBar):
         self.ajouter(u"creer")
         self.ajouter("affichage")
         self.ajouter("autres")
-        self.ajouter(u"Outils", [u"Tableau de valeurs", u"Tableaux de valeurs des fonctions.", u"Ctrl+T", self.panel.tableau], [u"Représenter une suite", u"Représenter une suite numérique.", None, self.panel.suite], None, [u"options"])
+        self.ajouter(u"Outils",
+        #[u"Tableau de valeurs", u"Tableaux de valeurs des fonctions.", u"Ctrl+T", self.panel.tableau],
+        [u"Représenter une suite", u"Représenter une suite numérique.", None, self.panel.suite],
+        None, [u"options"])
         self.ajouter(u"avance1")
         self.ajouter(u"?")
 
@@ -220,11 +223,11 @@ class Traceur(Panel_API_graphique):
         self.affiche()
         #event.Skip()
 
-    def tableau(self, event = None):
-        self.parent.a_venir()
-        return
-        table = tableau.TableauValeurs(self)
-        table.Show(True)
+#    def tableau(self, event = None):
+#        self.parent.a_venir()
+#        return
+#        table = tableau.TableauValeurs(self)
+#        table.Show(True)
         #table.SetSize(wx.Size(200,250))
         #table.SetDimensions(-1, -1, -1, 300)
 

@@ -24,20 +24,16 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 # version unicode
 
+from random import uniform, normalvariate
+from numpy import ndarray
 
+from .objet import Argument, Arguments, Ref, Objet_avec_coordonnees, Objet, G,\
+                    contexte, TYPES_REELS, Objet_avec_coordonnees_modifiables
+from .points import Point, Point_generique, Point_final
+from .variables import Variable_generique
+from .routines import norme, vect
 
-from lignes import *
-##from points import *
-
-
-
-
-
-
-# Vecteurs
-
-
-
+from .. import param
 
 
 class Vecteur_generique(Objet_avec_coordonnees):
@@ -85,10 +81,11 @@ class Vecteur_generique(Objet_avec_coordonnees):
         return self + (-y)
 
     def __mul__(self, y):
-        if isinstance(y, Vecteur_generique):
-            return Produit_scalaire(self, y)
-        else:
-            return NotImplemented
+        return NotImplemented
+#        if isinstance(y, Vecteur_generique):
+#            return Produit_scalaire(self, y)
+#        else:
+#            return NotImplemented
 
     def __rmul__(self, y):
         return Somme_vecteurs([self], [y])
@@ -106,7 +103,7 @@ class Vecteur_generique(Objet_avec_coordonnees):
         if self.existe:
             if  isinstance(y, Vecteur_generique) and y.existe:
                 return abs(self.x - y.x) < contexte['tolerance'] and abs(self.y - y.y) < contexte['tolerance']
-            elif isinstance(y, (list, tuple, numpy.ndarray)) and len(y) == 2:
+            elif isinstance(y, (list, tuple, ndarray)) and len(y) == 2:
                 return abs(self.x - y[0]) < contexte['tolerance'] and abs(self.y - y[1]) < contexte['tolerance']
         return False
 
@@ -144,8 +141,8 @@ class Vecteur(Vecteur_generique):
     point2 = __point2 = Argument("Point_generique", defaut = Point)
 
     def __new__(cls, *args, **kw):
-        if len(args) == 2 and isinstance(args[0], ALL.TYPES_REELS + (ALL.Variable_generique, basestring, )) \
-                                   and isinstance(args[1], ALL.TYPES_REELS + (ALL.Variable_generique, basestring, )):
+        if len(args) == 2 and isinstance(args[0], TYPES_REELS + (Variable_generique, basestring, )) \
+                                   and isinstance(args[1], TYPES_REELS + (Variable_generique, basestring, )):
             vecteur_libre = Vecteur_libre.__new__(Vecteur_libre, *args, **kw)
             vecteur_libre.__init__(*args, **kw)
             return vecteur_libre
@@ -154,11 +151,11 @@ class Vecteur(Vecteur_generique):
     def __init__(self, point1 = None, point2 = None, **styles):
 #        if point2 is None:
 #            point2 = point1
-#            point1 = ALL.Point(0, 0)
+#            point1 = Point(0, 0)
         self.__point1 = point1 = Ref(point1)
         self.__point2 = point2 = Ref(point2)
         Vecteur_generique.__init__(self, **styles)
-        self.etiquette = ALL.Label_vecteur(self)
+        self.etiquette = G.Label_vecteur(self)
 
     @property
     def extremites(self):
@@ -241,8 +238,8 @@ class Vecteur_libre(Objet_avec_coordonnees_modifiables, Vecteur_generique):
 
     Un vecteur défini par ses coordonnées."""
 
-    abscisse = x = __x = Argument("Variable_generique", defaut = lambda:module_random.normalvariate(0,10))
-    ordonnee = y = __y = Argument("Variable_generique", defaut = lambda:module_random.normalvariate(0,10))
+    abscisse = x = __x = Argument("Variable_generique", defaut = lambda: normalvariate(0,10))
+    ordonnee = y = __y = Argument("Variable_generique", defaut = lambda: normalvariate(0,10))
 
     def __init__(self, x = None, y = None, **styles):
         x, y, styles = self._recuperer_x_y(x, y, styles)
@@ -255,10 +252,10 @@ class Vecteur_libre(Objet_avec_coordonnees_modifiables, Vecteur_generique):
     def _set_feuille(self):
         xmin, xmax, ymin, ymax = self.__feuille__.fenetre
         if "_Vecteur_libre__x" in self._valeurs_par_defaut:
-            self.__x.val = module_random.uniform(xmin, xmax)
+            self.__x.val =  uniform(xmin, xmax)
 #            self._valeurs_par_defaut.discard("_Vecteur_libre__x")
         if "_Vecteur_libre__y" in self._valeurs_par_defaut:
-            self.__y.val = module_random.uniform(ymin, ymax)
+            self.__y.val =  uniform(ymin, ymax)
 #            self._valeurs_par_defaut.discard("_Vecteur_libre__y")
         Objet._set_feuille(self)
 

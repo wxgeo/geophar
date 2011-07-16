@@ -23,16 +23,10 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 
-# version unicode
-
-# importation des librairies classiques
 from operator import attrgetter
 from functools import partial
 
-from LIB import *
-from API import *
-
-
+import wx
 
 
 
@@ -415,4 +409,3 @@ class MenuBar(wx.MenuBar):
             self.ajouter(*item)
 
         self.parent.parent.Bind(wx.EVT_MENU_OPEN, self.actualiser)
-

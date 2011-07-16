@@ -22,11 +22,9 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-#version unicode
-
-from LIB import *
-from ligne_commande import *
-
+import wx
+from .ligne_commande import LigneCommande
+from ..pylib import print_error
 
 class ConsoleGeolib(wx.Panel):
     def __init__(self, parent, couleur = None):
@@ -54,4 +52,3 @@ class ConsoleGeolib(wx.Panel):
         except:
             print_error()
             self.resultats.SetLabel('Erreur.')
-

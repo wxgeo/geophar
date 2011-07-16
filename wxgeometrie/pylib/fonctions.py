@@ -4,7 +4,7 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 ##########################################################################
 #
 #       Fonctions couramment utilisees, et non implementees en Python
-#                           (ou non connues de moi !)
+#                     (...du moins, à ma connaissance !)
 #
 ##########################################################################
 #    WxGeometrie
@@ -25,16 +25,17 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-# version unicode
 
-import param # paramètres du programme
 import re
 import weakref
 import sys, zlib
 import os.path
-import warnings, traceback
+import warnings, traceback, linecache
 
-from decorator import decorator
+from .decorator import decorator
+
+from .. import param # paramètres du programme
+from sympy import sympify
 
 
 def is_in(element, _list):
@@ -231,27 +232,11 @@ def advanced_split(main_string, separator, keep_empty_str = False, symbols = "([
     return [main_string[i+1:j] for i, j in zip(coupures[:-1], coupures[1:]) if main_string[i+1:j] or keep_empty_str]
 
 
-
-
-def regexp(regular_exp, main_string, action = "''"): # DESUET, utiliser désormais regsub
-    u"""Transforme la chaine "main_string" :
-    Il applique aux parties vérifiant "regular_exp" le traitement "action".
-    Le traitement "action" doit avoir pour variable "x",
-    x correspondant a un bout de chaine vérifiant "regular_exp".
-    Par exemple, action peut être "x[:-1] + '*' + x[-1]"."""
-    deprecation("Use regsub instead of regexp.")
-    l = re.split("(" + regular_exp + ")", main_string)
-    exec("def f(x): return " + (action or "''"))
-    for i in range(len(l)//2):
-        l[2*i+1] = f(l[2*i+1])
-    return "".join(l)
-
-
 def regsub(regular_exp, main_string, action = ""):
     u"""Transforme la chaine "main_string" :
     Il applique aux parties vérifiant "regular_exp" le traitement "action".
 
-    >>> from geolib.fonctions import regsub
+    >>> from wxgeometrie.geolib.fonctions import regsub
     >>> regsub("[a-z]", "salut les amis !", "?")
     '????? ??? ???? !'
     >>> regsub("[a-z]+", "hello world !", lambda s: s[1:])
@@ -261,9 +246,6 @@ def regsub(regular_exp, main_string, action = ""):
         return re.sub(regular_exp, action, main_string)
     else:
         return re.sub(regular_exp, lambda x: action(x.group(0)), main_string)
-
-
-
 
 
 class WeakList(weakref.WeakValueDictionary):
@@ -347,7 +329,6 @@ def print_error(chaine = ''):
     """
     if chaine:
         print(chaine)
-    import traceback
     typ, val, tb = sys.exc_info()
     tb = traceback.extract_tb(tb)
     print 'Traceback (most recent call last)'
@@ -508,12 +489,12 @@ def find_closing_bracket(expr, start = 0, brackets = '{}'):
     raise ValueError, 'unbalanced brackets (%s) while scanning %s...' %(balance, repr(expr_deb))
 
 
-def warning(message, type_warning = Warning):
+def warning(message, type_warning = Warning, level=0):
     if param.warning:
-        warnings.warn(message, type_warning, stacklevel = 3)
+        warnings.warn(message, type_warning, stacklevel = (level + 3))
 
-def deprecation(message):
-    warnings.warn(message, DeprecationWarning, stacklevel = 3)
+def deprecation(message, level=0):
+    warnings.warn(message, DeprecationWarning, stacklevel = (level + 3))
 
 #def unicode2(string_or_unicode, encodage = None):
 #    u"Convertit en unicode si besoin est, avec l'encodage de 'param.encodage' par défaut."
@@ -782,9 +763,9 @@ def traceit(frame, event, arg):
 
 def tracer_(booleen = True):
     if booleen:
-        __sys__.settrace(traceit)
+        sys.settrace(traceit)
     else:
-        __sys__.settrace(None)
+        sys.settrace(None)
 
 
 def property2(fonction):
@@ -831,7 +812,7 @@ def pstfunc(chaine):
     dict_fn = {'ln':'ln'}
 
     def code_arg(s):
-        return '(' + str(sympy.sympify(s)) + ')'
+        return '(' + str(sympify(s)) + ')'
 
     for s in chaine.split(' '):
         if s in dict_op:
@@ -921,7 +902,7 @@ class OrderedDict(dict):
         del self.__keys[:]
         dict.clear(self)
 
-    def pop(k, d = no_argument):
+    def pop(self, k, d=no_argument):
         try:
             v = dict.pop(self, k)
             self.__keys.remove(k)

@@ -1,8 +1,11 @@
 # -*- coding: iso-8859-1 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
-from geolib.tests.geotestlib import *
-from geolib import Variable, Formule, mathtext_parser
+from random import random
+
+from tools.testlib import assertAlmostEqual, assertEqual, randint, assertRaises
+from wxgeometrie.geolib import Variable, Formule
+from wxgeometrie.pylib import mathtext_parser
 
 
 def test_operations():
@@ -58,4 +61,3 @@ def test_parser_matplotlib():
     c_math = '$%s$' %c
     assert(mathtext_parser(c))
     assert(mathtext_parser(c_math))
-

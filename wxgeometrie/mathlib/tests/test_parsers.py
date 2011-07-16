@@ -1,14 +1,14 @@
 # -*- coding: iso-8859-1 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
-from tools.testlib import *
+#from tools.testlib import *
 
 import re
-import mathlib
-from mathlib import traduire_formule
-from mathlib.parsers import NBR, NBR_SIGNE, VAR, VAR_NOT_ATTR, NBR_OR_VAR, _arguments_latex
+from wxgeometrie.mathlib import universal_functions
+from wxgeometrie.mathlib.parsers import (traduire_formule, NBR, NBR_SIGNE, VAR,
+                                        VAR_NOT_ATTR, NBR_OR_VAR, _arguments_latex)
 
-liste_fonctions = [key for key in mathlib.universal_functions.__dict__.keys() if "_" not in key]
+liste_fonctions = [key for key in universal_functions.__dict__.keys() if "_" not in key]
 liste_fonctions.append("limite")
 liste_fonctions.append("log10")
 liste_fonctions.append("mat")
@@ -57,9 +57,9 @@ def assert_VAR(chaine):
 def assert_not_VAR(chaine):
     assert_not_match(VAR, chaine)
 
-def assert_NBR(chaine):
-    assert_match(NBR, chaine)
-    assert_match(NBR_OR_VAR, chaine)
+#def assert_NBR(chaine):
+#    assert_match(NBR, chaine)
+#    assert_match(NBR_OR_VAR, chaine)
 
 def assert_NBR(chaine):
     assert_match(NBR, chaine)

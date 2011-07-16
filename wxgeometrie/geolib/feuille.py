@@ -24,49 +24,57 @@ from __future__ import with_statement
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 
-
 # Ce module contient essentiellement la classe Feuille. C'est la classe qui va accueillir tous les objets geometriques.
 # Elle fait l'intermediaire entre les objets et le Panel ou s'affichent les objets.
 
-import keyword
+from keyword import iskeyword
+from random import choice
+from string import letters
+from math import pi, e
+from types import MethodType, GeneratorType, TypeType
+from operator import attrgetter
+import re
+import time
 
-from ALL import *
-import ALL
-from pseudo_canvas import _pseudocanvas
-import math, string, random
-import mathlib
-import sympy
+from sympy import Symbol, Wild, sympify, oo
 
-assert ALL.Objet is Objet
-##class Dict_objets(dict):
-##    u"""Utilisé pour l'instruction exec."""
-##    def __init__(self, objets, dico = None):
-##        if dico is None:
-##            dict.__init__(self)
-##        else:
-##            dict.__init__(self, dico)
-##        self.objets = objets
-##
-##    def __setitem__(self, key, val):
-##        setattr(self.objets, key, val)
-##
-##    def __delitem__(self, key):
-##        delattr(self.objets, key)
+from ..pylib import uu, is_in, str3, property2, print_error, rstrip_, CompressedList
+from ..mathlib.intervalles import Union, Intervalle
 
+from .objet import Objet, contexte, souffler, G
+from .angles import Secteur_angulaire
+from .lignes import Segment
+from .fonctions import Fonction
+from .points import Point
+from .cercles import Arc_generique
+from .textes import Texte
+from .labels import Label_generique
+from .vecteurs import Vecteur_libre
+from .variables import Variable
+from .constantes import FORMULE, NOM, RIEN
+
+from .pseudo_canvas import _pseudocanvas
+from .. import param
+from .. import mathlib
+from ..pylib.securite import keywords_interdits_presents, keywords_interdits
+
+
+#assert geo.Objet is Objet
 
 def parse_equation(chaine):
+    #XXX: ébauche d'un parser d'équations
     left, right = chaine.split('=')
     chaine = left + '-(' + right + ')'
     chaine = mathlib.parsers.traduire_formule(chaine)
-    expr = sympy.sympify(chaine)
-    a = sympy.Wild('a',exclude=[x,y])
-    b = sympy.Wild('b',exclude=[x,y])
-    c = sympy.Wild('c',exclude=[x,y])
-    d = sympy.Wild('d',exclude=[x,y])
-    e = sympy.Wild('e',exclude=[x,y])
-    f = sympy.Wild('f',exclude=[x,y])
-    x = sympy.Symbol('x')
-    y = sympy.Symbol('y')
+    expr = sympify(chaine)
+    a = Wild('a',exclude=[x, y])
+    b = Wild('b',exclude=[x, y])
+    c = Wild('c',exclude=[x, y])
+    d = Wild('d',exclude=[x, y])
+    e = Wild('e',exclude=[x, y])
+    f = Wild('f',exclude=[x, y])
+    x = Symbol('x')
+    y = Symbol('y')
     droite = a*x + b*y + c
     cercle = a*x**2 + a*y**2 + b*x + c*y + d
 
@@ -101,7 +109,7 @@ class Liste_objets(object):
             delattr(obj, nom)
 
     def __getattr__(self, nom):
-        if hasattr(self.classe, nom) and isinstance(getattr(self.classe, nom), ALL.types.MethodType):
+        if hasattr(self.classe, nom) and isinstance(getattr(self.classe, nom), MethodType):
             return MethodesObjets(nom, *self)
         return [getattr(obj, nom) for obj in self]
 
@@ -151,20 +159,20 @@ Attributs spéciaux:
         self.clear()
         # On ajoute au dictionnaire courant les objets géométriques, et uniquement eux
         # (pas tout LIB.py !)
-        self.update((key, val) for key, val in ALL.__dict__.iteritems() \
-                    if isinstance(val, type) and issubclass(val, ALL.Objet))
+        self.update((key, val) for key, val in G.__dict__.iteritems() \
+                    if isinstance(val, type) and issubclass(val, Objet))
         # Les noms de classe peuvent aussi être tapés en minuscules (c'est plus rapide à taper)
-        self.update((key.lower(), val) for key, val in ALL.__dict__.iteritems() \
-                    if isinstance(val, type) and issubclass(val, ALL.Objet))
+        self.update((key.lower(), val) for key, val in G.__dict__.iteritems() \
+                    if isinstance(val, type) and issubclass(val, Objet))
 
         # On ajoute au dictionnaire les fonctions mathématiques courantes
         self.update((key, val) for key, val in mathlib.universal_functions.__dict__.iteritems() \
                     if key[0] != "_" and key != "division")
 
-        self.update(pi = math.pi, e = math.e, oo = sympy.oo, \
-                    Intervalle = intervalles.Intervalle, Union = intervalles.Union, \
-                    x = sympy.Symbol("x"), y = sympy.Symbol("y"), z = sympy.Symbol("z"), \
-                    t = sympy.Symbol("t"))
+        self.update(pi = pi, e = e, oo = oo, \
+                    Intervalle = Intervalle, Union = Union, \
+                    x = Symbol("x"), y = Symbol("y"), z = Symbol("z"), \
+                    t = Symbol("t"))
 
 
         self.update(pause = self.__feuille__.pause, erreur = self.__feuille__.erreur,
@@ -182,7 +190,7 @@ Attributs spéciaux:
                  'textes': 'Texte_generique', 'vecteurs': 'Vecteur_generique', 'variables': 'Variable'}
         d = {}
         for typ in types:
-            d[typ] = Liste_objets(self.__feuille__, getattr(ALL, types[typ]))
+            d[typ] = Liste_objets(self.__feuille__, getattr(G, types[typ]))
         self.update(d)
 
 
@@ -263,13 +271,13 @@ Attributs spéciaux:
         if not isinstance(valeur, Objet):
 
             # Permet de construire des points à la volée : '=((i,sqrt(i)) for i in (3,4,5,6))'
-            if isinstance(valeur, types.GeneratorType) and nom == "_":
+            if isinstance(valeur, GeneratorType) and nom == "_":
                 for item in valeur:
                     self.__setitem__('', item)
                 return
 
             # 'A = Point' est un alias de 'A = Point()'
-            elif isinstance(valeur, types.TypeType) and issubclass(valeur, Objet):
+            elif isinstance(valeur, TypeType) and issubclass(valeur, Objet):
                 valeur = valeur()
 
             # Par convéniance, certains types sont automatiquement convertis :
@@ -433,7 +441,7 @@ Attributs spéciaux:
             return '_'
         nom = self.__convertir_nom(nom)
         # Noms réservés en python (if, then, else, for, etc.):
-        if keyword.iskeyword(nom):
+        if iskeyword(nom):
             return err(u"Nom r\xe9serv\xe9 : " + nom) # Pas d'accent dans le code ici a cause de Pyshell !
         # Les noms contenant '__' sont des noms réservés pour un usage futur éventuel (convention).
         if "__" in nom:
@@ -519,8 +527,8 @@ class Interprete_feuille(object):
             self.feuille.save_log("REQUETE FEUILLE: " + commande)
 
         # À mettre en toute fin, pour des raisons de sécurité.
-        if pylib.securite.keywords_interdits_presents(commande):
-            self.erreur("Mots-clefs interdits : " + ", ".join(sorted(pylib.securite.keywords_interdits)))
+        if keywords_interdits_presents(commande):
+            self.erreur("Mots-clefs interdits : " + ", ".join(sorted(keywords_interdits)))
         try:
             code = compile(commande, '<string>', 'eval')
             val = eval(code, self.feuille.objets)
@@ -1037,7 +1045,7 @@ class Feuille(object):
     def nettoyer(self):
         u"Supprime les objets cachés inutiles."
         objets = sorted((obj for obj in self.liste_objets(True) if not obj.style('visible')),
-                            key = operator.attrgetter("_hierarchie"), reverse = True)
+                            key = attrgetter("_hierarchie"), reverse = True)
         for obj in objets:
             if not any(heritier.nom for heritier in obj._heritiers()):
                 obj.supprimer()
@@ -1094,8 +1102,8 @@ class Feuille(object):
                 if abs(groupe[-1]["angle"] - angle["angle"]) < contexte['tolerance']:
                     groupe.append(angle)
                 else:
-#                    print abs(abs(groupe[-1]["angle"]) - math.pi/2)
-                    if abs(abs(groupe[-1]["angle"]) - math.pi/2) < contexte['tolerance']:
+#                    print abs(abs(groupe[-1]["angle"]) - pi/2)
+                    if abs(abs(groupe[-1]["angle"]) - pi/2) < contexte['tolerance']:
                         for elt in groupe:
                             elt["objet"].style(codage = "^")
 ##                            elt["objet"].creer_figure()
@@ -1106,7 +1114,7 @@ class Feuille(object):
                         if resultat:
                             i += 1
                     groupe = [angle]
-            if abs(abs(groupe[-1]["angle"]) - math.pi/2) < contexte['tolerance']:
+            if abs(abs(groupe[-1]["angle"]) - pi/2) < contexte['tolerance']:
                 for elt in groupe:
                     elt["objet"].style(codage = "^")
 ##                    elt["objet"].creer_figure()
@@ -1119,7 +1127,7 @@ class Feuille(object):
     def objet_temporaire(self, objet = False):
         if objet is not False:
             if self._objets_temporaires:
-                obj = self._objets_temporaires[0]
+#                obj = self._objets_temporaires[0]
                 self.affichage_perime()
             if objet is None:
                 self._objets_temporaires = []
@@ -1217,7 +1225,7 @@ class Feuille(object):
         S'il n'y a pas d'objet en cours de déplacement, la deuxième liste est vide.
         """
         objet_deplace = self._objet_deplace
-        if isinstance(objet_deplace, ALL.Label_generique):
+        if isinstance(objet_deplace, Label_generique):
             objet_deplace = objet_deplace.parent
             # TODO: pouvoir rafraichir uniquement l'étiquette ?
 ##        # Rafraichit les figures s'il y a besoin:
@@ -1283,7 +1291,7 @@ class Feuille(object):
 
         objets = self.liste_objets(True)
         # on doit enregistrer les objets dans le bon ordre (suivant la _hierarchie) :
-        objets.sort(key = operator.attrgetter("_hierarchie_et_nom"))
+        objets.sort(key = attrgetter("_hierarchie_et_nom"))
 
 ##        texte = "fenetre = " + repr(self.fenetre) + "\n"
         texte = '\n'.join(nom + ' = ' + repr(getattr(self, nom))
@@ -1384,7 +1392,7 @@ class Feuille(object):
             nom = self.objets._Dictionnaire_objets__verifier_syntaxe_nom(objet, nom, skip_err=True)
             if nom is not None:
                 return nom
-            prefixe = ''.join(random.choice(string.letters) for i in xrange(8))
+            prefixe = ''.join(choice(letters) for i in xrange(8))
         raise RuntimeError, "Impossible de trouver un nom convenable apres 1000 essais !"
 
 
@@ -1393,6 +1401,3 @@ class Feuille(object):
         souffler()
         if self._stop:
             raise RuntimeError, "Interruption de la macro."
-
-
-feuille_par_defaut = Feuille()

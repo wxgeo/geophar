@@ -1,12 +1,17 @@
 # -*- coding: iso-8859-1 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
-from geolib.tests.geotestlib import *
+from random import random
+import math
 
-import geolib
-from geolib import (Angle_oriente, Angle_vectoriel, Angle_libre,
-                                Secteur_angulaire, univ, Label_angle,
+from tools.testlib import assertAlmostEqual, assertNotAlmostEqual
+
+from wxgeometrie.geolib import (Feuille, Angle_oriente, Angle_vectoriel, Angle_libre,
+                                Secteur_angulaire, Label_angle, Vecteur_libre,
+                                Point, Angle, Variable,
                                 )
+from wxgeometrie.mathlib.universal_functions import sin as u_sin, cos as u_cos, tan as u_tan
+
 
 def test_Secteur_angulaire():
     u = Vecteur_libre(5.458, -2.546)
@@ -47,12 +52,9 @@ def test_Angle_libre():
     assertAlmostEqual(a.grad, x*200/math.pi)
     assertAlmostEqual(a.rad, x)
     assertNotAlmostEqual(a.val, a.deg)
-    sin = univ.sin
-    cos = univ.cos
-    tan = univ.tan
-    assertAlmostEqual(sin(a), math.sin(x))
-    assertAlmostEqual(cos(a), math.cos(x))
-    assertAlmostEqual(tan(a), math.tan(x))
+    assertAlmostEqual(u_sin(a), math.sin(x))
+    assertAlmostEqual(u_cos(a), math.cos(x))
+    assertAlmostEqual(u_tan(a), math.tan(x))
     a.unite = "g"
     assertNotAlmostEqual(a.val, a.grad)
     b = Angle_libre(u"45°")
@@ -69,11 +71,11 @@ def test_Angle_libre():
 ##        f.objets.k = v
 ##        f.objets.c = Angle_libre(f.objets.k, "d")
 ##        assertAlmostEqual(b.rad, c.rad)
-    f = geolib.Feuille()
-    f.objets.A = geolib.Point(40, 20)
-    f.objets.k = geolib.Variable("A.x+5")
-    f.objets.c = geolib.Angle_libre(f.objets.k, "d")
-    f.objets.d = geolib.Angle_libre("A.x+5", "d")
+    f = Feuille()
+    f.objets.A = Point(40, 20)
+    f.objets.k = Variable("A.x+5")
+    f.objets.c = Angle_libre(f.objets.k, "d")
+    f.objets.d = Angle_libre("A.x+5", "d")
     assert(f.objets.c.rad is not None)
     assertAlmostEqual(b.rad, f.objets.c.rad)
     assertAlmostEqual(f.objets.d.rad, f.objets.c.rad)

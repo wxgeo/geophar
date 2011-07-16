@@ -1,18 +1,15 @@
 # -*- coding: iso-8859-1 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
-import re
-import sympy
+from pytest import XFAIL
 
-from tools.testlib import *
+from sympy import exp, sqrt, Symbol
 
-import mathlib
-from mathlib import traduire_formule
-import mathlib.custom_functions as custom_functions
-from sympy import exp, sqrt
-#from mathlib.custom_functions import resoudre
+#from tools.testlib import *
+from wxgeometrie.mathlib.custom_functions import resoudre, positif, ensemble_definition
 
-VERBOSE = False
+
+#VERBOSE = False
 
 
 def assertEqual(x, y):
@@ -21,13 +18,13 @@ def assertEqual(x, y):
     assert(x == y)
 
 def assert_resoudre(x, y):
-    assertEqual(str(custom_functions.resoudre(x)), y)
+    assertEqual(str(resoudre(x)), y)
 
 def assert_positif(x, y):
-    assertEqual(unicode(custom_functions.positif(x)), y)
+    assertEqual(unicode(positif(x)), y)
 
 def assert_ens_def(x, y):
-    assertEqual(unicode(custom_functions.ensemble_definition(x)), y)
+    assertEqual(unicode(ensemble_definition(x)), y)
 
 def test_resoudre():
     assert_resoudre("2*x=0", "{0}")
@@ -41,21 +38,21 @@ def test_resoudre():
 
 
 def test_positif():
-    x = sympy.Symbol("x")
+    x = Symbol("x")
     assert_positif(x**7, "[0;+oo[")
-    assert_positif((x+1)**5, "[-1;+oo[")
-    assert_positif(sympy.sqrt(x+1), "[-1;+oo[")
-    assert_positif((x+1)**6, "]-oo;+oo[")
-    assert_positif(-x**2-x, "[-1;0]")
-    assert_positif(sympy.sqrt(5), "]-oo;+oo[")
-    assert_positif((x-1)/(x+1), ']-oo;-1[U[1;+oo[')
-    assert_positif(x*sympy.exp(3)-1, '[exp(-3);+oo[')
+    assert_positif((x + 1)**5, "[-1;+oo[")
+    assert_positif(sqrt(x + 1), "[-1;+oo[")
+    assert_positif((x + 1)**6, "]-oo;+oo[")
+    assert_positif(-x**2 - x, "[-1;0]")
+    assert_positif(sqrt(5), "]-oo;+oo[")
+    assert_positif((x - 1)/(x + 1), ']-oo;-1[U[1;+oo[')
+    assert_positif(x*exp(3) - 1, '[exp(-3);+oo[')
 
 @XFAIL
 def test_positif2():
-    x = sympy.Symbol("x")
+    x = Symbol("x")
     assert_positif(x - 1 + exp(x), "[0;+oo[")
 
 def test_ensemble_definition():
-    x = sympy.Symbol("x")
+    x = Symbol("x")
     assert_ens_def((2 - x)/(6 - 5*x + x**2), ']-oo;2[U]2;3[U]3;+oo[')

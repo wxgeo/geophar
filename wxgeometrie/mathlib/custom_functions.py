@@ -23,26 +23,24 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-# version unicode
-
 ## Cette librairie contient les fonctions de haut niveau non inclues dans sympy.
 
-import sympy
-from sympy import exp, ln, Add, Mul, pi
-
-import custom_objects
 import math
-import internal_functions
-import sympy_functions
-import intervalles
-import pylib
-import param
+from types import FunctionType
+
+from sympy import exp, ln, tan, pi, E, Rational, Symbol, oo, diff, log, floor,\
+                    Add, Mul, sqrt, solve, Wild, sympify, FunctionClass
+from .intervalles import Intervalle, vide, Union, R
+from .custom_objects import Temps, CustomLatexPrinter, CustomStrPrinter, Fonction
+from .internal_functions import extract_var, count_syms
+from ..pylib import msplit, split_around_parenthesis
+from .. import param
 
 
 
 #def deg(x):
 #    u'Conversion radians -> degrés.'
-#    return custom_objects.MesureDegres(x)
+#    return .MesureDegres(x)
 
 def deg(x):
     u'Conversion radians -> degrés.'
@@ -54,7 +52,7 @@ def deg(x):
 
 def jhms(s):
     u"Convertit un temps en secondes en jours-heures-minutes-secondes."
-    return custom_objects.Temps(s = s)
+    return Temps(s = s)
 
 
 def cbrt(x):
@@ -130,7 +128,7 @@ def frac(valeur, n = 20, epsilon = 1e-15):
         q, q_ = a*q + q_, q
         delta = x - a
         if abs(delta) < epsilon or abs(valeur - p/q) < epsilon:
-            return sympy.Rational(p, q)
+            return Rational(p, q)
         x = 1/delta
     return valeur
 
@@ -150,38 +148,17 @@ def bin(n):
 
 
 def custom_latex(expr, profile = None):
-    return custom_objects.CustomLatexPrinter(profile).doprint(expr)
+    return CustomLatexPrinter(profile).doprint(expr)
 
 def custom_str(expr, profile = None):
-    return custom_objects.CustomStrPrinter(profile).doprint(expr)
-
-def auto_collect(expression):
-    u"""Factorise une expression en utilisant sympy.collect, sans préciser manuellement ce par quoi factoriser."""
-    if expression.is_Add:
-        for terme in expression.args:
-            if terme.is_Mul:
-                for facteur in terme.args:
-                    expression_transformee = sympy.collect(expression, facteur)
-                    if expression_transformee.is_Mul:
-                        resultat = 1
-                        for arg in expression_transformee.args:
-                            resultat *= auto_collect(arg)
-                        return resultat
-        for symbole in internal_functions.syms(expression):
-            expression_transformee = sympy.collect(expression, symbole)
-            if expression_transformee.is_Mul:
-                resultat = 1
-                for arg in expression_transformee.args:
-                    resultat *= auto_collect(arg)
-                return resultat
-    return expression
+    return CustomStrPrinter(profile).doprint(expr)
 
 def _Pow2list(expression):
     u"""On décompose une puissance en liste de facteurs."""
     base, puissance = expression.as_base_exp()
     if puissance.is_integer:
         return int(puissance)*[base]
-    elif base == sympy.E:
+    elif base == E:
         coeff = puissance.as_coeff_mul()[0]
         if coeff.is_integer:
             return int(abs(coeff))*[base**(puissance/abs(coeff))]
@@ -217,28 +194,29 @@ def auto_collect(expression):
 
 
 def derivee(f):
-    if isinstance(f, pylib.types.FunctionType):
-        x = sympy.Symbol('x')
-        return custom_objects.Fonction(x, sympy.diff(f(x), x))
-    return custom_objects.Fonction(f.variables[0], sympy.diff(f.expression, f.variables[0]))
+    if isinstance(f, FunctionType):
+        x = Symbol('x')
+        return Fonction(x, diff(f(x), x))
+    return Fonction(f.variables[0], diff(f.expression, f.variables[0]))
 
 
 def nul(expression, variable = None, intervalle = True):
     u"""Retourne l'ensemble sur lequel une expression à variable réelle est nulle."""
+    from .sympy_functions import factor, solve
     if variable is None:
-        variable = internal_functions.extract_var(expression)
-    expression = sympy_functions.factor(expression, variable, "R", decomposer_entiers = False)
+        variable = extract_var(expression)
+    expression = factor(expression, variable, "R", decomposer_entiers = False)
     if expression.is_Mul:
         facteurs = expression.args
     else:
         facteurs = [expression]
 
-    solutions = (intervalles.vide if intervalle else set())
+    solutions = (vide if intervalle else set())
 
     for facteur in facteurs:
-        liste_solutions = sympy_functions.solve(facteur, variable, ensemble = "R")
+        liste_solutions = solve(facteur, variable, ensemble = "R")
         if intervalle:
-            solutions += intervalles.Union(*liste_solutions)
+            solutions += Union(*liste_solutions)
         else:
             solutions.update(liste_solutions)
     return solutions
@@ -247,8 +225,8 @@ def nul(expression, variable = None, intervalle = True):
 def ensemble_definition(expression, variable = None):
 ##    print expression, variable
     if variable is None:
-        variable = internal_functions.extract_var(expression)
-    ens_def = intervalles.R
+        variable = extract_var(expression)
+    ens_def = R
     if hasattr(expression, "is_Add") and expression.is_Add:
         for terme in expression.args:
             ens_def *= ensemble_definition(terme, variable)
@@ -260,7 +238,7 @@ def ensemble_definition(expression, variable = None):
 ##            print "Warning: Factorisation impossible de ", expression
     if hasattr(expression, "subs"):
         old_variable = variable
-        variable = sympy.Symbol("_tmp",real=True)
+        variable = Symbol("_tmp",real=True)
         expression = expression.subs({old_variable:variable})
     if hasattr(expression, "is_Pow") and expression.is_Pow:
         base, p = expression.as_base_exp()
@@ -290,10 +268,10 @@ def ensemble_definition(expression, variable = None):
         for facteur in expression.args:
             ens_def *= ensemble_definition(facteur, variable)
         return ens_def
-    elif isinstance(expression, sympy.tan):
+    elif isinstance(expression, tan):
         arg = expression.args[0] # -pi/2 < arg < pi/2
-        return positif(arg + sympy.pi/2, variable, strict = True)*positif(sympy.pi/2-arg, variable, strict = True)
-    elif isinstance(expression, sympy.ln):
+        return positif(arg + pi/2, variable, strict = True)*positif(pi/2-arg, variable, strict = True)
+    elif isinstance(expression, ln):
         arg = expression.args[0] # 0 < arg
         return positif(arg, variable, strict = True)
     return ens_def
@@ -310,16 +288,17 @@ def _is_var(expression, variable):
 
 def positif(expression, variable = None, strict = False):
     u"""Retourne l'ensemble sur lequel une expression à variable réelle est positive (resp. strictement positive)."""
+    from .sympy_functions import factor
     # L'étude du signe se fait dans R, on indique donc à sympy que la variable est réelle.
     if variable is None:
-        variable = internal_functions.extract_var(expression)
+        variable = extract_var(expression)
     if hasattr(expression, "subs"):
         old_variable = variable
-        variable = sympy.Symbol("_tmp",real=True)
+        variable = Symbol("_tmp",real=True)
         expression = expression.subs({old_variable:variable})
     ens_def = ensemble_definition(expression, variable)
     try:
-        expression = sympy_functions.factor(expression, variable, "R", decomposer_entiers = False)
+        expression = factor(expression, variable, "R", decomposer_entiers = False)
     except NotImplementedError:
         if param.debug:
             print "Warning: Factorisation impossible de ", expression
@@ -331,14 +310,14 @@ def positif(expression, variable = None, strict = False):
             strict = True
         if p.is_integer and p.is_even:
             if strict:
-                return ens_def*(intervalles.R - (positif(base, variable, strict = False) - positif(base, variable, strict = True)))
+                return ens_def*(R - (positif(base, variable, strict = False) - positif(base, variable, strict = True)))
             else:
                 return ens_def
         else:
             return ens_def*positif(base, variable, strict = strict)
     if hasattr(expression, "is_Mul") and expression.is_Mul:
-        posit = intervalles.R
-        posit_nul = intervalles.R
+        posit = R
+        posit_nul = R
         for facteur in expression.args:
             # pos : ensemble des valeurs pour lequelles l'expression est positive
             # pos_nul : ensemble des valeurs pour lequelles l'expression est positive ou nulle
@@ -360,9 +339,9 @@ def positif(expression, variable = None, strict = False):
     if getattr(expression, "is_positive", None) is True: # > 0
         return ens_def
     if getattr(expression, "is_negative", None) is True: # < 0
-        return intervalles.vide
+        return vide
     if getattr(expression, "is_positive", None) is False and strict: # <= 0
-        return intervalles.vide
+        return vide
     if getattr(expression, "is_negative", None) is False and not strict: # >= 0
         return ens_def
     if getattr(expression, "is_zero", None) is True and not strict: # == 0
@@ -371,11 +350,9 @@ def positif(expression, variable = None, strict = False):
         if expression > 0 or (expression == 0 and not strict):
             return ens_def
         else:
-            return intervalles.vide
+            return vide
     # pas besoin de l'ensemble de définition pour les fonctions polynomiales
     if hasattr(expression, "is_polynomial") and expression.is_polynomial():
-        oo = sympy.oo
-        Intervalle = intervalles.Intervalle
         P = expression.as_poly(variable)
         if P.degree() == 1:
             a, b = P.all_coeffs()
@@ -387,8 +364,8 @@ def positif(expression, variable = None, strict = False):
             a, b, c = P.all_coeffs()
             d = b**2 - 4*a*c
             if d > 0:
-                x1 = (-b - sympy.sqrt(d))/(2*a)
-                x2 = (-b + sympy.sqrt(d))/(2*a)
+                x1 = (-b - sqrt(d))/(2*a)
+                x2 = (-b + sqrt(d))/(2*a)
                 x1, x2 = min(x1, x2), max(x1, x2)
                 if a > 0:
                     return Intervalle(-oo, x1, sup_inclus = not strict) + Intervalle(x2, +oo, inf_inclus = not strict)
@@ -402,9 +379,9 @@ def positif(expression, variable = None, strict = False):
                     return Intervalle(x0, x0, sup_inclus  = not strict)
             else: # d < 0
                if a > 0:
-                   return intervalles.R
+                   return R
                else:
-                   return intervalles.vide
+                   return vide
 
     # a*f(x)+b > 0 <=> f(x)+b/a > 0 pour a > 0, -f(x) - b/a > 0 pour a < 0
     if getattr(expression, "is_Add", False):
@@ -418,7 +395,7 @@ def positif(expression, variable = None, strict = False):
                 else:
                     liste_constantes.append(arg)
             if len(liste_autres) == 1:
-                partie_constante = sympy.Add(*liste_constantes)
+                partie_constante = Add(*liste_constantes)
                 partie_variable = liste_autres[0]
                 if getattr(partie_variable, "is_Mul", False):
                     liste_facteurs_constants = []
@@ -429,16 +406,16 @@ def positif(expression, variable = None, strict = False):
                         else:
                             liste_facteurs_constants.append(facteur)
                     if liste_facteurs_constants:
-                        facteur_constant = sympy.Mul(*liste_facteurs_constants)
-                        autre_facteur = sympy.Mul(*liste_autres_facteurs)
+                        facteur_constant = Mul(*liste_facteurs_constants)
+                        autre_facteur = Mul(*liste_autres_facteurs)
                         if _is_pos(facteur_constant):
                             return positif(autre_facteur + partie_constante/facteur_constant, variable, strict = strict)
                         elif _is_neg(facteur_constant):
-                            return ens_def*(intervalles.R - positif(autre_facteur + partie_constante/facteur_constant, variable, strict = not strict))
+                            return ens_def*(R - positif(autre_facteur + partie_constante/facteur_constant, variable, strict = not strict))
 
 
     # Logarithme :
-    if isinstance(expression, sympy.ln):
+    if isinstance(expression, ln):
         return positif(expression.args[0] - 1, variable, strict = strict)
     # Résolution de ln(X1) + ln(X2) + ... + b > 0, où X1=f1(x), X2 = f2(x) ...
     if getattr(expression, "is_Add", False):
@@ -451,25 +428,25 @@ def positif(expression, variable = None, strict = False):
                 liste_constantes = []
                 liste_ln = []
                 for facteur in arg.args:
-                    if isinstance(facteur, sympy.ln) and _is_var(facteur, variable):
+                    if isinstance(facteur, ln) and _is_var(facteur, variable):
                         liste_ln.append(facteur)
                     elif not _is_var(facteur, variable):
                         liste_constantes.append(facteur)
 ##                print facteur, liste_constantes, liste_ln
                 if len(liste_constantes) == len(arg.args) - 1 and len(liste_ln) == 1:
-                    expression += sympy.ln(liste_ln[0].args[0]**sympy.Add(*liste_constantes)) - arg
+                    expression += ln(liste_ln[0].args[0]**Add(*liste_constantes)) - arg
 ##        print "Resultat 1er passage:", expression
         # Deuxième passage : ln(X1)+ln(X2)+b>0 <=> X1*X2-exp(-b)>0
         for arg in args:
-            if isinstance(arg, sympy.ln) and hasattr(arg, "has_any_symbols") and arg.has(variable):
+            if isinstance(arg, ln) and hasattr(arg, "has_any_symbols") and arg.has(variable):
                 liste_ln.append(arg)
             elif not hasattr(arg, "has_any_symbols") or not arg.has(variable):
                 liste_constantes.append(arg)
 
         if liste_ln and len(liste_ln) + len(liste_constantes) == len(args):
             # ln(X1)+ln(X2)+b>0 <=> X1*X2-exp(-b)>0
-            contenu_log = sympy.Mul(*(logarithme.args[0] for logarithme in liste_ln))
-            contenu_cst = sympy.exp(- sympy.Add(*liste_constantes))
+            contenu_log = Mul(*(logarithme.args[0] for logarithme in liste_ln))
+            contenu_cst = exp(- Add(*liste_constantes))
             return ens_def*positif(contenu_log - contenu_cst, variable, strict = strict)
 
 
@@ -477,9 +454,9 @@ def positif(expression, variable = None, strict = False):
     # Exponentielle
     # Résolution de a*exp(f(x)) + b > 0
     if getattr(expression, "is_Add", False):
-        a_ = sympy.Wild('a')
-        b_ = sympy.Wild('b')
-        X_ = sympy.Wild('X')
+        a_ = Wild('a')
+        b_ = Wild('b')
+        X_ = Wild('X')
         match = expression.match(a_*exp(X_) + b_)
         if match is not None:
             a = match[a_]
@@ -496,17 +473,17 @@ def positif(expression, variable = None, strict = False):
                     if _is_pos(a):
                         return positif(X - ln(-b/a), variable, strict = strict)
                     elif _is_neg(a):
-                        return intervalles.vide
+                        return vide
 
     # Cas très particulier : on utilise le fait que exp(x)>=x+1 sur R
     if getattr(expression, "is_Add", False):
         expr = expression
         changements = False
         for arg in expr.args:
-            if isinstance(arg, sympy.exp):
+            if isinstance(arg, exp):
                 changements = True
                 expr += arg.args[0] + 1 - arg
-        if changements and (ens_def - positif(expr, variable, strict = strict) == intervalles.vide):
+        if changements and (ens_def - positif(expr, variable, strict = strict) == vide):
             return ens_def
 
     # Sommes contenant des logarithmes :
@@ -515,21 +492,21 @@ def positif(expression, variable = None, strict = False):
         expr = expression
         changements = False
         for arg in expr.args:
-            if isinstance(arg, sympy.ln):
+            if isinstance(arg, ln):
                 changements = True
                 expr += arg.args[0] + 1 - arg
         if changements:
             try:
 ##                print "S458475",  -expr
                 non_positif = positif(-expr, variable, strict = not strict) # complementaire
-                (ens_def - positif(expr, variable, strict = not strict) == intervalles.vide)
-                if (ens_def - non_positif == intervalles.vide):
-                    return intervalles.vide
+                (ens_def - positif(expr, variable, strict = not strict) == vide)
+                if (ens_def - non_positif == vide):
+                    return vide
             except NotImplementedError:
                 pass
 
             # Somme contenant des logarithmes : si aucune autre méthode n'a fonctionné, on tente ln(a)+ln(b)>0 <=> a*b>1 (pour a>0 et b>0)
-            expr = sympy.Mul(*(sympy.exp(arg) for arg in expression.args)) - 1
+            expr = Mul(*(exp(arg) for arg in expression.args)) - 1
             try:
                 return ens_def*positif(expr, variable, strict = strict)
             except NotImplementedError:
@@ -538,23 +515,23 @@ def positif(expression, variable = None, strict = False):
 
 ##    print "Changement de variable."
     # En dernier recours, on tente un changement de variable :
-    tmp2 = sympy.Symbol("_tmp2", real=True)
+    tmp2 = Symbol("_tmp2", real=True)
     # changements de variables courants : x², exp(x), ln(x), sqrt(x), x³ :
-    for X in (variable**2, variable**3, sympy.exp(variable), sympy.ln(variable), sympy.sqrt(variable)):
+    for X in (variable**2, variable**3, exp(variable), ln(variable), sqrt(variable)):
         expr = expression.subs(X, tmp2)
         # Si la nouvelle variable apparait une seule fois,
         # le changement de variable produirait une récurrence infinie !
-        if variable not in expr.atoms() and internal_functions.count_syms(expr, X) > 1:
+        if variable not in expr.atoms() and count_syms(expr, X) > 1:
 ##            print "nouvelle variable:", X
             solution_temp = positif(expr, tmp2, strict = strict)
-            solution = intervalles.vide
+            solution = vide
             for intervalle in solution_temp.intervalles:
-                sol = intervalles.R
+                sol = R
                 a = intervalle.inf
                 b = intervalle.sup
-                if a != - sympy.oo:
+                if a != - oo:
                     sol *= positif(X - a, variable, strict = strict)
-                if b != sympy.oo:
+                if b != oo:
                     sol *= positif(b - X, variable, strict = strict)
                 solution += sol
             return ens_def*solution
@@ -563,26 +540,26 @@ def positif(expression, variable = None, strict = False):
 
 def resoudre(chaine, variables = (), local_dict = None):
     if local_dict is None:
-        evaluer = sympy.sympify
+        evaluer = sympify
     else:
         def evaluer(expression, local_dict = local_dict):
             return eval(expression, local_dict.globals, local_dict)
 
     if not variables:
         arguments = chaine.split(',')
-        variables = [sympy.Symbol(s.strip()) for s in arguments[1:]]
+        variables = [Symbol(s.strip()) for s in arguments[1:]]
         if not variables:
             variables = set()
-            expressions = pylib.msplit(arguments[0], ('et', 'ou', '>', '<', '=', '!', ')', '(', '*', '/', '-', '+'))
+            expressions = msplit(arguments[0], ('et', 'ou', '>', '<', '=', '!', ')', '(', '*', '/', '-', '+'))
             for expr in expressions:
                 if expr.strip():
 ##                    print expr
                     ev = evaluer(expr)
-                    if hasattr(ev, 'atoms') and not isinstance(ev, sympy.FunctionClass):
-                        variables.update(ev.atoms(sympy.Symbol))
+                    if hasattr(ev, 'atoms') and not isinstance(ev, FunctionClass):
+                        variables.update(ev.atoms(Symbol))
 #            variables = list(evaluer(arguments[0].replace("et","+").replace("ou","+")
 #                            .replace("<", "+").replace(">", "+")
-#                            .replace("=", "+").replace("!", "+")).atoms(sympy.Symbol))
+#                            .replace("=", "+").replace("!", "+")).atoms(Symbol))
         chaine = arguments[0]
 
     if len(variables) > 1:
@@ -593,7 +570,7 @@ def resoudre(chaine, variables = (), local_dict = None):
     chaine = chaine.replace(')et', ') et').replace(')ou', ') ou').replace('et(', 'et (').replace('ou(', 'ou (')
     debut = ''
     while chaine:
-        l = [s for s in pylib.split_around_parenthesis(chaine)]
+        l = [s for s in split_around_parenthesis(chaine)]
         if len(l) == 3:
             if l[0].strip() == l[2].strip() == '':
                 return resoudre(chaine[1:-1], variables = variables, local_dict = local_dict)
@@ -648,7 +625,7 @@ def resoudre(chaine, variables = (), local_dict = None):
 def systeme(chaine, variables = (), local_dict = None):
     chaine = chaine.replace("==", "=")
     if local_dict is None:
-        evaluer = sympy.sympify
+        evaluer = sympify
     else:
         def evaluer(expression, local_dict = local_dict):
             return eval(expression, local_dict.globals, local_dict)
@@ -659,20 +636,20 @@ def systeme(chaine, variables = (), local_dict = None):
 
     if not variables:
         arguments = chaine.split(',')
-        variables = tuple(sympy.Symbol(s.strip()) for s in arguments[1:])
+        variables = tuple(Symbol(s.strip()) for s in arguments[1:])
         chaine = arguments[0]
     eqs = tuple(transformer(eq) for eq in chaine.split("et"))
     if not variables:
         variables = set()
         for eq in eqs:
-            variables.update(eq.atoms(sympy.Symbol))
-    return sympy.solve(eqs, *variables)
+            variables.update(eq.atoms(Symbol))
+    return solve(eqs, *variables)
 
 
 def _convertir_frequences(frequences, serie):
     if frequences is None:
         n = len(serie)
-        return n*[sympy.Rational(1, n)]
+        return n*[Rational(1, n)]
     else:
         total = sum(frequences)
         if total != 1:
@@ -692,7 +669,7 @@ def variance(serie, coeffs = None):
 
 def ecart_type(serie, coeffs = None):
     u"Retourne l'écart-type de la série des (xi, fi)."
-    return sympy.sqrt(variance(serie, coeffs))
+    return sqrt(variance(serie, coeffs))
 
 def covariance(serie1, serie2, coeffs = None):
     u"Retourne la covariance des deux séries."
@@ -712,20 +689,19 @@ def linreg(serie1, serie2, coeffs = None):
      >>> linreg((85.6,84.5,81,80.2,72.8,71.2,73,48.1),(78.7,77.6,75.2,71.1,67.7,66.3,59.1,46.8))
      (0.849191825268073, 4.50524942626518)
      """
-    frequences = _convertir_frequences(coeffs, serie1)
     a = covariance(serie1, serie2)/variance(serie1)
     b = moyenne(serie2) - a*moyenne(serie1)
     return a, b
 
 
 def pstfunc(chaine):
-    u"Convertit une chaine représentant une fonction pst-trick en une fonction sympy."
+    u"Convertit une chaine représentant une fonction pst-trick en une fonction "
     args = []
     dict_op = {'mul':'*','add':'+','exp':'**','div':'/','sub':'-'}
     dict_fn = {'ln':'ln'}
 
     def code_arg(s):
-        return '(' + str(sympy.sympify(s)) + ')'
+        return '(' + str(sympify(s)) + ')'
 
     for s in chaine.split(' '):
         if s in dict_op:
@@ -737,7 +713,7 @@ def pstfunc(chaine):
         elif s:
             args.append(code_arg(s))
     assert len(args) == 1, 'Il doit rester un seul argument a la fin.'
-    return custom_str(sympy.sympify(args[0]))
+    return custom_str(sympify(args[0]))
 
 def aide(fonction):
     u"Retourne (si possible) de l'aide sur la fonction saisie."
@@ -757,5 +733,5 @@ def aide(fonction):
 
 def arrondir(valeur, chiffres = 0):
     # Nombre de chiffres de la partie entière :
-    n = sympy.floor(sympy.log10(valeur)) + 1
+    n = floor(log(valeur, 10)) + 1
     return valeur.evalf(chiffres + n)

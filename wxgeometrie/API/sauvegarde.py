@@ -22,17 +22,14 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-# version unicode
-
-
-# importation des librairies classiques
-from LIB import *
-from API.filtres import filtre_versions_anterieures
 from xml.dom.minidom import parseString
 from xml.parsers.expat import ExpatError
-import tarfile
+import tarfile, os, zipfile, re
 from cStringIO import StringIO
 
+from .filtres import filtre_versions_anterieures
+from ..pylib import print_error, eval_safe, removeend
+from .. import param
 
 #----------------------------------
 #     DOM pour lire un fichier
@@ -303,7 +300,7 @@ class FichierSession(object):
                 fichier = FichierGEO().importer(data)
                 if nom == 'session.info':
                     for key in fichier.contenu:
-                        self.infos[key] = securite.eval_safe(fichier.contenu[key][0])
+                        self.infos[key] = eval_safe(fichier.contenu[key][0])
                 else:
                     self._ajouter_fichier(fichier)
         finally:

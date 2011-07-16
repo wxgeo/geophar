@@ -23,13 +23,19 @@ from __future__ import with_statement
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-# version unicode
+from random import uniform, normalvariate
+from math import cos, sin, pi
 
+from numpy import ndarray
 
-from objet import *
+from sympy import cos as scos, sin as ssin
 
+from .objet import Objet_avec_coordonnees, Ref, Argument, Objet, Arguments, \
+                   contexte, Objet_avec_coordonnees_modifiables, issympy
+from .routines import angle_vectoriel, vect, carre_distance, produit_scalaire, \
+                      distance
 
-
+from .. import param
 
 
 ################################################################################
@@ -50,8 +56,9 @@ class Point_generique(Objet_avec_coordonnees):
 
     def __init__(self, **styles):
         #~ self.__args = GestionnaireArguments()
-        Objet.__init__(self, **styles)
-        self.etiquette = ALL.Label_point(self)
+        Objet_avec_coordonnees.__init__(self, **styles)
+        from .labels import Label_point
+        self.etiquette = Label_point(self)
 
 
     def _creer_figure(self):
@@ -94,23 +101,24 @@ class Point_generique(Objet_avec_coordonnees):
     z = affixe
 
 #    def _image(self, transformation):
-#        if isinstance(transformation, ALL.Rotation):
+#        if isinstance(transformation, Rotation):
 #            return Point_rotation(self, transformation)
-#        elif isinstance(transformation, ALL.Homothetie):
+#        elif isinstance(transformation, Homothetie):
 #            return Point_homothetie(self, transformation)
-#        elif isinstance(transformation, ALL.Translation):
+#        elif isinstance(transformation, Translation):
 #            return Point_translation(self, transformation)
-#        elif isinstance(transformation, ALL.Rotation):
+#        elif isinstance(transformation, Rotation):
 #            return Point_rotation(self, transformation)
 
     def image_par(self, transformation):
-        if isinstance(transformation, ALL.Rotation):
+        from .transformations import Translation, Homothetie, Reflexion, Rotation
+        if isinstance(transformation, Rotation):
             return Point_rotation(self, transformation)
-        elif isinstance(transformation, ALL.Translation):
+        elif isinstance(transformation, Translation):
             return Point_translation(self, transformation)
-        elif isinstance(transformation, ALL.Homothetie):
+        elif isinstance(transformation, Homothetie):
             return Point_homothetie(self, transformation)
-        elif isinstance(transformation, ALL.Reflexion):
+        elif isinstance(transformation, Reflexion):
             return Point_reflexion(self, transformation)
         raise NotImplementedError
 
@@ -120,13 +128,16 @@ class Point_generique(Objet_avec_coordonnees):
 
 
     def __add__(self, y):
-        if isinstance(y, ALL.Vecteur_generique): return Point_final(self, [y])
+        from .vecteurs import Vecteur_generique
+        if isinstance(y, Vecteur_generique):
+            return Point_final(self, [y])
         raise TypeError, "vecteur attendu"
 
     # A>B est un alias de Vecteur(A,B) - attention aux parentheses pour 2*(A>B) !
     # A ne pas utiliser en interne (code peu lisible)
     def __gt__(self, point2):
-        return ALL.Vecteur(self, point2)
+        from .vecteurs import Vecteur
+        return Vecteur(self, point2)
 
 
     def _distance_inf(self, x, y, d):
@@ -138,7 +149,7 @@ class Point_generique(Objet_avec_coordonnees):
         if self.existe:
             if  isinstance(y, Point_generique) and y.existe:
                 return abs(self.x - y.x) < contexte['tolerance'] and abs(self.y - y.y) < contexte['tolerance']
-            elif isinstance(y, (list, tuple, numpy.ndarray)) and len(y) == 2:
+            elif isinstance(y, (list, tuple, ndarray)) and len(y) == 2:
                 return abs(self.x - y[0]) < contexte['tolerance'] and abs(self.y - y[1]) < contexte['tolerance']
         return False
 
@@ -148,19 +159,21 @@ class Point_generique(Objet_avec_coordonnees):
 
     def relier_axe_x(self):
         if self.__feuille__ is not None:
+            from .lignes import Segment
             with self.__canvas__.geler_affichage(actualiser = True):
                 M = Point("%s.x" %self.nom, 0, fixe = True)
                 M.label("${%s.x}$" %self.nom, formule = True)
-                s = ALL.Segment(self, M, style = ":")
+                s = Segment(self, M, style = ":")
                 self.__feuille__.objets.add(M)
                 self.__feuille__.objets.add(s)
 
     def relier_axe_y(self):
         if self.__feuille__ is not None:
+            from .lignes import Segment
             with self.__canvas__.geler_affichage(actualiser = True):
                 M = Point(0, "%s.y" %self.nom, fixe = True)
                 M.label("${%s.y}$" %self.nom, formule = True)
-                s = ALL.Segment(self, M, style = ":")
+                s = Segment(self, M, style = ":")
                 self.__feuille__.objets.add(M)
                 self.__feuille__.objets.add(s)
 
@@ -175,7 +188,7 @@ class Point_generique(Objet_avec_coordonnees):
     @staticmethod
     def _convertir(objet):
         if hasattr(objet, "__iter__"):
-            return ALL.Point(*objet)
+            return Point(*objet)
         raise TypeError, "'" + str(type(objet)) + "' object is not iterable"
 
 
@@ -184,7 +197,7 @@ class Point_generique(Objet_avec_coordonnees):
 class Point(Objet_avec_coordonnees_modifiables, Point_generique):
     u"""Un point libre.
 
-    >>> from geolib import Point
+    >>> from wxgeometrie.geolib import Point
     >>> A = Point(7, 3)
     >>> print A
     Point(x = 7, y = 3)
@@ -192,21 +205,23 @@ class Point(Objet_avec_coordonnees_modifiables, Point_generique):
 
     _style_defaut = param.points_deplacables
 
-    abscisse = x = __x = Argument("Variable_generique", defaut = lambda:module_random.normalvariate(0,10))
-    ordonnee = y = __y = Argument("Variable_generique", defaut = lambda:module_random.normalvariate(0,10))
+    abscisse = x = __x = Argument("Variable_generique", defaut = lambda: normalvariate(0, 10))
+    ordonnee = y = __y = Argument("Variable_generique", defaut = lambda: normalvariate(0, 10))
 
     def __new__(cls, *args, **kw):
         if len(args) == 1:
-            if isinstance(args[0], ALL.Droite_generique):
-                newclass = ALL.Glisseur_droite
-            elif isinstance(args[0], ALL.Segment):
-                newclass = ALL.Glisseur_segment
-            elif isinstance(args[0], ALL.Demidroite):
-                newclass = ALL.Glisseur_demidroite
-            elif isinstance(args[0], ALL.Cercle_generique):
-                newclass = ALL.Glisseur_cercle
-            elif isinstance(args[0], ALL.Arc_generique):
-                newclass = ALL.Glisseur_arc_cercle
+            from .cercles import Arc_generique, Cercle_generique
+            from .lignes import Segment, Droite_generique, Demidroite
+            if isinstance(args[0], Droite_generique):
+                newclass = Glisseur_droite
+            elif isinstance(args[0], Segment):
+                newclass = Glisseur_segment
+            elif isinstance(args[0], Demidroite):
+                newclass = Glisseur_demidroite
+            elif isinstance(args[0], Cercle_generique):
+                newclass = Glisseur_cercle
+            elif isinstance(args[0], Arc_generique):
+                newclass = Glisseur_arc_cercle
             else:
                 return object.__new__(cls)
         else:
@@ -227,10 +242,10 @@ class Point(Objet_avec_coordonnees_modifiables, Point_generique):
     def _set_feuille(self):
         xmin, xmax, ymin, ymax = self.__feuille__.fenetre
         if "_Point__x" in self._valeurs_par_defaut:
-            self.__x = module_random.uniform(xmin, xmax)
+            self.__x = uniform(xmin, xmax)
 #                self._valeurs_par_defaut.discard("_Point__x")
         if "_Point__y" in self._valeurs_par_defaut:
-            self.__y = module_random.uniform(ymin, ymax)
+            self.__y = uniform(ymin, ymax)
 #                self._valeurs_par_defaut.discard("_Point__y")
         Objet._set_feuille(self)
 
@@ -323,7 +338,8 @@ class Milieu(Barycentre):
     point2 = __point2 = Argument("Point_generique", defaut = Point)
 
     def __init__(self, point1 = None, point2 = None, **styles):
-        if isinstance(point1, ALL.Segment):
+        from .lignes import Segment
+        if isinstance(point1, Segment):
             point2 = point1._Segment__point2
             point1 = point1._Segment__point1
         self.__point1 = point1 = Ref(point1)
@@ -416,16 +432,16 @@ class Point_rotation(Point_generique):
         xA, yA = self.__point.coordonnees
         a = self.__rotation.radian
         if contexte['exact'] and issympy(a, x0, y0, xA, yA):
-            sina = sympy.sin(a) ; cosa = sympy.cos(a)
+            sina = ssin(a) ; cosa = scos(a)
         else:
-            sina = math.sin(a) ; cosa = math.cos(a)
+            sina = sin(a) ; cosa = cos(a)
         return (-sina*(yA - y0) + x0 + cosa*(xA - x0), y0 + cosa*(yA - y0) + sina*(xA - x0))
 
 
 #    def _get_coordonnees2(self): # un poil plus lent
 #        x0, y0 = self.__rotation.centre.coordonnees
 #        xA, yA = self.__point.coordonnees
-#        z = ((xA - x0) + (yA - y0)*1j)*cmath.exp(1j*self.__rotation.radian) + x0 + y0*1j
+#        z = ((xA - x0) + (yA - y0)*1j)*cexp(1j*self.__rotation.radian) + x0 + y0*1j
 #        return z.real, z.imag
 
 
@@ -564,9 +580,9 @@ class Projete_cercle(Projete_generique):
         x0, y0 = self.__cercle.centre.coordonnees
         r = self.__cercle.rayon
         if contexte['exact'] and issympy(r, x0, y0):
-            return x0 + r*sympy.cos(k), y0 + r*sympy.sin(k)
+            return x0 + r*scos(k), y0 + r*ssin(k)
         else:
-            return x0 + r*math.cos(k), y0 + r*math.sin(k)
+            return x0 + r*cos(k), y0 + r*sin(k)
 
 
 
@@ -600,10 +616,10 @@ class Projete_arc_cercle(Projete_generique):
         a, b = arc._intervalle()
         c = angle_vectoriel((1, 0), vect(O, M))
         while c < a:
-            c += 2*math.pi
+            c += 2*pi
         # La mesure d'angle c est donc dans l'intervalle [a; a+2*pi[
         if c > b: # c n'appartient pas à [a;b] (donc M est en dehors de l'arc de cercle)
-            if c - b > 2*math.pi + a - c: # c est plus proche de a+2*pi
+            if c - b > 2*pi + a - c: # c est plus proche de a+2*pi
                 c = a
             else:   # c est plus proche de b
                 c = b
@@ -615,9 +631,9 @@ class Projete_arc_cercle(Projete_generique):
         x0, y0 = arc.centre.coordonnees
         r = arc.rayon
         if contexte['exact'] and issympy(r, x0, y0):
-            return x0 +r*sympy.cos(t), y0 + r*sympy.sin(t)
+            return x0 +r*scos(t), y0 + r*ssin(t)
         else:
-            return x0 +r*math.cos(t), y0 + r*math.sin(t)
+            return x0 +r*cos(t), y0 + r*sin(t)
 
 
 
@@ -910,7 +926,7 @@ class Glisseur_vecteur(Glisseur_generique):
 
     def __init__(self, vecteur, k = None, **styles):
         if k is None:
-            k = module_random.uniform(0, 1)
+            k = uniform(0, 1)
         self.__vecteur = vecteur = Ref(vecteur)
         self.__k = k = Ref(self._initialiser_k(k))
         Glisseur_generique.__init__(self, vecteur, k, **styles)
@@ -962,7 +978,7 @@ class Glisseur_droite(Glisseur_ligne_generique):
 
     def __init__(self, droite, k = None, **styles):
         if k is None:
-            k = module_random.normalvariate(0.5, 0.5)
+            k = normalvariate(0.5, 0.5)
         self.__droite = droite = Ref(droite)
         self.__k = k = Ref(self._initialiser_k(k))
         Glisseur_ligne_generique.__init__(self, ligne = droite, k = k, **styles)
@@ -992,7 +1008,7 @@ class Glisseur_segment(Glisseur_ligne_generique):
 
     def __init__(self, segment, k = None, **styles):
         if k is None:
-            k = module_random.uniform(0, 1)
+            k = uniform(0, 1)
         self.__segment = segment = Ref(segment)
         self.__k = k = Ref(self._initialiser_k(k))
         Glisseur_ligne_generique.__init__(self, ligne = segment, k = k, **styles)
@@ -1043,7 +1059,7 @@ class Glisseur_cercle(Glisseur_generique):
 
     def __init__(self, cercle, k = None, **styles):
         if k is None:
-            k = module_random.uniform(0, 2*math.pi)
+            k = uniform(0, 2*pi)
         self.__cercle = cercle = Ref(cercle)
         self.__k = k = Ref(self._initialiser_k(k))
         Glisseur_generique.__init__(self, objet = cercle, k = k, **styles)
@@ -1055,9 +1071,9 @@ class Glisseur_cercle(Glisseur_generique):
         x0, y0 = cercle.centre.coordonnees
         r = cercle.rayon
         if contexte['exact'] and issympy(r, x0, y0):
-            return x0 + r*sympy.cos(k), y0 + r*sympy.sin(k)
+            return x0 + r*scos(k), y0 + r*ssin(k)
         else:
-            return x0 + r*math.cos(k), y0 + r*math.sin(k)
+            return x0 + r*cos(k), y0 + r*sin(k)
 
 
     def _conversion_coordonnees_parametre(self, x, y):
@@ -1089,7 +1105,7 @@ class Glisseur_arc_cercle(Glisseur_generique):
 
     def __init__(self, arc, k = None, **styles):
         if k is None:
-            k = module_random.uniform(0, 1)
+            k = uniform(0, 1)
         self.__arc = arc = Ref(arc)
         self.__k = k = Ref(self._initialiser_k(k))
         Glisseur_generique.__init__(self, objet = arc, k = k, **styles)
@@ -1106,9 +1122,9 @@ class Glisseur_arc_cercle(Glisseur_generique):
         x0, y0 = arc.centre.coordonnees
         r = arc.rayon
         if contexte['exact'] and issympy(r, x0, y0):
-            return x0 + r*sympy.cos(t), y0 + r*sympy.sin(t)
+            return x0 + r*scos(t), y0 + r*ssin(t)
         else:
-            return x0 + r*math.cos(t), y0 + r*math.sin(t)
+            return x0 + r*cos(t), y0 + r*sin(t)
 
     def _conversion_coordonnees_parametre(self, x, y):
         M = (x, y)
@@ -1117,10 +1133,10 @@ class Glisseur_arc_cercle(Glisseur_generique):
             a, b = self.__arc._intervalle()
             c = angle_vectoriel((1, 0), vect(O, M))
             while c < a:
-                c += 2*math.pi
+                c += 2*pi
             # La mesure d'angle c est donc dans l'intervalle [a; a+2*pi[
             if c > b: # c n'appartient pas à [a;b] (donc M est en dehors de l'arc de cercle)
-                if c - b > 2*math.pi + a - c: # c est plus proche de a+2*pi
+                if c - b > 2*pi + a - c: # c est plus proche de a+2*pi
                     c = a
                 else:   # c est plus proche de b
                     c = b

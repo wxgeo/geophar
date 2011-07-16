@@ -20,9 +20,9 @@ from __future__ import with_statement
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-
-from pylib import *
-
+import time
+from ..pylib import uu, print_error
+from .. import param
 
 class Rapport(list):
     def __init__(self, fichier_log = None, frequence_archivage = 100):

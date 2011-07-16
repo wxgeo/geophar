@@ -22,10 +22,36 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-# version unicode
+from operator import attrgetter
 
-# importation des librairies classiques
-from LIB import *
+import wx
+
+from ..pylib import regsub
+from ..geolib.textes import Texte
+from ..geolib.points import Point_generique, Barycentre, Point, Milieu, Centre,\
+                            Orthocentre, Centre_cercle_circonscrit, Centre_cercle_inscrit,\
+                            Glisseur_droite, Glisseur_cercle, Glisseur_segment,\
+                            Centre_gravite, Point_final
+from ..geolib.cercles import Cercle_generique, Cercle, Arc_points,\
+                             Arc_oriente, Cercle_diametre, Cercle_rayon, Demicercle,\
+                             Arc_cercle, Disque
+from ..geolib.lignes import Droite_generique, Segment, Demidroite, Ligne_generique,\
+                            Droite, Tangente, Parallele, Perpendiculaire, Bissectrice,\
+                            Mediatrice
+from ..geolib.polygones import Polygone_regulier, Triangle, Polygone,\
+                               Parallelogramme, Polygone_regulier_centre
+from ..geolib.angles import Angle_generique, Angle, Angle_oriente,\
+                            Angle_libre, Angle_vectoriel
+from ..geolib.transformations import Rotation, Homothetie, Translation, Reflexion,\
+                              Symetrie_centrale
+from ..geolib.vecteurs import Vecteur_generique, Vecteur, Vecteur_libre, Representant
+from ..geolib.intersections import Intersection_cercles, Intersection_droite_cercle,\
+                            Intersection_droites
+from ..geolib.interpolations import Interpolation_lineaire, Interpolation_quadratique
+from ..geolib.variables import Variable
+from ..geolib.objet import Objet
+from .. import param
+
 
 def repr_str(chaine):
     u'Force la chaîne a être représentée entourée de guillemets doubles (").'
@@ -165,7 +191,7 @@ class Dialogue(wx.Dialog):
             if liste:
                 type = type[0]
             liste_objets = self.onglet_actuel.feuille_actuelle.objets.lister(False, type = type)
-            liste_objets.sort(key = operator.attrgetter('nom')) # ordre alphabétique
+            liste_objets.sort(key = attrgetter('nom')) # ordre alphabétique
             if not liste_objets:
                 return
             ids = [wx.NewId() for obj in liste_objets]
@@ -829,4 +855,3 @@ class EditerObjet(wx.lib.dialogs.MultipleChoiceDialog):
     def __init__(self, parent):
         liste = parent.onglet_actuel.feuille_actuelle.inventaire()
         wx.lib.dialogs.MultipleChoiceDialog.__init__(self, parent, u"Sélectionnez les objets à editer", u"Editer", liste, size=(250,400))
-

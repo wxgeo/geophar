@@ -23,14 +23,17 @@ from __future__ import with_statement
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
+import re
+from math import isnan, sqrt
 
+import wx
+from numpy import array
 
-from GUI import *
-from experience import *
-from onglets_internes import OngletsStatistiques
-import __builtin__
-from math import isnan
-
+from ...GUI import MenuBar, Panel_API_graphique
+from .experience import LancerDes, Sondage, ExperienceFrame
+from .onglets_internes import OngletsStatistiques
+from ...mathlib.custom_functions import arrondir
+from ...pylib import property2, uu, regsub, advanced_split, print_error, eval_restricted
 
 def tst(result):
     if isnan(result):
@@ -62,7 +65,7 @@ class Classe(tuple):
     def __sub__(self, y):   return self.milieu() + (-y)
     def __rsub__(self, y):  return - self.milieu() + y
     def __pow__(self, y):   return self.milieu()**y
-    def __rpow__(self):     return y**self.milieu()
+    def __rpow__(self, y):     return y**self.milieu()
     def __abs__(self):      return abs(self.milieu())
     def __eq__(self, y):    return self.milieu() == y
     def __ne__(self, y):   return not self.milieu() == y
@@ -249,21 +252,21 @@ class Statistiques(Panel_API_graphique):
             for classe in advanced_split(classes.replace(";", ","), " ", symbols = "({})"):
                 if classe.endswith("["):
                     classe = classe[:-1] + "]"
-                self.ajouter_classes(Classe(securite.eval_restricted(classe)).lier(self))
+                self.ajouter_classes(Classe(eval_restricted(classe)).lier(self))
 
             for val in advanced_split(valeurs.replace(";", ","), " ", symbols = "({})"):
                 if val.endswith("["):
                     val = val[:-1] + "]"
 
                 if re.match("[[][^]]*for[^]]*in[^]]*[]]", val):
-                    val = securite.eval_restricted(val.replace('|',' '))
+                    val = eval_restricted(val.replace('|',' '))
                     for v in val:
                         if type(v) in (list, tuple): # syntaxe style "[(3,i) for i in range(7)]" où 3 est l'effectif
                             self.ajouter_valeur(v[1], v[0])
                         else:
                             self.ajouter_valeur(v) # syntaxe style "[i for i in range(7)]"
                 else:
-                    val = [securite.eval_restricted(x) for x in advanced_split(val, "*")]
+                    val = [eval_restricted(x) for x in advanced_split(val, "*")]
                     val.reverse()
                     self.ajouter_valeur(*val)
 
@@ -316,7 +319,7 @@ class Statistiques(Panel_API_graphique):
         if mode:
             k = (100 if mode == 1 else 1)
             valeurs = valeurs.copy()
-            total = __builtin__.sum(valeurs.itervalues())
+            total = sum(valeurs.itervalues())
             for val in valeurs:
                 valeurs[val] *= k/total
         return valeurs
@@ -447,7 +450,7 @@ class Statistiques(Panel_API_graphique):
         if n is None:
             return
         m = self.moyenne(); f = m/100.
-        e = 200*math.sqrt(f*(1-f)/n)
+        e = 200*sqrt(f*(1-f)/n)
         x0 = m - e; x1 = m + e
         y0 = self.canvas.fenetre[2] + 4*self.canvas.coeff(1)
         y1 = self.canvas.fenetre[3] - 6*self.canvas.coeff(1)
@@ -501,7 +504,7 @@ class Statistiques(Panel_API_graphique):
 
         if 'x' in self.gradu_a:
             lu, hu_ = (float(c) for c in self.gradu_a.split('x'))
-            effectif = lu*hu
+            effectif = lu*hu_
             lu *= l
             hu = effectif/lu
         elif '*' in self.gradu_a:
@@ -513,7 +516,7 @@ class Statistiques(Panel_API_graphique):
             # l'effectif que represente le carre
             effectif = float(self.gradu_a) if self.gradu_a else arrondir(sum([classe.effectif() for classe in self.classes])/20)
             # cote du carre en pixels
-            cote = math.sqrt(effectif/(self.canvas.coeff(0)*self.canvas.coeff(1)))
+            cote = sqrt(effectif/(self.canvas.coeff(0)*self.canvas.coeff(1)))
             lu = cote*self.canvas.coeff(0)
             hu = cote*self.canvas.coeff(1)
 
@@ -569,7 +572,7 @@ class Statistiques(Panel_API_graphique):
                         (c, y) = self.select_classe(y_cum, a, mode)
                         self.quantile_plot(c, y, a, couleur = self.choix_quantiles[q][2], style = self.choix_quantiles[q][3])
                     except TypeError:
-                        # c peut être vide si les classes commencent à une 
+                        # c peut être vide si les classes commencent à une
                         # fcc trop grande.
                         pass
         #legende
@@ -588,7 +591,7 @@ class Statistiques(Panel_API_graphique):
     def quantile_plot(self, classe, y, a, couleur ='r', style ='-'):
         u"""
         Trace le a-quantile
-        
+
         @type classe: classe
         @param classe: la classe dans laquelle tombe le a-quantile.
         @type y: list
@@ -617,7 +620,7 @@ class Statistiques(Panel_API_graphique):
     def select_classe(self, liste, a, mode=1):
         u"""
         selectionne la classe contenant le a-quantile
-        
+
         @type a: real
 
         @param a: le paramètre dans [0.1[. Ne pas mettre a=1.0 pour éviter un
@@ -790,7 +793,7 @@ class Statistiques(Panel_API_graphique):
         else:
             couleurs = tuple(self.couleurs)
 
-        effectifs = angle/360.*pylab.array(effectifs)/sum(effectifs)
+        effectifs = angle/360.*array(effectifs)/sum(effectifs)
         labels = [str(valeur) for valeur in valeurs]
         patches, texts = self.canvas.axes.pie(effectifs, labels = labels, labeldistance = 1.16, shadow = False, colors = couleurs)
         if self.param('hachures'):
@@ -855,11 +858,11 @@ class Statistiques(Panel_API_graphique):
 
     def effectif_total(self):
         # self._valeurs : effectifs bruts (non convertis en fréquences)
-        return __builtin__.sum(self._valeurs.itervalues())
+        return sum(self._valeurs.itervalues())
 
     def total(self):
         u"Retourne soit l'effectif total, soit 100, soit 1, selon les paramètres en cours."
-        return __builtin__.sum(self.valeurs.itervalues())
+        return sum(self.valeurs.itervalues())
 
     def mode(self):
         if not self.effectif_total():
@@ -896,7 +899,7 @@ class Statistiques(Panel_API_graphique):
         v = self.variance()
         if isinstance(v, basestring):
             return u"Calcul impossible."
-        return tst(math.sqrt(v))
+        return tst(sqrt(v))
 
     def mediane(self):
         u"""Correspond à la 'valeur du milieu' quand on ordonne les données.

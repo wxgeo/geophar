@@ -23,24 +23,21 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-# version unicode
 
-import re
-import decimal
+import wx
 
-from GUI import *
-
-from GUI.ligne_commande import LigneCommande
-from GUI.wxlib import png
-from GUI.inspecteur import FenCode
-
-import mathlib
-import sympy
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigureCanvas
 from matplotlib.figure import Figure
-from mathlib.custom_objects import Interprete
-##from mathlib.custom_functions import custom_latex
-from mathlib.end_user_functions import __classement__
+
+from ...GUI.ligne_commande import LigneCommande
+from ...GUI.wxlib import png
+from ...GUI.inspecteur import FenCode
+from ...GUI import MenuBar, Panel_simple
+from ...mathlib.interprete import Interprete
+from ...mathlib.end_user_functions import __classement__
+
+from ...pylib import print_error, uu, debug, no_argument, eval_safe
+from ... import param
 
 
 class CalculatriceMenuBar(MenuBar):
@@ -48,7 +45,6 @@ class CalculatriceMenuBar(MenuBar):
         MenuBar.__init__(self, panel)
         self.ajouter(u"Fichier", ["quitter"])
         self.ajouter(u"Affichage", ["onglet"])
-        liste = []
         for rubrique in __classement__:
             self.ajouter(rubrique, *(self.formater(contenu, rubrique != "Symboles") for contenu in __classement__[rubrique]))
             # pas de parenthese apres un symbole
@@ -317,7 +313,7 @@ class Calculatrice(Panel_simple):
             calc = fgeo.contenu["Calculatrice"][0]
             self.initialiser()
 
-            self.entree.historique = securite.eval_safe(calc["Historique"][0])
+            self.entree.historique = eval_safe(calc["Historique"][0])
 #            self.interprete.derniers_resultats = securite.eval_safe(calc["Resultats"][0])
             self.resultats.SetValue(calc["Affichage"][0] + "\n")
             self.interprete.load_state(calc["Etat_interne"][0])
@@ -325,7 +321,7 @@ class Calculatrice(Panel_simple):
             liste = calc["Options"][0].items()
             options = [option for aide, option in self.options]
             for key, value in liste:
-                value = securite.eval_safe(value[0])
+                value = eval_safe(value[0])
                 self.param(key, value)
                 if key in options:
                     self.options_box[options.index(key)].SetValue(value)
@@ -397,7 +393,6 @@ class Calculatrice(Panel_simple):
                 else:
                     self.vers_presse_papier()
             # TextCtrl
-            longueur = len(self.resultats.GetValue())
             numero = str(len(self.interprete.derniers_resultats))
             # Évite le décalage entre la première ligne et les suivantes (matrices)
             if "\n" in resultat and not aide:
@@ -412,7 +407,7 @@ class Calculatrice(Panel_simple):
             self.resultats.SetFocus()
             self.resultats.ScrollLines(1)
             self.entree.SetFocus()
-        except Exception, erreur:
+        except Exception:
             self.message(u"Calcul impossible.")
             self.entree.SetFocus()
             if param.debug:

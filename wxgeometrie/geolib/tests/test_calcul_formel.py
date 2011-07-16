@@ -1,14 +1,14 @@
 # -*- coding: iso-8859-1 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
-from geolib.tests.geotestlib import *
-from geolib import (Point, Vecteur, Droite, Intersection, Cercle, Segment, Disque,
-                    Homothetie, Rotation, Translation, Reflexion, Vecteur, Variable,
-                    Variable_generique, Disque,
-                    contexte, TYPES_NUMERIQUES
-                    )
-from sympy import S, Expr
 from numpy import array
+
+from sympy import S, Expr
+
+from wxgeometrie.geolib import (Point, Vecteur, Droite, Intersection, Cercle, Segment, Disque,
+                    Homothetie, Rotation, Translation, Reflexion, Variable,
+                    Variable_generique, contexte, TYPES_NUMERIQUES, Triangle
+                    )
 
 l = locals
 

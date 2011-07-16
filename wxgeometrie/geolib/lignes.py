@@ -22,13 +22,24 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-# version unicode
+import re
+from random import uniform
+from math import pi, atan2, cos, sin
 
+from numpy import inf
 
-from points import *
+from .objet import Objet, Objet_avec_equation, Argument, ArgumentNonModifiable, \
+                    Ref, contexte, RE_NOM_DE_POINT, G
+from .angles import Secteur_angulaire
+from .points import Point, Point_generique, Centre, Point_translation, Milieu
+from .routines import nice_display, distance, carre_distance, formatage, \
+                      vect, produit_scalaire, norme, distance_segment
+from .vecteurs import Vecteur_unitaire, Vecteur, Vecteur_libre, Vecteur_generique
+from .labels import Label_droite, Label_demidroite, Label_segment
+from .transformations import Translation
 
-
-
+from .. import param
+from ..pylib import eval_restricted
 ##########################################################################################
 
 ## LIGNES
@@ -117,7 +128,7 @@ class Ligne_generique(Objet_avec_equation):
         u"""Crée le nom formaté en LaTeX. Ex: M1 -> $M_1$."""
         Objet._creer_nom_latex(self)
         nom = self.nom_latex[1:-1]
-        if re.match("(" + ALL.RE_NOM_DE_POINT + "){2}",  nom):
+        if re.match("(" + RE_NOM_DE_POINT + "){2}",  nom):
             self.nom_latex = "$" + self._marqueurs[0] + nom + self._marqueurs[1] + "$"
         else:
             nom = self.latex_police_cursive(nom)
@@ -148,13 +159,13 @@ class Ligne_generique(Objet_avec_equation):
     def pente(self):
         x1, y1 = self.__point1.coordonnees
         x2, y2 = self.__point2.coordonnees
-        return (y2 - y1)/(x2 - x1) if (x2 - x1) else numpy.inf
+        return (y2 - y1)/(x2 - x1) if (x2 - x1) else inf
 
     @property
     def copente(self):
         x1, y1 = self.__point1.coordonnees
         x2, y2 = self.__point2.coordonnees
-        return (x2 - x1)/(y2 - y1) if (y2 - y1) else numpy.inf
+        return (x2 - x1)/(y2 - y1) if (y2 - y1) else inf
 
     def _points(self):
         u"Donne les points d'intersection de la droite avec les bords de la fenêtre."
@@ -213,7 +224,7 @@ class Segment(Ligne_generique):
         self.__point1 = point1 = Ref(point1)
         self.__point2 = point2 = Ref(point2)
         Ligne_generique.__init__(self, point1 = point1, point2 = point2, **styles)
-        self.etiquette = ALL.Label_segment(self)
+        self.etiquette = Label_segment(self)
 
 
     def _creer_figure(self):
@@ -311,7 +322,7 @@ class Demidroite(Ligne_generique):
         self.__origine = origine = Ref(origine)
         self.__point = point = Ref(point)
         Ligne_generique.__init__(self, point1 = origine, point2 = point, **styles)
-        self.etiquette = ALL.Label_demidroite(self)
+        self.etiquette = Label_demidroite(self)
 
     def image_par(self, transformation):
         return Demidroite(self.__point1.image_par(transformation), self.__point2.image_par(transformation))
@@ -423,7 +434,7 @@ class Droite_generique(Ligne_generique):
         self.__point1 = point1 = Ref(point1)
         self.__point2 = point2 = Ref(point2)
         Ligne_generique.__init__(self, point1 = point1, point2 = point2, **styles)
-        self.etiquette = ALL.Label_droite(self)
+        self.etiquette = Label_droite(self)
 
     def image_par(self, transformation):
         return Droite(self.__point1.image_par(transformation), self.__point2.image_par(transformation))
@@ -505,7 +516,7 @@ class Droite(Droite_generique):
     def __new__(cls, *args, **kw):
         if len(args) == 1  and isinstance(args[0], basestring):
             newclass = Droite_equation
-        elif len(args) == 2  and isinstance(args[1], ALL.Vecteur_generique):
+        elif len(args) == 2  and isinstance(args[1], Vecteur_generique):
             newclass = Droite_vectorielle
         else:
             return object.__new__(cls)
@@ -556,8 +567,8 @@ class Droite_vectorielle(Droite_generique):
 
     Une droite définie par un point et un vecteur directeur."""
 
-    point = __point = Argument("Point_generique", defaut = Point)
-    vecteur = __vecteur = Argument("Vecteur_generique", defaut = lambda:ALL.Vecteur_libre())
+    point = __point = Argument("Point_generique", defaut=Point)
+    vecteur = __vecteur = Argument("Vecteur_generique", defaut=Vecteur_libre)
 
     def __init__(self, point = None, vecteur = None, **styles):
         self.__point = point = Ref(point)
@@ -649,7 +660,7 @@ class Mediatrice(Perpendiculaire):
 
     La médiatrice d'un segment (ou d'un bipoint, ...)
 
-    >>> from geolib import Point, Mediatrice, Segment
+    >>> from wxgeometrie.geolib import Point, Mediatrice, Segment
     >>> A=Point(1,2); B=Point(3,4)
     >>> s=Segment(A,B)
     >>> Mediatrice(A, B) == Mediatrice(s)
@@ -660,7 +671,7 @@ class Mediatrice(Perpendiculaire):
     point2 = __point2 = Argument("Point_generique", defaut = Point)
 
     def __init__(self, point1 = None, point2 = None, **styles):
-        if isinstance(point1, ALL.Segment):
+        if isinstance(point1, Segment):
             point2 = point1._Segment__point2
             point1 = point1._Segment__point1
         self.__point1 = point1 = Ref(point1)
@@ -698,7 +709,7 @@ class Droite_equation(Droite_generique):
             return 1
         elif chaine[-1] == "*":
             chaine = chaine[:-1]
-        return securite.eval_restricted(chaine)
+        return eval_restricted(chaine)
 
     @classmethod
     def __extraire_coeffs(cls, chaine):
@@ -777,15 +788,15 @@ class Bissectrice(Droite_vectorielle):
     point3 = __point3 = Argument("Point_generique", defaut = Point)
 
     def __init__(self, point1 = None, point2 = None, point3 = None, **styles):
-        if isinstance(point1, ALL.Secteur_angulaire): # Au lieu de 3 points, on peut entrer un angle.
+        if isinstance(point1, Secteur_angulaire): # Au lieu de 3 points, on peut entrer un angle.
             point2 = point1._Secteur_angulaire__point
-            point1 = Point_translation(point2, ALL.Translation(point1._Secteur_angulaire__vecteur1))
-            point3 = Point_translation(point2, ALL.Translation(point1._Secteur_angulaire__vecteur2))
+            point1 = Point_translation(point2, Translation(point1._Secteur_angulaire__vecteur1))
+            point3 = Point_translation(point2, Translation(point1._Secteur_angulaire__vecteur2))
         self.__point1 = point1 = Ref(point1)
         self.__point2 = point2 = Ref(point2)
         self.__point3 = point3 = Ref(point3)
 
-        v = ALL.Vecteur_unitaire(ALL.Vecteur(point2, point1)) + ALL.Vecteur_unitaire(ALL.Vecteur(point2, point3))
+        v = Vecteur_unitaire(Vecteur(point2, point1)) + Vecteur_unitaire(Vecteur(point2, point3))
         Droite_vectorielle.__init__(self, point2, v, **styles)
 
     def _conditions_existence(self):
@@ -808,7 +819,7 @@ class Point_tangence(Point_generique):
         self.__cercle = cercle = Ref(cercle)
         self.__point = point = Ref(point)
         self.__angle_positif = angle_positif = Ref(angle_positif)
-        self.__intersection = ALL.Intersection_cercles(cercle, ALL.Cercle_diametre(ALL.Centre(cercle), point), angle_positif)
+        self.__intersection = G.Intersection_cercles(cercle, G.Cercle_diametre(Centre(cercle), point), angle_positif)
         Point_generique.__init__(self, **styles)
 
     def _get_coordonnees(self):
@@ -831,7 +842,7 @@ class Tangente(Perpendiculaire):    # À REDÉFINIR ?
     Le dernier paramètre (True/False) sert à distinguer les deux tangentes.
     (Voir la classe Intersection_cercles pour plus d'infos)."""
 
-    cercle = __cercle = Argument("Cercle_generique", defaut = lambda: ALL.Cercle())
+    cercle = __cercle = Argument("Cercle_generique", defaut='Cercle')
     point = __point = Argument("Point_generique", defaut = Point)
     angle_positif = __angle_positif = Argument("bool", defaut = True)
 
@@ -840,7 +851,7 @@ class Tangente(Perpendiculaire):    # À REDÉFINIR ?
         self.__point = point = Ref(point)
         self.__angle_positif = angle_positif = Ref(angle_positif)
         self.point_tangence = self.__point_tangence = Point_tangence(cercle, point, angle_positif)
-        Perpendiculaire.__init__(self, ALL.Droite(ALL.Centre(cercle), self.__point_tangence), self.__point_tangence, **styles)
+        Perpendiculaire.__init__(self, Droite(Centre(cercle), self.__point_tangence), self.__point_tangence, **styles)
 
 
     def _conditions_existence(self):
@@ -858,9 +869,9 @@ class Tangente(Perpendiculaire):    # À REDÉFINIR ?
                     break
         if "_Tangente__point" in self._valeurs_par_defaut:
             if distance(self.__cercle.centre, self.__point) < self.__cercle.rayon:
-                r = self.__cercle.rayon*module_random.uniform(1, 2)
-                a = module_random.uniform(0, 2*math.pi)
-                self.__point.coordonnees = self.__cercle.centre.x + r*math.cos(a), self.__cercle.centre.y + r*math.sin(a)
+                r = self.__cercle.rayon*uniform(1, 2)
+                a = uniform(0, 2*pi)
+                self.__point.coordonnees = self.__cercle.centre.x + r*cos(a), self.__cercle.centre.y + r*sin(a)
         Objet._set_feuille(self)
 
 
@@ -942,7 +953,7 @@ class DemiPlan(Objet_avec_equation):
         sommets = [coin for coin in coins if (coin in self)]
         sommets.extend([(x1, y1), (x2, y2)])
         x0, y0 = (x1 + x2)/2, (y1 + y2)/2
-        sommets.sort(key = lambda xy: math.atan2(xy[0] - x0, xy[1] - y0))
+        sommets.sort(key = lambda xy: atan2(xy[0] - x0, xy[1] - y0))
         fill.xy = sommets
 
 

@@ -23,7 +23,16 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-from tablatexlib import *
+import re
+
+from sympy import oo, nan, Symbol
+
+from .tablatexlib import convertir_en_latex, traduire_latex, test_parentheses,\
+                         maths, extraire_facteurs, resoudre
+from ...mathlib.intervalles import R, conversion_chaine_ensemble
+from ...mathlib.custom_functions import ensemble_definition, custom_str
+from ...mathlib.interprete import Interprete
+from ... import param
 
 
 def _auto_tabsign(chaine, cellspace = False):
@@ -33,16 +42,16 @@ def _auto_tabsign(chaine, cellspace = False):
     ensemble de définition.
     Par ailleurs, ses zéros doivent être calculables pour la librairie sympy.
     """
-    str = mathlib.custom_functions.custom_str
+    str = custom_str
 
     chaine_initiale = chaine
 
     # Ensemble de définition
     if ' sur ' in chaine:
         chaine, ens_def = chaine.split(' sur ')
-        ens_def = mathlib.intervalles.conversion_chaine_ensemble(ens_def, utiliser_sympy = True)
+        ens_def = conversion_chaine_ensemble(ens_def, utiliser_sympy = True)
     else:
-        ens_def = mathlib.intervalles.R
+        ens_def = R
 
     # Légende de la dernière ligne
     if '=' in chaine:
@@ -53,18 +62,18 @@ def _auto_tabsign(chaine, cellspace = False):
     # Décomposition en produit
     facteurs = extraire_facteurs(chaine)#.replace('/', '*'))
     # Conversion en expression sympy
-    interprete = mathlib.custom_objects.Interprete()
+    interprete = Interprete()
     interprete.evaluer(chaine)
     expr = interprete.ans()
     # Récupération de la variable
-    variables = expr.atoms(sympy.Symbol)
+    variables = expr.atoms(Symbol)
     if len(variables) > 1:
         raise ValueError, "Il y a plusieurs variables dans l'expression !"
     elif not variables:
         raise ValueError, "Il n'y a pas de variable dans l'expression !"
     var = variables.pop()
     # Récupération de l'ensemble de définition
-    ens_def *= mathlib.custom_functions.ensemble_definition(expr, var)
+    ens_def *= ensemble_definition(expr, var)
     if param.debug and param.verbose:
         print '-> Ensemble de definition:', ens_def
 
@@ -91,7 +100,7 @@ def _auto_tabsign(chaine, cellspace = False):
     for facteur in facteurs:
         interprete.evaluer(facteur)
         f_expr = interprete.ans()
-        f_ens_def = mathlib.custom_functions.ensemble_definition(f_expr, var)
+        f_ens_def = ensemble_definition(f_expr, var)
         valeurs = {xmin: None, xmax: None}
         solutions = [sol for sol in resoudre(f_expr, var) if sol.is_real and xmin <= sol <= xmax]
         for sol in solutions:

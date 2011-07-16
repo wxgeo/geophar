@@ -24,11 +24,11 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-from geolib import Feuille
-from API.canvas import Canvas
-from API.sauvegarde import ouvrir_fichierGEO
-from LIB import print_error
-import param
+from ..geolib.feuille import Feuille
+from ..API.canvas import Canvas
+from ..API.sauvegarde import ouvrir_fichierGEO
+from ..pylib import print_error
+from .. import param
 
 
 def _err(msg, *msgs):
@@ -50,7 +50,7 @@ def wxgeometrie_mode_script(input = None, output = None):
             try:
                 commandes = fgeo.contenu["Figure"][0]
             except KeyError:
-                return  _err(u"Le fichier '%s' ne comporte pas de figure." %fichier)
+                return  _err(u"Le fichier '%s' ne comporte pas de figure." %input)
 
         else:
             try:

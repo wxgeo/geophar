@@ -23,25 +23,13 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-# version unicode
-
-import sympy_functions
-import custom_functions
-import universal_functions
-import custom_objects
-import end_user_functions
-import intervalles
-import parsers
-import graphes
-from parsers import traduire_formule
-from intervalles import Intervalle
-from internal_functions import *
-from internal_objects import *
-
-#~ from sympy_functions import *
-#~ from custom_functions import *
-#~ from universal_functions import *
-#~ from custom_objects import *
-#~ from end_user_functions import *
-#~ from intervalles import *
-
+#import sympy_functions
+#import custom_functions
+#import universal_functions
+#import custom_objects
+#import end_user_functions
+#import intervalles
+#import parsers
+#import graphes
+#from parsers import traduire_formule
+#from intervalles import Intervalle

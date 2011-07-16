@@ -22,17 +22,12 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-#version unicode
-
-# from LIB import *
 import wx
-
-
 
 
 class LigneCommande(wx.Panel):
     u"Un TextCtrl muni d'un historique et associé à un bouton pour valider."
-    def __init__(self, parent, longueur = 500, texte = None, 
+    def __init__(self, parent, longueur = 500, texte = None,
                 action = (lambda *args, **kw: True), afficher_bouton = True,
                 legende = None):
         self.parent = parent
@@ -49,7 +44,7 @@ class LigneCommande(wx.Panel):
             self.bouton = wx.Button(self, label = texte)
         self.bouton.Bind(wx.EVT_BUTTON, self.EvtButton)
         self.bouton.Show(afficher_bouton)
-        
+
         if legende is not None:
             sizer.Add(wx.StaticText(self, -1, legende), 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5)
         sizer.Add(self.texte, 1, wx.ALL|wx.ALIGN_CENTER_VERTICAL|wx.EXPAND, 5)
@@ -95,7 +90,7 @@ class LigneCommande(wx.Panel):
 
     def SetToolTip(self, tip):
         self.texte.SetToolTip(tip)
-        
+
     def EvtButton(self, event):
         commande = self.GetValue()
         self.position = None
@@ -145,7 +140,7 @@ class LigneCommande(wx.Panel):
         else:
             self.position = None
             event.Skip()
-            
+
     def Command(*args, **kwargs):
         pass
     def Create(*args, **kwargs):
@@ -154,4 +149,3 @@ class LigneCommande(wx.Panel):
         pass
     def GetLabelText(*args, **kwargs):
         pass
-

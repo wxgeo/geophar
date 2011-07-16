@@ -24,8 +24,8 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 
 
-from GUI import *
-
+#from GUI import *
+from ...GUI import MenuBar, Panel_API_graphique
 
 
 class GeometreMenuBar(MenuBar):

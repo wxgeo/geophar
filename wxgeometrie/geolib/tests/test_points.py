@@ -1,15 +1,27 @@
 # -*- coding: iso-8859-1 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
-from geolib.tests.geotestlib import *
-import sympy
+from random import random
+
 from sympy import sympify as symp
 
-from geolib import (Glisseur_arc_cercle, Glisseur_cercle, Glisseur_demidroite, Glisseur_droite,
-                                Glisseur_segment, Point_equidistant, Centre, Centre_cercle_inscrit, Centre_cercle_circonscrit,
-                                Orthocentre, Projete_demidroite, Projete_segment, Projete_arc_cercle, Projete_cercle,
-                                Projete_droite, Centre_gravite, Label_point, Point_reflexion, Point_homothetie,
-                                Point_rotation, Point_translation, Point_final, Arc_points,
+from tools.testlib import assertAlmostEqual, assertEqual, randint
+from wxgeometrie.geolib.tests.geotestlib import rand_pt, rand_cercle
+
+from wxgeometrie.geolib import (Glisseur_arc_cercle, Glisseur_cercle, Glisseur_demidroite,
+                                Glisseur_droite, Point, Demidroite, Droite,
+                                Glisseur_segment, Point_equidistant, Centre,
+                                Centre_cercle_inscrit, Centre_cercle_circonscrit,
+                                Orthocentre, Projete_demidroite, Projete_segment,
+                                Projete_arc_cercle, Projete_cercle, Segment,
+                                Projete_droite, Centre_gravite, Label_point,
+                                Point_reflexion, Point_homothetie, Cercle,
+                                Point_rotation, Point_translation, Point_final,
+                                Arc_points, Arc_cercle, Triangle, Milieu,
+                                Barycentre, Mediatrice, Droite_equation,
+                                Cercle_equation, Polygone, Rotation, Translation,
+                                Vecteur, Vecteur_libre, Representant, Reflexion,
+                                Homothetie, NOM,
                                 )
 
 def test_Point():
@@ -74,7 +86,6 @@ def test_Barycentre():
 
 def test_Point_final():
     A = Point(random(),random())
-    B = Point(random(),random())
     C = Point(random(),random())
     u = Vecteur_libre(random(),random())
     v = Vecteur(Point(random(),  random()),  Point(random(),  random()))
@@ -191,7 +202,6 @@ def test_Projete_demidroite():
 
 
 def test_Centre_gravite():
-    M = rand_pt()
     A = rand_pt()
     B = rand_pt()
     C = rand_pt()
@@ -334,6 +344,3 @@ def test_Glisseur_arc_cercle():
     O = a.centre
     M.coordonnees = O.coordonnees
     # il faudrait compléter un peu
-
-
-

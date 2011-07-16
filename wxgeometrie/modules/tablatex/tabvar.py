@@ -23,7 +23,16 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-from tablatexlib import *
+
+import re
+
+from sympy import sympify, oo, nan, limit, Symbol
+
+from .tablatexlib import convertir_en_latex, test_parentheses, resoudre
+from ...mathlib.custom_functions import ensemble_definition, custom_str
+from ...mathlib.intervalles import R, conversion_chaine_ensemble
+from ...mathlib.interprete import Interprete
+from ... import param
 
 
 def _auto_tabvar(chaine = '', derivee = True, limites = True, decimales = None):
@@ -34,15 +43,15 @@ def _auto_tabvar(chaine = '', derivee = True, limites = True, decimales = None):
     Par ailleurs, les zéros de sa dérivée doivent être calculables pour la librairie sympy.
     """
     # TODO: gérer le paramètre 'decimales'
-    str = mathlib.custom_functions.custom_str
+    str = custom_str
     chaine_initiale = chaine
 
     # Ensemble de définition
     if ' sur ' in chaine:
         chaine, ens_def = chaine.split(' sur ')
-        ens_def = mathlib.intervalles.conversion_chaine_ensemble(ens_def, utiliser_sympy = True)
+        ens_def = conversion_chaine_ensemble(ens_def, utiliser_sympy = True)
     else:
-        ens_def = mathlib.intervalles.R
+        ens_def = R
 
     # Légende de la dernière ligne
     if '=' in chaine:
@@ -51,18 +60,18 @@ def _auto_tabvar(chaine = '', derivee = True, limites = True, decimales = None):
         legende = 'f'
 
     # Conversion en expression sympy
-    interprete = mathlib.custom_objects.Interprete()
+    interprete = Interprete()
     interprete.evaluer(chaine)
     expr = interprete.ans()
     # Récupération de la variable
-    variables = expr.atoms(sympy.Symbol)
+    variables = expr.atoms(Symbol)
     if len(variables) > 1:
         raise ValueError, "Il y a plusieurs variables dans l'expression !"
     elif not variables:
         raise ValueError, "Il n'y a pas de variable dans l'expression !"
     var = variables.pop()
     # Récupération de l'ensemble de définition
-    ens_def *= mathlib.custom_functions.ensemble_definition(expr, var)
+    ens_def *= ensemble_definition(expr, var)
     valeurs_interdites = []
     xmin = ens_def.intervalles[0].inf
     if not ens_def.intervalles[0].inf_inclus:
@@ -81,7 +90,7 @@ def _auto_tabvar(chaine = '', derivee = True, limites = True, decimales = None):
 
     # On étudie la dérivée
     derivee = expr.diff(var)
-    ens_def_deriv = mathlib.custom_functions.ensemble_definition(derivee, var)
+    ens_def_deriv = ensemble_definition(derivee, var)
     solutions = [sol for sol in resoudre(derivee, var) if sol.is_real]
 
     # On liste toutes les valeurs remarquables pour la fonction
@@ -106,14 +115,14 @@ def _auto_tabvar(chaine = '', derivee = True, limites = True, decimales = None):
     for i, valeur in enumerate(liste_valeurs):
         code_point = '(' + str(valeur) + ';'
         if valeur == xmin:
-            lim_plus = sympy.limit(expr, var, valeur, dir = '+')
+            lim_plus = limit(expr, var, valeur, dir = '+')
             if valeur != -oo and valeur in valeurs_interdites:
                 code_point += '|'
             # On n'affiche les limites que si 'limites == True'
             if limites or (valeur != -oo and valeur not in valeurs_interdites):
                 code_point += str(lim_plus)
         elif valeur == xmax:
-            lim_moins = sympy.limit(expr, var, valeur, dir = '-')
+            lim_moins = limit(expr, var, valeur, dir = '-')
             # On n'affiche les limites que si 'limites == True'
             if limites or (valeur != +oo and valeur not in valeurs_interdites):
                 code_point += str(lim_moins)
@@ -122,8 +131,8 @@ def _auto_tabvar(chaine = '', derivee = True, limites = True, decimales = None):
         else:
             if valeur in valeurs_interdites:
                 # On n'affiche les limites que si 'limites == True'
-                lim_plus = sympy.limit(expr, var, valeur, dir = '+')
-                lim_moins = sympy.limit(expr, var, valeur, dir = '-')
+                lim_plus = limit(expr, var, valeur, dir = '+')
+                lim_moins = limit(expr, var, valeur, dir = '-')
                 if limites:
                     code_point += str(lim_moins) + '|' + str(lim_plus)
                 else:
@@ -367,7 +376,3 @@ f: (-oo;3) << (1;2;0) << (3;+oo|-oo) << (5;2) >> (+oo;-oo)
     code += "\\hline\n\\end{tabvar}\\]\n% " + chaine_originale + "\n"
 
     return code
-
-
-
-

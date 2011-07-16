@@ -50,7 +50,6 @@ tools/pytest.py
 tools/runtests.py
 tools/strip_whitespace.py
 tools/test.py
-tools/testlib.py
 wxgeometrie/tests/
 ressources_annexes/
 wxgeometrie/developpeurs/

@@ -23,12 +23,13 @@ from __future__ import with_statement
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-# version unicode
+from weakref import ref
+from math import cos, sin, hypot, pi, acos
 
-from textes import *
-
-
-
+from .objet import Objet
+from .textes import Texte_generique
+from .routines import angle_vectoriel
+from .. import param
 
 
 class Label_generique(Texte_generique):
@@ -40,6 +41,7 @@ class Label_generique(Texte_generique):
     _style_defaut = param.labels
     # Les coordonnées exactes n'ont aucun intérêt pour une étiquette.
     _utiliser_coordonnees_approchees = True
+    _initialisation_minimale = True
 
     @property
     def __feuille__(self):
@@ -47,7 +49,7 @@ class Label_generique(Texte_generique):
 
     def __init__(self, parent):
         Texte_generique.__init__(self)
-        self._parent = weakref.ref(parent)
+        self._parent = ref(parent)
         # self._parent est une fonction qui renvoit parent si il existe encore.
         # Cela évite de le maintenir en vie artificiellement par une référence circulaire !
         self.suffixe = self.__class__.__name__.split("_", 1)[1]
@@ -100,7 +102,7 @@ class Label_generique(Texte_generique):
 
     def _set_rayon(self, rayon, x, y):
         xmin, xmax, ymin, ymax = self._boite()
-        rayon_max = param.distance_max_etiquette + math.hypot(xmin - xmax, ymin - ymax)/2
+        rayon_max = param.distance_max_etiquette + hypot(xmin - xmax, ymin - ymax)/2
         self.style(_rayon_ = min(rayon, rayon_max))
         # TODO: nouvel algorithme:
         # 1. Chercher le point le plus proche parmi les 4 coins du texte.
@@ -110,10 +112,10 @@ class Label_generique(Texte_generique):
 
 ##    def _distance_boite(self, x, y):
 ##        xmin, xmax, ymin, ymax = self._boite()
-##        d1 = math.hypot((x-xmin), (y-ymin))
-##        d2 = math.hypot((x-xmax), (y-ymax))
-##        d3 = math.hypot((x-xmin), (y-ymax))
-##        d4 = math.hypot((x-xmax), (y-ymin))
+##        d1 = hypot((x-xmin), (y-ymin))
+##        d2 = hypot((x-xmax), (y-ymax))
+##        d3 = hypot((x-xmin), (y-ymax))
+##        d4 = hypot((x-xmax), (y-ymin))
 ##        return min(d1, d2, d3, d4)
 
     @property
@@ -138,22 +140,22 @@ class Label_point(Label_generique):
     u"L'étiquette d'un point."
 
     def _initialiser_coordonnees(self):
-        self.style(_angle_ = math.pi/4) # les noms de style sont entre "_" pour éviter des conflits avec les styles de Texte.
+        self.style(_angle_ = pi/4) # les noms de style sont entre "_" pour éviter des conflits avec les styles de Texte.
         self.style(_rayon_ = 7) # distance au point en pixels
 
     def _get_coordonnees(self):
         parent = self.parent
         r = self.style("_rayon_"); a = self.style("_angle_")
-        rx, ry = self._epix2coo(r*math.cos(a), r*math.sin(a))
+        rx, ry = self._epix2coo(r*cos(a), r*sin(a))
         return  parent.abscisse + rx, parent.ordonnee + ry
 
     def _set_coordonnees(self, x = None, y = None):
         if x is not None:
             parent = self.parent
             rx, ry = self._ecoo2pix(x - parent.abscisse, y - parent.ordonnee)
-            rayon = math.hypot(rx, ry)
+            rayon = hypot(rx, ry)
             if rayon:
-                self.style(_angle_ = math.acos(rx/rayon)*(cmp(ry, 0) or 1))
+                self.style(_angle_ = acos(rx/rayon)*(cmp(ry, 0) or 1))
             self.style(_rayon_ = min(rayon, 50)) # distance maximale entre le point et son etiquette : 25 pixels
 
 
@@ -175,7 +177,7 @@ class Label_segment(Label_generique):
     defaut = 0.5
 
     def _initialiser_coordonnees(self):
-        self.style(_angle_ = math.pi/4) # les noms de style sont entre "_" pour éviter des conflits avec les styles de Texte.
+        self.style(_angle_ = pi/4) # les noms de style sont entre "_" pour éviter des conflits avec les styles de Texte.
         self.style(_rayon_ = 7) # distance au point en pixels
         self.style(_k_ = self.defaut) # Sur le segment [AB], l'étiquette sera relative au point fictif M = k*A + (1-k)*B
         self._M = None # il serait assez délicat d'initialiser _M d'office (risque de récursion infinie)...
@@ -184,25 +186,25 @@ class Label_segment(Label_generique):
     def _get_coordonnees(self):
         if self._M is None:
 #            import objets
-            self._M = getattr(ALL, "Glisseur_" + self.suffixe)(self.parent, k = self.style("_k_"))
+            self._M = locals()["Glisseur_" + self.suffixe](self.parent, k = self.style("_k_"))
         #~ print self._M.coordonnees
         x0, y0 =  self._M.coordonnees
         r = self.style("_rayon_"); a = self.style("_angle_")
-        rx, ry = self._epix2coo(r*math.cos(a), r*math.sin(a));
+        rx, ry = self._epix2coo(r*cos(a), r*sin(a));
         return  x0 + rx, y0 + ry
 
     def _set_coordonnees(self, x = None, y = None):
         if self._M is None:
 #            import objets
-            self._M = getattr(ALL, "Glisseur_" + self.suffixe)(self.parent, k = self.style("_k_"))
+            self._M = locals()["Glisseur_" + self.suffixe](self.parent, k = self.style("_k_"))
         if x is not None:
             self._M.coordonnees = (x, y)
             x0, y0 = self._M.coordonnees # comme _M est un glisseur, ce n'est pas x0 et y0 en général
             self.style(_k_ = self._M.parametre)
             rx, ry = self._ecoo2pix(x - x0, y - y0)
-            rayon = math.hypot(rx, ry)
+            rayon = hypot(rx, ry)
             if rayon:
-                self.style(_angle_ = math.acos(rx/rayon)*(cmp(ry, 0) or 1))
+                self.style(_angle_ = acos(rx/rayon)*(cmp(ry, 0) or 1))
             self.style(_rayon_ = min(rayon, 50)) # distance maximale entre le point et son etiquette : 25 pixels
 
 
@@ -256,7 +258,7 @@ class Label_polygone(Label_generique):
     u"L'étiquette d'un polygone."
 
     def _initialiser_coordonnees(self):
-        self.style(_angle_ = math.pi/4) # les noms de style sont entre "_" pour éviter des conflits avec les styles de Texte.
+        self.style(_angle_ = pi/4) # les noms de style sont entre "_" pour éviter des conflits avec les styles de Texte.
         self.style(_rayon_ = 7) # distance au point en pixels
 
     def _set_coordonnees(self, x = None, y = None):
@@ -266,16 +268,16 @@ class Label_polygone(Label_generique):
             x = max(min(x, x2), x1)
             y = max(min(y, y2), y1)
             rx, ry = self._ecoo2pix(x - parent.centre.abscisse, y - parent.centre.ordonnee)
-            rayon = math.hypot(rx, ry)
+            rayon = hypot(rx, ry)
             if rayon:
-                self.style(_angle_ = math.acos(rx/rayon)*(cmp(ry, 0) or 1))
+                self.style(_angle_ = acos(rx/rayon)*(cmp(ry, 0) or 1))
             self.style(_rayon_ = rayon) # distance maximale entre le point et son étiquette : 25 pixels
 
 
     def _get_coordonnees(self):
         parent = self.parent
         r = self.style("_rayon_"); a = self.style("_angle_")
-        rx, ry = self._epix2coo(r*math.cos(a), r*math.sin(a))
+        rx, ry = self._epix2coo(r*cos(a), r*sin(a))
         return  parent.centre.abscisse + rx, parent.centre.ordonnee + ry
 
 
@@ -302,9 +304,9 @@ class Label_angle(Label_generique):
         if parent.sens == u"non défini" and parent._sens() < 0:
             a, b = b, a
         if b < a:
-            b += 2*math.pi
+            b += 2*pi
         c = k*b + (1 - k)*a
-        rx, ry = self._epix2coo(r*math.cos(c), r*math.sin(c))
+        rx, ry = self._epix2coo(r*cos(c), r*sin(c))
         return  parent._Secteur_angulaire__point.abscisse + rx, parent._Secteur_angulaire__point.ordonnee + ry
 
 
@@ -312,7 +314,7 @@ class Label_angle(Label_generique):
         if x is not None:
             parent = self.parent
             rx, ry = self._ecoo2pix(x - parent.point.abscisse, y - parent.point.ordonnee)
-            rayon = math.hypot(rx, ry)
+            rayon = hypot(rx, ry)
             if rayon:
                 u = self._epix2coo(*parent._Secteur_angulaire__vecteur1)
                 v = self._epix2coo(*parent._Secteur_angulaire__vecteur2)
@@ -324,8 +326,8 @@ class Label_angle(Label_generique):
                 c = angle_vectoriel(i, (rx, ry))
                 if a <> b:
                     if b < a:
-                        b += 2*math.pi
+                        b += 2*pi
                     if c < a:
-                        c += 2*math.pi
+                        c += 2*pi
                     self.style(_k_ = (c-a)/(b-a))
             self.style(_rayon_ = min(rayon, param.codage["rayon"] + 25))

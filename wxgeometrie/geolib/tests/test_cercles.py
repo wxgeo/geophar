@@ -1,10 +1,16 @@
 # -*- coding: iso-8859-1 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
-from geolib.tests.geotestlib import *
-from geolib import (Cercle_points, Cercle_diametre, Cercle_rayon, Demicercle,
+from math import sqrt, sin, cos
+from random import random
+
+from pytest import XFAIL
+
+from tools.testlib import assertAlmostEqual, assertEqual
+from wxgeometrie.geolib import (Cercle_points, Cercle_diametre, Cercle_rayon, Demicercle,
                                 Arc_oriente, Arc_points, Label_arc_cercle, Disque,
-                                Label_cercle, Rayon,
+                                Label_cercle, Rayon, Point, Cercle, Milieu, Segment,
+                                Mediatrice, Arc_cercle, Cercle_equation,
                                 )
 
 def test_Arc_cercle():
@@ -66,12 +72,14 @@ def test_Cercle_rayon():
     assertEqual(c0.rayon,  0)
     assertEqual(c2.rayon,  2)
     k = random()
-    B = Point(A.x + 2*math.sin(k),  A.y + 2*math.cos(k))
+    B = Point(A.x + 2*sin(k),  A.y + 2*cos(k))
     assert(B in c2)
 
 @XFAIL
 def test_cercle_defini_par_equation():
     c = Cercle("x^2+y^2-2x+y-3=0")
+    assertAlmostEqual(c.centre.xy, (1, -.5))
+    assertAlmostEqual(c.rayon, sqrt(4.25))
 
 def test_Cercle():
     A = Point(2.78841, -5.25)

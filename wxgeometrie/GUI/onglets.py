@@ -23,38 +23,41 @@ from __future__ import with_statement
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-from LIB import *
-
+import os
 import wx
-
-import param, modules
-
-from GUI.inspecteur import FenCode
-from GUI.aide import Help, About, Informations
-from GUI.dialogues_geometrie import EditerObjet, SupprimerObjet
-from API.sauvegarde import FichierGEO, ouvrir_fichierGEO
-
 import matplotlib.backend_bases as backend_bases
+
+from .inspecteur import FenCode
+from .aide import Help, About, Informations
+from .dialogues_geometrie import EditerObjet, SupprimerObjet
+from .nouvelles_versions import Gestionnaire_mises_a_jour
+from . import dialogues_geometrie
+from ..API.sauvegarde import FichierGEO, ouvrir_fichierGEO
+from .proprietes_objets import Proprietes
+from .. import param, modules, geolib
+from ..pylib import print_error, debug, path2
+from .animer import DialogueAnimation
+from .proprietes_feuille import ProprietesFeuille
+from ..param.options import options as param_options
+from .fenetre_options import FenetreOptions
+from .contact import Contact
 
 class Onglets(wx.Notebook):
     def __init__(self, parent, id):
         self.parent = parent
         wx.Notebook.__init__(self, parent, id, style=wx.NB_TOP)
 
-
         ###############################
         # Creation de fonctions associees aux entrees du menu "Creer"
-        import GUI.dialogues_geometrie as DG
         self.creer = {}
-        dialogues = [(nom[8:], DG.__dict__[nom]) for nom in DG.__dict__.keys() if nom.startswith("Dialogue")]
+        DG = dialogues_geometrie.__dict__
+        dialogues = [(nom[8:], DG[nom]) for nom in DG.keys() if nom.startswith("Dialogue")]
         for dialogue in dialogues:
             def f(event = None, self = self, dialogue = dialogue[1]):
                 self.creer_objet(dialogue)
             self.creer[dialogue[0]] = f
-        del DG
         ###############################
 
-        from GUI.nouvelles_versions import Gestionnaire_mises_a_jour
         self.gestionnaire_de_mises_a_jour = Gestionnaire_mises_a_jour(self)
 
         self._liste = [] # liste des onglets
@@ -84,7 +87,7 @@ class Onglets(wx.Notebook):
     def OnOptionsModified(self, evt = None):
         self.actualiser_liste_onglets()
         for parametre in ('decimales', 'unite_angle', 'tolerance'):
-            ALL.contexte[parametre] = getattr(param,  parametre)
+            geolib.contexte[parametre] = getattr(param,  parametre)
         self.parent.actualiser_intervalle_autosave()
 
 
@@ -444,7 +447,6 @@ class Onglets(wx.Notebook):
 
 
     def editer(self, event = None):
-        from GUI.proprietes_objets import Proprietes # à deplacer !!
         feuille = self.onglet_actuel.feuille_actuelle
         if feuille:
             objets = []
@@ -486,7 +488,6 @@ class Onglets(wx.Notebook):
         dl.Destroy()
 
     def Animer(self, event):
-        from GUI.animer import DialogueAnimation
         d = DialogueAnimation(self)
         d.CenterOnParent(wx.BOTH)
         d.Show(True)
@@ -501,14 +502,11 @@ class Onglets(wx.Notebook):
         self.onglet_actuel.feuille_actuelle.charger(instructions)
 
     def Proprietes(self, event):
-        from GUI.proprietes_feuille import ProprietesFeuille # à deplacer ?
         actuelle = self.onglet_actuel.feuille_actuelle # feuille courante
         ProprietesFeuille(self, actuelle).Show()
 
     def Options(self, evt = None):
-        from param.options import options
-        from GUI.fenetre_options import FenetreOptions
-        FenetreOptions(self, options).Show()
+        FenetreOptions(self, param_options).Show()
 
 
     def Aide(self, event):
@@ -537,7 +535,6 @@ class Onglets(wx.Notebook):
         dlg.ShowModal()
 
     def Contacter(self, event):
-        from GUI.contact import Contact
         formulaire = Contact(self)
         formulaire.Show()
         #~ val = dialog.ShowModal()
@@ -548,10 +545,10 @@ class Onglets(wx.Notebook):
 
     def About(self, event):
         dialog = About(self)
-        btn = dialog.ShowModal()
+        dialog.ShowModal()
         dialog.Destroy()
 
     def Informations(self, event):
         dialog = Informations(self)
-        btn = dialog.ShowModal()
+        dialog.ShowModal()
         dialog.Destroy()

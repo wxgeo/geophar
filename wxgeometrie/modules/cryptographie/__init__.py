@@ -24,14 +24,19 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 
-from GUI import *
 from string import ascii_uppercase as majuscules
 from functools import partial
 from itertools import cycle, izip
 from random import shuffle
 import re
 
-from GUI.wxlib import MyFont
+import wx
+
+#from ...GUI.wxlib import MyFont
+from ...GUI import MenuBar, Panel_simple
+from ...pylib import print_error
+from ... import param
+
 
 dict_accents = {
 u"é": "E",
@@ -95,7 +100,7 @@ class Cryptographie(Panel_simple):
         self.sizer = wx.BoxSizer(wx.VERTICAL)
 
         font = self.GetFont()
-        italic = wx.Font(font.GetPointSize(), font.GetFamily(), wx.ITALIC, wx.NORMAL)
+#        italic = wx.Font(font.GetPointSize(), font.GetFamily(), wx.ITALIC, wx.NORMAL)
         bold = wx.Font(font.GetPointSize(), font.GetFamily(), wx.NORMAL, wx.BOLD)
 
         self.textes = wx.GridBagSizer(5, 5)
@@ -192,7 +197,7 @@ class Cryptographie(Panel_simple):
     @staticmethod
     def generer_cle(evt=None):
         l = list(majuscules)
-        random.shuffle(l)
+        shuffle(l)
         return ''.join(l)
 
 
@@ -211,7 +216,7 @@ class Cryptographie(Panel_simple):
         clair = self.clair.GetValue().upper()
         for key, val in dict_accents.items():
             clair = clair.replace(key, val)
-        d = dict(zip(string.ascii_uppercase, cle))
+        d = dict(zip(majuscules, cle))
         code = ''.join(d.get(s, ' ') for s in clair)
         code = re.sub(' +', ' ', code)
         if not espaces:

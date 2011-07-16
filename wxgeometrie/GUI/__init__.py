@@ -21,7 +21,7 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 import traceback
 
-import param
+from .. import param
 
 if not param.py2exe:
     import wxversion
@@ -46,10 +46,10 @@ except:
 
 import wx
 
-from LIB import *
+#from LIB import *
 
-from GUI.menu import MenuBar
-from GUI.panel import Panel_simple, Panel_API_graphique
+from .menu import MenuBar
+from .panel import Panel_simple, Panel_API_graphique
 
 # NB: Ne *PAS* importer modules.py ici (ou alors, modifier le script d'initialisation).
 # En effet, la mise à jour des paramètres en fonction des préférences de l'utilisateur

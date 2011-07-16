@@ -80,11 +80,13 @@ valeurs_a_ne_pas_sauver = (
 
 import os
 import platform
-from sys import version_info as python_version_info, version as python_version
+import sys
 from locale import getdefaultlocale
 from math import pi
 from time import mktime
-python_version = float(python_version[:3])
+
+python_version = float(sys.version[:3])
+python_version_info = sys.version_info
 
 python_min = (2, 6) # version minimale requise
 
@@ -99,7 +101,7 @@ time_verification = time_version
 plateforme = platform.system() #'Windows' ou 'Linux' par exemple.
 repertoire = os.getcwd() # memorise le repertoire de lancement
 
-py2exe = False # le programme tourne-t-il en version "executable" ?
+py2exe = hasattr(sys, 'frozen') # le programme tourne-t-il en version "executable" ?
 
 EMPLACEMENT = "" # le répertoire contenant wxgéométrie.pyw (sera détecté dynamiquement)
 ecriture_possible = None # sera testé plus tard.
@@ -721,6 +723,6 @@ try:
 except ImportError:
     print("Warning: impossible d'activer la gestion des options !")
 
-del os, platform
+del os, platform, sys
 
 print(u'Import des paramètres terminé.')

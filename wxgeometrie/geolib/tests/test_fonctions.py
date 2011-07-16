@@ -1,13 +1,17 @@
 # -*- coding: iso-8859-1 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
-from geolib.tests.geotestlib import *
+from pytest import XFAIL
+
+from tools.testlib import assertAlmostEqual
+from wxgeometrie.geolib import Fonction, Feuille
 
 _VAL0 = -5.156557933
 
 
 @XFAIL
-def test_sans_feuille():
+def test_Fonction():
+    u"Test sans feuille."
     g = Fonction('2x+7')
     assert g(17) == 41
     # La fonction n'est compilée que s'il y a une feuille.

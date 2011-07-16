@@ -22,9 +22,11 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-from LIB import *
+#from LIB import *
 #from GUI.wxlib import png
-from GUI.barre_outils import BarreOutils
+from ...GUI.barre_outils import BarreOutils
+from ...geolib import Arc_oriente, Arc_points, Point_generique
+
 
 class BarreOutilsGraphes(BarreOutils):
     def __init__(self, parent, couleur = None):

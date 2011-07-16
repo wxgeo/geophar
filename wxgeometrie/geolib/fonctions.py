@@ -24,10 +24,15 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 # version unicode
 
+import re
+from .objet import Objet_numerique, Objet, contexte, ArgumentNonModifiable, \
+                   Argument, Ref
 
-from objet import *
-
-
+#from .. import param
+from ..pylib import is_in, property2
+from ..mathlib.intervalles import preformatage_geolib_ensemble, formatage_ensemble
+from ..mathlib.parsers import VAR_NOT_ATTR, traduire_formule
+from .variables import Variable
 
 class Fonction(Objet_numerique):
     u"""Une fontion.
@@ -38,7 +43,7 @@ class Fonction(Objet_numerique):
     _prefixe_nom = "f"
 
     # nom de variable (mais pas d'attribut)
-    __re = re.compile('(' + parsers.VAR_NOT_ATTR + ')')
+    __re = re.compile('(' + VAR_NOT_ATTR + ')')
 
 
     __expression = Argument("basestring")
@@ -92,8 +97,8 @@ class Fonction(Objet_numerique):
         if ensemble is None:
             ensemble = self.__ensemble
         else:
-            ensemble, extremites_cachees = intervalles.preformatage_geolib_ensemble(ensemble)
-            extremites_cachees = tuple([ALL.Variable(x) for x in partie] for partie in extremites_cachees)
+            ensemble, extremites_cachees = preformatage_geolib_ensemble(ensemble)
+            extremites_cachees = tuple([Variable(x) for x in partie] for partie in extremites_cachees)
             self.style(extremites_cachees = extremites_cachees)
         if ensemble == self.__ensemble and expression == self.__expression:
             # Aucune modification
@@ -109,17 +114,17 @@ class Fonction(Objet_numerique):
         if variable not in 'xt':
             raise NotImplementedError
         # *Pré*formatage
-        ensemble, extremites_cachees = intervalles.preformatage_geolib_ensemble(ensemble)
+        ensemble, extremites_cachees = preformatage_geolib_ensemble(ensemble)
         if self.style("extremites_cachees"):
             extremites_cachees = self.style("extremites_cachees")
         else:
-            extremites_cachees = tuple([ALL.Variable(x) for x in partie] for partie in extremites_cachees)
+            extremites_cachees = tuple([Variable(x) for x in partie] for partie in extremites_cachees)
         self.__liste_expression = []
         self.__liste_ensemble = []
         # Une fonction peut être définie par morceaux
         # Liste des fonctions correspondant à chaque morceau
         self.__fonctions = None
-        # Liste des (unions d')intervalles correspondant à chaque morceau
+        # Liste des (unions d'intervalles correspondant à chaque morceau
         self.__unions = None
         # Les arguments non modifiables ne sont pas encapsulés dans des références (classe Ref)
         self.__expression = expression = Ref(expression)
@@ -162,7 +167,7 @@ class Fonction(Objet_numerique):
                     raise
                 # L'erreur peut-être due à la présence de code LaTeX dans la fonction ;
                 # on tente un 2e essai après traduction du code LaTeX éventuel.
-                expression = parsers.traduire_formule(expression, fonctions = self.__feuille__.objets)
+                expression = traduire_formule(expression, fonctions = self.__feuille__.objets)
                 return self._test_dependance_circulaire(expression, ensemble, deuxieme_essai = True)
         return None, None, None
 
@@ -184,14 +189,14 @@ class Fonction(Objet_numerique):
             # TODO: Prévoir le cas où les deux listes ne sont pas de même longueur
             n = min(len(expressions), len(ensembles))
             for i in xrange(n):
-                express = parsers.traduire_formule(expressions[i], fonctions = self.__feuille__.objets)
+                express = traduire_formule(expressions[i], fonctions = self.__feuille__.objets)
                 # On force ensuite la variable à apparaitre dans l'expression de la formule.
                 # C'est important quand la fonction est constante :
                 # l'image d'un tableau par la fonction doit être un tableau, et non la constante.
                 if self.__variable not in express:
                     express += "+0.*" + self.__variable
                 self.__fonctions.append(eval("lambda " + self.__variable + ":" + express, self.__feuille__.objets))
-                ensemb = intervalles.formatage_ensemble(ensembles[i], preformatage = False)
+                ensemb = formatage_ensemble(ensembles[i], preformatage = False)
                 self.__unions.append(eval(ensemb, self.__feuille__.objets))
 
             # on supprime la variable de la liste des vassaux pour les objets dont elle ne dépendra plus desormais:
@@ -238,7 +243,7 @@ class Fonction(Objet_numerique):
     @staticmethod
     def _convertir(objet):
         u"Convertit un objet en fonction."
-        return ALL.Fonction(objet)
+        return Fonction(objet)
 
 
     def __call__(self, valeur):

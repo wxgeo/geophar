@@ -22,92 +22,15 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-# version unicode
+import re, time
 
-from objet import *
+from sympy import Symbol, Basic, sympify
 
-
-
-
-class Formule(object):
-
-    # Le caractère d'erreur doit être accepté par le parser de matplotlib en mode normal *ET* en mode math.
-    _caractere_erreur = "<.>"
-
-    def _get_feuille(self):
-        return self.__feuille
-
-    def _set_feuille(self, value):
-        self.__feuille = value
-        liste = self._contenu[:]
-        for i in xrange(1, len(liste), 2):
-            self._contenu[i].__feuille__ = value
-
-    __feuille__ = property(_get_feuille, _set_feuille)
-
-    def __init__(self, parent, chaine = ""):
-        if isinstance(chaine, Formule):
-            chaine = eval(repr(chaine))
-##        print "Initialisation formule:", chaine, type(chaine)
-        self._parent = weakref.ref(parent) # self._parent est une fonction qui renvoit parent si il existe encore. Cela permet de ne pas le maintenir en vie artificiellement (pas de référence circulaire).
-        #~ self._cache_repr = chaine
-        #~ self._cache_str = "<?>".join()
-        if "{" not in chaine:
-            liste = ["", "{" + chaine + "}", ""]
-        else:
-            liste = re.split("([{][^}]+[}])", chaine)
-        for i in xrange(1, len(liste), 2):
-            cache = liste[i][1:-1] # "{A.x}" -> "A.x"
-            var = liste[i] = Variable(cache)
-            var._cache_formule = cache
-##            # on va maintenant redéfinir la méthode affiche de toutes les variables de la formule : au lieu d'être inactive, la méthode affiche va actualiser l'affichage de l'objet contenant la formule.
-##            def affiche(self, actualiser = False, formule = self):
-##                formule.parent.creer_figure()
-##            var.affiche = new.instancemethod(affiche, var, var.__class__)
-        self._contenu = liste
-
-        # il faut faire un système de cache pour chaque variable :
-        # - si la variable est calculable, on renvoie la valeur de la variable (et on met à jour son cache)
-        # - sinon, on renvoie le cache s'il s'agit de repr, et <?> s'il s'agit de str.
-
-        self.__feuille__ = self.parent.__feuille__
-
-
-    @property
-    def parent(self):
-        return self._parent()
-
-    def supprimer(self):
-        for i in xrange(1, len(self._contenu), 2):
-            self._contenu[i].supprimer()
-
-
-    def __repr__(self):
-        liste = self._contenu[:]
-        for i in xrange(1, len(liste), 2):
-            if liste[i].val is not None:
-                liste[i]._cache_formule = str(liste[i])
-            liste[i] = "{" + liste[i]._cache_formule + "}"
-        return repr(uu("".join(liste)))
-        #~ return uu("".join(liste))
-
-
-    def __unicode__(self):
-        liste = self._contenu[:]
-        for i in xrange(1, len(liste), 2):
-            if liste[i].val is None:
-                s = self._caractere_erreur
-            else:
-                s = nice_display(liste[i])
-            #~ if s == "None":
-                #~ s = "<?>"
-            liste[i] = s
-        return uu("".join(liste))
-
-
-    def __str__(self):
-        return unicode(self).encode(param.encodage)
-
+from .objet import Ref, Argument, Objet, Objet_numerique, souffler, TYPES_REELS,\
+                   contexte
+from ..pylib import property2, print_error, fullrange, is_in
+from ..mathlib.parsers import VAR_NOT_ATTR, NBR_SIGNE
+from .. import param
 
 
 class Variable_generique(Objet_numerique):
@@ -124,9 +47,9 @@ class Variable_generique(Objet_numerique):
     @staticmethod
     def _convertir(objet):
         u"Convertit un objet en variable."
-##        if isinstance(objet, ALL.Variable):   #  Inutile (?)
+##        if isinstance(objet, Variable):   #  Inutile (?)
 ##            return objet.copy()
-        return ALL.Variable(objet)
+        return Variable(objet)
 
 
 class Variable(Variable_generique):
@@ -140,7 +63,7 @@ class Variable(Variable_generique):
 
 
     # RE correspondant à un nom de variable (mais pas d'attribut)
-    __re = re.compile('(' + parsers.VAR_NOT_ATTR + ')')
+    __re = re.compile('(' + VAR_NOT_ATTR + ')')
 
     def _set_contenu(self, value):
         if isinstance(value, Variable):
@@ -152,16 +75,16 @@ class Variable(Variable_generique):
         elif isinstance(value, basestring):
             value = value.replace(" ","")
             # Si c'est un nombre:
-            if not "." in value and sympy is not None:
+            if not "." in value:
                 try:
-                    symp = sympy.sympify(value)
-                    if not symp.atoms(sympy.Symbol):
+                    symp = sympify(value)
+                    if not symp.atoms(Symbol):
                         value = symp
                 except AttributeError:
                     pass
-            elif re.match(parsers.NBR_SIGNE + "$", value):
+            elif re.match(NBR_SIGNE + "$", value):
                 value = eval(value, {})
-        elif sympy is not None and isinstance(value, sympy.Basic):
+        elif isinstance(value, Basic):
             if not value.is_real:
                 raise RuntimeError, "La variable doit etre reelle."
         return value
@@ -338,7 +261,7 @@ class Variable(Variable_generique):
 ##    def add(self, y):
 ##        u"Addition liée (le résultat est une variable qui reste toujours égale à la somme des 2 valeurs)."
 ##        if self._type == "simple":
-##            if isinstance(y, ALL.TYPES_NUMERIQUES) or (isinstance(y, Variable) and y._type == "simple"):
+##            if isinstance(y, TYPES_NUMERIQUES) or (isinstance(y, Variable) and y._type == "simple"):
 ##                return Variable(self + y)
 ##        var = Variable("(%s)+(%s)" %(self, y))
 ##        var.__feuille__ = self.__feuille__
@@ -347,7 +270,7 @@ class Variable(Variable_generique):
 ##    def mul(self, y):
 ##        u"Multiplication liée (le résultat est une variable qui reste toujours égale au produit des 2 valeurs)."
 ##        if self._type == "simple":
-##           if isinstance(y, ALL.TYPES_NUMERIQUES) or (isinstance(y, Variable) and y._type == "simple"):
+##           if isinstance(y, TYPES_NUMERIQUES) or (isinstance(y, Variable) and y._type == "simple"):
 ##                return Variable(self * y)
 ##        var = Variable("(%s)*(%s)" %(self, y))
 ##        var.__feuille__ = self.__feuille__
@@ -357,7 +280,7 @@ class Variable(Variable_generique):
 class Rayon(Variable_generique):
     u"""Le rayon d'un cercle.
 
-    >>> from geolib import Cercle, Rayon
+    >>> from wxgeometrie.geolib import Cercle, Rayon
     >>> c = Cercle((0, 0), 1)
     >>> c.rayon
     1

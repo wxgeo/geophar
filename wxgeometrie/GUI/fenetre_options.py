@@ -21,11 +21,10 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #
 ######################################
 
-import wx, wx.lib.newevent
-import param
-from param.options import Theme, Section, Parametre
-
 from functools import partial
+import wx, wx.lib.newevent
+
+from ..param.options import Section, Parametre
 
 OptionsModifiedEvent, EVT_OPTIONS_MODIFIED = wx.lib.newevent.NewEvent()
 
@@ -52,7 +51,7 @@ class FenetreOptions(wx.Frame):
                         elif isinstance(parametre, basestring):
                             bsizer.Add(wx.StaticText(panel, -1, parametre), 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5)
                         else:
-                            raise NotImplementedError, repr(type(elt))                        
+                            raise NotImplementedError, repr(type(elt))
                     bsizer.AddSpacer(3)
                     sizer.Add(bsizer, 0, wx.ALL, 8)
                 elif isinstance(elt, Parametre):

@@ -22,10 +22,13 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-
-from LIB import *
+import thread, sys
+import wx
 from wxlib import TransmitEvent, EVT_TRANSMIT
 
+from .. import param
+from ..pylib import path2
+from ..pylib.bugs_report import rapporter
 
 class Contact(wx.Frame):
     def __init__(self, parent):
@@ -36,7 +39,7 @@ class Contact(wx.Frame):
 
         panel = wx.Panel(self, -1)
         italic = wx.Font(panel.GetFont().GetPointSize(), panel.GetFont().GetFamily(), wx.ITALIC, wx.NORMAL)
-        bold_italic = wx.Font(panel.GetFont().GetPointSize(), panel.GetFont().GetFamily(), wx.ITALIC, wx.BOLD)
+#        bold_italic = wx.Font(panel.GetFont().GetPointSize(), panel.GetFont().GetFamily(), wx.ITALIC, wx.BOLD)
         panel.SetBackgroundColour(wx.WHITE)
 
         panelSizer = wx.BoxSizer(wx.VERTICAL)
@@ -142,7 +145,7 @@ vous êtes invités à signaler tout problème rencontré.""")
         else:
             msg = ""
         def f():
-            result = bugs_report.rapporter(titre = titre, auteur = nom, email = mail, description = commentaire, historique = histo, log = msg)
+            result = rapporter(titre = titre, auteur = nom, email = mail, description = commentaire, historique = histo, log = msg)
             wx.PostEvent(self, TransmitEvent(success = result))
         self.Hide()
         thread.start_new_thread(f, ())
@@ -167,4 +170,3 @@ vous êtes invités à signaler tout problème rencontré.""")
             self.Close()
         else:
             self.Show()
-

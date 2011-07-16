@@ -1,15 +1,18 @@
 # -*- coding: iso-8859-1 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
-from geolib.tests.geotestlib import *
-from geolib import (Point, Droite, Droite_equation, Reflexion, Rotation, Translation,
+from random import random
+from math import pi
+
+from tools.testlib import assertAlmostEqual, randint
+from wxgeometrie.geolib import (Point, Droite, Droite_equation, Reflexion, Rotation, Translation,
                                 Homothetie, Symetrie_centrale, Milieu, Mediatrice, Vecteur_libre
                                 )
 
 
 def test_Rotation():
     A = Point(1.523, 45.35211)
-    r = Rotation(A, math.pi/4)
+    r = Rotation(A, pi/4)
     M = Point(1.4452,  -1.2545)
     assertAlmostEqual(r(M).coordonnees, (34.423837071540447, 12.341247113306926))
     assertAlmostEqual(r(A).coordonnees, A.coordonnees)
@@ -49,5 +52,3 @@ def test_Symetrie_centrale():
     s = Symetrie_centrale(A)
     assertAlmostEqual(Milieu(M, s(M)).coordonnees, A.coordonnees)
     assert(s(A) is A)
-
-

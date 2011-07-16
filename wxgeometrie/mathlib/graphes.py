@@ -22,21 +22,14 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-# version unicode
-
-# from resolution import *
-
 # Lexicon
 # http://www.apprendre-en-ligne.net/graphes/lexique/index.html
 # http://en.wikipedia.org/wiki/Glossary_of_graph_theory
 
 import collections, copy
 
-from pylib import *
-import sympy
-
-oo = sympy.oo
-
+from sympy import oo, Matrix
+from ..pylib import OrderedDict, advanced_split
 
 class GraphError(StandardError):
     pass
@@ -153,7 +146,7 @@ class Graph(dict):
             # In an unoriented graph, loops are counted twice.
             k = (1 if self.oriented or i != j else 2)
             return k*len(self[nodes[i]].get(nodes[j], ()))
-        return sympy.Matrix(n, n, f)
+        return Matrix(n, n, f)
 
     def degree(self, node):
         if self.oriented:
@@ -206,7 +199,7 @@ class Graph(dict):
         if walk is None:
             #TODO: return an (arbitrary) eulerian trail if any, else None
             raise NotImplementedError
-            return trail
+#            return trail
 
         # Convert input string to a list of nodes.
         for sep in ('-', ',', ';'):

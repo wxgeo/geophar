@@ -24,12 +24,14 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-# version unicode
+import time
+from types import NoneType
 
-from LIB import *
-import sauvegarde
+from . import sauvegarde
+from ..pylib import print_error, eval_safe
+from .. import param
 
-types_supportes = (int, long, str, unicode, float, bool, types.NoneType, list, tuple, dict)
+types_supportes = (int, long, str, unicode, float, bool, NoneType, list, tuple, dict)
 
 # TO DO (?) :
 # - rajouter le support des types array et complex dans securite.eval_safe
@@ -69,7 +71,7 @@ def actualiser_module(module, fichier):
         parametres = fgeo.contenu["Parametres"][-1]
         try:
             for key in parametres:
-                setattr(module, key, securite.eval_safe(parametres[key][-1]))
+                setattr(module, key, eval_safe(parametres[key][-1]))
         except:
             print module, key
             print_error()

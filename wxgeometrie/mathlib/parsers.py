@@ -22,16 +22,11 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-# version unicode
-
-# from resolution import *
-
-import keyword
+import keyword, re
 from itertools import chain, izip_longest
 
-from pylib import *
-import sympy
-
+from sympy import Expr
+from ..pylib import regsub, split_around_parenthesis, debug
 
 
 
@@ -153,7 +148,7 @@ def _ajouter_mult_manquants(formule, fonctions = (), verbose = None, mots_cles =
     if isinstance(fonctions, dict):
         # On récupère les fonctions de l'espace des noms
         # (tout objet 'callable' sauf certains objets Sympy).
-        fonctions = [key for key, val in fonctions.items() if hasattr(val, "__call__") and not isinstance(val, sympy.Expr)]
+        fonctions = [key for key, val in fonctions.items() if hasattr(val, "__call__") and not isinstance(val, Expr)]
 
     if verbose:
         print '1', formule
@@ -169,7 +164,7 @@ def _ajouter_mult_manquants(formule, fonctions = (), verbose = None, mots_cles =
         print '2', formule
 
     # Si a, b, c... ne sont pas des fonctions, on remplace "a(" par "a*(", etc...
-    def f(s):
+    def f1(s):
         s = s.strip()
         if s in fonctions:# or s in mots_cles:
             return s
@@ -180,7 +175,7 @@ def _ajouter_mult_manquants(formule, fonctions = (), verbose = None, mots_cles =
             return s
         else:
             return s + "*"
-    formule = regsub("[.]?" + NBR_OR_VAR + "[ ]?(?=[(])", formule, f)
+    formule = regsub("[.]?" + NBR_OR_VAR + "[ ]?(?=[(])", formule, f1)
 
     if verbose:
         print '3', formule
@@ -188,7 +183,7 @@ def _ajouter_mult_manquants(formule, fonctions = (), verbose = None, mots_cles =
     # "f x" devient "f(x)" si f est une fonction, "f*x" sinon ;
     # de même, "f 2.5" devient "f(2.5)" si f est une fonction, et "f*2.5" sinon.
     # (Si f est un mot-clé (if, then, else, for...), on n'y touche pas.)
-    def f(s):
+    def f2(s):
         l = s.split()
         if l[0] in mots_cles:
             return s
@@ -200,7 +195,7 @@ def _ajouter_mult_manquants(formule, fonctions = (), verbose = None, mots_cles =
     i = 0 # sécurité sans doute inutile...
     while formule != formule_initiale and i < 1000:
         formule_initiale = formule
-        formule = regsub(VAR + "[ ]" + NBR + "?[*/]?" + NBR_OR_VAR , formule, f)
+        formule = regsub(VAR + "[ ]" + NBR + "?[*/]?" + NBR_OR_VAR , formule, f2)
         i += 1
 
     if verbose:

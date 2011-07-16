@@ -23,12 +23,14 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-# version unicode
 
-from LIB import *
-import  wx.html as  html
+import  wx.html as html
+import wx
 
-from wxlib import png
+from .. import param
+from .wxlib import png
+from ..pylib.infos import informations_configuration
+
 
 
 class Help(wx.Frame):

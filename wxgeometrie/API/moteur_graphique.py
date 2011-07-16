@@ -20,20 +20,23 @@ from __future__ import with_statement
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
+from itertools import chain
+from operator import attrgetter
+from string import ascii_lowercase
 
-from LIB import *
-
-import matplotlib
+from matplotlib.colors import colorConverter
 from matplotlib.transforms import Bbox
 from matplotlib.backends.backend_wxagg import FigureCanvasAgg
 from matplotlib.lines import Line2D
 from matplotlib.collections import LineCollection
 from matplotlib.patches import Polygon, Circle, FancyArrowPatch
 from matplotlib.text import Text
-from numpy import array, cos as ncos, sin as nsin
-from math import cos, sin, atan2, pi, hypot
+from matplotlib.axes import Axes
+from numpy import array, arange, concatenate, cos as ncos, sin as nsin
+from math import cos, sin, atan2, pi, hypot, sqrt, atan
 
-from pylib import fullrange
+from ..pylib import fullrange, is_in, uu, warning, print_error, tex
+from .. import param
 
 
 
@@ -153,7 +156,7 @@ class FlecheCourbe(FlecheGenerique):
         r = self.rayon
         a, b = self.intervalle
         t = fullrange(a, b, self.canvas.pas())
-        lignes = [zip(x + r*numpy.cos(t), y + r*numpy.sin(t))]
+        lignes = [zip(x + r*ncos(t), y + r*nsin(t))]
 
         k = self.position
         sens = self.sens
@@ -319,8 +322,8 @@ class Angle(Polygon):
             xy.append(self.canvas.pix2coo(*N))
         else:
             # cost et sint sont mis en cache pour être réutilisés par CodageAngle()
-            cost = self.cost = ncos(t)
-            sint = self.sint = nsin(t)
+            self.cost = ncos(t)
+            self.sint = nsin(t)
             xy.extend(self.arc_angle(i=max(0, self.style.count(')') - 1)))
         self.xy = xy
 
@@ -374,7 +377,7 @@ class ZoomArtistes(object):
         self.markeredgewidth = {}
         self.taille = {}
         self.rayon = {}
-        self.artistes = list(itertools.chain(axes.artists, axes.patches, axes.lines, axes.texts, axes.tables, axes.collections))
+        self.artistes = list(chain(axes.artists, axes.patches, axes.lines, axes.texts, axes.tables, axes.collections))
 
     def __enter__(self):
         self.regler_textes = abs(self.zoom_texte - 1) > 0.05
@@ -535,7 +538,7 @@ class Moteur_graphique(object):
         u"À supprimer après quelques temps (01/05/2011)."
         if 'couleur' in kw:
             kw['color'] = kw.pop('couleur')
-            warning("Utiliser desormais 'color' au lieu de 'couleur'.")
+            warning("Utiliser desormais 'color' au lieu de 'couleur'.", level=1)
 
 
     def ligne(self, x = (0, 1), y = (1, 0), pixel = False, **kw):
@@ -562,9 +565,9 @@ class Moteur_graphique(object):
         return polygone
 
     def ajouter_polygone(self, x = (0, 1, 1, 0), y = (1, 0, 0, 1), facecolor = 'b', pixel = False, **kw):
-        if kw.pop('color', None):
-            warning("Utiliser desormais 'facecolor' ou 'edgecolor' au lieu de 'couleur'.")
-            facecolor = color
+##        if kw.pop('color', None):
+##            warning("Utiliser desormais 'facecolor' ou 'edgecolor' au lieu de 'couleur'.")
+##            facecolor = color
         self._ajouter_objet(self.polygone(x, y, pixel, facecolor=facecolor, **kw))
 
 
@@ -599,16 +602,16 @@ class Moteur_graphique(object):
             else:
                 angle = -pi/2
         else:
-            angle = math.atan(vecteur[1]/vecteur[0])
+            angle = atan(vecteur[1]/vecteur[0])
             if vecteur[0] < 0:
                 angle += pi
         # donne l'angle d'incidence à l'extrémité
-        t = numpy.arange(angle - pi/2, angle + pi/2, 0.05)
+        t = arange(angle - pi/2, angle + pi/2, 0.05)
         R = self.canvas.taille["("]*self.zoom_ligne
 
         x, y = self.canvas.coo2pix(x, y)
-        return self.ligne(x + R*(numpy.cos(t) - math.cos(angle)),
-                          y + R*(numpy.sin(t) - math.sin(angle)),
+        return self.ligne(x + R*(ncos(t) - cos(angle)),
+                          y + R*(nsin(t) - sin(angle)),
                           pixel=True, **kw)
 
     def ajouter_arc(self, x, y, vecteur, color='k', **kw):
@@ -618,7 +621,7 @@ class Moteur_graphique(object):
 
     def point(self, x, y, plein=True, **kw):
         u"Un petit cercle, vide ou plein."
-        assert isinstance(plein, bool), str(type(pixel)) # Changement d'API
+        assert isinstance(plein, bool), str(type(plein)) # Changement d'API
         self._temp_warning_color(kw)
         couleur = kw.pop('color', 'k')
         kw.setdefault('zorder', 2.1)
@@ -717,7 +720,7 @@ class Moteur_graphique(object):
 
     def _regler_fenetre(self):
         xmin, xmax, ymin, ymax = self.canvas.fenetre
-        self.axes.viewLim.set_points(pylab.array([[xmin, ymin], [xmax, ymax]]))
+        self.axes.viewLim.set_points(array([[xmin, ymin], [xmax, ymax]]))
 
 
     def dessiner(self, dessin_temporaire = False, rafraichir_axes = False):
@@ -853,7 +856,7 @@ class Moteur_graphique(object):
 
     def _dessiner_artistes(self):
         with ZoomArtistes(self.axes, self.zoom_texte, self.zoom_ligne) as artistes:
-            artistes.sort(key = operator.attrgetter('zorder'))
+            artistes.sort(key=attrgetter('zorder'))
             for artiste in artistes:
                 if artiste._visible:
                     try:
@@ -877,7 +880,7 @@ class Moteur_graphique(object):
         #un = nbr_axes == 1              # un seul axe
         #x = num == 0; y = not x         # axe des abscisses / des ordonnees
         #rep = self.utiliser_repere      # repere ou non
-        vect = self.canvas.utiliser_repere and self.canvas.repere[1 + num] in string.ascii_lowercase
+        vect = self.canvas.utiliser_repere and self.canvas.repere[1 + num] in ascii_lowercase
         # repere defini ou non par des vecteurs
         correspondance = {"b" : "bottom", "c": "center", "l": "left", "r": "right", "t": "top"}
 
@@ -895,7 +898,7 @@ class Moteur_graphique(object):
         if self.canvas.afficher_fleches:
             # On cree la fleche au bout de l'axe:
             x, y = self.canvas.coo2pix(f(fenetre[1], origine), f(origine, fenetre[3]))
-            dx, dy = .5*self.canvas.taille[">"]*self.zoom_ligne*pylab.array([f(math.sqrt(3), 1), f(1, math.sqrt(3))])
+            dx, dy = .5*self.canvas.taille[">"]*self.zoom_ligne*array([f(sqrt(3), 1), f(1, sqrt(3))])
             self.ajouter_ligne([x - dx, x, x + signe*dx], [y + dy, y, y + signe*dy], "k",  pixel = True)
 
 
@@ -1023,9 +1026,9 @@ class Moteur_graphique(object):
                 maxi = fenetre[2*n + 1]
                 if self.canvas.afficher_axes and (n in self.canvas.liste_axes) and hauteur:
                     # les graduations qui chevauchent les fleches, c'est pas joli
-                    maxi -= .7*self.canvas.taille[">"]*self.zoom_ligne*math.sqrt(3)*self.canvas.coeff(n)
+                    maxi -= .7*self.canvas.taille[">"]*self.zoom_ligne*sqrt(3)*self.canvas.coeff(n)
 
-                valeurs = pylab.concatenate((pylab.arange(origine[n], fenetre[2*n], -pas[n]), pylab.arange(origine[n] + pas[n], maxi, pas[n])))
+                valeurs = concatenate((arange(origine[n], fenetre[2*n], -pas[n]), arange(origine[n] + pas[n], maxi, pas[n])))
                 for val in valeurs:
                     # si on affiche le quadrillage ou les graduations sur les axes, ca fait pas net:
                     if val != origine[n] or not self.canvas.afficher_axes or not (1 - n in self.canvas.liste_axes):
@@ -1038,7 +1041,7 @@ class Moteur_graphique(object):
 ##        m = len(segments)
 ##        width = m*[epaisseur]
 ##        color = m*[matplotlib.colors.colorConverter.to_rgba(couleur)]
-        couleur = matplotlib.colors.colorConverter.to_rgba(couleur)
+        couleur = colorConverter.to_rgba(couleur)
         style_dict = {':': 'dotted', '--': 'dashed', '-.': 'dashdot', '-': 'solid'}
         style = style_dict.get(style, style)
         collection = LineCollection(segments, linewidths = epaisseur, colors = couleur,  linestyle = style)
@@ -1082,7 +1085,7 @@ class Moteur_graphique(object):
                 infos['face-color'] = artiste.get_markerfacecolor()
         elif isinstance(artiste, LineCollection):
             infos['color'] = artiste.get_color()
-        elif isinstance(artiste, matplotlib.patches.Polygon):
+        elif isinstance(artiste, Polygon):
             infos['xy'] = artiste.get_verts()
             infos['edge-color'] = artiste.get_edgecolor()
             infos['face-color'] = artiste.get_edgecolor()
@@ -1122,9 +1125,9 @@ class Moteur_graphique(object):
         u"""Test 1.
 
         Barre rouge en travers reliant 2 croix (+)."""
-        self.axes.viewLim.set_points(pylab.array([[0, 0], [1, 1]]))
-        matplotlib.axes.Axes.clear(self.canvas.axes)
-        matplotlib.axes.Axes.plot(self.canvas.axes, [0.1, 0.9], [0.1, 0.9], 'r+-')
+        self.axes.viewLim.set_points(array([[0, 0], [1, 1]]))
+        Axes.clear(self.canvas.axes)
+        Axes.plot(self.canvas.axes, [0.1, 0.9], [0.1, 0.9], 'r+-')
         self.canvas.draw()
 
     def _test2(self):
@@ -1133,8 +1136,8 @@ class Moteur_graphique(object):
         Barre bleue en travers. Un point vert et un rouge (croix +).
         Un point vert en forme de rond (plein).
         """
-        self.axes.viewLim.set_points(pylab.array([[0, 0], [1, 1]]))
-        matplotlib.axes.Axes.clear(self.canvas.axes)
+        self.axes.viewLim.set_points(array([[0, 0], [1, 1]]))
+        Axes.clear(self.canvas.axes)
         pt = self.point(.5, .5, couleur="g")
         pt2 = self.ligne([.4], [.5], couleur="g")
         pt2._marker = "+"
@@ -1150,9 +1153,8 @@ class Moteur_graphique(object):
         Une flêche verte, et une flêche double rouge, croisées.
         """
         self.canvas.fenetre = 0, 1, 0, 1
-        #self.axes.viewLim.set_points(pylab.array([[0, 0], [1, 1]]))
-        FancyArrowPatch = matplotlib.patches.FancyArrowPatch
-        matplotlib.axes.Axes.clear(self.canvas.axes)
+        #self.axes.viewLim.set_points(array([[0, 0], [1, 1]]))
+        Axes.clear(self.canvas.axes)
         f1 = self.fleche((0.2, 0.2), (0.6, 0.6), double=False, color='g')
         f2 = FancyArrowPatch((0.6, 0.2), (0.2, 0.6), arrowstyle='<->', mutation_scale=25, color='r')
         #f2.set_figure(self.canvas.figure)
@@ -1222,7 +1224,7 @@ class ConvertisseurTikz(ConvertisseurBase):
 
     def _couleur(self, obj):
         _colstr = self._colstr
-        color = matplotlib.colors.colorConverter.to_rgb(obj.get_color())
+        color = colorConverter.to_rgb(obj.get_color())
         #TODO: conversion incorrecte. Se documenter sur la question.
         R = _colstr(color[0])
         V = _colstr(color[1])

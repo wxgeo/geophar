@@ -22,12 +22,13 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-# version unicode
+import os
 
-from LIB import *
-from GUI.menu import MenuBar
-from GUI.panel import Panel_simple
-from API.parametres import actualiser_module
+from ..GUI.menu import MenuBar
+from ..GUI.panel import Panel_simple
+from ..API.parametres import actualiser_module
+from .. import param
+from ..pylib import print_error, str2, path2
 
 def importer_module(nom_module, forcer = False):
     u"Retourne le module si l'import a réussi, None sinon."
@@ -35,7 +36,8 @@ def importer_module(nom_module, forcer = False):
         if param.verbose:
             print("Import du module '%s'..." %nom_module)
         try:
-            module = __import__("modules.%s" %nom_module, fromlist=[''])
+            wxgeometrie = __import__('wxgeometrie.modules.' + nom_module, level=2)
+            module = getattr(wxgeometrie.modules, nom_module)
             if hasattr(module, '_menu_'):
                 # Module déjà importé -> rien à faire.
                 return module
@@ -59,8 +61,9 @@ def importer_module(nom_module, forcer = False):
                 raise IndexError, str2(u"Aucune classe n'hérite de Panel_simple dans le module %s." %nom_module)
             panel = module._panel_ = panels[0]
             try:
-                _param = __import__('modules.%s._param_' %nom_module, fromlist=[''])
-                panel._param_ = _param
+                param_pth = 'wxgeometrie.modules.%s._param_' %nom_module
+                wxgeometrie = __import__(param_pth, level=2)
+                panel._param_ = eval(param_pth)
                 path = path2(param.emplacements['preferences'] + "/" + nom_module + "/parametres.xml")
                 if param.sauver_preferences and param.charger_preferences and os.path.exists(path):
                     try:

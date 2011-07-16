@@ -1,8 +1,9 @@
 # -*- coding: iso-8859-1 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
-from geolib.tests.geotestlib import *
-from geolib import Interpolation_lineaire
+#from tools.testlib import assertAlmostEqual
+from wxgeometrie.geolib.tests.geotestlib import rand_pt
+from wxgeometrie.geolib import Interpolation_lineaire
 
 
 def test_Interpolation_lineaire():
@@ -23,4 +24,3 @@ def test_Interpolation_lineaire():
     i1 = Interpolation_lineaire(points = (A, B, C, D, E, F, G, H, I, J, K))
     assert(len(i1.points) == len(i0.points))
     assert("points" not in i1.style())
-

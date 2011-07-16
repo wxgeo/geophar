@@ -23,19 +23,13 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-# version unicode
-
 ## Cette librairie contient des fonctions mathématiques à usage interne
 
-import math, re
-import cmath
-##import pylab
+from math import cos, sin, hypot, ceil, floor, sqrt, pi, log10
 import numpy
-import sympy
-from pylib import *
-##import sympy_functions
-import mathlib.universal_functions as universal_functions
-import ALL
+from sympy import sqrt as s_sqrt
+from .contexte import contexte
+from ..mathlib.universal_functions import arg as u_arg, sqrt as u_sqrt
 
 ## Fonctions rapides destinées essentiellement à géolib
 
@@ -49,25 +43,25 @@ def produit_scalaire(u, v):
 #def angle_vectoriel(u, v):
 #    u"""Renvoie une mesure sur ]-pi;pi] de l'angle formé par les vecteurs u et v.
 #    u et v doivent être de type list, tuple, array, ou geolib.Vecteur, et de dimension 2."""
-#    return cmath.log(complex(*v)/complex(*u)).imag
+#    return clog(complex(*v)/complex(*u)).imag
 
 def angle_vectoriel(u, v):
     u"""Renvoie une mesure sur ]-pi;pi] de l'angle formé par les vecteurs u et v.
     u et v doivent être de type list, tuple, array, ou geolib.Vecteur, et de dimension 2.
 
     Version compatible avec sympy."""
-    return universal_functions.arg((v[0] + v[1]*1j)/(u[0] + u[1]*1j))
+    return u_arg((v[0] + v[1]*1j)/(u[0] + u[1]*1j))
 
 #~ def _angle_vectoriel_bis_(u, v):
     #~ u"Autre implémentation du produit vectoriel (un peu plus lente)."
-    #~ return (cmp(u[0]*v[1]-v[0]*u[1], 0) or 1)*math.acos(produit_scalaire(u, v)/(math.hypot(*u)*math.hypot(*v)))
+    #~ return (cmp(u[0]*v[1]-v[0]*u[1], 0) or 1)*acos(produit_scalaire(u, v)/(hypot(*u)*hypot(*v)))
 
 
 def norme(x, y):
     u"Implémentation rapide de la norme d'un vecteur."
     if isinstance(x, (int, float, long)) or isinstance(y, (int, float, long)):
-        return math.hypot(x, y)
-    return universal_functions.sqrt(x**2 + y**2)
+        return hypot(x, y)
+    return u_sqrt(x**2 + y**2)
 
 
 
@@ -100,14 +94,14 @@ def vect(A, B):
 def nchiffres(x, n = 1):
     u"Arrondi x en fournissant n chiffres significatifs. Ex: nchiffres(2345, 2)."
     if x:
-        k = 10**math.floor(math.log10(abs(x))-n+1)
+        k = 10**floor(log10(abs(x))-n+1)
         return round(x/k)*k
     return x # Attention au cas x = 0 !
 
 def nice_display(x):
     if isinstance(x, float):
-        x = round(x, ALL.contexte["decimales"])
-        if abs(x - int(x)) < ALL.contexte["tolerance"]:
+        x = round(x, contexte["decimales"])
+        if abs(x - int(x)) < contexte["tolerance"]:
             x = int(x)
     elif hasattr(x, 'valeur'):
         return nice_display(x.valeur)
@@ -118,7 +112,7 @@ def nice_display(x):
 def arrondir(x):
     u"""Arrondi le nombre : un seul chiffre significatif, compris entre 1 et 5.
     Transforme automatiquement le nombre en entier selon le cas."""
-    n = nchiffres(x, math.sqrt(.5))
+    n = nchiffres(x, sqrt(.5))
     if int(n) == n:
         n = int(n)
     return n
@@ -139,7 +133,7 @@ def racines(a, b, c, exact=False):
     if not d:
         return [-b/(2*a)]
     if d > 0:
-        rac = (sympy.sqrt(d) if exact else math.sqrt(d))
+        rac = (s_sqrt(d) if exact else sqrt(d))
         return [(-rac-b)/(2*a) , (rac-b)/(2*a)]
     return []
 
@@ -249,18 +243,18 @@ def distance_point_ellipse(centre, rx, ry, point):
     if x**2 + y**2 < param.tolerance**2:
         return ry
     # Cas général : http://www.spaceroots.org/documents/distance/node9.html
-    s = math.sqrt(x**2 + y**2)
+    s = sqrt(x**2 + y**2)
     cos0 = x/s
     sin0 = y/s
     t0 = sin0/(1 - cos0)
     a = ((1 - f)*cos0)**2 + sin0**2
     b = (1 - f)**2*x*cos0 + y*sin0
     c = (1 - f)**2*(x**2 - rx**2) + y**2
-    k0 = c/(b + math.sqrt(b**2 - a*c))
+    k0 = c/(b + sqrt(b**2 - a*c))
     # Nouveau point :
     x0 = x - k*cos0
     y0 = x - k*sin0
-    phi = math.atan2(y, x*(1 - f)**2)
+    phi = atan2(y, x*(1 - f)**2)
 '''
 
 
@@ -269,7 +263,7 @@ def carre_distance_point_ellipse(centre, rx, ry, point, epsilon = None):
 
     Algorithme naïf, d'après moi-même. ;-)"""
     if epsilon is None:
-        epsilon = ALL.contexte["tolerance"]
+        epsilon = contexte["tolerance"]
     xO, yO = centre
     x, y = point
     # L'ellipse est déjà orientée selon les axes, on prend le centre de l'ellipse comme origine
@@ -281,9 +275,9 @@ def carre_distance_point_ellipse(centre, rx, ry, point, epsilon = None):
     rx = abs(rx)
     ry = abs(ry)
     def f(t):
-        return (rx*math.cos(t) - x)**2 + (ry*math.sin(t) - y)**2
+        return (rx*cos(t) - x)**2 + (ry*sin(t) - y)**2
     a = 0
-    b = math.pi/2
+    b = pi/2
     while b - a > epsilon:
         i = (a + b)/2
         fim = f(i - epsilon)
@@ -316,7 +310,7 @@ def direction_droite(pi, pj, pk):
 
 def trigshift(t, a = 0):
     u"Retourne le représentant de t[2pi] situé dans l'intervalle [a; a+2pi[."
-    return t + 2*math.pi*math.ceil((a - t)/(2*math.pi))
+    return t + 2*pi*ceil((a - t)/(2*pi))
 
 
 def distance_segment(M, A, B, d):
@@ -336,7 +330,7 @@ def distance_segment(M, A, B, d):
     y1 = min(yA, yB) - d; y2 = max(yA, yB) + d
     if x1 < x < x2 and y1 < y < y2:
         norme2 = ((xB - xA)**2 + (yB - yA)**2)
-        if norme2 > ALL.contexte['tolerance']:
+        if norme2 > contexte['tolerance']:
             return ((yA - yB)*(x - xA) + (xB - xA)*(y - yA))**2/norme2 < d**2
         else:   # les extrémités du segment sont confondues
             return (x - xA)**2 + (y - yA)**2 < d**2
@@ -347,7 +341,7 @@ def distance_segment(M, A, B, d):
 def formatage(eqn):
     u"""Améliore l'affichage des équations.
 
-    >>> from geolib.routines import formatage
+    >>> from wxgeometrie.geolib.routines import formatage
     >>> formatage('1 x + -1/3 y + 1 = 0')
     'x - 1/3 y + 1 = 0'
     >>> formatage('-1 x + -1 y + -1 = 0')
@@ -365,9 +359,3 @@ def formatage(eqn):
               .replace("+ -", "- ").replace('- 1 x', '- x').replace('- 1 y', '- y')\
               .replace('+ 1 x', '+ x').replace('+ 1 y', '+ y')\
               .replace('+ 0 x ', '').replace('+ 0 y ', '').replace('+ 0 ', '')
-
-
-if not hasattr(cmath, 'phase'): # Python <= 2.5
-    cmath.phase = lambda z: math.atan2(z.imag, z.real)
-    cmath.rect = lambda r, phi: r*(math.cos(phi) + math.sin(phi)*1j)
-    cmath.polar = lambda z: (abs(z), cmath.phase(z))

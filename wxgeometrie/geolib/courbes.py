@@ -22,13 +22,15 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-# version unicode
-
-
-from objet import *
-import numpy
-from numpy import isnan, isinf, sign, arange, inf
 from itertools import izip,chain
+from numpy import isnan, isinf, sign, arange, inf, append
+
+from sympy import oo
+
+from .objet import Objet, Argument, Ref
+from .routines import distance_segment
+from .. import param
+
 
 def inf_or_nan(x):
     return isinf(x) or isnan(x)
@@ -118,8 +120,8 @@ class Courbe(Courbe_generique):
                         ))
                     # _xarray et _yarray ne servent pas pour la représentation graphique,
                     # mais pour ._distance_inf() uniquement
-                    self._xarray = numpy.append(self._xarray,  x)
-                    self._yarray = numpy.append(self._yarray,  y)
+                    self._xarray = append(self._xarray,  x)
+                    self._yarray = append(self._yarray,  y)
 
                     inf = intervalle.inf
                     if fenetre[0] < inf < fenetre[1]:
@@ -288,9 +290,9 @@ class Courbe(Courbe_generique):
     def _espace_vital(self):
         xmin = self.__fonction._Fonction__unions[0].intervalles[0].inf
         xmax = self.__fonction._Fonction__unions[-1].intervalles[-1].sup
-        if xmin == -intervalles.oo:
+        if xmin == -oo:
             xmin = None
-        if xmax == intervalles.oo:
+        if xmax == oo:
             xmax = None
         return (xmin, xmax, min(self.yarray), max(self.yarray))
 

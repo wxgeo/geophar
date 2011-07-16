@@ -20,8 +20,12 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 
-from LIB import *
+import thread, urllib, webbrowser
+import wx
 from wxlib import TransmitEvent, EVT_TRANSMIT
+
+from ..pylib import print_error
+from .. import param
 
 
 class Progression:
@@ -31,7 +35,7 @@ class Progression:
         self.titre = u"Vérification des nouvelles versions."
 
     def actualiser(self, blocs_finis = None, taille_bloc = None, taille_fichier = None):
-        if blocs_finis <> None:
+        if blocs_finis != None:
             self.fini = min(taille_bloc*blocs_finis, taille_fichier)
             #print self.fini
 
@@ -98,7 +102,7 @@ class Gestionnaire_mises_a_jour(wx.EvtHandler):
 
 
     def _verifier_version(self, event = None):
-        progression = Progression(self.parent)
+#        progression = Progression(self.parent)
         try:
             filename, headers = urllib.urlretrieve("http://wxgeo.free.fr/wordpress/version")#, None, progression.actualiser)
             f = open(filename)
@@ -113,11 +117,3 @@ class Gestionnaire_mises_a_jour(wx.EvtHandler):
         except:
             print_error()
             wx.PostEvent(self, TransmitEvent(success = False, update_available = None))
-
-
-
-
-
-
-
-

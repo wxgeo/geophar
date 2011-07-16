@@ -20,17 +20,20 @@ from __future__ import with_statement
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-
-from LIB import *
-import matplotlib
-
+import re
+import wx
+from numpy import array
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg
 
-from API.canvas import Canvas
-from GUI.wxlib import PseudoEvent, BusyCursor
-
-
-
+from ..API.canvas import Canvas
+from .proprietes_objets import Proprietes
+from .wxlib import PseudoEvent, BusyCursor
+from .. import param
+from ..pylib import print_error, debug
+from ..geolib.textes import Texte, Texte_generique
+from ..geolib.objet import Objet
+from ..geolib.points import Point_generique
+from ..geolib.constantes import NOM, FORMULE, TEXTE, RIEN
 
 class MiniEditeur:
     def __init__(self, parent):
@@ -70,8 +73,8 @@ class MiniEditeur:
                     self.objet.label(self.texte)
                     panel.action_effectuee(u"%s.label(%s)" %(nom, repr(self.texte)))
                 else:
-                    self.objet.renommer(self.texte, legende = geolib.NOM)
-                    panel.action_effectuee(u"%s.renommer(%s, legende = %s)" %(nom, repr(self.texte), geolib.NOM))
+                    self.objet.renommer(self.texte, legende = NOM)
+                    panel.action_effectuee(u"%s.renommer(%s, legende = %s)" %(nom, repr(self.texte), NOM))
             except RuntimeError: # on reste en mode edition
                 if not param.nom_multiple:
                     self.display()
@@ -283,8 +286,8 @@ class WxCanvas(FigureCanvasWxAgg, Canvas):
         if self.interaction:
             pixel = event.GetPositionTuple()
             self.detecter(pixel)
-            objet = self.interaction(selection = self.select, autres = self.selections, position = self.coordonnees(event), pixel = pixel)
-            self.detecter(pixel)
+            self.interaction(selection = self.select, autres = self.selections, position = self.coordonnees(event), pixel = pixel)
+            self.detecter(pixel) # XXX: toujours utile ?
 
 
     def deplacable(self, obj): # indique si un objet est deplacable
@@ -474,7 +477,7 @@ class WxCanvas(FigureCanvasWxAgg, Canvas):
         elif event.RightIsDown() and self.debut_shift and not self.fixe: # deplacement de la feuille
             self.SetCursor(wx.StockCursor(wx.CURSOR_SIZING))
             self.fin_shift = self.pix2coo(*event.GetPositionTuple())
-            translation = pylab.array(self.fin_shift) - pylab.array(self.debut_shift)
+            translation = array(self.fin_shift) - array(self.debut_shift)
             self.fenetre = self.fenetre[0] - translation[0], self.fenetre[1] - translation[0], self.fenetre[2] - translation[1], self.fenetre[3] - translation[1]
             if self.select is not None:
                 self.select = None
@@ -543,17 +546,16 @@ class WxCanvas(FigureCanvasWxAgg, Canvas):
 
         def exporte():
             actuelle = self.feuille_actuelle # feuille de travail courante
-            if actuelle.sauvegarde["export"]:
-                dir, fichier = os.path.split(actuelle.sauvegarde["export"]) # on exporte sous le même nom qu'avant par défaut
-            elif actuelle.sauvegarde["nom"]:
-                fichier = actuelle.sauvegarde["nom"] # le nom par defaut est le nom de sauvegarde
-                dir = actuelle.sauvegarde["repertoire"]
-            else:
-                fichier = ""
-                if param.rep_export is None:
-                    dir = param.repertoire
-                else:
-                    dir = param.rep_export
+##            if actuelle.sauvegarde["export"]:
+##                dir, fichier = os.path.split(actuelle.sauvegarde["export"]) # on exporte sous le même nom qu'avant par défaut
+##            elif actuelle.sauvegarde["nom"]:
+##                fichier = actuelle.sauvegarde["nom"] # le nom par defaut est le nom de sauvegarde
+##                dir = actuelle.sauvegarde["repertoire"]
+##            else:
+##                if param.rep_export is None:
+##                    dir = param.repertoire
+##                else:
+##                    dir = param.rep_export
 
             filename = self.parent.parent.ExportFile(exporter = False)
             # ne pas faire l'export, mais récupérer juste le nom
@@ -578,7 +580,6 @@ class WxCanvas(FigureCanvasWxAgg, Canvas):
                         for objet in objets_dans_la_zone:
                             self.executer(u"%s.cacher()" %objet.nom)
                 elif choix == 2:
-                    from GUI.proprietes_objets import Proprietes
                     win = Proprietes(self, objets_dans_la_zone)
                     win.Show(True)
                 elif choix == 3:
@@ -656,7 +657,7 @@ class WxCanvas(FigureCanvasWxAgg, Canvas):
             menu = wx.Menu()
             # Contournement d'un bug de wxGtk
             if wx.Platform == '__WXGTK__':
-                menuitem = menu.Append(wx.NewId(), u" \u2714 " + self.select.nom_complet)
+                menu.Append(wx.NewId(), u" \u2714 " + self.select.nom_complet)
                 menu.AppendSeparator()
             else:
                 menu.SetTitle(self.select.nom_complet)
@@ -694,7 +695,7 @@ class WxCanvas(FigureCanvasWxAgg, Canvas):
                     test = dlg.ShowModal()
                     if test == wx.ID_OK:
                         try:    # on renomme, et on met l'affichage de la légende en mode "Nom"
-                            self.executer(u"%s.renommer(%s, legende = %s)" %(select.nom, repr(dlg.GetValue()), geolib.NOM))
+                            self.executer(u"%s.renommer(%s, legende = %s)" %(select.nom, repr(dlg.GetValue()), NOM))
                             break
                         except:
                             print_error()
@@ -719,7 +720,7 @@ class WxCanvas(FigureCanvasWxAgg, Canvas):
                 dlg.text = wx.TextCtrl(dlg, -1, old_label, size=wx.Size(300,50), style = wx.TE_MULTILINE)
                 sizer.Add(dlg.text, 0, wx.ALIGN_LEFT|wx.ALL, 5)
                 dlg.cb = wx.CheckBox(dlg, -1, u"Interpréter la formule")
-                dlg.cb.SetValue(select.style(u"legende") == geolib.FORMULE)
+                dlg.cb.SetValue(select.style(u"legende") == FORMULE)
                 sizer.Add(dlg.cb, 0, wx.ALIGN_LEFT|wx.ALL, 5)
                 line = wx.StaticLine(dlg, -1, size=(20,-1), style=wx.LI_HORIZONTAL)
                 sizer.Add(line, 0, wx.GROW|wx.ALIGN_CENTER_VERTICAL|wx.RIGHT|wx.TOP, 5)
@@ -758,12 +759,12 @@ class WxCanvas(FigureCanvasWxAgg, Canvas):
             menu.Append(ids[n + 4], chaine + u" nom/texte")
             def masquer_nom(event, select = self.select):
                 if self.select.label():
-                    mode = geolib.RIEN
+                    mode = RIEN
                 else:
                     if self.select.style(u"label"):
-                        mode = geolib.TEXTE
+                        mode = TEXTE
                     else:
-                        mode = geolib.NOM
+                        mode = NOM
                 self.executer(u"%s.style(legende = %s)" %(select.nom, mode))
             menu.Bind(wx.EVT_MENU, masquer_nom, id = ids[n + 4])
 
@@ -817,7 +818,6 @@ class WxCanvas(FigureCanvasWxAgg, Canvas):
 
             menu.Append(ids[n + 6], u"Propriétés")
             def proprietes(event, select = self.select):
-                from GUI.proprietes_objets import Proprietes
                 win = Proprietes(self, [select])
                 win.Show(True)
             menu.Bind(wx.EVT_MENU, proprietes, id = ids[n + 6])

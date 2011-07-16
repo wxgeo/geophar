@@ -23,20 +23,23 @@ from __future__ import with_statement
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-# version unicode
+import os, time, thread
+import wx
 
+from .barre_outils import BarreOutils
+from .menu import RSSMenu
+from .console_geolib import ConsoleGeolib
+from .wxlib import BusyCursor
+from .wxcanvas import WxCanvas
+from ..API.sauvegarde import ouvrir_fichierGEO, FichierGEO
+from ..API.parametres import sauvegarder_module
 
-# importation des librairies classiques
-from LIB import *
-from GUI.barre_outils import BarreOutils
-from GUI.menu import RSSMenu
-from GUI.console_geolib import ConsoleGeolib
-from GUI.wxlib import BusyCursor
-from GUI.wxcanvas import WxCanvas
-from API.sauvegarde import ouvrir_fichierGEO, FichierGEO
-from API.parametres import sauvegarder_module
-
-
+from .. import param
+from ..pylib import debug, path2, print_error, property2, removeend, no_argument,\
+                    eval_safe
+from ..pylib.rapport import Rapport
+from ..geolib.classeur import Classeur
+from ..geolib.feuille import Feuille
 
 #-----------------------
 #       Panels
@@ -82,7 +85,7 @@ class Panel_simple(wx.Panel):
         self.nom = self.__class__.__name__.lower()
         self.canvas = None
         path = path2(param.emplacements['log'] + "/" + self.nom + u"_historique.log")
-        self.log = rapport.Rapport(path)
+        self.log = Rapport(path)
         # ._derniere_signature : sert pour les logs (en cas de zoom de souris essentiellement).
         # (cf. geolib/feuille.py pour plus de détails.)
         self._derniere_signature = None
@@ -346,7 +349,7 @@ class Panel_API_graphique(Panel_simple):
             del self.feuille_actuelle
         else:
             if not isinstance(feuille, Feuille):
-                feuille = self.feuilles[num]
+                feuille = self.feuilles[feuille]
             self.feuilles.remove(feuille)
             self.update()
 
@@ -396,7 +399,7 @@ class Panel_API_graphique(Panel_simple):
             if fgeo.contenu["Affichage"]:
                 parametres = fgeo.contenu["Affichage"][0]
                 for parametre in parametres.keys():
-                    setattr(self.canvas, parametre, securite.eval_safe(parametres[parametre][0]))
+                    setattr(self.canvas, parametre, eval_safe(parametres[parametre][0]))
 
         if fgeo.contenu.has_key("Figure"):
             for figure in fgeo.contenu["Figure"]:

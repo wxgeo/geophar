@@ -23,12 +23,8 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 
-# version unicode
-
-# importation des librairies classiques
-from LIB import *
-from API import *
-
+import re
+from .sauvegarde import FichierGEO
 
 
 

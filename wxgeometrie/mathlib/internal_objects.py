@@ -22,11 +22,10 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-# version unicode
-
-import pylib
 import numpy
 
+UfuncType = type(numpy.absolute)
+fonctions_numpy = [key for key, val in numpy.__dict__.items() if type(val) == UfuncType]
 
 class ObjetMathematique(object):
     u"Classe mère de la plupart des objets mathématiques."
@@ -77,7 +76,7 @@ class Reel(ObjetMathematique):
     u"""Classe mère pour les objets mathématiques supportant les fonctions usuelles.
     Permet de leur appliquer les opérations mathématiques de pylab."""
 
-    for nom in pylib.fonctions_matplotlib:
+    for nom in fonctions_numpy:
         exec("""
 def %s(self, *args):
     arguments = []
@@ -85,8 +84,3 @@ def %s(self, *args):
         arguments.append(float(arg))
     return numpy.%s(float(self), *arguments)""" %(nom, nom))
     del nom
-
-
-
-
-

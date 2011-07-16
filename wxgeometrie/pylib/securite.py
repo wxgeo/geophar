@@ -24,13 +24,13 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-# version unicode
-
-from fonctions import *
-import keyword
-import types
+import keyword, re, types
 import math # pour avoir droit aux fonctions mathematiques dans eval_restricted par defaut.
 import random as module_random# idem
+
+from ..pylib import advanced_split
+from .. import param
+
 
 def _avertissement(*arg, **kw): print u"Instruction interdite en mode securisé."
 #fonctions_interdites = ["eval", "compile", "execfile", "file", "open", "write", "getattr", "setattr"]

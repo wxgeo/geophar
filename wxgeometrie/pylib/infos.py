@@ -25,12 +25,13 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 # version unicode
 
-import sys# as sys
-import wx# as wx
-import matplotlib# as matplotlib
-import os# as os
-import platform# as platform
-import locale# as locale
+import sys
+import wx
+import matplotlib
+import os
+import platform
+import locale
+
 
 class dossier(object):
     def __init__(self, titre):
@@ -153,4 +154,3 @@ def informations_configuration():
                                 + dossier_wxpython.contenu() + dossier_matplotlib.contenu()
                                 + dossier_sympy.contenu() + dossier_psyco.contenu()
                                 + dossier_wxgeometrie.contenu())
-

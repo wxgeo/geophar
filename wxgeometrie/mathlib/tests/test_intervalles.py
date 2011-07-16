@@ -1,15 +1,11 @@
 # -*- coding: iso-8859-1 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
-import mathlib
+from sympy import sqrt, pi
 
-from tools.testlib import *
-
-import mathlib
-import mathlib.intervalles as intervalles
-from mathlib.intervalles import Intervalle
-import sympy
-
+from tools.testlib import assertEqual
+import wxgeometrie.mathlib.intervalles as intervalles
+from wxgeometrie.mathlib.intervalles import Intervalle
 
 
 def assert_intervalle_preformater(x, y):
@@ -49,7 +45,7 @@ def test_intervalle():
 def test_evalf():
     i = intervalles.conversion_chaine_ensemble(']-oo;-2]U[1/4;1/2[')
     assert(str(i.evalf()) == ']-oo;-2.0]U[0.25;0.5[')
-    i = Intervalle(-sympy.sqrt(2), sympy.pi)
+    i = Intervalle(-sqrt(2), pi)
     assert(str(i.evalf()) == '[-1.41421356237310;3.14159265358979]')
     assert(str(i.evalf(n = 3)) == '[-1.41;3.14]')
 

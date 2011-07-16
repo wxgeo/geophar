@@ -22,12 +22,10 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-# version unicode
+import wx
 
-# importation des librairies classiques
-from LIB import *
-from wxlib import MyMiniFrame
-
+from .wxlib import MyMiniFrame
+from ..pylib import uu
 
 class ProprietesDescription(wx.Panel):
     def __init__(self, parent):
@@ -142,7 +140,6 @@ class ProprietesStatistiques(wx.Panel):
 
 class OngletsProprietesFeuille(wx.Notebook):
     def __init__(self, parent):
-        style = wx.NB_TOP
         self.parent = parent
         self.feuille = parent.feuille
         wx.Notebook.__init__(self, parent)
@@ -173,7 +170,3 @@ class ProprietesFeuille(MyMiniFrame):
         MyMiniFrame.__init__(self, parent, u"Propriétés de " + uu(self.feuille.nom))
         self.onglets = OngletsProprietesFeuille(self)
         self.SetSize(wx.Size(*(max(dimensions) + 50 for dimensions in zip(self.dim1, self.dim2))))
-
-
-
-

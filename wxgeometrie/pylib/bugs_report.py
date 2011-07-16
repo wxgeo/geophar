@@ -21,19 +21,19 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 # version unicode
 
-import urllib, zlib
-import infos
-import param
-from fonctions import *
+import urllib
+from .infos import informations_configuration
+from .. import param
+from .fonctions import uu
 
 def rapporter(titre = "", auteur = "", email = "", description = "", historique = "", log = ""):
     parametres = param.__dict__.copy()
     parametres.pop("__builtins__", None)
     parametres = "\n".join(str(key) + " = " + repr(val) for key, val in parametres.items())
-    
+
     data = {
     "version": param.version,
-    "config": infos.informations_configuration(),
+    "config": informations_configuration(),
     "titre": titre,
     "auteur": auteur,
     "email": email,
@@ -53,4 +53,3 @@ def rapporter(titre = "", auteur = "", email = "", description = "", historique 
         return True
     except IOError:
         return False
-

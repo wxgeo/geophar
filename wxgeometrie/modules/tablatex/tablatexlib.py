@@ -23,35 +23,33 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-import mathlib
-import mathlib.universal_functions as maths
-import math
-import param
-import sympy
-from sympy import sympify
-oo = maths.oo = sympy.oo
-nan = maths.nan = sympy.nan
-import pylib
-import re, time, functools
-
-
+import re, functools, math
 import numpy
+
+from sympy import oo, nan
+
+from ...mathlib import universal_functions as maths
+from ...mathlib.parsers import traduire_formule, simplifier_ecriture
+from ...mathlib.custom_functions import nul
+from ...pylib import find_closing_bracket, advanced_split
+from ... import param
+
+
+maths.oo = oo
+maths.nan = nan
 maths.num_oo = numpy.inf
 maths.num_nan = numpy.nan
 maths.pi = math.pi
 maths.e = math.e
 
-import LIB
-import param
 
-
-resoudre = functools.partial(mathlib.custom_functions.nul, intervalle = False)
+resoudre = functools.partial(nul, intervalle = False)
 # resoudre = sympy.solve
 
 #TODO: déplacer autant que possibles ces fonctions vers le parser de mathlib.
 
 def traduire_latex(expression):
-    return LIB.parsers.traduire_formule(  expression,
+    return traduire_formule(  expression,
                                             fonctions = maths.__dict__,
 ##                                            variables = '[_A-Za-z][_A-Za-z0-9]*',
                                             OOo = False,
@@ -196,7 +194,7 @@ def convertir_en_latex(chaine):
             if i == -1:
                 break
             i += len(func) + 1
-            j = pylib.find_closing_bracket(chaine, start = i , brackets = '()')
+            j = find_closing_bracket(chaine, start = i , brackets = '()')
             chaine = chaine[:i-1] + '{' + chaine[i:j] + '}' + chaine[j+1:]
 
     chaine = chaine.replace("*", " ")
@@ -254,14 +252,14 @@ def _extraire_facteurs(chaine):
     # On commence par enlever les '+' ou '-' en début de chaîne (-2x n'est pas une différence)
     _chaine = chaine.lstrip('+-')
     for symbole in ('+', '-'):
-        if len(mathlib.advanced_split(_chaine, symbole)) > 1:
+        if len(advanced_split(_chaine, symbole)) > 1:
             return [chaine]
             # c'est une somme/différence, pas de décomposition en facteurs
 
     # 3. On découpe autour des '*' (en tenant compte des parenthèses)
-    facteurs = mathlib.advanced_split(chaine, '*')
+    facteurs = advanced_split(chaine, '*')
     if len(facteurs) == 1:
-        facteurs = mathlib.advanced_split(chaine, '/')
+        facteurs = advanced_split(chaine, '/')
         if len(facteurs) == 1:
             # Ce n'est ni un produit ni un quotient
             return facteurs
@@ -273,8 +271,8 @@ def _extraire_facteurs(chaine):
     return decomposition
 
 def extraire_facteurs(chaine):
-##    chaine = mathlib.parsers._ajouter_mult_manquants(chaine, fonctions = maths.__dict__)
-    chaine = mathlib.parsers.traduire_formule(chaine, fonctions = maths.__dict__).replace('**', '^')
+##    chaine = _ajouter_mult_manquants(chaine, fonctions = maths.__dict__)
+    chaine = traduire_formule(chaine, fonctions = maths.__dict__).replace('**', '^')
     # Pour faciliter la décomposition en produit,
     # il est important que la puissance ne soit pas notée '**'.
-    return [mathlib.parsers.simplifier_ecriture(facteur) for facteur in _extraire_facteurs(chaine)]
+    return [simplifier_ecriture(facteur) for facteur in _extraire_facteurs(chaine)]

@@ -23,8 +23,8 @@ from __future__ import with_statement
 
 import os, math
 import wx, wx.lib.dialogs, wx.lib.newevent
-import param
-from pylib import uu
+from .. import param
+from ..pylib import uu
 
 
 class PseudoEvent(object):

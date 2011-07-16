@@ -24,12 +24,13 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 # version unicode
 
+from numpy import array, arange, append
 
-from objet import *
+from .objet import Ref, Argument, Arguments
+from .courbes import Courbe_generique
 
-from courbes import *
-
-
+from ..pylib import fullrange
+from .. import param
 
 class Interpolation_generique(Courbe_generique):
     u"""Classe mère de toutes les interpolations."""
@@ -64,11 +65,11 @@ class Interpolation_generique(Courbe_generique):
 ##            if vecteur[0] < 0:
 ##                angle += math.pi
 ##        # donne l'angle d'incidence a l'extremite
-##        t = numpy.arange(angle - math.pi/2, angle + math.pi/2, 0.05)
+##        t = arange(angle - math.pi/2, angle + math.pi/2, 0.05)
 ##        R = self.__canvas__.taille["("]
 ##
 ##        x, y = self.__canvas__.coo2pix(x, y)
-##        return self.__canvas__.pix2coo(x + R*(numpy.cos(t) - math.cos(angle)), y + R*(numpy.sin(t) - math.sin(angle)))
+##        return self.__canvas__.pix2coo(x + R*(cos(t) - math.cos(angle)), y + R*(sin(t) - math.sin(angle)))
 
 
     def _affiche_extremites(self, vec_deb = None, vec_fin = None):
@@ -148,8 +149,8 @@ class Interpolation_lineaire(Interpolation_generique):
         if not self._representation:
             self._representation = [self.rendu.ligne() for i in xrange(n + 1)]
 
-        self._xarray = numpy.array([])
-        self._yarray = numpy.array([])
+        self._xarray = array([])
+        self._yarray = array([])
 
         if n < 2:
             return
@@ -160,11 +161,11 @@ class Interpolation_lineaire(Interpolation_generique):
             plot = self._representation[i]
             x1, y1 = self.__points[i].coordonnees
             x2, y2 = self.__points[i+1].coordonnees
-            plot.set_data(numpy.array((x1, x2)), numpy.array((y1, y2)))
+            plot.set_data(array((x1, x2)), array((y1, y2)))
             plot.set(color=couleur, linestyle=style, linewidth=epaisseur)
             plot.zorder = niveau
-            self._xarray = numpy.append(self._xarray, numpy.arange(x1, x2, pas))
-            self._xarray = numpy.append(self._xarray, numpy.arange(x1, x2, pas))
+            self._xarray = append(self._xarray, arange(x1, x2, pas))
+            self._xarray = append(self._xarray, arange(x1, x2, pas))
 
         self._affiche_extremites()
 
@@ -203,8 +204,8 @@ class Interpolation_quadratique(Interpolation_generique):
         if not self._representation:
             self._representation = [self.rendu.ligne() for i in xrange(n + 1)]
 
-        self._xarray = numpy.array([])
-        self._yarray = numpy.array([])
+        self._xarray = array([])
+        self._yarray = array([])
 
         if n < 2:
             return
@@ -228,8 +229,8 @@ class Interpolation_quadratique(Interpolation_generique):
             dx0 = 2*a + b
             dy0 = 2*d + e
 
-            self._xarray = numpy.append(self._xarray, u)
-            self._xarray = numpy.append(self._xarray, v)
+            self._xarray = append(self._xarray, u)
+            self._xarray = append(self._xarray, v)
 
         self._affiche_extremites(vec_fin = (dx0, dy0))
 
@@ -241,7 +242,7 @@ class Interpolation_quadratique(Interpolation_generique):
 class Interpolation_cubique(Interpolation_generique):
     u"""Une interpolation cubique.
 
-    Interpolation des points donnés par une courbe polynomiale par morceaux, de vecteur tangent horizontal aux sommets, et de classe C1 en général (ie. si x_n<>x_{n-1}).
+    Interpolation des points donnés par une courbe polynomiale par morceaux, de vecteur tangent horizontal aux sommets, et de classe C1 en général (ie. si x_n!=x_{n-1}).
     Pour chaque morceau, x(t)=at^3+bt^2+ct+d et y(t)=et^3+ft^2+gt+h, où t appartient à [0;1], et y'(0)=y'(1)=0.
     """
 
@@ -255,7 +256,7 @@ class Interpolation_cubique(Interpolation_generique):
             points = styles.pop("points")
         debut = styles.pop("debut", True)
         fin = styles.pop("fin", True)
-        courbure = kw.pop("courbure", 1)
+        courbure = styles.pop("courbure", 1)
         self.__points = points = tuple(Ref(pt) for pt in points)
         self.__debut = debut = Ref(debut)
         self.__fin = fin = Ref(fin)
@@ -272,8 +273,8 @@ class Interpolation_cubique(Interpolation_generique):
         if not self._representation:
             self._representation = [self.rendu.ligne() for i in xrange(n + 1)]
 
-        self._xarray = numpy.array([])
-        self._yarray = numpy.array([])
+        self._xarray = array([])
+        self._yarray = array([])
 
         if n < 2:
             return
@@ -289,7 +290,7 @@ class Interpolation_cubique(Interpolation_generique):
                 dy0 = y1 - y0
             else:
                 dx0 = self.__courbure*abs(x1 - x0)
-                if dx1 <> 0:
+                if dx1 != 0:
                     dy0 = dy1/dx1*dx0
                 else:
                     dx0 = dx1
@@ -319,7 +320,7 @@ class Interpolation_cubique(Interpolation_generique):
             plot.set(color=couleur, linestyle=style, linewidth=epaisseur)
             plot.zorder = niveau
 
-            self._xarray = numpy.append(self._xarray, u)
-            self._xarray = numpy.append(self._xarray, v)
+            self._xarray = append(self._xarray, u)
+            self._xarray = append(self._xarray, v)
 
         self._affiche_extremites(vec_deb = (dx0, dy0), vec_fin = (dx1, dy1))

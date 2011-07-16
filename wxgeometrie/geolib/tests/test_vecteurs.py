@@ -1,8 +1,11 @@
 # -*- coding: iso-8859-1 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
-from geolib.tests.geotestlib import *
-from geolib import Point, Vecteur_unitaire, Vecteur, Vecteur_libre, Representant, Label_vecteur, Somme_vecteurs
+from random import random
+from math import sqrt
+
+from tools.testlib import assertAlmostEqual, assertEqual
+from wxgeometrie.geolib import Point, Vecteur_unitaire, Vecteur, Vecteur_libre, Representant, Label_vecteur, Somme_vecteurs
 
 
 def setUp():
@@ -14,7 +17,7 @@ def test_Vecteur():
     v=Vecteur(A, B)
     assert(isinstance(v.etiquette, Label_vecteur))
     assert(v.x == 1 and v.y == 2)
-    assertEqual(v.norme,  math.sqrt(5))
+    assertEqual(v.norme,  sqrt(5))
     assertEqual(type(v.coordonnees),  tuple)
     # Test du typage dynamique :
     assert(isinstance(Vecteur(1, 3), Vecteur_libre))
@@ -25,7 +28,7 @@ def test_Vecteur():
 def test_Vecteur_libre():
     u = Vecteur_libre(1, -2)
     u.y = -3
-    assertEqual(u.norme,  math.sqrt(10))
+    assertEqual(u.norme,  sqrt(10))
     assertEqual(type(u.coordonnees),  tuple)
 
 
@@ -56,6 +59,3 @@ def test_Somme_vecteurs():
     assert(tuple(vec.coordonnees) == (23, -19))
     assertEqual(type(vec.coordonnees),  tuple)
     assertEqual(vec.coordonnees,  Somme_vecteurs((u, v, w), (2, 1, -5)).coordonnees)
-
-
-

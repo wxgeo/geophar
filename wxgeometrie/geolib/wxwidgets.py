@@ -166,5 +166,3 @@ class Widget(Objet):
 #        x, y = self.coordonnees()
 #        x0, y0 = self.__canvas__().XYcoo2pix((x, y), -1) # coordonnées en pixels
 #        wx.Button.SetPosition(self, (int(x0), int(y0)))
-
-

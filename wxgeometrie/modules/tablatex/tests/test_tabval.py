@@ -1,7 +1,8 @@
 # -*- coding: iso-8859-1 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
-from modules.tablatex.tests.tabtestlib import *
+from wxgeometrie.modules.tablatex.tests.tabtestlib import assert_tableau
+from wxgeometrie.modules.tablatex.tabval import tabval
 
 
 def assert_tabval(chaine, code_latex):
@@ -65,4 +66,3 @@ $(2x+3)^2$ & $25$ & $49$ & $81$ & $121$ & $169$ & $225$ & $289$ & $361$ & $441$ 
 % (2x+3)^2:-10..0// 1..10
 """
     assert_tabval(s, tab)
-

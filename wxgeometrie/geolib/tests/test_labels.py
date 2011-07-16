@@ -1,8 +1,11 @@
 # -*- coding: iso-8859-1 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
-from geolib.tests.geotestlib import *
+from pytest import XFAIL
 
+#from tools.testlib import assertAlmostEqual
+from wxgeometrie.geolib.tests.geotestlib import rand_pt
+from wxgeometrie.geolib import NOM
 
 def test_Label_point():
     A = rand_pt()
@@ -41,4 +44,3 @@ def test_Label_polygone():
 @XFAIL
 def test_Label_angle():
     raise NotImplementedError
-

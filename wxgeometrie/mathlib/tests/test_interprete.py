@@ -1,13 +1,11 @@
 # -*- coding: iso-8859-1 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
-import re
+from pytest import XFAIL
 
-from tools.testlib import *
+from tools.testlib import assertRaises, assertAlmostEqual
 
-import mathlib
-from mathlib import traduire_formule
-from mathlib.custom_objects import Interprete
+from wxgeometrie.mathlib.interprete import Interprete
 
 VERBOSE = False
 

@@ -24,34 +24,21 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-# version unicode
-
 # choisit comme répertoire courant le repertoire d'execution du script (pour Linux)
-import os, sys, codecs
+from codecs import getwriter
+import sys, os
+from os.path import dirname, join, realpath
 
 if sys.platform == 'win32':
-    sys.stdout = codecs.getwriter('cp850')(sys.stdout)
+    sys.stdout = getwriter('cp850')(sys.stdout)
 else:
-    sys.stdout = codecs.getwriter('utf8')(sys.stdout)
-    
-try:
-    path = os.path.split(__file__)[0]
-    if path:    
-        os.chdir(path)
-except NameError:
-    os.chdir(os.path.split(sys.executable)[0]) # le repertoire courant change quand le programme est lancé avec un fichier .geo en paramètre
-    sys.path = [os.path.dirname(sys.executable)] + sys.path
-    # On charge param seulement après avoir modifié sys.path
-    # (cela permet de chercher de préférence le module dans wxgeometrie/param/__init__.py, s'il existe, plutôt que dans wxgeometrie/library.zip)
-    import param 
-    param.py2exe = True
+    sys.stdout = getwriter('utf8')(sys.stdout)
 
-  
-from initialisation import initialiser
+path = join(dirname(realpath(sys._getframe().f_code.co_filename)), 'wxgeometrie')
+os.chdir(path)
+sys.path.insert(0, path)
 
+from wxgeometrie.initialisation import initialiser
 
 if __name__ == '__main__':
     initialiser()
-
-
-
