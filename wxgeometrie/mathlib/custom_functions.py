@@ -734,4 +734,4 @@ def aide(fonction):
 def arrondir(valeur, chiffres = 0):
     # Nombre de chiffres de la partie entière :
     n = floor(log(valeur, 10)) + 1
-    return valeur.evalf(chiffres + n)
+    return sympify(valeur).evalf(chiffres + n)
