@@ -41,28 +41,6 @@ from ..pylib.rapport import Rapport
 from ..geolib.classeur import Classeur
 from ..geolib.feuille import Feuille
 
-#-----------------------
-#       Panels
-#-----------------------
-
-
-
-#class Canvas_vide:
-#    """Canvas bidon, qui sert pour l'initialisation des classes menu."""
-#    def __getattr__(self, nom):
-#        return None
-#
-#    def __nonzero__(self):
-#        return False
-#
-#    def __repr__(self):
-#        return "<Canvas Vide>"
-#
-#    def __str__(self):
-#        return "<Canvas Vide>"
-
-
-
 
 
 class Panel_simple(wx.Panel):

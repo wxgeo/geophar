@@ -76,6 +76,10 @@ valeurs_a_ne_pas_sauver = (
 "codage_des_angles",
 "styles_a_signification_variable",
 "styles_a_ne_pas_copier",
+"dependances",
+"NOMPROG",
+"NOMPROG2",
+"GUIlib",
 )
 
 import os
@@ -123,9 +127,14 @@ fermeture_instantanee = False # Utile en mode développement
 # affichage de la ligne de commande (utile pour le développement)
 ligne_commande = debug
 
+NOMPROG = u"WxGéométrie"
+NOMPROG2 = 'WxGeometrie' # sans accent
+GUIlib = 'wx'
 
 version_wxpython = "2.8-unicode"
 
+# Les valeurs sont les noms des paquets sous Debian/Ubuntu.
+dependances = {'wx': 'python-wxgtk2.8', 'matplotlib': 'python-matplotlib', 'numpy': 'python-numpy'}
 
 latex = False
 latex_unicode = True # (sera éventuellement désactivé ultérieurement, après l'import de wx)

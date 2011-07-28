@@ -38,7 +38,7 @@ def _err(msg, *msgs):
     return msg
 
 
-def wxgeometrie_mode_script(input = None, output = None):
+def mode_script(input = None, output = None):
     try:
         if input is None:
             input = raw_input(u'Adresse du fichier de script ou du fichier .geo :')

@@ -50,7 +50,7 @@ class ReceptionDeFichiers(wx.FileDropTarget):
 
 
 
-class WxGeometrie(wx.Frame):
+class FenetrePrincipale(wx.Frame):
     def __init__(self, app, fichier_log = None):
         wx.Frame.__init__(self, parent = None, title = u"WxGéométrie", pos=wx.DefaultPosition, style=wx.DEFAULT_FRAME_STYLE)
 
@@ -96,9 +96,6 @@ class WxGeometrie(wx.Frame):
         self.SetDropTarget(ReceptionDeFichiers(self))
         self.SetFocus()
 
-#        self._auto_save_timer=wx.Timer(self)
-#        self.Bind(wx.EVT_TIMER, self._auto_save)
-#        self._auto_save_timer.Start(150)
         self.__sauver_session = False
         self._auto_save_timer = wx.Timer(self)
         self.Bind(wx.EVT_TIMER, self._autosave)
@@ -108,9 +105,6 @@ class WxGeometrie(wx.Frame):
         # closing == True si l'application est en train d'être fermée
         self.closing = False
 
-        #self.DragAcceptFiles(True)
-        #self.Bind(wx.EVT_DROP_FILES, self.OnDrop)
-
         # Création (si nécessaire) des répertoires /log, /macro, etc., définis dans /param/__init__.py
         for repertoire in param.emplacements:
             repertoire = path2(repertoire)
@@ -119,6 +113,7 @@ class WxGeometrie(wx.Frame):
                     os.makedirs(repertoire)
                 except IOError:
                     print_error()
+
 
     def _autosave(self, evt = None):
         self.__sauver_session = True
@@ -166,12 +161,6 @@ class WxGeometrie(wx.Frame):
 
 
 
-    #def recharger(self, event):
-    #    reload(param)
-    #
-    #    self.onglets.onglet_actuel.historique.rafraichir()
-    #    self.barre.SetStatusText("Parametres et figure recharges.", 0)
-
     def message(self, texte, lieu = 0):
         self.barre.SetStatusText(texte, lieu)
 
@@ -181,27 +170,6 @@ class WxGeometrie(wx.Frame):
         else:
             self.SetTitle(u"WxGéométrie")
 
-
-
-#    # <PERIME>
-#    def sauver_session(self, lieu = None):
-#        fichiers_ouverts = []
-#        for onglet in self.onglets:
-#            fichiers_ouverts.extend(onglet._fichiers_ouverts())
-#        fgeo = sauvegarder_session(*fichiers_ouverts)
-#        if lieu is None:
-#            lieu = path2(param.emplacements['session'] + "/session.xml.gz")
-#        fgeo.ecrire(lieu, zip = True)
-
-
-#    def charger_session(self, lieu = None, reinitialiser = True):
-#        if reinitialiser:
-#            self.reinitialiser_session()
-#        if lieu is None:
-#            lieu = path2(param.emplacements['session'] + "/session.xml.gz")
-#        for fichier in ouvrir_session(lieu):
-#            self.onglets.ouvrir(fichier, en_arriere_plan = True)
-#    # </PERIME>
 
 
     def reinitialiser_session(self):
@@ -240,8 +208,6 @@ class WxGeometrie(wx.Frame):
         except (IndexError, AttributeError):
             warning("Impossible de restaurer l'onglet actif (%s)." %session.infos['onglet_actif'])
 
-#    def _auto_save(self, evt = None):
-#        self.sauver_session()
 
     def executer_commande(self, commande, **kw):
         try:
@@ -252,49 +218,6 @@ class WxGeometrie(wx.Frame):
             self.barre.SetStatusText(u"Commande incorrecte.", 0)
             if param.debug:
                 raise
-
-
-    def _old_EvtChar(self, event):    # gere la ligne de commandes
-        commande = self.commande.GetValue()
-        code = event.GetKeyCode()
-
-        if self.commande_en_cours_a_sauvegarder and commande.strip():
-            self.commande_en_cours = commande
-            self.commande_en_cours_a_sauvegarder = False
-
-        if code == wx.WXK_RETURN or code == wx.WXK_NUMPAD_ENTER:
-            try:
-                self.console.executer(commande)
-                self.barre.SetStatusText(u"Commande interne exécutée.", 0)
-                self.historique.append(commande)
-                self.commande_en_cours = ""
-                self.position = len(self.historique) - 1
-                self.commande.Clear()
-            except:
-                self.barre.SetStatusText(u"Commande incorrecte.", 0)
-                if param.debug:
-                    raise
-
-        elif code == wx.WXK_UP:   # on remonte dans l'historique des commandes
-            if self.position >= 0:
-                if self.position == len(self.historique):
-                    self.commande.SetValue(self.commande_en_cours)
-                else:
-                    self.commande.SetValue(self.historique[self.position])
-                self.position = self.position - 1
-
-        elif code == wx.WXK_DOWN:   # on redescend dans l'historique vers les commandes recentes
-            if self.position < len(self.historique) -1 or (self.position == len(self.historique) -1 and self.commande_en_cours):
-                if self.position == (len(self.historique) - 2):
-                    self.commande.SetValue(self.commande_en_cours)
-                elif self.position == (len(self.historique) - 1):
-                    self.commande.Clear()
-                else:
-                    self.commande.SetValue(self.historique[self.position + 2])
-                self.position += 1
-        else:
-            event.Skip()
-            self.commande_en_cours_a_sauvegarder = True
 
 
     def OnClose(self, event):
