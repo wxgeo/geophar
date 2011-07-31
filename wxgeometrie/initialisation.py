@@ -405,11 +405,11 @@ try:
                     if crash:
                         print(NOMPROG + u" n'a pas été fermé correctement.\n"
                               "Tentative de restauration de la session en cours...")
-                    frame.charger_session()
+                    frame.gestion.charger_session()
                 except:
                     print(u"Warning: La session n'a pas pu être restaurée.")
                     print_error()
-            frame.show()
+            frame.Show()
             app.boucle()
             sorties.close()
         os.remove(path_lock)

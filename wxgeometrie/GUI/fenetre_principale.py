@@ -23,19 +23,18 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-import sys, os, thread, traceback
+import sys, thread, traceback
 import wx
 
-from ..pylib import uu, print_error, path2, debug, warning
+from ..pylib import uu, print_error, path2, debug
 from . import Panel_API_graphique
 from .ligne_commande import LigneCommande
 from .onglets import Onglets
+from .gestion_session import GestionnaireSession
 from ..API.console import Console
-from ..API.sauvegarde import FichierSession
-from ..API.parametres import sauvegarder_module
 from .. import param
+NOMPROG = param.NOMPROG
 
-######################################################
 
 
 class ReceptionDeFichiers(wx.FileDropTarget):
@@ -51,15 +50,16 @@ class ReceptionDeFichiers(wx.FileDropTarget):
 
 
 class FenetrePrincipale(wx.Frame):
-    def __init__(self, app, fichier_log = None):
-        wx.Frame.__init__(self, parent = None, title = u"WxGéométrie", pos=wx.DefaultPosition, style=wx.DEFAULT_FRAME_STYLE)
+    def __init__(self, app, fichier_log=None):
+        wx.Frame.__init__(self, parent=None, title=NOMPROG, pos=wx.DefaultPosition,
+                          style=wx.DEFAULT_FRAME_STYLE)
 
-        self.SetBackgroundColour(wx.NamedColor(u"WHITE"))
+        self.SetBackgroundColour(wx.NamedColor(u'WHITE'))
 
         self.application = app # pour acceder a l'application en interne
 
         # À créer avant les onglets
-        self.fenetre_sortie = wx.PyOnDemandOutputWindow(title = u"WxGéométrie - messages.")
+        self.fenetre_sortie = wx.PyOnDemandOutputWindow(title = NOMPROG + u" - messages.")
         self.fichier_log = fichier_log
 
         self.SetIcon(wx.Icon(path2(u"%/images/icone.ico"), wx.BITMAP_TYPE_ICO))
@@ -68,9 +68,10 @@ class FenetrePrincipale(wx.Frame):
         self.barre = wx.StatusBar(self, -1)
         self.barre.SetFieldsCount(2)
         self.barre.SetStatusWidths([-3, -2])
-        self.barre.SetStatusText(u"  Bienvenue !", 1)
-        self.barre.SetStatusText(u"WxGéométrie version " + param.version, 0)
         self.SetStatusBar(self.barre)
+
+        self.message(u"  Bienvenue !", 1)
+        self.message(NOMPROG + u" version " + param.version)
 
         #Ligne de commande de débogage
         self.ligne_commande = LigneCommande(self, 300, action = self.executer_commande, \
@@ -105,23 +106,18 @@ class FenetrePrincipale(wx.Frame):
         # closing == True si l'application est en train d'être fermée
         self.closing = False
 
-        # Création (si nécessaire) des répertoires /log, /macro, etc., définis dans /param/__init__.py
-        for repertoire in param.emplacements:
-            repertoire = path2(repertoire)
-            if not os.path.isdir(repertoire):
-                try:
-                    os.makedirs(repertoire)
-                except IOError:
-                    print_error()
+        self.gestion = GestionnaireSession(self.onglets)
 
 
-    def _autosave(self, evt = None):
+    def _autosave(self, evt=None):
         self.__sauver_session = True
+
 
     def OnIdle(self, evt):
         if self.__sauver_session:
-            thread.start_new_thread(self.sauver_session, ())
+            thread.start_new_thread(self.gestion.sauver_session, (), {'forcer': True})
             self.__sauver_session = False
+
 
     def actualiser_intervalle_autosave(self):
         if param.sauvegarde_automatique:
@@ -130,8 +126,7 @@ class FenetrePrincipale(wx.Frame):
             self._auto_save_timer.Stop()
 
 
-
-    def afficher_ligne_commande(self, afficher = None):
+    def afficher_ligne_commande(self, afficher=None):
         u"Afficher ou non la ligne de commande."
         if afficher is not None:
             if isinstance(afficher, bool):
@@ -145,7 +140,7 @@ class FenetrePrincipale(wx.Frame):
         return param.ligne_commande
 
 
-    def mode_debug(self, debug = None):
+    def mode_debug(self, debug=None):
         u"Passer en mode déboguage."
         if debug is not None:
             if isinstance(debug, bool):
@@ -157,65 +152,24 @@ class FenetrePrincipale(wx.Frame):
         return param.debug
 
 
-#####################################################################
-
-
-
-    def message(self, texte, lieu = 0):
+    def message(self, texte, lieu=0):
         self.barre.SetStatusText(texte, lieu)
 
-    def titre(self, texte = u""):
+
+    def titre(self, texte=None):
+        titre = NOMPROG
         if texte:
-            self.SetTitle(u"WxGéométrie - " + uu(texte))
-        else:
-            self.SetTitle(u"WxGéométrie")
-
-
-
-    def reinitialiser_session(self):
-        for onglet in self.onglets:
-            onglet.reinitialiser()
-
-
-    def sauver_session(self, lieu = None, seulement_si_necessaire = True):
-        fichiers_ouverts = []
-        if seulement_si_necessaire and not any(onglet.modifie for onglet in self.onglets):
-            return
-        for onglet in self.onglets:
-            fichiers_ouverts.extend(onglet._fichiers_ouverts())
-        if self.onglets.onglet_actuel is None:
-            print("Warning: Aucun onglet ouvert ; impossible de sauver la session !")
-            return
-        session = FichierSession(*fichiers_ouverts, **{'onglet_actif': self.onglets.onglet_actuel.nom})
-        if lieu is None:
-            lieu = path2(param.emplacements['session'] + "/session.tar.gz")
-            for onglet in self.onglets:
-                onglet.modifie = False
-        session.ecrire(lieu, compresser = True)
-        print(u"Session sauvée : (%s)" %lieu)
-
-
-    def charger_session(self, lieu = None, reinitialiser = True):
-        if reinitialiser:
-            self.reinitialiser_session()
-        if lieu is None:
-            lieu = path2(param.emplacements['session'] + "/session.tar.gz")
-        session = FichierSession().ouvrir(lieu)
-        for fichier in session:
-            self.onglets.ouvrir(fichier, en_arriere_plan = True)
-        try:
-            self.onglets.changer_onglet(session.infos['onglet_actif'])
-        except (IndexError, AttributeError):
-            warning("Impossible de restaurer l'onglet actif (%s)." %session.infos['onglet_actif'])
+            titre += '-' + uu(texte)
+        self.SetTitle(titre)
 
 
     def executer_commande(self, commande, **kw):
         try:
             self.console.executer(commande)
-            self.barre.SetStatusText(u"Commande interne exécutée.", 0)
+            self.message(u"Commande interne exécutée.")
             self.ligne_commande.Clear()
         except Exception:
-            self.barre.SetStatusText(u"Commande incorrecte.", 0)
+            self.message(u"Commande incorrecte.")
             if param.debug:
                 raise
 
@@ -228,7 +182,9 @@ class FenetrePrincipale(wx.Frame):
                     panel = self.onglets.onglet_actuel
                     if hasattr(panel, u"canvas") and hasattr(panel.canvas, u"Freeze"):
                         panel.canvas.Freeze()
-                    dlg = wx.MessageDialog(self, u'Voulez-vous quitter WxGéométrie ?', u'Quitter WxGéométrie ?', wx.YES_NO | wx.ICON_QUESTION)
+                    dlg = wx.MessageDialog(self, u'Voulez-vous quitter %s ?' %NOMPROG,
+                                           u'Quitter %s ?' %NOMPROG,
+                                           wx.YES_NO | wx.ICON_QUESTION)
                     reponse = dlg.ShowModal()
                     if hasattr(panel, u"canvas") and hasattr(panel.canvas, u"Thaw"):
                         panel.canvas.Thaw()
@@ -237,24 +193,8 @@ class FenetrePrincipale(wx.Frame):
                         self.closing = False
                         return
 
-                if param.sauver_preferences:
-                    fgeo = sauvegarder_module(param)
-                    fgeo.ecrire(path2(param.emplacements['preferences'] + "/parametres.xml"))
-                    for onglet in self.onglets:
-                        try:
-                            onglet.sauver_preferences()
-                        except:
-                            debug(u"Fermeture incorrecte de l'onglet : ", uu(str(onglet)))
-                            raise
-                else:
-                    # La préférence 'sauver_preferences' doit être sauvée dans tous les cas,
-                    # sinon il ne serait jamais possible de désactiver les préférences depuis WxGéométrie !
-                    fgeo = sauvegarder_module({'sauver_preferences': False})
-                    fgeo.ecrire(path2(param.emplacements['preferences'] + "/parametres.xml"))
-
-
-                if param.sauver_session:
-                    self.sauver_session()
+                self.gestion.sauver_preferences()
+                self.gestion.sauver_session()
 
                 for onglet in self.onglets:
                     try:
