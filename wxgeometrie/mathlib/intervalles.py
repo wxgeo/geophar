@@ -148,7 +148,7 @@ class Union(Ensemble):
         self.intervalles = [intervalle for intervalle in ints if intervalle is not None]
 
     def __str__(self):
-        from .custom_functions import custom_str as str
+        #from .custom_functions import custom_str as str
         return "U".join(str(intervalle) for intervalle in self.intervalles).replace("}U{", " ; ")
 
     def __repr__(self):

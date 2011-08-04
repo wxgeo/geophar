@@ -33,16 +33,18 @@ from core import BasicMeta, C
 from basic import Basic
 from singleton import S
 from expr import Expr, AtomicExpr
-
+from decorators import _sympifyit
+from compatibility import iterable,is_sequence
 from cache import cacheit
 from numbers import Rational
+
 from sympy.core.containers import Tuple
 from sympy.core.decorators import deprecated
-from sympy.utilities import all, any, default_sort_key
-from sympy.core.compatibility import iterable, ordered_iter
+from sympy.utilities import default_sort_key
 from sympy.utilities.iterables import uniq
 
 from sympy import mpmath
+import sympy.mpmath.libmp as mlib
 
 class PoleError(Exception):
     pass
@@ -160,6 +162,12 @@ class Function(Application, Expr):
         if cls is Function:
             return UndefinedFunction(*args)
 
+        if cls.nargs is not None:
+            if (isinstance(cls.nargs, tuple) and len(args) not in cls.nargs) \
+               or (not isinstance(cls.nargs, tuple) and cls.nargs != len(args)):
+               raise ValueError('Function %s expects %s argument(s), got %s.' % (
+                                 cls, cls.nargs, len(args)))
+
         args = map(sympify, args)
         evaluate = options.pop('evaluate', True)
         if evaluate:
@@ -167,8 +175,10 @@ class Function(Application, Expr):
             if evaluated is not None:
                 return evaluated
         result = super(Application, cls).__new__(cls, *args, **options)
-        if evaluate and any([cls._should_evalf(a) for a in args]):
-            return result.evalf()
+        pr = max(cls._should_evalf(a) for a in args)
+        pr2 = min(cls._should_evalf(a) for a in args)
+        if evaluate and pr2 > 0:
+            return result.evalf(mlib.libmpf.prec_to_dps(pr))
         return result
 
     @classmethod
@@ -181,11 +191,13 @@ class Function(Application, Expr):
         This function is used by __new__.
         """
         if arg.is_Float:
-            return True
+            return arg._prec
         if not arg.is_Add:
-            return False
+            return -1
         re, im = arg.as_real_imag()
-        return re.is_Float or im.is_Float
+        l = [a._prec for a in [re, im] if a.is_Float]
+        l.append(-1)
+        return max(l)
 
     @classmethod
     def class_key(cls):
@@ -271,9 +283,11 @@ class Function(Application, Expr):
             da = a.diff(s)
             if da is S.Zero:
                 continue
-            if isinstance(self.func, FunctionClass):
+            try:
                 df = self.fdiff(i)
-                l.append(df * da)
+            except ArgumentIndexError:
+                df = Function.fdiff(self, i)
+            l.append(df * da)
         return Add(*l)
 
     def _eval_is_commutative(self):
@@ -513,8 +527,8 @@ functions are not supported.')
             if not (1<=argindex<=nargs):
                 raise ArgumentIndexError(self, argindex)
         if not self.args[argindex-1].is_Symbol:
-            # See issue 1525 and issue 1620
-            arg_dummy = C.Dummy('%i' % argindex)
+            # See issue 1525 and issue 1620 and issue 2501
+            arg_dummy = C.Dummy('xi_%i' % argindex)
             return Subs(Derivative(
                 self.subs(self.args[argindex-1], arg_dummy),
                 arg_dummy), arg_dummy, self.args[argindex-1])
@@ -605,9 +619,9 @@ class Derivative(Expr):
 
     Examples:
 
-    Derivative(Derivative(expr, x), y) -> Derivative(expr, x, y)
-    Derivative(expr, x, 3)  -> Derivative(expr, x, x, x)
-    Derivative(f(x, y), y, x, evaluate=True) -> Derivative(f(x, y), x, y)
+    * Derivative(Derivative(expr, x), y) -> Derivative(expr, x, y)
+    * Derivative(expr, x, 3)  -> Derivative(expr, x, x, x)
+    * Derivative(f(x, y), y, x, evaluate=True) -> Derivative(f(x, y), x, y)
 
     """
 
@@ -715,6 +729,26 @@ class Derivative(Expr):
         hints['evaluate'] = True
         return Derivative(expr, *self.variables, **hints)
 
+    @_sympifyit('z0', NotImplementedError)
+    def doit_numerically(self, z0):
+        """
+        Evaluate the derivative at z numerically.
+
+        When we can represent derivatives at a point, this should be folded
+        into the normal evalf. For now, we need a special method.
+        """
+        from sympy import mpmath
+        from sympy.core.expr import Expr
+        if len(self.free_symbols) != 1 or len(self.variables) != 1:
+            raise NotImplementedError('partials and higher order derivatives')
+        z = list(self.free_symbols)[0]
+        def eval(x):
+            f0 = self.expr.subs(z, Expr._from_mpmath(x, prec=mpmath.mp.prec))
+            f0 = f0.evalf(mlib.libmpf.prec_to_dps(mpmath.mp.prec))
+            return f0._to_mpmath(mpmath.mp.prec)
+        return Expr._from_mpmath(mpmath.diff(eval, z0._to_mpmath(mpmath.mp.prec)),
+                                 mpmath.mp.prec)
+
     @property
     def expr(self):
         return self._args[0]
@@ -767,23 +801,26 @@ class Lambda(Expr):
     Lambda((x, y, ...), expr).
 
     A simple example:
-        >>> from sympy import Lambda
-        >>> from sympy.abc import x
-        >>> f = Lambda(x, x**2)
-        >>> f(4)
-        16
+
+    >>> from sympy import Lambda
+    >>> from sympy.abc import x
+    >>> f = Lambda(x, x**2)
+    >>> f(4)
+    16
 
     For multivariate functions, use:
-        >>> from sympy.abc import y, z, t
-        >>> f2 = Lambda((x, y, z, t), x + y**z + t**z)
-        >>> f2(1, 2, 3, 4)
-        73
+
+    >>> from sympy.abc import y, z, t
+    >>> f2 = Lambda((x, y, z, t), x + y**z + t**z)
+    >>> f2(1, 2, 3, 4)
+    73
 
     A handy shortcut for lots of arguments:
-        >>> p = x, y, z
-        >>> f = Lambda(p, x + y*z)
-        >>> f(*p)
-        x + y*z
+
+    >>> p = x, y, z
+    >>> f = Lambda(p, x + y*z)
+    >>> f(*p)
+    x + y*z
 
     """
     is_Function = True
@@ -864,11 +901,11 @@ class Subs(Expr):
     """
     Represents unevaluated substitutions of an expression.
 
-    `Subs(expr, x, x0)` receives 3 arguments: an expression, a variable or list
+    ``Subs(expr, x, x0)`` receives 3 arguments: an expression, a variable or list
     of distinct variables and a point or list of evaluation points
     corresponding to those variables.
 
-    `Subs` objects are generally useful to represent unevaluated derivatives
+    ``Subs`` objects are generally useful to represent unevaluated derivatives
     calculated at a point.
 
     The variables may be expressions, but they are subjected to the limitations
@@ -885,24 +922,26 @@ class Subs(Expr):
     Derivative()).
 
     A simple example:
+
     >>> from sympy import Subs, Function, sin
     >>> from sympy.abc import x, y, z
     >>> f = Function('f')
     >>> e = Subs(f(x).diff(x), x, y)
     >>> e.subs(y, 0)
-    Subs(D(f(_x), _x), Tuple(_x), Tuple(0))
+    Subs(Derivative(f(_x), _x), (_x,), (0,))
     >>> e.subs(f, sin).doit()
     cos(y)
 
     An example with several variables:
+
     >>> Subs(f(x)*sin(y)+z, (x, y), (0, 1))
-    Subs(z + f(_x)*sin(_y), Tuple(_x, _y), Tuple(0, 1))
+    Subs(z + f(_x)*sin(_y), (_x, _y), (0, 1))
     >>> _.doit()
     z + f(0)*sin(1)
 
     """
     def __new__(cls, expr, variables, point, **assumptions):
-        if not ordered_iter(variables, Tuple):
+        if not is_sequence(variables, Tuple):
             variables = [variables]
         variables = Tuple(*sympify(variables))
 
@@ -912,7 +951,7 @@ class Subs(Expr):
             raise ValueError('cannot substitute expressions %s more than '
                              'once.' % repeated)
 
-        if not ordered_iter(point, Tuple):
+        if not is_sequence(point, Tuple):
             point = [point]
         point = Tuple(*sympify(point))
 
@@ -1034,9 +1073,9 @@ def diff(f, *symbols, **kwargs):
     >>> diff(sin(x), x)
     cos(x)
     >>> diff(f(x), x, x, x)
-    D(f(x), x, x, x)
+    Derivative(f(x), x, x, x)
     >>> diff(f(x), x, 3)
-    D(f(x), x, x, x)
+    Derivative(f(x), x, x, x)
     >>> diff(sin(x)*cos(y), x, 2, y, 2)
     sin(x)*cos(y)
 
@@ -1098,24 +1137,28 @@ def expand(e, deep=True, modulus=None, power_base=True, power_exp=True, \
     >>> from sympy import cos, exp
     >>> from sympy.abc import x, y, z
 
-    mul - Distributes multiplication over addition.
+    mul - Distributes multiplication over addition:
+
     >>> (y*(x + z)).expand(mul=True)
     x*y + y*z
 
-    complex - Split an expression into real and imaginary parts.
+    complex - Split an expression into real and imaginary parts:
+
     >>> (x + y).expand(complex=True)
     I*im(x) + I*im(y) + re(x) + re(y)
     >>> cos(x).expand(complex=True)
     -I*sin(re(x))*sinh(im(x)) + cos(re(x))*cosh(im(x))
 
-    power_exp - Expand addition in exponents into multiplied bases.
+    power_exp - Expand addition in exponents into multiplied bases:
+
     >>> exp(x + y).expand(power_exp=True)
     exp(x)*exp(y)
     >>> (2**(x + y)).expand(power_exp=True)
     2**x*2**y
 
     power_base - Split powers of multiplied bases if assumptions allow
-    or if the 'force' hint is used.
+    or if the 'force' hint is used:
+
     >>> ((x*y)**z).expand(power_base=True)
     (x*y)**z
     >>> ((x*y)**z).expand(power_base=True, force=True)
@@ -1126,7 +1169,8 @@ def expand(e, deep=True, modulus=None, power_base=True, power_exp=True, \
     log - Pull out power of an argument as a coefficient and split logs products
     into sums of logs.  Note that these only work if the arguments of the log
     function have the proper assumptions: the arguments must be positive and the
-    exponents must be real or else the force hint must be True.
+    exponents must be real or else the force hint must be True:
+
     >>> from sympy import log, symbols, oo
     >>> log(x**2*y).expand(log=True)
     log(x**2*y)
@@ -1136,20 +1180,24 @@ def expand(e, deep=True, modulus=None, power_base=True, power_exp=True, \
     >>> log(x**2*y).expand(log=True)
     2*log(x) + log(y)
 
-    trig - Do trigonometric expansions.
+    trig - Do trigonometric expansions:
+
     >>> cos(x + y).expand(trig=True)
     -sin(x)*sin(y) + cos(x)*cos(y)
 
-    func - Expand other functions.
+    func - Expand other functions:
+
     >>> from sympy import gamma
     >>> gamma(x + 1).expand(func=True)
     x*gamma(x)
 
-    multinomial - Expand (x + y + ...)**n where n is a positive integer.
+    multinomial - Expand (x + y + ...)**n where n is a positive integer:
+
     >>> ((x + y + z)**2).expand(multinomial=True)
     x**2 + 2*x*y + 2*x*z + y**2 + 2*y*z + z**2
 
-    You can shut off methods that you don't want.
+    You can shut off methods that you don't want:
+
     >>> (exp(x + y)*(x + y)).expand()
     x*exp(x)*exp(y) + y*exp(x)*exp(y)
     >>> (exp(x + y)*(x + y)).expand(power_exp=False)
@@ -1157,7 +1205,8 @@ def expand(e, deep=True, modulus=None, power_base=True, power_exp=True, \
     >>> (exp(x + y)*(x + y)).expand(mul=False)
     (x + y)*exp(x)*exp(y)
 
-    Use deep=False to only expand on the top level.
+    Use deep=False to only expand on the top level:
+
     >>> exp(x + exp(x + y)).expand()
     exp(x)*exp(exp(x)*exp(y))
     >>> exp(x + exp(x + y)).expand(deep=False)
@@ -1171,31 +1220,36 @@ def expand(e, deep=True, modulus=None, power_base=True, power_exp=True, \
     with mul=False first, then run expand_mul if you need further expansion.
 
     Examples:
+
     >>> from sympy import expand_log, expand, expand_mul
     >>> x, y, z = symbols('x,y,z', positive=True)
 
-    >> expand(log(x*(y + z))) # could be either one below
-    log(x*y + x*z)
-    log(x) + log(y + z)
+    ::
+
+      expand(log(x*(y + z))) # could be either one below
+      log(x*y + x*z)
+      log(x) + log(y + z)
 
     >>> expand_log(log(x*y + x*z))
     log(x*y + x*z)
 
-    >> expand(log(x*(y + z)), mul=False)
+    >>> expand(log(x*(y + z)), mul=False)
     log(x) + log(y + z)
 
+    ::
 
-    >> expand((x*(y + z))**x) # could be either one below
-    (x*y + x*z)**x
-    x**x*(y + z)**x
+      expand((x*(y + z))**x) # could be either one below
+      (x*y + x*z)**x
+      x**x*(y + z)**x
 
     >>> expand((x*(y + z))**x, mul=False)
     x**x*(y + z)**x
 
+    ::
 
-    >> expand(x*(y + z)**2) # could be either one below
-    2*x*y*z + x*y**2 + x*z**2
-    x*(y + z)**2
+      expand(x*(y + z)**2) # could be either one below
+      2*x*y*z + x*y**2 + x*z**2
+      x*(y + z)**2
 
     >>> expand(x*(y + z)**2, mul=False)
     x*(y**2 + 2*y*z + z**2)
@@ -1220,6 +1274,7 @@ def expand_mul(expr, deep=True):
     docstring for more information.
 
     Example:
+
     >>> from sympy import symbols, expand_mul, exp, log
     >>> x, y = symbols('x,y', positive=True)
     >>> expand_mul(exp(x+y)*(x+y)*log(x*y**2))
@@ -1235,6 +1290,7 @@ def expand_multinomial(expr, deep=True):
     docstring for more information.
 
     Example:
+
     >>> from sympy import symbols, expand_multinomial, exp
     >>> x, y = symbols('x y', positive=True)
     >>> expand_multinomial((x + exp(x + 1))**2)
@@ -1251,6 +1307,7 @@ def expand_log(expr, deep=True):
     docstring for more information.
 
     Example:
+
     >>> from sympy import symbols, expand_log, exp, log
     >>> x, y = symbols('x,y', positive=True)
     >>> expand_log(exp(x+y)*(x+y)*log(x*y**2))
@@ -1266,6 +1323,7 @@ def expand_func(expr, deep=True):
     docstring for more information.
 
     Example:
+
     >>> from sympy import expand_func, gamma
     >>> from sympy.abc import x
     >>> expand_func(gamma(x + 2))
@@ -1281,6 +1339,7 @@ def expand_trig(expr, deep=True):
     docstring for more information.
 
     Example:
+
     >>> from sympy import expand_trig, sin, cos
     >>> from sympy.abc import x, y
     >>> expand_trig(sin(x+y)*(x+y))
@@ -1296,6 +1355,7 @@ def expand_complex(expr, deep=True):
     docstring for more information.
 
     Example:
+
     >>> from sympy import expand_complex, I, im, re
     >>> from sympy.abc import z
     >>> expand_complex(z**(2*I))
@@ -1309,10 +1369,10 @@ def count_ops(expr, visual=False):
     """
     Return a representation (integer or expression) of the operations in expr.
 
-    If `visual` is False (default) then the sum of the coefficients of the
+    If ``visual`` is ``False`` (default) then the sum of the coefficients of the
     visual expression will be returned.
 
-    If `visual` is True then the number of each type of operation is shown
+    If ``visual`` is ``True`` then the number of each type of operation is shown
     with the core class types (or their virtual equivalent) multiplied by the
     number of times they occur.
 
@@ -1320,48 +1380,56 @@ def count_ops(expr, visual=False):
     items will be returned.
 
     Examples:
-        >>> from sympy.abc import a, b, x, y
-        >>> from sympy import sin, count_ops
+
+    >>> from sympy.abc import a, b, x, y
+    >>> from sympy import sin, count_ops
 
     Although there isn't a SUB object, minus signs are interpreted as
     either negations or subtractions:
-        >>> (x - y).count_ops(visual=True)
-        SUB
-        >>> (-x).count_ops(visual=True)
-        NEG
+
+    >>> (x - y).count_ops(visual=True)
+    SUB
+    >>> (-x).count_ops(visual=True)
+    NEG
 
     Here, there are two Adds and a Pow:
-        >>> (1 + a + b**2).count_ops(visual=True)
-        2*ADD + POW
+
+    >>> (1 + a + b**2).count_ops(visual=True)
+    2*ADD + POW
 
     In the following, an Add, Mul, Pow and two functions:
-        >>> (sin(x)*x + sin(x)**2).count_ops(visual=True)
-        ADD + MUL + POW + 2*SIN
+
+    >>> (sin(x)*x + sin(x)**2).count_ops(visual=True)
+    ADD + MUL + POW + 2*SIN
 
     for a total of 5:
-        >>> (sin(x)*x + sin(x)**2).count_ops(visual=False)
-        5
+
+    >>> (sin(x)*x + sin(x)**2).count_ops(visual=False)
+    5
 
     Note that "what you type" is not always what you get. The expression
     1/x/y is translated by sympy into 1/(x*y) so it gives a DIV and MUL rather
     than two DIVs:
-        >>> (1/x/y).count_ops(visual=True)
-        DIV + MUL
+
+    >>> (1/x/y).count_ops(visual=True)
+    DIV + MUL
 
     The visual option can be used to demonstrate the difference in
     operations for expressions in different forms. Here, the Horner
     representation is compared with the expanded form of a polynomial:
-        >>> eq=x*(1 + x*(2 + x*(3 + x)))
-        >>> count_ops(eq.expand(), visual=True) - count_ops(eq, visual=True)
-        -MUL + 3*POW
+
+    >>> eq=x*(1 + x*(2 + x*(3 + x)))
+    >>> count_ops(eq.expand(), visual=True) - count_ops(eq, visual=True)
+    -MUL + 3*POW
 
     The count_ops function also handles iterables:
-        >>> count_ops([x, sin(x), None, True, x + 2], visual=False)
-        2
-        >>> count_ops([x, sin(x), None, True, x + 2], visual=True)
-        ADD + SIN
-        >>> count_ops({x: sin(x), x + 2: y + 1}, visual=True)
-        2*ADD + SIN
+
+    >>> count_ops([x, sin(x), None, True, x + 2], visual=False)
+    2
+    >>> count_ops([x, sin(x), None, True, x + 2], visual=True)
+    ADD + SIN
+    >>> count_ops({x: sin(x), x + 2: y + 1}, visual=True)
+    2*ADD + SIN
 
     """
     from sympy.simplify.simplify import fraction

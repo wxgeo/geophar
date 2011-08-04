@@ -53,18 +53,16 @@ def __cacheit(func):
        important: the result of cached function must be *immutable*
 
 
-       Example
-       -------
+       **Example**
 
-       @cacheit
-       def f(a,b):
-           return a+b
+       >>> from sympy.core.cache import cacheit
+       >>> @cacheit
+       ... def f(a,b):
+       ...    return a+b
 
-
-       @cacheit
-       def f(a,b):
-           return [a,b] # <-- WRONG, returns mutable object
-
+       >>> @cacheit
+       ... def f(a,b):
+       ...    return [a,b] # <-- WRONG, returns mutable object
 
        to force cacheit to check returned results mutability and consistency,
        set environment variable SYMPY_USE_CACHE to 'debug'
@@ -171,7 +169,7 @@ class MemoizerArg:
             raise ValueError('%s %s-th argument must be of type %r but got %r' % (func_src, index, self.allowed_types, obj))
         if isinstance(index, str):
             raise ValueError('%s %r keyword argument must be of type %r but got %r' % (func_src, index, self.allowed_types, obj))
-        raise NotImplementedError(`index,type(index)`)
+        raise NotImplementedError(repr((index,type(index))))
 
 class Memoizer:
     """ Memoizer function decorator generator.
