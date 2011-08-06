@@ -189,7 +189,6 @@ class Ligne_generique(Objet_avec_equation):
         Mymax = self.xy(y=ymax)
         if xmin - dx <= Mymax[0] <= xmax + dx:
             points.append(Mymax)
-        print Mxmin, Mxmax, Mymin, Mymax
         # En principe, points ne contient que deux éléments.
         # Il peut éventuellement en contenir 3 ou 4, dans le cas limite où la droite
         # coupe la fenêtre dans un coin. Dans ce cas, on peut trouver
