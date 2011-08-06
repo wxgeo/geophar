@@ -88,7 +88,6 @@ class Onglets(wx.Notebook):
         self.actualiser_liste_onglets()
         for parametre in ('decimales', 'unite_angle', 'tolerance'):
             geolib.contexte[parametre] = getattr(param,  parametre)
-        self.parent.actualiser_intervalle_autosave()
 
 
     def deplacer_onglet(self, i, j):

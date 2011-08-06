@@ -24,6 +24,8 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os
+from thread import start_new_thread
+from time import sleep
 
 from ..pylib import uu, print_error, path2, debug, warning
 from ..API.sauvegarde import FichierSession
@@ -42,7 +44,18 @@ class GestionnaireSession(object):
                     os.makedirs(repertoire)
                 except IOError:
                     print_error()
+        start_new_thread(self._autosave_timer, ())
 
+    def _autosave_timer(self):
+        while True:
+            if param.sauvegarde_automatique:
+                self.__sauver_session = True
+            sleep(max(10*param.sauvegarde_automatique, 2))
+
+    def autosave(self):
+        if self.__sauver_session:
+            start_new_thread(self.sauver_session, (), {'forcer': True})
+            self.__sauver_session = False
 
     def sauver_session(self, lieu=None, seulement_si_necessaire=True, forcer=False):
         if param.sauver_session or forcer:

@@ -97,10 +97,6 @@ class FenetrePrincipale(wx.Frame):
         self.SetDropTarget(ReceptionDeFichiers(self))
         self.SetFocus()
 
-        self.__sauver_session = False
-        self._auto_save_timer = wx.Timer(self)
-        self.Bind(wx.EVT_TIMER, self._autosave)
-        self.actualiser_intervalle_autosave()
         self.Bind (wx.EVT_IDLE, self.OnIdle)
 
         # closing == True si l'application est en train d'être fermée
@@ -109,21 +105,8 @@ class FenetrePrincipale(wx.Frame):
         self.gestion = GestionnaireSession(self.onglets)
 
 
-    def _autosave(self, evt=None):
-        self.__sauver_session = True
-
-
     def OnIdle(self, evt):
-        if self.__sauver_session:
-            thread.start_new_thread(self.gestion.sauver_session, (), {'forcer': True})
-            self.__sauver_session = False
-
-
-    def actualiser_intervalle_autosave(self):
-        if param.sauvegarde_automatique:
-            self._auto_save_timer.Start(10000*param.sauvegarde_automatique)
-        else:
-            self._auto_save_timer.Stop()
+        self.gestion.autosave()
 
 
     def afficher_ligne_commande(self, afficher=None):
