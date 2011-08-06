@@ -24,7 +24,7 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os
-from thread import start_new_thread
+from threading import Thread
 from time import sleep
 
 from ..pylib import uu, print_error, path2, debug, warning
@@ -44,17 +44,24 @@ class GestionnaireSession(object):
                     os.makedirs(repertoire)
                 except IOError:
                     print_error()
-        start_new_thread(self._autosave_timer, ())
+        thread = Thread(target=self._autosave_timer)
+        thread.daemon = True
+        thread.start()
 
     def _autosave_timer(self):
-        while True:
-            if param.sauvegarde_automatique:
-                self.__sauver_session = True
-            sleep(max(10*param.sauvegarde_automatique, 2))
+        try:
+            while True:
+                if param.sauvegarde_automatique:
+                    self.__sauver_session = True
+                sleep(max(10*param.sauvegarde_automatique, 2))
+        except AttributeError:
+            print('Warning: closing thread...')
+            # Si le programme est en train d'être fermé, param peut ne
+            # plus exister.
 
     def autosave(self):
         if self.__sauver_session:
-            start_new_thread(self.sauver_session, (), {'forcer': True})
+            Thread(target=self.sauver_session, kwargs={'forcer': True}).start()
             self.__sauver_session = False
 
     def sauver_session(self, lieu=None, seulement_si_necessaire=True, forcer=False):
