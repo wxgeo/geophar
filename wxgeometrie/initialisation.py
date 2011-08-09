@@ -383,8 +383,8 @@ try:
                 print msg
 
         else:
-            from .GUI.app import App
-            app = App(nom=NOMPROG)
+            from .GUI.app import app
+            app.nom(NOMPROG)
 
             from .GUI.fenetre_principale import FenetrePrincipale
             frame = FenetrePrincipale(app, fichier_log = fichier_log)

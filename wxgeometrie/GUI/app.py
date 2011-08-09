@@ -26,9 +26,18 @@ import wx
 
 
 class App(wx.PySimpleApp):
-    def __init__(self, nom='', args=(), **kw):
-        wx.PySimpleApp.__init__(self)
-        self.SetAppName(nom)
-
     def boucle(self):
         self.MainLoop()
+
+    def nom(self, nom=''):
+        self.SetAppName(nom)
+
+    def vers_presse_papier(self, texte):
+        clipBoard=wx.TheClipboard
+        if clipBoard.Open():
+            clipBoard.AddData(wx.TextDataObject(texte))
+            clipBoard.Close()
+            return True
+        return False
+
+app = App()

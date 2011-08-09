@@ -31,6 +31,7 @@ from .menu import RSSMenu
 from .console_geolib import ConsoleGeolib
 from .wxlib import BusyCursor
 from .wxcanvas import WxCanvas
+from .app import app
 from ..API.sauvegarde import ouvrir_fichierGEO, FichierGEO
 from ..API.parametres import sauvegarder_module
 
@@ -72,7 +73,7 @@ class Panel_simple(wx.Panel):
             self.menu = self.module._menu_(self)
 
     def message(self, texte = ''):
-        self.parent.parent.barre.SetStatusText(texte, 0)
+        self.parent.parent.message(texte)
 
     def changer_titre(self, texte = ''):
         self.parent.parent.titre(texte)
@@ -105,7 +106,8 @@ class Panel_simple(wx.Panel):
             self.message(u"Sauvegarde effectuée.")
         except Exception:
             self.message(u"Echec de la sauvegarde.")
-            if param.debug: raise
+            if param.debug:
+                raise
 
 
     def _fichiers_ouverts(self):
@@ -190,12 +192,7 @@ class Panel_simple(wx.Panel):
         u"""Copie le texte dans le presse-papier.
 
         Retourne True si la copie a réussi, False sinon."""
-        clipBoard=wx.TheClipboard
-        if clipBoard.Open():
-            clipBoard.AddData(wx.TextDataObject(texte))
-            clipBoard.Close()
-            return True
-        return False
+        return app.vers_presse_papier(texte)
 
 
 
