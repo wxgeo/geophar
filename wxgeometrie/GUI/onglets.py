@@ -46,6 +46,7 @@ class Onglets(wx.Notebook):
     def __init__(self, parent, id):
         self.parent = parent
         wx.Notebook.__init__(self, parent, id, style=wx.NB_TOP)
+        self.SetBackgroundColour(wx.WHITE)
 
         ###############################
         # Creation de fonctions associees aux entrees du menu "Creer"

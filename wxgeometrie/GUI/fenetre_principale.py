@@ -25,6 +25,7 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 import sys, thread, traceback
 import wx
+from wx import PyOnDemandOutputWindow
 
 from ..pylib import uu, print_error, path2, debug
 from . import Panel_API_graphique
@@ -51,15 +52,14 @@ class ReceptionDeFichiers(wx.FileDropTarget):
 
 class FenetrePrincipale(wx.Frame):
     def __init__(self, app, fichier_log=None):
-        wx.Frame.__init__(self, parent=None, title=NOMPROG, pos=wx.DefaultPosition,
-                          style=wx.DEFAULT_FRAME_STYLE)
+        wx.Frame.__init__(self, parent=None, title=NOMPROG)
 
-        self.SetBackgroundColour(wx.NamedColor(u'WHITE'))
+        self.SetBackgroundColour(wx.WHITE)
 
         self.application = app # pour acceder a l'application en interne
 
         # À créer avant les onglets
-        self.fenetre_sortie = wx.PyOnDemandOutputWindow(title = NOMPROG + u" - messages.")
+        self.fenetre_sortie = PyOnDemandOutputWindow(title = NOMPROG + u" - messages.")
         self.fichier_log = fichier_log
 
         self.SetIcon(wx.Icon(path2(u"%/images/icone.ico"), wx.BITMAP_TYPE_ICO))
