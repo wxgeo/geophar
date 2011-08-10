@@ -35,7 +35,7 @@ class CstmPanel(wx.Panel):
         wx.Panel.__init__(self, parent)
         self.parent = parent
         self.main = self.parent.parent
-        self.SetBackgroundColour(wx.WHITE)
+        self.setStyleSheet("background-color:white")
         self.main_sizer = wx.BoxSizer(wx.VERTICAL)
 
     def finaliser(self):

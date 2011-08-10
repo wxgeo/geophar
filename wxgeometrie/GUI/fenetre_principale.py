@@ -23,38 +23,54 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-import sys, thread, traceback
-import wx
-from wx import PyOnDemandOutputWindow
+import sys, os, thread, traceback
 
-from ..pylib import uu, print_error, path2, debug
-from . import Panel_API_graphique
-from .ligne_commande import LigneCommande
-from .onglets import Onglets
-from .gestion_session import GestionnaireSession
+from PyQt4.QtGui import (QMainWindow, QApplication, QPlainTextEdit, QIcon,
+                        QLabel)
+from PyQt4.QtCore import QSize
+
+from ..pylib import uu, print_error, path2, debug, warning
 from ..API.console import Console
+from ..API.sauvegarde import FichierSession
+from ..API.parametres import sauvegarder_module
+from .compatibility import WxQt, PyOnDemandOutputWindow
+from .gestion_session import GestionnaireSession
+from .onglets import Onglets
 from .. import param
 NOMPROG = param.NOMPROG
 
 
+class PyOnDemandOutputWindow(QPlainTextEdit):
+    def __init__(self, title):
+        QPlainTextEdit.__init__(self)
+        self.setWindowTitle(title)
+        self.setReadOnly(True) # assuming QPlainTextEdit
+        self.hide()
+        self.resize(QSize(450, 300))
 
-class ReceptionDeFichiers(wx.FileDropTarget):
-    def __init__(self, window):
-        wx.FileDropTarget.__init__(self)
-        self.window = window
-
-    def OnDropFiles(self, x, y, filenames):
-        for filename in filenames:
-            if filename.endswith(u".geo") or filename.endswith(u".geoz"):
-                self.window.onglets.ouvrir(filename)
+    def write(self, s):
+        self.show()
+        self.insertPlainText(s.decode(param.encodage)) # again assuming QPlainTextEdit
 
 
+#class ReceptionDeFichiers(wx.FileDropTarget):
+#    def __init__(self, window):
+#        wx.FileDropTarget.__init__(self)
+#        self.window = window
 
-class FenetrePrincipale(wx.Frame):
+#    def OnDropFiles(self, x, y, filenames):
+#        for filename in filenames:
+#            if filename.endswith(u".geo") or filename.endswith(u".geoz"):
+#                self.window.onglets.ouvrir(filename)
+
+
+
+class FenetrePrincipale(QMainWindow):
     def __init__(self, app, fichier_log=None):
-        wx.Frame.__init__(self, parent=None, title=NOMPROG)
+        QMainWindow.__init__(self, None)
+        self.setWindowTitle(NOMPROG)
 
-        self.SetBackgroundColour(wx.WHITE)
+        self.setStyleSheet("background-color:white")
 
         self.application = app # pour acceder a l'application en interne
 
@@ -62,42 +78,48 @@ class FenetrePrincipale(wx.Frame):
         self.fenetre_sortie = PyOnDemandOutputWindow(title = NOMPROG + u" - messages.")
         self.fichier_log = fichier_log
 
-        self.SetIcon(wx.Icon(path2(u"%/images/icone.ico"), wx.BITMAP_TYPE_ICO))
+        self.setWindowIcon(QIcon(path2(u"%/images/icone.ico")))
+        self.barre = self.statusBar()
+        self.barre_dte = QLabel(self)
+#        self.barre_dte.setText(
+        self.barre.addPermanentWidget(self.barre_dte)
 
-        # Barre de statut
-        self.barre = wx.StatusBar(self, -1)
-        self.barre.SetFieldsCount(2)
-        self.barre.SetStatusWidths([-3, -2])
-        self.SetStatusBar(self.barre)
+
+#        # Barre de statut
+#        self.barre = wx.StatusBar(self, -1)
+#        self.barre.SetFieldsCount(2)
+#        self.barre.SetStatusWidths([-3, -2])
+#        self.SetStatusBar(self.barre)
 
         self.message(u"  Bienvenue !", 1)
         self.message(NOMPROG + u" version " + param.version)
 
-        #Ligne de commande de débogage
-        self.ligne_commande = LigneCommande(self, 300, action = self.executer_commande, \
-                    afficher_bouton = False, legende = 'Ligne de commande :')
-        self.ligne_commande.Show(param.ligne_commande)
+#        #Ligne de commande de débogage
+#        self.ligne_commande = LigneCommande(self, 300, action = self.executer_commande, \
+#                    afficher_bouton = False, legende = 'Ligne de commande :')
+#        self.ligne_commande.setVisible(param.ligne_commande)
 
-        # Creation des onglets et de leur contenu
-        self.onglets = Onglets(self, -1)
+#        # Creation des onglets et de leur contenu
+        self.onglets = Onglets(self)
 
-        self.__sizer_principal = wx.BoxSizer(wx.VERTICAL)
-        self.__sizer_principal.Add(self.ligne_commande, 0, wx.LEFT, 5)
-        self.__sizer_principal.Add(self.onglets, 1, wx.GROW)
-        self.SetSizer(self.__sizer_principal)
-        self.Fit()
-        x_fit, y_fit = self.GetSize()
-        x_param, y_param = param.dimensions_fenetre
-        self.SetSize(wx.Size(max(x_fit, x_param), max(y_fit, y_param)))
+#        self.__sizer_principal = wx.BoxSizer(wx.VERTICAL)
+#        self.__sizer_principal.Add(self.ligne_commande, 0, wx.LEFT, 5)
+#        self.__sizer_principal.Add(self.onglets, 1, wx.GROW)
+#        self.SetSizer(self.__sizer_principal)
+#        self.Fit()
+#        x_fit, y_fit = self.GetSize()
+#        x_param, y_param = param.dimensions_fenetre
+#        self.SetSize(wx.Size(max(x_fit, x_param), max(y_fit, y_param)))
+        self.resize(*param.dimensions_fenetre)
 
-        self.console = Console(self)
+#        self.console = Console(self)
 
-        self.Bind(wx.EVT_CLOSE, self.OnClose)
+#        self.Bind(wx.EVT_CLOSE, self.OnClose)
 
-        self.SetDropTarget(ReceptionDeFichiers(self))
-        self.SetFocus()
+#        self.SetDropTarget(ReceptionDeFichiers(self))
+        self.setFocus()
 
-        self.Bind (wx.EVT_IDLE, self.OnIdle)
+#        self.Bind (wx.EVT_IDLE, self.OnIdle)
 
         # closing == True si l'application est en train d'être fermée
         self.closing = False
@@ -116,9 +138,9 @@ class FenetrePrincipale(wx.Frame):
                 param.ligne_commande = afficher
             else:
                 param.ligne_commande = not param.ligne_commande
-            self.ligne_commande.Show(param.ligne_commande)
+            self.ligne_commande.setVisible(param.ligne_commande)
             if param.ligne_commande:
-                self.ligne_commande.SetFocus()
+                self.ligne_commande.setFocus()
             self.SendSizeEvent()
         return param.ligne_commande
 
@@ -136,14 +158,17 @@ class FenetrePrincipale(wx.Frame):
 
 
     def message(self, texte, lieu=0):
-        self.barre.SetStatusText(texte, lieu)
+        if lieu == 0:
+            self.barre.showMessage(texte)
+        else:
+            print 'Status bar not yet fully implemented...'
 
 
     def titre(self, texte=None):
         titre = NOMPROG
         if texte:
             titre += '-' + uu(texte)
-        self.SetTitle(titre)
+        self.setWindowTitle(titre)
 
 
     def executer_commande(self, commande, **kw):

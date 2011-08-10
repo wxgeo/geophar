@@ -431,16 +431,16 @@ class Statistiques(Panel_API_graphique):
 
     def creer_experience(self, event = None):
         win = ExperienceFrame(self)
-        win.Show(True)
+        win.show()
 
     def creer_lancer_des(self, event = None):
         win = LancerDes(self)
-        win.Show(True)
+        win.show()
 
 
     def creer_sondage(self, event = None):
         win = Sondage(self)
-        win.Show(True)
+        win.show()
 
 
 

@@ -93,10 +93,10 @@ class Help(wx.Frame):
 class Informations(wx.Dialog):
     def __init__(self, parent):
         wx.Dialog.__init__(self, parent, -1, u"Configuration systeme")
-        self.SetBackgroundColour(wx.WHITE)
+        self.setStyleSheet("background-color:white")
 
         panel = wx.Panel(self, -1)
-        panel.SetBackgroundColour(wx.WHITE)
+        panel.setStyleSheet("background-color:white")
 
         panelSizer = wx.BoxSizer(wx.VERTICAL)
 
@@ -148,10 +148,10 @@ class Informations(wx.Dialog):
 class About(wx.Dialog):
     def __init__(self, parent):
         wx.Dialog.__init__(self, parent, -1, u"A propos de WxGéométrie")
-        self.SetBackgroundColour(wx.WHITE)
+        self.setStyleSheet("background-color:white")
 
         panel = wx.Panel(self, -1)
-        panel.SetBackgroundColour(wx.WHITE)
+        panel.setStyleSheet("background-color:white")
 
         panelSizer = wx.BoxSizer(wx.VERTICAL)
 

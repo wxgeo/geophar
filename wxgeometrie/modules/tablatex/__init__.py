@@ -173,7 +173,7 @@ class TabLaTeX(Panel_simple):
 
     def activer(self):
         # Actions à effectuer lorsque l'onglet devient actif
-        self.entree.SetFocus()
+        self.entree.setFocus()
 
     def vers_presse_papier(self, event = None, texte = ""):
         Panel_simple.vers_presse_papier(texte)
@@ -194,11 +194,11 @@ class TabLaTeX(Panel_simple):
             self.code_tableau.SetValue(code_latex)
             if self._param_.copie_automatique:
                 self.vers_presse_papier(texte = code_latex)
-            self.entree.SetFocus()
+            self.entree.setFocus()
             self.message(u"Le code LaTeX a bien été généré.")
         except BaseException, erreur:
             self.message(u"Impossible de générer le code LaTeX. " + message(erreur))
-            self.entree.SetFocus()
+            self.entree.setFocus()
             if param.debug:
                 raise
 

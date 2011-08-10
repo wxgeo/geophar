@@ -41,7 +41,7 @@ class FenCode(MyMiniFrame):
         self.texte.AddText(contenu)
         self.texte.Bind(wx.EVT_CHAR, self.EvtChar)
 ##        self.texte.SetInsertionPointEnd()
-        self.texte.SetFocus()
+        self.texte.setFocus()
 
 
         tb = self.CreateToolBar( wx.TB_HORIZONTAL

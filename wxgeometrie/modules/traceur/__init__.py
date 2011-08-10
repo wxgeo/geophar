@@ -104,7 +104,7 @@ class Traceur(Panel_API_graphique):
 
     def activer(self):
         # Actions à effectuer lorsque l'onglet devient actif
-        self.equations[0].SetFocus()
+        self.equations[0].setFocus()
 
     def _changement_feuille(self):
         u"""Après tout changement de feuille."""
@@ -234,4 +234,4 @@ class Traceur(Panel_API_graphique):
 
     def suite(self, event = None):
         suite = suites.CreerSuite(self)
-        suite.Show(True)
+        suite.show()

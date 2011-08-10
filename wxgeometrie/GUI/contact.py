@@ -33,14 +33,14 @@ from ..pylib.bugs_report import rapporter
 class Contact(wx.Frame):
     def __init__(self, parent):
         wx.Frame.__init__(self, parent, -1, u"Contacter l'auteur", style = wx.FRAME_FLOAT_ON_PARENT|wx.CLIP_CHILDREN|wx.CLOSE_BOX|wx.CAPTION)
-        self.SetBackgroundColour(wx.WHITE)
+        self.setStyleSheet("background-color:white")
 
         self.parent = parent
 
         panel = wx.Panel(self, -1)
         italic = wx.Font(panel.GetFont().GetPointSize(), panel.GetFont().GetFamily(), wx.ITALIC, wx.NORMAL)
 #        bold_italic = wx.Font(panel.GetFont().GetPointSize(), panel.GetFont().GetFamily(), wx.ITALIC, wx.BOLD)
-        panel.SetBackgroundColour(wx.WHITE)
+        panel.setStyleSheet("background-color:white")
 
         panelSizer = wx.BoxSizer(wx.VERTICAL)
 
@@ -169,4 +169,4 @@ vous êtes invités à signaler tout problème rencontré.""")
         if event.success:
             self.Close()
         else:
-            self.Show()
+            self.show()

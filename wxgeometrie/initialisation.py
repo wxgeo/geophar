@@ -409,7 +409,7 @@ try:
                 except:
                     print(u"Warning: La session n'a pas pu être restaurée.")
                     print_error()
-            frame.Show()
+            frame.show()
             app.boucle()
             sorties.close()
         os.remove(path_lock)

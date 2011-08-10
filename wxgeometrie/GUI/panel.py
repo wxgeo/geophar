@@ -58,7 +58,7 @@ class Panel_simple(wx.Panel):
 
         self.module = module
         # wx.NamedColor ne peut pas être appelé avant que wx.App existe.
-        self.SetBackgroundColour(wx.WHITE)
+        self.setStyleSheet("background-color:white")
         self.parent = parent
         self.nom = self.__class__.__name__.lower()
         self.canvas = None
@@ -215,8 +215,8 @@ class Panel_API_graphique(Panel_simple):
 
         self.barre_outils = BarreOutils(self, couleur='white')
         self.console_geolib = ConsoleGeolib(self, couleur='white')
-        self.barre_outils.Show(self.param("afficher_barre_outils"))
-        self.console_geolib.Show(self.param("afficher_console_geolib"))
+        self.barre_outils.setVisible(self.param("afficher_barre_outils"))
+        self.console_geolib.setVisible(self.param("afficher_console_geolib"))
 
 ##        self.creer_feuille()
         self.canvas.initialiser()
@@ -473,7 +473,7 @@ class Panel_API_graphique(Panel_simple):
             else:
                 self._param_.afficher_barre_outils = not self.param("afficher_barre_outils")
             with self.canvas.geler_affichage(actualiser = True):
-                self.barre_outils.Show(self.param("afficher_barre_outils"))
+                self.barre_outils.setVisible(self.param("afficher_barre_outils"))
                 self.Fit()
         return self.param("afficher_barre_outils")
 
@@ -485,9 +485,9 @@ class Panel_API_graphique(Panel_simple):
             else:
                 self._param_.afficher_console_geolib = not self.param("afficher_console_geolib")
             with self.canvas.geler_affichage(actualiser = True):
-                self.console_geolib.Show(self.param("afficher_console_geolib"))
+                self.console_geolib.setVisible(self.param("afficher_console_geolib"))
                 if self.param("afficher_console_geolib"):
-                    self.console_geolib.ligne_commande.SetFocus()
+                    self.console_geolib.ligne_commande.setFocus()
                 self.Fit()
         return self.param("afficher_console_geolib")
 
@@ -496,4 +496,4 @@ class Panel_API_graphique(Panel_simple):
         u"Actions à effectuer lorsque l'onglet du module est sélectionné. À surclasser."
         if self.param("afficher_console_geolib"):
         #if gettattr(self._param_, "afficher_console_geolib", False):
-            self.console_geolib.SetFocus()
+            self.console_geolib.setFocus()

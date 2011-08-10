@@ -168,7 +168,7 @@ class Dialogue(wx.Dialog):
         self.sizer.Fit(self)
         self.CenterOnScreen()
         if self.objet:
-            self.champs['nom'].SetFocus()
+            self.champs['nom'].setFocus()
 
     def affiche(self):
         return self.ShowModal()
@@ -186,7 +186,7 @@ class Dialogue(wx.Dialog):
     def MiddleClicFunction(self, type, champ):
         u"Retourne une fonction qui sera executée lors d'un clic avec le bouton du milieu sur le champ 'champ'."
         def f(event, self = self, type = type, champ = champ):
-            champ.SetFocus()
+            champ.setFocus()
             liste = isinstance(type, list)
             if liste:
                 type = type[0]

@@ -431,7 +431,7 @@ class ProprietesAffichage(wx.Panel):
 
     def EvtLabelStyle(self, event):
         win = Proprietes(self.parent, [objet.etiquette for objet in self.objets if objet.etiquette is not None], True)
-        win.Show(True)
+        win.show()
 
 
     def EvtEpaisseur(self, event):

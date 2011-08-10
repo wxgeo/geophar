@@ -101,7 +101,7 @@ class DialogueAnimation(MyMiniFrame):
 
     def Propositions(self, event = None):
         u"Liste des noms de variables de la feuille actuelle."
-        self.var.SetFocus()
+        self.var.setFocus()
         liste_objets = self.feuille_actuelle.objets.lister(False, type = Variable)
         liste_objets.sort(key=attrgetter('nom')) # ordre alphabétique
         if not liste_objets:

@@ -43,7 +43,7 @@ class LigneCommande(wx.Panel):
         else:
             self.bouton = wx.Button(self, label = texte)
         self.bouton.Bind(wx.EVT_BUTTON, self.EvtButton)
-        self.bouton.Show(afficher_bouton)
+        self.bouton.setVisible(afficher_bouton)
 
         if legende is not None:
             sizer.Add(wx.StaticText(self, -1, legende), 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5)
@@ -58,7 +58,7 @@ class LigneCommande(wx.Panel):
     def initialiser(self):
         self.historique = []
         self.position = None
-        self.SetFocus()
+        self.setFocus()
         self.Clear()
 
     def GetValue(self):
@@ -68,7 +68,7 @@ class LigneCommande(wx.Panel):
         self.texte.SetValue(value)
 
     def SetFocus(self):
-        self.texte.SetFocus()
+        self.texte.setFocus()
 
     def Clear(self):
         self.texte.Clear()

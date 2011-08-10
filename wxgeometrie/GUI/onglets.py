@@ -24,7 +24,7 @@ from __future__ import with_statement
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os
-import wx
+from PyQt4.QtGui import QTabWidget
 import matplotlib.backend_bases as backend_bases
 
 from .inspecteur import FenCode
@@ -42,47 +42,39 @@ from ..param.options import options as param_options
 from .fenetre_options import FenetreOptions
 from .contact import Contact
 
-class Onglets(wx.Notebook):
-    def __init__(self, parent, id):
+class Onglets(QTabWidget):
+    def __init__(self, parent):
         self.parent = parent
-        wx.Notebook.__init__(self, parent, id, style=wx.NB_TOP)
-        self.SetBackgroundColour(wx.WHITE)
+        QTabWidget.__init__(self, parent)
+        self.setStyleSheet("background-color:white")
 
-        ###############################
-        # Creation de fonctions associees aux entrees du menu "Creer"
-        self.creer = {}
-        DG = dialogues_geometrie.__dict__
-        dialogues = [(nom[8:], DG[nom]) for nom in DG.keys() if nom.startswith("Dialogue")]
-        for dialogue in dialogues:
-            def f(event = None, self = self, dialogue = dialogue[1]):
-                self.creer_objet(dialogue)
-            self.creer[dialogue[0]] = f
-        ###############################
+#        ###############################
+#        # Creation de fonctions associees aux entrees du menu "Creer"
+#        self.creer = {}
+#        DG = dialogues_geometrie.__dict__
+#        dialogues = [(nom[8:], DG[nom]) for nom in DG.keys() if nom.startswith("Dialogue")]
+#        for dialogue in dialogues:
+#            def f(event = None, self = self, dialogue = dialogue[1]):
+#                self.creer_objet(dialogue)
+#            self.creer[dialogue[0]] = f
+#        ###############################
 
         self.gestionnaire_de_mises_a_jour = Gestionnaire_mises_a_jour(self)
 
         self._liste = [] # liste des onglets
 
         # Ajoute les differentes composantes :
-        self.actualiser_liste_onglets()
-##        for nom in param.modules:
-##            module = modules.importer_module(nom)
-##            if module is not None:
-##                panel = module._panel_(self)  # ex: panel = Geometre(self)
-##                setattr(self, nom, panel)       #     self.geometre = panel
-##                panel.menu = module._menu_(panel)   #     menu = GeometreMenuBar(panel)
-##                module._menu_(panel)   #     menu = GeometreMenuBar(panel)
-##                self.nouvel_onglet(panel)
+#        self.actualiser_liste_onglets()
 
 
         # adaptation du titre de l'application et du menu.
-        self.Bind(wx.EVT_NOTEBOOK_PAGE_CHANGED, self.changer, self)
-        import fenetre_options
-        self.Bind(fenetre_options.EVT_OPTIONS_MODIFIED, self.OnOptionsModified)
-        if self._liste:
-            # affiche le titre et le menu du 1er onglet
-            self.actualise_onglet(self._liste[0])
-            self._liste[0].activer()
+#        self.Bind(wx.EVT_NOTEBOOK_PAGE_CHANGED, self.changer, self)
+#        import fenetre_options
+#        self.Bind(fenetre_options.EVT_OPTIONS_MODIFIED, self.OnOptionsModified)
+#        if self._liste:
+#            # affiche le titre et le menu du 1er onglet
+#            self.actualise_onglet(self._liste[0])
+#            self._liste[0].activer()
 
 
     def OnOptionsModified(self, evt = None):
@@ -458,7 +450,7 @@ class Onglets(wx.Notebook):
 
             if objets:
                 win = Proprietes(self, objets)
-                win.Show(True)
+                win.show()
                 def fermeture(event, win = win):
                     win.Unbind(wx.EVT_CLOSE)
                     win.Close()
@@ -490,12 +482,12 @@ class Onglets(wx.Notebook):
     def Animer(self, event):
         d = DialogueAnimation(self)
         d.CenterOnParent(wx.BOTH)
-        d.Show(True)
+        d.show()
 
     def Histo(self, event):
         contenu = self.onglet_actuel.feuille_actuelle.sauvegarder()
         h = FenCode(self, u"Contenu interne de la feuille", contenu, self.executer_dans_feuille_courante)
-        h.Show(True)
+        h.show()
 
     def executer_dans_feuille_courante(self, instructions):
         self.onglet_actuel.creer_feuille()
@@ -503,15 +495,15 @@ class Onglets(wx.Notebook):
 
     def Proprietes(self, event):
         actuelle = self.onglet_actuel.feuille_actuelle # feuille courante
-        ProprietesFeuille(self, actuelle).Show()
+        ProprietesFeuille(self, actuelle).show()
 
     def Options(self, evt = None):
-        FenetreOptions(self, param_options).Show()
+        FenetreOptions(self, param_options).show()
 
 
     def Aide(self, event):
         aide = Help(self, path2("%/doc/help.htm"))
-        aide.Show(True)
+        aide.show()
 
     #~ def Verifier_version(self, event):
         #~ # from GUI.nouvelles_versions import verifier_version # à deplacer ?
@@ -536,7 +528,7 @@ class Onglets(wx.Notebook):
 
     def Contacter(self, event):
         formulaire = Contact(self)
-        formulaire.Show()
+        formulaire.show()
         #~ val = dialog.ShowModal()
         #~ if val == wx.ID_OK:
             #~ dialog.rapporter()

@@ -430,7 +430,7 @@ class WxCanvas(FigureCanvasWxAgg, Canvas):
     def OnMotion(self, event):
         #if self.FindFocus() in (self.parent, self.parent.parent, self.parent.parent.parent):
         if self.GetTopLevelParent().IsEnabled() and (event.LeftIsDown() or event.RightIsDown()):
-            self.SetFocus()
+            self.setFocus()
         if self.redetecter:
             self.detecter()
         actuelle = self.feuille_actuelle
@@ -581,7 +581,7 @@ class WxCanvas(FigureCanvasWxAgg, Canvas):
                             self.executer(u"%s.cacher()" %objet.nom)
                 elif choix == 2:
                     win = Proprietes(self, objets_dans_la_zone)
-                    win.Show(True)
+                    win.show()
                 elif choix == 3:
                     exporte()
 
@@ -599,7 +599,7 @@ class WxCanvas(FigureCanvasWxAgg, Canvas):
         self.detecter(event.GetPositionTuple())
         if self.HasCapture():
             self.ReleaseMouse()
-        self.SetFocus()
+        self.setFocus()
         if self.deplacable(self.select):
             x, y = self.select.coordonnees
             x1, y1 = self.coordonnees(event)
@@ -660,7 +660,7 @@ class WxCanvas(FigureCanvasWxAgg, Canvas):
                 menu.Append(wx.NewId(), u" \u2714 " + self.select.nom_complet)
                 menu.AppendSeparator()
             else:
-                menu.SetTitle(self.select.nom_complet)
+                menu.setWindowTitle(self.select.nom_complet)
             selections = [obj for obj in self.selections if obj is not self.select] # autres objets a proximite
             n = len(selections)
             ids = [wx.NewId() for i in xrange(n + 7)]
@@ -819,7 +819,7 @@ class WxCanvas(FigureCanvasWxAgg, Canvas):
             menu.Append(ids[n + 6], u"Propriétés")
             def proprietes(event, select = self.select):
                 win = Proprietes(self, [select])
-                win.Show(True)
+                win.show()
             menu.Bind(wx.EVT_MENU, proprietes, id = ids[n + 6])
 
             self.PopupMenu(menu)

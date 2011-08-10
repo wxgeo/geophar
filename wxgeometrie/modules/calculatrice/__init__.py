@@ -78,7 +78,7 @@ class CalculatriceMenuBar(MenuBar):
                 panel.entree.WriteText(")")
                 panel.entree.SetInsertionPoint(deb)
                 panel.entree.WriteText(nom + "(")
-                panel.entree.SetFocus()
+                panel.entree.setFocus()
                 if deb == fin:
                     final = fin + len(nom) + 1
                 else:
@@ -86,7 +86,7 @@ class CalculatriceMenuBar(MenuBar):
             else:
                 panel.entree.WriteText(nom)
                 final = fin + len(nom)
-            panel.entree.SetFocus()
+            panel.entree.setFocus()
             panel.entree.SetInsertionPoint(final)
             panel.entree.SetSelection(final, final)
         return f
@@ -172,7 +172,7 @@ class Calculatrice(Panel_simple):
                     else:
                         entree.WriteText(inserer[j])
                     n = entree.GetInsertionPoint()
-                    entree.SetFocus()
+                    entree.setFocus()
                     entree.SetInsertionPoint(n)
                     self.seconde = False
                     self.message("")
@@ -260,7 +260,7 @@ class Calculatrice(Panel_simple):
             self.options_box[i].SetValue(self.param(self.options[i][1]))
             def action(event, chaine = self.options[i][1], entree = self.entree, self = self):
                 self.param(chaine, not self.param(chaine))
-                entree.SetFocus()
+                entree.setFocus()
             self.options_box[i].Bind(wx.EVT_CHECKBOX, action)
             ligne.Add(wx.StaticText(self, -1, " " + self.options[i][0]), flag = wx.ALIGN_CENTER_VERTICAL)
             self.pave.Add(ligne)
@@ -293,7 +293,7 @@ class Calculatrice(Panel_simple):
 
     def activer(self):
         # Actions à effectuer lorsque l'onglet devient actif
-        self.entree.SetFocus()
+        self.entree.setFocus()
 
 
     def _sauvegarder(self, fgeo):
@@ -404,12 +404,12 @@ class Calculatrice(Panel_simple):
             self.message(u"Calcul effectué." + self.interprete.warning)
             self.entree.Clear()
             self.resultats.SetInsertionPoint(len(self.resultats.GetValue()))
-            self.resultats.SetFocus()
+            self.resultats.setFocus()
             self.resultats.ScrollLines(1)
-            self.entree.SetFocus()
+            self.entree.setFocus()
         except Exception:
             self.message(u"Calcul impossible.")
-            self.entree.SetFocus()
+            self.entree.setFocus()
             if param.debug:
                 raise
 
@@ -426,7 +426,7 @@ class Calculatrice(Panel_simple):
                     panel.entree.WriteText(")")
                     panel.entree.SetInsertionPoint(deb)
                     panel.entree.WriteText(nom + "(")
-                    panel.entree.SetFocus()
+                    panel.entree.setFocus()
                     if deb == fin:
                         final = fin + len(nom) + 1
                     else:
@@ -434,12 +434,12 @@ class Calculatrice(Panel_simple):
                 else:
                     panel.entree.WriteText(nom)
                     final = fin + len(nom)
-                panel.entree.SetFocus()
+                panel.entree.setFocus()
                 panel.entree.SetInsertionPoint(final)
                 panel.entree.SetSelection(final, final)
             return f
         menu = wx.Menu()
-        menu.SetTitle(u"Fonctions mathématiques")
+        menu.setWindowTitle(u"Fonctions mathématiques")
         debut = True
         for rubrique in __classement__:
             if not debut:
@@ -507,4 +507,4 @@ class Calculatrice(Panel_simple):
     def EtatInterne(self, event):
         contenu = self.interprete.save_state()
         h = FenCode(self, u"État interne de l'inteprète", contenu, self.interprete.load_state)
-        h.Show(True)
+        h.show()

@@ -244,7 +244,7 @@ omega
             self.info_proprietes(u'Aucun sommet.')
             return
         win = Proprietes(self, objets)
-        win.Show(True)
+        win.show()
 
 
 
@@ -254,7 +254,7 @@ omega
             self.info_proprietes(u'Aucune arête.')
             return
         win = Proprietes(self, objets)
-        win.Show(True)
+        win.show()
 
 
     def proprietes_titres(self, event = None):
@@ -263,7 +263,7 @@ omega
             self.info_proprietes(u'Aucun titre.')
             return
         win = Proprietes(self, objets)
-        win.Show(True)
+        win.show()
 
 
     def _affiche(self):

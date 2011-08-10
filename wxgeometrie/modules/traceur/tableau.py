@@ -112,6 +112,6 @@ if __name__ == '__main__':
     import sys 
     app = wx.PySimpleApp() 
     frame = TableauValeurs(None) 
-    frame.Show(True) 
+    frame.show() 
     app.MainLoop() 
 #--------------------------------------------------------------------------- 

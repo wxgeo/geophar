@@ -22,22 +22,21 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-import wx
+from PyQt4.QtGui import QApplication
 
 
-class App(wx.PySimpleApp):
+class App(QApplication):
+    def __init__(self, args=[], **kw):
+        QApplication.__init__(self, args)
+
     def boucle(self):
-        self.MainLoop()
+        self.exec_()
 
     def nom(self, nom=''):
-        self.SetAppName(nom)
+        self.setApplicationName(nom)
 
     def vers_presse_papier(self, texte):
-        clipBoard=wx.TheClipboard
-        if clipBoard.Open():
-            clipBoard.AddData(wx.TextDataObject(texte))
-            clipBoard.Close()
-            return True
-        return False
+        self.clipboard().setText(texte)
+        return True
 
 app = App()
