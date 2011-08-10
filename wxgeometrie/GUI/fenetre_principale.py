@@ -79,7 +79,7 @@ class FenetrePrincipale(wx.Frame):
         self.ligne_commande.Show(param.ligne_commande)
 
         # Creation des onglets et de leur contenu
-        self.onglets = Onglets(self, -1)
+        self.onglets = Onglets(self)
 
         self.__sizer_principal = wx.BoxSizer(wx.VERTICAL)
         self.__sizer_principal.Add(self.ligne_commande, 0, wx.LEFT, 5)

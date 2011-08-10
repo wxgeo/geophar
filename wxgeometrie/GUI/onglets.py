@@ -43,9 +43,9 @@ from .fenetre_options import FenetreOptions
 from .contact import Contact
 
 class Onglets(wx.Notebook):
-    def __init__(self, parent, id):
+    def __init__(self, parent):
         self.parent = parent
-        wx.Notebook.__init__(self, parent, id, style=wx.NB_TOP)
+        wx.Notebook.__init__(self, parent)
         self.SetBackgroundColour(wx.WHITE)
 
         ###############################
@@ -65,15 +65,6 @@ class Onglets(wx.Notebook):
 
         # Ajoute les differentes composantes :
         self.actualiser_liste_onglets()
-##        for nom in param.modules:
-##            module = modules.importer_module(nom)
-##            if module is not None:
-##                panel = module._panel_(self)  # ex: panel = Geometre(self)
-##                setattr(self, nom, panel)       #     self.geometre = panel
-##                panel.menu = module._menu_(panel)   #     menu = GeometreMenuBar(panel)
-##                module._menu_(panel)   #     menu = GeometreMenuBar(panel)
-##                self.nouvel_onglet(panel)
-
 
         # adaptation du titre de l'application et du menu.
         self.Bind(wx.EVT_NOTEBOOK_PAGE_CHANGED, self.changer, self)
