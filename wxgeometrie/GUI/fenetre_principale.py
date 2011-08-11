@@ -26,7 +26,7 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 import sys, os, thread, traceback
 
 from PyQt4.QtGui import (QMainWindow, QApplication, QPlainTextEdit, QIcon,
-                        QLabel)
+                        QLabel, QWidget, QVBoxLayout, QMessageBox)
 from PyQt4.QtCore import QSize
 
 from ..pylib import uu, print_error, path2, debug, warning
@@ -69,7 +69,6 @@ class FenetrePrincipale(QMainWindow):
     def __init__(self, app, fichier_log=None):
         QMainWindow.__init__(self, None)
         self.setWindowTitle(NOMPROG)
-
         self.setStyleSheet("background-color:white")
 
         self.application = app # pour acceder a l'application en interne
@@ -101,6 +100,12 @@ class FenetrePrincipale(QMainWindow):
 
 #        # Creation des onglets et de leur contenu
         self.onglets = Onglets(self)
+
+        self.mainWidget=QWidget(self) # dummy widget to contain the
+                                      # layout manager
+        self.setCentralWidget(self.mainWidget)
+        self.mainLayout = QVBoxLayout(self.mainWidget)
+        self.mainLayout.addWidget(self.onglets)
 
 #        self.__sizer_principal = wx.BoxSizer(wx.VERTICAL)
 #        self.__sizer_principal.Add(self.ligne_commande, 0, wx.LEFT, 5)
@@ -161,7 +166,8 @@ class FenetrePrincipale(QMainWindow):
         if lieu == 0:
             self.barre.showMessage(texte)
         else:
-            print 'Status bar not yet fully implemented...'
+            assert lieu == 1
+            self.barre_dte.setText(texte)
 
 
     def titre(self, texte=None):
@@ -182,52 +188,51 @@ class FenetrePrincipale(QMainWindow):
                 raise
 
 
-    def OnClose(self, event):
+    def closeEvent(self, event):
         self.closing = True
         if not param.fermeture_instantanee: # pour des tests rapides
             try:
                 if param.confirmer_quitter:
                     panel = self.onglets.onglet_actuel
-                    if hasattr(panel, u"canvas") and hasattr(panel.canvas, u"Freeze"):
-                        panel.canvas.Freeze()
-                    dlg = wx.MessageDialog(self, u'Voulez-vous quitter %s ?' %NOMPROG,
-                                           u'Quitter %s ?' %NOMPROG,
-                                           wx.YES_NO | wx.ICON_QUESTION)
-                    reponse = dlg.ShowModal()
-                    if hasattr(panel, u"canvas") and hasattr(panel.canvas, u"Thaw"):
-                        panel.canvas.Thaw()
-                    dlg.Destroy()
-                    if reponse != wx.ID_YES:
+                    if hasattr(panel, 'canvas'):
+                        panel.canvas.setUpdatesEnabled(False)
+                    reponse = QMessageBox.question(self, u'Quitter %s ?' %NOMPROG,
+                                               u'Voulez-vous quitter %s ?' %NOMPROG,
+                                               QMessageBox.Yes | QMessageBox.No)
+                    if hasattr(panel, 'canvas'):
+                        panel.canvas.setUpdatesEnabled(True)
+                    if reponse != QMessageBox.Yes:
                         self.closing = False
+                        event.ignore()
                         return
 
                 self.gestion.sauver_preferences()
                 self.gestion.sauver_session()
 
-                for onglet in self.onglets:
-                    try:
-                        if isinstance(onglet, Panel_API_graphique):
-                            if param.historique_log:
-                                onglet.log.archiver()
-                            onglet.fermer_feuilles()
-                    except:
-                        #print_error()
-                        debug(u"Fermeture incorrecte de l'onglet : ", uu(str(onglet)))
-                        raise
+#                for onglet in self.onglets:
+#                    try:
+#                        if isinstance(onglet, Panel_API_graphique):
+#                            if param.historique_log:
+#                                onglet.log.archiver()
+#                            onglet.fermer_feuilles()
+#                    except:
+#                        #print_error()
+#                        debug(u"Fermeture incorrecte de l'onglet : ", uu(str(onglet)))
+#                        raise
 
             except Exception:
                 try:
                     print_error()
-                    wx.lib.dialogs.ScrolledMessageDialog(self, traceback.format_exc(), u"Erreur lors de la fermeture du programme").ShowModal()
+                    QMessageBox.warning(self, u"Erreur lors de la fermeture du programme", traceback.format_exc())
                 except UnicodeError:
-                    wx.lib.dialogs.ScrolledMessageDialog(self, "Impossible d'afficher l'erreur.", u"Erreur lors de la fermeture du programme").ShowModal()
+                    MessageBox.warning(self, u"Erreur lors de la fermeture du programme", "Impossible d'afficher l'erreur.")
         sys.stdout = sys.__stdout__
         sys.stderr = sys.__stderr__
         if hasattr(self, "fenetre_sortie"):
             self.fenetre_sortie.close()
-        # Si le premier onglet n'est pas actif au moment de quitter, cela produit une "Segmentation fault" sous Linux.
-        # Quant à savoir pourquoi...
-        if self.onglets.GetRowCount():
-            self.onglets.ChangeSelection(0)
+#        # Si le premier onglet n'est pas actif au moment de quitter, cela produit une "Segmentation fault" sous Linux.
+#        # Quant à savoir pourquoi...
+#        if self.onglets.GetRowCount():
+#            self.onglets.ChangeSelection(0)
         print "On ferme !"
-        event.Skip()
+#        event.Skip()

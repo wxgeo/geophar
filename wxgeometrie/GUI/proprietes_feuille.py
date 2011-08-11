@@ -138,15 +138,15 @@ class ProprietesStatistiques(wx.Panel):
 
 
 
-class OngletsProprietesFeuille(wx.Notebook):
+class OngletsProprietesFeuille(QTabWidget):
     def __init__(self, parent):
         self.parent = parent
         self.feuille = parent.feuille
-        wx.Notebook.__init__(self, parent)
+        QTabWidget.__init__(self, parent)
         self.description = ProprietesDescription(self)
-        self.AddPage(self.description, u"Description")
+        self.addTab(self.description, u"Description")
         self.statistiques = ProprietesStatistiques(self)
-        self.AddPage(self.statistiques, u"Statistiques")
+        self.addTab(self.statistiques, u"Statistiques")
 
 
 

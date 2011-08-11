@@ -88,24 +88,30 @@ class Onglets(QTabWidget):
         if i != j:
             panel = self._liste.pop(i)
             self._liste.insert(j, panel)
-            self.RemovePage(i)
-            self.InsertPage(j, panel, panel.__titre__)
+            self.removeTab(i)
+            self.insertTab(j, panel, panel.__titre__)
 
     def nouvel_onglet(self, panel, i = None):
         u"Ajouter un nouvel onglet à la position 'i'."
         if i is None:
             self._liste.append(panel)
-            self.AddPage(panel, panel.__titre__)
+            self.addTab(panel, panel.__titre__)
         else:
             self._liste.insert(i, panel)
-            self.InsertPage(i, panel, panel.__titre__)
+            self.insertTab(i, panel, panel.__titre__)
         setattr(self, panel.module._nom_, panel)
 
     def fermer_onglet(self, i):
         u"Fermer l'onglet situé en position 'i'."
         panel = self._liste.pop(i)
         delattr(self, panel.module._nom_)
-        self.DeletePage(i)
+        self.deleteTab(i)
+
+    def deleteTab(self, i):
+        tab = self.widget(i)
+        self.removeTab(i)
+        tab.close()
+        tab.deleteLater()
 
     def changer(self, event):
         event.Skip()
@@ -114,7 +120,6 @@ class Onglets(QTabWidget):
         self.actualise_onglet(onglet)
         # Actions personnalisées lors de la sélection
         wx.CallLater(10, onglet.activer)
-
 
 
     def actualise_onglet(self, onglet):
@@ -135,10 +140,10 @@ class Onglets(QTabWidget):
     @property
     def onglet_actuel(self):
         if self._liste:
-            return self._liste[self.GetSelection()]
+            return self._liste[self.currentIndex()]
 
     def onglet_suivant(self, event):
-        self.AdvanceSelection()
+        self.setCurrentIndex((self.currentIndex() + 1) % self.count())
 
     def __nonzero__(self):
         return bool(self._liste)
@@ -152,7 +157,7 @@ class Onglets(QTabWidget):
             onglet = self._liste.index(getattr(self, onglet.lower()))
         elif type(onglet) not in (int, long):
             onglet = self._liste.index(onglet)
-        self.SetSelection(onglet)
+        self.setCurrentIndex(onglet)
 
 
     def actualiser_liste_onglets(self,  evt = None):
@@ -178,7 +183,7 @@ class Onglets(QTabWidget):
                     # Mettre à jour la position
                     pos += 1
         # Supprimer tous les onglets qui sont situés après pos
-        while pos < self.GetPageCount():
+        while pos < self.count():
             self.fermer_onglet(pos)
 
 

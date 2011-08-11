@@ -590,17 +590,17 @@ class ProprietesAvance(wx.Panel):
 
 
 
-class OngletsProprietes(wx.Notebook):
+class OngletsProprietes(QTabWidget):
     def __init__(self, parent):
         self.parent = parent
         self.objets = parent.objets
-        wx.Notebook.__init__(self, parent)
+        QTabWidget.__init__(self, parent)
         self.affichage = ProprietesAffichage(self)
-        self.AddPage(self.affichage, u"Affichage")
+        self.addTab(self.affichage, u"Affichage")
         self.infos = ProprietesInfos(self)
-        self.AddPage(self.infos, u"Informations")
+        self.addTab(self.infos, u"Informations")
         self.avance = ProprietesAvance(self)
-        self.AddPage(self.avance, u"Avancé")
+        self.addTab(self.avance, u"Avancé")
 
 
 

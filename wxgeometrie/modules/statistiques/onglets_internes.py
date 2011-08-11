@@ -229,21 +229,21 @@ class Autres_quantile(CstmPanel):
         self.finaliser()
 
 
-class OngletsStatistiques(wx.Notebook):
+class OngletsStatistiques(QTabWidget):
     def __init__(self, parent):
         self.parent = parent
-        wx.Notebook.__init__(self, parent, style=wx.NB_TOP)
+        QTabWidget.__init__(self, parent, style=wx.NB_TOP)
         self.donnees = Donnees(self)
         self.legende = Legende(self)
         self.graduation = Graduation(self)
         self.autres = Autres(self)
         self.autresq = Autres_quantile(self)
 
-        self.AddPage(self.donnees, u'Données')
-        self.AddPage(self.legende, u'Légende')
-        self.AddPage(self.graduation, u'Graduation')
-        self.AddPage(self.autres, u'Réglages')
-        self.AddPage(self.autresq, u'Quantiles')
+        self.addTab(self.donnees, u'Données')
+        self.addTab(self.legende, u'Légende')
+        self.addTab(self.graduation, u'Graduation')
+        self.addTab(self.autres, u'Réglages')
+        self.addTab(self.autresq, u'Quantiles')
 
 
     def enable(self, x, y, a, classes=False, legende_x=False):

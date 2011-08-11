@@ -23,11 +23,17 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 from PyQt4.QtGui import QApplication
+from PyQt4.QtCore import QLocale, QTranslator, QLibraryInfo
 
 
 class App(QApplication):
     def __init__(self, args=[], **kw):
         QApplication.__init__(self, args)
+        locale = QLocale.system().name()
+        translator=QTranslator ()
+        translator.load("qt_" + locale,
+                      QLibraryInfo.location(QLibraryInfo.TranslationsPath))
+        self.installTranslator(translator)
 
     def boucle(self):
         self.exec_()

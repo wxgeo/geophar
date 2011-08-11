@@ -32,13 +32,13 @@ class FenetreOptions(wx.Frame):
     def __init__(self, parent, options):
         wx.Frame.__init__(self, parent, -1, options.titre, style = wx.DEFAULT_FRAME_STYLE|wx.FRAME_FLOAT_ON_PARENT)
         self.parent = parent
-        self.onglets = wx.Notebook(self, -1, style=wx.NB_TOP)
+        self.onglets = QTabWidget(self, -1, style=wx.NB_TOP)
         dimensions_onglets = []
         self.widgets = {}
         for theme in options:
             panel = wx.Panel(self.onglets)
             sizer = wx.BoxSizer(wx.VERTICAL)
-            self.onglets.AddPage(panel, theme.titre)
+            self.onglets.addTab(panel, theme.titre)
             for elt in theme:
                 if isinstance(elt, Section):
                     box = wx.StaticBox(panel, -1, elt.titre)
