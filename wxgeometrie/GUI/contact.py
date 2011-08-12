@@ -24,7 +24,7 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 import thread, sys
 import wx
-from wxlib import TransmitEvent, EVT_TRANSMIT
+#from wxlib import TransmitEvent, EVT_TRANSMIT
 
 from .. import param
 from ..pylib import path2

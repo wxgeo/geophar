@@ -23,6 +23,7 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import wx
+from PyQt4.QtGui import QWidget, QTabWidget
 
 from .wxlib import MyMiniFrame
 from ..pylib import uu
@@ -34,8 +35,6 @@ class ProprietesDescription(QWidget):
         self.feuille = parent.feuille
         self.sizer = gbs = wx.GridBagSizer(10, 10)
         self.infos = {}
-
-
 
         gbs.Add(wx.StaticText(self, -1, u"Titre : "), (1, 1))
         self.titre = wx.TextCtrl(self, value = self.feuille.infos("titre"), size=wx.Size(300, -1))

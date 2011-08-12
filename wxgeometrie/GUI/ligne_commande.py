@@ -22,7 +22,7 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-import wx
+from PyQt4.QtGui import QWidget
 
 
 class LigneCommande(QWidget):
@@ -32,11 +32,13 @@ class LigneCommande(QWidget):
                 legende = None):
         self.parent = parent
         self.action = action
-        QWidget.__init__(self, parent, style = wx.TAB_TRAVERSAL|wx.WANTS_CHARS)
-        self.SetBackgroundColour(self.parent.GetBackgroundColour())
+        QWidget.__init__(self, parent)
+#        self.SetBackgroundColour(self.parent.GetBackgroundColour())
 
         sizer = wx.BoxSizer(wx.HORIZONTAL)
-        self.texte = wx.TextCtrl(self, size = wx.Size(longueur, -1), style = wx.TE_PROCESS_ENTER)
+        self.texte = QLineEdit(self)
+        #TODO: implement longueur
+        self.texte.returnPressed.connect(self.EvtButton)
         self.texte.Bind(wx.EVT_KEY_UP, self.EvtChar)
         if texte is None:
             self.bouton = wx.Button(self, wx.ID_OK)
@@ -59,7 +61,7 @@ class LigneCommande(QWidget):
         self.historique = []
         self.position = None
         self.setFocus()
-        self.Clear()
+        self.clear()
 
     def GetValue(self):
         return self.texte.GetValue()
@@ -70,8 +72,8 @@ class LigneCommande(QWidget):
     def SetFocus(self):
         self.texte.setFocus()
 
-    def Clear(self):
-        self.texte.Clear()
+    def clear(self):
+        self.texte.clear()
 
     def GetSelection(self):
         return self.texte.GetSelection()
@@ -82,14 +84,14 @@ class LigneCommande(QWidget):
     def SetInsertionPoint(self, num):
         return self.texte.SetInsertionPoint(num)
 
-    def WriteText(self, texte):
-        self.texte.WriteText(texte)
+    def setText(self, texte):
+        self.texte.setText(texte)
 
     def SetSelection(self, deb, fin):
         self.texte.SetSelection(deb, fin)
 
-    def SetToolTip(self, tip):
-        self.texte.SetToolTip(tip)
+    def setToolTip(self, tip):
+        self.texte.setToolTip(tip)
 
     def EvtButton(self, event):
         commande = self.GetValue()
@@ -105,14 +107,14 @@ class LigneCommande(QWidget):
         self.action(commande, **kw)
 
 
-    def EvtChar(self, event):
-        code = event.GetKeyCode()
-        commande = self.GetValue()
+    def keyPressEvent(self, event):
+        key = event.key()
+        commande = self.text()
 
-        if code in (wx.WXK_RETURN, wx.WXK_NUMPAD_ENTER):
-            self.EvtButton(event)
+#        if code in (wx.WXK_RETURN, wx.WXK_NUMPAD_ENTER):
+#            self.EvtButton(event)
 
-        elif code == wx.WXK_UP:
+        if key == Qt.Key_Up:
             # On remonte dans l'historique (-> entrées plus anciennes)
             if self.position is None:
                 # cas d'une commande en cours d'édition :
@@ -125,21 +127,21 @@ class LigneCommande(QWidget):
                     self.position = len(self.historique)
             if self.position > 0:
                 self.position -= 1
-                self.texte.SetValue(self.historique[self.position])
+                self.texte.setText(self.historique[self.position])
 
-        elif code == wx.WXK_DOWN:
+        elif key == Qt.Key_Down:
             # On redescend dans l'historique (-> entrées plus récentes)
             if self.position is None or self.position == len(self.historique) - 1:
                 if commande and commande != self.historique[-1]:
                     self.historique.append(commande)
-                self.texte.Clear()
+                self.texte.clear()
                 self.position = len(self.historique)
             elif self.position < len(self.historique) - 1:
                 self.position += 1
                 self.texte.SetValue(self.historique[self.position])
         else:
             self.position = None
-            event.Skip()
+#            event.Skip()
 
     def Command(*args, **kwargs):
         pass

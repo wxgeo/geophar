@@ -23,7 +23,8 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import math
-import wx
+
+from PyQt4.QtGui import QWidget, QToolButton
 
 from .wxlib import png
 from ..pylib import is_in
@@ -44,7 +45,9 @@ from ..geolib.intersections import Intersection_cercles, Intersection_droite_cer
 from ..geolib.objet import Objet
 from .. import param
 
-class MultiButton(wx.BitmapButton):
+
+
+class MultiButton(QToolButton):
     def __init__(self, parent, raccourci, selectionnable, *liste):
         self.parent = parent
         self.raccourci = raccourci

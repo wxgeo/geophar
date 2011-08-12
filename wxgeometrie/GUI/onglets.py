@@ -31,7 +31,7 @@ import matplotlib.backend_bases as backend_bases
 from .aide import Help, About, Informations
 from .animer import DialogueAnimation
 from .contact import Contact
-from .dialogues_geometrie import EditerObjet, SupprimerObjet
+#from .dialogues_geometrie import EditerObjet, SupprimerObjet
 from .fenetre_options import FenetreOptions
 from .inspecteur import FenCode
 from .nouvelles_versions import Gestionnaire_mises_a_jour
@@ -87,7 +87,7 @@ class Onglets(QTabWidget):
 
     def deplacer_onglet(self, i, j):
         u"Déplacer un onglet de la position 'i' à la position 'j'."
-         if i != j:
+        if i != j:
             panel = self._liste.pop(i)
             self._liste.insert(j, panel)
             self.removeTab(i)

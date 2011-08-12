@@ -27,7 +27,7 @@ from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg
 
 from ..API.canvas import Canvas
 from .proprietes_objets import Proprietes
-from .wxlib import PseudoEvent, BusyCursor
+from .wxlib import BusyCursor#, PseudoEvent
 from .. import param
 from ..pylib import print_error, debug
 from ..geolib.textes import Texte, Texte_generique

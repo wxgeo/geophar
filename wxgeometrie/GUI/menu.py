@@ -26,7 +26,7 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 from operator import attrgetter
 from functools import partial
 
-from PyQt4.QtGui import QMenu, QMenuBar
+from PyQt4.QtGui import QMenu, QMenuBar, QKeySequence
 
 
 

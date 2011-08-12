@@ -22,13 +22,13 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 import thread, urllib, webbrowser
 import wx
-from wxlib import TransmitEvent, EVT_TRANSMIT
+#from wxlib import TransmitEvent, EVT_TRANSMIT
 
 from ..pylib import print_error
 from .. import param
 
 
-class Progression:
+class Progression(object):
     def __init__(self, parent):
         self.parent = parent
         self.initialiser = True
@@ -81,7 +81,7 @@ class Gestionnaire_mises_a_jour(wx.EvtHandler):
         self.parent = parent
         self.derniere_version = None
         wx.EvtHandler.__init__(self)
-        self.Bind(EVT_TRANSMIT, self.onTransmit)
+        #self.Bind(EVT_TRANSMIT, self.onTransmit)
 
 
 
