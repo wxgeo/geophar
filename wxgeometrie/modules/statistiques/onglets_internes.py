@@ -30,9 +30,9 @@ from __future__ import with_statement
 import wx
 
 
-class CstmPanel(wx.Panel):
+class CstmPanel(QWidget):
     def __init__(self, parent):
-        wx.Panel.__init__(self, parent)
+        QWidget.__init__(self, parent)
         self.parent = parent
         self.main = self.parent.parent
         self.setStyleSheet("background-color:white")
@@ -40,7 +40,7 @@ class CstmPanel(wx.Panel):
 
     def finaliser(self):
         self.SetSizer(self.main_sizer)
-        self.Fit()
+        self.adjustSize()
 
     def add(self, item):
         self.main_sizer.Add(item, 0, wx.ALL, 5)

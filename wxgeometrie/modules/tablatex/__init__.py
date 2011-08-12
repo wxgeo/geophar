@@ -134,7 +134,7 @@ class TabLaTeX(Panel_simple):
         self.sizer.Add(self.cb, 0, wx.ALL, 5)
 
         self.SetSizer(self.sizer)
-        self.Fit()
+        self.adjustSize()
 
 
 ##        self.entree.Bind(wx.EVT_KEY_UP, self.EvtChar)

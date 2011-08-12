@@ -195,7 +195,7 @@ class Dialogue(wx.Dialog):
             if not liste_objets:
                 return
             ids = [wx.NewId() for obj in liste_objets]
-            menu = wx.Menu()
+            menu = QMenu()
 
             for i in xrange(len(liste_objets)):
                 menu.Append(ids[i], liste_objets[i].nom_complet)

@@ -279,7 +279,7 @@ class Calculatrice(Panel_simple):
         self.sizer.Add(self.entree, 0, wx.ALL, 5)
         self.sizer.Add(self.corps, 0, wx.ALL, 5)
         self.SetSizer(self.sizer)
-        self.Fit()
+        self.adjustSize()
 
         # historique des calculs
 ##        self.entree.Bind(wx.EVT_KEY_UP, self.EvtChar)
@@ -438,12 +438,12 @@ class Calculatrice(Panel_simple):
                 panel.entree.SetInsertionPoint(final)
                 panel.entree.SetSelection(final, final)
             return f
-        menu = wx.Menu()
+        menu = QMenu()
         menu.setWindowTitle(u"Fonctions mathématiques")
         debut = True
         for rubrique in __classement__:
             if not debut:
-                menu.AppendSeparator()
+                menu.addSeparator()
             debut = False
             for titre, nom, doc in __classement__[rubrique]:
                 i = wx.NewId()
@@ -458,7 +458,7 @@ class Calculatrice(Panel_simple):
 
 
     def EvtMenuVisualisation(self, event):
-        menu = wx.Menu()
+        menu = QMenu()
         i = wx.NewId()
         menu.Append(i, "Copier LaTeX",  "Copier le code LaTeX dans le presse-papier.")
         menu.Bind(wx.EVT_MENU, self.copier_latex, id=i)

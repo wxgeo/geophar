@@ -209,7 +209,7 @@ class Surfaces(Panel_API_graphique):
         self.sizer.Add(self.canvas, 1, wx.LEFT | wx.TOP | wx.GROW)
         self.sizer.Add(self.entrees, 0, wx.ALL, 5)
         self.SetSizer(self.sizer)
-        self.Fit()
+        self.adjustSize()
         self.ax3d = MyAxes3D(self.canvas.figure)
         self.plt = self.canvas.figure.axes.append(self.ax3d)
         self.initialisation_terminee = True

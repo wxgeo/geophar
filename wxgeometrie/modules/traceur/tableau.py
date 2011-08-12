@@ -8,7 +8,7 @@ import  wx.grid as  gridlib
 
 class EditorsAndRenderersGrid(gridlib.Grid): 
     def __init__(self, parent): 
-        gridlib.Grid.__init__(self, parent, -1) 
+        gridlib.Grid.__init__(self, parent,) 
         self.SetDefaultCellAlignment(wx.ALIGN_CENTRE, wx.ALIGN_CENTRE) 
         self.CreateGrid(8, 2)
         self.EnableDragRowSize(False)
@@ -82,9 +82,9 @@ class EditorsAndRenderersGrid(gridlib.Grid):
 #--------------------------------------------------------------------------- 
 class TableauValeurs(wx.MiniFrame): 
     def __init__(self, parent): 
-        wx.MiniFrame.__init__(self, parent, -1, "Tableau de valeurs", style=wx.DEFAULT_FRAME_STYLE | wx.TINY_CAPTION_HORIZ, size=(250,300)) 
+        wx.MiniFrame.__init__(self, parent, "Tableau de valeurs", style=wx.DEFAULT_FRAME_STYLE | wx.TINY_CAPTION_HORIZ, size=(250,300)) 
         self.parent = parent
-        p = self.panel = wx.Panel(self, -1)
+        p = self.panel = QWidget(self)
 
         sizer = wx.BoxSizer(wx.VERTICAL)
         barre = wx.BoxSizer(wx.HORIZONTAL)

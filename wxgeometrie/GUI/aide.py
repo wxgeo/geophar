@@ -36,7 +36,7 @@ from .app import app
 
 class Help(wx.Frame):
     def __init__(self, parent, path):
-        wx.Frame.__init__(self, parent, -1, size=wx.Size(700,610))
+        wx.Frame.__init__(self, parent, size=wx.Size(700,610))
 
         self.path = path
 
@@ -92,10 +92,10 @@ class Help(wx.Frame):
 
 class Informations(wx.Dialog):
     def __init__(self, parent):
-        wx.Dialog.__init__(self, parent, -1, u"Configuration systeme")
+        wx.Dialog.__init__(self, parent, u"Configuration systeme")
         self.setStyleSheet("background-color:white")
 
-        panel = wx.Panel(self, -1)
+        panel = QWidget(self)
         panel.setStyleSheet("background-color:white")
 
         panelSizer = wx.BoxSizer(wx.VERTICAL)
@@ -147,10 +147,10 @@ class Informations(wx.Dialog):
 
 class About(wx.Dialog):
     def __init__(self, parent):
-        wx.Dialog.__init__(self, parent, -1, u"A propos de WxGéométrie")
+        wx.Dialog.__init__(self, parent, u"A propos de WxGéométrie")
         self.setStyleSheet("background-color:white")
 
-        panel = wx.Panel(self, -1)
+        panel = QWidget(self)
         panel.setStyleSheet("background-color:white")
 
         panelSizer = wx.BoxSizer(wx.VERTICAL)

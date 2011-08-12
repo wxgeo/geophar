@@ -34,9 +34,9 @@ from ..pylib import print_error, debug, advanced_split
 from ..geolib.constantes import NOM, FORMULE, TEXTE, RIEN
 from ..geolib.routines import nice_display
 
-class ProprietesAffichage(wx.Panel):
+class ProprietesAffichage(QWidget):
     def __init__(self, parent):
-        wx.Panel.__init__(self, parent)
+        QWidget.__init__(self, parent)
         self.parent = parent
         self.panel = self.parent.parent.panel
         self.canvas = self.panel.canvas
@@ -474,9 +474,9 @@ class UpdatableTextCtrl(wx.TextCtrl):
         self.SetValue(self.formater(getattr(self.parent.objet, self.attribut)))
 
 
-class ProprietesInfos(wx.Panel):
+class ProprietesInfos(QWidget):
     def __init__(self, parent):
-        wx.Panel.__init__(self, parent)
+        QWidget.__init__(self, parent)
         self.parent = parent
         self.objets = parent.objets
         self.sizer = wx.BoxSizer(wx.VERTICAL)
@@ -532,9 +532,9 @@ class ProprietesInfos(wx.Panel):
 
 
 
-class ProprietesAvance(wx.Panel):
+class ProprietesAvance(QWidget):
     def __init__(self, parent):
-        wx.Panel.__init__(self, parent)
+        QWidget.__init__(self, parent)
         self.parent = parent
         self.objets = parent.objets
         self.panel = self.parent.parent.panel

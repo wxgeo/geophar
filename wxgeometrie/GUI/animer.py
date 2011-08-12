@@ -35,7 +35,7 @@ class DialogueAnimation(MyMiniFrame):
         self.SetExtraStyle(wx.WS_EX_BLOCK_EVENTS )
         self.parent = parent
         self.feuille_actuelle = self.parent.onglet_actuel.feuille_actuelle
-        p = self.panel = wx.Panel(self, -1)
+        p = self.panel = QWidget(self)
 
         self.sizer = sizer = wx.BoxSizer(wx.VERTICAL)
 
@@ -107,7 +107,7 @@ class DialogueAnimation(MyMiniFrame):
         if not liste_objets:
             return
         ids = [wx.NewId() for obj in liste_objets]
-        menu = wx.Menu()
+        menu = QMenu()
         for i in xrange(len(liste_objets)):
             menu.Append(ids[i], liste_objets[i].nom_complet)
             def select(event, nom = liste_objets[i].nom, champ = self.var):

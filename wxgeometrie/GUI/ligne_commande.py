@@ -25,14 +25,14 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 import wx
 
 
-class LigneCommande(wx.Panel):
+class LigneCommande(QWidget):
     u"Un TextCtrl muni d'un historique et associé à un bouton pour valider."
     def __init__(self, parent, longueur = 500, texte = None,
                 action = (lambda *args, **kw: True), afficher_bouton = True,
                 legende = None):
         self.parent = parent
         self.action = action
-        wx.Panel.__init__(self, parent, -1, style = wx.TAB_TRAVERSAL|wx.WANTS_CHARS)
+        QWidget.__init__(self, parent, style = wx.TAB_TRAVERSAL|wx.WANTS_CHARS)
         self.SetBackgroundColour(self.parent.GetBackgroundColour())
 
         sizer = wx.BoxSizer(wx.HORIZONTAL)
@@ -50,7 +50,7 @@ class LigneCommande(wx.Panel):
         sizer.Add(self.texte, 1, wx.ALL|wx.ALIGN_CENTER_VERTICAL|wx.EXPAND, 5)
         sizer.Add(self.bouton, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5)
         self.SetSizer(sizer)
-        self.Fit()
+        self.adjustSize()
 
         self.initialiser()
 

@@ -24,23 +24,25 @@ from __future__ import with_statement
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os
+
 from PyQt4.QtGui import QTabWidget
 import matplotlib.backend_bases as backend_bases
 
-from .inspecteur import FenCode
 from .aide import Help, About, Informations
+from .animer import DialogueAnimation
+from .contact import Contact
 from .dialogues_geometrie import EditerObjet, SupprimerObjet
+from .fenetre_options import FenetreOptions
+from .inspecteur import FenCode
 from .nouvelles_versions import Gestionnaire_mises_a_jour
+from .proprietes_feuille import ProprietesFeuille
+from .proprietes_objets import Proprietes
 from . import dialogues_geometrie
 from ..API.sauvegarde import FichierGEO, ouvrir_fichierGEO
-from .proprietes_objets import Proprietes
 from .. import param, modules, geolib
 from ..pylib import print_error, debug, path2
-from .animer import DialogueAnimation
-from .proprietes_feuille import ProprietesFeuille
 from ..param.options import options as param_options
-from .fenetre_options import FenetreOptions
-from .contact import Contact
+
 
 class Onglets(QTabWidget):
     def __init__(self, parent):
@@ -64,7 +66,7 @@ class Onglets(QTabWidget):
         self._liste = [] # liste des onglets
 
         # Ajoute les differentes composantes :
-#        self.actualiser_liste_onglets()
+        self.actualiser_liste_onglets()
 
 
         # adaptation du titre de l'application et du menu.
@@ -85,7 +87,7 @@ class Onglets(QTabWidget):
 
     def deplacer_onglet(self, i, j):
         u"Déplacer un onglet de la position 'i' à la position 'j'."
-        if i != j:
+         if i != j:
             panel = self._liste.pop(i)
             self._liste.insert(j, panel)
             self.removeTab(i)
@@ -125,9 +127,9 @@ class Onglets(QTabWidget):
     def actualise_onglet(self, onglet):
         self.parent.SetMenuBar(onglet.menu) # change le menu de la fenetre
         onglet.changer_titre() # change le titre de la fenetre
-        if param.plateforme == "Windows":
-            if onglet.canvas is not None:
-                onglet.canvas.execute_on_idle(onglet.canvas.graph.restaurer_dessin)
+#        if param.plateforme == "Windows":
+#            if onglet.canvas is not None:
+#                onglet.canvas.execute_on_idle(onglet.canvas.graph.restaurer_dessin)
 
 
     def onglet(self, nom):

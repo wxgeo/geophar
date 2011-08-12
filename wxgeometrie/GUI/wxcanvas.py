@@ -134,7 +134,7 @@ class WxCanvas(FigureCanvasWxAgg, Canvas):
         self.parent = parent
         # initialisation dans cet ordre (self.figure doit être défini pour initialiser FigureCanvas)
         Canvas.__init__(self, couleur_fond = self.param("couleur_fond"))
-        FigureCanvasWxAgg.__init__(self, parent, -1, self.figure)
+        FigureCanvasWxAgg.__init__(self, parent, self.figure)
 
         if param.plateforme == "Linux":
             self.SetSize(wx.Size(10, 10))
@@ -654,11 +654,11 @@ class WxCanvas(FigureCanvasWxAgg, Canvas):
         self.detecter(event.GetPositionTuple())
 
         if self.select is not None and not event.ControlDown():
-            menu = wx.Menu()
+            menu = QMenu()
             # Contournement d'un bug de wxGtk
             if wx.Platform == '__WXGTK__':
                 menu.Append(wx.NewId(), u" \u2714 " + self.select.nom_complet)
-                menu.AppendSeparator()
+                menu.addSeparator()
             else:
                 menu.setWindowTitle(self.select.nom_complet)
             selections = [obj for obj in self.selections if obj is not self.select] # autres objets a proximite
@@ -671,7 +671,7 @@ class WxCanvas(FigureCanvasWxAgg, Canvas):
                 menu.Append(ids[i], u"Sélectionner " + selections[i].nom_complet)
                 menu.Bind(wx.EVT_MENU, select, id = ids[i])
             if n:
-                menu.AppendSeparator()
+                menu.addSeparator()
 
             menu.Append(ids[n], u"Supprimer")
             def supprimer(event, select = self.select):
@@ -768,7 +768,7 @@ class WxCanvas(FigureCanvasWxAgg, Canvas):
                 self.executer(u"%s.style(legende = %s)" %(select.nom, mode))
             menu.Bind(wx.EVT_MENU, masquer_nom, id = ids[n + 4])
 
-            menu.AppendSeparator()
+            menu.addSeparator()
 
             menu.Append(ids[n + 5], u"Redéfinir")
             def redefinir(event, select = self.select):
@@ -789,11 +789,11 @@ class WxCanvas(FigureCanvasWxAgg, Canvas):
                 dlg.Destroy()
             menu.Bind(wx.EVT_MENU, redefinir, id = ids[n + 5])
 
-            menu.AppendSeparator()
+            menu.addSeparator()
 
             if isinstance(self.select, Point_generique):
                 ids_relier = [wx.NewId(), wx.NewId(), wx.NewId()]
-                relier = wx.Menu()
+                relier = QMenu()
                 relier.Append(ids_relier[0], u"aux axes")
                 relier.Append(ids_relier[1], u"à l'axe des abscisses")
                 relier.Append(ids_relier[2], u"à l'axe des ordonnées")
@@ -814,7 +814,7 @@ class WxCanvas(FigureCanvasWxAgg, Canvas):
                 menu.AppendMenu(wx.NewId(), u"Relier le point", relier)
 
 
-                menu.AppendSeparator()
+                menu.addSeparator()
 
             menu.Append(ids[n + 6], u"Propriétés")
             def proprietes(event, select = self.select):

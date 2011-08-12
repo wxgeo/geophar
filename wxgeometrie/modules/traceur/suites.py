@@ -34,7 +34,7 @@ class CreerSuite(MyMiniFrame):
         self.SetExtraStyle(wx.WS_EX_BLOCK_EVENTS )
         self.parent = parent
         self._param_ = self.parent._param_
-        p = self.panel = wx.Panel(self, -1)
+        p = self.panel = QWidget(self)
 
         self.sizer = sizer = wx.BoxSizer(wx.VERTICAL)
         sizer.Add(wx.StaticText(p, -1, u"Choisissez le mode de génération de la suite :"), 0, wx.ALIGN_LEFT|wx.ALL,5)

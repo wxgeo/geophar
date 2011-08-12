@@ -156,7 +156,7 @@ class Cryptographie(Panel_simple):
         self.sizer.Add(self.textes, 0, wx.ALIGN_CENTER | wx.ALL, 10)
         self.sizer.Add(self.table, 0, wx.ALIGN_CENTER | wx.ALL, 10)
         self.SetSizer(self.sizer)
-        self.Fit()
+        self.adjustSize()
 
         couleur_position = wx.Color(255, 205, 179)
         couleur1 = wx.Color(90, 40, 190)

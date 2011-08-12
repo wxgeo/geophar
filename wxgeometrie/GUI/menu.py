@@ -26,7 +26,7 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 from operator import attrgetter
 from functools import partial
 
-import wx
+from PyQt4.QtGui import QMenu, QMenuBar
 
 
 
@@ -35,104 +35,83 @@ import wx
 #-----------------------
 
 
-class RSSMenu(wx.Menu): # parent : wxgeometrie (Frame principal)
+class RSSMenu(QMenu): # parent : wxgeometrie (Frame principal)
     u"Menu dynamique."
-    def __init__(self, parent, titre = "", liste = None, fonction = None, aide = ""):
-        wx.Menu.__init__(self)
-        self.parent = parent
-        self.table_ids = {}
+    def __init__(self, parent, titre='', liste=None, fonction=None, aide=''):
+        QMenu.__init__(self)
+#        self.parent = parent
         self.fonction = None
-        self.titre = titre
+#        self.titre = titre
+        self.setTitle(titre)
         self.update(liste, fonction, aide)
 
-    def update(self, liste = None, fonction = None, aide = None):
+    def update(self, liste=None, fonction=None, aide=None):
         if fonction is not None:
             self.fonction = fonction
         if aide is not None:
             self.aide = aide
         self.liste = liste or []
 
-        for id in self.table_ids.keys():
-            if self.fonction: # bof: pas super precis (si on rajoute une fonction entre temps, erreur)
-                self.parent.parent.Unbind(wx.EVT_MENU, id = id)
-            self.Delete(id)
-        self.table_ids = {}
+        self.clear()
 
-        for i in xrange(len(self.liste)):
-            id = wx.NewId()
-            self.table_ids[id] = i
-            self.Append(id, self.liste[i], self.aide)
-            if self.fonction:
-                self.parent.parent.Bind(wx.EVT_MENU, self.gerer_evenement, id = id)
-
-
-    def gerer_evenement(self, event): # rajoute a l'evenement la propriete nom_menu, avant de le rediriger.
-        event.numero = self.table_ids[event.GetId()]
-        self.fonction(event)
+        for i, name in enumerate(self.liste):
+            action = self.addAction(name, partial(self.fonction, i))
+            action.setStatusTip(self.aide)
 
 
 
+class Menu(QMenu):
+    u"Remplace la classe QMenu."
 
-class Menu(wx.Menu):
-    u"Remplace la classe wx.Menu."
-
-    def __init__(self, menubar, liste):
-        wx.Menu.__init__(self)
+    def __init__(self, menubar, titre, liste):
+        QMenu.__init__(self)
+        self.setTitle(titre)
         IDEM = True
-        self.parent = menubar.parent
-        self.table_ids = {}
+#        self.parent = menubar.parent
+        self.aboutToShow.connect(self.actualiser)
         for contenu in liste:
-            id = wx.NewId() # pour être sûr que 2 menus (dans 2 modules différents) n'auront pas le même id.
-
             if not contenu:
-                self.AppendSeparator()
+                self.addSeparator()
 
             elif isinstance(contenu, RSSMenu):
-                self.AppendMenu(id, "&" + contenu.titre, contenu)
+                self.addMenu(contenu)
 
             else:
 
                 if len(contenu) == 1: # menus predefinis
                     contenu = menubar.menus[contenu[0]]
 
-                self.table_ids[id] = contenu
                 if isinstance(contenu[1], (list, tuple)): # le menu contient un sous-menu
-                    menu = Menu(menubar, contenu[1:])
-                    self.AppendMenu(id, "&" + contenu[0], menu)
+                    menu = Menu(menubar, contenu[0], contenu[1:])
+                    self.addMenu(menu)
 
                 else:
                     if not contenu[1]:
-                        contenu[1] = ""
+                        contenu[1] = ''
                     # 0->titre, 1->description, 2->raccourci, 3->fonction associee[, 4->cocher ou non]
-                    titre = "&" + contenu[0]
-                    if contenu[2]:
-                        titre += "\t" + contenu[2]
+                    titre = contenu[0]
+                    shortcut = (QKeySequence(contenu[2]) if contenu[2] else 0)
+                    if contenu[3]:
+                        action = self.addAction(titre, partial(contenu[3], contenu[0]), shortcut)
+                    else:
+                        action = self.addAction(titre)
+                    action.setStatusTip(contenu[1])
                     if len(contenu) == 5:   # le menu contient une case a cocher
-                        self.Append(id, titre, contenu[1], wx.ITEM_CHECK)
                         if contenu[4] == IDEM:
                             contenu[4] = contenu[3]
-                        #elif isinstance(contenu[4], basestring):
-                        #    def f(self = menubar):
-                        #        return getattr(self.canvas
-                        #    contenu[4] = f
-                        self.Check(id, contenu[4]())
-                    else:                   # cas classique
-                        self.Append(id, titre, contenu[1])
-                    if contenu[3]:
-                        self.parent.parent.Bind(wx.EVT_MENU, self.gerer_evenement, id = id)
+                        action.setCheckable(True)
+                        action.setChecked(contenu[4]())
+                        action._test = contenu[4]
 
-
-    def gerer_evenement(self, event): # rajoute a l'evenement la propriete nom_menu, avant de le rediriger.
-        contenu = self.table_ids[event.GetId()]
-        event.nom_menu = contenu[0]
-        contenu[3](event)
+    def actualiser(self):
+        for action in self.actions():
+            if action.checkable():
+                action.setChecked(action._test())
 
 
 
-
-
-class MenuBar(wx.MenuBar):
-    u"""Remplace la classe wx.MenuBar pour créer une barre de menu propre à chaque module.
+class MenuBar(QMenuBar):
+    u"""Remplace la classe QMenuBar pour créer une barre de menu propre à chaque module.
 
     La méthode de base est 'ajouter(self, *menu)', où menu est une liste.
     Exemple1:
@@ -147,30 +126,21 @@ class MenuBar(wx.MenuBar):
     La presence de deux fonctions (eventuellement identiques) indique qu'il s'agit d'un menu "cochable".
     L'etat (coché ou non coché) est déterminé par la valeur renvoyée par la fonction 'fonction2'.
 
-    Note: Pour un menu moins standard, on peut toujours utiliser directement wx.MenuBar.
+    Note: Pour un menu moins standard, on peut toujours utiliser directement QMenuBar.
     """
 
     def ajouter(self, *contenu):
         if isinstance(contenu, RSSMenu):
-            self.Append(contenu, "&" + contenu.titre)
+            self.addMenu(contenu)
         else:
             if len(contenu) == 1: # menus predefinis
                 contenu = self.menus[contenu[0]]
-            menu = Menu(self, contenu[1:])
-            self.Append(menu, "&" + contenu[0])
-
-
-    def actualiser(self, event):
-        u"Met à jour le menu en actualisant l'état des menus contenant une case à cocher."
-        menu = event.GetMenu()
-        if hasattr(menu, "table_ids"):
-            for item in menu.GetMenuItems():
-                if item.IsCheckable():
-                    item.Check(menu.table_ids[item.GetId()][4]())
+            menu = Menu(self, contenu[0], contenu[1:])
+            self.addMenu(menu)
 
 
     def __init__(self, panel = None, *contenu): # parent : wxgeometrie (Frame principal)
-        wx.MenuBar.__init__(self)
+        QMenuBar.__init__(self)
         self.panel = panel
         self.parent = panel.parent
         self.canvas = panel.canvas
@@ -254,35 +224,35 @@ class MenuBar(wx.MenuBar):
                 ],
 
 "zoom_texte": [u"Zoom texte",
-                    [u"100 %", u"Afficher les textes à leur taille par défaut.", None, lambda event, self=self: self.canvas.zoom_text(event, 100)],
+                    [u"100 %", u"Afficher les textes à leur taille par défaut.", None, partial(self.canvas.zoom_text, valeur=100)],
                     None,
-                    [u"50 %", u"Réduire les textes à 50 % de leur taille.", None, lambda event, self=self: self.canvas.zoom_text(event, 50)],
-                    [u"60 %", u"Réduire les textes à 60 % de leur taille.", None, lambda event, self=self: self.canvas.zoom_text(event, 60)],
-                    [u"70 %", u"Réduire les textes à 70 % de leur taille.", None, lambda event, self=self: self.canvas.zoom_text(event, 70)],
-                    [u"80 %", u"Réduire les textes à 80 % de leur taille.", None, lambda event, self=self: self.canvas.zoom_text(event, 80)],
-                    [u"90 %", u"Réduire les textes à 90 % de leur taille.", None, lambda event, self=self: self.canvas.zoom_text(event, 90)],
+                    [u"50 %", u"Réduire les textes à 50 % de leur taille.", None, partial(self.canvas.zoom_text, valeur=50)],
+                    [u"60 %", u"Réduire les textes à 60 % de leur taille.", None, partial(self.canvas.zoom_text, valeur=60)],
+                    [u"70 %", u"Réduire les textes à 70 % de leur taille.", None, partial(self.canvas.zoom_text, valeur=70)],
+                    [u"80 %", u"Réduire les textes à 80 % de leur taille.", None, partial(self.canvas.zoom_text, valeur=80)],
+                    [u"90 %", u"Réduire les textes à 90 % de leur taille.", None, partial(self.canvas.zoom_text, valeur=90)],
                     None,
-                    [u"120 %", u"Agrandir les textes à 120 % de leur taille.", None, lambda event, self=self: self.canvas.zoom_text(event, 120)],
-                    [u"140 %", u"Agrandir les textes à 140 % de leur taille.", None, lambda event, self=self: self.canvas.zoom_text(event, 140)],
-                    [u"160 %", u"Agrandir les textes à 160 % de leur taille.", None, lambda event, self=self: self.canvas.zoom_text(event, 160)],
-                    [u"180 %", u"Agrandir les textes à 180 % de leur taille.", None, lambda event, self=self: self.canvas.zoom_text(event, 180)],
-                    [u"200 %", u"Agrandir les textes à 200 % de leur taille.", None, lambda event, self=self: self.canvas.zoom_text(event, 200)],
+                    [u"120 %", u"Agrandir les textes à 120 % de leur taille.", None, partial(self.canvas.zoom_text, valeur=120)],
+                    [u"140 %", u"Agrandir les textes à 140 % de leur taille.", None, partial(self.canvas.zoom_text, valeur=140)],
+                    [u"160 %", u"Agrandir les textes à 160 % de leur taille.", None, partial(self.canvas.zoom_text, valeur=160)],
+                    [u"180 %", u"Agrandir les textes à 180 % de leur taille.", None, partial(self.canvas.zoom_text, valeur=180)],
+                    [u"200 %", u"Agrandir les textes à 200 % de leur taille.", None, partial(self.canvas.zoom_text, valeur=200)],
                ],
 
 "zoom_ligne": [u"Zoom ligne",
-                    [u"100 %", u"Afficher les lignes à leur taille par défaut.", None, lambda event, self=self: self.canvas.zoom_line(event, 100)],
+                    [u"100 %", u"Afficher les lignes à leur taille par défaut.", None, partial(self.canvas.zoom_line, valeur=100)],
                     None,
-                    [u"50 %", u"Réduire les lignes à 50 % de leur taille.", None, lambda event, self=self: self.canvas.zoom_line(event, 50)],
-                    [u"60 %", u"Réduire les lignes à 60 % de leur taille.", None, lambda event, self=self: self.canvas.zoom_line(event, 60)],
-                    [u"70 %", u"Réduire les lignes à 70 % de leur taille.", None, lambda event, self=self: self.canvas.zoom_line(event, 70)],
-                    [u"80 %", u"Réduire les lignes à 80 % de leur taille.", None, lambda event, self=self: self.canvas.zoom_line(event, 80)],
-                    [u"90 %", u"Réduire les lignes à 90 % de leur taille.", None, lambda event, self=self: self.canvas.zoom_line(event, 90)],
+                    [u"50 %", u"Réduire les lignes à 50 % de leur taille.", None, partial(self.canvas.zoom_line, valeur=50)],
+                    [u"60 %", u"Réduire les lignes à 60 % de leur taille.", None, partial(self.canvas.zoom_line, valeur=60)],
+                    [u"70 %", u"Réduire les lignes à 70 % de leur taille.", None, partial(self.canvas.zoom_line, valeur=70)],
+                    [u"80 %", u"Réduire les lignes à 80 % de leur taille.", None, partial(self.canvas.zoom_line, valeur=80)],
+                    [u"90 %", u"Réduire les lignes à 90 % de leur taille.", None, partial(self.canvas.zoom_line, valeur=90)],
                     None,
-                    [u"120 %", u"Agrandir les lignes à 120 % de leur taille.", None, lambda event, self=self: self.canvas.zoom_line(event, 120)],
-                    [u"140 %", u"Agrandir les lignes à 140 % de leur taille.", None, lambda event, self=self: self.canvas.zoom_line(event, 140)],
-                    [u"160 %", u"Agrandir les lignes à 160 % de leur taille.", None, lambda event, self=self: self.canvas.zoom_line(event, 160)],
-                    [u"180 %", u"Agrandir les lignes à 180 % de leur taille.", None, lambda event, self=self: self.canvas.zoom_line(event, 180)],
-                    [u"200 %", u"Agrandir les lignes à 200 % de leur taille.", None, lambda event, self=self: self.canvas.zoom_line(event, 200)],
+                    [u"120 %", u"Agrandir les lignes à 120 % de leur taille.", None, partial(self.canvas.zoom_line, valeur=120)],
+                    [u"140 %", u"Agrandir les lignes à 140 % de leur taille.", None, partial(self.canvas.zoom_line, valeur=140)],
+                    [u"160 %", u"Agrandir les lignes à 160 % de leur taille.", None, partial(self.canvas.zoom_line, valeur=160)],
+                    [u"180 %", u"Agrandir les lignes à 180 % de leur taille.", None, partial(self.canvas.zoom_line, valeur=180)],
+                    [u"200 %", u"Agrandir les lignes à 200 % de leur taille.", None, partial(self.canvas.zoom_line, valeur=200)],
                ],
 
 "zoom_general": [u"Zoom général",
@@ -407,5 +377,3 @@ class MenuBar(wx.MenuBar):
 
         for item in contenu:
             self.ajouter(*item)
-
-        self.parent.parent.Bind(wx.EVT_MENU_OPEN, self.actualiser)

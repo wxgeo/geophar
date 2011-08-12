@@ -24,7 +24,7 @@ from __future__ import with_statement
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os, time, thread
-import wx
+from PyQt4.QtGui import QWidget
 
 from .barre_outils import BarreOutils
 from .menu import RSSMenu
@@ -44,8 +44,8 @@ from ..geolib.feuille import Feuille
 
 
 
-class Panel_simple(wx.Panel):
-    u"""Remplace la classe la classe wx.Panel pour les différents modules.
+class Panel_simple(QWidget):
+    u"""Remplace la classe la classe QWidget pour les différents modules.
     Pour les modules ayant besoin des fonctions graphiques evoluées de WxGéométrie, mieux vaut utiliser
     la classe Panel_API_graphique, plus evoluée que celle-ci."""
 
@@ -53,11 +53,10 @@ class Panel_simple(wx.Panel):
     # Indique si des modifications ont eu lieu (et s'il faudra donc sauvegarder la session)
     modifie = False
 
-    def __init__(self, parent, module, menu = True, style = wx.TAB_TRAVERSAL|wx.WANTS_CHARS):
-        wx.Panel.__init__(self, parent, -1, style = style)
+    def __init__(self, parent, module, menu = True): # style = wx.TAB_TRAVERSAL|wx.WANTS_CHARS
+        QWidget.__init__(self, parent)
 
         self.module = module
-        # wx.NamedColor ne peut pas être appelé avant que wx.App existe.
         self.setStyleSheet("background-color:white")
         self.parent = parent
         self.nom = self.__class__.__name__.lower()
@@ -201,8 +200,8 @@ class Panel_API_graphique(Panel_simple):
     Cela concerne essentiellement les modules qui ont besoin de tracer des objets géométriques."""
 
     def __init__(self, parent, module, BarreOutils = BarreOutils):
-        extra = {'style': wx.WANTS_CHARS} if param.plateforme == "Windows" else {}
-        Panel_simple.__init__(self, parent, module, menu=False, **extra)
+        # extra = {'style': wx.WANTS_CHARS} if param.plateforme == "Windows" else {}
+        Panel_simple.__init__(self, parent, module, menu=False)
 
         # IMPORTANT: contruire toujours dans cet ordre.
         self.feuilles = Classeur(self, log = self.log)
@@ -218,7 +217,6 @@ class Panel_API_graphique(Panel_simple):
         self.barre_outils.setVisible(self.param("afficher_barre_outils"))
         self.console_geolib.setVisible(self.param("afficher_console_geolib"))
 
-##        self.creer_feuille()
         self.canvas.initialiser()
         self.__sizer_principal = wx.BoxSizer(wx.VERTICAL)
         self.__sizer_principal.Add(self.barre_outils, 0, wx.ALL, 5)
@@ -278,7 +276,7 @@ class Panel_API_graphique(Panel_simple):
         self.__sizer_principal.Add(contenu, 1, wx.LEFT | wx.TOP | wx.GROW)
         self.__sizer_principal.Add(self.console_geolib, 0, wx.ALL, 5)
         self.SetSizer(self.__sizer_principal)
-        self.Fit()
+        self.adjustSize()
 
 
 
@@ -474,7 +472,7 @@ class Panel_API_graphique(Panel_simple):
                 self._param_.afficher_barre_outils = not self.param("afficher_barre_outils")
             with self.canvas.geler_affichage(actualiser = True):
                 self.barre_outils.setVisible(self.param("afficher_barre_outils"))
-                self.Fit()
+                self.adjustSize()
         return self.param("afficher_barre_outils")
 
     def afficher_console_geolib(self, afficher = None):
@@ -488,7 +486,7 @@ class Panel_API_graphique(Panel_simple):
                 self.console_geolib.setVisible(self.param("afficher_console_geolib"))
                 if self.param("afficher_console_geolib"):
                     self.console_geolib.ligne_commande.setFocus()
-                self.Fit()
+                self.adjustSize()
         return self.param("afficher_console_geolib")
 
 

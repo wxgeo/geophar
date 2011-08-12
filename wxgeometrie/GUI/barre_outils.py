@@ -106,13 +106,13 @@ class MultiButton(wx.BitmapButton):
 
     def OnRightclic(self, event = None):
         if len(self.liste) > 1:
-            menu = wx.Menu()
+            menu = QMenu()
             for i in xrange(len(self.liste)):
                 if self.liste[i] is None:
-                    menu.AppendSeparator()
+                    menu.addSeparator()
                     #item = wx.MenuItem(menu, id = wx.ITEM_SEPARATOR, kind = wx.ITEM_SEPARATOR)
                 else:
-                    item = wx.MenuItem(menu, self.items[i], self.liste[i][0])
+                    item = QMenuItem(menu, self.items[i], self.liste[i][0])
                     #item.SetBitmap(self.liste[i][1][0])
                     #item.SetBackgroundColour(self.parent.GetBackgroundColour())
                     #-> ces méthodes sont largement bugguées dans WxPython
@@ -148,10 +148,10 @@ class MultiButton(wx.BitmapButton):
 
 
 
-class BarreOutils(wx.Panel):
+class BarreOutils(QWidget):
     def __init__(self, parent, couleur = None):
         self.parent = parent
-        wx.Panel.__init__(self, parent, -1, style = wx.TAB_TRAVERSAL|wx.WANTS_CHARS)
+        QWidget.__init__(self, parent, style = wx.TAB_TRAVERSAL|wx.WANTS_CHARS)
         self.SetBackgroundColour(couleur if couleur is not None else wx.NamedColor(u"WHITE"))
         self.debut_selection = None
         self.debut_zoombox = None
@@ -169,7 +169,7 @@ class BarreOutils(wx.Panel):
             self.creer_boutons()
 
         self.SetSizer(self.sizer)
-        self.Fit()
+        self.adjustSize()
 
 
     def add(self, racc, *liste):

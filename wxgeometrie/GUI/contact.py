@@ -32,12 +32,12 @@ from ..pylib.bugs_report import rapporter
 
 class Contact(wx.Frame):
     def __init__(self, parent):
-        wx.Frame.__init__(self, parent, -1, u"Contacter l'auteur", style = wx.FRAME_FLOAT_ON_PARENT|wx.CLIP_CHILDREN|wx.CLOSE_BOX|wx.CAPTION)
+        wx.Frame.__init__(self, parent, u"Contacter l'auteur", style = wx.FRAME_FLOAT_ON_PARENT|wx.CLIP_CHILDREN|wx.CLOSE_BOX|wx.CAPTION)
         self.setStyleSheet("background-color:white")
 
         self.parent = parent
 
-        panel = wx.Panel(self, -1)
+        panel = QWidget(self)
         italic = wx.Font(panel.GetFont().GetPointSize(), panel.GetFont().GetFamily(), wx.ITALIC, wx.NORMAL)
 #        bold_italic = wx.Font(panel.GetFont().GetPointSize(), panel.GetFont().GetFamily(), wx.ITALIC, wx.BOLD)
         panel.setStyleSheet("background-color:white")

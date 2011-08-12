@@ -26,10 +26,10 @@ import wx
 from .ligne_commande import LigneCommande
 from ..pylib import print_error
 
-class ConsoleGeolib(wx.Panel):
+class ConsoleGeolib(QWidget):
     def __init__(self, parent, couleur = None):
         self.parent = parent
-        wx.Panel.__init__(self, parent, -1, style = wx.TAB_TRAVERSAL|wx.WANTS_CHARS)
+        QWidget.__init__(self, parent, style = wx.TAB_TRAVERSAL|wx.WANTS_CHARS)
         self.SetBackgroundColour(couleur if couleur is not None else wx.NamedColor(u"WHITE"))
         vsizer = wx.BoxSizer(wx.VERTICAL)
         label = u"Tapez une commande ci-dessus, puis appuyez sur [Entrée]."
@@ -42,7 +42,7 @@ class ConsoleGeolib(wx.Panel):
         vsizer.Add(self.ligne_commande, 1, wx.ALL|wx.EXPAND, 0)
         vsizer.Add(self.resultats, 1, wx.ALL|wx.EXPAND, 5)
         self.SetSizer(vsizer)
-        self.Fit()
+        self.adjustSize()
 
     def action(self, commande, **kw):
         try:

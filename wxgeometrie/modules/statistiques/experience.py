@@ -58,7 +58,7 @@ class ExperienceFrame(MyMiniFrame):
         self.SetExtraStyle(wx.WS_EX_BLOCK_EVENTS )
         self.parent = parent
 
-        p = self.panel = wx.Panel(self, -1)
+        p = self.panel = QWidget(self)
 
         sizer = wx.BoxSizer(wx.VERTICAL)
         exp = wx.BoxSizer(wx.HORIZONTAL)
@@ -147,7 +147,7 @@ class LancerDes(MyMiniFrame):
         MyMiniFrame.__init__(self, parent, u"Simulation de lancers de dés")
         self.parent = parent
 
-        p = self.panel = wx.Panel(self, -1)
+        p = self.panel = QWidget(self)
 
         sizer = wx.BoxSizer(wx.VERTICAL)
         sizer.Add(wx.StaticText(p, -1, u"On simule le lancer d'un ou plusieurs dés"), 0, wx.LEFT|wx.TOP|wx.RIGHT|wx.ALIGN_CENTER_VERTICAL, 5)
@@ -237,7 +237,7 @@ class Sondage(MyMiniFrame):
         MyMiniFrame.__init__(self, parent, u"Simulation d'un sondage")
         self.parent = parent
 
-        p = self.panel = wx.Panel(self, -1)
+        p = self.panel = QWidget(self)
 
         sizer = wx.BoxSizer(wx.VERTICAL)
         sizer.Add(wx.StaticText(p, -1, u"On simule un sondage simple (réponse par oui ou non)."), 0, wx.LEFT|wx.TOP|wx.RIGHT|wx.ALIGN_CENTER_VERTICAL, 5)

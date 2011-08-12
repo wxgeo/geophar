@@ -27,9 +27,9 @@ import wx
 from .wxlib import MyMiniFrame
 from ..pylib import uu
 
-class ProprietesDescription(wx.Panel):
+class ProprietesDescription(QWidget):
     def __init__(self, parent):
-        wx.Panel.__init__(self, parent)
+        QWidget.__init__(self, parent)
         self.parent = parent
         self.feuille = parent.feuille
         self.sizer = gbs = wx.GridBagSizer(10, 10)
@@ -122,9 +122,9 @@ class ProprietesDescription(wx.Panel):
 
 
 
-class ProprietesStatistiques(wx.Panel):
+class ProprietesStatistiques(QWidget):
     def __init__(self, parent):
-        wx.Panel.__init__(self, parent)
+        QWidget.__init__(self, parent)
         self.parent = parent
         self.feuille = parent.feuille
 
