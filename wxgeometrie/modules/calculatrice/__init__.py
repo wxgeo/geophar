@@ -25,8 +25,11 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 
 import wx
+from PyQt4.QtGui import (QHBoxLayout, QVBoxLayout, QCheckBox, QIcon, QPushButton,
+                         QTextEdit, QMenu, QLabel, QSpinBox)
 
-from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigureCanvas
+#from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigureCanvas
+from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 
 from ...GUI.ligne_commande import LigneCommande
@@ -74,21 +77,21 @@ class CalculatriceMenuBar(MenuBar):
         def f(event = None, panel = self.panel, nom = nom, parenthese = parenthese):
             deb, fin = panel.entree.GetSelection()
             if parenthese:
-                panel.entree.SetInsertionPoint(fin)
-                panel.entree.WriteText(")")
-                panel.entree.SetInsertionPoint(deb)
-                panel.entree.WriteText(nom + "(")
+                panel.entree.setCursorPosition(fin)
+                panel.entree.insert(")")
+                panel.entree.setCursorPosition(deb)
+                panel.entree.insert(nom + "(")
                 panel.entree.setFocus()
                 if deb == fin:
                     final = fin + len(nom) + 1
                 else:
                     final = fin + len(nom) + 2
             else:
-                panel.entree.WriteText(nom)
+                panel.entree.insert(nom)
                 final = fin + len(nom)
             panel.entree.setFocus()
-            panel.entree.SetInsertionPoint(final)
-            panel.entree.SetSelection(final, final)
+            panel.entree.setCursorPosition(final)
+            panel.entree.setSelection(final, final)
         return f
 
 
@@ -123,29 +126,34 @@ class Calculatrice(Panel_simple):
 ##        self.entrees.Add(self.entree, 1, wx.ALL|wx.GROW, 5)
 ##        self.valider = wx.Button(self, wx.ID_OK)
 ##        self.entrees.Add(self.valider, 0, wx.ALL, 5)
-        self.entree = LigneCommande(self, longueur = 550, action = self.affichage_resultat)
-        self.entree.SetToolTip(wx.ToolTip(u"[Maj]+[Entrée] pour une valeur approchée."))
+        self.entree = entree = LigneCommande(self, longueur = 550, action = self.affichage_resultat)
+        entree.setToolTip(u"[Maj]+[Entrée] pour une valeur approchée.")
 
-        self.corps = wx.BoxSizer(wx.HORIZONTAL)
-        self.gauche = wx.BoxSizer(wx.VERTICAL)
-        self.resultats = wx.TextCtrl(self, size = (450,310), style = wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH)
-        self.gauche.Add(self.resultats, 0, wx.ALL, 5)
+        self.sizer = sizer = QVBoxLayout()
+        sizer.addWidget(entree)
+        self.corps = corps = QHBoxLayout()
+        sizer.addLayout(corps)
+        self.gauche = gauche = QVBoxLayout()
+        corps.addLayout(gauche)
+        self.resultats = resultats = QTextEdit(self)
+        resultats.setMinimumSize(450, 310)
+        resultats.setReadOnly(True)
+        gauche.addWidget(resultats)
 
-        self.figure = Figure(figsize=(5,1.3),frameon=True, facecolor="w")
-        self.visualisation = FigureCanvas(self, -1, self.figure)
-        self.axes = self.figure.add_axes([0, 0, 1, 1], frameon=False)
-        self.axes.axison = False
-        self.pp_texte = self.axes.text(0.5, 0.5, "", horizontalalignment='center', verticalalignment='center', transform = self.axes.transAxes, size=18)
-        self.gauche.Add(self.visualisation, 0, wx.ALL|wx.ALIGN_CENTER, 5)
-        self.corps.Add(self.gauche, 0, wx.ALL, 5)
-
+        self.figure = Figure(figsize=(5,1.3), frameon=True, facecolor="w")
+        self.visualisation = FigureCanvas(self.figure)
+        self.axes = axes = self.figure.add_axes([0, 0, 1, 1], frameon=False)
+        axes.axison = False
+        self.pp_texte = axes.text(0.5, 0.5, "", horizontalalignment='center', verticalalignment='center', transform = axes.transAxes, size=18)
+        gauche.addWidget(self.visualisation) # wx.ALL|wx.ALIGN_CENTER
 
         ### Pave numerique de la calculatrice ###
         # On construit le pavé de la calculatrice.
         # Chaque bouton du pavé doit provoquer l'insertion de la commande correspondante.
 
-        self.pave  = wx.BoxSizer(wx.VERTICAL)
-        self.corps.Add(self.pave, 0, wx.ALL, 5)
+        self.pave = pave = QVBoxLayout()
+        corps.addLayout(pave)
+#        pave.setSpacing(1)
         boutons = ["2nde", "ans", "ouv", "ferm", "egal", "7", "8", "9", "div", "x", "4", "5", "6", "mul", "y", "1", "2", "3", "minus", "z", "0", "pt", "pow", "plus", "t", "rac", "sin", "cos", "tan", "exp", "i", "pi", "e", "abs", "mod"]
         inserer = ["", "ans()", "(", ")", "=", "7", "8", "9",  "/", "x", "4", "5", "6", "*", "y", "1", "2", "3", "-", "z", "0", ".", "^", "+", "t", "sqrt(", ("sin(", "asin(", "sinus / arcsinus"), ("cos(", "acos(", "cosinus / arccosinus"), ("tan(", "atan(", "tangente / arctangente"), ("exp(", "ln(", "exponentielle / logarithme neperien"), ("i", "cbrt(", "i / racine cubique"), ("pi", "sinh(", "pi / sinus hyperbolique"), ("e", "cosh", "e / cosinus hyperbolique"), ("abs(", "tanh", "valeur absolue / tangente hyperbolique"), (" mod ", "log10(", "modulo / logarithme decimal")]
 
@@ -153,98 +161,108 @@ class Calculatrice(Panel_simple):
 
         def action(event = None):
             self.seconde = not self.seconde
-            if self.seconde: self.message(u"Touche [2nde] activée.")
-            else: self.message("")
+            if self.seconde:
+                self.message(u"Touche [2nde] activée.")
+            else:
+                self.message("")
 
         self.actions = [action]
 
         for i in range(len(boutons)):
-            # On aligne les boutons de la calculatrice par rangees de 5.
+            # On aligne les boutons de la calculatrice par rangées de 5.
             if i%5 == 0:
-                self.rangee = wx.BoxSizer(wx.HORIZONTAL)
-                self.pave.Add(self.rangee, 0, wx.ALL,0)
+                self.rangee = rangee = QHBoxLayout()
+                rangee.addStretch()
+                pave.addLayout(rangee)
 
-            # Ensuite, on construit une liste de fonctions, parallelement à la liste des boutons.
+            # Ensuite, on construit une liste de fonctions, parallèlement à la liste des boutons.
             if i > 0:
+                #XXX: ce serait plus propre en utilisant partial().
                 def action(event = None, entree = self.entree, j = i):
                     if type(inserer[j]) == tuple:
-                        entree.WriteText(inserer[j][self.seconde])
+                        entree.insert(inserer[j][self.seconde])
                     else:
-                        entree.WriteText(inserer[j])
-                    n = entree.GetInsertionPoint()
+                        entree.insert(inserer[j])
+                    n = entree.cursorPosition()
                     entree.setFocus()
-                    entree.SetInsertionPoint(n)
+                    entree.setCursorPosition(n)
                     self.seconde = False
                     self.message("")
                 self.actions.append(action)
 
-            bmp = png('btn_' + boutons[i])
-            bouton = wx.BitmapButton(self, -1, bmp, style=wx.NO_BORDER)
-            bouton.SetBackgroundColour(self.GetBackgroundColour())
-            espace = 3
-            if param.plateforme == "Linux":
-                espace = 0
-            self.rangee.Add(bouton, 0, wx.ALL, espace)
+            bouton = QPushButton()
+            pix = png('btn_' + boutons[i])
+            bouton.setIcon(QIcon(pix))
+            bouton.setIconSize(pix.size())
+            bouton.setFlat(True)
+#            bouton.setSize()
+#            bouton.SetBackgroundColour(self.GetBackgroundColour())
+            rangee.addWidget(bouton)
+            if i%5 == 4:
+                rangee.addStretch()
             # A chaque bouton, on associe une fonction de la liste.
-            bouton.Bind(wx.EVT_BUTTON, self.actions[i])
-            if type(inserer[i]) == tuple: bouton.SetToolTipString(inserer[i][2])
+            bouton.clicked.connect(self.actions[i])
+            if type(inserer[i]) == tuple:
+                bouton.setToolTip(inserer[i][2])
 
-        self.pave.Add(wx.BoxSizer(wx.HORIZONTAL))
+#        self.pave.Add(QHBoxLayout())
 
 
         ### Liste des options ###
         # En dessous du pavé apparait la liste des différents modes de fonctionnement de la calculatrice.
 
         # Calcul exact
-        ligne = wx.BoxSizer(wx.HORIZONTAL)
-        self.cb_calcul_exact = wx.CheckBox(self)
-        self.cb_calcul_exact.SetValue(not self.param("calcul_exact"))
-        ligne.Add(self.cb_calcul_exact, flag = wx.ALIGN_CENTER_VERTICAL)
-        ligne.Add(wx.StaticText(self, -1, u" Valeur approchée."), flag = wx.ALIGN_CENTER_VERTICAL)
-        self.pave.Add(ligne)
+        ligne = QHBoxLayout()
+        pave.addLayout(ligne)
+        self.cb_calcul_exact = QCheckBox(self)
+        self.cb_calcul_exact.setChecked(not self.param("calcul_exact"))
+        ligne.addWidget(self.cb_calcul_exact) #, flag = wx.ALIGN_CENTER_VERTICAL)
+        ligne.addWidget(QLabel(u" Valeur approchée."))#, flag = wx.ALIGN_CENTER_VERTICAL)
 
-        self.cb_calcul_exact.Bind(wx.EVT_CHECKBOX, self.EvtCalculExact)
+        self.cb_calcul_exact.stateChanged.connect(self.EvtCalculExact)
 
         # Notation scientifique
-        ligne = wx.BoxSizer(wx.HORIZONTAL)
-        self.cb_notation_sci = wx.CheckBox(self)
-        self.cb_notation_sci.SetValue(self.param("ecriture_scientifique"))
-        ligne.Add(self.cb_notation_sci, flag = wx.ALIGN_CENTER_VERTICAL)
-        self.st_notation_sci = wx.StaticText(self, -1, u" Écriture scientifique (arrondie à ")
-        ligne.Add(self.st_notation_sci, flag = wx.ALIGN_CENTER_VERTICAL)
-        self.sc_decimales = wx.SpinCtrl(self, -1, size = (45, -1), min = 0, max = 11)
-        self.sc_decimales.SetValue(self.param("ecriture_scientifique_decimales"))
-        ligne.Add(self.sc_decimales, flag = wx.ALIGN_CENTER_VERTICAL)
-        self.st_decimales = wx.StaticText(self, -1, u" décimales).")
-        ligne.Add(self.st_decimales, flag = wx.ALIGN_CENTER_VERTICAL)
-        self.pave.Add(ligne)
+        ligne = QHBoxLayout()
+        pave.addLayout(ligne)
+        self.cb_notation_sci = QCheckBox(self)
+        self.cb_notation_sci.setChecked(self.param("ecriture_scientifique"))
+        ligne.addWidget(self.cb_notation_sci)#, flag = wx.ALIGN_CENTER_VERTICAL)
+        self.st_notation_sci = QLabel(u" Écriture scientifique (arrondie à ")
+        ligne.addWidget(self.st_notation_sci)#, flag = wx.ALIGN_CENTER_VERTICAL)
+        self.sc_decimales = sd = QSpinBox(self)
+        # size = (45, -1)
+        sd.setRange(0, 11)
+        self.sc_decimales.setValue(self.param("ecriture_scientifique_decimales"))
+        ligne.addWidget(self.sc_decimales)#, flag = wx.ALIGN_CENTER_VERTICAL)
+        self.st_decimales = QLabel(u" décimales).")
+        ligne.addWidget(self.st_decimales)#, flag = wx.ALIGN_CENTER_VERTICAL)
 
         self.EvtCalculExact()
 
-        self.cb_notation_sci.Bind(wx.EVT_CHECKBOX, self.EvtNotationScientifique)
-        self.sc_decimales.Bind(wx.EVT_SPINCTRL, self.EvtNotationScientifique)
+        self.cb_notation_sci.stateChanged.connect(self.EvtNotationScientifique)
+        self.sc_decimales.valueChanged.connect(self.EvtNotationScientifique)
 
         # Copie du résultat dans le presse-papier
-        ligne = wx.BoxSizer(wx.HORIZONTAL)
-        self.cb_copie_automatique = wx.CheckBox(self)
-        self.cb_copie_automatique.SetValue(self.param("copie_automatique"))
-        ligne.Add(self.cb_copie_automatique, flag = wx.ALIGN_CENTER_VERTICAL)
-        ligne.Add(wx.StaticText(self, -1, u" Copie du résultat dans le presse-papier."), flag = wx.ALIGN_CENTER_VERTICAL)
-        self.pave.Add(ligne)
+        ligne = QHBoxLayout()
+        pave.addLayout(ligne)
+        self.cb_copie_automatique = QCheckBox(self)
+        self.cb_copie_automatique.setChecked(self.param("copie_automatique"))
+        ligne.addWidget(self.cb_copie_automatique)#, flag = wx.ALIGN_CENTER_VERTICAL)
+        ligne.addWidget(QLabel(u" Copie du résultat dans le presse-papier."))#, flag = wx.ALIGN_CENTER_VERTICAL)
 
-        self.cb_copie_automatique.Bind(wx.EVT_CHECKBOX, self.EvtCopieAutomatique)
+        self.cb_copie_automatique.stateChanged.connect(self.EvtCopieAutomatique)
 
         # En mode LaTeX
-        ligne = wx.BoxSizer(wx.HORIZONTAL)
-        self.cb_copie_automatique_LaTeX = wx.CheckBox(self)
-        self.cb_copie_automatique_LaTeX.SetValue(self.param("copie_automatique_LaTeX"))
-        ligne.Add(self.cb_copie_automatique_LaTeX, flag = wx.ALIGN_CENTER_VERTICAL)
-        self.st_copie_automatique_LaTeX = wx.StaticText(self, -1, u" Copie au format LaTeX (si possible).")
-        ligne.Add(self.st_copie_automatique_LaTeX, flag = wx.ALIGN_CENTER_VERTICAL)
-        self.pave.Add(ligne)
+        ligne = QHBoxLayout()
+        pave.addLayout(ligne)
+        self.cb_copie_automatique_LaTeX = QCheckBox(self)
+        self.cb_copie_automatique_LaTeX.setChecked(self.param("copie_automatique_LaTeX"))
+        ligne.addWidget(self.cb_copie_automatique_LaTeX)
+        self.st_copie_automatique_LaTeX = QLabel(u" Copie au format LaTeX (si possible).")
+        ligne.addWidget(self.st_copie_automatique_LaTeX)
 
         self.EvtCopieAutomatique()
-        self.cb_copie_automatique_LaTeX.Bind(wx.EVT_CHECKBOX, self.EvtCopieAutomatiqueLatex)
+        self.cb_copie_automatique_LaTeX.stateChanged.connect(self.EvtCopieAutomatiqueLatex)
 
         # Autres options
         self.options = [(u"Virgule comme séparateur décimal.", u"changer_separateurs"),
@@ -254,42 +272,26 @@ class Calculatrice(Panel_simple):
                         ]
         self.options_box = []
         for i in range(len(self.options)):
-            ligne = wx.BoxSizer(wx.HORIZONTAL)
-            self.options_box.append(wx.CheckBox(self))
-            ligne.Add(self.options_box[i], flag = wx.ALIGN_CENTER_VERTICAL)
-            self.options_box[i].SetValue(self.param(self.options[i][1]))
+            ligne = QHBoxLayout()
+            pave.addLayout(ligne)
+            self.options_box.append(QCheckBox(self))
+            ligne.addWidget(self.options_box[i])
+            self.options_box[i].setChecked(self.param(self.options[i][1]))
             def action(event, chaine = self.options[i][1], entree = self.entree, self = self):
                 self.param(chaine, not self.param(chaine))
                 entree.setFocus()
-            self.options_box[i].Bind(wx.EVT_CHECKBOX, action)
-            ligne.Add(wx.StaticText(self, -1, " " + self.options[i][0]), flag = wx.ALIGN_CENTER_VERTICAL)
-            self.pave.Add(ligne)
+            self.options_box[i].stateChanged.connect(action)
+            ligne.addWidget(QLabel(" " + self.options[i][0]))
 
+        self.setLayout(self.sizer)
+#        self.adjustSize()
 
-        self.option1 = wx.BoxSizer(wx.HORIZONTAL)
-        self.pave.Add(self.option1)
-        #wx.CheckBox(self)
-
-        self.option2 = wx.BoxSizer(wx.HORIZONTAL)
-        self.pave.Add(self.option2)
-
-
-        self.sizer = wx.BoxSizer(wx.VERTICAL)
-##        self.sizer.Add(self.entrees, 0, wx.ALL, 5)
-        self.sizer.Add(self.entree, 0, wx.ALL, 5)
-        self.sizer.Add(self.corps, 0, wx.ALL, 5)
-        self.SetSizer(self.sizer)
-        self.adjustSize()
-
-        # historique des calculs
-##        self.entree.Bind(wx.EVT_KEY_UP, self.EvtChar)
-        self.entree.texte.Bind(wx.EVT_RIGHT_DOWN, self.EvtMenu)
-##        #self.Bind(wx.EVT_CHAR, self.EvtChar, self.entree)
-##        self.valider.Bind(wx.EVT_BUTTON, self.affichage_resultat)
-        self.visualisation.Bind(wx.EVT_RIGHT_DOWN, self.EvtMenuVisualisation)
-
+        #TODO:
+#        self.entree.texte.Bind(wx.EVT_RIGHT_DOWN, self.EvtMenu)
+#        self.visualisation.Bind(wx.EVT_RIGHT_DOWN, self.EvtMenuVisualisation)
 
         self.initialiser()
+
 
     def activer(self):
         # Actions à effectuer lorsque l'onglet devient actif
@@ -304,7 +306,7 @@ class Calculatrice(Panel_simple):
         fgeo.contenu["Calculatrice"][0]["Etat_interne"] = [self.interprete.save_state()]
         fgeo.contenu["Calculatrice"][0]["Options"] = [{}]
         for i in range(len(self.options)):
-            fgeo.contenu["Calculatrice"][0]["Options"][0][self.options[i][1]] = [str(self.options_box[i].GetValue())]
+            fgeo.contenu["Calculatrice"][0]["Options"][0][self.options[i][1]] = [str(self.options_box[i].isChecked())]
 
 
 
@@ -315,7 +317,7 @@ class Calculatrice(Panel_simple):
 
             self.entree.historique = eval_safe(calc["Historique"][0])
 #            self.interprete.derniers_resultats = securite.eval_safe(calc["Resultats"][0])
-            self.resultats.SetValue(calc["Affichage"][0] + "\n")
+            self.resultats.setText(calc["Affichage"][0] + "\n")
             self.interprete.load_state(calc["Etat_interne"][0])
 
             liste = calc["Options"][0].items()
@@ -324,7 +326,7 @@ class Calculatrice(Panel_simple):
                 value = eval_safe(value[0])
                 self.param(key, value)
                 if key in options:
-                    self.options_box[options.index(key)].SetValue(value)
+                    self.options_box[options.index(key)].setChecked(value)
             # il faudrait encore sauvegarder les variables, mais la encore, 2 problemes :
             # - pb de securite pour evaluer les variables
             # - pb pour obtenir le code source d'une fonction.
@@ -358,7 +360,7 @@ class Calculatrice(Panel_simple):
         self.dernier_resultat = "" # dernier resultat, sous forme de chaine formatee pour l'affichage
         self.entree.initialiser()
         self.interprete.initialiser()
-        self.resultats.Clear()
+        self.resultats.clear()
 
     def affichage_resultat(self, commande, **kw):
         # Commandes spéciales:
@@ -402,8 +404,8 @@ class Calculatrice(Panel_simple):
                                                         + " "*(4+len(numero))
                                                         + resultat + "\n__________________\n\n")
             self.message(u"Calcul effectué." + self.interprete.warning)
-            self.entree.Clear()
-            self.resultats.SetInsertionPoint(len(self.resultats.GetValue()))
+            self.entree.clear()
+            self.resultats.setCursorPosition(len(self.resultats.GetValue()))
             self.resultats.setFocus()
             self.resultats.ScrollLines(1)
             self.entree.setFocus()
@@ -422,21 +424,21 @@ class Calculatrice(Panel_simple):
             def f(event = None, panel = self, nom = nom, parenthese = parenthese):
                 deb, fin = panel.entree.GetSelection()
                 if parenthese:
-                    panel.entree.SetInsertionPoint(fin)
-                    panel.entree.WriteText(")")
-                    panel.entree.SetInsertionPoint(deb)
-                    panel.entree.WriteText(nom + "(")
+                    panel.entree.setCursorPosition(fin)
+                    panel.entree.insert(")")
+                    panel.entree.setCursorPosition(deb)
+                    panel.entree.insert(nom + "(")
                     panel.entree.setFocus()
                     if deb == fin:
                         final = fin + len(nom) + 1
                     else:
                         final = fin + len(nom) + 2
                 else:
-                    panel.entree.WriteText(nom)
+                    panel.entree.insert(nom)
                     final = fin + len(nom)
                 panel.entree.setFocus()
-                panel.entree.SetInsertionPoint(final)
-                panel.entree.SetSelection(final, final)
+                panel.entree.setCursorPosition(final)
+                panel.entree.setSelection(final, final)
             return f
         menu = QMenu()
         menu.setWindowTitle(u"Fonctions mathématiques")
@@ -473,33 +475,33 @@ class Calculatrice(Panel_simple):
         return Panel_simple.param(self, parametre = parametre, valeur = valeur, defaut = defaut)
 
     def EvtCalculExact(self, event = None):
-        valeur = self.cb_calcul_exact.GetValue()
+        valeur = self.cb_calcul_exact.isChecked()
         self.param("calcul_exact", not valeur)
         if valeur:
-            self.cb_notation_sci.Enable()
-            self.st_notation_sci.Enable()
-            self.sc_decimales.Enable()
-            self.st_decimales.Enable()
+            self.cb_notation_sci.setEnabled(True)
+            self.st_notation_sci.setEnabled(True)
+            self.sc_decimales.setEnabled(True)
+            self.st_decimales.setEnabled(True)
         else:
-            self.cb_notation_sci.Disable()
-            self.st_notation_sci.Disable()
-            self.sc_decimales.Disable()
-            self.st_decimales.Disable()
+            self.cb_notation_sci.setEnabled(False)
+            self.st_notation_sci.setEnabled(False)
+            self.sc_decimales.setEnabled(False)
+            self.st_decimales.setEnabled(False)
 
 
     def EvtNotationScientifique(self, event = None):
-        self.param("ecriture_scientifique", self.cb_notation_sci.GetValue())
-        self.param("ecriture_scientifique_decimales", self.sc_decimales.GetValue())
+        self.param("ecriture_scientifique", self.cb_notation_sci.isChecked())
+        self.param("ecriture_scientifique_decimales", self.sc_decimales.value())
 
     def EvtCopieAutomatique(self, event = None):
-        valeur = self.cb_copie_automatique.GetValue()
+        valeur = self.cb_copie_automatique.isChecked()
         self.param("copie_automatique", valeur)
         if valeur:
-            self.cb_copie_automatique_LaTeX.Enable()
-            self.st_copie_automatique_LaTeX.Enable()
+            self.cb_copie_automatique_LaTeX.setEnabled(True)
+            self.st_copie_automatique_LaTeX.setEnabled(True)
         else:
-            self.cb_copie_automatique_LaTeX.Disable()
-            self.st_copie_automatique_LaTeX.Disable()
+            self.cb_copie_automatique_LaTeX.setEnabled(False)
+            self.st_copie_automatique_LaTeX.setEnabled(False)
 
     def EvtCopieAutomatiqueLatex(self, event = None):
         self.param("copie_automatique_LaTeX", self.cb_copie_automatique_LaTeX.GetValue())

@@ -58,9 +58,9 @@ class Probabilites(Panel_API_graphique):
 
         self.couleurs = u"bgrmkcy"
 
-        self.entrees = wx.BoxSizer(wx.VERTICAL)
+        self.entrees = QVBoxLayout()
 
-        self.entrees.Add(wx.StaticText(self, -1, u" Instructions :"), 0, wx.ALL,5)
+        self.entrees.Add(QLabel(self, u" Instructions :"), 0, wx.ALL,5)
 
         self.instructions = wx.TextCtrl(self, size = (200, 300), style = wx.TE_MULTILINE)
         self.instructions.SetValue("""||Tirage 1|Tirage 2|Tirage 3
@@ -79,7 +79,7 @@ omega
         self.appliquer.Bind(wx.EVT_BUTTON, self.Appliquer)
         self.entrees.Add(self.appliquer, 0, wx.ALL,5)
 
-        self.sizer = wx.BoxSizer(wx.HORIZONTAL)
+        self.sizer = QHBoxLayout()
         self.sizer.Add(self.canvas, 1, wx.LEFT | wx.TOP | wx.GROW)
         self.sizer.Add(self.entrees, 0, wx.ALL, 5)
         self.finaliser(contenu = self.sizer)

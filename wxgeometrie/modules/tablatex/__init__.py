@@ -60,7 +60,7 @@ class TabLaTeX(Panel_simple):
     def __init__(self, *args, **kw):
         Panel_simple.__init__(self, *args, **kw)
 
-        self.sizer = wx.BoxSizer(wx.VERTICAL)
+        self.sizer = QVBoxLayout()
 
 ##        self.entrees = wx.BoxSizer(wx.HORIZONTAL)
 ##        self.entree = wx.TextCtrl(self, size = (500, -1), style=wx.TE_PROCESS_ENTER)
@@ -73,27 +73,27 @@ class TabLaTeX(Panel_simple):
         self.sizer.Add(self.entree, 0, wx.ALL, 5)
 
 
-        self.sizer_type = wx.BoxSizer(wx.HORIZONTAL)
+        self.sizer_type = QHBoxLayout()
         self.type_tableau = wx.Choice(self, choices = (u"Tableau de variations", u"Tableau de signes", u"Tableau de valeurs"))
-        self.type_tableau.SetSelection(self._param_.mode)
-        self.sizer_type.Add(wx.StaticText(self, label = u"Type de tableau à générer :"), 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5)
+        self.type_tableau.setSelection(self._param_.mode)
+        self.sizer_type.Add(QLabel(self, label = u"Type de tableau à générer :"), 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5)
         self.sizer_type.Add(self.type_tableau, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5)
 
-        self.utiliser_cellspace =  wx.CheckBox(self, label = u"Utiliser le paquetage cellspace.")
+        self.utiliser_cellspace =  QCheckBox(self, label = u"Utiliser le paquetage cellspace.")
         self.utiliser_cellspace.SetValue(self._param_.utiliser_cellspace)
-        self.utiliser_cellspace.SetToolTipString(u"Le paquetage cellspace évite que certains objets (comme les fractions) touchent les bordures du tableaux.")
+        self.utiliser_cellspace.setToolTip(u"Le paquetage cellspace évite que certains objets (comme les fractions) touchent les bordures du tableaux.")
         self.sizer_type.AddSpacer((10,0))
         self.sizer_type.Add(self.utiliser_cellspace, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5)
 
-        self.derivee =  wx.CheckBox(self, label = u"Dérivée.")
+        self.derivee =  QCheckBox(self, label = u"Dérivée.")
         self.derivee.SetValue(self._param_.derivee)
-        self.derivee.SetToolTipString(u"Afficher une ligne indiquant le signe de la dérivée.")
+        self.derivee.setToolTip(u"Afficher une ligne indiquant le signe de la dérivée.")
         self.sizer_type.AddSpacer((10,0))
         self.sizer_type.Add(self.derivee, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5)
 
-        self.limites =  wx.CheckBox(self, label = u"Limites.")
+        self.limites =  QCheckBox(self, label = u"Limites.")
         self.limites.SetValue(self._param_.limites)
-        self.limites.SetToolTipString(u"Afficher les limites dans le tableau de variations.")
+        self.limites.setToolTip(u"Afficher les limites dans le tableau de variations.")
         self.sizer_type.AddSpacer((10,0))
         self.sizer_type.Add(self.limites, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5)
 
@@ -116,9 +116,9 @@ class TabLaTeX(Panel_simple):
         self.copier_code = wx.Button(self, label = u"Copier dans le presse-papier")
         self.bsizer.Add(self.copier_code, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5)
 
-        self.bsizer.Add(wx.StaticText(self, label = u"Pensez à rajouter dans l'entête de votre fichier LaTeX la ligne suivante :"), 0, wx.TOP|wx.LEFT, 5)
+        self.bsizer.Add(QLabel(self, label = u"Pensez à rajouter dans l'entête de votre fichier LaTeX la ligne suivante :"), 0, wx.TOP|wx.LEFT, 5)
 
-        self.sizer_entete = wx.BoxSizer(wx.HORIZONTAL)
+        self.sizer_entete = QHBoxLayout()
         self.code_entete = wx.TextCtrl(self, size = (200, -1), value = u"\\usepackage{tabvar}", style = wx.TE_READONLY)
         self.sizer_entete.Add(self.code_entete, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5)
         self.copier_entete = wx.Button(self, label = u"Copier cette ligne")
@@ -129,11 +129,11 @@ class TabLaTeX(Panel_simple):
         self.sizer.Add(self.bsizer, 0, wx.ALL, 5)
 
 
-        self.cb = wx.CheckBox(self, label = u"Copier automatiquement le code LaTeX dans le presse-papier.")
+        self.cb = QCheckBox(self, label = u"Copier automatiquement le code LaTeX dans le presse-papier.")
         self.cb.SetValue(self._param_.copie_automatique)
         self.sizer.Add(self.cb, 0, wx.ALL, 5)
 
-        self.SetSizer(self.sizer)
+        self.setLayout(self.sizer)
         self.adjustSize()
 
 
@@ -211,22 +211,22 @@ class TabLaTeX(Panel_simple):
         self._param_.mode = self.type_tableau.GetSelection()
         if self._param_.mode == 0:
             self.code_entete.SetValue(u"\\usepackage{tabvar}")
-            self.entree.SetToolTipString(tabvar.__doc__)
-            self.utiliser_cellspace.Disable()
-            self.derivee.Enable()
-            self.limites.Enable()
+            self.entree.setToolTip(tabvar.__doc__)
+            self.utiliser_cellspace.setEnabled(False)
+            self.derivee.setEnabled(True)
+            self.limites.setEnabled(True)
         elif self._param_.mode == 1:
-            self.utiliser_cellspace.Enable()
-            self.derivee.Disable()
-            self.limites.Disable()
-            self.entree.SetToolTipString(tabsign.__doc__)
+            self.utiliser_cellspace.setEnabled(True)
+            self.derivee.setEnabled(False)
+            self.limites.setEnabled(False)
+            self.entree.setToolTip(tabsign.__doc__)
             if self._param_.utiliser_cellspace:
                 self.code_entete.SetValue(u"\\usepackage{cellspace}")
             else:
                 self.code_entete.SetValue(u"")
         elif self._param_.mode == 2:
-            self.utiliser_cellspace.Disable()
-            self.derivee.Disable()
-            self.limites.Disable()
-            self.entree.SetToolTipString(tabval.__doc__)
+            self.utiliser_cellspace.setEnabled(False)
+            self.derivee.setEnabled(False)
+            self.limites.setEnabled(False)
+            self.entree.setToolTip(tabval.__doc__)
             self.code_entete.SetValue(u"")

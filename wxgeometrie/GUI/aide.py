@@ -47,9 +47,9 @@ class Help(wx.Frame):
 
         self.printer = html.HtmlEasyPrinting()
 
-        self.box = wx.BoxSizer(wx.VERTICAL)
+        self.box = QVBoxLayout()
 
-        subbox = wx.BoxSizer(wx.HORIZONTAL)
+        subbox = QHBoxLayout()
 
         icones = [(u"maison",u"Page d'accueil.", self.OnHome), (u"gauche", u"Page precedente.", self.OnBack), (u"droite", u"Page suivante.", self.OnForward), (u"print", u"Imprimer la page.", self.OnPrint)]
 
@@ -59,14 +59,14 @@ class Help(wx.Frame):
             bouton = wx.BitmapButton(self, -1, bmp, style=wx.NO_BORDER)
             bouton.SetBackgroundColour(self.GetBackgroundColour())
             subbox.Add(bouton, 0, wx.ALL,5)
-            bouton.SetToolTipString(icone[1])
+            bouton.setToolTip(icone[1])
             bouton.Bind(wx.EVT_BUTTON, icone[2])
 
 
 
         self.box.Add(subbox, 0)
         self.box.Add(self.html, 1, wx.GROW)
-        self.SetSizer(self.box)
+        self.setLayout(self.box)
         self.SetAutoLayout(True)
 
         self.OnHome(None)
@@ -98,7 +98,7 @@ class Informations(wx.Dialog):
         panel = QWidget(self)
         panel.setStyleSheet("background-color:white")
 
-        panelSizer = wx.BoxSizer(wx.VERTICAL)
+        panelSizer = QVBoxLayout()
 
         italic = wx.Font(panel.GetFont().GetPointSize(),
                           panel.GetFont().GetFamily(),
@@ -111,7 +111,7 @@ class Informations(wx.Dialog):
         textes = informations_configuration().split(u"\n")
 
         for texte in textes:
-            t = wx.StaticText(panel, -1, texte)
+            t = QLabel(panel, -1, texte)
             if texte.startswith("+ "):
                 t.SetFont(italic)
             panelSizer.Add(t, 0, wx.ALIGN_LEFT)
@@ -121,20 +121,20 @@ class Informations(wx.Dialog):
         btnCopier = wx.Button(panel, -1, u"Copier")
         btnCopier.Bind(wx.EVT_BUTTON, self.copier)
 
-        sizer = wx.BoxSizer(wx.HORIZONTAL)
-        sizer.Add(btnOK, 0, wx.RIGHT, 40)
-        sizer.Add(btnCopier, 0, wx.LEFT, 40)
+        sizer = QHBoxLayout()
+        sizer.addWidget(btnOK, 0, wx.RIGHT, 40)
+        sizer.addWidget(btnCopier, 0, wx.LEFT, 40)
         panelSizer.Add(sizer, 0, wx.ALL | wx.ALIGN_CENTRE, 5)
 
         panel.SetAutoLayout(True)
-        panel.SetSizer(panelSizer)
+        panel.setLayout(panelSizer)
         panelSizer.Fit(panel)
 
-        topSizer = wx.BoxSizer(wx.HORIZONTAL)
+        topSizer = QHBoxLayout()
         topSizer.Add(panel, 0, wx.ALL, 10)
 
         self.SetAutoLayout(True)
-        self.SetSizer(topSizer)
+        self.setLayout(topSizer)
         topSizer.Fit(self)
 
         self.Centre()
@@ -153,7 +153,7 @@ class About(wx.Dialog):
         panel = QWidget(self)
         panel.setStyleSheet("background-color:white")
 
-        panelSizer = wx.BoxSizer(wx.VERTICAL)
+        panelSizer = QVBoxLayout()
 
         italic = wx.Font(panel.GetFont().GetPointSize(),
                           panel.GetFont().GetFamily(),
@@ -186,7 +186,7 @@ class About(wx.Dialog):
         for texte in textes:
             l = len(texte)
             if l:
-                txt = wx.StaticText(panel, -1, texte[0])
+                txt = QLabel(panel, -1, texte[0])
                 if l > 1:  txt.SetFont(texte[1])
                 panelSizer.Add(txt, 0, wx.ALIGN_LEFT)
             else:
@@ -198,14 +198,14 @@ class About(wx.Dialog):
         panelSizer.Add(btnOK, 0, wx.ALL | wx.ALIGN_CENTRE, 5)
 
         panel.SetAutoLayout(True)
-        panel.SetSizer(panelSizer)
+        panel.setLayout(panelSizer)
         panelSizer.Fit(panel)
 
-        topSizer = wx.BoxSizer(wx.HORIZONTAL)
+        topSizer = QHBoxLayout()
         topSizer.Add(panel, 0, wx.ALL, 10)
 
         self.SetAutoLayout(True)
-        self.SetSizer(topSizer)
+        self.setLayout(topSizer)
         topSizer.Fit(self)
 
         self.Centre()

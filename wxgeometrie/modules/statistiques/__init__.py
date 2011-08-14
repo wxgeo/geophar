@@ -136,9 +136,9 @@ class Statistiques(Panel_API_graphique):
                                     "quartiles": [True, [0.25, 0.75], 'b', '--'],\
                                     "deciles": [True, [0.1, 0.9], 'g', ':']}
 
-        self.entrees = wx.BoxSizer(wx.VERTICAL)
+        self.entrees = QVBoxLayout()
 
-        self.entrees.Add(wx.StaticText(self, -1, u" Mode graphique :"), 0, wx.ALL,5)
+        self.entrees.Add(QLabel(self, u" Mode graphique :"), 0, wx.ALL,5)
 
         self.choix = wx.Choice(self, -1, (100, 50), choices = self.noms_diagrammes)
         self.graph = 'barres' # *APRES* que self.choix soit défini.
@@ -154,31 +154,31 @@ class Statistiques(Panel_API_graphique):
         #self.entrees.Add(bsizer, 1, wx.EXPAND|wx.ALL, 5)
         self.entrees.Add(bsizer, 0, wx.ALL, 5)
 
-        self._effectif_total = wx.StaticText(self, -1, u" Effectif total:")
-        self._moyenne = wx.StaticText(self, -1, u" Moyenne:")
-        self._mediane = wx.StaticText(self, -1, u" Médiane:")
-        self._mode = wx.StaticText(self, -1, u" Mode:")
-        self._etendue = wx.StaticText(self, -1, u" Etendue:")
-        self._variance = wx.StaticText(self, -1, u" Variance:")
-        self._ecart_type = wx.StaticText(self, -1, u" Ecart-type:" + 30*" ")
+        self._effectif_total = QLabel(self, u" Effectif total:")
+        self._moyenne = QLabel(self, u" Moyenne:")
+        self._mediane = QLabel(self, u" Médiane:")
+        self._mode = QLabel(self, u" Mode:")
+        self._etendue = QLabel(self, u" Etendue:")
+        self._variance = QLabel(self, u" Variance:")
+        self._ecart_type = QLabel(self, u" Ecart-type:" + 30*" ")
 
-        bsizer.Add(self._effectif_total, 0, wx.TOP|wx.LEFT, 9)
-        bsizer.Add(self._moyenne, 0, wx.TOP|wx.LEFT, 9)
-        bsizer.Add(self._mediane, 0, wx.TOP|wx.LEFT, 9)
-        bsizer.Add(self._mode, 0, wx.TOP|wx.LEFT, 9)
-        bsizer.Add(self._etendue, 0, wx.TOP|wx.LEFT, 9)
-        bsizer.Add(self._variance, 0, wx.TOP|wx.LEFT, 9)
-        bsizer.Add(self._ecart_type, 0, wx.ALL, 9)
+        bsizer.addWidget(self._effectif_total, 0, wx.TOP|wx.LEFT, 9)
+        bsizer.addWidget(self._moyenne, 0, wx.TOP|wx.LEFT, 9)
+        bsizer.addWidget(self._mediane, 0, wx.TOP|wx.LEFT, 9)
+        bsizer.addWidget(self._mode, 0, wx.TOP|wx.LEFT, 9)
+        bsizer.addWidget(self._etendue, 0, wx.TOP|wx.LEFT, 9)
+        bsizer.addWidget(self._variance, 0, wx.TOP|wx.LEFT, 9)
+        bsizer.addWidget(self._ecart_type, 0, wx.ALL, 9)
 
-        haut = wx.BoxSizer(wx.HORIZONTAL)
+        haut = QHBoxLayout()
         haut.Add(self.canvas, 1, wx.LEFT | wx.TOP | wx.GROW)
         haut.Add(self.entrees, 0, wx.ALL, 5)
 
         self.onglets_bas = OngletsStatistiques(self)
 
-        self.sizer = wx.BoxSizer(wx.VERTICAL)
-        self.sizer.Add(haut, 1, wx.GROW)
-        self.sizer.Add(self.onglets_bas, 0)
+        self.sizer = QVBoxLayout()
+        self.sizer.addWidget(haut, 1, wx.GROW)
+        self.sizer.addWidget(self.onglets_bas, 0)
         self.finaliser(contenu = self.sizer)
 
 
@@ -198,7 +198,7 @@ class Statistiques(Panel_API_graphique):
         if val is not None:
             assert val in self.types_diagrammes, "Type de diagramme incorrect."
             self._graph = val
-            self.choix.SetSelection(self.types_diagrammes.index(self._graph))
+            self.choix.setSelection(self.types_diagrammes.index(self._graph))
         return self._graph
 
 

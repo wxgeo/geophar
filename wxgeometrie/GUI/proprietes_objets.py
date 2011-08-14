@@ -44,7 +44,7 @@ class ProprietesAffichage(QWidget):
         self.canvas = self.panel.canvas
         self.islabel = self.parent.parent.islabel
         self.objets = parent.objets
-        self.sizer = wx.BoxSizer(wx.VERTICAL)
+        self.sizer = QVBoxLayout()
 
         self.changements = {} # ce dictionnaire contiendra tous les styles modifiés
         encadre = wx.StaticBoxSizer(wx.StaticBox(self, -1, u"Mode d'affichage"), wx.HORIZONTAL)
@@ -52,7 +52,7 @@ class ProprietesAffichage(QWidget):
         if not self.islabel:
             objets = [objet for objet in self.objets if objet.style("fixe") is not None]
             if objets:
-                cb1 = wx.CheckBox(self, -1, u"Objet fixe", style = wx.CHK_3STATE)
+                cb1 = QCheckBox(self, -1, u"Objet fixe", style = wx.CHK_3STATE)
                 cb1.Bind(wx.EVT_CHECKBOX, self.EvtFixe)
                 encadre.Add(cb1, 0, wx.ALL, 5)
                 fixe = [objet.style("fixe") is True for objet in objets]
@@ -68,7 +68,7 @@ class ProprietesAffichage(QWidget):
 
             objets = [objet for objet in self.objets if objet.style("visible") is not None]
             if objets:
-                cb2 = wx.CheckBox(self, -1, u"Objet visible", style = wx.CHK_3STATE)
+                cb2 = QCheckBox(self, -1, u"Objet visible", style = wx.CHK_3STATE)
                 cb2.Bind(wx.EVT_CHECKBOX, self.EvtVisible)
                 encadre.Add(cb2, 0, wx.ALL, 5)
                 visible = [objet.style("visible") is True for objet in objets]
@@ -83,7 +83,7 @@ class ProprietesAffichage(QWidget):
 
             objets = [objet for objet in self.objets if objet.style("trace") is not None]
             if objets:
-                cb3 = wx.CheckBox(self, -1, u"Laisser une trace", style = wx.CHK_3STATE)
+                cb3 = QCheckBox(self, -1, u"Laisser une trace", style = wx.CHK_3STATE)
                 cb3.Bind(wx.EVT_CHECKBOX, self.EvtTrace)
                 encadre.Add(cb3, 0, wx.ALL, 5)
                 trace = [objet.style("trace") is True for objet in objets]
@@ -98,7 +98,7 @@ class ProprietesAffichage(QWidget):
 
         encadre1 = wx.StaticBoxSizer(wx.StaticBox(self, -1, u"Etiquette"), wx.VERTICAL)
         if not self.islabel:
-            ligne = wx.BoxSizer(wx.HORIZONTAL)
+            ligne = QHBoxLayout()
             if len(self.objets) == 1:
                 etiquette = wx.TextCtrl(self, value = self.objets[0].style("label"), size=wx.Size(200, -1))
                 self.Bind(wx.EVT_TEXT, self.EvtEtiquette, etiquette)
@@ -112,7 +112,7 @@ class ProprietesAffichage(QWidget):
             objets = [objet for objet in self.objets if objet.style("legende") is not None]
             if objets:
                 leg = objets[0].style("legende")
-                legende = wx.BoxSizer(wx.HORIZONTAL)
+                legende = QHBoxLayout()
                 self.radio_nom = wx.RadioButton(self, -1, "Nom", style = wx.RB_GROUP)
                 self.radio_nom.SetValue(0)
                 self.radio_etiquette = wx.RadioButton(self, -1, u"Texte")
@@ -139,7 +139,7 @@ class ProprietesAffichage(QWidget):
                 legende.Add(self.radio_etiquette, 0, wx.ALL, 5)
                 legende.Add(self.radio_formule, 0, wx.ALL, 5)
                 legende.Add(self.radio_aucun, 0, wx.ALL, 5)
-                encadre1.Add(wx.StaticText(self, -1, u"Afficher : "), 0, wx.ALL,5)
+                encadre1.Add(QLabel(self, u"Afficher : "), 0, wx.ALL,5)
                 encadre1.Add(legende, 0, wx.ALL, 5)
 
 
@@ -154,8 +154,8 @@ class ProprietesAffichage(QWidget):
 
 
         if objets and categorie and all(objet.style("categorie") == categorie for objet in objets):
-            choix = wx.BoxSizer(wx.HORIZONTAL)
-            choix.Add(wx.StaticText(self, -1, u"Style de l'objet : "), 0, wx.ALL,5)
+            choix = QHBoxLayout()
+            choix.Add(QLabel(self, u"Style de l'objet : "), 0, wx.ALL,5)
 
             #categorie = objets[0].style("categorie") or "lignes"
             self.liste_styles = getattr(param, "styles_de_" + categorie, [])
@@ -164,15 +164,15 @@ class ProprietesAffichage(QWidget):
 
             style = objets[0].style("style")
             if style in self.liste_styles and all(objet.style("style") == style for objet in objets):
-                self.style.SetSelection(self.liste_styles.index(style)) # on sélectionne le style actuel
+                self.style.setSelection(self.liste_styles.index(style)) # on sélectionne le style actuel
             choix.Add(self.style, 0, wx.ALL, 5)
             encadre2.Add(choix, 0, wx.ALL, 5)
 
 
         objets = [objet for objet in self.objets if objet.style("hachures") is not None]
         if objets:
-            choix = wx.BoxSizer(wx.HORIZONTAL)
-            choix.Add(wx.StaticText(self, -1, u"Style des hâchures : "), 0, wx.ALL,5)
+            choix = QHBoxLayout()
+            choix.Add(QLabel(self, u"Style des hâchures : "), 0, wx.ALL,5)
 
             self.types_de_hachures = getattr(param, "types_de_hachures", [])
             self.hachures = wx.Choice(self, -1, (100, 50), choices = self.types_de_hachures)
@@ -180,7 +180,7 @@ class ProprietesAffichage(QWidget):
 
             hachures = objets[0].style("hachures")
             if hachures in self.types_de_hachures and all(objet.style("hachures") == hachures for objet in objets):
-                self.hachures.SetSelection(self.types_de_hachures.index(hachures)) # on sélectionne les hachures actuelles
+                self.hachures.setSelection(self.types_de_hachures.index(hachures)) # on sélectionne les hachures actuelles
             choix.Add(self.hachures, 0, wx.ALL, 5)
             encadre2.Add(choix, 0, wx.ALL, 5)
 
@@ -189,8 +189,8 @@ class ProprietesAffichage(QWidget):
         categorie = objets and objets[0].style("categorie") or None
 
         if objets and categorie and all(objet.style("categorie") == categorie for objet in objets):
-            choix = wx.BoxSizer(wx.HORIZONTAL)
-            choix.Add(wx.StaticText(self, -1, "Police : "), 0, wx.ALL,5)
+            choix = QHBoxLayout()
+            choix.Add(QLabel(self, "Police : "), 0, wx.ALL,5)
 
             #categorie = self.objet.style("categorie") or "lignes"
             self.liste_familles = getattr(param, "familles_de_" + categorie, [])
@@ -199,7 +199,7 @@ class ProprietesAffichage(QWidget):
 
             famille = objets[0].style("famille")
             if famille in self.liste_familles and all(objet.style("famille") == famille for objet in objets):
-                self.famille.SetSelection(self.liste_familles.index(famille)) # on sélectionne la famille actuelle
+                self.famille.setSelection(self.liste_familles.index(famille)) # on sélectionne la famille actuelle
 
             choix.Add(self.famille, 0, wx.ALL, 5)
             encadre2.Add(choix, 0, wx.ALL, 5)
@@ -208,8 +208,8 @@ class ProprietesAffichage(QWidget):
         objets = [objet for objet in self.objets if objet.style("couleur") is not None]
         if objets:
             couleur = objets[0].style("couleur")
-            choix = wx.BoxSizer(wx.HORIZONTAL)
-            choix.Add(wx.StaticText(self, -1, u"Couleur de l'objet : "), 0, wx.ALL,5)
+            choix = QHBoxLayout()
+            choix.Add(QLabel(self, u"Couleur de l'objet : "), 0, wx.ALL,5)
             if all(objet.style("couleur") == couleur for objet in objets):
                 couleur = colorConverter.to_rgb(couleur)
                 couleur = tuple(int(255*i) for i in couleur) # conversion du format matplotlib au format wx
@@ -224,9 +224,9 @@ class ProprietesAffichage(QWidget):
         objets = [objet for objet in self.objets if objet.style("epaisseur") is not None]
         if objets:
             epaiss = objets[0].style("epaisseur")
-            epaisseur = wx.BoxSizer(wx.HORIZONTAL)
-            epaisseur.Add(wx.StaticText(self, -1, u"Epaisseur (en 10e de pixels) : "), 0, wx.ALL,5)
-            self.epaisseur = wx.SpinCtrl(self, -1, "", (30, 50))
+            epaisseur = QHBoxLayout()
+            epaisseur.Add(QLabel(self, u"Epaisseur (en 10e de pixels) : "), 0, wx.ALL,5)
+            self.epaisseur = QSpinBox(self, -1, "", (30, 50))
             self.epaisseur.SetRange(1,10000)
             if all(objet.style("epaisseur") == epaiss for objet in objets):
                 self.epaisseur.SetValue(10*epaiss)
@@ -240,9 +240,9 @@ class ProprietesAffichage(QWidget):
         objets = [objet for objet in self.objets if objet.style("taille") is not None]
         if objets:
             tail = objets[0].style("taille")
-            taille = wx.BoxSizer(wx.HORIZONTAL)
-            taille.Add(wx.StaticText(self, -1, u"Taille (en 10e de pixels) : "), 0, wx.ALL,5)
-            self.taille = wx.SpinCtrl(self, -1, "", (30, 50))
+            taille = QHBoxLayout()
+            taille.Add(QLabel(self, u"Taille (en 10e de pixels) : "), 0, wx.ALL,5)
+            self.taille = QSpinBox(self, -1, "", (30, 50))
             self.taille.SetRange(1,10000)
             if all(objet.style("taille") == tail for objet in objets):
                 self.taille.SetValue(10*tail)
@@ -256,9 +256,9 @@ class ProprietesAffichage(QWidget):
         objets = [objet for objet in self.objets if objet.style("position") is not None]
         if objets:
             pos = objets[0].style("position")
-            position = wx.BoxSizer(wx.HORIZONTAL)
-            position.Add(wx.StaticText(self, -1, u"Position de la flêche : "), 0, wx.ALL,5)
-            self.position = wx.SpinCtrl(self, -1, "", (30, 50))
+            position = QHBoxLayout()
+            position.Add(QLabel(self, u"Position de la flêche : "), 0, wx.ALL,5)
+            self.position = QSpinBox(self, -1, "", (30, 50))
             self.position.SetRange(0, 100)
             if all(objet.style("position") == pos for objet in objets):
                 self.position.SetValue(100*pos)
@@ -273,9 +273,9 @@ class ProprietesAffichage(QWidget):
         objets = [objet for objet in self.objets if objet.style("angle") is not None]
         if objets:
             ang = objets[0].style("angle")
-            angle = wx.BoxSizer(wx.HORIZONTAL)
-            angle.Add(wx.StaticText(self, -1, u"Angle (en degré) : "), 0, wx.ALL,5)
-            self.angle = wx.SpinCtrl(self, -1, "", (30, 50))
+            angle = QHBoxLayout()
+            angle.Add(QLabel(self, u"Angle (en degré) : "), 0, wx.ALL,5)
+            self.angle = QSpinBox(self, -1, "", (30, 50))
             self.angle.SetRange(0, 360)
             if all(objet.style("angle") == ang for objet in objets):
                 self.angle.SetValue(ang)
@@ -288,7 +288,7 @@ class ProprietesAffichage(QWidget):
 
         objets = [objet for objet in self.objets if objet.style("double_fleche") is not None]
         if objets:
-            cb4 = wx.CheckBox(self, -1, u"Flêche double", style = wx.CHK_3STATE)
+            cb4 = QCheckBox(self, -1, u"Flêche double", style = wx.CHK_3STATE)
             cb4.Bind(wx.EVT_CHECKBOX, self.EvtFlecheDouble)
             encadre.Add(cb4, 0, wx.ALL, 5)
             double = [objet.style("double_fleche") is True for objet in objets]
@@ -307,8 +307,8 @@ class ProprietesAffichage(QWidget):
 
 
         if objets and categorie and all(objet.style("categorie") == categorie for objet in objets):
-            choix = wx.BoxSizer(wx.HORIZONTAL)
-            choix.Add(wx.StaticText(self, -1, "Codage : "), 0, wx.ALL,5)
+            choix = QHBoxLayout()
+            choix.Add(QLabel(self, "Codage : "), 0, wx.ALL,5)
 
             #categorie = objets[0].style("categorie") or "lignes"
             self.liste_codages = getattr(param, "codage_des_" + categorie, [])
@@ -317,14 +317,14 @@ class ProprietesAffichage(QWidget):
 
             codage = objets[0].style("codage")
             if codage in self.liste_codages and all(objet.style("codage") == codage for objet in objets):
-                self.codage.SetSelection(self.liste_codages.index(codage)) # on sélectionne le codage actuel
+                self.codage.setSelection(self.liste_codages.index(codage)) # on sélectionne le codage actuel
             choix.Add(self.codage, 0, wx.ALL, 5)
             encadre2.Add(choix, 0, wx.ALL, 5)
 
 
 
 
-        boutons = wx.BoxSizer(wx.HORIZONTAL)
+        boutons = QHBoxLayout()
         ok = wx.Button(self, wx.ID_OK)
         ok.Bind(wx.EVT_BUTTON, self.EvtOk)
         boutons.Add(ok, 0, wx.ALL, 5)
@@ -343,18 +343,18 @@ class ProprietesAffichage(QWidget):
         boutons.Add(annuler, 0, wx.ALL, 5)
 
         if encadre.GetChildren(): # ne pas afficher un cadre vide !
-            self.sizer.Add(encadre, 0, wx.ALL, 5)
+            self.sizer.addWidget(encadre, 0, wx.ALL, 5)
         else:
             encadre.GetStaticBox().Destroy()
         if encadre1.GetChildren():
-            self.sizer.Add(encadre1, 0, wx.ALL, 5)
+            self.sizer.addWidget(encadre1, 0, wx.ALL, 5)
         else:
             encadre1.GetStaticBox().Destroy()
         if encadre2.GetChildren():
-            self.sizer.Add(encadre2, 0, wx.ALL, 5)
+            self.sizer.addWidget(encadre2, 0, wx.ALL, 5)
         else:
             encadre2.GetStaticBox().Destroy()
-        self.sizer.Add(boutons, 0, wx.ALL, 5)
+        self.sizer.addWidget(boutons, 0, wx.ALL, 5)
         self.SetSizerAndFit(self.sizer)
         self.parent.parent.dim1 = self.sizer.CalcMin().Get()
 
@@ -481,7 +481,7 @@ class ProprietesInfos(QWidget):
         QWidget.__init__(self, parent)
         self.parent = parent
         self.objets = parent.objets
-        self.sizer = wx.BoxSizer(wx.VERTICAL)
+        self.sizer = QVBoxLayout()
         self.infos = wx.StaticBoxSizer(wx.StaticBox(self, -1, u"Informations"), wx.VERTICAL)
         if len(self.objets) == 1:
             self.objet = self.objets[0]
@@ -502,12 +502,12 @@ class ProprietesInfos(QWidget):
 
 
         if self.textes:
-            self.sizer.Add(self.infos, 0, wx.ALL, 5)
+            self.sizer.addWidget(self.infos, 0, wx.ALL, 5)
             actualiser = wx.Button(self, label = u"Actualiser")
             actualiser.Bind(wx.EVT_BUTTON, self.EvtActualiser)
-            self.sizer.Add(actualiser, 0, wx.ALL, 15)
+            self.sizer.addWidget(actualiser, 0, wx.ALL, 15)
         else:
-            self.sizer.Add(wx.StaticText(self, -1, str(len(self.objets)) + u" objets sélectionnés."), 0, wx.ALL, 15)
+            self.sizer.addWidget(QLabel(self, str(len(self.objets)) + u" objets sélectionnés."), 0, wx.ALL, 15)
             self.infos.GetStaticBox().Destroy()
             del self.infos
 
@@ -521,7 +521,7 @@ class ProprietesInfos(QWidget):
             nom = propriete.replace("_", " ").strip().capitalize()
         nom += " : "
         if hasattr(self.objet, propriete):
-            self.infos.Add(wx.StaticText(self, -1, nom), 0, wx.ALL, 5)
+            self.infos.Add(QLabel(self, nom), 0, wx.ALL, 5)
             txt = UpdatableTextCtrl(self, propriete)
             self.infos.Add(txt, 0, wx.ALL, 5)
             self.textes.append(txt)
@@ -543,26 +543,26 @@ class ProprietesAvance(QWidget):
         self.canvas = self.parent.parent.canvas
         self.islabel = self.parent.parent.islabel
 
-        self.sizer = wx.BoxSizer(wx.VERTICAL)
+        self.sizer = QVBoxLayout()
         if len(self.objets) is 1:
             self.objet = self.objets[0]
             box = wx.StaticBoxSizer(wx.StaticBox(self, -1, u"Style de l'objet"), wx.VERTICAL)
-            box.Add(wx.StaticText(self, label = u"Attention, ne modifiez ce contenu que si vous savez ce que vous faites."), 0, wx.ALL, 5)
+            box.Add(QLabel(self, label = u"Attention, ne modifiez ce contenu que si vous savez ce que vous faites."), 0, wx.ALL, 5)
             self.avance = wx.TextCtrl(self, size=wx.Size(350, 200), style = wx.TE_MULTILINE)
             self.actualiser()
             box.Add(self.avance, 0, wx.ALL, 5)
-            self.sizer.Add(box, 0, wx.ALL, 5)
+            self.sizer.addWidget(box, 0, wx.ALL, 5)
             ok = wx.Button(self, id = wx.ID_OK)
             appliquer = wx.Button(self, label = u"Appliquer")
             actualiser = wx.Button(self, label = u"Actualiser")
             ok.Bind(wx.EVT_BUTTON, self.EvtOk)
             appliquer.Bind(wx.EVT_BUTTON, self.EvtAppliquer)
             actualiser.Bind(wx.EVT_BUTTON, self.actualiser)
-            boutons = wx.BoxSizer(wx.HORIZONTAL)
+            boutons = QHBoxLayout()
             boutons.Add(ok, 0, wx.ALL, 5)
             boutons.Add(appliquer, 0, wx.ALL, 5)
             boutons.Add(actualiser, 0, wx.ALL, 5)
-            self.sizer.Add(boutons, 0, wx.ALL, 10)
+            self.sizer.addWidget(boutons, 0, wx.ALL, 10)
 
         self.SetSizerAndFit(self.sizer)
         self.parent.parent.dim3 = self.sizer.CalcMin().Get()

@@ -115,7 +115,7 @@ class FenetrePrincipale(QMainWindow):
 #        x_fit, y_fit = self.GetSize()
 #        x_param, y_param = param.dimensions_fenetre
 #        self.SetSize(wx.Size(max(x_fit, x_param), max(y_fit, y_param)))
-        self.resize(*param.dimensions_fenetre)
+        self.setMinimumSize(*param.dimensions_fenetre)
 
 #        self.console = Console(self)
 
@@ -181,7 +181,7 @@ class FenetrePrincipale(QMainWindow):
         try:
             self.console.executer(commande)
             self.message(u"Commande interne exécutée.")
-            self.ligne_commande.Clear()
+            self.ligne_commande.clear()
         except Exception:
             self.message(u"Commande incorrecte.")
             if param.debug:
@@ -194,12 +194,13 @@ class FenetrePrincipale(QMainWindow):
             try:
                 if param.confirmer_quitter:
                     panel = self.onglets.onglet_actuel
-                    if hasattr(panel, 'canvas'):
+                    test = hasattr(panel, 'canvas') and hasattr(panel.canvas, 'setUpdatesEnabled')
+                    if test:
                         panel.canvas.setUpdatesEnabled(False)
                     reponse = QMessageBox.question(self, u'Quitter %s ?' %NOMPROG,
                                                u'Voulez-vous quitter %s ?' %NOMPROG,
                                                QMessageBox.Yes | QMessageBox.No)
-                    if hasattr(panel, 'canvas'):
+                    if test:
                         panel.canvas.setUpdatesEnabled(True)
                     if reponse != QMessageBox.Yes:
                         self.closing = False

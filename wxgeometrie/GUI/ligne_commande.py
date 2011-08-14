@@ -22,7 +22,8 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-from PyQt4.QtGui import QWidget
+from PyQt4.QtCore import Qt
+from PyQt4.QtGui import QWidget, QHBoxLayout, QLineEdit, QLabel, QPushButton
 
 
 class LigneCommande(QWidget):
@@ -35,25 +36,19 @@ class LigneCommande(QWidget):
         QWidget.__init__(self, parent)
 #        self.SetBackgroundColour(self.parent.GetBackgroundColour())
 
-        sizer = wx.BoxSizer(wx.HORIZONTAL)
-        self.texte = QLineEdit(self)
-        #TODO: implement longueur
+        sizer = QHBoxLayout()
+        self.texte = QLineEdit()
+        self.texte.setMinimumWidth(longueur)
         self.texte.returnPressed.connect(self.EvtButton)
-        self.texte.Bind(wx.EVT_KEY_UP, self.EvtChar)
-        if texte is None:
-            self.bouton = wx.Button(self, wx.ID_OK)
-        else:
-            self.bouton = wx.Button(self, label = texte)
-        self.bouton.Bind(wx.EVT_BUTTON, self.EvtButton)
+        self.bouton = QPushButton('OK' if texte is None else texte)
         self.bouton.setVisible(afficher_bouton)
+        self.bouton.clicked.connect(self.EvtButton)
 
         if legende is not None:
-            sizer.Add(wx.StaticText(self, -1, legende), 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5)
-        sizer.Add(self.texte, 1, wx.ALL|wx.ALIGN_CENTER_VERTICAL|wx.EXPAND, 5)
-        sizer.Add(self.bouton, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5)
-        self.SetSizer(sizer)
-        self.adjustSize()
-
+            sizer.addWidget(QLabel(legende, self))
+        sizer.addWidget(self.texte)
+        sizer.addWidget(self.bouton)
+        self.setLayout(sizer)
         self.initialiser()
 
 
@@ -63,32 +58,32 @@ class LigneCommande(QWidget):
         self.setFocus()
         self.clear()
 
-    def GetValue(self):
-        return self.texte.GetValue()
+    def text(self):
+        return self.texte.text()
 
-    def SetValue(self, value):
-        self.texte.SetValue(value)
+    def setText(self, value):
+        self.texte.setText(value)
 
-    def SetFocus(self):
+    def setFocus(self):
         self.texte.setFocus()
 
     def clear(self):
         self.texte.clear()
 
-    def GetSelection(self):
-        return self.texte.GetSelection()
+#    def GetSelection(self):
+#        return self.texte.GetSelection()
 
-    def GetInsertionPoint(self):
-        return self.texte.GetInsertionPoint()
+    def cursorPosition(self):
+        return self.texte.cursorPosition()
 
-    def SetInsertionPoint(self, num):
-        return self.texte.SetInsertionPoint(num)
+    def setCursorPosition(self, num):
+        return self.texte.setCursorPosition(num)
 
-    def setText(self, texte):
-        self.texte.setText(texte)
+    def insert(self, texte):
+        self.texte.insert(texte)
 
-    def SetSelection(self, deb, fin):
-        self.texte.SetSelection(deb, fin)
+    def setSelection(self, deb, fin):
+        self.texte.setSelection(deb, fin)
 
     def setToolTip(self, tip):
         self.texte.setToolTip(tip)
@@ -110,9 +105,6 @@ class LigneCommande(QWidget):
     def keyPressEvent(self, event):
         key = event.key()
         commande = self.text()
-
-#        if code in (wx.WXK_RETURN, wx.WXK_NUMPAD_ENTER):
-#            self.EvtButton(event)
 
         if key == Qt.Key_Up:
             # On remonte dans l'historique (-> entrées plus anciennes)
@@ -141,13 +133,3 @@ class LigneCommande(QWidget):
                 self.texte.SetValue(self.historique[self.position])
         else:
             self.position = None
-#            event.Skip()
-
-    def Command(*args, **kwargs):
-        pass
-    def Create(*args, **kwargs):
-        pass
-    def GetAlignment(*args, **kwargs):
-        pass
-    def GetLabelText(*args, **kwargs):
-        pass

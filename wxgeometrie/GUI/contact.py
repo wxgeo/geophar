@@ -42,9 +42,9 @@ class Contact(wx.Frame):
 #        bold_italic = wx.Font(panel.GetFont().GetPointSize(), panel.GetFont().GetFamily(), wx.ITALIC, wx.BOLD)
         panel.setStyleSheet("background-color:white")
 
-        panelSizer = wx.BoxSizer(wx.VERTICAL)
+        panelSizer = QVBoxLayout()
 
-        avant_propos = wx.StaticText(panel, -1, u"""Afin d'améliorer le fonctionnement de WxGéométrie,
+        avant_propos = QLabel(panel, -1, u"""Afin d'améliorer le fonctionnement de WxGéométrie,
 vous êtes invités à signaler tout problème rencontré.""")
         panelSizer.Add(avant_propos, 0, wx.ALL, 5)
         avant_propos.SetFont(italic)
@@ -57,35 +57,35 @@ vous êtes invités à signaler tout problème rencontré.""")
         titre.SelectAll()
         rapport.Add(titre, 0, wx.ALL, 5)
 
-        sizer= wx.BoxSizer(wx.HORIZONTAL)
+        sizer= QHBoxLayout()
         self.modules = modules = wx.Choice(panel, choices = [self.parent.onglet(md).__titre__ for md in param.modules if hasattr(self.parent.onglet(md), "__titre__")])
-        sizer.Add(wx.StaticText(panel, -1, u"Module concerné :"), 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5)
-        modules.SetSelection(self.parent.GetSelection())
-        sizer.Add(modules, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5)
+        sizer.addWidget(QLabel(panel, -1, u"Module concerné :"), 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5)
+        modules.setSelection(self.parent.GetSelection())
+        sizer.addWidget(modules, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5)
         rapport.Add(sizer, 0, wx.ALL, 0)
 
-        rapport.Add(wx.StaticText(panel, -1, u"Description du problème :"), 0, wx.ALL, 5)
+        rapport.Add(QLabel(panel, -1, u"Description du problème :"), 0, wx.ALL, 5)
         self.commentaire = commentaire = wx.TextCtrl(panel, size = (300,100), style = wx.TE_MULTILINE)
         rapport.Add(commentaire, 0, wx.ALL, 5)
 
         panelSizer.Add(rapport, 0, wx.ALL|wx.EXPAND, 5)
 
         sizer = wx.StaticBoxSizer(wx.StaticBox(panel, -1, u"Vos coordonnées (facultatif)"), wx.HORIZONTAL)
-        sizer.Add(wx.StaticText(panel, -1, u"Nom :"), 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5)
+        sizer.addWidget(QLabel(panel, -1, u"Nom :"), 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5)
         self.nom = nom = wx.TextCtrl(panel, size = (100, -1))
-        sizer.Add(nom, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5)
-        sizer.Add(wx.StaticText(panel, -1, u" E-mail :"), 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5)
+        sizer.addWidget(nom, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5)
+        sizer.addWidget(QLabel(panel, -1, u" E-mail :"), 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5)
         self.mail = mail = wx.TextCtrl(panel, size = (100, -1))
-        sizer.Add(mail, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5)
+        sizer.addWidget(mail, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5)
 
         panelSizer.Add(sizer, 0, wx.ALL|wx.EXPAND, 5)
 
         options = wx.StaticBoxSizer(wx.StaticBox(panel, -1, u"Options"), wx.VERTICAL)
-        self.histo = histo = wx.CheckBox(panel, -1, "Inclure l'historique du module courant.")
+        self.histo = histo = QCheckBox(panel, -1, "Inclure l'historique du module courant.")
         histo.SetValue(True)
         options.Add(histo, 0, wx.ALL, 5)
 
-        self.msg = msg = wx.CheckBox(panel, -1, "Inclure l'historique des commandes.")
+        self.msg = msg = QCheckBox(panel, -1, "Inclure l'historique des commandes.")
         msg.SetValue(True)
         options.Add(msg, 0, wx.ALL, 5)
 
@@ -93,24 +93,24 @@ vous êtes invités à signaler tout problème rencontré.""")
 
 
         btnOK = wx.Button(panel, wx.ID_OK, u"Envoyer")
-        btnOK.SetToolTipString(u"Envoyer les informations.")
+        btnOK.setToolTip(u"Envoyer les informations.")
         btnCancel = wx.Button(panel, wx.ID_CANCEL, u"Annuler")
-        btnCancel.SetToolTipString(u"Quitter sans rien envoyer.")
+        btnCancel.setToolTip(u"Quitter sans rien envoyer.")
 
-        sizer = wx.BoxSizer(wx.HORIZONTAL)
-        sizer.Add(btnOK, 0, wx.RIGHT, 40)
-        sizer.Add(btnCancel, 0, wx.LEFT, 40)
+        sizer = QHBoxLayout()
+        sizer.addWidget(btnOK, 0, wx.RIGHT, 40)
+        sizer.addWidget(btnCancel, 0, wx.LEFT, 40)
         panelSizer.Add(sizer, 0, wx.ALL | wx.ALIGN_CENTRE, 15)
 
         panel.SetAutoLayout(True)
-        panel.SetSizer(panelSizer)
+        panel.setLayout(panelSizer)
         panelSizer.Fit(panel)
 
-        topSizer = wx.BoxSizer(wx.HORIZONTAL)
+        topSizer = QHBoxLayout()
         topSizer.Add(panel, 0, wx.ALL, 10)
 
         self.SetAutoLayout(True)
-        self.SetSizer(topSizer)
+        self.setLayout(topSizer)
         topSizer.Fit(self)
 
         self.Centre()

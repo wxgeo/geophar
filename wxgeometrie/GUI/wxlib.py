@@ -24,7 +24,7 @@ from __future__ import with_statement
 import os, math
 
 from PyQt4.QtCore import Qt
-from PyQt4.QtGui import QCursor, QDialog
+from PyQt4.QtGui import QCursor, QDialog, QPixmap
 
 from .. import param
 from ..pylib import uu

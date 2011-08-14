@@ -84,7 +84,7 @@ class MultiButton(QToolButton):
             aide = self.liste[self.selection][2] + touche
             if len(self.liste) > 1:
                 aide += "\n\nClic droit pour plus de choix."
-            self.SetToolTipString(aide)
+            self.setToolTip(aide)
         self.display(sel)
 
     def display(self, selected = None):
@@ -159,7 +159,7 @@ class BarreOutils(QWidget):
         self.debut_selection = None
         self.debut_zoombox = None
 
-        self.sizer = wx.BoxSizer(wx.HORIZONTAL)
+        self.sizer = QHBoxLayout()
 
 
         self.add2(u"ouvrir", u"Ouvrir un fichier .geo.", self.parent.parent.OpenFile)
@@ -171,7 +171,7 @@ class BarreOutils(QWidget):
         if self.parent.param('afficher_boutons'):
             self.creer_boutons()
 
-        self.SetSizer(self.sizer)
+        self.setLayout(self.sizer)
         self.adjustSize()
 
 
@@ -181,7 +181,7 @@ class BarreOutils(QWidget):
         i = 5
         if param.plateforme == "Linux":
             i = 0
-        self.sizer.Add(button, 0, wx.ALL, i)
+        self.sizer.addWidget(button, 0, wx.ALL, i)
         return button
 
 
@@ -191,7 +191,7 @@ class BarreOutils(QWidget):
         i = 5
         if param.plateforme == "Linux":
             i = 0
-        self.sizer.Add(button, 0, wx.ALL, i)
+        self.sizer.addWidget(button, 0, wx.ALL, i)
         return button
 
 

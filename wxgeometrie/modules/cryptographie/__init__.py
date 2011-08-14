@@ -97,7 +97,7 @@ class Cryptographie(Panel_simple):
         # Signe indiquant un caractère non déchiffré
         self.symbole = '-' # '.'
 
-        self.sizer = wx.BoxSizer(wx.VERTICAL)
+        self.sizer = QVBoxLayout()
 
         font = self.GetFont()
 #        italic = wx.Font(font.GetPointSize(), font.GetFamily(), wx.ITALIC, wx.NORMAL)
@@ -108,7 +108,7 @@ class Cryptographie(Panel_simple):
 
         TE_STYLE = wx.TE_MULTILINE|wx.TE_RICH2#|wx.TE_CHARWRAP
 
-        txt_clair = wx.StaticText(self, -1, u"Texte en clair")
+        txt_clair = QLabel(self, u"Texte en clair")
         txt_clair.SetFont(bold)
         self.clair = wx.TextCtrl(self, style=TE_STYLE, size=size)
         # self.clair.Bind(wx.EVT_LEFT_UP, self.clairLeft)
@@ -118,7 +118,7 @@ class Cryptographie(Panel_simple):
         self.copier_clair = wx.Button(self, label=u'Copier le texte en clair')
         self.copier_clair.Bind(wx.EVT_BUTTON, partial(self.copier, widget=self.clair))
 
-        txt_code = wx.StaticText(self, -1, u"Texte codé")
+        txt_code = QLabel(self, u"Texte codé")
         txt_code.SetFont(bold)
         self.code = wx.TextCtrl(self, style=TE_STYLE, size=size)
         # self.code.Bind(wx.EVT_LEFT_UP, self.codeLeft)
@@ -139,11 +139,11 @@ class Cryptographie(Panel_simple):
         self.table = wx.GridBagSizer(5, 5)
         self.cases = {}
         size = (30, -1)
-        self.table.Add(wx.StaticText(self, -1, u"Codé:"), (0, 0), flag=wx.ALIGN_CENTER)
-        self.table.Add(wx.StaticText(self, -1, u"Clair:"), (1, 0), flag=wx.ALIGN_CENTER)
+        self.table.Add(QLabel(self, u"Codé:"), (0, 0), flag=wx.ALIGN_CENTER)
+        self.table.Add(QLabel(self, u"Clair:"), (1, 0), flag=wx.ALIGN_CENTER)
         for i, l in enumerate(majuscules):
             txtctrl = wx.TextCtrl(self, value=l, size=size, style=wx.TE_READONLY|wx.TE_CENTRE)
-            txtctrl.Disable()
+            txtctrl.setEnabled(False)
             self.table.Add(txtctrl, (0, i + 1))
         for i, l in enumerate(majuscules):
             self.cases[l] = wx.TextCtrl(self, size=size, style=wx.TE_CENTRE)
@@ -155,7 +155,7 @@ class Cryptographie(Panel_simple):
 
         self.sizer.Add(self.textes, 0, wx.ALIGN_CENTER | wx.ALL, 10)
         self.sizer.Add(self.table, 0, wx.ALIGN_CENTER | wx.ALL, 10)
-        self.SetSizer(self.sizer)
+        self.setLayout(self.sizer)
         self.adjustSize()
 
         couleur_position = wx.Color(255, 205, 179)
@@ -279,7 +279,7 @@ class Cryptographie(Panel_simple):
     def _formater(self, widget):
         self._freeze = True
         txt = widget.GetValue()
-        pos = widget.GetInsertionPoint()
+        pos = widget.cursorPosition()
         if param.plateforme == "Windows":
             self.copier_clair.SetFocusFromKbd()
         for w in (self.code, self.clair):

@@ -86,8 +86,8 @@ class TableauValeurs(wx.MiniFrame):
         self.parent = parent
         p = self.panel = QWidget(self)
 
-        sizer = wx.BoxSizer(wx.VERTICAL)
-        barre = wx.BoxSizer(wx.HORIZONTAL)
+        sizer = QVBoxLayout()
+        barre = QHBoxLayout()
         creer = wx.Button(p, -1, "Creer les points")
         effacer = wx.Button(p, -1, "Effacer")
         barre.Add(creer, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL, 5)
@@ -95,8 +95,8 @@ class TableauValeurs(wx.MiniFrame):
         
         self.grid = grid = EditorsAndRenderersGrid(p)
         self.Bind(wx.EVT_BUTTON, self.efface, effacer)
-        sizer.Add(barre, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL, 5)
-        sizer.Add(grid, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL|wx.EXPAND , 5)
+        sizer.addWidget(barre, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL, 5)
+        sizer.addWidget(grid, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL|wx.EXPAND , 5)
 
         #p.SetSizer(sizer)
         p.SetSizerAndFit(sizer)

@@ -33,24 +33,24 @@ class ConsoleGeolib(QWidget):
         self.parent = parent
         QWidget.__init__(self, parent, style = wx.TAB_TRAVERSAL|wx.WANTS_CHARS)
         self.SetBackgroundColour(couleur if couleur is not None else wx.NamedColor(u"WHITE"))
-        vsizer = wx.BoxSizer(wx.VERTICAL)
+        vsizer = QVBoxLayout()
         label = u"Tapez une commande ci-dessus, puis appuyez sur [Entrée]."
-        self.resultats = wx.StaticText(self, size = (500, -1), label = label)
+        self.resultats = QLabel(self, size = (500, -1), label = label)
         italic = wx.Font(self.GetFont().GetPointSize(),
                           self.GetFont().GetFamily(),
                           wx.ITALIC, wx.NORMAL)
         self.resultats.SetFont(italic)
         self.ligne_commande = LigneCommande(self, longueur = 500, action = self.action)
-        vsizer.Add(self.ligne_commande, 1, wx.ALL|wx.EXPAND, 0)
-        vsizer.Add(self.resultats, 1, wx.ALL|wx.EXPAND, 5)
-        self.SetSizer(vsizer)
+        vsizer.addWidget(self.ligne_commande, 1, wx.ALL|wx.EXPAND, 0)
+        vsizer.addWidget(self.resultats, 1, wx.ALL|wx.EXPAND, 5)
+        self.setLayout(vsizer)
         self.adjustSize()
 
     def action(self, commande, **kw):
         try:
             resultat = self.parent.feuille_actuelle.executer(commande)
             self.resultats.SetLabel(resultat)
-            self.ligne_commande.Clear()
+            self.ligne_commande.clear()
         except:
             print_error()
             self.resultats.SetLabel('Erreur.')

@@ -218,7 +218,7 @@ class Panel_API_graphique(Panel_simple):
         self.console_geolib.setVisible(self.param("afficher_console_geolib"))
 
         self.canvas.initialiser()
-        self.__sizer_principal = wx.BoxSizer(wx.VERTICAL)
+        self.__sizer_principal = QVBoxLayout()
         self.__sizer_principal.Add(self.barre_outils, 0, wx.ALL, 5)
 
 
@@ -275,7 +275,7 @@ class Panel_API_graphique(Panel_simple):
             contenu = self.canvas
         self.__sizer_principal.Add(contenu, 1, wx.LEFT | wx.TOP | wx.GROW)
         self.__sizer_principal.Add(self.console_geolib, 0, wx.ALL, 5)
-        self.SetSizer(self.__sizer_principal)
+        self.setLayout(self.__sizer_principal)
         self.adjustSize()
 
 

@@ -37,47 +37,47 @@ class DialogueAnimation(MyMiniFrame):
         self.feuille_actuelle = self.parent.onglet_actuel.feuille_actuelle
         p = self.panel = QWidget(self)
 
-        self.sizer = sizer = wx.BoxSizer(wx.VERTICAL)
+        self.sizer = sizer = QVBoxLayout()
 
-        terme = wx.BoxSizer(wx.HORIZONTAL)
-        terme.Add(wx.StaticText(p, -1, u"Variable :"), 0, wx.ALIGN_LEFT|wx.ALIGN_CENTER_VERTICAL|wx.ALL,5)
+        terme = QHBoxLayout()
+        terme.Add(QLabel(p, -1, u"Variable :"), 0, wx.ALIGN_LEFT|wx.ALIGN_CENTER_VERTICAL|wx.ALL,5)
         self.var =  wx.TextCtrl(p, -1, "", size=(100, -1))
         terme.Add(self.var, 0, wx.ALIGN_LEFT|wx.ALIGN_CENTER_VERTICAL|wx.ALL,5)
         self.var.Bind(wx.EVT_MIDDLE_DOWN, self.Propositions)
-        sizer.Add(terme)
+        sizer.addWidget(terme)
 
-        sizer.Add(wx.StaticLine(p, -1, style=wx.LI_HORIZONTAL), 0, wx.GROW|wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5)
+        sizer.addWidget(wx.StaticLine(p, -1, style=wx.LI_HORIZONTAL), 0, wx.GROW|wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5)
 
-        terme = wx.BoxSizer(wx.HORIZONTAL)
-        terme.Add(wx.StaticText(p, -1, u"Début :"), 0, wx.ALIGN_LEFT|wx.ALIGN_CENTER_VERTICAL|wx.ALL,5)
+        terme = QHBoxLayout()
+        terme.Add(QLabel(p, -1, u"Début :"), 0, wx.ALIGN_LEFT|wx.ALIGN_CENTER_VERTICAL|wx.ALL,5)
         self.deb =  wx.TextCtrl(p, -1, "0", size=(50, -1))
         terme.Add(self.deb, 0, wx.ALIGN_LEFT|wx.ALIGN_CENTER_VERTICAL|wx.ALL,5)
-        terme.Add(wx.StaticText(p, -1, u"Fin :"), 0, wx.ALIGN_LEFT|wx.ALIGN_CENTER_VERTICAL|wx.ALL,5)
+        terme.Add(QLabel(p, -1, u"Fin :"), 0, wx.ALIGN_LEFT|wx.ALIGN_CENTER_VERTICAL|wx.ALL,5)
         self.fin =  wx.TextCtrl(p, -1, "1", size=(50, -1))
         terme.Add(self.fin, 0, wx.ALIGN_LEFT|wx.ALIGN_CENTER_VERTICAL|wx.ALL,5)
-        terme.Add(wx.StaticText(p, -1, u"Pas :"), 0, wx.ALIGN_LEFT|wx.ALIGN_CENTER_VERTICAL|wx.ALL,5)
+        terme.Add(QLabel(p, -1, u"Pas :"), 0, wx.ALIGN_LEFT|wx.ALIGN_CENTER_VERTICAL|wx.ALL,5)
         self.pas =  wx.TextCtrl(p, -1, "0.05", size=(50, -1))
         terme.Add(self.pas, 0, wx.ALIGN_LEFT|wx.ALIGN_CENTER_VERTICAL|wx.ALL,5)
-        sizer.Add(terme)
+        sizer.addWidget(terme)
 
-        terme = wx.BoxSizer(wx.HORIZONTAL)
-        terme.Add(wx.StaticText(p, -1, u"Période (s) :"), 0, wx.ALIGN_LEFT|wx.ALIGN_CENTER_VERTICAL|wx.ALL,5)
+        terme = QHBoxLayout()
+        terme.Add(QLabel(p, -1, u"Période (s) :"), 0, wx.ALIGN_LEFT|wx.ALIGN_CENTER_VERTICAL|wx.ALL,5)
         self.periode =  wx.TextCtrl(p, -1, "0.1", size=(100, -1))
         terme.Add(self.periode, 0, wx.ALIGN_LEFT|wx.ALIGN_CENTER_VERTICAL|wx.ALL,5)
-        sizer.Add(terme)
+        sizer.addWidget(terme)
 
 
 
-        sizer.Add(wx.StaticLine(p, -1, style=wx.LI_HORIZONTAL), 0, wx.GROW|wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5)
+        sizer.addWidget(wx.StaticLine(p, -1, style=wx.LI_HORIZONTAL), 0, wx.GROW|wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5)
 
-        boutons = wx.BoxSizer(wx.HORIZONTAL)
+        boutons = QHBoxLayout()
         self.btn_lancer = lancer = wx.Button(p, -1, u"Animer")
         boutons.Add(lancer, 0, wx.ALL, 5)
         fermer = wx.Button(p, -1, u"Fermer")
         boutons.Add(fermer, 0, wx.ALL, 5)
         self.Bind(wx.EVT_BUTTON, self.Animer, lancer)
         self.Bind(wx.EVT_BUTTON, self.OnCloseMe, fermer)
-        sizer.Add(boutons)
+        sizer.addWidget(boutons)
 
         p.SetSizerAndFit(sizer)
         self.SetClientSize(p.GetSize())

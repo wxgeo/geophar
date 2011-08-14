@@ -37,7 +37,7 @@ class FenetreOptions(wx.Frame):
         self.widgets = {}
         for theme in options:
             panel = QWidget(self.onglets)
-            sizer = wx.BoxSizer(wx.VERTICAL)
+            sizer = QVBoxLayout()
             self.onglets.addTab(panel, theme.titre)
             for elt in theme:
                 if isinstance(elt, Section):
@@ -47,22 +47,22 @@ class FenetreOptions(wx.Frame):
                     for parametre in elt:
                         if isinstance(parametre, Parametre):
                             psizer = self.ajouter_parametre(parametre, panel, sizer)
-                            bsizer.Add(psizer, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 2)
+                            bsizer.addWidget(psizer, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 2)
                         elif isinstance(parametre, basestring):
-                            bsizer.Add(wx.StaticText(panel, -1, parametre), 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5)
+                            bsizer.addWidget(QLabel(panel, -1, parametre), 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5)
                         else:
                             raise NotImplementedError, repr(type(elt))
                     bsizer.AddSpacer(3)
-                    sizer.Add(bsizer, 0, wx.ALL, 8)
+                    sizer.addWidget(bsizer, 0, wx.ALL, 8)
                 elif isinstance(elt, Parametre):
                     psizer = self.ajouter_parametre(elt, panel, sizer)
-                    sizer.Add(psizer, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5)
+                    sizer.addWidget(psizer, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5)
                 elif isinstance(elt, basestring):
-                    sizer.Add(wx.StaticText(panel, -1, elt), 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5)
+                    sizer.addWidget(QLabel(panel, -1, elt), 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5)
                 else:
                     raise NotImplementedError, repr(type(elt))
 
-            boutons = wx.BoxSizer(wx.HORIZONTAL)
+            boutons = QHBoxLayout()
             ok = wx.Button(panel, wx.ID_OK)
             ok.Bind(wx.EVT_BUTTON, self.EvtOk)
             boutons.Add(ok, 0, wx.ALL, 5)
@@ -74,8 +74,8 @@ class FenetreOptions(wx.Frame):
             annuler = wx.Button(panel, wx.ID_CANCEL)
             annuler.Bind(wx.EVT_BUTTON, self.EvtAnnuler)
             boutons.Add(annuler, 0, wx.ALL, 5)
-            sizer.Add(boutons, 0, wx.ALL, 5)
-            panel.SetSizer(sizer)
+            sizer.addWidget(boutons, 0, wx.ALL, 5)
+            panel.setLayout(sizer)
             dimensions_onglets.append(sizer.CalcMin().Get())
 
         w, h = (max(dimensions) for dimensions in zip(*dimensions_onglets))
@@ -85,19 +85,19 @@ class FenetreOptions(wx.Frame):
 
 
     def ajouter_parametre(self, parametre, panel, sizer):
-        psizer = wx.BoxSizer(wx.HORIZONTAL)
+        psizer = QHBoxLayout()
         if parametre.type is not bool:
-            psizer.Add(wx.StaticText(panel, -1, parametre.texte + ' :'), 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5)
+            psizer.addWidget(QLabel(panel, -1, parametre.texte + ' :'), 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5)
 
         if parametre.type is bool:
-            widget = wx.CheckBox(panel, label=parametre.texte)
+            widget = QCheckBox(panel, label=parametre.texte)
         elif parametre.type is file:
             widget = wx.TextCtrl(panel, -1, '', size=(200,-1))
         elif parametre.type is str:
             widget = wx.TextCtrl(panel, -1, '')
         elif isinstance(parametre.type, tuple):
             min_, max_ = parametre.type
-            widget = wx.SpinCtrl(panel, min = min_, max = max_)
+            widget = QSpinBox(panel, min = min_, max = max_)
         elif isinstance(parametre.type, list):
 ##            widget = wx.Choice(panel, -1, choices = parametre.type)
             widget = wx.ComboBox(panel, choices = parametre.type,  style = wx.CB_READONLY)
@@ -111,11 +111,11 @@ class FenetreOptions(wx.Frame):
 ##        else:
 ##            widget.SetValue(parametre.valeur)
         widget.SetValue(parametre.valeur)
-        psizer.Add(widget, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5)
+        psizer.addWidget(widget, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5)
         if parametre.type is file:
             parcourir = wx.Button(panel, -1, u'Parcourir')
             self.Bind(wx.EVT_BUTTON, partial(self.EvtParcourir, widget = widget), parcourir)
-            psizer.Add(parcourir, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5)
+            psizer.addWidget(parcourir, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5)
         return psizer
 
 
