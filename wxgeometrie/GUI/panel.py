@@ -57,7 +57,7 @@ class Panel_simple(QWidget):
         QWidget.__init__(self, parent)
 
         self.module = module
-        self.setStyleSheet("background-color:white")
+#        self.setStyleSheet("background-color:white")
         self.parent = parent
         self.nom = self.__class__.__name__.lower()
         self.canvas = None
@@ -74,6 +74,7 @@ class Panel_simple(QWidget):
         self.parent.parent.message(texte)
 
     def changer_titre(self, texte = ''):
+        print 'changer_titre...'
         self.parent.parent.titre(texte)
 
 
@@ -209,7 +210,7 @@ class Panel_API_graphique(Panel_simple):
         self.canvas = WxCanvas(self)
         # La construction du menu nécessite que self.canvas et self.log
         # soient définis, ainsi que self.doc_ouverts.
-        self.doc_ouverts = RSSMenu(parent, u"Documents ouverts", [], self.charger_feuille, u"Documents ouverts.")
+        self.doc_ouverts = RSSMenu(u"Documents ouverts", [], self.charger_feuille, u"Documents ouverts.")
         self.menu = self.module._menu_(self)
 
         self.barre_outils = BarreOutils(self, couleur='white')

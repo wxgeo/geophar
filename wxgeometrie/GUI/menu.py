@@ -35,14 +35,15 @@ from PyQt4.QtGui import QMenu, QMenuBar, QKeySequence
 #-----------------------
 
 
+
 class RSSMenu(QMenu): # parent : wxgeometrie (Frame principal)
     u"Menu dynamique."
-    def __init__(self, parent, titre='', liste=None, fonction=None, aide=''):
-        QMenu.__init__(self)
+    def __init__(self, titre='', liste=None, fonction=None, aide=''):
+        QMenu.__init__(self, titre)
 #        self.parent = parent
         self.fonction = None
 #        self.titre = titre
-        self.setTitle(titre)
+#        self.setTitle(titre)
         self.update(liste, fonction, aide)
 
     def update(self, liste=None, fonction=None, aide=None):
@@ -64,8 +65,7 @@ class Menu(QMenu):
     u"Remplace la classe QMenu."
 
     def __init__(self, menubar, titre, liste):
-        QMenu.__init__(self)
-        self.setTitle(titre)
+        QMenu.__init__(self, titre, menubar)
         IDEM = True
 #        self.parent = menubar.parent
         self.aboutToShow.connect(self.actualiser)
@@ -105,7 +105,7 @@ class Menu(QMenu):
 
     def actualiser(self):
         for action in self.actions():
-            if action.checkable():
+            if action.isCheckable():
                 action.setChecked(action._test())
 
 
@@ -131,6 +131,7 @@ class MenuBar(QMenuBar):
 
     def ajouter(self, *contenu):
         if isinstance(contenu, RSSMenu):
+            contenu.setParent(self)
             self.addMenu(contenu)
         else:
             if len(contenu) == 1: # menus predefinis

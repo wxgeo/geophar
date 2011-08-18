@@ -69,7 +69,7 @@ class FenetrePrincipale(QMainWindow):
     def __init__(self, app, fichier_log=None):
         QMainWindow.__init__(self, None)
         self.setWindowTitle(NOMPROG)
-        self.setStyleSheet("background-color:white")
+#        self.setStyleSheet("background:white")
 
         self.application = app # pour acceder a l'application en interne
 

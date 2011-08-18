@@ -48,7 +48,9 @@ class Onglets(QTabWidget):
     def __init__(self, parent):
         self.parent = parent
         QTabWidget.__init__(self, parent)
-        self.setStyleSheet("background-color:white")
+        self.setTabsClosable(True)
+        self.setMovable(True)
+        self.tabCloseRequested.connect(self.fermer_onglet)
 
 #        ###############################
 #        # Creation de fonctions associees aux entrees du menu "Creer"
@@ -70,13 +72,14 @@ class Onglets(QTabWidget):
 
 
         # adaptation du titre de l'application et du menu.
+        self.currentChanged.connect(self.changer)
 #        self.Bind(wx.EVT_NOTEBOOK_PAGE_CHANGED, self.changer, self)
 #        import fenetre_options
 #        self.Bind(fenetre_options.EVT_OPTIONS_MODIFIED, self.OnOptionsModified)
-#        if self._liste:
-#            # affiche le titre et le menu du 1er onglet
-#            self.actualise_onglet(self._liste[0])
-#            self._liste[0].activer()
+        if self._liste:
+            # affiche le titre et le menu du 1er onglet
+            self.actualise_onglet(self._liste[0])
+            self._liste[0].activer()
 
 
     def OnOptionsModified(self, evt = None):
@@ -85,13 +88,19 @@ class Onglets(QTabWidget):
             geolib.contexte[parametre] = getattr(param,  parametre)
 
 
+#    def deplacer_onglet(self, i, j):
+#        u"Déplacer un onglet de la position 'i' à la position 'j'."
+#        if i != j:
+#            panel = self._liste.pop(i)
+#            self._liste.insert(j, panel)
+#            self.removeTab(i)
+#            self.insertTab(j, panel, panel.__titre__)
     def deplacer_onglet(self, i, j):
         u"Déplacer un onglet de la position 'i' à la position 'j'."
         if i != j:
-            panel = self._liste.pop(i)
-            self._liste.insert(j, panel)
-            self.removeTab(i)
-            self.insertTab(j, panel, panel.__titre__)
+            self.moveTab(i, j)
+
+
 
     def nouvel_onglet(self, panel, i = None):
         u"Ajouter un nouvel onglet à la position 'i'."
@@ -115,18 +124,20 @@ class Onglets(QTabWidget):
         tab.close()
         tab.deleteLater()
 
-    def changer(self, event):
-        event.Skip()
-        # onglet selectionné:
-        onglet = self._liste[event.GetSelection()]
-        self.actualise_onglet(onglet)
-        # Actions personnalisées lors de la sélection
-        wx.CallLater(10, onglet.activer)
+    def changer(self, index):
+        if index != -1:
+            onglet = self._liste[index]
+            self.actualise_onglet(onglet)
+            # Actions personnalisées lors de la sélection
+            onglet.activer()
+    #        wx.CallLater(10, onglet.activer)
 
 
     def actualise_onglet(self, onglet):
-        self.parent.SetMenuBar(onglet.menu) # change le menu de la fenetre
+        self.parent.setMenuBar(onglet.menu) # change le menu de la fenetre
         onglet.changer_titre() # change le titre de la fenetre
+        bar = self.parent.menuBar()
+
 #        if param.plateforme == "Windows":
 #            if onglet.canvas is not None:
 #                onglet.canvas.execute_on_idle(onglet.canvas.graph.restaurer_dessin)

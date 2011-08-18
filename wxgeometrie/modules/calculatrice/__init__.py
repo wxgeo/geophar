@@ -23,10 +23,12 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
+from functools import partial
 
-import wx
+#import wx
 from PyQt4.QtGui import (QHBoxLayout, QVBoxLayout, QCheckBox, QIcon, QPushButton,
-                         QTextEdit, QMenu, QLabel, QSpinBox)
+                         QTextEdit, QMenu, QLabel, QSpinBox, QCursor)
+from PyQt4.QtCore import Qt
 
 #from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigureCanvas
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
@@ -71,33 +73,49 @@ class CalculatriceMenuBar(MenuBar):
         if contenu is None:
             return
         titre, nom, doc = contenu
-        return [titre, doc, "", self.generer_fonction(nom, parentheses)]
+        return [titre, doc, "", partial(self.panel.insere, nom=nom, parentheses=parentheses)]
 
-    def generer_fonction(self, nom, parenthese = True):
-        def f(event = None, panel = self.panel, nom = nom, parenthese = parenthese):
-            deb, fin = panel.entree.GetSelection()
-            if parenthese:
-                panel.entree.setCursorPosition(fin)
-                panel.entree.insert(")")
-                panel.entree.setCursorPosition(deb)
-                panel.entree.insert(nom + "(")
-                panel.entree.setFocus()
-                if deb == fin:
-                    final = fin + len(nom) + 1
-                else:
-                    final = fin + len(nom) + 2
-            else:
-                panel.entree.insert(nom)
-                final = fin + len(nom)
-            panel.entree.setFocus()
-            panel.entree.setCursorPosition(final)
-            panel.entree.setSelection(final, final)
-        return f
+#    def generer_fonction(self, nom, parenthese = True):
+#        def f(event = None, panel = self.panel, nom = nom, parenthese = parenthese):
+#            entree = panel.entree
+#            deb, fin = panel.entree.getSelection()
+#            if parenthese:
+#                panel.entree.setCursorPosition(fin)
+#                panel.entree.insert(")")
+#                panel.entree.setCursorPosition(deb)
+#                panel.entree.insert(nom + "(")
+#                panel.entree.setFocus()
+#                if deb == fin:
+#                    final = fin + len(nom) + 1
+#                else:
+#                    final = fin + len(nom) + 2
+#            else:
+#                panel.entree.insert(nom)
+#                final = fin + len(nom)
+#            panel.entree.setFocus()
+#            panel.entree.setCursorPosition(final)
+#            panel.entree.setSelection(final, final)
+#        return f
 
-
-
-
-
+#    def insere(event=None, nom=nom, parentheses=parentheses):
+#        entree = self.panel.entree
+#        deb, fin = panel.entree.getSelection()
+#        if parenthese:
+#            panel.entree.setCursorPosition(fin)
+#            panel.entree.insert(")")
+#            panel.entree.setCursorPosition(deb)
+#            panel.entree.insert(nom + "(")
+#            panel.entree.setFocus()
+#            if deb == fin:
+#                final = fin + len(nom) + 1
+#            else:
+#                final = fin + len(nom) + 2
+#        else:
+#            panel.entree.insert(nom)
+#            final = fin + len(nom)
+#        panel.entree.setFocus()
+#        panel.entree.setCursorPosition(final)
+#        panel.entree.setSelection(final, final)
 
 
 
@@ -128,6 +146,9 @@ class Calculatrice(Panel_simple):
 ##        self.entrees.Add(self.valider, 0, wx.ALL, 5)
         self.entree = entree = LigneCommande(self, longueur = 550, action = self.affichage_resultat)
         entree.setToolTip(u"[Maj]+[Entrée] pour une valeur approchée.")
+        self.entree.texte.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.entree.texte.customContextMenuRequested.connect(self.EvtMenu)
+
 
         self.sizer = sizer = QVBoxLayout()
         sizer.addWidget(entree)
@@ -146,6 +167,8 @@ class Calculatrice(Panel_simple):
         axes.axison = False
         self.pp_texte = axes.text(0.5, 0.5, "", horizontalalignment='center', verticalalignment='center', transform = axes.transAxes, size=18)
         gauche.addWidget(self.visualisation) # wx.ALL|wx.ALIGN_CENTER
+        self.visualisation.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.visualisation.customContextMenuRequested.connect(self.EvtMenuVisualisation)
 
         ### Pave numerique de la calculatrice ###
         # On construit le pavé de la calculatrice.
@@ -172,7 +195,7 @@ class Calculatrice(Panel_simple):
             # On aligne les boutons de la calculatrice par rangées de 5.
             if i%5 == 0:
                 self.rangee = rangee = QHBoxLayout()
-                rangee.addStretch()
+                rangee.addStretch(1)
                 pave.addLayout(rangee)
 
             # Ensuite, on construit une liste de fonctions, parallèlement à la liste des boutons.
@@ -199,7 +222,7 @@ class Calculatrice(Panel_simple):
 #            bouton.SetBackgroundColour(self.GetBackgroundColour())
             rangee.addWidget(bouton)
             if i%5 == 4:
-                rangee.addStretch()
+                rangee.addStretch(2)
             # A chaque bouton, on associe une fonction de la liste.
             bouton.clicked.connect(self.actions[i])
             if type(inserer[i]) == tuple:
@@ -217,7 +240,8 @@ class Calculatrice(Panel_simple):
         self.cb_calcul_exact = QCheckBox(self)
         self.cb_calcul_exact.setChecked(not self.param("calcul_exact"))
         ligne.addWidget(self.cb_calcul_exact) #, flag = wx.ALIGN_CENTER_VERTICAL)
-        ligne.addWidget(QLabel(u" Valeur approchée."))#, flag = wx.ALIGN_CENTER_VERTICAL)
+        ligne.addWidget(QLabel(u"Valeur approchée."))#, flag = wx.ALIGN_CENTER_VERTICAL)
+        ligne.addStretch()
 
         self.cb_calcul_exact.stateChanged.connect(self.EvtCalculExact)
 
@@ -227,7 +251,7 @@ class Calculatrice(Panel_simple):
         self.cb_notation_sci = QCheckBox(self)
         self.cb_notation_sci.setChecked(self.param("ecriture_scientifique"))
         ligne.addWidget(self.cb_notation_sci)#, flag = wx.ALIGN_CENTER_VERTICAL)
-        self.st_notation_sci = QLabel(u" Écriture scientifique (arrondie à ")
+        self.st_notation_sci = QLabel(u"Écriture scientifique (arrondie à ")
         ligne.addWidget(self.st_notation_sci)#, flag = wx.ALIGN_CENTER_VERTICAL)
         self.sc_decimales = sd = QSpinBox(self)
         # size = (45, -1)
@@ -236,7 +260,7 @@ class Calculatrice(Panel_simple):
         ligne.addWidget(self.sc_decimales)#, flag = wx.ALIGN_CENTER_VERTICAL)
         self.st_decimales = QLabel(u" décimales).")
         ligne.addWidget(self.st_decimales)#, flag = wx.ALIGN_CENTER_VERTICAL)
-
+        ligne.addStretch()
         self.EvtCalculExact()
 
         self.cb_notation_sci.stateChanged.connect(self.EvtNotationScientifique)
@@ -248,7 +272,8 @@ class Calculatrice(Panel_simple):
         self.cb_copie_automatique = QCheckBox(self)
         self.cb_copie_automatique.setChecked(self.param("copie_automatique"))
         ligne.addWidget(self.cb_copie_automatique)#, flag = wx.ALIGN_CENTER_VERTICAL)
-        ligne.addWidget(QLabel(u" Copie du résultat dans le presse-papier."))#, flag = wx.ALIGN_CENTER_VERTICAL)
+        ligne.addWidget(QLabel(u"Copie du résultat dans le presse-papier."))#, flag = wx.ALIGN_CENTER_VERTICAL)
+        ligne.addStretch()
 
         self.cb_copie_automatique.stateChanged.connect(self.EvtCopieAutomatique)
 
@@ -258,8 +283,9 @@ class Calculatrice(Panel_simple):
         self.cb_copie_automatique_LaTeX = QCheckBox(self)
         self.cb_copie_automatique_LaTeX.setChecked(self.param("copie_automatique_LaTeX"))
         ligne.addWidget(self.cb_copie_automatique_LaTeX)
-        self.st_copie_automatique_LaTeX = QLabel(u" Copie au format LaTeX (si possible).")
+        self.st_copie_automatique_LaTeX = QLabel(u"Copie au format LaTeX (si possible).")
         ligne.addWidget(self.st_copie_automatique_LaTeX)
+        ligne.addStretch()
 
         self.EvtCopieAutomatique()
         self.cb_copie_automatique_LaTeX.stateChanged.connect(self.EvtCopieAutomatiqueLatex)
@@ -281,7 +307,8 @@ class Calculatrice(Panel_simple):
                 self.param(chaine, not self.param(chaine))
                 entree.setFocus()
             self.options_box[i].stateChanged.connect(action)
-            ligne.addWidget(QLabel(" " + self.options[i][0]))
+            ligne.addWidget(QLabel(self.options[i][0]))
+            ligne.addStretch()
 
         self.setLayout(self.sizer)
 #        self.adjustSize()
@@ -302,7 +329,7 @@ class Calculatrice(Panel_simple):
         fgeo.contenu["Calculatrice"] = [{}]
         fgeo.contenu["Calculatrice"][0]["Historique"] = [repr(self.entree.historique)]
 #        fgeo.contenu["Calculatrice"][0]["Resultats"] = [repr(self.interprete.derniers_resultats)]
-        fgeo.contenu["Calculatrice"][0]["Affichage"] = [self.resultats.GetValue()]
+        fgeo.contenu["Calculatrice"][0]["Affichage"] = [self.resultats.toPlainText()]
         fgeo.contenu["Calculatrice"][0]["Etat_interne"] = [self.interprete.save_state()]
         fgeo.contenu["Calculatrice"][0]["Options"] = [{}]
         for i in range(len(self.options)):
@@ -317,7 +344,8 @@ class Calculatrice(Panel_simple):
 
             self.entree.historique = eval_safe(calc["Historique"][0])
 #            self.interprete.derniers_resultats = securite.eval_safe(calc["Resultats"][0])
-            self.resultats.setText(calc["Affichage"][0] + "\n")
+            print 'Kirikou', calc["Affichage"][0] + "\n"
+            self.resultats.setPlainText(calc["Affichage"][0] + "\n")
             self.interprete.load_state(calc["Etat_interne"][0])
 
             liste = calc["Options"][0].items()
@@ -399,15 +427,15 @@ class Calculatrice(Panel_simple):
             # Évite le décalage entre la première ligne et les suivantes (matrices)
             if "\n" in resultat and not aide:
                 resultat = "\n" + "\n".join(20*" " + ligne for ligne in resultat.split("\n"))
-            self.resultats.AppendText(u" Calcul n\xb0" + numero + " :   "
+            self.resultats.insertPlainText(u" Calcul n\xb0" + numero + " :   "
                                                         + uu(commande) + u"\n Résultat :"
                                                         + " "*(4+len(numero))
                                                         + resultat + "\n__________________\n\n")
             self.message(u"Calcul effectué." + self.interprete.warning)
             self.entree.clear()
-            self.resultats.setCursorPosition(len(self.resultats.GetValue()))
-            self.resultats.setFocus()
-            self.resultats.ScrollLines(1)
+#            self.resultats.setCursorPosition(len(self.resultats.plainText()))
+#            self.resultats.setFocus()
+#            self.resultats.ScrollLines(1)
             self.entree.setFocus()
         except Exception:
             self.message(u"Calcul impossible.")
@@ -416,30 +444,31 @@ class Calculatrice(Panel_simple):
                 raise
 
 
+    def insere(self, event=None, nom='', parentheses=True):
+        entree = self.entree
+        deb, fin = entree.getSelection()
+        if parentheses:
+            entree.setCursorPosition(fin)
+            entree.insert(")")
+            entree.setCursorPosition(deb)
+            entree.insert(nom + "(")
+            entree.setFocus()
+            if deb == fin:
+                final = fin + len(nom) + 1
+            else:
+                final = fin + len(nom) + 2
+        else:
+            entree.insert(nom)
+            final = fin + len(nom)
+        entree.setFocus()
+        entree.setCursorPosition(final)
+
+
     def EvtMenu(self, event):
-        if not event.ControlDown():
-            event.Skip()
-            return
-        def generer_fonction(nom, parenthese = True, self = self):
-            def f(event = None, panel = self, nom = nom, parenthese = parenthese):
-                deb, fin = panel.entree.GetSelection()
-                if parenthese:
-                    panel.entree.setCursorPosition(fin)
-                    panel.entree.insert(")")
-                    panel.entree.setCursorPosition(deb)
-                    panel.entree.insert(nom + "(")
-                    panel.entree.setFocus()
-                    if deb == fin:
-                        final = fin + len(nom) + 1
-                    else:
-                        final = fin + len(nom) + 2
-                else:
-                    panel.entree.insert(nom)
-                    final = fin + len(nom)
-                panel.entree.setFocus()
-                panel.entree.setCursorPosition(final)
-                panel.entree.setSelection(final, final)
-            return f
+#        if not event.ControlDown():
+#            event.Skip()
+#            return
+#            entree.setSelection(final, final)
         menu = QMenu()
         menu.setWindowTitle(u"Fonctions mathématiques")
         debut = True
@@ -447,25 +476,20 @@ class Calculatrice(Panel_simple):
             if not debut:
                 menu.addSeparator()
             debut = False
-            for titre, nom, doc in __classement__[rubrique]:
-                i = wx.NewId()
-                menu.Append(i, titre, doc)
-                if rubrique != "Symboles":
-                    menu.Bind(wx.EVT_MENU, generer_fonction(nom), id =i)
-                else:
-                    menu.Bind(wx.EVT_MENU, generer_fonction(nom, False), id =i) # pas de parenthese apres un symbole
-        self.PopupMenu(menu)
-        menu.Destroy()
-#        self.entree.SetFocus()
+            for titre, nom, doc in filter(None, __classement__[rubrique]):
+                action = menu.addAction(titre, partial(self.insere, nom=nom, parentheses=(rubrique != "Symboles")))
+                # Pas de parenthèses après un symbole.
+                action.setToolTip(doc)
+        menu.exec_(QCursor.pos())
 
 
     def EvtMenuVisualisation(self, event):
         menu = QMenu()
-        i = wx.NewId()
-        menu.Append(i, "Copier LaTeX",  "Copier le code LaTeX dans le presse-papier.")
-        menu.Bind(wx.EVT_MENU, self.copier_latex, id=i)
-        self.PopupMenu(menu)
-        menu.Destroy()
+        action = menu.addAction("Copier LaTeX", self.copier_latex)
+        action.setToolTip("Copier le code LaTeX dans le presse-papier.")
+        menu.exec_(QCursor.pos())
+#        self.PopupMenu(menu)
+#        menu.Destroy()
 
 
 
@@ -504,7 +528,7 @@ class Calculatrice(Panel_simple):
             self.st_copie_automatique_LaTeX.setEnabled(False)
 
     def EvtCopieAutomatiqueLatex(self, event = None):
-        self.param("copie_automatique_LaTeX", self.cb_copie_automatique_LaTeX.GetValue())
+        self.param("copie_automatique_LaTeX", self.cb_copie_automatique_LaTeX.isChecked())
 
     def EtatInterne(self, event):
         contenu = self.interprete.save_state()

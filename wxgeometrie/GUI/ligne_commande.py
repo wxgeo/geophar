@@ -70,8 +70,14 @@ class LigneCommande(QWidget):
     def clear(self):
         self.texte.clear()
 
-#    def GetSelection(self):
-#        return self.texte.GetSelection()
+    def getSelection(self):
+        if self.texte.hasSelectedText():
+            start = self.texte.selectionStart()
+            length = len(self.texte.selectedText())
+            end = start + length
+        else:
+            start = end = self.texte.cursorPosition()
+        return start, end
 
     def cursorPosition(self):
         return self.texte.cursorPosition()
@@ -88,8 +94,8 @@ class LigneCommande(QWidget):
     def setToolTip(self, tip):
         self.texte.setToolTip(tip)
 
-    def EvtButton(self, event):
-        commande = self.GetValue()
+    def EvtButton(self, event=None):
+        commande = unicode(self.text())
         self.position = None
         if commande:
             self.historique.append(commande)
@@ -130,6 +136,6 @@ class LigneCommande(QWidget):
                 self.position = len(self.historique)
             elif self.position < len(self.historique) - 1:
                 self.position += 1
-                self.texte.SetValue(self.historique[self.position])
+                self.texte.setText(self.historique[self.position])
         else:
             self.position = None

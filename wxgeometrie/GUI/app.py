@@ -22,7 +22,7 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-from PyQt4.QtGui import QApplication
+from PyQt4.QtGui import QApplication#, QPalette, QColor
 from PyQt4.QtCore import QLocale, QTranslator, QLibraryInfo
 
 
@@ -46,3 +46,7 @@ class App(QApplication):
         return True
 
 app = App()
+#app.setStyleSheet("background-color:white")
+#palette = app.palette()
+#palette.setColor(QPalette.Active, QPalette.Window, QColor('white'))
+#palette.setColor(QPalette.Inactive, QPalette.Window, QColor('white'))
