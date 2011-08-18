@@ -26,7 +26,7 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 import sys, os, thread, traceback
 
 from PyQt4.QtGui import (QMainWindow, QApplication, QPlainTextEdit, QIcon,
-                        QLabel, QWidget, QVBoxLayout, QMessageBox)
+                        QLabel, QWidget, QVBoxLayout, QMessageBox, QTextCursor)
 from PyQt4.QtCore import QSize
 
 from ..pylib import uu, print_error, path2, debug, warning
@@ -50,6 +50,7 @@ class PyOnDemandOutputWindow(QPlainTextEdit):
 
     def write(self, s):
         self.show()
+        self.moveCursor(QTextCursor.End)
         self.insertPlainText(s.decode(param.encodage)) # again assuming QPlainTextEdit
 
 

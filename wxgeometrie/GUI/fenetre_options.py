@@ -41,7 +41,7 @@ class FenetreOptions(wx.Frame):
             self.onglets.addTab(panel, theme.titre)
             for elt in theme:
                 if isinstance(elt, Section):
-                    box = wx.StaticBox(panel, -1, elt.titre)
+                    box = QGroupBox(panel, -1, elt.titre)
                     bsizer = wx.StaticBoxSizer(box, wx.VERTICAL)
                     bsizer.AddSpacer(3)
                     for parametre in elt:

@@ -129,7 +129,7 @@ class Surfaces(Panel_API_graphique):
         self.entrees = QVBoxLayout()
 
 
-        box = wx.StaticBox(self, -1, u"Equation")
+        box = QGroupBox(self, -1, u"Equation")
         ligne = wx.StaticBoxSizer(box, wx.HORIZONTAL)
         ligne.Add(QLabel(self, "Z = "), 0, wx.ALIGN_CENTRE|wx.ALL,5)
         self.equation = wx.TextCtrl(self, size = (160, -1), style=wx.TE_PROCESS_ENTER)
@@ -137,7 +137,7 @@ class Surfaces(Panel_API_graphique):
         ligne.Add(self.equation, 0, wx.ALIGN_CENTRE|wx.ALL,5)
         self.entrees.Add(ligne, 0, wx.ALL, 5)
 
-        box = wx.StaticBox(self, -1, u"Abscisse")
+        box = QGroupBox(self, -1, u"Abscisse")
         liste = wx.StaticBoxSizer(box, wx.VERTICAL)
 
         ligne = QHBoxLayout()
@@ -163,7 +163,7 @@ class Surfaces(Panel_API_graphique):
 
         self.entrees.Add(liste, 0, wx.ALL, 5)
 
-        box = wx.StaticBox(self, -1, u"Ordonnée")
+        box = QGroupBox(self, -1, u"Ordonnée")
         liste = wx.StaticBoxSizer(box, wx.VERTICAL)
 
         ligne = QHBoxLayout()
@@ -189,7 +189,7 @@ class Surfaces(Panel_API_graphique):
 
         self.entrees.Add(liste, 0, wx.ALL, 5)
 
-        box = wx.StaticBox(self, -1, u"Seuils")
+        box = QGroupBox(self, -1, u"Seuils")
         liste = wx.StaticBoxSizer(box, wx.VERTICAL)
 
         ligne = QHBoxLayout()

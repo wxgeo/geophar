@@ -51,7 +51,7 @@ vous êtes invités à signaler tout problème rencontré.""")
         panelSizer.Add((5, 5))
 
 
-        rapport = wx.StaticBoxSizer(wx.StaticBox(panel, -1, u"Rapport d'incident"), wx.VERTICAL)
+        rapport = wx.StaticBoxSizer(QGroupBox(panel, -1, u"Rapport d'incident"), wx.VERTICAL)
         #rapport.Add(wx.StaticText(panel, -1, u"Résumé :"), 0, wx.ALL, 5)
         self.titre = titre = wx.TextCtrl(panel, -1, u"Résumé", size = (300, -1))
         titre.SelectAll()
@@ -70,7 +70,7 @@ vous êtes invités à signaler tout problème rencontré.""")
 
         panelSizer.Add(rapport, 0, wx.ALL|wx.EXPAND, 5)
 
-        sizer = wx.StaticBoxSizer(wx.StaticBox(panel, -1, u"Vos coordonnées (facultatif)"), wx.HORIZONTAL)
+        sizer = wx.StaticBoxSizer(QGroupBox(panel, -1, u"Vos coordonnées (facultatif)"), wx.HORIZONTAL)
         sizer.addWidget(QLabel(panel, -1, u"Nom :"), 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5)
         self.nom = nom = wx.TextCtrl(panel, size = (100, -1))
         sizer.addWidget(nom, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5)
@@ -80,7 +80,7 @@ vous êtes invités à signaler tout problème rencontré.""")
 
         panelSizer.Add(sizer, 0, wx.ALL|wx.EXPAND, 5)
 
-        options = wx.StaticBoxSizer(wx.StaticBox(panel, -1, u"Options"), wx.VERTICAL)
+        options = wx.StaticBoxSizer(QGroupBox(panel, -1, u"Options"), wx.VERTICAL)
         self.histo = histo = QCheckBox(panel, -1, "Inclure l'historique du module courant.")
         histo.SetValue(True)
         options.Add(histo, 0, wx.ALL, 5)

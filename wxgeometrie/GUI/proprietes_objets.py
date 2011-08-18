@@ -47,7 +47,7 @@ class ProprietesAffichage(QWidget):
         self.sizer = QVBoxLayout()
 
         self.changements = {} # ce dictionnaire contiendra tous les styles modifiés
-        encadre = wx.StaticBoxSizer(wx.StaticBox(self, -1, u"Mode d'affichage"), wx.HORIZONTAL)
+        encadre = wx.StaticBoxSizer(QGroupBox(self, -1, u"Mode d'affichage"), wx.HORIZONTAL)
 
         if not self.islabel:
             objets = [objet for objet in self.objets if objet.style("fixe") is not None]
@@ -96,7 +96,7 @@ class ProprietesAffichage(QWidget):
                 cb3.Set3StateValue(etat)
 
 
-        encadre1 = wx.StaticBoxSizer(wx.StaticBox(self, -1, u"Etiquette"), wx.VERTICAL)
+        encadre1 = wx.StaticBoxSizer(QGroupBox(self, -1, u"Etiquette"), wx.VERTICAL)
         if not self.islabel:
             ligne = QHBoxLayout()
             if len(self.objets) == 1:
@@ -145,7 +145,7 @@ class ProprietesAffichage(QWidget):
 
 
 
-        encadre2 = wx.StaticBoxSizer(wx.StaticBox(self, -1, u"Styles"), wx.VERTICAL)
+        encadre2 = wx.StaticBoxSizer(QGroupBox(self, -1, u"Styles"), wx.VERTICAL)
 
 
         objets = [objet for objet in self.objets if objet.style("style") is not None]
@@ -482,7 +482,7 @@ class ProprietesInfos(QWidget):
         self.parent = parent
         self.objets = parent.objets
         self.sizer = QVBoxLayout()
-        self.infos = wx.StaticBoxSizer(wx.StaticBox(self, -1, u"Informations"), wx.VERTICAL)
+        self.infos = wx.StaticBoxSizer(QGroupBox(self, -1, u"Informations"), wx.VERTICAL)
         if len(self.objets) == 1:
             self.objet = self.objets[0]
         else:
@@ -546,7 +546,7 @@ class ProprietesAvance(QWidget):
         self.sizer = QVBoxLayout()
         if len(self.objets) is 1:
             self.objet = self.objets[0]
-            box = wx.StaticBoxSizer(wx.StaticBox(self, -1, u"Style de l'objet"), wx.VERTICAL)
+            box = wx.StaticBoxSizer(QGroupBox(self, -1, u"Style de l'objet"), wx.VERTICAL)
             box.Add(QLabel(self, label = u"Attention, ne modifiez ce contenu que si vous savez ce que vous faites."), 0, wx.ALL, 5)
             self.avance = wx.TextCtrl(self, size=wx.Size(350, 200), style = wx.TE_MULTILINE)
             self.actualiser()

@@ -148,7 +148,7 @@ class Statistiques(Panel_API_graphique):
 
         #self.entrees.Add(wx.StaticText(self, -1, ""))
 
-        box = wx.StaticBox(self, -1, u"Mesures")
+        box = QGroupBox(self, -1, u"Mesures")
         bsizer = wx.StaticBoxSizer(box, wx.VERTICAL)
 
         #self.entrees.Add(bsizer, 1, wx.EXPAND|wx.ALL, 5)

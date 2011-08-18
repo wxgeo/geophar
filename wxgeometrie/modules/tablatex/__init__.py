@@ -62,83 +62,65 @@ class TabLaTeX(Panel_simple):
 
         self.sizer = QVBoxLayout()
 
-##        self.entrees = wx.BoxSizer(wx.HORIZONTAL)
-##        self.entree = wx.TextCtrl(self, size = (500, -1), style=wx.TE_PROCESS_ENTER)
-##        self.entrees.Add(self.entree, 1, wx.ALL|wx.GROW, 5)
-##        self.valider = wx.Button(self, wx.ID_OK)
-##        self.entrees.Add(self.valider, 0, wx.ALL, 5)
-##
-##        self.sizer.Add(self.entrees, 0, wx.ALL, 5)
         self.entree = LigneCommande(self, longueur = 500, action = self.generer_code)
-        self.sizer.Add(self.entree, 0, wx.ALL, 5)
-
+        self.sizer.addWidget(self.entree)
 
         self.sizer_type = QHBoxLayout()
-        self.type_tableau = wx.Choice(self, choices = (u"Tableau de variations", u"Tableau de signes", u"Tableau de valeurs"))
-        self.type_tableau.setSelection(self._param_.mode)
-        self.sizer_type.Add(QLabel(self, label = u"Type de tableau à générer :"), 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5)
-        self.sizer_type.Add(self.type_tableau, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5)
+        self.type_tableau = QComboBox(self)
+        self.type_tableau.addItems([u"Tableau de variations", u"Tableau de signes", u"Tableau de valeurs"])
+        self.type_tableau.setCurrentIndex(self._param_.mode)
+        self.sizer_type.addWidget(QLabel(u"Type de tableau à générer :", self))
+        self.sizer_type.addWidget(self.type_tableau)
 
-        self.utiliser_cellspace =  QCheckBox(self, label = u"Utiliser le paquetage cellspace.")
-        self.utiliser_cellspace.SetValue(self._param_.utiliser_cellspace)
+        self.utiliser_cellspace = QCheckBox(self, label = u"Utiliser le paquetage cellspace.")
+        self.utiliser_cellspace.setChecked(self._param_.utiliser_cellspace)
         self.utiliser_cellspace.setToolTip(u"Le paquetage cellspace évite que certains objets (comme les fractions) touchent les bordures du tableaux.")
-        self.sizer_type.AddSpacer((10,0))
-        self.sizer_type.Add(self.utiliser_cellspace, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5)
+        self.sizer_type.addSpacing(10)
+        self.sizer_type.addWidget(self.utiliser_cellspace)
 
-        self.derivee =  QCheckBox(self, label = u"Dérivée.")
-        self.derivee.SetValue(self._param_.derivee)
+        self.derivee = QCheckBox(self, label = u"Dérivée.")
+        self.derivee.setChecked(self._param_.derivee)
         self.derivee.setToolTip(u"Afficher une ligne indiquant le signe de la dérivée.")
-        self.sizer_type.AddSpacer((10,0))
-        self.sizer_type.Add(self.derivee, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5)
+        self.sizer_type.addSpacing(10)
+        self.sizer_type.addWidget(self.derivee)
 
-        self.limites =  QCheckBox(self, label = u"Limites.")
-        self.limites.SetValue(self._param_.limites)
+        self.limites = QCheckBox(self, label = u"Limites.")
+        self.limites.setChecked(self._param_.limites)
         self.limites.setToolTip(u"Afficher les limites dans le tableau de variations.")
-        self.sizer_type.AddSpacer((10,0))
-        self.sizer_type.Add(self.limites, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5)
+        self.sizer_type.addSpacing(10)
+        self.sizer_type.addWidget(self.limites)
 
-        self.sizer.Add(self.sizer_type, 0, wx.ALL, 5)
+        self.sizer.addLayout(self.sizer_type)
 
-        box = wx.StaticBox(self, -1, u"Code LaTeX permettant de de générer le tableau")
-        self.bsizer = wx.StaticBoxSizer(box, wx.VERTICAL)
-
-        #~ self.sizer_code = wx.BoxSizer(wx.HORIZONTAL)
-        #~ self.sizer_code.Add(wx.StaticText(self, label = u"Code LaTeX permettant de de générer le tableau."), 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5)
-        #~ self.copier_code = wx.Button(self, label = u"Copier dans le presse-papier")
-        #~ self.sizer_code.Add(self.copier_code, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5)
-
-
-        #~ self.bsizer.Add(self.sizer_code, 0, wx.ALL, 5)
+        box = QGroupBox(u"Code LaTeX permettant de de générer le tableau", self)
+        self.bsizer = QVBoxLayout()
+        self.bsizer.setLayout(box)
 
         self.code_tableau = wx.TextCtrl(self, size = (700, 200), style = wx.TE_MULTILINE | wx.TE_RICH)
-        self.bsizer.Add(self.code_tableau, 0, wx.ALL, 5)
+        self.bsizer.addWidget(self.code_tableau)
 
         self.copier_code = wx.Button(self, label = u"Copier dans le presse-papier")
-        self.bsizer.Add(self.copier_code, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5)
+        self.bsizer.addWidget(self.copier_code)
 
-        self.bsizer.Add(QLabel(self, label = u"Pensez à rajouter dans l'entête de votre fichier LaTeX la ligne suivante :"), 0, wx.TOP|wx.LEFT, 5)
+        self.bsizer.addWidget(QLabel(u"Pensez à rajouter dans l'entête de votre fichier LaTeX la ligne suivante :", self))
 
         self.sizer_entete = QHBoxLayout()
         self.code_entete = wx.TextCtrl(self, size = (200, -1), value = u"\\usepackage{tabvar}", style = wx.TE_READONLY)
-        self.sizer_entete.Add(self.code_entete, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5)
+        self.sizer_entete.addWidget(self.code_entete)
         self.copier_entete = wx.Button(self, label = u"Copier cette ligne")
-        self.sizer_entete.Add(self.copier_entete, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5)
+        self.sizer_entete.addWidget(self.copier_entete)
 
-        self.bsizer.Add(self.sizer_entete, 0, wx.ALL, 5)
+        self.bsizer.addLayout(self.sizer_entete)
 
-        self.sizer.Add(self.bsizer, 0, wx.ALL, 5)
+        self.sizer.addLayout(self.bsizer)
 
 
         self.cb = QCheckBox(self, label = u"Copier automatiquement le code LaTeX dans le presse-papier.")
-        self.cb.SetValue(self._param_.copie_automatique)
-        self.sizer.Add(self.cb, 0, wx.ALL, 5)
+        self.cb.setChecked(self._param_.copie_automatique)
+        self.sizer.addWidget(self.cb)
 
         self.setLayout(self.sizer)
         self.adjustSize()
-
-
-##        self.entree.Bind(wx.EVT_KEY_UP, self.EvtChar)
-##        self.valider.Bind(wx.EVT_BUTTON, self.generer_code)
 
         self.type_tableau.Bind(wx.EVT_CHOICE, self.EvtChoix)
         self.EvtChoix()
@@ -158,9 +140,9 @@ class TabLaTeX(Panel_simple):
         def regler_cellspace(event = None):
             self._param_.utiliser_cellspace = self.utiliser_cellspace.GetValue()
             if self._param_.utiliser_cellspace:
-                self.code_entete.SetValue(u"\\usepackage{cellspace}")
+                self.code_entete.setText(u"\\usepackage{cellspace}")
             else:
-                self.code_entete.SetValue(u"")
+                self.code_entete.setText(u"")
         self.utiliser_cellspace.Bind(wx.EVT_CHECKBOX, regler_cellspace)
 
         def regler_derivee(event = None):
@@ -191,7 +173,7 @@ class TabLaTeX(Panel_simple):
             else:
                 warning("Type de tableau non reconnu.")
 
-            self.code_tableau.SetValue(code_latex)
+            self.code_tableau.setText(code_latex)
             if self._param_.copie_automatique:
                 self.vers_presse_papier(texte = code_latex)
             self.entree.setFocus()
@@ -210,7 +192,7 @@ class TabLaTeX(Panel_simple):
     def EvtChoix(self, event = None):
         self._param_.mode = self.type_tableau.GetSelection()
         if self._param_.mode == 0:
-            self.code_entete.SetValue(u"\\usepackage{tabvar}")
+            self.code_entete.setText(u"\\usepackage{tabvar}")
             self.entree.setToolTip(tabvar.__doc__)
             self.utiliser_cellspace.setEnabled(False)
             self.derivee.setEnabled(True)
@@ -221,12 +203,12 @@ class TabLaTeX(Panel_simple):
             self.limites.setEnabled(False)
             self.entree.setToolTip(tabsign.__doc__)
             if self._param_.utiliser_cellspace:
-                self.code_entete.SetValue(u"\\usepackage{cellspace}")
+                self.code_entete.setText(u"\\usepackage{cellspace}")
             else:
-                self.code_entete.SetValue(u"")
+                self.code_entete.setText(u"")
         elif self._param_.mode == 2:
             self.utiliser_cellspace.setEnabled(False)
             self.derivee.setEnabled(False)
             self.limites.setEnabled(False)
             self.entree.setToolTip(tabval.__doc__)
-            self.code_entete.SetValue(u"")
+            self.code_entete.setText(u"")

@@ -74,7 +74,7 @@ class Legende(CstmPanel):
     def __init__(self, parent):
         CstmPanel.__init__(self, parent)
         # Légendes
-        box = wx.StaticBox(self, -1, u"Légende des axes")
+        box = QGroupBox(self, -1, u"Légende des axes")
         sizer = wx.StaticBoxSizer(box, wx.HORIZONTAL)
 
         self.sx = QLabel(self, u"Abscisses:")
@@ -105,7 +105,7 @@ class Graduation(CstmPanel):
         CstmPanel.__init__(self, parent)
         msizer = QHBoxLayout()
         # Graduations
-        box = wx.StaticBox(self, -1, u"Taille d'une graduation")
+        box = QGroupBox(self, -1, u"Taille d'une graduation")
         sizer = wx.StaticBoxSizer(box, wx.HORIZONTAL)
 
         self.sx = QLabel(self, u"Abscisses:")
@@ -133,7 +133,7 @@ class Graduation(CstmPanel):
         msizer.Add(QLabel(self, '   '), 0, wx.LEFT|wx.ALIGN_CENTER_VERTICAL, 5)
 
         # Origine
-        box = wx.StaticBox(self, -1, u"Origine des axes")
+        box = QGroupBox(self, -1, u"Origine des axes")
         sizer = wx.StaticBoxSizer(box, wx.HORIZONTAL)
 
         self.sox = QLabel(self, u"Abscisses:")
@@ -202,7 +202,7 @@ class Autres_quantile(CstmPanel):
     def __init__(self, parent):
         CstmPanel.__init__(self, parent)
 
-        box = wx.StaticBox(self, -1, u"Construction de quantiles")
+        box = QGroupBox(self, -1, u"Construction de quantiles")
         sizer = wx.StaticBoxSizer(box, wx.HORIZONTAL)
 
         self.mediane = QCheckBox(self, label = u'Construire la médiane')
