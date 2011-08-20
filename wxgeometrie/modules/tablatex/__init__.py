@@ -23,7 +23,10 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-import wx
+from functools import partial
+
+from PyQt4.QtGui import (QHBoxLayout, QVBoxLayout, QCheckBox, QPushButton,
+                         QTextEdit, QLineEdit, QLabel, QComboBox, QGroupBox)
 
 from ...GUI.ligne_commande import LigneCommande
 from ...GUI import MenuBar, Panel_simple
@@ -72,19 +75,19 @@ class TabLaTeX(Panel_simple):
         self.sizer_type.addWidget(QLabel(u"Type de tableau à générer :", self))
         self.sizer_type.addWidget(self.type_tableau)
 
-        self.utiliser_cellspace = QCheckBox(self, label = u"Utiliser le paquetage cellspace.")
+        self.utiliser_cellspace = QCheckBox(u"Utiliser le paquetage cellspace.", self)
         self.utiliser_cellspace.setChecked(self._param_.utiliser_cellspace)
         self.utiliser_cellspace.setToolTip(u"Le paquetage cellspace évite que certains objets (comme les fractions) touchent les bordures du tableaux.")
         self.sizer_type.addSpacing(10)
         self.sizer_type.addWidget(self.utiliser_cellspace)
 
-        self.derivee = QCheckBox(self, label = u"Dérivée.")
+        self.derivee = QCheckBox(u"Dérivée.", self)
         self.derivee.setChecked(self._param_.derivee)
         self.derivee.setToolTip(u"Afficher une ligne indiquant le signe de la dérivée.")
         self.sizer_type.addSpacing(10)
         self.sizer_type.addWidget(self.derivee)
 
-        self.limites = QCheckBox(self, label = u"Limites.")
+        self.limites = QCheckBox(u"Limites.", self)
         self.limites.setChecked(self._param_.limites)
         self.limites.setToolTip(u"Afficher les limites dans le tableau de variations.")
         self.sizer_type.addSpacing(10)
@@ -94,71 +97,71 @@ class TabLaTeX(Panel_simple):
 
         box = QGroupBox(u"Code LaTeX permettant de de générer le tableau", self)
         self.bsizer = QVBoxLayout()
-        self.bsizer.setLayout(box)
+        box.setLayout(self.bsizer)
 
-        self.code_tableau = wx.TextCtrl(self, size = (700, 200), style = wx.TE_MULTILINE | wx.TE_RICH)
+        self.code_tableau = QTextEdit(self)
+        self.code_tableau.setMinimumSize(700, 200)
+        self.code_tableau.setReadOnly(True)
         self.bsizer.addWidget(self.code_tableau)
 
-        self.copier_code = wx.Button(self, label = u"Copier dans le presse-papier")
+        self.copier_code = QPushButton(u"Copier dans le presse-papier", self)
         self.bsizer.addWidget(self.copier_code)
 
         self.bsizer.addWidget(QLabel(u"Pensez à rajouter dans l'entête de votre fichier LaTeX la ligne suivante :", self))
 
         self.sizer_entete = QHBoxLayout()
-        self.code_entete = wx.TextCtrl(self, size = (200, -1), value = u"\\usepackage{tabvar}", style = wx.TE_READONLY)
+        self.code_entete = QLineEdit(self)
+        self.code_entete.setMinimumWidth(200)
+        self.code_entete.setReadOnly(True)
+        self.code_entete.setText(u"\\usepackage{tabvar}")
         self.sizer_entete.addWidget(self.code_entete)
-        self.copier_entete = wx.Button(self, label = u"Copier cette ligne")
+        self.copier_entete = QPushButton(u"Copier cette ligne", self)
         self.sizer_entete.addWidget(self.copier_entete)
 
         self.bsizer.addLayout(self.sizer_entete)
 
-        self.sizer.addLayout(self.bsizer)
+        self.sizer.addWidget(box)
 
 
-        self.cb = QCheckBox(self, label = u"Copier automatiquement le code LaTeX dans le presse-papier.")
+        self.cb = QCheckBox(u"Copier automatiquement le code LaTeX dans le presse-papier.", self)
         self.cb.setChecked(self._param_.copie_automatique)
         self.sizer.addWidget(self.cb)
 
         self.setLayout(self.sizer)
         self.adjustSize()
 
-        self.type_tableau.Bind(wx.EVT_CHOICE, self.EvtChoix)
+        self.type_tableau.currentIndexChanged.connect(self.EvtChoix)
         self.EvtChoix()
 
-        def copier_code(event = None):
-            self.vers_presse_papier(texte = self.code_tableau.GetValue())
-        self.copier_code.Bind(wx.EVT_BUTTON, copier_code)
+        copier_code = partial(self.vers_presse_papier, texte=self.code_tableau.toPlainText())
+        self.copier_code.clicked.connect(copier_code)
 
-        def copier_entete(event = None):
-            self.vers_presse_papier(texte = self.code_entete.GetValue())
-        self.copier_entete.Bind(wx.EVT_BUTTON, copier_entete)
+        copier_entete = partial(self.vers_presse_papier, texte=self.code_entete.text())
+        self.copier_entete.clicked.connect(copier_entete)
 
-        def regler_mode_copie(event = None):
-            self._param_.copie_automatique = self.cb.GetValue()
-        self.cb.Bind(wx.EVT_CHECKBOX, regler_mode_copie)
+        def regler_mode_copie():
+            self._param_.copie_automatique = self.cb.isChecked()
+        self.cb.stateChanged.connect(regler_mode_copie)
 
-        def regler_cellspace(event = None):
-            self._param_.utiliser_cellspace = self.utiliser_cellspace.GetValue()
+        def regler_cellspace():
+            self._param_.utiliser_cellspace = self.utiliser_cellspace.isChecked()
             if self._param_.utiliser_cellspace:
                 self.code_entete.setText(u"\\usepackage{cellspace}")
             else:
                 self.code_entete.setText(u"")
-        self.utiliser_cellspace.Bind(wx.EVT_CHECKBOX, regler_cellspace)
+        self.utiliser_cellspace.stateChanged.connect(regler_cellspace)
 
-        def regler_derivee(event = None):
-            self._param_.derivee = self.derivee.GetValue()
-        self.derivee.Bind(wx.EVT_CHECKBOX, regler_derivee)
+        def regler_derivee():
+            self._param_.derivee = self.derivee.isChecked()
+        self.derivee.stateChanged.connect(regler_derivee)
 
         def regler_limites(event = None):
-            self._param_.limites = self.limites.GetValue()
-        self.limites.Bind(wx.EVT_CHECKBOX, regler_limites)
+            self._param_.limites = self.limites.isChecked()
+        self.limites.stateChanged.connect(regler_limites)
 
     def activer(self):
         # Actions à effectuer lorsque l'onglet devient actif
         self.entree.setFocus()
-
-    def vers_presse_papier(self, event = None, texte = ""):
-        Panel_simple.vers_presse_papier(texte)
 
 
     def generer_code(self, commande, **kw):
@@ -190,7 +193,7 @@ class TabLaTeX(Panel_simple):
 
 
     def EvtChoix(self, event = None):
-        self._param_.mode = self.type_tableau.GetSelection()
+        self._param_.mode = self.type_tableau.currentIndex()
         if self._param_.mode == 0:
             self.code_entete.setText(u"\\usepackage{tabvar}")
             self.entree.setToolTip(tabvar.__doc__)
