@@ -25,9 +25,9 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 import sys, os, thread, traceback
 
-from PyQt4.QtGui import (QMainWindow, QApplication, QPlainTextEdit, QIcon,
+from PyQt4.QtGui import (QMainWindow, QApplication, QPlainTextEdit, QIcon, QColor, QPalette,
                         QLabel, QWidget, QVBoxLayout, QMessageBox, QTextCursor)
-from PyQt4.QtCore import QSize
+from PyQt4.QtCore import QSize, Qt
 
 from ..pylib import uu, print_error, path2, debug, warning
 from ..API.console import Console
@@ -71,6 +71,11 @@ class FenetrePrincipale(QMainWindow):
         QMainWindow.__init__(self, None)
         self.setWindowTitle(NOMPROG)
 #        self.setStyleSheet("background:white")
+#        palette = QPalette()
+#        white = QColor(Qt.white)
+#        palette.setColor(QPalette.Window, white)
+#        palette.setColor(QPalette.AlternateBase, white)
+#        self.setPalette(palette)
 
         self.application = app # pour acceder a l'application en interne
 

@@ -24,11 +24,17 @@ from __future__ import with_statement
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os
+from webbrowser import open_new_tab
+
+#from PyQt4.QtGui import (QMainWindow, QApplication, QPlainTextEdit, QIcon, QColor, QPalette,
+#                        QLabel, QWidget, QVBoxLayout, QMessageBox, QTextCursor)
+#from PyQt4.QtCore import QSize, Qt
+
 
 from PyQt4.QtGui import QTabWidget
 import matplotlib.backend_bases as backend_bases
 
-from .aide import Help, About, Informations
+from .aide import About, Informations
 from .animer import DialogueAnimation
 from .contact import Contact
 #from .dialogues_geometrie import EditerObjet, SupprimerObjet
@@ -51,6 +57,12 @@ class Onglets(QTabWidget):
         self.setTabsClosable(True)
         self.setMovable(True)
         self.tabCloseRequested.connect(self.fermer_onglet)
+#        palette = QPalette()
+#        white = QColor(Qt.white)
+#        palette.setColor(QPalette.Window, white)
+#        palette.setColor(QPalette.Button, white)
+#        palette.setColor(QPalette.WindowText, white)
+#        self.setPalette(palette)
 
 #        ###############################
 #        # Creation de fonctions associees aux entrees du menu "Creer"
@@ -520,8 +532,9 @@ class Onglets(QTabWidget):
 
 
     def Aide(self, event):
-        aide = Help(self, path2("%/doc/help.htm"))
-        aide.show()
+        open_new_tab(path2("%/doc/help.htm"))
+#        aide = Help(self, path2("%/doc/help.htm"))
+#        aide.show()
 
     #~ def Verifier_version(self, event):
         #~ # from GUI.nouvelles_versions import verifier_version # à deplacer ?
@@ -555,10 +568,10 @@ class Onglets(QTabWidget):
 
     def About(self, event):
         dialog = About(self)
-        dialog.ShowModal()
-        dialog.Destroy()
+        dialog.exec_()
 
     def Informations(self, event):
         dialog = Informations(self)
-        dialog.ShowModal()
-        dialog.Destroy()
+        dialog.show()
+#        dialog.ShowModal()
+#        dialog.Destroy()

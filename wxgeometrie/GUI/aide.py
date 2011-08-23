@@ -24,188 +24,179 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 
-import  wx.html as html
+from PyQt4.QtGui import (QPushButton, QDialog, QWidget, QVBoxLayout, QHBoxLayout,
+                         QLabel, QPalette, QColor, QPixmap)
+from PyQt4.QtCore import Qt
 import wx
 
 from .. import param
+from ..param import NOMPROG
 from .wxlib import png
 from ..pylib.infos import informations_configuration
-from .app import app
+from .app import app, white_palette
 
 
 
-class Help(wx.Frame):
-    def __init__(self, parent, path):
-        wx.Frame.__init__(self, parent, size=wx.Size(700,610))
+#class Help(wx.Frame):
+#    def __init__(self, parent, path):
+#        wx.Frame.__init__(self, parent, size=wx.Size(700,610))
 
-        self.path = path
+#        self.path = path
 
-        self.SetBackgroundColour(wx.Colour(255, 225, 153))
-        self.html = html.HtmlWindow(self, -1, style=wx.NO_FULL_REPAINT_ON_RESIZE)
-        self.html.SetRelatedFrame(self, u" %s ")
-        #self.html.SetRelatedStatusBar(0)
+#        self.SetBackgroundColour(wx.Colour(255, 225, 153))
+#        self.html = html.HtmlWindow(self, -1, style=wx.NO_FULL_REPAINT_ON_RESIZE)
+#        self.html.SetRelatedFrame(self, u" %s ")
+#        #self.html.SetRelatedStatusBar(0)
 
-        self.printer = html.HtmlEasyPrinting()
+#        self.printer = html.HtmlEasyPrinting()
 
-        self.box = QVBoxLayout()
+#        self.box = QVBoxLayout()
 
-        subbox = QHBoxLayout()
+#        subbox = QHBoxLayout()
 
-        icones = [(u"maison",u"Page d'accueil.", self.OnHome), (u"gauche", u"Page precedente.", self.OnBack), (u"droite", u"Page suivante.", self.OnForward), (u"print", u"Imprimer la page.", self.OnPrint)]
+#        icones = [(u"maison",u"Page d'accueil.", self.OnHome), (u"gauche", u"Page precedente.", self.OnBack), (u"droite", u"Page suivante.", self.OnForward), (u"print", u"Imprimer la page.", self.OnPrint)]
 
-        for i in range(len(icones)):
-            icone = icones[i]
-            bmp = png(icone[0])
-            bouton = wx.BitmapButton(self, -1, bmp, style=wx.NO_BORDER)
-            bouton.SetBackgroundColour(self.GetBackgroundColour())
-            subbox.Add(bouton, 0, wx.ALL,5)
-            bouton.setToolTip(icone[1])
-            bouton.Bind(wx.EVT_BUTTON, icone[2])
-
-
-
-        self.box.Add(subbox, 0)
-        self.box.Add(self.html, 1, wx.GROW)
-        self.setLayout(self.box)
-        self.SetAutoLayout(True)
-
-        self.OnHome(None)
-
-
-    def OnHome(self, event):
-        self.html.LoadPage(self.path)
+#        for i in range(len(icones)):
+#            icone = icones[i]
+#            bmp = png(icone[0])
+#            bouton = wx.BitmapButton(self, -1, bmp, style=wx.NO_BORDER)
+#            bouton.SetBackgroundColour(self.GetBackgroundColour())
+#            subbox.Add(bouton, 0, wx.ALL,5)
+#            bouton.setToolTip(icone[1])
+#            bouton.Bind(wx.EVT_BUTTON, icone[2])
 
 
 
-    def OnBack(self, event):
-        self.html.HistoryBack()
+#        self.box.Add(subbox, 0)
+#        self.box.Add(self.html, 1, wx.GROW)
+#        self.setLayout(self.box)
+#        self.SetAutoLayout(True)
+
+#        self.OnHome(None)
 
 
-    def OnForward(self, event):
-        self.html.HistoryForward()
+#    def OnHome(self, event):
+#        self.html.LoadPage(self.path)
 
 
-    def OnPrint(self, event):
-        self.printer.GetPrintData().SetPaperId(wx.PAPER_LETTER)
-        self.printer.PrintFile(self.html.GetOpenedPage())
+
+#    def OnBack(self, event):
+#        self.html.HistoryBack()
 
 
-class Informations(wx.Dialog):
+#    def OnForward(self, event):
+#        self.html.HistoryForward()
+
+
+#    def OnPrint(self, event):
+#        self.printer.GetPrintData().SetPaperId(wx.PAPER_LETTER)
+#        self.printer.PrintFile(self.html.GetOpenedPage())
+
+
+class Informations(QDialog):
     def __init__(self, parent):
-        wx.Dialog.__init__(self, parent, u"Configuration systeme")
-        self.setStyleSheet("background-color:white")
+        QDialog.__init__(self, parent)
+        self.setWindowTitle(u"Configuration systeme")
+        self.setPalette(white_palette)
 
         panel = QWidget(self)
-        panel.setStyleSheet("background-color:white")
 
         panelSizer = QVBoxLayout()
 
-        italic = wx.Font(panel.GetFont().GetPointSize(),
-                          panel.GetFont().GetFamily(),
-                          wx.ITALIC, wx.NORMAL)
-
-        #logo = wx.StaticBitmap(panel, -1, wx.Image(name = "images"+os.sep+"logo2.png").ConvertToBitmap())
-
-        #panelSizer.Add(logo, 0, wx.ALIGN_CENTRE)
-
         textes = informations_configuration().split(u"\n")
 
-        for texte in textes:
-            t = QLabel(panel, -1, texte)
+        for i, texte in enumerate(textes):
             if texte.startswith("+ "):
-                t.SetFont(italic)
-            panelSizer.Add(t, 0, wx.ALIGN_LEFT)
+                textes[i] = '<i>' + texte + '</i>'
+        t = QLabel('<br>'.join(textes), panel)
+        panelSizer.addWidget(t)
 
 
-        btnOK = wx.Button(panel, wx.ID_OK, u"OK")
-        btnCopier = wx.Button(panel, -1, u"Copier")
-        btnCopier.Bind(wx.EVT_BUTTON, self.copier)
+        btnOK = QPushButton(u"OK", panel)
+        btnOK.clicked.connect(self.close)
+        btnCopier = QPushButton(u"Copier", panel)
+        btnCopier.clicked.connect(self.copier)
 
         sizer = QHBoxLayout()
-        sizer.addWidget(btnOK, 0, wx.RIGHT, 40)
-        sizer.addWidget(btnCopier, 0, wx.LEFT, 40)
-        panelSizer.Add(sizer, 0, wx.ALL | wx.ALIGN_CENTRE, 5)
+        sizer.addWidget(btnOK)
+        sizer.addStretch()
+        sizer.addWidget(btnCopier)
+        panelSizer.addLayout(sizer)
 
-        panel.SetAutoLayout(True)
+#        panel.SetAutoLayout(True)
         panel.setLayout(panelSizer)
-        panelSizer.Fit(panel)
+#        panelSizer.Fit(panel)
 
         topSizer = QHBoxLayout()
-        topSizer.Add(panel, 0, wx.ALL, 10)
+        topSizer.addWidget(panel)
 
-        self.SetAutoLayout(True)
+#        self.SetAutoLayout(True)
         self.setLayout(topSizer)
-        topSizer.Fit(self)
+#        topSizer.Fit(self)
 
-        self.Centre()
+#        self.Centre()
 
 
-    def copier(self, event):
+    def copier(self):
         app.vers_presse_papier(informations_configuration())
 
 
 
-class About(wx.Dialog):
+class About(QDialog):
     def __init__(self, parent):
-        wx.Dialog.__init__(self, parent, u"A propos de WxGéométrie")
-        self.setStyleSheet("background-color:white")
+        QDialog.__init__(self, parent)
+        self.setWindowTitle(u"A propos de " + NOMPROG)
+#        self.setStyleSheet("background-color:white")
+        self.setPalette(white_palette)
 
         panel = QWidget(self)
-        panel.setStyleSheet("background-color:white")
 
         panelSizer = QVBoxLayout()
 
-        italic = wx.Font(panel.GetFont().GetPointSize(),
-                          panel.GetFont().GetFamily(),
-                          wx.ITALIC, wx.NORMAL)
+        logo = QLabel(self)
+        logo.setPixmap(QPixmap(png(u"logo2")))
 
-        bold = wx.Font(panel.GetFont().GetPointSize(),
-                          panel.GetFont().GetFamily(),
-                          wx.NORMAL, wx.BOLD)
-
-        logo = wx.StaticBitmap(panel, -1, png(u"logo2"))
-
-        panelSizer.Add(logo, 0, wx.ALIGN_CENTRE)
+        panelSizer.addWidget(logo, 0, Qt.AlignCenter)
 
         date = "/".join(str(n) for n in reversed(param.date_version))
-        textes = [[u"WxGéométrie version %s" % param.version, bold]]
-        textes.append([u"Version publiée le " + date + "."])
-        textes.append([])
-        textes.append([u"De la géométrie dynamique, un traceur de courbes, et bien plus..."])
-        textes.append([u"WxGéométrie est un logiciel libre, vous pouvez l'utiliser et le modifier comme vous le souhaitez."])
-        textes.append([u"Copyright 2005-" + unicode(param.date_version[0]) +" Nicolas Pourcelot (wxgeo@users.sourceforge.net)", italic])
-        textes.append([])
-        textes.append([u"WxGéométrie inclut désormais SymPy : Python library for symbolic mathematics."])
-        textes.append([u"Copyright 2006-" + unicode(param.date_version[0]) + " The Sympy Team - http://www.sympy.org.", italic])
-        textes.append([])
-        textes.append([u"À Sophie."])
-        textes.append([u"'Le rêve est bien réel. Effleurant votre main, je peux toucher le ciel!'  Alain Ayroles", italic])
-        textes.append([u"Tous mes remerciements à la communauté du logiciel libre."])
-        textes.append([])
+        textes = [u"<b>%s version %s</b>" % (NOMPROG, param.version)]
+        textes.append(u"<i>Version publiée le " + date + "</i>")
+        textes.append('')
+        textes.append(u"De la géométrie dynamique, un traceur de courbes, et bien plus...")
+        textes.append(NOMPROG + u" est un logiciel libre, vous pouvez l'utiliser et le modifier comme vous le souhaitez.")
+        textes.append(u"<i>Copyright 2005-" + unicode(param.date_version[0]) + " Nicolas Pourcelot (wxgeo@users.sourceforge.net)</i>")
+        textes.append('')
+        textes.append(NOMPROG + u" inclut désormais SymPy : Python library for symbolic mathematics.")
+        textes.append(u"<i>Copyright 2006-" + unicode(param.date_version[0]) + " The Sympy Team - http://www.sympy.org.</i>")
+        textes.append('')
+        textes.append(u"À Sophie.")
+        textes.append(u"<i>'Le rêve est bien réel. Effleurant votre main, je peux toucher le ciel!'  Alain Ayroles</i>")
+        textes.append(u"Tous mes remerciements à la communauté du logiciel libre.")
+        textes.append('')
 
-        for texte in textes:
-            l = len(texte)
-            if l:
-                txt = QLabel(panel, -1, texte[0])
-                if l > 1:  txt.SetFont(texte[1])
-                panelSizer.Add(txt, 0, wx.ALIGN_LEFT)
-            else:
-                panelSizer.Add((5, 5)) # Spacer.
+        label = QLabel('<br>'.join(textes), panel)
+        panelSizer.addWidget(label, 0, Qt.AlignCenter)
+        label.setAlignment(Qt.AlignCenter)
 
 
-        btnOK = wx.Button(panel, wx.ID_OK, u"OK")
+        btnOK = QPushButton(u"OK", panel)
+        btnOK.clicked.connect(self.close)
 
-        panelSizer.Add(btnOK, 0, wx.ALL | wx.ALIGN_CENTRE, 5)
+        sizer = QHBoxLayout()
+        sizer.addStretch(1)
+        sizer.addWidget(btnOK)
+        sizer.addStretch(1)
+        panelSizer.addLayout(sizer)
 
-        panel.SetAutoLayout(True)
+#        panel.SetAutoLayout(True)
         panel.setLayout(panelSizer)
-        panelSizer.Fit(panel)
+#        panelSizer.Fit(panel)
 
         topSizer = QHBoxLayout()
-        topSizer.Add(panel, 0, wx.ALL, 10)
+        topSizer.addWidget(panel)
 
-        self.SetAutoLayout(True)
+#        self.SetAutoLayout(True)
         self.setLayout(topSizer)
-        topSizer.Fit(self)
+#        topSizer.Fit(self)
 
-        self.Centre()
+#        self.Centre()

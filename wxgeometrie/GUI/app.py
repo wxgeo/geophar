@@ -22,8 +22,8 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-from PyQt4.QtGui import QApplication#, QPalette, QColor
-from PyQt4.QtCore import QLocale, QTranslator, QLibraryInfo
+from PyQt4.QtGui import QApplication, QPalette, QColor
+from PyQt4.QtCore import QLocale, QTranslator, QLibraryInfo, Qt
 
 
 class App(QApplication):
@@ -46,6 +46,12 @@ class App(QApplication):
         return True
 
 app = App()
+
+white_palette = QPalette()
+white = QColor(Qt.white)
+white_palette.setColor(QPalette.Window, white)
+white_palette.setColor(QPalette.AlternateBase, white)
+
 #app.setStyleSheet("background-color:white")
 #palette = app.palette()
 #palette.setColor(QPalette.Active, QPalette.Window, QColor('white'))

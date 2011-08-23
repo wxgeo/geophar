@@ -344,7 +344,6 @@ class Calculatrice(Panel_simple):
 
             self.entree.historique = eval_safe(calc["Historique"][0])
 #            self.interprete.derniers_resultats = securite.eval_safe(calc["Resultats"][0])
-            print 'Kirikou', calc["Affichage"][0] + "\n"
             self.resultats.setPlainText(calc["Affichage"][0] + "\n")
             self.interprete.load_state(calc["Etat_interne"][0])
 
