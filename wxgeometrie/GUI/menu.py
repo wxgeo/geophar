@@ -166,7 +166,7 @@ class MenuBar(QMenuBar):
 "imprimer": [u"Imprimer", u"Imprimer la figure géométrique courante.", u"Ctrl+P", self.parent.Printout],
 "proprietes": [u"Propriétés", u"Modifier les informations relatives au document", None, self.parent.Proprietes],
 "fermer":   [u"Fermer", u"Fermer la feuille courante.", u"Ctrl+W", self.parent.CloseFile],
-"quitter":  [u"Quitter", u"Fermer le programme.", u"Alt+F4", self.parent.CloseWindow],
+"quitter":  [u"Quitter", u"Fermer le programme.", u"Alt+F4", self.parent.close],
 
 
 

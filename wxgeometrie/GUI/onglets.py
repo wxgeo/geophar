@@ -31,7 +31,8 @@ from webbrowser import open_new_tab
 #from PyQt4.QtCore import QSize, Qt
 
 
-from PyQt4.QtGui import QTabWidget
+from PyQt4.QtGui import QTabWidget, QToolButton, QIcon
+from PyQt4.QtCore import Qt
 import matplotlib.backend_bases as backend_bases
 
 from .aide import About, Informations
@@ -43,6 +44,7 @@ from .inspecteur import FenCode
 from .nouvelles_versions import Gestionnaire_mises_a_jour
 from .proprietes_feuille import ProprietesFeuille
 from .proprietes_objets import Proprietes
+from .wxlib import png
 from . import dialogues_geometrie
 from ..API.sauvegarde import FichierGEO, ouvrir_fichierGEO
 from .. import param, modules, geolib
@@ -54,6 +56,7 @@ class Onglets(QTabWidget):
     def __init__(self, parent):
         self.parent = parent
         QTabWidget.__init__(self, parent)
+        self.setStyleSheet("QTabBar {background:white}, QStackedWidget {background:white}")
         self.setTabsClosable(True)
         self.setMovable(True)
         self.tabCloseRequested.connect(self.fermer_onglet)
@@ -74,6 +77,15 @@ class Onglets(QTabWidget):
 #                self.creer_objet(dialogue)
 #            self.creer[dialogue[0]] = f
 #        ###############################
+
+        #TODO: Ajouter un bouton "New Tab"
+        newTabButton = QToolButton(self)
+        self.setCornerWidget(newTabButton, Qt.TopRightCorner)
+        newTabButton.setCursor(Qt.ArrowCursor)
+        newTabButton.setAutoRaise(True)
+        newTabButton.setIcon(QIcon(path2("images/newtab3.png")))
+        #newTabButton.clicked.connect(self.newTab)
+        newTabButton.setToolTip(u"Add page")
 
         self.gestionnaire_de_mises_a_jour = Gestionnaire_mises_a_jour(self)
 
@@ -438,18 +450,7 @@ class Onglets(QTabWidget):
         self.a_venir()
 
     def a_venir(self, event = None):
-        dlg = wx.MessageDialog(self, u"Fonctionnalité non présente pour l'instant !", u"A venir !", wx.OK | wx.ICON_INFORMATION)
-        dlg.ShowModal()
-        dlg.Destroy()
-
-
-
-    def CloseWindow(self, event):
-        self.parent.Close(True)
-
-
-
-
+        QMessageBox.information(self, u"A venir !", u"Fonctionnalité non présente pour l'instant !")
 
     def supprimer(self, event = None):
         canvas = self.onglet_actuel.canvas
@@ -483,7 +484,7 @@ class Onglets(QTabWidget):
                 win.show()
                 def fermeture(event, win = win):
                     win.Unbind(wx.EVT_CLOSE)
-                    win.Close()
+                    win.close()
                     self.editer()
                 win.Bind(wx.EVT_CLOSE, fermeture)
         #self.parent.Raise()
@@ -558,8 +559,8 @@ class Onglets(QTabWidget):
         dlg.ShowModal()
 
     def Contacter(self, event):
-        formulaire = Contact(self)
-        formulaire.show()
+        self.formulaire = Contact(self)
+        self.formulaire.show()
         #~ val = dialog.ShowModal()
         #~ if val == wx.ID_OK:
             #~ dialog.rapporter()
