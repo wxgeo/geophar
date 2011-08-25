@@ -19,21 +19,21 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-# version unicode
-
 import urllib
-from .infos import informations_configuration
+
 from .. import param
+from .infos import informations_configuration
 from .fonctions import uu
 
-def rapporter(titre = "", auteur = "", email = "", description = "", historique = "", log = ""):
+def rapporter(titre='', auteur='', email='', description='', historique='',
+              log='', config=''):
     parametres = param.__dict__.copy()
     parametres.pop("__builtins__", None)
     parametres = "\n".join(str(key) + " = " + repr(val) for key, val in parametres.items())
 
     data = {
     "version": param.version,
-    "config": informations_configuration(),
+    "config": config or informations_configuration(),
     "titre": titre,
     "auteur": auteur,
     "email": email,
@@ -45,11 +45,15 @@ def rapporter(titre = "", auteur = "", email = "", description = "", historique 
     for key, value in data.items():
 #        data[key] = zlib.compress(uu(value.replace("\n", "\n<br>\n")).encode("utf-8"), 9).replace("\x01", "\x01\x03").replace("\x00", "\x01\x02") # php n'aime pas les caractères nuls dans une chaîne semble-t-il...
         data[key] = uu(value).replace("\n", "\n<br>\n").encode("iso-8859-1")
+    msg = 'Erreur inconnue.'
     try:
-        f = urllib.urlopen("http://www.wxgeo.free.fr/bugs_report.php", urllib.urlencode(data))
-        if param.debug:
-            print f.read()
-        f.close()
-        return True
-    except IOError:
-        return False
+        filename, headers = urllib.urlretrieve("http://wxgeo.free.fr/wordpress/contact")
+        with open(filename) as f:
+            adresse = f.read(300)
+        remote = urllib.urlopen(adresse, urllib.urlencode(data))
+        msg = remote.read()
+        remote.close()
+        return True, uu(msg)
+    except Exception:
+        # XXX: print_error() is not thread safe.
+        return False, uu(msg)

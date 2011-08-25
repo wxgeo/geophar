@@ -22,119 +22,131 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-import thread, sys
-import wx
-#from wxlib import TransmitEvent, EVT_TRANSMIT
+import sys
+from threading import Thread
 
+from PyQt4.QtCore import pyqtSignal
+from PyQt4.QtGui import (QHBoxLayout, QVBoxLayout, QCheckBox, QPushButton, QDialog,
+                         QTextEdit, QLineEdit, QLabel, QComboBox, QGroupBox,
+                         QMessageBox, QWidget,)
 from .. import param
 from ..pylib import path2
 from ..pylib.bugs_report import rapporter
+from .app import white_palette
+from .wxlib import GenericThread
+from ..pylib.infos import informations_configuration
 
-class Contact(wx.Frame):
+
+class Contact(QDialog):
+    u"Formulaire utilisé pour contacter l'auteur et rapporter les bogues."
+
+    sent = pyqtSignal(bool, unicode)
+
     def __init__(self, parent):
-        wx.Frame.__init__(self, parent, u"Contacter l'auteur", style = wx.FRAME_FLOAT_ON_PARENT|wx.CLIP_CHILDREN|wx.CLOSE_BOX|wx.CAPTION)
-        self.setStyleSheet("background-color:white")
+        QDialog.__init__(self, parent)
+        self.setWindowTitle(u"Contacter l'auteur")
+        #style = wx.FRAME_FLOAT_ON_PARENT|wx.CLIP_CHILDREN|wx.CLOSE_BOX|wx.CAPTION)
+        self.setPalette(white_palette)
 
         self.parent = parent
 
         panel = QWidget(self)
-        italic = wx.Font(panel.GetFont().GetPointSize(), panel.GetFont().GetFamily(), wx.ITALIC, wx.NORMAL)
+#        italic = wx.Font(panel.GetFont().GetPointSize(), panel.GetFont().GetFamily(), wx.ITALIC, wx.NORMAL)
 #        bold_italic = wx.Font(panel.GetFont().GetPointSize(), panel.GetFont().GetFamily(), wx.ITALIC, wx.BOLD)
-        panel.setStyleSheet("background-color:white")
+#        panel.setStyleSheet("background-color:white")
 
         panelSizer = QVBoxLayout()
 
-        avant_propos = QLabel(panel, -1, u"""Afin d'améliorer le fonctionnement de WxGéométrie,
-vous êtes invités à signaler tout problème rencontré.""")
-        panelSizer.Add(avant_propos, 0, wx.ALL, 5)
-        avant_propos.SetFont(italic)
-        panelSizer.Add((5, 5))
+        avant_propos = QLabel(u"""<i>Afin d'améliorer le fonctionnement de WxGéométrie,
+vous êtes invités à signaler tout problème rencontré.</i>""", panel)
+        panelSizer.addWidget(avant_propos)
+        panelSizer.addSpacing(5)
 
-
-        rapport = wx.StaticBoxSizer(QGroupBox(panel, -1, u"Rapport d'incident"), wx.VERTICAL)
-        #rapport.Add(wx.StaticText(panel, -1, u"Résumé :"), 0, wx.ALL, 5)
-        self.titre = titre = wx.TextCtrl(panel, -1, u"Résumé", size = (300, -1))
-        titre.SelectAll()
-        rapport.Add(titre, 0, wx.ALL, 5)
+        rapport = QVBoxLayout()
+        rapport_box = QGroupBox(u"Rapport d'incident", panel)
+        rapport_box.setLayout(rapport)
+        self.titre = titre = QLineEdit(panel)
+        titre.setMinimumWidth(200)
+        titre.setText(u"Résumé")
+        titre.selectAll()
+        rapport.addWidget(titre)
 
         sizer= QHBoxLayout()
-        self.modules = modules = wx.Choice(panel, choices = [self.parent.onglet(md).__titre__ for md in param.modules if hasattr(self.parent.onglet(md), "__titre__")])
-        sizer.addWidget(QLabel(panel, -1, u"Module concerné :"), 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5)
-        modules.setSelection(self.parent.GetSelection())
-        sizer.addWidget(modules, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5)
-        rapport.Add(sizer, 0, wx.ALL, 0)
+        self.modules = modules = QComboBox(panel)
+        modules.addItems([parent.onglet(md).__titre__ for md in param.modules if hasattr(self.parent.onglet(md), "__titre__")])
+        modules.setCurrentIndex(self.parent.currentIndex())
+        sizer.addWidget(QLabel(u"Module concerné :", panel))
+        sizer.addWidget(modules)
+        rapport.addLayout(sizer)
 
-        rapport.Add(QLabel(panel, -1, u"Description du problème :"), 0, wx.ALL, 5)
-        self.commentaire = commentaire = wx.TextCtrl(panel, size = (300,100), style = wx.TE_MULTILINE)
-        rapport.Add(commentaire, 0, wx.ALL, 5)
+        rapport.addWidget(QLabel(u"Description du problème :", panel))
+        self.commentaire = commentaire = QTextEdit(panel)
+        commentaire.setMinimumSize(200, 100)
+        rapport.addWidget(commentaire)
 
-        panelSizer.Add(rapport, 0, wx.ALL|wx.EXPAND, 5)
+        panelSizer.addWidget(rapport_box)
 
-        sizer = wx.StaticBoxSizer(QGroupBox(panel, -1, u"Vos coordonnées (facultatif)"), wx.HORIZONTAL)
-        sizer.addWidget(QLabel(panel, -1, u"Nom :"), 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5)
-        self.nom = nom = wx.TextCtrl(panel, size = (100, -1))
-        sizer.addWidget(nom, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5)
-        sizer.addWidget(QLabel(panel, -1, u" E-mail :"), 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5)
-        self.mail = mail = wx.TextCtrl(panel, size = (100, -1))
-        sizer.addWidget(mail, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5)
+        sizer = QHBoxLayout()
+        coordonnees_box = QGroupBox(u"Vos coordonnées (recommandées)", panel)
+        coordonnees_box.setLayout(sizer)
+        sizer.addWidget(QLabel(u"Nom :", panel))
+        self.nom = nom = QLineEdit(panel)
+        nom.setMinimumWidth(100)
+        sizer.addWidget(nom)
+        sizer.addWidget(QLabel(u" E-mail :"))
+        self.mail = mail = QLineEdit(panel)
+        mail.setMinimumWidth(100)
+        sizer.addWidget(mail)
 
-        panelSizer.Add(sizer, 0, wx.ALL|wx.EXPAND, 5)
+        panelSizer.addWidget(coordonnees_box)
 
-        options = wx.StaticBoxSizer(QGroupBox(panel, -1, u"Options"), wx.VERTICAL)
-        self.histo = histo = QCheckBox(panel, -1, "Inclure l'historique du module courant.")
-        histo.SetValue(True)
-        options.Add(histo, 0, wx.ALL, 5)
+        options = QVBoxLayout()
+        options_box = QGroupBox(u"Options", panel)
+        options_box.setLayout(options)
+        self.histo = histo = QCheckBox("Inclure l'historique du module courant.")
+        histo.setChecked(True)
+        options.addWidget(histo)
 
-        self.msg = msg = QCheckBox(panel, -1, "Inclure l'historique des commandes.")
-        msg.SetValue(True)
-        options.Add(msg, 0, wx.ALL, 5)
+        self.msg = msg = QCheckBox("Inclure l'historique des commandes.")
+        msg.setChecked(True)
+        options.addWidget(msg)
 
-        panelSizer.Add(options, 0, wx.ALL|wx.EXPAND, 5)
+        panelSizer.addWidget(options_box)
 
 
-        btnOK = wx.Button(panel, wx.ID_OK, u"Envoyer")
+        btnOK = QPushButton(u"Envoyer", panel)
         btnOK.setToolTip(u"Envoyer les informations.")
-        btnCancel = wx.Button(panel, wx.ID_CANCEL, u"Annuler")
+        btnCancel = QPushButton(u"Annuler", panel)
         btnCancel.setToolTip(u"Quitter sans rien envoyer.")
 
         sizer = QHBoxLayout()
-        sizer.addWidget(btnOK, 0, wx.RIGHT, 40)
-        sizer.addWidget(btnCancel, 0, wx.LEFT, 40)
-        panelSizer.Add(sizer, 0, wx.ALL | wx.ALIGN_CENTRE, 15)
+        sizer.addWidget(btnOK)
+        sizer.addStretch()
+        sizer.addWidget(btnCancel)
+        panelSizer.addLayout(sizer)
 
-        panel.SetAutoLayout(True)
+#        panel.SetAutoLayout(True)
         panel.setLayout(panelSizer)
-        panelSizer.Fit(panel)
+#        panelSizer.Fit(panel)
 
         topSizer = QHBoxLayout()
-        topSizer.Add(panel, 0, wx.ALL, 10)
+        topSizer.addWidget(panel)
 
-        self.SetAutoLayout(True)
+#        self.SetAutoLayout(True)
         self.setLayout(topSizer)
-        topSizer.Fit(self)
 
-        self.Centre()
-
-        self.Bind(EVT_TRANSMIT, self.onTransmit)
-        btnOK.Bind(wx.EVT_BUTTON, self.rapporter)
-        btnCancel.Bind(wx.EVT_BUTTON, self.annuler)
+        self.sent.connect(self.termine)
+        btnOK.clicked.connect(self.rapporter)
+        btnCancel.clicked.connect(self.close)
 
 
-    def annuler(self, event):
-        self.Close()
-
-
-    def rapporter(self, event):
-        titre = self.titre.GetValue()
-        commentaire = self.commentaire.GetValue()
-        nom = self.nom.GetValue()
-        mail = self.mail.GetValue()
-        module = self.parent.onglet(self.modules.GetSelection())
-        if self.histo.GetValue() and hasattr(module, "log"):
+    def rapporter(self):
+        module = self.parent.onglet(self.modules.currentIndex())
+        if self.histo.isChecked() and hasattr(module, "log"):
             histo = module.log.contenu()
         else:
             histo = ""
-        if self.msg.GetValue():
+        if self.msg.isChecked():
             sys.stdout.flush()
             filename = path2(param.emplacements['log'] + u"/messages.log")
             try:
@@ -144,29 +156,31 @@ vous êtes invités à signaler tout problème rencontré.""")
                 file.close()
         else:
             msg = ""
-        def f():
-            result = rapporter(titre = titre, auteur = nom, email = mail, description = commentaire, historique = histo, log = msg)
-            wx.PostEvent(self, TransmitEvent(success = result))
-        self.Hide()
-        thread.start_new_thread(f, ())
+        self.hide()
+        kw = {'titre': self.titre.text(), 'auteur': self.nom.text(),
+              'email': self.mail.text(), 'description': self.commentaire.toPlainText(),
+              'historique': histo, 'log': msg, 'config': informations_configuration(),
+             }
+        self.thread = GenericThread(self._rapporter, **kw)
+        self.thread.start()
+        # XXX: Qt complains here: "QObject::connect: Cannot queue arguments of type 'QTextBlock'"
+
+
+    def _rapporter(self, **kw):
+        # /!\ Ne **JAMAIS** utiliser `print()` depuis une autre thread que la principale !
+        self.sent.emit(*rapporter(**kw))
 
 
 
-    def onTransmit(self, event):
-        if event.success:
-            dlg = wx.MessageDialog(self, u"Le message a été envoyé avec succès. Merci !",
-                                   u"Message envoyé",
-                                   wx.OK | wx.ICON_INFORMATION
-                                   )
+    def termine(self, success, msg):
+        if param.debug:
+            print(' ** Remote site report **\n' + msg)
+        if 'mail()' in msg:
+            # Fonction mail() de PHP très probablement bloquée par Free.
+            success = False
+        if success:
+            QMessageBox.information(self, u"Message envoyé", u"Le message a été envoyé avec succès. Merci !")
+            self.close()
         else:
-            dlg = wx.MessageDialog(self, u"Impossible d'envoyer le message !",
-                               u"Connexion impossible.",
-                               wx.OK | wx.ICON_INFORMATION
-                               #wx.YES_NO | wx.NO_DEFAULT | wx.CANCEL | wx.ICON_INFORMATION
-                               )
-        dlg.ShowModal()
-        dlg.Destroy()
-        if event.success:
-            self.Close()
-        else:
+            QMessageBox.warning(self, u"Connexion impossible.", u"Impossible d'envoyer le message !")
             self.show()
