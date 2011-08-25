@@ -20,100 +20,66 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 
-import thread, urllib, webbrowser
-import wx
-#from wxlib import TransmitEvent, EVT_TRANSMIT
+import urllib, webbrowser
+
+from PyQt4.QtCore import QObject, pyqtSignal
+from PyQt4.QtGui import QMessageBox
 
 from ..pylib import print_error
 from .. import param
+from .wxlib import GenericThread
 
 
-class Progression(object):
+
+class Gestionnaire_mises_a_jour(QObject):
     def __init__(self, parent):
-        self.parent = parent
-        self.initialiser = True
-        self.titre = u"Vérification des nouvelles versions."
-
-    def actualiser(self, blocs_finis = None, taille_bloc = None, taille_fichier = None):
-        if blocs_finis != None:
-            self.fini = min(taille_bloc*blocs_finis, taille_fichier)
-            #print self.fini
-
-        # la premiere fois, on cree la fenetre de progression.
-        if self.initialiser:
-            self.dlg = wx.ProgressDialog(self.titre, u"Vérification en cours.",
-                               maximum = taille_fichier,
-                               parent = self.parent,
-                               style = wx.PD_CAN_ABORT
-                                | wx.PD_APP_MODAL
-                                | wx.PD_ELAPSED_TIME
-                                | wx.PD_AUTO_HIDE
-                                | wx.PD_ESTIMATED_TIME
-                                | wx.PD_REMAINING_TIME
-                                )
-            self.timer = wx.FutureCall(500, self.actualiser)
-
-        # les autres fois, on l'actualise.
-        else:
-            if not self.dlg.Update(self.fini):
-                self.fin()
-                raise ValueError # de maniere a interrompre le telechargement en cours.
-            self.timer.Restart(500)
-        self.initialiser = False
-
-
-    def fin(self):
-        try:
-            self.timer.Stop()
-            del self.timer
-            self.dlg.Destroy()
-
-        except: pass
-
-
-
-
-
-
-
-class Gestionnaire_mises_a_jour(wx.EvtHandler):
-    def __init__(self, parent):
+        QObject.__init__(self)
         self.parent = parent
         self.derniere_version = None
-        wx.EvtHandler.__init__(self)
-        #self.Bind(EVT_TRANSMIT, self.onTransmit)
+        self.sent.connect(self.termine)
+
+    sent = pyqtSignal(bool, bool, unicode, unicode)
 
 
-
-    def onTransmit(self, event):
-        if event.success:
-            if event.update_available:
-                self.derniere_version = event.version
-                wx.MessageBox(u"La version %s de WxGéométrie est sortie.\nVous allez être redirigé vers la page de téléchargement." %event.version, u"Une mise à jour a été trouvée.")
+    def termine(self, success, update, version, msg):
+        if success:
+            if update:
+                self.derniere_version = version
+                QMessageBox.information(self.parent, u"Une mise à jour a été trouvée.",
+                        u"La version %s de WxGéométrie est sortie.\nVous allez être redirigé vers la page de téléchargement." %version)
                 webbrowser.open("http://sourceforge.net/projects/wxgeometrie/files/WxGeometrie/")
             else:
-                wx.MessageBox(u"Aucune mise à jour n'est disponible actuellement.\nConsultez http://wxgeo.free.fr pour plus d'informations.", u"Aucune mise à jour trouvée.")
+                QMessageBox.information(self.parent, u"Aucune mise à jour trouvée.",
+                        u"Aucune mise à jour n'est disponible actuellement.\nConsultez http://wxgeo.free.fr pour plus d'informations.", )
         else:
-            wx.MessageBox(u"Impossible de vérifier si une nouvelle version existe.", u"Connexion impossible")
+            QMessageBox.warning(self.parent, u"Connexion impossible", u"Impossible de vérifier si une nouvelle version existe.")
 
 
     def verifier_version(self, event = None):
-        thread.start_new_thread(self._verifier_version, ())
+        self.thread = GenericThread(self._verifier_version)
+        self.thread.start()
 
 
-    def _verifier_version(self, event = None):
-#        progression = Progression(self.parent)
+    def _verifier_version(self):
+        # /!\ Ne **JAMAIS** utiliser `print()` depuis une autre thread que la principale !
+        version = '?'
+        success = False
+        update = False
+        msg = u'Unknown error.'
         try:
-            filename, headers = urllib.urlretrieve("http://wxgeo.free.fr/wordpress/version")#, None, progression.actualiser)
+            filename, headers = urllib.urlretrieve("http://wxgeo.free.fr/wordpress/version")
             f = open(filename)
             version = f.read(60)
             f.close()
             if len(version) > 50 or not version.replace(" ", "").replace(".", "").isalnum():
                 raise Exception, "Incorrect file format, unable to find current version."
+            success = True
             if version.split(".") > param.version.split('.'):
-                wx.PostEvent(self, TransmitEvent(success = True, update_available = True, version = version))
+                update = True
             else:
-                wx.PostEvent(self, TransmitEvent(success = True, update_available = False))
-        except:
-            print_error()
-            wx.PostEvent(self, TransmitEvent(success = False, update_available = None))
+                update = False
+        except Exception as msg:
+            pass
+            # XXX: print_error() is not thread safe.
+
+        self.sent.emit(success, update, version, msg)
