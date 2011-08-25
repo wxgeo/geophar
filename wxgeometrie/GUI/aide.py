@@ -30,7 +30,7 @@ from PyQt4.QtCore import Qt
 import wx
 
 from .. import param
-from ..param import NOMPROG
+from ..param import NOMPROG, LOGO
 from .wxlib import png
 from ..pylib.infos import informations_configuration
 from .app import app, white_palette
@@ -154,7 +154,7 @@ class About(QDialog):
         panelSizer = QVBoxLayout()
 
         logo = QLabel(self)
-        logo.setPixmap(QPixmap(png(u"logo2")))
+        logo.setPixmap(QPixmap(LOGO))
 
         panelSizer.addWidget(logo, 0, Qt.AlignCenter)
 
