@@ -57,6 +57,7 @@ ligne_commande = debug
 NOMPROG = u"Géophar"
 NOMPROG2 = 'Geophar' # sans accent
 GUIlib = 'Qt'
+LOGO = 'images/logo6.png'
 
 version_wxpython = "2.8-unicode"
 

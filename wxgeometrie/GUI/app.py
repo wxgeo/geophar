@@ -22,9 +22,10 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-from PyQt4.QtGui import QApplication, QPalette, QColor
+from PyQt4.QtGui import QApplication, QPalette, QColor, QPixmap, QSplashScreen, QLabel
 from PyQt4.QtCore import QLocale, QTranslator, QLibraryInfo, Qt
 
+from ..pylib import path2
 
 class App(QApplication):
     def __init__(self, args=[], **kw):
@@ -51,6 +52,17 @@ white_palette = QPalette()
 white = QColor(Qt.white)
 white_palette.setColor(QPalette.Window, white)
 white_palette.setColor(QPalette.AlternateBase, white)
+
+def splash(path):
+    u"Create and display the splash screen. Credits: Eli Bendersky (eliben@gmail.com)"
+    splash_pix = QPixmap(path2(path))
+    splash = QSplashScreen(splash_pix, Qt.WindowStaysOnTopHint)
+    ##splash.setAttribute(Qt.WA_TranslucentBackground)
+    # XXX: Doesn't work currently: https://bugreports.qt.nokia.com//browse/QTBUG-12820
+    # See also http://developer.qt.nokia.com/wiki/QSplashScreen_replacement_for_semitransparent_images
+    splash.show()
+    return splash
+
 
 #app.setStyleSheet("background-color:white")
 #palette = app.palette()

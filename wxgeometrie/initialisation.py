@@ -24,7 +24,7 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 import sys, time, os, optparse, itertools, traceback, imp
 
 from . import param
-from .param import dependances, NOMPROG, NOMPROG2, plateforme, GUIlib
+from .param import dependances, NOMPROG, NOMPROG2, LOGO, plateforme, GUIlib
 
 nomprog = NOMPROG2.lower()
 
@@ -383,11 +383,13 @@ try:
                 print msg
 
         else:
-            from .GUI.app import app
+            from .GUI.app import app, splash
             app.nom(NOMPROG)
+            splash_screen = splash(LOGO)
 
             from .GUI.fenetre_principale import FenetrePrincipale
             frame = FenetrePrincipale(app, fichier_log = fichier_log)
+            splash_screen.finish(frame)
             if isinstance(sys.stdout, SortiesMultiples):
                 if param.debug:
                     for msg in sys.stdout.facultatives[0]:
