@@ -25,7 +25,7 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 
 from PyQt4.QtGui import (QPushButton, QDialog, QWidget, QVBoxLayout, QHBoxLayout,
-                         QLabel, QPalette, QColor, QPixmap)
+                         QLabel, QPalette, QColor, QPixmap, QTextEdit)
 from PyQt4.QtCore import Qt
 import wx
 
@@ -33,6 +33,7 @@ from .. import param
 from ..param import NOMPROG, LOGO
 from .wxlib import png
 from ..pylib.infos import informations_configuration
+from ..pylib import path2
 from .app import app, white_palette
 
 
@@ -123,18 +124,12 @@ class Informations(QDialog):
         sizer.addWidget(btnCopier)
         panelSizer.addLayout(sizer)
 
-#        panel.SetAutoLayout(True)
         panel.setLayout(panelSizer)
-#        panelSizer.Fit(panel)
 
         topSizer = QHBoxLayout()
         topSizer.addWidget(panel)
 
-#        self.SetAutoLayout(True)
         self.setLayout(topSizer)
-#        topSizer.Fit(self)
-
-#        self.Centre()
 
 
     def copier(self):
@@ -146,7 +141,6 @@ class About(QDialog):
     def __init__(self, parent):
         QDialog.__init__(self, parent)
         self.setWindowTitle(u"A propos de " + NOMPROG)
-#        self.setStyleSheet("background-color:white")
         self.setPalette(white_palette)
 
         panel = QWidget(self)
@@ -188,15 +182,54 @@ class About(QDialog):
         sizer.addStretch(1)
         panelSizer.addLayout(sizer)
 
-#        panel.SetAutoLayout(True)
         panel.setLayout(panelSizer)
-#        panelSizer.Fit(panel)
 
         topSizer = QHBoxLayout()
         topSizer.addWidget(panel)
 
-#        self.SetAutoLayout(True)
         self.setLayout(topSizer)
-#        topSizer.Fit(self)
 
-#        self.Centre()
+
+class WhiteScrolledMessageDialog(QDialog):
+    def __init__(self, parent, title='', msg = '', width=None):
+        QDialog.__init__(self, parent)
+        self.setWindowTitle(title)
+        self.setPalette(white_palette)
+
+        sizer = QVBoxLayout()
+        self.setLayout(sizer)
+
+        texte = QTextEdit(self)
+        texte.setPlainText(msg)
+        texte.setMinimumHeight(500)
+        texte.setReadOnly(True)
+        if width is None:
+            texte.setLineWrapMode(QTextEdit.NoWrap)
+            doc = texte.document()
+            width = doc.idealWidth() + 4*doc.documentMargin()
+        texte.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        texte.setMinimumWidth(width)
+        sizer.addWidget(texte)
+
+        boutons = QHBoxLayout()
+        boutons.addStretch()
+        ok = QPushButton('OK', clicked=self.close)
+        boutons.addWidget(ok)
+        boutons.addStretch()
+        sizer.addLayout(boutons)
+
+
+class Notes(WhiteScrolledMessageDialog):
+    def __init__(self, parent):
+        with open(path2("%/doc/notes.txt"), "r") as f:
+            msg = f.read().decode("utf8")
+        msg = msg.replace(u"WxGeometrie", u"WxGéométrie version " + param.version, 1)
+        WhiteScrolledMessageDialog.__init__(self, parent, u"Notes de version", msg, 500)
+
+class Licence(WhiteScrolledMessageDialog):
+    def __init__(self, parent):
+        with open(path2("%/doc/license.txt"), "r") as f:
+            msg = f.read().decode("utf8")
+        msg = msg.replace(u"WxGeometrie", u"WxGéométrie version " + param.version, 1)
+        WhiteScrolledMessageDialog.__init__(self, parent, u"Licence", msg)
+

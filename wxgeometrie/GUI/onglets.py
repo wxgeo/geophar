@@ -35,7 +35,7 @@ from PyQt4.QtGui import QTabWidget, QToolButton, QIcon
 from PyQt4.QtCore import Qt
 import matplotlib.backend_bases as backend_bases
 
-from .aide import About, Informations
+from .aide import About, Informations, Notes, Licence
 from .animer import DialogueAnimation
 from .contact import Contact
 #from .dialogues_geometrie import EditerObjet, SupprimerObjet
@@ -512,7 +512,6 @@ class Onglets(QTabWidget):
 
     def Animer(self, event):
         d = DialogueAnimation(self)
-        d.CenterOnParent(wx.BOTH)
         d.show()
 
     def Histo(self, event):
@@ -543,29 +542,16 @@ class Onglets(QTabWidget):
         #~ self.gestionnaire_de_mises_a_jour.verifier_version()
 
     def Notes(self, event):
-        f = open(path2("%/doc/notes.txt"), "r")
-        msg = f.read().decode("utf8")
-        f.close()
-        msg = msg.replace(u"WxGeometrie", u"WxGéométrie version " + param.version, 1)
-        dlg = wx.lib.dialogs.ScrolledMessageDialog(self, msg, "Notes de version")
-        dlg.ShowModal()
+        self.notes = Notes(self)
+        self.notes.show()
 
     def Licence(self, event):
-        f = open(path2("%/doc/license.txt"), "r")
-        msg = f.read().decode("utf8")
-        f.close()
-        msg = msg.replace(u"WxGeometrie", u"WxGéométrie version " + param.version, 1)
-        dlg = wx.lib.dialogs.ScrolledMessageDialog(self, msg, "Licence")
-        dlg.ShowModal()
+        self.licence = Licence(self)
+        self.licence.show()
 
     def Contacter(self, event):
         self.formulaire = Contact(self)
         self.formulaire.show()
-        #~ val = dialog.ShowModal()
-        #~ if val == wx.ID_OK:
-            #~ dialog.rapporter()
-        #~ dialog.Destroy()
-
 
     def About(self, event):
         dialog = About(self)
@@ -574,5 +560,3 @@ class Onglets(QTabWidget):
     def Informations(self, event):
         dialog = Informations(self)
         dialog.show()
-#        dialog.ShowModal()
-#        dialog.Destroy()
