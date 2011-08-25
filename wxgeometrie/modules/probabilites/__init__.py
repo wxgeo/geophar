@@ -60,7 +60,7 @@ class Probabilites(Panel_API_graphique):
 
         self.entrees = QVBoxLayout()
 
-        self.entrees.Add(QLabel(self, u" Instructions :"), 0, wx.ALL,5)
+        self.entrees.addWidget(QLabel(u" Instructions :"))
 
         self.instructions = wx.TextCtrl(self, size = (200, 300), style = wx.TE_MULTILINE)
         self.instructions.SetValue("""||Tirage 1|Tirage 2|Tirage 3
@@ -74,10 +74,10 @@ omega
 >>>G
 >>>H
 >>&E:0,9""")
-        self.entrees.Add(self.instructions, 0, wx.ALL,5)
+        self.entrees.Add(self.instructions)
         self.appliquer = QPushButton(self, label = u"Générer l'arbre")
         self.appliquer.Bind(wx.EVT_BUTTON, self.Appliquer)
-        self.entrees.Add(self.appliquer, 0, wx.ALL,5)
+        self.entrees.Add(self.appliquer)
 
         self.sizer = QHBoxLayout()
         self.sizer.Add(self.canvas, 1, wx.LEFT | wx.TOP | wx.GROW)

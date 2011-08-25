@@ -30,7 +30,7 @@ from .barre_outils import BarreOutils
 from .menu import RSSMenu
 from .console_geolib import ConsoleGeolib
 from .wxlib import BusyCursor
-from .wxcanvas import WxCanvas
+from .wxcanvas import QtCanvas
 from .app import app
 from ..API.sauvegarde import ouvrir_fichierGEO, FichierGEO
 from ..API.parametres import sauvegarder_module
@@ -206,20 +206,20 @@ class Panel_API_graphique(Panel_simple):
         # IMPORTANT: contruire toujours dans cet ordre.
         self.feuilles = Classeur(self, log = self.log)
         # En particulier, l'initialisation du canvas nécessite qu'il y ait déjà une feuille ouverte.
-        self.canvas = WxCanvas(self)
+        self.canvas = QtCanvas(self)
         # La construction du menu nécessite que self.canvas et self.log
         # soient définis, ainsi que self.doc_ouverts.
         self.doc_ouverts = RSSMenu(u"Documents ouverts", [], self.charger_feuille, u"Documents ouverts.")
         self.menu = self.module._menu_(self)
 
-        self.barre_outils = BarreOutils(self, couleur='white')
-        self.console_geolib = ConsoleGeolib(self, couleur='white')
+        self.barre_outils = BarreOutils(self)
+        self.console_geolib = ConsoleGeolib(self)
         self.barre_outils.setVisible(self.param("afficher_barre_outils"))
         self.console_geolib.setVisible(self.param("afficher_console_geolib"))
 
         self.canvas.initialiser()
         self.__sizer_principal = QVBoxLayout()
-        self.__sizer_principal.Add(self.barre_outils)
+        self.__sizer_principal.addWidget(self.barre_outils)
 
 
     @property2
@@ -273,22 +273,22 @@ class Panel_API_graphique(Panel_simple):
     def finaliser(self, contenu = None):
         if contenu is None:
             contenu = self.canvas
-        self.__sizer_principal.Add(contenu, 1, wx.LEFT | wx.TOP | wx.GROW)
-        self.__sizer_principal.Add(self.console_geolib)
+        self.__sizer_principal.addWidget(contenu)#, 1, wx.LEFT|wx.TOP|wx.GROW
+        self.__sizer_principal.addWidget(self.console_geolib)
         self.setLayout(self.__sizer_principal)
-        self.adjustSize()
+        ##self.adjustSize()
 
 
 
-    def action_effectuee(self, log, signature = None):
-        Panel_simple.action_effectuee(self, log, signature = signature)
-        self.feuille_actuelle.interprete.commande_executee(signature = signature)
+    def action_effectuee(self, log, signature=None):
+        Panel_simple.action_effectuee(self, log, signature=signature)
+        self.feuille_actuelle.interprete.commande_executee(signature=signature)
 
     def _get_actuelle(self):
         return self.feuilles.feuille_actuelle
 
     def _set_actuelle(self, feuille):
-        self.feuilles.feuille_actuelle = feuille
+        self.feuilles.feuille_actuelle=feuille
         self.update()
 
     def _del_actuelle(self):
@@ -314,7 +314,7 @@ class Panel_API_graphique(Panel_simple):
             feuille = self.feuilles[feuille]
         self.feuille_actuelle = feuille
 
-    def fermer_feuille(self, feuille = None):
+    def fermer_feuille(self, feuille=None):
         if feuille is None:
             del self.feuille_actuelle
         else:

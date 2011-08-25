@@ -152,10 +152,10 @@ class MultiButton(QToolButton):
 
 
 class BarreOutils(QWidget):
-    def __init__(self, parent, couleur = None):
+    def __init__(self, parent):
         self.parent = parent
-        QWidget.__init__(self, parent, style = wx.TAB_TRAVERSAL|wx.WANTS_CHARS)
-        self.SetBackgroundColour(couleur if couleur is not None else wx.NamedColor(u"WHITE"))
+        QWidget.__init__(self, parent)
+        ##self.SetBackgroundColour(couleur if couleur is not None else wx.NamedColor(u"WHITE"))
         self.debut_selection = None
         self.debut_zoombox = None
 

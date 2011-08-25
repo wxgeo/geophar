@@ -24,33 +24,30 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 from PyQt4.QtGui import QWidget
 
+from .app import white_palette
 from .ligne_commande import LigneCommande
 from ..pylib import print_error
 
 
 class ConsoleGeolib(QWidget):
-    def __init__(self, parent, couleur = None):
+    def __init__(self, parent):
+        QWidget.__init__(self, parent)
         self.parent = parent
-        QWidget.__init__(self, parent, style = wx.TAB_TRAVERSAL|wx.WANTS_CHARS)
-        self.SetBackgroundColour(couleur if couleur is not None else wx.NamedColor(u"WHITE"))
+        self.setPalette(white_palette)
         vsizer = QVBoxLayout()
-        label = u"Tapez une commande ci-dessus, puis appuyez sur [Entrée]."
-        self.resultats = QLabel(self, size = (500, -1), label = label)
-        italic = wx.Font(self.GetFont().GetPointSize(),
-                          self.GetFont().GetFamily(),
-                          wx.ITALIC, wx.NORMAL)
-        self.resultats.SetFont(italic)
-        self.ligne_commande = LigneCommande(self, longueur = 500, action = self.action)
-        vsizer.addWidget(self.ligne_commande, 1, wx.ALL|wx.EXPAND, 0)
-        vsizer.addWidget(self.resultats, 1, wx.ALL|wx.EXPAND, 5)
+        txt = u"<i>Tapez une commande ci-dessus, puis appuyez sur </i>[<i>Entrée</i>]<i>.</i>"
+        self.resultats = QLabel(txt)
+        self.resultats.setMinimumSize(500)
+        self.ligne_commande = LigneCommande(self, longueur=500, action=self.action)
+        vsizer.addWidget(self.ligne_commande)
+        vsizer.addWidget(self.resultats)
         self.setLayout(vsizer)
-        self.adjustSize()
 
     def action(self, commande, **kw):
         try:
             resultat = self.parent.feuille_actuelle.executer(commande)
-            self.resultats.SetLabel(resultat)
+            self.resultats.setText(resultat)
             self.ligne_commande.clear()
         except:
             print_error()
-            self.resultats.SetLabel('Erreur.')
+            self.resultats.setText('Erreur.')

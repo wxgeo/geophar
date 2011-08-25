@@ -65,7 +65,7 @@ class Traceur(Panel_API_graphique):
         self.intervalles = []
 
         self.entrees = QVBoxLayout()
-        self.entrees.Add(QLabel(self, u" Equations :"), 0, wx.ALL,5)
+        self.entrees.addWidget(QLabel(u" Equations :"))
 
         for i in range(self.nombre_courbes):
                 ligne = QHBoxLayout()
@@ -77,23 +77,23 @@ class Traceur(Panel_API_graphique):
                 # aux évènements EVT_CHECKBOX et EVT_ENTER_WINDOW
                 #self.boites[i].Bind(wx.EVT_ENTER_WINDOW, partial(self.MouseOver, i=i))
                 self.boites[i].Bind(wx.EVT_LEAVE_WINDOW, self.MouseOver)
-                ligne.Add(self.boites[i], 0, wx.ALIGN_CENTRE|wx.ALL,5)
+                ligne.Add(self.boites[i])
 
-                ligne.Add(QLabel(self, "Y ="), 0, wx.ALIGN_CENTRE|wx.ALL,5)
+                ligne.addWidget(QLabel("Y ="))
                 self.equations.append(wx.TextCtrl(self, size=(120, -1), style=wx.TE_PROCESS_ENTER))
                 self.equations[i].Bind(wx.EVT_CHAR, partial(self.EvtChar, i=i))
                 self.equations[i].Bind(wx.EVT_ENTER_WINDOW, partial(self.MouseOver, i=i))
                 self.equations[i].Bind(wx.EVT_LEAVE_WINDOW, self.MouseOver)
-                ligne.Add(self.equations[i], 0, wx.ALIGN_CENTRE|wx.ALL,5)
+                ligne.Add(self.equations[i])
 
-                ligne.Add(QLabel(self, "sur"), 0, wx.ALIGN_CENTRE|wx.ALL,5)
+                ligne.addWidget(QLabel("sur"))
                 self.intervalles.append(wx.TextCtrl(self, size = (100, -1), style = wx.TE_PROCESS_ENTER))
                 self.intervalles[i].Bind(wx.EVT_CHAR, partial(self.EvtChar, i=i))
                 self.intervalles[i].Bind(wx.EVT_ENTER_WINDOW, partial(self.MouseOver, i=i))
                 self.intervalles[i].Bind(wx.EVT_LEAVE_WINDOW, self.MouseOver)
-                ligne.Add(self.intervalles[i], 0, wx.ALIGN_CENTRE|wx.ALL,5)
+                ligne.Add(self.intervalles[i])
 
-                self.entrees.Add(ligne)
+                self.entrees.addLayout(ligne)
 
         self.sizer = QHBoxLayout()
         self.sizer.addWidget(self.canvas, 1, wx.LEFT | wx.TOP | wx.GROW, 0)

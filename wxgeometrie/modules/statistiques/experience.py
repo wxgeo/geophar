@@ -62,14 +62,14 @@ class ExperienceFrame(MyMiniFrame):
 
         sizer = QVBoxLayout()
         exp = QHBoxLayout()
-        exp.Add(QLabel(p, -1, u"Experience:"))
+        exp.addWidget(QLabel(p, -1, u"Experience:"))
         self.experience = wx.TextCtrl(p, -1, "", size=(120, -1))
         self.experience.Bind(wx.EVT_CHAR, self.EvtChar)
         exp.Add(self.experience)
         sizer.addWidget(exp)
 
         nbr = QHBoxLayout()
-        nbr.Add(QLabel(p, -1, u"Nombre d'expériences:"))
+        nbr.addWidget(QLabel(p, -1, u"Nombre d'expériences:"))
         sc = self.sc = QSpinBox(p, -1, "", (30, 50))
         sc.SetRange(1,100000)
         sc.SetValue(5)
@@ -81,7 +81,7 @@ class ExperienceFrame(MyMiniFrame):
         sizer.addWidget(nbr)
 
         val = QHBoxLayout()
-        val.Add(QLabel(p, -1, u"Valeurs possibles:"))
+        val.addWidget(QLabel(p, -1, u"Valeurs possibles:"))
         self.valeurs = wx.TextCtrl(p, -1, "", size=(120, -1))
         self.valeurs.Bind(wx.EVT_CHAR, self.EvtChar)
         val.Add(self.valeurs)
@@ -153,7 +153,7 @@ class LancerDes(MyMiniFrame):
         sizer.addWidget(QLabel(p, -1, u"On simule le lancer d'un ou plusieurs dés"), 0, wx.LEFT|wx.TOP|wx.RIGHT|wx.ALIGN_CENTER_VERTICAL, 5)
         sizer.addWidget(QLabel(p, -1, u"à 6 faces, et on étudie la somme des points."))
         exp = QHBoxLayout()
-        exp.Add(QLabel(p, -1, u"Nombre de dés:"))
+        exp.addWidget(QLabel(p, -1, u"Nombre de dés:"))
         ex = self.experience = QSpinBox(p, -1, "",  (30, 50))
         ex.SetRange(1, 100000)
         ex.SetValue(1)
@@ -164,7 +164,7 @@ class LancerDes(MyMiniFrame):
         sizer.addWidget(exp)
 
         nbr = QHBoxLayout()
-        nbr.Add(QLabel(p, -1, u"Nombre de lancers:"))
+        nbr.addWidget(QLabel(p, -1, u"Nombre de lancers:"))
         sc = self.sc = QSpinBox(p, -1, "", (30, 50))
         sc.SetRange(1, 100000)
         sc.SetValue(1)
@@ -243,7 +243,7 @@ class Sondage(MyMiniFrame):
         sizer.addWidget(QLabel(p, -1, u"On simule un sondage simple (réponse par oui ou non)."), 0, wx.LEFT|wx.TOP|wx.RIGHT|wx.ALIGN_CENTER_VERTICAL, 5)
         sizer.addWidget(QLabel(p, -1, u"Exemple: \"préférez-vous le candidat A au candidat B ?\""))
         exp = QHBoxLayout()
-        exp.Add(QLabel(p, -1, u"Pourcentage de réponses affirmatives sur l'ensemble de la population:"))
+        exp.addWidget(QLabel(p, -1, u"Pourcentage de réponses affirmatives sur l'ensemble de la population:"))
         ex = self.experience = QSpinBox(p, -1, "",  (30, 50))
         ex.SetRange(0,100)
         ex.SetValue(50)
@@ -254,7 +254,7 @@ class Sondage(MyMiniFrame):
         sizer.addWidget(exp)
 
         nbr = QHBoxLayout()
-        nbr.Add(QLabel(p, -1, u"Taille de l'echantillon:"))
+        nbr.addWidget(QLabel(p, -1, u"Taille de l'echantillon:"))
         sc = self.sc1 = QSpinBox(p, -1, "", (30, 50))
         sc.SetRange(1, 100000)
         sc.SetValue(1000)
@@ -270,7 +270,7 @@ class Sondage(MyMiniFrame):
 
 
         nbr = QHBoxLayout()
-        nbr.Add(QLabel(p, -1, u"Nombre de sondages:"))
+        nbr.addWidget(QLabel(p, -1, u"Nombre de sondages:"))
         sc = self.sc2 = QSpinBox(p, -1, "", (30, 50))
         sc.SetRange(1,100000)
         sc.SetValue(1)

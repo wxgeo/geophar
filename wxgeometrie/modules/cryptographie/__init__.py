@@ -139,8 +139,8 @@ class Cryptographie(Panel_simple):
         self.table = QGridLayout(5, 5)
         self.cases = {}
         size = (30, -1)
-        self.table.Add(QLabel(self, u"Codé:"), (0, 0), flag=wx.ALIGN_CENTER)
-        self.table.Add(QLabel(self, u"Clair:"), (1, 0), flag=wx.ALIGN_CENTER)
+        self.table.addWidget(QLabel(u"Codé:"), (0, 0), flag=wx.ALIGN_CENTER)
+        self.table.addWidget(QLabel(u"Clair:"), (1, 0), flag=wx.ALIGN_CENTER)
         for i, l in enumerate(majuscules):
             txtctrl = wx.TextCtrl(self, value=l, size=size, style=wx.TE_READONLY|wx.TE_CENTRE)
             txtctrl.setEnabled(False)
@@ -153,8 +153,8 @@ class Cryptographie(Panel_simple):
             self.cases[l].Bind(wx.EVT_KEY_DOWN,  partial(self.EvtKey, l=l))
             self.cases[l].Bind(wx.EVT_TEXT, self.decoder)
 
-        self.sizer.Add(self.textes, 0, wx.ALIGN_CENTER | wx.ALL, 10)
-        self.sizer.Add(self.table, 0, wx.ALIGN_CENTER | wx.ALL, 10)
+        self.sizer.Add(self.textes)
+        self.sizer.Add(self.table)
         self.setLayout(self.sizer)
         self.adjustSize()
 

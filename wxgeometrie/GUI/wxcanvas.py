@@ -127,7 +127,7 @@ class MiniEditeur:
 
 
 
-class WxCanvas(FigureCanvasWxAgg, Canvas):
+class QtCanvas(FigureCanvasWxAgg, Canvas):
     def __init__(self, parent, fixe = False):
         u"Si fixe = True, l'utilisateur ne peut pas zoomer ou recadrer la fenêtre d'affichage avec la souris."
 

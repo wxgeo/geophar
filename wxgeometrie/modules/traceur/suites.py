@@ -44,7 +44,7 @@ class CreerSuite(MyMiniFrame):
         sizer.addWidget(self.mode, 0, wx.ALIGN_LEFT|wx.ALL,5)
 
         f = QHBoxLayout()
-        f.Add(QLabel(p, -1, u"Choisissez la fonction f :"), 0, wx.ALIGN_LEFT|wx.ALIGN_CENTER_VERTICAL|wx.ALL,5)
+        f.addWidget(QLabel(p, -1, u"Choisissez la fonction f :"), 0, wx.ALIGN_LEFT|wx.ALIGN_CENTER_VERTICAL|wx.ALL,5)
         self.fonction = QComboBox(p, -1, (100, 50), choices = ["Y" + str(i+1) for i in xrange(self.parent.nombre_courbes)])
         self.fonction.setSelection(0)
         self.Bind(wx.EVT_CHOICE, self.EvtChoixFonction, self.fonction)
@@ -52,7 +52,7 @@ class CreerSuite(MyMiniFrame):
         sizer.addWidget(f)
 
         start = QHBoxLayout()
-        start.Add(QLabel(p, -1, u"Commencer pour n ="), 0, wx.ALIGN_LEFT|wx.ALIGN_CENTER_VERTICAL|wx.ALL,5)
+        start.addWidget(QLabel(p, -1, u"Commencer pour n ="), 0, wx.ALIGN_LEFT|wx.ALIGN_CENTER_VERTICAL|wx.ALL,5)
         self.n0 = QSpinBox(p, -1, "", size = (50, -1))
         self.n0.SetRange(0, 1000000)
         self.n0.SetValue(0)
@@ -60,7 +60,7 @@ class CreerSuite(MyMiniFrame):
         sizer.addWidget(start)
 
         self.terme = terme = QHBoxLayout()
-        terme.Add(QLabel(p, -1, u"Terme initial :"), 0, wx.ALIGN_LEFT|wx.ALIGN_CENTER_VERTICAL|wx.ALL,5)
+        terme.addWidget(QLabel(p, -1, u"Terme initial :"), 0, wx.ALIGN_LEFT|wx.ALIGN_CENTER_VERTICAL|wx.ALL,5)
         self.un0 =  wx.TextCtrl(p, -1, "1", size=(100, -1))
         terme.Add(self.un0, 0, wx.ALIGN_LEFT|wx.ALIGN_CENTER_VERTICAL|wx.ALL,5)
         sizer.addWidget(terme)
@@ -68,13 +68,13 @@ class CreerSuite(MyMiniFrame):
         sizer.addWidget(wx.StaticLine(p, -1, style=wx.LI_HORIZONTAL), 0, wx.GROW|wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5)
 
         nbr = QHBoxLayout()
-        nbr.Add(QLabel(p, -1, u"Construire les"), 0, wx.ALIGN_LEFT|wx.ALIGN_CENTER_VERTICAL
+        nbr.addWidget(QLabel(p, -1, u"Construire les"), 0, wx.ALIGN_LEFT|wx.ALIGN_CENTER_VERTICAL
 |wx.ALL,5)
         self.termes = QSpinBox(p, -1, "", size = (50, -1))
         self.termes.SetRange(0, 100)
         self.termes.SetValue(5)
         nbr.Add(self.termes, 0, wx.ALIGN_LEFT|wx.ALIGN_CENTER_VERTICAL|wx.ALL,5)
-        nbr.Add(QLabel(p, -1, u"premiers termes."), 0, wx.ALIGN_LEFT|wx.ALIGN_CENTER_VERTICAL|wx.ALL,5)
+        nbr.addWidget(QLabel(p, -1, u"premiers termes."), 0, wx.ALIGN_LEFT|wx.ALIGN_CENTER_VERTICAL|wx.ALL,5)
         sizer.addWidget(nbr)
 
         sizer.addWidget(wx.StaticLine(p, -1, style=wx.LI_HORIZONTAL), 0, wx.GROW|wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5)

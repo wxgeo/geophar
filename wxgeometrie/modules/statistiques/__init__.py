@@ -138,7 +138,7 @@ class Statistiques(Panel_API_graphique):
 
         self.entrees = QVBoxLayout()
 
-        self.entrees.Add(QLabel(self, u" Mode graphique :"), 0, wx.ALL,5)
+        self.entrees.addWidget(QLabel(u" Mode graphique :"))
 
         self.choix = QComboBox(self, -1, (100, 50), choices = self.noms_diagrammes)
         self.graph = 'barres' # *APRES* que self.choix soit défini.

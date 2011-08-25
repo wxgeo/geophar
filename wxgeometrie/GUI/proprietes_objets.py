@@ -107,7 +107,7 @@ class ProprietesAffichage(QWidget):
                 editer = QPushButton(self, label = u"Style")
                 editer.Bind(wx.EVT_BUTTON, self.EvtLabelStyle)
                 ligne.Add(editer)
-            encadre1.Add(ligne)
+            encadre1.addLayout(ligne)
 
             objets = [objet for objet in self.objets if objet.style("legende") is not None]
             if objets:
@@ -139,7 +139,7 @@ class ProprietesAffichage(QWidget):
                 legende.Add(self.radio_etiquette)
                 legende.Add(self.radio_formule)
                 legende.Add(self.radio_aucun)
-                encadre1.Add(QLabel(self, u"Afficher : "), 0, wx.ALL,5)
+                encadre1.addWidget(QLabel(u"Afficher : "))
                 encadre1.Add(legende)
 
 
@@ -155,7 +155,7 @@ class ProprietesAffichage(QWidget):
 
         if objets and categorie and all(objet.style("categorie") == categorie for objet in objets):
             choix = QHBoxLayout()
-            choix.Add(QLabel(self, u"Style de l'objet : "), 0, wx.ALL,5)
+            choix.addWidget(QLabel(u"Style de l'objet : "))
 
             #categorie = objets[0].style("categorie") or "lignes"
             self.liste_styles = getattr(param, "styles_de_" + categorie, [])
@@ -172,7 +172,7 @@ class ProprietesAffichage(QWidget):
         objets = [objet for objet in self.objets if objet.style("hachures") is not None]
         if objets:
             choix = QHBoxLayout()
-            choix.Add(QLabel(self, u"Style des hâchures : "), 0, wx.ALL,5)
+            choix.addWidget(QLabel(u"Style des hâchures : "))
 
             self.types_de_hachures = getattr(param, "types_de_hachures", [])
             self.hachures = QComboBox(self, -1, (100, 50), choices = self.types_de_hachures)
@@ -190,7 +190,7 @@ class ProprietesAffichage(QWidget):
 
         if objets and categorie and all(objet.style("categorie") == categorie for objet in objets):
             choix = QHBoxLayout()
-            choix.Add(QLabel(self, "Police : "), 0, wx.ALL,5)
+            choix.addWidget(QLabel("Police : "))
 
             #categorie = self.objet.style("categorie") or "lignes"
             self.liste_familles = getattr(param, "familles_de_" + categorie, [])
@@ -209,7 +209,7 @@ class ProprietesAffichage(QWidget):
         if objets:
             couleur = objets[0].style("couleur")
             choix = QHBoxLayout()
-            choix.Add(QLabel(self, u"Couleur de l'objet : "), 0, wx.ALL,5)
+            choix.addWidget(QLabel(u"Couleur de l'objet : "))
             if all(objet.style("couleur") == couleur for objet in objets):
                 couleur = colorConverter.to_rgb(couleur)
                 couleur = tuple(int(255*i) for i in couleur) # conversion du format matplotlib au format wx
@@ -225,7 +225,7 @@ class ProprietesAffichage(QWidget):
         if objets:
             epaiss = objets[0].style("epaisseur")
             epaisseur = QHBoxLayout()
-            epaisseur.Add(QLabel(self, u"Epaisseur (en 10e de pixels) : "), 0, wx.ALL,5)
+            epaisseur.addWidget(QLabel(u"Epaisseur (en 10e de pixels) : "))
             self.epaisseur = QSpinBox(self, -1, "", (30, 50))
             self.epaisseur.SetRange(1,10000)
             if all(objet.style("epaisseur") == epaiss for objet in objets):
@@ -241,7 +241,7 @@ class ProprietesAffichage(QWidget):
         if objets:
             tail = objets[0].style("taille")
             taille = QHBoxLayout()
-            taille.Add(QLabel(self, u"Taille (en 10e de pixels) : "), 0, wx.ALL,5)
+            taille.addWidget(QLabel(u"Taille (en 10e de pixels) : "))
             self.taille = QSpinBox(self, -1, "", (30, 50))
             self.taille.SetRange(1,10000)
             if all(objet.style("taille") == tail for objet in objets):
@@ -257,7 +257,7 @@ class ProprietesAffichage(QWidget):
         if objets:
             pos = objets[0].style("position")
             position = QHBoxLayout()
-            position.Add(QLabel(self, u"Position de la flêche : "), 0, wx.ALL,5)
+            position.addWidget(QLabel(u"Position de la flêche : "))
             self.position = QSpinBox(self, -1, "", (30, 50))
             self.position.SetRange(0, 100)
             if all(objet.style("position") == pos for objet in objets):
@@ -274,7 +274,7 @@ class ProprietesAffichage(QWidget):
         if objets:
             ang = objets[0].style("angle")
             angle = QHBoxLayout()
-            angle.Add(QLabel(self, u"Angle (en degré) : "), 0, wx.ALL,5)
+            angle.addWidget(QLabel(u"Angle (en degré) : "))
             self.angle = QSpinBox(self, -1, "", (30, 50))
             self.angle.SetRange(0, 360)
             if all(objet.style("angle") == ang for objet in objets):
@@ -308,7 +308,7 @@ class ProprietesAffichage(QWidget):
 
         if objets and categorie and all(objet.style("categorie") == categorie for objet in objets):
             choix = QHBoxLayout()
-            choix.Add(QLabel(self, "Codage : "), 0, wx.ALL,5)
+            choix.addWidget(QLabel("Codage : "))
 
             #categorie = objets[0].style("categorie") or "lignes"
             self.liste_codages = getattr(param, "codage_des_" + categorie, [])
@@ -521,7 +521,7 @@ class ProprietesInfos(QWidget):
             nom = propriete.replace("_", " ").strip().capitalize()
         nom += " : "
         if hasattr(self.objet, propriete):
-            self.infos.Add(QLabel(self, nom))
+            self.infos.addWidget(QLabel(nom))
             txt = UpdatableTextCtrl(self, propriete)
             self.infos.Add(txt)
             self.textes.append(txt)
@@ -547,7 +547,7 @@ class ProprietesAvance(QWidget):
         if len(self.objets) is 1:
             self.objet = self.objets[0]
             box = wx.StaticBoxSizer(QGroupBox(self, -1, u"Style de l'objet"), wx.VERTICAL)
-            box.Add(QLabel(self, label = u"Attention, ne modifiez ce contenu que si vous savez ce que vous faites."))
+            box.addWidget(QLabel(label = u"Attention, ne modifiez ce contenu que si vous savez ce que vous faites."))
             self.avance = wx.TextCtrl(self, size=wx.Size(350, 200), style = wx.TE_MULTILINE)
             self.actualiser()
             box.Add(self.avance)

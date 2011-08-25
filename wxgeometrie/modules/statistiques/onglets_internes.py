@@ -50,7 +50,7 @@ class Donnees(CstmPanel):
     def __init__(self, parent):
         CstmPanel.__init__(self, parent)
         sizer = QHBoxLayout()
-        sizer.Add(QLabel(self, u"Effectifs et valeurs associées:  "), 0, wx.ALIGN_CENTER|wx.ALL, 5)
+        sizer.addWidget(QLabel(u"Effectifs et valeurs associées:  "), 0, wx.ALIGN_CENTER|wx.ALL, 5)
         self.valeurs = wx.TextCtrl(self, -1, self.main.donnees_valeurs, size=(500, -1), style=wx.TE_PROCESS_ENTER)
         aide = u"Valeurs simples:\n8 8 9 12 17 18\nEffectifs et valeurs:\n2*7 14*8 5*9 1*10\nClasses et effectifs:\n17*[0;10[ 24*[10;20["
         self.valeurs.setToolTip(aide)
@@ -130,7 +130,7 @@ class Graduation(CstmPanel):
         sizer.Add(self.a)
         msizer.Add(sizer)
 
-        msizer.Add(QLabel(self, '   '))
+        msizer.addWidget(QLabel('   '))
 
         # Origine
         box = QGroupBox(self, -1, u"Origine des axes")
