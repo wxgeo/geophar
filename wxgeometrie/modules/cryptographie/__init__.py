@@ -103,7 +103,7 @@ class Cryptographie(Panel_simple):
 #        italic = wx.Font(font.GetPointSize(), font.GetFamily(), wx.ITALIC, wx.NORMAL)
         bold = wx.Font(font.GetPointSize(), font.GetFamily(), wx.NORMAL, wx.BOLD)
 
-        self.textes = wx.GridBagSizer(5, 5)
+        self.textes = QGridLayout(5, 5)
         size = (400, 300)
 
         TE_STYLE = wx.TE_MULTILINE|wx.TE_RICH2#|wx.TE_CHARWRAP
@@ -115,7 +115,7 @@ class Cryptographie(Panel_simple):
         self.clair.Bind(wx.EVT_TEXT, partial(self.formater, widget=self.clair))
         self.clair.Bind(wx.EVT_LEFT_UP, partial(self.formater, widget=self.clair))
         self.clair.Bind(wx.EVT_KEY_DOWN, partial(self.formater, widget=self.clair))
-        self.copier_clair = wx.Button(self, label=u'Copier le texte en clair')
+        self.copier_clair = QPushButton(self, label=u'Copier le texte en clair')
         self.copier_clair.Bind(wx.EVT_BUTTON, partial(self.copier, widget=self.clair))
 
         txt_code = QLabel(self, u"Texte codé")
@@ -125,18 +125,18 @@ class Cryptographie(Panel_simple):
         self.code.Bind(wx.EVT_LEFT_UP, partial(self.formater, widget=self.code))
         self.code.Bind(wx.EVT_TEXT, self.code_modifie)
         self.code.Bind(wx.EVT_KEY_DOWN, partial(self.formater, widget=self.code))
-        self.copier_code = wx.Button(self, label=u'Copier le texte codé')
+        self.copier_code = QPushButton(self, label=u'Copier le texte codé')
         self.copier_code.Bind(wx.EVT_BUTTON, partial(self.copier, widget=self.code))
 
         self.textes.Add(txt_clair, (0, 0), flag=wx.ALIGN_CENTER)
-        self.textes.AddSpacer((50, 1), (0, 1))
+        self.textes.addSpacing((50, 1), (0, 1))
         self.textes.Add(txt_code, (0, 2), flag=wx.ALIGN_CENTER)
         self.textes.Add(self.clair, (1, 0), flag=wx.ALIGN_CENTER)
         self.textes.Add(self.code, (1, 2), flag=wx.ALIGN_CENTER)
         self.textes.Add(self.copier_code, (2, 2), flag=wx.ALIGN_CENTER)
         self.textes.Add(self.copier_clair, (2, 0), flag=wx.ALIGN_CENTER)
 
-        self.table = wx.GridBagSizer(5, 5)
+        self.table = QGridLayout(5, 5)
         self.cases = {}
         size = (30, -1)
         self.table.Add(QLabel(self, u"Codé:"), (0, 0), flag=wx.ALIGN_CENTER)

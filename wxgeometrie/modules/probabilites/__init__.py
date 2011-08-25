@@ -75,13 +75,13 @@ omega
 >>>H
 >>&E:0,9""")
         self.entrees.Add(self.instructions, 0, wx.ALL,5)
-        self.appliquer = wx.Button(self, label = u"Générer l'arbre")
+        self.appliquer = QPushButton(self, label = u"Générer l'arbre")
         self.appliquer.Bind(wx.EVT_BUTTON, self.Appliquer)
         self.entrees.Add(self.appliquer, 0, wx.ALL,5)
 
         self.sizer = QHBoxLayout()
         self.sizer.Add(self.canvas, 1, wx.LEFT | wx.TOP | wx.GROW)
-        self.sizer.Add(self.entrees, 0, wx.ALL, 5)
+        self.sizer.Add(self.entrees)
         self.finaliser(contenu = self.sizer)
 
 

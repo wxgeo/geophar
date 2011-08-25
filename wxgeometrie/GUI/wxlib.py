@@ -23,7 +23,7 @@ from __future__ import with_statement
 
 import os, math
 
-from PyQt4.QtCore import Qt
+from PyQt4.QtCore import Qt, QThread
 from PyQt4.QtGui import QCursor, QDialog, QPixmap
 
 from .. import param
@@ -65,7 +65,7 @@ class BusyCursor(object):
 
 
 class MyMiniFrame(QDialog):
-    def __init__(self, parent, titre):
+    def __init__(self, parent, titre=''):
         QDialog.__init__(self, parent)
         self.setModal(False)
         self.setWindowTitle(titre)
@@ -78,6 +78,20 @@ def png(nom):
     pixmap = QPixmap()
     pixmap.load(os.path.normpath(os.path.join(uu(param.EMPLACEMENT), 'images', nom + ".png")), 'PNG')
     return pixmap
+
+
+class GenericThread(QThread):
+    def __init__(self, function, *args, **kwargs):
+        QThread.__init__(self)
+        self.function = function
+        self.args = args
+        self.kwargs = kwargs
+
+    def __del__(self):
+        self.wait()
+
+    def run(self):
+        self.function(*self.args,**self.kwargs)
 
 
 #class MyFont(wx.Font):

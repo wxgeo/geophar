@@ -55,7 +55,6 @@ class Panel_simple(QWidget):
 
     def __init__(self, parent, module, menu = True): # style = wx.TAB_TRAVERSAL|wx.WANTS_CHARS
         QWidget.__init__(self, parent)
-
         self.module = module
 #        self.setStyleSheet("background-color:white")
         self.parent = parent
@@ -220,7 +219,7 @@ class Panel_API_graphique(Panel_simple):
 
         self.canvas.initialiser()
         self.__sizer_principal = QVBoxLayout()
-        self.__sizer_principal.Add(self.barre_outils, 0, wx.ALL, 5)
+        self.__sizer_principal.Add(self.barre_outils)
 
 
     @property2
@@ -275,7 +274,7 @@ class Panel_API_graphique(Panel_simple):
         if contenu is None:
             contenu = self.canvas
         self.__sizer_principal.Add(contenu, 1, wx.LEFT | wx.TOP | wx.GROW)
-        self.__sizer_principal.Add(self.console_geolib, 0, wx.ALL, 5)
+        self.__sizer_principal.Add(self.console_geolib)
         self.setLayout(self.__sizer_principal)
         self.adjustSize()
 
@@ -309,8 +308,8 @@ class Panel_API_graphique(Panel_simple):
 
     def charger_feuille(self, feuille):
         # Utilisé par la classe API.menu.RSSMenu
-        if isinstance(feuille, wx.Event):
-            feuille = feuille.numero
+#        if isinstance(feuille, wx.Event):
+#            feuille = feuille.numero
         if not isinstance(feuille, Feuille):
             feuille = self.feuilles[feuille]
         self.feuille_actuelle = feuille

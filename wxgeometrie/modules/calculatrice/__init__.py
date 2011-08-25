@@ -125,7 +125,6 @@ class Calculatrice(Panel_simple):
 
     def __init__(self, *args, **kw):
         Panel_simple.__init__(self, *args, **kw)
-
         self.interprete = Interprete(calcul_exact = self.param("calcul_exact"),
                                 ecriture_scientifique = self.param("ecriture_scientifique"),
                                 changer_separateurs = self.param("changer_separateurs"),

@@ -43,7 +43,7 @@ class CstmPanel(QWidget):
         self.adjustSize()
 
     def add(self, item):
-        self.main_sizer.Add(item, 0, wx.ALL, 5)
+        self.main_sizer.Add(item)
 
 
 class Donnees(CstmPanel):
@@ -55,16 +55,16 @@ class Donnees(CstmPanel):
         aide = u"Valeurs simples:\n8 8 9 12 17 18\nEffectifs et valeurs:\n2*7 14*8 5*9 1*10\nClasses et effectifs:\n17*[0;10[ 24*[10;20["
         self.valeurs.setToolTip(aide)
         self.valeurs.Bind(wx.EVT_CHAR, self.main.EvtChar)
-        sizer.Add(self.valeurs, 0, wx.EXPAND|wx.ALIGN_CENTER_VERTICAL|wx.ALL, 4)
+        sizer.Add(self.valeurs)
         self.add(sizer)
 
         sizer = QHBoxLayout()
         self.sc = QLabel(self, u"Regroupement par classes:  ")
-        sizer.Add(self.sc, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5)
+        sizer.Add(self.sc)
         self.classes = wx.TextCtrl(self, -1, self.main.donnees_classes, size=(500, -1), style=wx.TE_PROCESS_ENTER)
         self.classes.setToolTip(u"Exemple:\n[0;10[ [10;20[ [20;30[")
         self.classes.Bind(wx.EVT_CHAR, self.main.EvtChar)
-        sizer.Add(self.classes, 0, wx.EXPAND|wx.ALIGN_CENTER_VERTICAL|wx.ALL, 4)
+        sizer.Add(self.classes)
         self.add(sizer)
 
         self.finaliser()
@@ -78,23 +78,23 @@ class Legende(CstmPanel):
         sizer = wx.StaticBoxSizer(box, wx.HORIZONTAL)
 
         self.sx = QLabel(self, u"Abscisses:")
-        sizer.Add(self.sx, 0, wx.LEFT|wx.ALIGN_CENTER_VERTICAL, 5)
+        sizer.Add(self.sx)
         self.x = wx.TextCtrl(self, -1, self.main.legende_x, size=(200, -1), style=wx.TE_PROCESS_ENTER)
         self.x.Bind(wx.EVT_CHAR, self.main.EvtChar)
-        sizer.Add(self.x, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5)
+        sizer.Add(self.x)
 
         self.sy = QLabel(self, u"Ordonnées:")
-        sizer.Add(self.sy, 0, wx.LEFT|wx.ALIGN_CENTER_VERTICAL, 5)
+        sizer.Add(self.sy)
         self.y = wx.TextCtrl(self, -1, self.main.legende_y, size=(200, -1), style=wx.TE_PROCESS_ENTER)
         self.y.Bind(wx.EVT_CHAR, self.main.EvtChar)
-        sizer.Add(self.y, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5)
+        sizer.Add(self.y)
 
         self.sa = QLabel(self, u"Aire:")
-        sizer.Add(self.sa, 0, wx.LEFT|wx.ALIGN_CENTER_VERTICAL, 5)
+        sizer.Add(self.sa)
         self.a = wx.TextCtrl(self, -1, self.main.legende_a, size=(100, -1), style=wx.TE_PROCESS_ENTER)
         self.a.setToolTip(u"Pour les histogrammes.\nIndique en quelle unité s'exprime la quantité.\nExemples:\npersonnes, ampoules, %, $, ...")
         self.a.Bind(wx.EVT_CHAR, self.main.EvtChar)
-        sizer.Add(self.a, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5)
+        sizer.Add(self.a)
         self.add(sizer)
 
         self.finaliser()
@@ -109,48 +109,48 @@ class Graduation(CstmPanel):
         sizer = wx.StaticBoxSizer(box, wx.HORIZONTAL)
 
         self.sx = QLabel(self, u"Abscisses:")
-        sizer.Add(self.sx, 0, wx.LEFT|wx.ALIGN_CENTER_VERTICAL, 5)
+        sizer.Add(self.sx)
         self.x = wx.TextCtrl(self, -1, self.main.gradu_x, size=(50, -1), style=wx.TE_PROCESS_ENTER)
         self.x.setToolTip(u"Graduation en abscisses.")
         self.x.Bind(wx.EVT_CHAR, self.main.EvtChar)
-        sizer.Add(self.x, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5)
+        sizer.Add(self.x)
 
         self.sy = QLabel(self, u"Ordonnées:")
-        sizer.Add(self.sy, 0, wx.LEFT|wx.ALIGN_CENTER_VERTICAL, 5)
+        sizer.Add(self.sy)
         self.y = wx.TextCtrl(self, -1, self.main.gradu_y, size=(50, -1), style=wx.TE_PROCESS_ENTER)
         self.y.setToolTip(u"Graduation en ordonnées.")
         self.y.Bind(wx.EVT_CHAR, self.main.EvtChar)
-        sizer.Add(self.y, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5)
+        sizer.Add(self.y)
 
         self.sa = QLabel(self, u"Aire:")
-        sizer.Add(self.sa, 0, wx.LEFT|wx.ALIGN_CENTER_VERTICAL, 5)
+        sizer.Add(self.sa)
         self.a = wx.TextCtrl(self, -1, self.main.gradu_a, size=(50, -1), style=wx.TE_PROCESS_ENTER)
         self.a.setToolTip(u"Dimensions du carré ou rectangle donnant l'échelle.\nExemple:\n 1 (carré), 1x2 (rectangle)")
         self.a.Bind(wx.EVT_CHAR, self.main.EvtChar)
-        sizer.Add(self.a, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5)
-        msizer.Add(sizer, 0, wx.LEFT|wx.ALIGN_CENTER_VERTICAL, 5)
+        sizer.Add(self.a)
+        msizer.Add(sizer)
 
-        msizer.Add(QLabel(self, '   '), 0, wx.LEFT|wx.ALIGN_CENTER_VERTICAL, 5)
+        msizer.Add(QLabel(self, '   '))
 
         # Origine
         box = QGroupBox(self, -1, u"Origine des axes")
         sizer = wx.StaticBoxSizer(box, wx.HORIZONTAL)
 
         self.sox = QLabel(self, u"Abscisses:")
-        sizer.Add(self.sox, 0, wx.LEFT|wx.ALIGN_CENTER_VERTICAL, 5)
+        sizer.Add(self.sox)
         self.origine_x = wx.TextCtrl(self, -1, self.main.origine_x, size=(50, -1), style=wx.TE_PROCESS_ENTER)
         self.origine_x.setToolTip(u"Origine de l'axe des abscisses.")
         self.origine_x.Bind(wx.EVT_CHAR, self.main.EvtChar)
-        sizer.Add(self.origine_x, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5)
+        sizer.Add(self.origine_x)
 
         self.soy = QLabel(self, u"Ordonnées:")
-        sizer.Add(self.soy, 0, wx.LEFT|wx.ALIGN_CENTER_VERTICAL, 5)
+        sizer.Add(self.soy)
         self.origine_y = wx.TextCtrl(self, -1, self.main.origine_y, size=(50, -1), style=wx.TE_PROCESS_ENTER)
         self.origine_y.setToolTip(u"Origine de l'axe des ordonnées.")
         self.origine_y.Bind(wx.EVT_CHAR, self.main.EvtChar)
-        sizer.Add(self.origine_y, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5)
+        sizer.Add(self.origine_y)
 
-        msizer.Add(sizer, 0, wx.LEFT|wx.ALIGN_CENTER_VERTICAL, 5)
+        msizer.Add(sizer)
 
         self.add(msizer)
 
@@ -167,14 +167,14 @@ class Autres(CstmPanel):
         hsizer = QHBoxLayout()
         self.sm = QLabel(self, u'Affichage des effectifs:  ')
         hsizer.Add(self.sm, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 0)
-        self.mode = wx.Choice(self, -1, (100, 50), choices = (u'tels quels', u'en pourcentages', u'en fréquences'))
+        self.mode = QComboBox(self, -1, (100, 50), choices = (u'tels quels', u'en pourcentages', u'en fréquences'))
         self.mode.setSelection(self.main.param("mode_effectifs"))
         self.mode.Bind(wx.EVT_CHOICE, self.main.EvtCheck)
         hsizer.Add(self.mode, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 0)
 
-        vsizer.Add(hsizer, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 7)
+        vsizer.Add(hsizer)
 
-        sizer.Add(vsizer, 0, wx.ALL, 0)
+        sizer.Add(vsizer)
 
         vsizer = QVBoxLayout()
 
@@ -186,12 +186,12 @@ class Autres(CstmPanel):
         self.hachures = QCheckBox(self, label = u'Mode noir et blanc (hachures).')
         self.hachures.SetValue(self.main.param("hachures"))
         self.hachures.Bind(wx.EVT_CHECKBOX, self.main.EvtCheck)
-        vsizer.Add(self.hachures, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 7)
+        vsizer.Add(self.hachures)
 
         self.auto = QCheckBox(self, label = u"Réglage automatique de la fenêtre d'affichage.")
         self.auto.SetValue(self.main.param("reglage_auto_fenetre"))
         self.auto.Bind(wx.EVT_CHECKBOX, self.main.EvtCheck)
-        vsizer.Add(self.auto, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 7)
+        vsizer.Add(self.auto)
 
         sizer.Add(vsizer, 0, wx.LEFT, 7)
         self.add(sizer)
@@ -209,20 +209,20 @@ class Autres_quantile(CstmPanel):
         self.mediane.SetValue(self.main.choix_quantiles["mediane"][0])
         self.mediane.Bind(wx.EVT_CHECKBOX, self.main.EvtCheck)
 
-        sizer.Add(self.mediane, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 7)
-        sizer.AddSpacer(10) # valeur à ajuster
+        sizer.Add(self.mediane)
+        sizer.addSpacing(10) # valeur à ajuster
 
         self.quartiles = QCheckBox(self, label = u'Construire les quartiles')
         self.quartiles.SetValue(self.main.choix_quantiles["quartiles"][0])
         self.quartiles.Bind(wx.EVT_CHECKBOX, self.main.EvtCheck)
-        sizer.Add(self.quartiles, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 7)
-        sizer.AddSpacer(10) # valeur à ajuster
+        sizer.Add(self.quartiles)
+        sizer.addSpacing(10) # valeur à ajuster
 
         self.deciles = QCheckBox(self, label = u'Construire les déciles')
         self.deciles.SetValue(self.main.choix_quantiles["deciles"][0])
         self.deciles.Bind(wx.EVT_CHECKBOX, self.main.EvtCheck)
-        sizer.Add(self.deciles, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 7)
-        sizer.AddSpacer(10) # valeur à ajuster
+        sizer.Add(self.deciles)
+        sizer.addSpacing(10) # valeur à ajuster
 
         self.add(sizer)
 
@@ -247,28 +247,28 @@ class OngletsStatistiques(QTabWidget):
 
 
     def enable(self, x, y, a, classes=False, legende_x=False):
-        self.donnees.classes.Enable(a or classes)
-        self.donnees.sc.Enable(a or classes)
+        self.donnees.classes.setEnabled(a or classes)
+        self.donnees.sc.setEnabled(a or classes)
 
-        self.legende.Enable(x or y or a or legende_x)
-        self.legende.x.Enable(x or legende_x)
-        self.legende.sx.Enable(x or legende_x)
-        self.legende.y.Enable(y)
-        self.legende.sy.Enable(y)
-        self.legende.a.Enable(a)
-        self.legende.sa.Enable(a)
+        self.legende.setEnabled(x or y or a or legende_x)
+        self.legende.x.setEnabled(x or legende_x)
+        self.legende.sx.setEnabled(x or legende_x)
+        self.legende.y.setEnabled(y)
+        self.legende.sy.setEnabled(y)
+        self.legende.a.setEnabled(a)
+        self.legende.sa.setEnabled(a)
 
-        self.graduation.Enable(x or y or a)
-        self.graduation.x.Enable(x)
-        self.graduation.sx.Enable(x)
-        self.graduation.y.Enable(y)
-        self.graduation.sy.Enable(y)
-        self.graduation.a.Enable(a)
-        self.graduation.sa.Enable(a)
-        self.graduation.origine_x.Enable(x)
-        self.graduation.sox.Enable(x)
-        self.graduation.origine_y.Enable(y)
-        self.graduation.soy.Enable(y)
+        self.graduation.setEnabled(x or y or a)
+        self.graduation.x.setEnabled(x)
+        self.graduation.sx.setEnabled(x)
+        self.graduation.y.setEnabled(y)
+        self.graduation.sy.setEnabled(y)
+        self.graduation.a.setEnabled(a)
+        self.graduation.sa.setEnabled(a)
+        self.graduation.origine_x.setEnabled(x)
+        self.graduation.sox.setEnabled(x)
+        self.graduation.origine_y.setEnabled(y)
+        self.graduation.soy.setEnabled(y)
 
-        self.autres.mode.Enable(y or a)
-        self.autres.sm.Enable(y or a)
+        self.autres.mode.setEnabled(y or a)
+        self.autres.sm.setEnabled(y or a)

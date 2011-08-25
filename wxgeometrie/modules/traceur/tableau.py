@@ -88,8 +88,8 @@ class TableauValeurs(wx.MiniFrame):
 
         sizer = QVBoxLayout()
         barre = QHBoxLayout()
-        creer = wx.Button(p, -1, "Creer les points")
-        effacer = wx.Button(p, -1, "Effacer")
+        creer = QPushButton(p, -1, "Creer les points")
+        effacer = QPushButton(p, -1, "Effacer")
         barre.Add(creer, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL, 5)
         barre.Add(effacer, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL, 5)
         

@@ -38,14 +38,14 @@ class CreerSuite(MyMiniFrame):
 
         self.sizer = sizer = QVBoxLayout()
         sizer.addWidget(QLabel(p, -1, u"Choisissez le mode de génération de la suite :"), 0, wx.ALIGN_LEFT|wx.ALL,5)
-        self.mode = wx.Choice(p, -1, (100, 50), choices = [u"u(n+1)=f(u(n))", u"u(n)=f(n)"])
+        self.mode = QComboBox(p, -1, (100, 50), choices = [u"u(n+1)=f(u(n))", u"u(n)=f(n)"])
         self.mode.setSelection(0)
         self.Bind(wx.EVT_CHOICE, self.EvtChoixMode, self.mode)
         sizer.addWidget(self.mode, 0, wx.ALIGN_LEFT|wx.ALL,5)
 
         f = QHBoxLayout()
         f.Add(QLabel(p, -1, u"Choisissez la fonction f :"), 0, wx.ALIGN_LEFT|wx.ALIGN_CENTER_VERTICAL|wx.ALL,5)
-        self.fonction = wx.Choice(p, -1, (100, 50), choices = ["Y" + str(i+1) for i in xrange(self.parent.nombre_courbes)])
+        self.fonction = QComboBox(p, -1, (100, 50), choices = ["Y" + str(i+1) for i in xrange(self.parent.nombre_courbes)])
         self.fonction.setSelection(0)
         self.Bind(wx.EVT_CHOICE, self.EvtChoixFonction, self.fonction)
         f.Add(self.fonction, 0, wx.ALIGN_LEFT|wx.ALIGN_CENTER_VERTICAL|wx.ALL,5)
@@ -81,10 +81,10 @@ class CreerSuite(MyMiniFrame):
 
         #p.SetSizer(sizer)
         boutons = QHBoxLayout()
-        fermer = wx.Button(p, -1, u"Fermer")
-        boutons.Add(fermer, 0, wx.ALL, 5)
-        lancer = wx.Button(p, -1, u"Créer")
-        boutons.Add(lancer, 0, wx.ALL, 5)
+        fermer = QPushButton(p, -1, u"Fermer")
+        boutons.Add(fermer)
+        lancer = QPushButton(p, -1, u"Créer")
+        boutons.Add(lancer)
         self.Bind(wx.EVT_BUTTON, self.OnCloseMe, fermer)
         self.Bind(wx.EVT_BUTTON, self.Creer, lancer)
         sizer.addWidget(boutons)
@@ -184,4 +184,4 @@ class CreerSuite(MyMiniFrame):
             self.parent.boites[i].SetValue(i == n)
 
     def OnCloseMe(self, event):
-        self.Close(True)
+        self.close()

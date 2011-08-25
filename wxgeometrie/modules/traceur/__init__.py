@@ -93,7 +93,7 @@ class Traceur(Panel_API_graphique):
                 self.intervalles[i].Bind(wx.EVT_LEAVE_WINDOW, self.MouseOver)
                 ligne.Add(self.intervalles[i], 0, wx.ALIGN_CENTRE|wx.ALL,5)
 
-                self.entrees.Add(ligne, 0, wx.ALL, 5)
+                self.entrees.Add(ligne)
 
         self.sizer = QHBoxLayout()
         self.sizer.addWidget(self.canvas, 1, wx.LEFT | wx.TOP | wx.GROW, 0)

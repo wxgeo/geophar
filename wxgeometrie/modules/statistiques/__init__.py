@@ -140,11 +140,11 @@ class Statistiques(Panel_API_graphique):
 
         self.entrees.Add(QLabel(self, u" Mode graphique :"), 0, wx.ALL,5)
 
-        self.choix = wx.Choice(self, -1, (100, 50), choices = self.noms_diagrammes)
+        self.choix = QComboBox(self, -1, (100, 50), choices = self.noms_diagrammes)
         self.graph = 'barres' # *APRES* que self.choix soit défini.
 
         self.Bind(wx.EVT_CHOICE, self.EvtChoice, self.choix)
-        self.entrees.Add(self.choix, 0, wx.ALL, 5)
+        self.entrees.Add(self.choix)
 
         #self.entrees.Add(wx.StaticText(self, -1, ""))
 
@@ -152,7 +152,7 @@ class Statistiques(Panel_API_graphique):
         bsizer = wx.StaticBoxSizer(box, wx.VERTICAL)
 
         #self.entrees.Add(bsizer, 1, wx.EXPAND|wx.ALL, 5)
-        self.entrees.Add(bsizer, 0, wx.ALL, 5)
+        self.entrees.Add(bsizer)
 
         self._effectif_total = QLabel(self, u" Effectif total:")
         self._moyenne = QLabel(self, u" Moyenne:")
@@ -172,7 +172,7 @@ class Statistiques(Panel_API_graphique):
 
         haut = QHBoxLayout()
         haut.Add(self.canvas, 1, wx.LEFT | wx.TOP | wx.GROW)
-        haut.Add(self.entrees, 0, wx.ALL, 5)
+        haut.Add(self.entrees)
 
         self.onglets_bas = OngletsStatistiques(self)
 

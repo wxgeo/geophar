@@ -71,10 +71,10 @@ class DialogueAnimation(MyMiniFrame):
         sizer.addWidget(wx.StaticLine(p, -1, style=wx.LI_HORIZONTAL), 0, wx.GROW|wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5)
 
         boutons = QHBoxLayout()
-        self.btn_lancer = lancer = wx.Button(p, -1, u"Animer")
-        boutons.Add(lancer, 0, wx.ALL, 5)
-        fermer = wx.Button(p, -1, u"Fermer")
-        boutons.Add(fermer, 0, wx.ALL, 5)
+        self.btn_lancer = lancer = QPushButton(p, -1, u"Animer")
+        boutons.Add(lancer)
+        fermer = QPushButton(p, -1, u"Fermer")
+        boutons.Add(fermer)
         self.Bind(wx.EVT_BUTTON, self.Animer, lancer)
         self.Bind(wx.EVT_BUTTON, self.OnCloseMe, fermer)
         sizer.addWidget(boutons)
@@ -118,4 +118,4 @@ class DialogueAnimation(MyMiniFrame):
 
 
     def OnCloseMe(self, event):
-        self.Close(True)
+        self.close()
