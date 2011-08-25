@@ -553,7 +553,7 @@ def str3(unicode):
 def universal_unicode(chaine):
     u"Convertit en unicode si besoin est, avec l'encodage de 'param.encodage' par défaut."
     if not isinstance(chaine, basestring):
-        chaine = str(chaine)
+        chaine = unicode(chaine)
     if not isinstance(chaine, unicode):
         try:
             chaine = chaine.decode(param.encodage)
