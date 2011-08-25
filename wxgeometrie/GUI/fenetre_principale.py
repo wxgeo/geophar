@@ -33,7 +33,6 @@ from ..pylib import uu, print_error, path2, debug, warning
 from ..API.console import Console
 from ..API.sauvegarde import FichierSession
 from ..API.parametres import sauvegarder_module
-from .compatibility import WxQt, PyOnDemandOutputWindow
 from .gestion_session import GestionnaireSession
 from .onglets import Onglets
 from .. import param
@@ -70,7 +69,7 @@ class FenetrePrincipale(QMainWindow):
     def __init__(self, app, fichier_log=None):
         QMainWindow.__init__(self, None)
         self.setWindowTitle(NOMPROG)
-#        self.setStyleSheet("background:white")
+        self.setStyleSheet(".QWidget {background:white}")
 #        palette = QPalette()
 #        white = QColor(Qt.white)
 #        palette.setColor(QPalette.Window, white)
@@ -205,7 +204,8 @@ class FenetrePrincipale(QMainWindow):
                         panel.canvas.setUpdatesEnabled(False)
                     reponse = QMessageBox.question(self, u'Quitter %s ?' %NOMPROG,
                                                u'Voulez-vous quitter %s ?' %NOMPROG,
-                                               QMessageBox.Yes | QMessageBox.No)
+                                               QMessageBox.Yes | QMessageBox.No,
+                                               QMessageBox.Yes)
                     if test:
                         panel.canvas.setUpdatesEnabled(True)
                     if reponse != QMessageBox.Yes:
