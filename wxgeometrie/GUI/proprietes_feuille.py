@@ -22,10 +22,9 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-import wx
-from PyQt4.QtGui import QWidget, QTabWidget
+from PyQt4.QtGui import (QWidget, QTabWidget, QGridLayout, QLabel, QLineEdit,
+                         QPushButton, QVBoxLayout, QTextEdit, QDialog)
 
-from .wxlib import MyMiniFrame
 from ..pylib import uu
 
 class ProprietesDescription(QWidget):
@@ -33,91 +32,75 @@ class ProprietesDescription(QWidget):
         QWidget.__init__(self, parent)
         self.parent = parent
         self.feuille = parent.feuille
-        self.sizer = gbs = wx.GridBagSizer(10, 10)
-        self.infos = {}
+        gbs = QGridLayout()
+        gbs.setSpacing(10)
 
-        gbs.Add(QLabel(self, u"Titre : "), (1, 1))
-        self.titre = wx.TextCtrl(self, value = self.feuille.infos("titre"), size=wx.Size(300, -1))
-        self.Bind(wx.EVT_TEXT, self.EvtTitre, self.titre)
-        gbs.Add(self.titre, (1, 2), flag = wx.EXPAND)
+        gbs.addWidget(QLabel(u"Titre : "), 1, 1)
+        self.titre = titre = QLineEdit(self)
+        titre.setText(self.feuille.infos("titre"))
+        titre.setMinimumWidth(300)
+        gbs.addWidget(titre, 1, 2)
 
-        gbs.Add(QLabel(self, u"Auteur : "), (2, 1))
-        self.auteur = wx.TextCtrl(self, value = self.feuille.infos("auteur"), size=wx.Size(300, -1))
-        self.Bind(wx.EVT_TEXT, self.EvtAuteur, self.auteur)
-        gbs.Add(self.auteur, (2, 2), flag = wx.EXPAND)
+        gbs.addWidget(QLabel(u"Auteur : "), 2, 1)
+        self.auteur = auteur = QLineEdit(self)
+        auteur.setText(self.feuille.infos("auteur"))
+        auteur.setMinimumWidth(300)
+        gbs.addWidget(auteur, 2, 2)
 
-        gbs.Add(QLabel(self, u"Version : "), (3, 1))
-        self.version = wx.TextCtrl(self, value = self.feuille.infos("version"), size=wx.Size(300, -1))
-        self.Bind(wx.EVT_TEXT, self.EvtVersion, self.version)
-        gbs.Add(self.version, (3, 2), flag = wx.EXPAND)
+        gbs.addWidget(QLabel(u"Version : "), 3, 1)
+        self.version = version = QLineEdit(self)
+        version.setText(self.feuille.infos("version"))
+        version.setMinimumWidth(300)
+        gbs.addWidget(version, 3, 2)
 
-        gbs.Add(QLabel(self, u"Resumé : "), (4, 1))
-        self.resume = wx.TextCtrl(self, value = self.feuille.infos("resume"), size=wx.Size(300, 50), style=wx.TE_MULTILINE)
-        self.Bind(wx.EVT_TEXT, self.EvtResume, self.resume)
-        gbs.Add(self.resume, (4, 2), flag = wx.EXPAND)
+        gbs.addWidget(QLabel(u"Resumé : "), 4, 1)
+        self.resume = resume = QTextEdit(self)
+        resume.setPlainText(self.feuille.infos("resume"))
+        resume.setMinimumSize(300, 50)
+        gbs.addWidget(resume, 4, 2)
 
-        gbs.Add(QLabel(self, u"Notes : "), (5, 1))
-        self.notes = wx.TextCtrl(self, value = self.feuille.infos("notes"), size=wx.Size(300, 100), style=wx.TE_MULTILINE)
-        self.Bind(wx.EVT_TEXT, self.EvtNotes, self.notes)
-        gbs.Add(self.notes, (5, 2), flag = wx.EXPAND)
+        gbs.addWidget(QLabel(u"Notes : "), 5, 1)
+        self.notes = notes = QTextEdit(self)
+        notes.setPlainText(self.feuille.infos("notes"))
+        notes.setMinimumSize(300, 100)
+        gbs.addWidget(notes, 5, 2)
 
-        boutons = wx.GridBagSizer(10, 10)
-        ok = wx.Button(self, wx.ID_OK)
-        ok.Bind(wx.EVT_BUTTON, self.EvtOk)
-        appliquer = wx.Button(self, label = u"Appliquer")
-        appliquer.Bind(wx.EVT_BUTTON, self.EvtAppliquer)
-        effacer = wx.Button(self, label = u"Effacer")
-        effacer.Bind(wx.EVT_BUTTON, self.EvtEffacer)
-        annuler = wx.Button(self, label = u"Annuler")
-        annuler.Bind(wx.EVT_BUTTON, self.EvtAnnuler)
+        boutons = QGridLayout()
+        boutons.setSpacing(10)
+        ok = QPushButton(u'OK', clicked=self.ok)
+        appliquer = QPushButton(u"Appliquer", clicked=self.appliquer)
+        effacer = QPushButton(u"Effacer", clicked=self.effacer)
+        annuler = QPushButton(u"Annuler", clicked=self.annuler)
 
-        boutons.Add(ok, (1, 0))
-        boutons.Add(appliquer, (1, 1))
-        boutons.Add(effacer, (1, 2))
-        boutons.Add(annuler, (1, 3))
-        boutons.Add(QLabel(self, ""), (2, 1))
-        boutons.Add
-        gbs.Add(boutons, (6, 2))#, (1, 2))
+        boutons.addWidget(ok, 1, 0)
+        boutons.addWidget(appliquer, 1, 1)
+        boutons.addWidget(effacer, 1, 2)
+        boutons.addWidget(annuler, 1, 3)
+        ##boutons.addWidget(QLabel(''), 2, 1)
+        gbs.addWidget(boutons, 6, 2)
 
-        gbs.SetEmptyCellSize(wx.Size(10, 10))
-        boutons.SetEmptyCellSize(wx.Size(4, 4))
-        self.SetSizerAndFit(self.sizer)
-        self.parent.parent.dim1 = self.sizer.CalcMin().Get()
+        ##gbs.SetEmptyCellSize(wx.Size(10, 10))
+        ##boutons.SetEmptyCellSize(wx.Size(4, 4))
+        self.setLayout(gbs)
+        ##self.parent.parent.dim1 = self.sizer.CalcMin().Get()
 
+    def ok(self):
+        self.appliquer()
+        self.close()
 
-    def EvtTitre(self, event):
-        self.infos["titre"] = event.GetString()
-
-    def EvtAuteur(self, event):
-        self.infos["auteur"] = event.GetString()
-
-    def EvtVersion(self, event):
-        self.infos["version"] = event.GetString()
-
-    def EvtResume(self, event):
-        self.infos["resume"] = event.GetString()
-
-    def EvtNotes(self, event):
-        self.infos["notes"] = event.GetString()
-
-
-    def EvtOk(self, event):
-        self.EvtAppliquer(event)
-        self.EvtAnnuler(event)
-
-    def EvtAppliquer(self, event):
-        self.feuille.infos(**self.infos)
+    def appliquer(self):
+        self.feuille.infos(titre=self.titre.text(), auteur=self.auteur.text(),
+                           version=self.version.text(),
+                           resume=self.resume.toPlainText(),
+                           notes=self.notes.toPlainText())
         self.parent.parent.panel.rafraichir_titre()
 
-    def EvtEffacer(self, event):
-        self.titre.SetValue("")
-        self.auteur.SetValue("")
-        self.version.SetValue("")
-        self.resume.SetValue("")
-        self.notes.SetValue("")
-
-    def EvtAnnuler(self, event):
-        self.parent.parent.Close() # fermeture de la frame
+    def effacer(self):
+        self.titre.clear()
+        self.auteur.clear()
+        self.version.clear()
+        self.resume.clear()
+        self.notes.clear()
 
 
 
@@ -127,13 +110,13 @@ class ProprietesStatistiques(QWidget):
         self.parent = parent
         self.feuille = parent.feuille
 
-        self.sizer = QVBoxLayout()
-        self.sizer.addWidget(QLabel(self, u"Informations sur " + uu(self.feuille.nom) + " :"), 0, wx.ALL, 8)
-        self.sizer.addWidget(QLabel(self, u"Date de création :  " + uu(self.feuille.infos("creation"))), 0, wx.ALL, 8)
-        self.sizer.addWidget(QLabel(self, u"Dernière modification :  " + uu(self.feuille.infos("modification"))), 0, wx.ALL, 8)
-        self.sizer.addWidget(QLabel(self, u"Nombre d'objets :  " + str(len(self.feuille.liste_objets(True)))), 0, wx.ALL, 8)
-        self.SetSizerAndFit(self.sizer)
-        self.parent.parent.dim2 = self.sizer.CalcMin().Get()
+        sizer = QVBoxLayout()
+        sizer.addWidget(QLabel(u"Informations sur " + uu(self.feuille.nom) + " :"))
+        sizer.addWidget(QLabel(u"Date de création :  " + uu(self.feuille.infos("creation"))))
+        sizer.addWidget(QLabel(u"Dernière modification :  " + uu(self.feuille.infos("modification"))))
+        sizer.addWidget(QLabel(u"Nombre d'objets :  " + str(len(self.feuille.liste_objets(True)))))
+        self.setLayout(sizer)
+#        self.parent.parent.dim2 = self.sizer.CalcMin().Get()
 
 
 
@@ -150,22 +133,15 @@ class OngletsProprietesFeuille(QTabWidget):
 
 
 
-
-
-
-
-
-
-
-
-class ProprietesFeuille(MyMiniFrame):
+class ProprietesFeuille(QDialog):
     def __init__(self, parent, feuille):
+        QDialog.__init__(self, parent)
+        self.setWindowTitle(u"Propriétés de " + uu(feuille.nom))
         self.parent = parent
         self.feuille = feuille
         self.fenetre_principale = self
         while hasattr(self.fenetre_principale, "parent"): # detection de la fenetre principale de WxGeometrie.
             self.fenetre_principale = self.fenetre_principale.parent
         self.panel = self.fenetre_principale.onglets.onglet_actuel
-        MyMiniFrame.__init__(self, parent, u"Propriétés de " + uu(self.feuille.nom))
         self.onglets = OngletsProprietesFeuille(self)
-        self.SetSize(wx.Size(*(max(dimensions) + 50 for dimensions in zip(self.dim1, self.dim2))))
+        ##self.SetSize(wx.Size(*(max(dimensions) + 50 for dimensions in zip(self.dim1, self.dim2))))
