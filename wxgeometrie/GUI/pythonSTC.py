@@ -1,161 +1,83 @@
+#-------------------------------------------------------------------------
+# qsci_simple_pythoneditor.pyw
+#
+# QScintilla sample with PyQt
+#
+# Eli Bendersky (eliben@gmail.com)
+# This code is in the public domain
+#-------------------------------------------------------------------------
+import sys
+from PyQt4.QtCore import *
+from PyQt4.QtGui import *
+from PyQt4.Qsci import QsciScintilla, QsciLexerPython
 
-import  keyword
+class PythonSTC(QsciScintilla):
+    ARROW_MARKER_NUM = 8
 
-import  wx
-import  wx.stc  as  stc
+    def __init__(self, parent=None):
+        super(PythonSTC, self).__init__(parent)
 
+        # Set the default font
+        font = QFont()
+        font.setFamily('Courier')
+        font.setFixedPitch(True)
+        font.setPointSize(10)
+        self.setFont(font)
+        self.setMarginsFont(font)
 
+        # Margin 0 is used for line numbers
+        fontmetrics = QFontMetrics(font)
+        self.setMarginsFont(font)
+        self.setMarginWidth(0, fontmetrics.width("00000") + 6)
+        self.setMarginLineNumbers(0, True)
+        self.setMarginsBackgroundColor(QColor("#cccccc"))
 
+        # Clickable margin 1 for showing markers
+        self.setMarginSensitivity(1, True)
+        self.connect(self,
+            SIGNAL('marginClicked(int, int, Qt::KeyboardModifiers)'),
+            self.on_margin_clicked)
+        self.markerDefine(QsciScintilla.RightArrow,
+            self.ARROW_MARKER_NUM)
+        self.setMarkerBackgroundColor(QColor("#ee1111"),
+            self.ARROW_MARKER_NUM)
 
+        # Brace matching: enable for a brace immediately before or after
+        # the current position
+        #
+        self.setBraceMatching(QsciScintilla.SloppyBraceMatch)
 
+        # Current line visible with special background color
+        self.setCaretLineVisible(True)
+        self.setCaretLineBackgroundColor(QColor("#ffe4e4"))
 
-class PythonSTC(stc.StyledTextCtrl):
+        # Set Python lexer
+        # Set style for Python comments (style number 1) to a fixed-width
+        # courier.
+        #
+        lexer = QsciLexerPython()
+        lexer.setDefaultFont(font)
+        self.setLexer(lexer)
+        self.SendScintilla(QsciScintilla.SCI_STYLESETFONT, 1, 'Courier')
 
-    if wx.Platform == '__WXMSW__':
-        faces = { 'times': 'Times New Roman',
-                  'mono' : 'Courier New',
-                  'helv' : 'Verdana',
-                  'other': 'Comic Sans MS',
-                  'size' : 10,
-                  'size2': 8,
-                 }
-    elif wx.Platform == '__WXMAC__':
-        faces = { 'times': 'Times New Roman',
-                  'mono' : 'Monaco',
-                  'helv' : 'Arial',
-                  'other': 'Comic Sans MS',
-                  'size' : 12,
-                  'size2': 10,
-                 }
-    else:
-        faces = { 'times': 'Times',
-                  'mono' : 'Courier',
-                  'helv' : '!Bitstream Vera Sans',
-                  'other': 'new century schoolbook',
-                  'size' : 10,
-                  'size2': 8,
-                 }
-                  
-    fold_symbols = 2
-    
-    def __init__(self, parent, ID,
-                 pos=wx.DefaultPosition, size=wx.DefaultSize,
-                 style=0):
-        stc.StyledTextCtrl.__init__(self, parent, ID, pos, size, style)
+        # Don't want to see the horizontal scrollbar at all
+        # Use raw message to Scintilla here (all messages are documented
+        # here: http://www.scintilla.org/ScintillaDoc.html)
+        self.SendScintilla(QsciScintilla.SCI_SETHSCROLLBAR, 0)
 
-        self.CmdKeyAssign(ord('+'), stc.STC_SCMOD_CTRL, stc.STC_CMD_ZOOMIN)
-        self.CmdKeyAssign(ord('-'), stc.STC_SCMOD_CTRL, stc.STC_CMD_ZOOMOUT)
+        # not too small
+        self.setMinimumSize(600, 450)
 
-        self.SetLexer(stc.STC_LEX_PYTHON)
-        self.SetKeyWords(0, " ".join(keyword.kwlist))
-
-        self.SetProperty("tab.timmy.whinge.level", "1")
-
-        self.SetViewWhiteSpace(False)
-        self.SetBufferedDraw(False)
-        self.SetUseAntiAliasing(True)
-        
-        self.SetEdgeMode(stc.STC_EDGE_BACKGROUND)
-        self.SetEdgeColumn(78)
-
-        self.SetMarginMask(2, stc.STC_MASK_FOLDERS)
-        self.SetMarginWidth(2, 12)
-        self.SetIndent(4)
-        self.SetBackSpaceUnIndents(True)
-        self.SetTabWidth(4)
-        self.SetUseTabs(False)
-
-
-        self.Bind(stc.EVT_STC_UPDATEUI, self.OnUpdateUI)
-
-        # Make some styles,  The lexer defines what each style is used for, we
-        # just have to define what each style looks like.  This set is adapted from
-        # Scintilla sample property files.
-
-        # Global default styles for all languages
-        self.StyleSetSpec(stc.STC_STYLE_DEFAULT,     "face:%(helv)s,size:%(size)d" % self.faces)
-        self.StyleClearAll()  # Reset all to be like the default
-
-        # Global default styles for all languages
-        self.StyleSetSpec(stc.STC_STYLE_DEFAULT,     "face:%(helv)s,size:%(size)d" % self.faces)
-        self.StyleSetSpec(stc.STC_STYLE_LINENUMBER,  "back:#C0C0C0,face:%(helv)s,size:%(size2)d" % self.faces)
-        self.StyleSetSpec(stc.STC_STYLE_CONTROLCHAR, "face:%(other)s" % self.faces)
-        self.StyleSetSpec(stc.STC_STYLE_BRACELIGHT,  "fore:#FFFFFF,back:#0000FF,bold")
-        self.StyleSetSpec(stc.STC_STYLE_BRACEBAD,    "fore:#000000,back:#FF0000,bold")
-
-        # Python styles
-        # Default 
-        self.StyleSetSpec(stc.STC_P_DEFAULT, "fore:#000000,face:%(helv)s,size:%(size)d" % self.faces)
-        # Comments
-        self.StyleSetSpec(stc.STC_P_COMMENTLINE, "fore:#007F00,face:%(other)s,size:%(size)d" % self.faces)
-        # Number
-        self.StyleSetSpec(stc.STC_P_NUMBER, "fore:#007F7F,size:%(size)d" % self.faces)
-        # String
-        self.StyleSetSpec(stc.STC_P_STRING, "fore:#7F007F,face:%(helv)s,size:%(size)d" % self.faces)
-        # Single quoted string
-        self.StyleSetSpec(stc.STC_P_CHARACTER, "fore:#7F007F,face:%(helv)s,size:%(size)d" % self.faces)
-        # Keyword
-        self.StyleSetSpec(stc.STC_P_WORD, "fore:#00007F,bold,size:%(size)d" % self.faces)
-        # Triple quotes
-        self.StyleSetSpec(stc.STC_P_TRIPLE, "fore:#7F0000,size:%(size)d" % self.faces)
-        # Triple double quotes
-        self.StyleSetSpec(stc.STC_P_TRIPLEDOUBLE, "fore:#7F0000,size:%(size)d" % self.faces)
-        # Class name definition
-        self.StyleSetSpec(stc.STC_P_CLASSNAME, "fore:#0000FF,bold,underline,size:%(size)d" % self.faces)
-        # Function or method name definition
-        self.StyleSetSpec(stc.STC_P_DEFNAME, "fore:#007F7F,bold,size:%(size)d" % self.faces)
-        # Operators
-        self.StyleSetSpec(stc.STC_P_OPERATOR, "bold,size:%(size)d" % self.faces)
-        # Identifiers
-        self.StyleSetSpec(stc.STC_P_IDENTIFIER, "fore:#000000,face:%(helv)s,size:%(size)d" % self.faces)
-        # Comment-blocks
-        self.StyleSetSpec(stc.STC_P_COMMENTBLOCK, "fore:#7F7F7F,size:%(size)d" % self.faces)
-        # End of line where string is not closed
-        self.StyleSetSpec(stc.STC_P_STRINGEOL, "fore:#000000,face:%(mono)s,back:#E0C0E0,eol,size:%(size)d" % self.faces)
-
-        self.SetCaretForeground("BLUE")
-
-#        self.SetCaretLineVisible(True)
-        self.SetCaretLineBack(wx.Colour(200, 220, 220,255))
-        self.SetCaretLineBackAlpha(200)
-
-
-   
-
-    def OnUpdateUI(self, evt):
-        # check for matching braces
-        braceAtCaret = -1
-        braceOpposite = -1
-        charBefore = None
-        caretPos = self.GetCurrentPos()
-
-        if caretPos > 0:
-            charBefore = self.GetCharAt(caretPos - 1)
-            styleBefore = self.GetStyleAt(caretPos - 1)
-
-        # check before
-        if charBefore and chr(charBefore) in "[]{}()" and styleBefore == stc.STC_P_OPERATOR:
-            braceAtCaret = caretPos - 1
-
-        # check after
-        if braceAtCaret < 0:
-            charAfter = self.GetCharAt(caretPos)
-            styleAfter = self.GetStyleAt(caretPos)
-
-            if charAfter and chr(charAfter) in "[]{}()" and styleAfter == stc.STC_P_OPERATOR:
-                braceAtCaret = caretPos
-
-        if braceAtCaret >= 0:
-            braceOpposite = self.BraceMatch(braceAtCaret)
-
-        if braceAtCaret != -1  and braceOpposite == -1:
-            self.BraceBadLight(braceAtCaret)
+    def on_margin_clicked(self, nmargin, nline, modifiers):
+        # Toggle marker for the line the margin was clicked on
+        if self.markersAtLine(nline) != 0:
+            self.markerDelete(nline, self.ARROW_MARKER_NUM)
         else:
-            self.BraceHighlight(braceAtCaret, braceOpposite)
+            self.markerAdd(nline, self.ARROW_MARKER_NUM)
 
-
-
-
-
-
-
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    editor = PythonSTC()
+    editor.show()
+    editor.setText(open(sys.argv[0]).read())
+    app.exec_()

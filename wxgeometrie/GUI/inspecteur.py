@@ -22,57 +22,56 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
+
+from PyQt4.QtGui import QDialog, QVBoxLayout, QHBoxLayout
+
 from .pythonSTC import PythonSTC
-from wxlib import MyMiniFrame
-import wx
-
-####################################################################################################
-
-# Code de la feuille actuelle
 
 
-class FenCode(MyMiniFrame):
+
+class FenCode(QDialog):
+    u"""Permet d'éditer du code Python.
+
+    En particulier, permet d'éditer le code de la feuille actuelle."""
     def __init__(self, parent, titre, contenu, fonction_modif):
-        MyMiniFrame.__init__(self, parent, titre)
+        QDialog.__init__(self, parent)
+        self.setWindowTitle(titre)
+        sizer = QVBoxLayout()
         self.parent = parent
         self.fonction_modif = fonction_modif
-##        self.texte = wx.TextCtrl(self, -1, contenu, size=(300, 10), style=wx.TE_MULTILINE)
-        self.texte = PythonSTC(self, -1, size=(300, 10))
-        self.texte.AddText(contenu)
-        self.texte.Bind(wx.EVT_CHAR, self.EvtChar)
+        self.texte = PythonSTC(self)
+#        self.texte.setMinimumSize(300, 10)
+        self.texte.setText(contenu)
+        self.texte.Bind(wx.EVT_CHAR, self.EvtChar) #XXX
 ##        self.texte.SetInsertionPointEnd()
+        sizer.addWidget(self.texte)
+
+        boutons = QHBoxLayout()
+        self.btn_modif = QPushButton(tb, -1, u"Modifier - F5")
+        boutons.addWidget(self.btn_modif)
+        self.btn_esc = QPushButton(tb, -1, u"Annuler - ESC")
+        boutons.addWidget(self.btn_esc)
+        sizer.addLayout(boutons)
+        self.setLayout(sizer)
+
+        self.btn_modif.connect(self.executer)
+        self.btn_esc.connect(self.close)
+
+        self.setMinimumSize(400, 500)
         self.texte.setFocus()
 
 
-        tb = self.CreateToolBar( wx.TB_HORIZONTAL
-                                 | wx.NO_BORDER
-                                 | wx.TB_FLAT
-                                 | wx.TB_TEXT )
-        self.a = wx.Button(tb, -1, u"Modifier - F5")
-        tb.AddControl(self.a)
-        tb.AddSeparator()
-        tb.AddSeparator()
-        self.b = wx.Button(tb, -1, u"Annuler - ESC")
-        tb.AddControl(self.b)
-        tb.Realize()
+    def keyPressedEvent(self, event):
+        key = event.key()
+        if key == Qt.Key_Escape:
+            self.close()
+        elif key == Qt.Key_F5:
+            self.executer()
+        else:
+            QDialog.keyPressedEvent(self, event)
 
-        self.Bind(wx.EVT_BUTTON, self.executer, self.a)
-        self.Bind(wx.EVT_BUTTON, self.fermer, self.b)
-        self.SetSize((400, 500))
-        self.CenterOnParent(wx.BOTH)
-
-
-    def EvtChar(self, event):
-        key = event.GetKeyCode()
-        if key == wx.WXK_ESCAPE: self.fermer()
-        elif key == wx.WXK_F5: self.executer()
-        else : event.Skip()
-
-    def fermer(self, event = None):
-        self.Close(True)
 
     def executer(self, event = None):
         # On exécute le code (de la feuille par ex.) éventuellement modifié
-##        self.fonction_modif(self.texte.GetValue())
-        self.fonction_modif(self.texte.GetText())
-        self.fermer()
+        self.fonction_modif(self.texte.text())
+        self.close()
