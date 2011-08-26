@@ -1,9 +1,9 @@
 # -*- coding: iso-8859-1 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
-##--------------------------------------##
-#               Barre d'outils pour la géométrie               #
-##--------------------------------------##
+# o-----------------------------------------------------------o
+# |              Barre d'outils pour la géométrie             |
+# o-----------------------------------------------------------o
 #    WxGeometrie
 #    Dynamic geometry, graph plotter, and more for french mathematic teachers.
 #    Copyright (C) 2005-2010  Nicolas Pourcelot
@@ -23,11 +23,14 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import math
+from functools import partial
 
-from PyQt4.QtGui import QWidget, QToolButton
+from PyQt4.QtGui import (QWidget, QToolButton, QInputDialog, QLineEdit, QHBoxLayout,
+                         QIcon, QMenu)
+from PyQt4.QtCore import Qt
 
-from .wxlib import png
-from ..pylib import is_in
+##from .wxlib import png
+from ..pylib import is_in, path2
 from ..geolib.routines import distance
 from ..geolib.textes import Texte_generique
 from ..geolib.points import Point_generique, Barycentre, Point_pondere, Milieu
@@ -43,111 +46,104 @@ from ..geolib.transformations import Rotation, Homothetie, Translation
 from ..geolib.vecteurs import Vecteur_generique, Vecteur
 from ..geolib.intersections import Intersection_cercles, Intersection_droite_cercle
 from ..geolib.objet import Objet
-from .. import param
+##from .. import param
 
 
 
 class MultiButton(QToolButton):
-    def __init__(self, parent, raccourci, selectionnable, *liste):
+    def __init__(self, parent, raccourci, selectionnable, *fonctionnalites):
+        QToolButton.__init__(self, parent)
+        self.setAutoRaise(True)
+
         self.parent = parent
+
+        # Raccourci clavier pour sélectionner le bouton:
         self.raccourci = raccourci
+        combinaison = self.raccourci.split("+")
+        self.key = getattr(Qt, 'Key_' + combinaison[-1])
+        self.modifiers = Qt.NoModifier
+        for mod in combinaison[:-1]:
+            if mod == 'Ctrl':
+                mod = 'Control'
+            self.modifiers |= getattr(Qt, mod.capitalize() + 'Modifier')
+
         self.selectionnable = selectionnable
-        self.selected = False
-        self.liste = list(liste)
-        self.items = []
-        for i in xrange(len(self.liste)):
-            if self.liste[i] is None:
-                self.items.append(None)
-            else:
-                self.items.append(wx.NewId())
-                self.parent.Bind(wx.EVT_MENU, self.OnPopup, id=self.items[-1])
-                self.liste[i] = list(self.liste[i])
-                # on crée 2 images, nommée segment.png et segment_.png par exemple, la 2e correspondant au bouton sélectionné.
-                self.liste[i][1] = [png(self.liste[i][1] + s) for s in ("", "_")]
-        wx.BitmapButton.__init__(self, parent, style=wx.NO_BORDER)
-        self.SetBackgroundColour(self.parent.GetBackgroundColour())
+        # Liste des différentes fonctionnalités possibles:
+        self.liste = list(fonctionnalites)
+        # Menu à afficher pour changer de fonctionnalité:
+        self.menu = None
+        # Index de la fonctionnalité choisie dans la liste:
+        self.index = 0
+
+        ##self.SetBackgroundColour(self.parent.GetBackgroundColour())
         self.select(False, 0)
-        self.Bind(wx.EVT_RIGHT_DOWN, self.OnRightclic)
-        self.Bind(wx.EVT_LEFT_DCLICK, self.OnRightclic)
-        self.Bind(wx.EVT_BUTTON, self.OnLeftclic)
+        self.clicked.connect(self.left_click)
         if self.raccourci is not None:
-            self.parent.canvas.Bind(wx.EVT_CHAR, self.OnChar)
+            # Bouton < Barre < Panel < Onglets < Fenetre principale
+            self.parent.parent.parent.parent.fn_key_pressed.connect(self.key_pressed)
 
-    def select(self, sel = True, i = None):
-        u"Sélectionne et affiche le bouton i"
-        if i is not None:
-            self.selection = i
-            if self.raccourci is None:
-                touche = ""
+
+    def update_menu(self):
+        if self.menu is None:
+            self.setPopupMode(QToolButton.MenuButtonPopup)
+            self.menu = menu = QMenu(self)
+            self.setMenu(menu)
+        else:
+            menu = self.menu
+            menu.clear()
+        for i, entree in enumerate(self.liste):
+            if entree is None:
+                menu.addSeparator()
             else:
-                touche = " (" + self.raccourci.replace("Shift", "Maj") +")"
-            aide = self.liste[self.selection][2] + touche
-            if len(self.liste) > 1:
-                aide += "\n\nClic droit pour plus de choix."
+                titre, image, aide, action = entree
+                action = menu.addAction(self.img2icon(image), titre)
+                action.triggered.connect(partial(self.select, i=i))
+
+    @staticmethod
+    def img2icon(image):
+        return QIcon(path2('images/%s.png' % image))
+
+    @property
+    def selected(self):
+        return self.parent._selected_button is self
+
+    def select(self, selected=True, i=None):
+        u"Sélectionne la i-ème fonctionnalité de la liste. Met à jour l'icône."
+        if i is not None:
+            self.index = i
+            titre, image, aide, action = self.liste[i]
+            if self.raccourci:
+                aide += " (" + self.raccourci.replace("Shift", "Maj") + ")"
             self.setToolTip(aide)
-        self.display(sel)
-
-    def display(self, selected = None):
         if self.selectionnable:
-            if selected is not None:
-                self.selected = selected
-                if selected is True:
-                    if hasattr(self.parent, "selected_button") and self.parent.selected_button is not self:
-                        self.parent.selected_button.display(False)
-                    self.parent.selected_button = self
-        #else:
-        #    self.selected = False
-        self.SetBitmapLabel(self.liste[self.selection][1][self.selected])
+            if selected:
+                previous = self.parent._selected_button
+                self.parent._selected_button = self
+                previous.update_display()
+            elif self.selected:
+                # NB: ne pas déselectionner un autre bouton.
+                self.parent._selected_button = None
+            if len(self.liste) > 1:
+                self.update_menu()
+        self.update_display()
 
-    def action(self, event = None):
-        self.liste[self.selection][3](event)
+    def update_display(self):
+        u"""Change l'icône du bouton, selon la fonction sélectionnée, et le fait
+            que le bouton soit activé ou non."""
+        image = self.liste[self.index][2]
+        if self.selected:
+            image += '_'
+        self.setIcon(self.img2icon(image))
+        # setIcon ?
 
-    def OnLeftclic(self, event = None):
-        self.display(True)
-        self.action(event)
+    def left_click(self):
+        self.select(True)
+        action = self.liste[self.index][3]
+        action(True)
 
-
-    def OnRightclic(self, event = None):
-        if len(self.liste) > 1:
-            menu = QMenu()
-            for i in xrange(len(self.liste)):
-                if self.liste[i] is None:
-                    menu.addSeparator()
-                    #item = wx.MenuItem(menu, id = wx.ITEM_SEPARATOR, kind = wx.ITEM_SEPARATOR)
-                else:
-                    item = QMenuItem(menu, self.items[i], self.liste[i][0])
-                    #item.SetBitmap(self.liste[i][1][0])
-                    #item.SetBackgroundColour(self.parent.GetBackgroundColour())
-                    #-> ces méthodes sont largement bugguées dans WxPython
-                    menu.AppendItem(item)
-                    del item
-            self.PopupMenu(menu)
-            menu.Destroy()
-
-    def OnPopup(self, event = None):
-        self.select(True, self.items.index(event.GetId()))
-        self.action(event)
-
-    def OnChar(self, event = None):
-        r = self.raccourci.split("+")
-        if len(r) is 2:
-            m = r[0].lower()
-            shift = m == "shift"
-            alt = m == "alt"
-            ctrl = m == "ctrl"
-        else:
-            shift = alt = ctrl = False
-        if (shift^event.ShiftDown()) or (alt^event.AltDown()) or (ctrl^event.ControlDown()):
-            event.Skip()
-            return
-        keycode = event.GetKeyCode()
-        if hasattr(wx, "WXK_" + r[-1]) and getattr(wx, "WXK_" + r[-1]) == keycode:
-            self.OnLeftclic(event)
-        elif 0 <= keycode < 256 and unichr(keycode) == r[-1]:
-            self.OnLeftclic(event)
-        else:
-            event.Skip()
-
+    def key_pressed(self, key, modifiers):
+        if key == self.key and modifiers == self.modifiers:
+            self.left_click()
 
 
 
@@ -158,9 +154,9 @@ class BarreOutils(QWidget):
         ##self.SetBackgroundColour(couleur if couleur is not None else wx.NamedColor(u"WHITE"))
         self.debut_selection = None
         self.debut_zoombox = None
+        self._selected_button = None
 
         self.sizer = QHBoxLayout()
-
 
         self.add2(u"ouvrir", u"Ouvrir un fichier .geo.", self.parent.parent.OpenFile)
         self.btn_sauver = self.add2(u"sauvegarde", u"Enregistrer le document.", self.parent.parent.SaveFile)
@@ -176,22 +172,27 @@ class BarreOutils(QWidget):
 
 
     def add(self, racc, *liste):
-        u"Ajoute des boutons multiples, sélectionnables."
+        u"""Ajoute des boutons multiples, sélectionnables.
+
+        `racc` est un raccourci. Ex: "Control+F1", "Shift+F2", "Meta+F3", "Alt+F12".
+        `liste` est une liste de tuples, ayant le format suivant:
+        (titre, nom de l'image, aide, action)
+        `liste` peut également contenir `None`, qui sert de séparateur.
+        """
         button = MultiButton(self, racc, True, *liste)
-        i = 5
-        if param.plateforme == "Linux":
-            i = 0
-        self.sizer.addWidget(button, 0, wx.ALL, i)
+        self.sizer.addWidget(button)
         return button
 
 
     def add2(self, *args):
-        u"Ajoute des boutons simples, non sélectionnables."
+        u"""Ajoute des boutons simples, non sélectionnables.
+
+
+        `args` possède le format suivant:
+        nom de l'image, aide, action
+        """
         button = MultiButton(self, None, False, ("",) + args)
-        i = 5
-        if param.plateforme == "Linux":
-            i = 0
-        self.sizer.addWidget(button, 0, wx.ALL, i)
+        self.sizer.addWidget(button)
         return button
 
 
@@ -199,7 +200,7 @@ class BarreOutils(QWidget):
         self.add("F1", (u"Pointeur", u"fleche4", u"Déplacer ou modifier un objet.", self.curseur),
                   (u"Zoomer", u"zoombox2", u"Recentrer la zone d'affichage.", self.zoombox),
                   (u"Sélectionner", u"selection", u"Sélectionner une partie de la feuille.",
-                  self.selectionner)).display(True)
+                  self.selectionner)).select()
         self.add("F2", (u"Point", u"point2",u"Créer un point.", self.point))
         self.add("F3", (u"Milieu", u"milieu2", u"Créer un milieu ou un centre.", self.milieu))
         self.add("F4", (u"Segment", u"segment2", u"Créer un segment.", self.segment),
@@ -291,9 +292,7 @@ class BarreOutils(QWidget):
 
     def rafraichir(self):
         u"Appelé par le parent pour rafraichir la barre d'outils."
-        self.btn_sauver.selected = not self.feuille_actuelle.modifiee
-        self.btn_sauver.display()
-
+        self.btn_sauver.select(not self.feuille_actuelle.modifiee)
 
 
     def initialiser(self):
@@ -310,17 +309,12 @@ class BarreOutils(QWidget):
 
 
 
-    def dialogue(self, titre, question, defaut = ""):
+    def dialogue(self, titre, question, defaut=""):
         u"""Certaines constructions ont besoin d'une valeur numérique (rotations, homothéties...)
         Cette boîte de dialogue permet à l'utilisateur de saisir cette valeur.
         Retourne 'None' si l'utilisateur a annulé."""
-        dlg = wx.TextEntryDialog(self, question, titre, defaut)
-        if dlg.ShowModal() == wx.ID_OK:
-            valeur = dlg.GetValue()
-        else:
-            valeur = None
-        dlg.Destroy()
-        return valeur
+        valeur, ok = QInputDialog.getText(self, titre, question, QLineEdit.Normal, defaut)
+        return valeur if ok else None
 
 
     def executer(self, instruction, editer = "defaut", init = True):
@@ -342,14 +336,10 @@ class BarreOutils(QWidget):
             self.canvas.editer()
 
 
-
-
-
     def interagir(self, *args, **kw):
         u"Marque le bouton n comme sélectionné (et initialise le cache des sélections)."
         self.initialiser()
         self.canvas.interagir(*args, **kw)
-
 
 
     def test(self, doublons_interdits = True, **kw):
@@ -446,10 +436,6 @@ class BarreOutils(QWidget):
             self.canvas.debut_select = self.debut_selection
             self.canvas.selection_zone(kw["pixel"])
             self.canvas.debut_select = None
-
-
-
-
 
 
     def point(self, event = False, nom_style='points', editer='defaut', **kw):
