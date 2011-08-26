@@ -104,7 +104,7 @@ class ExperienceFrame(MyMiniFrame):
         self.Bind(wx.EVT_BUTTON, self.actualiser, lancer)
 
         sizer.addWidget(boutons)
-        p.SetSizerAndFit(sizer)
+        p.setLayout(sizer)
         self.SetClientSize(p.GetSize())
 
     def actualiser(self, event = None):
@@ -187,7 +187,7 @@ class LancerDes(MyMiniFrame):
         self.Bind(wx.EVT_BUTTON, self.actualiser, lancer)
 
         sizer.addWidget(boutons)
-        p.SetSizerAndFit(sizer)
+        p.setLayout(sizer)
         self.SetClientSize(p.GetSize())
 
     def actualiser(self, event = None):
@@ -290,7 +290,7 @@ class Sondage(MyMiniFrame):
         self.Bind(wx.EVT_BUTTON, self.actualiser, lancer)
 
         sizer.addWidget(boutons)
-        p.SetSizerAndFit(sizer)
+        p.setLayout(sizer)
         self.SetClientSize(p.GetSize())
 
 

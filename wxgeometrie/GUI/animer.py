@@ -22,17 +22,20 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-import wx
 from operator import attrgetter
 
-from .wxlib import MyMiniFrame
+from PyQt4.QtGui import (QDialog, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QMenu,
+                         QLineEdit, QPushButton, QFrame,)
+from PyQt4.QtCore import Qt
+
+##from .wxlib import MyMiniFrame
 from ..geolib.variables import Variable
 
 
-class DialogueAnimation(MyMiniFrame):
+class DialogueAnimation(QDialog):
     def __init__(self, parent):
-        MyMiniFrame.__init__(self, parent, u"Créer une animation")
-        self.SetExtraStyle(wx.WS_EX_BLOCK_EVENTS )
+        QDialog.__init__(self, parent)
+        self.setTitle(u"Créer une animation")
         self.parent = parent
         self.feuille_actuelle = self.parent.onglet_actuel.feuille_actuelle
         p = self.panel = QWidget(self)
@@ -40,82 +43,82 @@ class DialogueAnimation(MyMiniFrame):
         self.sizer = sizer = QVBoxLayout()
 
         terme = QHBoxLayout()
-        terme.addWidget(QLabel(p, -1, u"Variable :"), 0, wx.ALIGN_LEFT|wx.ALIGN_CENTER_VERTICAL|wx.ALL,5)
-        self.var =  wx.TextCtrl(p, -1, "", size=(100, -1))
-        terme.Add(self.var, 0, wx.ALIGN_LEFT|wx.ALIGN_CENTER_VERTICAL|wx.ALL,5)
-        self.var.Bind(wx.EVT_MIDDLE_DOWN, self.Propositions)
-        sizer.addWidget(terme)
+        terme.addWidget(QLabel(u"Variable :"))
+        self.var = var = QLineEdit()
+        var.setMinimumWidth(100)
+        var.setContextMenuPolicy(Qt.CustomContextMenu)
+        var.customContextMenuRequested.connect(self.propositions)
+        terme.addWidget(var)
+        sizer.addLayout(terme)
 
-        sizer.addWidget(wx.StaticLine(p, -1, style=wx.LI_HORIZONTAL), 0, wx.GROW|wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5)
-
-        terme = QHBoxLayout()
-        terme.addWidget(QLabel(p, -1, u"Début :"), 0, wx.ALIGN_LEFT|wx.ALIGN_CENTER_VERTICAL|wx.ALL,5)
-        self.deb =  wx.TextCtrl(p, -1, "0", size=(50, -1))
-        terme.Add(self.deb, 0, wx.ALIGN_LEFT|wx.ALIGN_CENTER_VERTICAL|wx.ALL,5)
-        terme.addWidget(QLabel(p, -1, u"Fin :"), 0, wx.ALIGN_LEFT|wx.ALIGN_CENTER_VERTICAL|wx.ALL,5)
-        self.fin =  wx.TextCtrl(p, -1, "1", size=(50, -1))
-        terme.Add(self.fin, 0, wx.ALIGN_LEFT|wx.ALIGN_CENTER_VERTICAL|wx.ALL,5)
-        terme.addWidget(QLabel(p, -1, u"Pas :"), 0, wx.ALIGN_LEFT|wx.ALIGN_CENTER_VERTICAL|wx.ALL,5)
-        self.pas =  wx.TextCtrl(p, -1, "0.05", size=(50, -1))
-        terme.Add(self.pas, 0, wx.ALIGN_LEFT|wx.ALIGN_CENTER_VERTICAL|wx.ALL,5)
-        sizer.addWidget(terme)
+        line = QFrame(self)
+        line.setFrameStyle(QFrame.HLine)
+        sizer.addWidget(line)
 
         terme = QHBoxLayout()
-        terme.addWidget(QLabel(p, -1, u"Période (s) :"), 0, wx.ALIGN_LEFT|wx.ALIGN_CENTER_VERTICAL|wx.ALL,5)
-        self.periode =  wx.TextCtrl(p, -1, "0.1", size=(100, -1))
-        terme.Add(self.periode, 0, wx.ALIGN_LEFT|wx.ALIGN_CENTER_VERTICAL|wx.ALL,5)
-        sizer.addWidget(terme)
+        terme.addWidget(QLabel(u"Début :"))
+        self.deb = QLineEdit()
+        self.deb.setText("0")
+        self.deb.setMinimumWidth(50)
+        terme.addWidget(self.deb)
+        terme.addWidget(QLabel(u"Fin :"))
+        self.fin = QLineEdit()
+        self.fin.setText("1")
+        self.fin.setMinimumWidth(50)
+        terme.addWidget(self.fin)
+        terme.addWidget(QLabel(u"Pas :"))
+        self.pas = QLineEdit()
+        self.pas.setText("0.05")
+        self.pas.setMinimumWidth(50)
+        terme.addWidget(self.pas)
+        sizer.addLayout(terme)
 
+        terme = QHBoxLayout()
+        terme.addWidget(QLabel(u"Période (s) :"))
+        self.periode = QLineEdit()
+        self.periode.setText("0.1")
+        self.periode.setMinimumWidth(100)
+        terme.addWidget(self.periode)
+        sizer.addLayout(terme)
 
-
-        sizer.addWidget(wx.StaticLine(p, -1, style=wx.LI_HORIZONTAL), 0, wx.GROW|wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5)
+        line = QFrame(self)
+        line.setFrameStyle(QFrame.HLine)
+        sizer.addWidget(line)
 
         boutons = QHBoxLayout()
-        self.btn_lancer = lancer = QPushButton(p, -1, u"Animer")
-        boutons.Add(lancer)
-        fermer = QPushButton(p, -1, u"Fermer")
-        boutons.Add(fermer)
-        self.Bind(wx.EVT_BUTTON, self.Animer, lancer)
-        self.Bind(wx.EVT_BUTTON, self.OnCloseMe, fermer)
-        sizer.addWidget(boutons)
+        self.btn_lancer = QPushButton(u"Animer", clicked=self.Animer)
+        boutons.addWidget(self.btn_lancer)
+        fermer = QPushButton(u"Fermer", clicked=self.close)
+        boutons.addWidget(fermer)
+        sizer.addLayout(boutons)
 
-        p.SetSizerAndFit(sizer)
-        self.SetClientSize(p.GetSize())
+        p.setLayout(sizer)
+
         self.en_cours = False
 
 
-
-
-
-    def Animer(self, event = None):
+    def Animer(self):
         if self.en_cours:
             self.feuille_actuelle.stop()
         else:
             self.en_cours = True
-            self.btn_lancer.SetLabel('Stop')
-            self.feuille_actuelle.animer(nom = self.var.GetValue(),
-                        debut=eval(self.deb.GetValue()), fin=eval(self.fin.GetValue()),
-                        pas=eval(self.pas.GetValue()), periode=eval(self.periode.GetValue()))
+            self.btn_lancer.setText('Stop')
+            self.feuille_actuelle.animer(nom = self.var.text(),
+                        debut=float(self.deb.text()), fin=float(self.fin.text()),
+                        pas=float(self.pas.text()), periode=float(self.periode.text()))
         self.en_cours = False
-        self.btn_lancer.SetLabel('Animer')
+        self.btn_lancer.setText('Animer')
 
-    def Propositions(self, event = None):
+    def propositions(self):
         u"Liste des noms de variables de la feuille actuelle."
         self.var.setFocus()
         liste_objets = self.feuille_actuelle.objets.lister(False, type = Variable)
         liste_objets.sort(key=attrgetter('nom')) # ordre alphabétique
-        if not liste_objets:
-            return
-        ids = [wx.NewId() for obj in liste_objets]
-        menu = QMenu()
-        for i in xrange(len(liste_objets)):
-            menu.addAction(ids[i], liste_objets[i].nom_complet)
-            def select(event, nom = liste_objets[i].nom, champ = self.var):
-                champ.SetValue(nom)
-            menu.Bind(wx.EVT_MENU, select, id = ids[i])
-        self.PopupMenu(menu)
-        menu.Destroy()
-
-
-    def OnCloseMe(self, event):
-        self.close()
+        if liste_objets:
+            menu = QMenu()
+            for obj in liste_objets:
+                action = menu.addAction(obj.nom_complet)
+                action.nom = obj.nom
+            action = menu.exec_()
+            if action:
+                self.var.setText(action.nom)

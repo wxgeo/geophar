@@ -89,7 +89,7 @@ class CreerSuite(MyMiniFrame):
         self.Bind(wx.EVT_BUTTON, self.Creer, lancer)
         sizer.addWidget(boutons)
 
-        p.SetSizerAndFit(sizer)
+        p.setLayout(sizer)
         self.SetClientSize(p.GetSize())
 
 

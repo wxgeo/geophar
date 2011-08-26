@@ -288,13 +288,13 @@ class Statistiques(Panel_API_graphique):
         e = self.effectif_total()
         if e == int(e):
             e = int(e)
-        self._effectif_total.SetLabel(u" Effectif total: %s" %e)
-        self._moyenne.SetLabel(u" Moyenne: %s" %self.moyenne())
-        self._mediane.SetLabel(u" Médiane: " + str(self.mediane()))
-        self._mode.SetLabel(u" Mode: %s" %self.mode())
-        self._etendue.SetLabel(u" Etendue: %s" %self.etendue())
-        self._variance.SetLabel(u" Variance: %s" %self.variance())
-        self._ecart_type.SetLabel(u" Ecart-type: %s" %self.ecart_type())
+        self._effectif_total.setText(u" Effectif total: %s" %e)
+        self._moyenne.setText(u" Moyenne: %s" %self.moyenne())
+        self._mediane.setText(u" Médiane: " + str(self.mediane()))
+        self._mode.setText(u" Mode: %s" %self.mode())
+        self._etendue.setText(u" Etendue: %s" %self.etendue())
+        self._variance.setText(u" Variance: %s" %self.variance())
+        self._ecart_type.setText(u" Ecart-type: %s" %self.ecart_type())
 
     def ajouter_valeurs(self, *valeurs):
         for val in valeurs:

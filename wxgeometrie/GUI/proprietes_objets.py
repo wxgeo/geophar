@@ -355,7 +355,7 @@ class ProprietesAffichage(QWidget):
         else:
             encadre2.GetStaticBox().Destroy()
         self.sizer.addWidget(boutons)
-        self.SetSizerAndFit(self.sizer)
+        self.setLayout(self.sizer)
         self.parent.parent.dim1 = self.sizer.CalcMin().Get()
 
     def EvtLegende(self, event):
@@ -511,7 +511,7 @@ class ProprietesInfos(QWidget):
             self.infos.GetStaticBox().Destroy()
             del self.infos
 
-        self.SetSizerAndFit(self.sizer)
+        self.setLayout(self.sizer)
         self.parent.parent.dim2 = self.sizer.CalcMin().Get()
 
 
@@ -564,7 +564,7 @@ class ProprietesAvance(QWidget):
             boutons.Add(actualiser)
             self.sizer.addWidget(boutons)
 
-        self.SetSizerAndFit(self.sizer)
+        self.setLayout(self.sizer)
         self.parent.parent.dim3 = self.sizer.CalcMin().Get()
 
     def EvtOk(self, event):

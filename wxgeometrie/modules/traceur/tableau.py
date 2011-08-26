@@ -99,7 +99,7 @@ class TableauValeurs(wx.MiniFrame):
         sizer.addWidget(grid, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL|wx.EXPAND , 5)
 
         #p.SetSizer(sizer)
-        p.SetSizerAndFit(sizer)
+        p.setLayout(sizer)
         x, y = p.GetSize().GetWidth(), p.GetSize().GetHeight()
         self.SetClientSize(wx.Size(x + 15, y + 15))
         grid.AdjustScrollbars()
