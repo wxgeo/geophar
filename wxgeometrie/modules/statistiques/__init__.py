@@ -2,9 +2,9 @@
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 from __future__ import with_statement
 
-##------------------------------------------#######
-#                   Satistiques                   #
-##------------------------------------------#######
+##-------------------------------------------#######
+#                   Statistiques                   #
+##-------------------------------------------#######
 #    WxGeometrie
 #    Dynamic geometry, graph plotter, and more for french mathematic teachers.
 #    Copyright (C) 2005-2010  Nicolas Pourcelot
@@ -34,6 +34,12 @@ from .experience import LancerDes, Sondage, ExperienceFrame
 from .onglets_internes import OngletsStatistiques
 from ...mathlib.custom_functions import arrondir
 from ...pylib import property2, uu, regsub, advanced_split, print_error, eval_restricted
+
+__doc__ = u"""
+Module Statistiques:
+Calculs de moyenne, variance, quantiles sur des séries de données avec modèle
+ linéaire si besoin.
+"""
 
 def tst(result):
     if isnan(result):
