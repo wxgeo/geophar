@@ -125,7 +125,8 @@ class Dialogue(QDialog):
                 ql.setWhatsThis(aide)
                 self.box.addWidget(ql)#, (len(txt) >= 4) and txt[3] or 0, wx.ALIGN_CENTRE|wx.ALL, 5)
                 if len(txt) >= 3 and txt[2] is not None:
-                    ql.Bind(wx.EVT_MIDDLE_DOWN, self.MiddleClicFunction(txt[2], self.champs[txt[0]]))
+                    ql.setContextMenuPolicy(Qt.CustomContextMenu)
+                    ql.customContextMenuRequested.connect(partial(self.right_click, type=txt[2], champ=ql))
                     # XXX: traduire en Qt
 
         self.sizer.addLayout(self.box)
@@ -172,39 +173,35 @@ class Dialogue(QDialog):
                          for etiquette in self.champs if etiquette != "nom"])
 
 
-    def MiddleClicFunction(self, type, champ):
+    def right_click(self, type, champ):
         u"Retourne une fonction qui sera executée lors d'un clic avec le bouton du milieu sur le champ 'champ'."
-        def f(event, self = self, type = type, champ = champ):
-            champ.setFocus()
-            liste = isinstance(type, list)
-            if liste:
-                type = type[0]
-            liste_objets = self.onglet_actuel.feuille_actuelle.objets.lister(False, type = type)
-            liste_objets.sort(key = attrgetter('nom')) # ordre alphabétique
-            if not liste_objets:
-                return
-            ids = [wx.NewId() for obj in liste_objets]
-            menu = QMenu()
+        champ.setFocus()
+        plusieurs = isinstance(type, list)
+        if plusieurs:
+            type = type[0]
+        liste_objets = self.onglet_actuel.feuille_actuelle.objets.lister(False, type = type)
+        liste_objets.sort(key = attrgetter('nom')) # ordre alphabétique
+        if not liste_objets:
+            return
+        menu = QMenu()
 
-            for i in xrange(len(liste_objets)):
-                menu.Append(ids[i], liste_objets[i].nom_complet)
-                if liste: # le champ doit contenir non pas un objet, mais une liste d'objets
-                    def select(event, nom = liste_objets[i].nom, champ = champ):
-                        val = champ.text().strip()
-                        if val:
-                            if not val.endswith(","):
-                                val += ","
-                            val += " "
-                        champ.setText(val + nom)
-                        champ.SetInsertionPointEnd()
-                else: # le champ contient un seul objet
-                    def select(event, nom = liste_objets[i].nom, champ = champ):
-                        champ.setText(nom)
-                menu.Bind(wx.EVT_MENU, select, id = ids[i])
+        for obj in liste_objets:
+            action = menu.addAction(obj.nom_complet)
+            action.nom = obj.nom
 
-            self.PopupMenu(menu)
-            menu.Destroy()
-        return f
+        action = menu.exec_()
+        if action:
+            if plusieurs:
+                # le champ doit contenir non pas un objet, mais une liste d'objets
+                val = champ.text().strip()
+                if val:
+                    if not val.endswith(","):
+                        val += ","
+                    val += " "
+                champ.setText(val + action.nom)
+            else:
+                # le champ contient un seul objet
+                champ.setText(action.nom)
 
 
 

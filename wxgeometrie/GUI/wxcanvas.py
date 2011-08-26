@@ -657,7 +657,7 @@ class QtCanvas(FigureCanvasWxAgg, Canvas):
             menu = QMenu()
             # Contournement d'un bug de wxGtk
             if wx.Platform == '__WXGTK__':
-                menu.Append(wx.NewId(), u" \u2714 " + self.select.nom_complet)
+                menu.addAction(wx.NewId(), u" \u2714 " + self.select.nom_complet)
                 menu.addSeparator()
             else:
                 menu.setWindowTitle(self.select.nom_complet)
@@ -668,12 +668,12 @@ class QtCanvas(FigureCanvasWxAgg, Canvas):
                 def select(event, obj = selections[i]):
                     self.select = self.select_memoire = obj
                     self.selection_en_gras()
-                menu.Append(ids[i], u"Sélectionner " + selections[i].nom_complet)
+                menu.addAction(ids[i], u"Sélectionner " + selections[i].nom_complet)
                 menu.Bind(wx.EVT_MENU, select, id = ids[i])
             if n:
                 menu.addSeparator()
 
-            menu.Append(ids[n], u"Supprimer")
+            menu.addAction(ids[n], u"Supprimer")
             def supprimer(event, select = self.select):
                 self.executer(u"%s.supprimer()" %select.nom)
             menu.Bind(wx.EVT_MENU, supprimer, id = ids[n])
@@ -682,12 +682,12 @@ class QtCanvas(FigureCanvasWxAgg, Canvas):
                 chaine = u"Masquer"
             else:
                 chaine = u"Afficher"
-            menu.Append(ids[n + 1], chaine)
+            menu.addAction(ids[n + 1], chaine)
             def masquer(event, select = self.select):
                 self.executer(u"%s.style(visible = %s)" %(select.nom, not self.select.style("visible")))
             menu.Bind(wx.EVT_MENU, masquer, id = ids[n + 1])
 
-            menu.Append(ids[n + 2], u"Renommer")
+            menu.addAction(ids[n + 2], u"Renommer")
             def renommer(event, select = self.select):
                 dlg = wx.TextEntryDialog(self, u"Note: pour personnaliser davantage le texte de l'objet,\nchoisissez \"Texte associé\" dans le menu de l'objet.", u"Renommer l'objet", select.nom_corrige)
                 test = True
@@ -706,7 +706,7 @@ class QtCanvas(FigureCanvasWxAgg, Canvas):
             menu.Bind(wx.EVT_MENU, renommer, id = ids[n + 2])
 
             msg = u"Éditer le texte" if isinstance(self.select, Texte_generique) else u"Texte associé"
-            menu.Append(ids[n + 3], msg)
+            menu.addAction(ids[n + 3], msg)
             def etiquette(event, select = self.select):
                 old_style = select.style().copy()
                 old_label = select.style(u"label")
@@ -756,7 +756,7 @@ class QtCanvas(FigureCanvasWxAgg, Canvas):
                 chaine = u"Masquer"
             else:
                 chaine = u"Afficher"
-            menu.Append(ids[n + 4], chaine + u" nom/texte")
+            menu.addAction(ids[n + 4], chaine + u" nom/texte")
             def masquer_nom(event, select = self.select):
                 if self.select.label():
                     mode = RIEN
@@ -770,7 +770,7 @@ class QtCanvas(FigureCanvasWxAgg, Canvas):
 
             menu.addSeparator()
 
-            menu.Append(ids[n + 5], u"Redéfinir")
+            menu.addAction(ids[n + 5], u"Redéfinir")
             def redefinir(event, select = self.select):
                 nom = select.nom
                 dlg = wx.TextEntryDialog(self, u"Exemple: transformez une droite en segment.", u"Redéfinir l'objet", select._definition())
@@ -816,7 +816,7 @@ class QtCanvas(FigureCanvasWxAgg, Canvas):
 
                 menu.addSeparator()
 
-            menu.Append(ids[n + 6], u"Propriétés")
+            menu.addAction(ids[n + 6], u"Propriétés")
             def proprietes(event, select = self.select):
                 win = Proprietes(self, [select])
                 win.show()

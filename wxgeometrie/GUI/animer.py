@@ -109,7 +109,7 @@ class DialogueAnimation(MyMiniFrame):
         ids = [wx.NewId() for obj in liste_objets]
         menu = QMenu()
         for i in xrange(len(liste_objets)):
-            menu.Append(ids[i], liste_objets[i].nom_complet)
+            menu.addAction(ids[i], liste_objets[i].nom_complet)
             def select(event, nom = liste_objets[i].nom, champ = self.var):
                 champ.SetValue(nom)
             menu.Bind(wx.EVT_MENU, select, id = ids[i])
