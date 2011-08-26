@@ -67,8 +67,6 @@ class PyOnDemandOutputWindow(QPlainTextEdit):
 
 class FenetrePrincipale(QMainWindow):
 
-    fn_key_pressed = pyqtSignal(Qt.Key, Qt.KeyboardModifier)
-
     def __init__(self, app, fichier_log=None):
         QMainWindow.__init__(self, None)
         self.setWindowTitle(NOMPROG)
@@ -138,14 +136,6 @@ class FenetrePrincipale(QMainWindow):
         self.closing = False
 
         self.gestion = GestionnaireSession(self.onglets)
-
-    def keyPressEvent(self, event):
-        if event.key() in (Qt.Key_F1, Qt.Key_F2, Qt.Key_F3, Qt.Key_F4, Qt.Key_F5,
-                           Qt.Key_F6, Qt.Key_F7, Qt.Key_F8, Qt.Key_F9, Qt.Key_F10,
-                           Qt.Key_F11, Qt.Key_F12,):
-            self.fn_key_pressed.emit(event.key(), event.modifiers())
-        else:
-            QMainWindow.keyPressEvent(self, event)
 
 
     def OnIdle(self, evt):

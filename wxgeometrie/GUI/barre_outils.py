@@ -26,7 +26,7 @@ import math
 from functools import partial
 
 from PyQt4.QtGui import (QWidget, QToolButton, QInputDialog, QLineEdit, QHBoxLayout,
-                         QIcon, QMenu)
+                         QIcon, QMenu, QShortcut)
 from PyQt4.QtCore import Qt
 
 ##from .wxlib import png
@@ -59,13 +59,11 @@ class MultiButton(QToolButton):
 
         # Raccourci clavier pour sélectionner le bouton:
         self.raccourci = raccourci
-        combinaison = self.raccourci.split("+")
-        self.key = getattr(Qt, 'Key_' + combinaison[-1])
-        self.modifiers = Qt.NoModifier
-        for mod in combinaison[:-1]:
-            if mod == 'Ctrl':
-                mod = 'Control'
-            self.modifiers |= getattr(Qt, mod.capitalize() + 'Modifier')
+        if self.raccourci:
+            sh = self.shortcut = QShortcut(self)
+            sh.setKey(raccourci)
+            sh.setAutoRepeat(not self.selectionnable)
+            sh.activated.connect(self.left_click)
 
         self.selectionnable = selectionnable
         # Liste des différentes fonctionnalités possibles:
@@ -78,9 +76,6 @@ class MultiButton(QToolButton):
         ##self.SetBackgroundColour(self.parent.GetBackgroundColour())
         self.select(False, 0)
         self.clicked.connect(self.left_click)
-        if self.raccourci is not None:
-            # Bouton < Barre < Panel < Onglets < Fenetre principale
-            self.parent.parent.parent.parent.fn_key_pressed.connect(self.key_pressed)
 
 
     def update_menu(self):
@@ -140,11 +135,6 @@ class MultiButton(QToolButton):
         self.select(True)
         action = self.liste[self.index][3]
         action(True)
-
-    def key_pressed(self, key, modifiers):
-        if key == self.key and modifiers == self.modifiers:
-            self.left_click()
-
 
 
 class BarreOutils(QWidget):

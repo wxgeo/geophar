@@ -21,9 +21,9 @@ from __future__ import with_statement
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import re
-import wx
+
 from numpy import array
-from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg
+from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg
 
 from ..API.canvas import Canvas
 from .proprietes_objets import Proprietes
@@ -34,6 +34,7 @@ from ..geolib.textes import Texte, Texte_generique
 from ..geolib.objet import Objet
 from ..geolib.points import Point_generique
 from ..geolib.constantes import NOM, FORMULE, TEXTE, RIEN
+
 
 class MiniEditeur:
     def __init__(self, parent):
@@ -123,24 +124,20 @@ class MiniEditeur:
 
 
 
-
-
-
-
-class QtCanvas(FigureCanvasWxAgg, Canvas):
+class QtCanvas(FigureCanvasQTAgg, Canvas):
     def __init__(self, parent, fixe = False):
         u"Si fixe = True, l'utilisateur ne peut pas zoomer ou recadrer la fenêtre d'affichage avec la souris."
 
         self.parent = parent
         # initialisation dans cet ordre (self.figure doit être défini pour initialiser FigureCanvas)
         Canvas.__init__(self, couleur_fond = self.param("couleur_fond"))
-        FigureCanvasWxAgg.__init__(self, parent, self.figure)
+        FigureCanvasQTAgg.__init__(self, self.figure)
 
-        if param.plateforme == "Linux":
-            self.SetSize(wx.Size(10, 10))
-        elif param.plateforme == "Windows":
-            self.SetWindowStyle(wx.WANTS_CHARS)
-            self.Refresh()
+        ##if param.plateforme == "Linux":
+            ##self.SetSize(wx.Size(10, 10))
+        ##elif param.plateforme == "Windows":
+            ##self.SetWindowStyle(wx.WANTS_CHARS)
+            ##self.Refresh()
 
         self.debut_zoom = None
         # Utilisé pour zoomer avec Ctrl + Clic gauche (contiendra la position initiale)
@@ -188,6 +185,8 @@ class QtCanvas(FigureCanvasWxAgg, Canvas):
         timer=wx.Timer(self)
         self.Bind(wx.EVT_TIMER, self._actualiser_si_necessaire)
         timer.Start(150)
+
+        self.setFocusPolicy(Qt.StrongFocus)
 
 
 
