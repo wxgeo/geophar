@@ -181,7 +181,7 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
         ##self.Bind(wx.EVT_RIGHT_DOWN, self.OnRightDown)
         ##self.Bind(wx.EVT_RIGHT_UP, self.OnRightUp)
         ##self.Bind(wx.EVT_PAINT, self.OnPaint)
-        self.Bind(wx.EVT_LEAVE_WINDOW, self.OnLeave)
+        ##self.Bind(wx.EVT_LEAVE_WINDOW, self.OnLeave)
         self._pile_instructions = [] # instructions à exécuter lorsqu'aucune autre action n'est en cours. (Idle)
         self.Bind(wx.EVT_IDLE, self.OnIdle)
 
