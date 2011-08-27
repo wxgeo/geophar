@@ -109,3 +109,15 @@ class GenericThread(QThread):
 #        if underline is None:
 #            underline = font.GetUnderlined()
 #        wx.Font.__init__(self, size, family, style, weight, underline)
+
+def shift_down(event):
+    return event.modifiers() & Qt.ShiftModifier
+
+def alt_down(event):
+    return event.modifiers() & Qt.AltModifier
+
+def ctrl_down(event):
+    return event.modifiers() & Qt.ControlModifier
+
+def meta_down(event):
+    return event.modifiers() & Qt.MetaModifier

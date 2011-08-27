@@ -26,8 +26,8 @@ from numpy import array
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg
 
 from ..API.canvas import Canvas
-from .proprietes_objets import Proprietes
-from .wxlib import BusyCursor#, PseudoEvent
+from .menu_objet import MenuActionsObjet
+from .wxlib import BusyCursor, shift_down, alt_down, ctrl_down#, PseudoEvent
 from .. import param
 from ..pylib import print_error, debug
 from ..geolib.textes import Texte, Texte_generique
@@ -89,22 +89,28 @@ class MiniEditeur:
         self.cancel()
 
 
-    def key(self, key):
+    def key(self, key, txt, modifiers):
         if self:
-            if key == wx.WXK_BACK:
+            if key == Qt.Key_BackSpace:
                 self.texte = self.texte[:-1]
                 self.display()
-            elif key == wx.WXK_ESCAPE:
+            elif key == Qt.Key_Escape:
                 self.cancel()
-            elif key == wx.WXK_RETURN or key == wx.WXK_NUMPAD_ENTER:
-                self.ok()
-            elif key == 10: # Ctrl + Entree (à tester sous Linux !)
-                self.texte += "\n"
+            elif key in (Qt.Key_Enter, Qt.Key_Return):
+                if Qt.ControlModifier & modifiers:
+                    self.texte += "\n"
+                    self.display()
+                else:
+                    self.ok()
+            ##elif key == 10: # Ctrl + Entree (à tester sous Linux !)
+                ### XXX: Technique non portable, à modifier !
+            elif 32 <= key <= 255:
+                self.texte += txt
                 self.display()
-            elif key >= 32 and key <= 255 and key <> wx.WXK_DELETE:
-                key = unichr(key) # a-z, A-Z, 0-9 ou _
-                self.texte += key
-                self.display()
+            else:
+                return False
+            return True
+        # return None si non actif
 
     def close(self):
         u"Ferme l'éditeur. Ne renvoie pas d'erreur s'il est déjà fermé."
@@ -168,16 +174,13 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
         self.wheel_event_count = 0
         self.wheel_ctrl_event_count = 0
 
-        self.Bind(wx.EVT_MOUSEWHEEL, self.EventOnWheel)
-        self.Bind(wx.EVT_MOTION, self.EventOnMotion)
-        self.Bind(wx.EVT_LEFT_UP, self.OnLeftUp)
-        self.Bind(wx.EVT_LEFT_DOWN, self.OnLeftDown)
-        self.Bind(wx.EVT_RIGHT_DOWN, self.OnRightDown)
-        self.Bind(wx.EVT_RIGHT_UP, self.OnRightUp)
-        self.Bind(wx.EVT_SIZE, self.OnSize)
-        self.Bind(wx.EVT_CHAR, self.OnChar)
-        #self.Bind(wx.EVT_LEAVE_WINDOW, self.OnLeave)
-        self.Bind(wx.EVT_PAINT, self.OnPaint)
+        ##self.Bind(wx.EVT_MOUSEWHEEL, self.EventOnWheel)
+        ##self.Bind(wx.EVT_MOTION, self.EventOnMotion)
+        ##self.Bind(wx.EVT_LEFT_UP, self.OnLeftUp)
+        ##self.Bind(wx.EVT_LEFT_DOWN, self.OnLeftDown)
+        ##self.Bind(wx.EVT_RIGHT_DOWN, self.OnRightDown)
+        ##self.Bind(wx.EVT_RIGHT_UP, self.OnRightUp)
+        ##self.Bind(wx.EVT_PAINT, self.OnPaint)
         self.Bind(wx.EVT_LEAVE_WINDOW, self.OnLeave)
         self._pile_instructions = [] # instructions à exécuter lorsqu'aucune autre action n'est en cours. (Idle)
         self.Bind(wx.EVT_IDLE, self.OnIdle)
@@ -207,7 +210,7 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
             wx.EndBusyCursor()
             if wx.Platform == '__WXMSW__':
                 # Le curseur disparaît sinon sous Windows !!
-                wx.SetCursor(wx.StockCursor(wx.CURSOR_DEFAULT))
+                wx.setCursor(Qt.ArrowCursor)
 
     @property
     def dimensions(self):
@@ -233,8 +236,8 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
         dx et dy correspondent au décalage entre les coordonnées de l'objet, et le point où on l'a saisit.
         (Par exemple, un texte n'est pas forcément saisi au niveau de son point d'ancrage).
         """
-        x, y = self.pix2coo(*event.GetPositionTuple())
-        if event.ShiftDown() or self.grille_aimantee:
+        x, y = self.pix2coo(*event.pos())
+        if shift_down(event) or self.grille_aimantee:
             a, b = self.gradu
             return a*round((x + dx)/a), b*round((y + dy)/b)
         else:
@@ -274,16 +277,16 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
         self.interaction = fonction
         self.interaction_deplacement = fonction_bis
         if fonction:
-            self.SetCursor(wx.StockCursor(wx.CURSOR_QUESTION_ARROW))
+            self.setCursor(Qt.WhatsThisCursor)
         else:
-            self.SetCursor(wx.StockCursor(wx.CURSOR_DEFAULT))
+            self.setCursor(Qt.ArrowCursor)
         if aide is not None:
             self.message(aide)
 
 
     def signal(self, event = None):
         if self.interaction:
-            pixel = event.GetPositionTuple()
+            pixel = event.pos()
             self.detecter(pixel)
             self.interaction(selection = self.select, autres = self.selections, position = self.coordonnees(event), pixel = pixel)
             self.detecter(pixel) # XXX: toujours utile ?
@@ -302,7 +305,7 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
 
     def detecter(self, position = None):
         u"""Détecte les objets à proximité de la position indiquée.
-        Typiquement, on utilise self.detecter(event.GetPositionTuple())."""
+        Typiquement, on utilise self.detecter(event.pos())."""
 
         self.redetecter = False
         self.debut_zoom = None
@@ -334,18 +337,18 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
                 if self.select_memoire and self.select_memoire in self.selections:
                     self.select = self.select_memoire
                 if self.interaction:
-                    self.SetCursor(wx.StockCursor(wx.CURSOR_QUESTION_ARROW))
+                    self.setCursor(Qt.WhatsThisCursor)
                 else:
                     if self.deplacable(self.select):
-                        self.SetCursor(wx.StockCursor(wx.CURSOR_HAND))
+                        self.setCursor(Qt.PointingHandCursor)
                     else:
-                        self.SetCursor(wx.StockCursor(wx.CURSOR_DEFAULT))
+                        self.setCursor(Qt.ArrowCursor)
                 self.infos()
             else:
                 if self.interaction:
-                    self.SetCursor(wx.StockCursor(wx.CURSOR_QUESTION_ARROW))
+                    self.setCursor(Qt.WhatsThisCursor)
                 else:
-                    self.SetCursor(wx.StockCursor(wx.CURSOR_DEFAULT))
+                    self.setCursor(Qt.ArrowCursor)
                 self.message("")
                 self.select = None
             self.selection_en_gras()
@@ -386,7 +389,7 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
         self._pile_instructions.append((fonction, args, kwargs))
 
     def EventOnWheel(self, event):
-        if event.ControlDown():
+        if ctrl_down(event):
             if event.GetWheelRotation() > 0:
                 self.wheel_ctrl_event_count += 1
             else:
@@ -439,16 +442,16 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
 
         if event.LeftIsDown():# or self.interaction:
             self.editeur.close()
-            if event.ControlDown(): # selection d'un zone pour zoomer
-                if event.AltDown(): # selection simultanée de tous les objets d'une zone
-                    self.selection_zone(event.GetPositionTuple())
+            if ctrl_down(event): # selection d'un zone pour zoomer
+                if alt_down(event): # selection simultanée de tous les objets d'une zone
+                    self.selection_zone(event.pos())
 
                 elif not self.fixe:
-                    self.gestion_zoombox(event.GetPositionTuple())
+                    self.gestion_zoombox(event.pos())
 
-            elif event.AltDown(): # deplacement de l'etiquette d'un objet
+            elif alt_down(event): # deplacement de l'etiquette d'un objet
                 self.debut_zoom = None
-                x, y = event.GetPositionTuple()
+                x, y = event.pos()
                 if self.etiquette_selectionnee is None:
                     for objet in actuelle.liste_objets(False):
                         if objet.etiquette is not None:
@@ -463,7 +466,7 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
                                 print_error()
                                 self.message(u"Erreur: impossible de trouver l'étiquette de %s.." %objet.nom)
                 if self.etiquette_selectionnee:
-                    self.SetCursor(wx.StockCursor(wx.CURSOR_HAND))
+                    self.setCursor(Qt.PointingHandCursor)
                     self.etiquette_selectionnee(*self.coordonnees(event, *self.decalage_coordonnees))
 
 
@@ -474,8 +477,8 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
                 self.infos()
 
         elif event.RightIsDown() and self.debut_shift and not self.fixe: # deplacement de la feuille
-            self.SetCursor(wx.StockCursor(wx.CURSOR_SIZING))
-            self.fin_shift = self.pix2coo(*event.GetPositionTuple())
+            self.setCursor(Qt.SizeAllCursor)
+            self.fin_shift = self.pix2coo(*event.pos())
             translation = array(self.fin_shift) - array(self.debut_shift)
             self.fenetre = self.fenetre[0] - translation[0], self.fenetre[1] - translation[0], self.fenetre[2] - translation[1], self.fenetre[3] - translation[1]
             if self.select is not None:
@@ -483,10 +486,10 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
                 self.selection_en_gras()
 
         elif self.interaction_deplacement is not None:
-            self.interaction_deplacement(pixel = event.GetPositionTuple())
+            self.interaction_deplacement(pixel = event.pos())
 
-        elif not event.ControlDown():   # detection des objets a proximite du pointeur
-            self.detecter(event.GetPositionTuple())
+        elif not ctrl_down(event):   # detection des objets a proximite du pointeur
+            self.detecter(event.pos())
 
 
 
@@ -593,11 +596,21 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
         self.rafraichir_affichage()
 
 
-    def OnLeftDown(self, event):
+    def mousePressEvent(self, event):
+        button = event.button()
+        if button == Qt.LeftButton:
+            self.left_down(event)
+        elif button == Qt.RightButton:
+            self.right_down(event)
+        else:
+            FigureCanvasQTAgg.mousePressEvent(self, event)
+
+
+    def left_down(self, event):
         # Patch pour l'utilisation avec un dispositif de pointage absolu (tablette graphique ou TNI)
-        self.detecter(event.GetPositionTuple())
-        if self.HasCapture():
-            self.ReleaseMouse()
+        self.detecter(event.pos())
+        ##if self.HasCapture():
+            ##self.ReleaseMouse()
         self.setFocus()
         if self.deplacable(self.select):
             x, y = self.select.coordonnees
@@ -605,9 +618,37 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
             self.decalage_coordonnees = x - x1, y - y1
 
 
-    def OnLeftUp(self, event):
-        if self.HasCapture():
-            self.ReleaseMouse()
+    def right_down(self, event):
+        self.editeur.close()
+        self.detecter(event.pos())
+
+        if self.select is not None and not ctrl_down(event):
+            menu = MenuActionsObjet(self)
+            menu.exec_()
+            if self.select is not None:
+                self.select = None
+                self.selection_en_gras()
+            self.setCursor(Qt.ArrowCursor)
+        elif not self.fixe:
+            self.debut_shift = self.pix2coo(*event.pos())
+            self.setCursor(Qt.SizeAllCursor)
+            ##if not self.HasCapture():
+                ##self.CaptureMouse()
+
+
+    def mouseReleaseEvent(self, event):
+        button = event.button()
+        if button == Qt.LeftButton:
+            self.left_up(event)
+        elif button == Qt.RightButton:
+            self.right_up(event)
+        else:
+            FigureCanvasQTAgg.mouseReleaseEvent(self, event)
+
+
+    def left_up(self, event):
+        ##if self.HasCapture():
+            ##self.ReleaseMouse()
 
         if self.etiquette_selectionnee:
             x, y = self.etiquette_selectionnee.coordonnees
@@ -616,9 +657,8 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
             return
 
         if self.debut_zoom and not self.fixe:
-            #self.ReleaseMouse()
             try:
-                if event.ControlDown():
+                if ctrl_down(event):
                     (x0, y0), (x1, y1) = self.debut_zoom, self.fin_zoom
                     self.executer("fenetre = " + str((x0, x1, y0, y1)))
                 else:
@@ -627,9 +667,8 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
                 self.debut_zoom = None
 
         elif self.debut_select and not self.fixe:
-            #self.ReleaseMouse()
             try:
-                if event.ControlDown() and event.AltDown():
+                if ctrl_down(event) and alt_down(event):
                     (x0, y0), (x1, y1) = self.debut_select, self.fin_select
                     self.OnSelect(x0, x1, y0, y1)
                 else:
@@ -639,7 +678,7 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
 
         elif self.interaction:
             self.signal(event)
-            self.SetCursor(wx.StockCursor(wx.CURSOR_DEFAULT))
+            self.setCursor(Qt.ArrowCursor)
 
         elif self.deplacable(self.select):
             self.parent.action_effectuee(self.select.nom + str(self.select.coordonnees))
@@ -647,202 +686,13 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
             # ca fait un enregistrement inutile dans l'historique...
 
 
-
-    def OnRightDown(self, event):
-        self.editeur.close()
-        self.detecter(event.GetPositionTuple())
-
-        if self.select is not None and not event.ControlDown():
-            menu = QMenu()
-            # Contournement d'un bug de wxGtk
-            if wx.Platform == '__WXGTK__':
-                menu.addAction(wx.NewId(), u" \u2714 " + self.select.nom_complet)
-                menu.addSeparator()
-            else:
-                menu.setWindowTitle(self.select.nom_complet)
-            selections = [obj for obj in self.selections if obj is not self.select] # autres objets a proximite
-            n = len(selections)
-            ids = [wx.NewId() for i in xrange(n + 7)]
-            for i in range(n):
-                def select(event, obj = selections[i]):
-                    self.select = self.select_memoire = obj
-                    self.selection_en_gras()
-                menu.addAction(ids[i], u"Sélectionner " + selections[i].nom_complet)
-                menu.Bind(wx.EVT_MENU, select, id = ids[i])
-            if n:
-                menu.addSeparator()
-
-            menu.addAction(ids[n], u"Supprimer")
-            def supprimer(event, select = self.select):
-                self.executer(u"%s.supprimer()" %select.nom)
-            menu.Bind(wx.EVT_MENU, supprimer, id = ids[n])
-
-            if self.select.style("visible"):
-                chaine = u"Masquer"
-            else:
-                chaine = u"Afficher"
-            menu.addAction(ids[n + 1], chaine)
-            def masquer(event, select = self.select):
-                self.executer(u"%s.style(visible = %s)" %(select.nom, not self.select.style("visible")))
-            menu.Bind(wx.EVT_MENU, masquer, id = ids[n + 1])
-
-            menu.addAction(ids[n + 2], u"Renommer")
-            def renommer(event, select = self.select):
-                dlg = wx.TextEntryDialog(self, u"Note: pour personnaliser davantage le texte de l'objet,\nchoisissez \"Texte associé\" dans le menu de l'objet.", u"Renommer l'objet", select.nom_corrige)
-                test = True
-                while test:
-                    test = dlg.ShowModal()
-                    if test == wx.ID_OK:
-                        try:    # on renomme, et on met l'affichage de la légende en mode "Nom"
-                            self.executer(u"%s.renommer(%s, legende = %s)" %(select.nom, repr(dlg.GetValue()), NOM))
-                            break
-                        except:
-                            print_error()
-
-                    if test == wx.ID_CANCEL:
-                        break
-                dlg.Destroy()
-            menu.Bind(wx.EVT_MENU, renommer, id = ids[n + 2])
-
-            msg = u"Éditer le texte" if isinstance(self.select, Texte_generique) else u"Texte associé"
-            menu.addAction(ids[n + 3], msg)
-            def etiquette(event, select = self.select):
-                old_style = select.style().copy()
-                old_label = select.style(u"label")
-                if old_label is None:   # le style label n'existe pas pour l'objet
-                    return
-                #dlg = wx.TextEntryDialog(self, "Note: le code LATEX doit etre entre $$. Ex: $\\alpha$", "Changer l'etiquette de l'objet", old_label, style = wx.TE_MULTILINE )
-                #dlg.FitInside()
-                dlg = wx.Dialog(self, -1, u"Changer la légende de l'objet (texte quelconque)")
-                sizer = QVBoxLayout()
-                sizer.addWidget(QLabel(dlg, -1, u"Note: le code LATEX doit etre entre $$. Ex: $\\alpha$"), 0, wx.ALIGN_LEFT|wx.ALL, 5)
-                dlg.text = wx.TextCtrl(dlg, -1, old_label, size=wx.Size(300,50), style = wx.TE_MULTILINE)
-                sizer.addWidget(dlg.text, 0, wx.ALIGN_LEFT|wx.ALL, 5)
-                dlg.cb = QCheckBox(dlg, -1, u"Interpréter la formule")
-                dlg.cb.SetValue(select.style(u"legende") == FORMULE)
-                sizer.addWidget(dlg.cb, 0, wx.ALIGN_LEFT|wx.ALL, 5)
-                line = wx.StaticLine(dlg, -1, size=(20,-1), style=wx.LI_HORIZONTAL)
-                sizer.addWidget(line, 0, wx.GROW|wx.ALIGN_CENTER_VERTICAL|wx.RIGHT|wx.TOP, 5)
-                box = QHBoxLayout()
-                btn = QPushButton(dlg, wx.ID_OK)
-                #btn.SetDefault()
-                box.Add(btn, 0, wx.ALIGN_LEFT|wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5)
-                btn = QPushButton(dlg, wx.ID_CANCEL, u" Annuler ")
-                box.Add(btn, 0, wx.ALIGN_RIGHT|wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5)
-                sizer.addWidget(box, 0, wx.ALIGN_RIGHT|wx.ALL, 5)
-                dlg.setLayout(sizer)
-                sizer.Fit(dlg)
-                dlg.CenterOnScreen()
-                test = True
-                while test:
-                    test = dlg.ShowModal()
-                    if test == wx.ID_OK:
-                        try:
-                            self.executer(u"%s.label(%s, %s)" %(select.nom, repr(dlg.text.GetValue()), dlg.cb.GetValue()))
-                            break
-                        except:
-                            select.style(**old_style)
-                            #~ print "Ancien style", old_style
-                            print_error()
-                    if test == wx.ID_CANCEL:
-                        #select.label(old_label)
-                        #~ select.style(**old_style)
-                        break
-                dlg.Destroy()
-            menu.Bind(wx.EVT_MENU, etiquette, id = ids[n + 3])
-
-            if self.select.label():
-                chaine = u"Masquer"
-            else:
-                chaine = u"Afficher"
-            menu.addAction(ids[n + 4], chaine + u" nom/texte")
-            def masquer_nom(event, select = self.select):
-                if self.select.label():
-                    mode = RIEN
-                else:
-                    if self.select.style(u"label"):
-                        mode = TEXTE
-                    else:
-                        mode = NOM
-                self.executer(u"%s.style(legende = %s)" %(select.nom, mode))
-            menu.Bind(wx.EVT_MENU, masquer_nom, id = ids[n + 4])
-
-            menu.addSeparator()
-
-            menu.addAction(ids[n + 5], u"Redéfinir")
-            def redefinir(event, select = self.select):
-                nom = select.nom
-                dlg = wx.TextEntryDialog(self, u"Exemple: transformez une droite en segment.", u"Redéfinir l'objet", select._definition())
-                test = True
-                while test:
-                    test = dlg.ShowModal()
-                    if test == wx.ID_OK:
-                        try:    # on redéfinit l'objet
-                            self.executer(u"%s.redefinir(%s)" %(nom, repr(dlg.GetValue())))
-                            break
-                        except:
-                            print_error()
-
-                    if test == wx.ID_CANCEL:
-                        break
-                dlg.Destroy()
-            menu.Bind(wx.EVT_MENU, redefinir, id = ids[n + 5])
-
-            menu.addSeparator()
-
-            if isinstance(self.select, Point_generique):
-                ids_relier = [wx.NewId(), wx.NewId(), wx.NewId()]
-                relier = QMenu()
-                relier.Append(ids_relier[0], u"aux axes")
-                relier.Append(ids_relier[1], u"à l'axe des abscisses")
-                relier.Append(ids_relier[2], u"à l'axe des ordonnées")
-
-
-                def relier0(event, self = self, select = self.select):
-                    self.executer(u"%s.relier_axes()" %select.nom)
-                relier.Bind(wx.EVT_MENU, relier0, id = ids_relier[0])
-
-                def relier1(event, self = self, select = self.select):
-                    self.executer(u"%s.relier_axe_x()" %select.nom)
-                relier.Bind(wx.EVT_MENU, relier1, id = ids_relier[1])
-
-                def relier2(event, self = self, select = self.select):
-                    self.executer(u"%s.relier_axe_y()" %select.nom)
-                relier.Bind(wx.EVT_MENU, relier2, id = ids_relier[2])
-
-                menu.AppendMenu(wx.NewId(), u"Relier le point", relier)
-
-
-                menu.addSeparator()
-
-            menu.addAction(ids[n + 6], u"Propriétés")
-            def proprietes(event, select = self.select):
-                win = Proprietes(self, [select])
-                win.show()
-            menu.Bind(wx.EVT_MENU, proprietes, id = ids[n + 6])
-
-            self.PopupMenu(menu)
-            menu.Destroy()
-            if self.select is not None:
-                self.select = None
-                self.selection_en_gras()
-            self.SetCursor(wx.StockCursor(wx.CURSOR_DEFAULT))
-        elif not self.fixe:
-            self.debut_shift = self.pix2coo(*event.GetPositionTuple())
-            self.SetCursor(wx.StockCursor(wx.CURSOR_SIZING))
-            if not self.HasCapture():
-                self.CaptureMouse()
-
-
-
-
-    def OnRightUp(self, event):
-        if self.HasCapture():
-            self.ReleaseMouse()
+    def right_up(self, event):
+        ##if self.HasCapture():
+            ##self.ReleaseMouse()
 
         if self.fixe: return
 
-        self.SetCursor(wx.StockCursor(wx.CURSOR_DEFAULT))
+        self.setCursor(Qt.ArrowCursor)
 
         if self.debut_shift:
             self.debut_shift= None
@@ -856,41 +706,43 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
             self.editeur.close()
 
 
-    def OnChar(self, event):
+    def keyPressEvent(self, event):
         if self.redetecter:
             self.detecter()
 
-        key = event.GetKeyCode()
+        key = event.key()
+        txt = event.text()
+        modifiers = event.modifiers()
+        accept = True
         debug(u"key: ", key)
-        if key == wx.WXK_DELETE and self.select:
-            if event.ShiftDown():
+        if key == Qt.Key_Delete and self.select:
+            if shift:
                 self.executer(u"%s.cacher()" %self.select.nom)
             else:
                 self.executer(u"%s.supprimer()" %self.select.nom)
-        if (key == wx.WXK_RETURN or key == wx.WXK_NUMPAD_ENTER) and self.editeur.objet is not self.select:
-            self.editer(event.ShiftDown())
-        elif self.editeur:
-            self.editeur.key(key)
+        elif key in (Qt.Key_Return, Qt.Key_Enter) and self.editeur.objet is not self.select:
+            self.editer(shift_down(event))
+        elif self.editeur and not self.editeur.key(key, txt, modifiers):
+            accept = False
 
-        if key == wx.WXK_ESCAPE and self.interaction:
+        if key == Qt.Key_Escape and self.interaction:
             print "ESCAPE !"
-            self.interaction(special = "ESC")
+            self.interaction(special="ESC")
+            accept = True
 
-        if key < 256:debug(unichr(key))
-        event.Skip()
+        if not accept:
+            FigureCanvasQTAgg.keyPressEvent(self, event)
 
 
-
-    def OnPaint(self, event):
+    def paintEvent(self, event):
         self.graph.restaurer_dessin()
-        if param.plateforme == "Windows":
-            event.Skip()
+        FigureCanvasQTAgg.paintEvent(self, event)
 
-
-    def OnSize(self, event):
+    def resizeEvent(self, event):
         self.feuille_actuelle._rafraichir_figures()
         self.rafraichir_affichage(rafraichir_axes = True)
-        event.Skip()
+        FigureCanvasQTAgg.resizeEvent(self, event)
 
-    def OnLeave(self, event):
+    def leaveEvent(self, event):
         self.execute_on_idle(self.feuille_actuelle.objets_en_gras)
+        FigureCanvasQTAgg.leaveEvent(self, event)
