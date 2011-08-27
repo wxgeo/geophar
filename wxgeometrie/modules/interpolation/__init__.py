@@ -37,7 +37,8 @@ import re as re
 
 from ...GUI import MenuBar, Panel_API_graphique
 from ...geolib import Courbe, Fonction
-from . import suites
+from .onglets_internes import OngletsInterpolation
+#from . import suites
 
 
 class TraceurMenuBar(MenuBar):
@@ -60,59 +61,56 @@ class Traceur(Panel_API_graphique):
 
         self.couleurs = u"bgrmkcy"
 
-        self.nombre_courbes = self._param_.nombre_courbes
+        #initialisation des listes de points de passage et condition de derive.
+        #elles seront ensuite injectees dans la classe interpol
+        self.conditions = {'xl': [], 'yl': [], 'derivl': []}
+#        self.nombre_courbes = self._param_.nombre_courbes
         self.boites = []
         self.equations = []
         self.intervalles = []
 
-        self.entrees = wx.BoxSizer(wx.VERTICAL)
-        self.entrees.Add(wx.StaticText(self, -1, u" Equations :"), 0, wx.ALL,5)
+#        self.entrees = wx.BoxSizer(wx.VERTICAL)
+#        self.entrees.Add(wx.StaticText(self, -1, u" Equations :"), 0, wx.ALL,5)
 
-        ligne = wx.BoxSizer(wx.HORIZONTAL)
-        ligne.Add(wx.StaticText(self, -1, "Liste des valeurs en x"), 0, wx.ALIGN_CENTRE|wx.ALL,5)
-        ligne.Add(wx.StaticText(self, -1, "Liste des valeurs en y"), 0, wx.ALIGN_CENTRE|wx.ALL,5)
-        self.entrees.Add(ligne, 0, wx.ALL, 5)
-        ligne.Add(wx.StaticText(self, -1, "Liste des nombres dérivés"), 0, wx.ALIGN_CENTRE|wx.ALL,5)
-        self.entrees.Add(ligne, 0, wx.ALL, 5)
-        ligne.Add(self.equations[i], 0, wx.ALIGN_CENTRE|wx.ALL,5)
-#         for i in range(self.nombre_courbes):
-#                 ligne = wx.BoxSizer(wx.HORIZONTAL)
-# 
-#                 self.boites.append(wx.CheckBox(self, label='f%s:'%(i+1)))
-#                 self.boites[-1].SetValue(True) # Par defaut, les cases sont cochees.
-#                 self.boites[i].Bind(wx.EVT_CHECKBOX, self.synchronise_et_affiche)
-#                 # Bug de WxGtk: on ne peut pas attacher simultanément une fonction
-#                 # aux évènements EVT_CHECKBOX et EVT_ENTER_WINDOW
-#                 #self.boites[i].Bind(wx.EVT_ENTER_WINDOW, partial(self.MouseOver, i=i))
-#                 self.boites[i].Bind(wx.EVT_LEAVE_WINDOW, self.MouseOver)
-#                 ligne.Add(self.boites[i], 0, wx.ALIGN_CENTRE|wx.ALL,5)
-# 
-#                 ligne.Add(wx.StaticText(self, -1, "Y ="), 0, wx.ALIGN_CENTRE|wx.ALL,5)
-#                 self.equations.append(wx.TextCtrl(self, size=(120, -1), style=wx.TE_PROCESS_ENTER))
-#                 self.equations[i].Bind(wx.EVT_CHAR, partial(self.EvtChar, i=i))
-#                 self.equations[i].Bind(wx.EVT_ENTER_WINDOW, partial(self.MouseOver, i=i))
-#                 self.equations[i].Bind(wx.EVT_LEAVE_WINDOW, self.MouseOver)
-#                 ligne.Add(self.equations[i], 0, wx.ALIGN_CENTRE|wx.ALL,5)
-# 
-#                 ligne.Add(wx.StaticText(self, -1, "sur"), 0, wx.ALIGN_CENTRE|wx.ALL,5)
-#                 self.intervalles.append(wx.TextCtrl(self, size = (100, -1), style = wx.TE_PROCESS_ENTER))
-#                 self.intervalles[i].Bind(wx.EVT_CHAR, partial(self.EvtChar, i=i))
-#                 self.intervalles[i].Bind(wx.EVT_ENTER_WINDOW, partial(self.MouseOver, i=i))
-#                 self.intervalles[i].Bind(wx.EVT_LEAVE_WINDOW, self.MouseOver)
-#                 ligne.Add(self.intervalles[i], 0, wx.ALIGN_CENTRE|wx.ALL,5)
-# 
-                self.entrees.Add(ligne, 0, wx.ALL, 5)
+#        ligne = wx.BoxSizer(wx.HORIZONTAL)
+#        ligne.Add(wx.StaticText(self, -1, u"Liste des valeurs en x"), 0, wx.ALIGN_CENTRE|wx.ALL,5)
+#        ligne.Add(wx.StaticText(self, -1, u"Liste des valeurs en y"), 0, wx.ALIGN_CENTRE|wx.ALL,5)
+#        ligne.Add(wx.StaticText(self, -1, u"Liste des nombres dérivés"), 0, wx.ALIGN_CENTRE|wx.ALL,5)
+#        self.entrees.Add(ligne, 0, wx.ALL, 5)
+
+        self.onglets_bas = OngletsInterpolation(self)
 
         self.sizer = wx.BoxSizer(wx.HORIZONTAL)
         self.sizer.Add(self.canvas, 1, wx.LEFT | wx.TOP | wx.GROW, 0)
-        self.sizer.Add(self.entrees, 0, wx.ALL|wx.GROW, 5)
+#         self.sizer.Add(self.entrees, 0, wx.ALL|wx.GROW, 5)
+        self.sizer.Add(self.onglets_bas, 0)
+
         self.finaliser(contenu = self.sizer)
         self._changement_feuille()
 
-
     def activer(self):
         # Actions à effectuer lorsque l'onglet devient actif
-        self.equations[0].SetFocus()
+        try:
+            for v in self.conditions.keys():
+                self.conditions[v] = []
+#            self.legende_x = self.onglets_bas.legende.x.GetValue()
+#            self.legende_y = self.onglets_bas.legende.y.GetValue()
+#            self.legende_a = self.onglets_bas.legende.a.GetValue()
+#            self.gradu_x = self.onglets_bas.graduation.x.GetValue()
+#            self.gradu_y = self.onglets_bas.graduation.y.GetValue()
+#            self.gradu_a = self.onglets_bas.graduation.a.GetValue()
+#            self.origine_x = self.onglets_bas.graduation.origine_x.GetValue()
+#            self.origine_y = self.onglets_bas.graduation.origine_y.GetValue()
+#
+#
+#            # test choix quantiles
+#            self.choix_quantiles["mediane"][0] = self.onglets_bas.autresq.mediane.GetValue()
+#            self.choix_quantiles["quartiles"][0] = self.onglets_bas.autresq.quartiles.GetValue()
+#            self.choix_quantiles["deciles"][0] = self.onglets_bas.autresq.deciles.GetValue()
+
+        except:
+            self.canvas.message(u"Impossible de construire le graphique.")
+            print_error()
 
     def _changement_feuille(self):
         u"""Après tout changement de feuille."""
@@ -126,6 +124,7 @@ class Traceur(Panel_API_graphique):
 
         Lors de l'ouverture d'un fichier, ou d'un changement de feuille,
         ou lorsqu'une commande est exécutée dans la feuille."""
+#        for v in self.conditions.keys():                   
         print "Synchronisation des champs..."
         for i in xrange(self.nombre_courbes):
             nom_courbe = 'Cf' + str(i + 1)
@@ -225,9 +224,9 @@ class Traceur(Panel_API_graphique):
         #table.SetDimensions(-1, -1, -1, 300)
 
 
-    def suite(self, event = None):
-        suite = suites.CreerSuite(self)
-        suite.Show(True)
+#     def suite(self, event = None):
+#         suite = suites.CreerSuite(self)
+#         suite.Show(True)
 
 
 # fonctions d'interpolation avec contrôle de la dérivée
