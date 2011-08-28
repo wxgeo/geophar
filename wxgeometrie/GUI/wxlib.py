@@ -70,13 +70,19 @@ class MyMiniFrame(QDialog):
         self.setModal(False)
         self.setWindowTitle(titre)
 
+def png_pth(nom):
+    u"""Adresse complète de l'image `nom`.png du repertoire 'images/'.
+
+    Le nom doit être indiqué sans l'extension '.png'."""
+    return os.path.normpath(os.path.join(uu(param.EMPLACEMENT), 'images', nom + ".png"))
+
 
 def png(nom):
     u"""Charge l'image <nom>.png depuis le repertoire 'images/'.
 
     L'image doit être au format png, et son nom doit indiqué sans l'extension '.png'."""
     pixmap = QPixmap()
-    pixmap.load(os.path.normpath(os.path.join(uu(param.EMPLACEMENT), 'images', nom + ".png")), 'PNG')
+    pixmap.load(png_pth(nom), 'PNG')
     return pixmap
 
 

@@ -29,7 +29,7 @@ from PyQt4.QtGui import (QWidget, QToolButton, QInputDialog, QLineEdit, QHBoxLay
                          QIcon, QMenu, QShortcut)
 from PyQt4.QtCore import Qt
 
-##from .wxlib import png
+from .wxlib import png, png_pth
 from ..pylib import is_in, path2
 from ..geolib.routines import distance
 from ..geolib.textes import Texte_generique
@@ -80,7 +80,7 @@ class MultiButton(QToolButton):
 
     def update_menu(self):
         if self.menu is None:
-            self.setPopupMode(QToolButton.MenuButtonPopup)
+            #self.setPopupMode(QToolButton.MenuButtonPopup)
             self.menu = menu = QMenu(self)
             self.setMenu(menu)
         else:
@@ -92,11 +92,13 @@ class MultiButton(QToolButton):
             else:
                 titre, image, aide, action = entree
                 action = menu.addAction(self.img2icon(image), titre)
+                action.setIconVisibleInMenu(True)
                 action.triggered.connect(partial(self.select, i=i))
 
     @staticmethod
     def img2icon(image):
-        return QIcon(path2('images/%s.png' % image))
+        ##print png_pth(image)
+        return QIcon(png(image))
 
     @property
     def selected(self):
@@ -126,11 +128,12 @@ class MultiButton(QToolButton):
     def update_display(self):
         u"""Change l'icône du bouton, selon la fonction sélectionnée, et le fait
             que le bouton soit activé ou non."""
-        image = self.liste[self.index][2]
+        image = self.liste[self.index][1]
         if self.selected:
             image += '_'
-        self.setIcon(self.img2icon(image))
-        # setIcon ?
+        pix = png(image)
+        self.setIcon(QIcon(pix))
+        self.setIconSize(pix.size())
 
     def left_click(self):
         self.select(True)
