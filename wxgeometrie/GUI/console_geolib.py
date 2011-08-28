@@ -22,7 +22,7 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-from PyQt4.QtGui import QWidget
+from PyQt4.QtGui import QWidget, QVBoxLayout, QLabel
 
 from .app import white_palette
 from .ligne_commande import LigneCommande
@@ -37,7 +37,7 @@ class ConsoleGeolib(QWidget):
         vsizer = QVBoxLayout()
         txt = u"<i>Tapez une commande ci-dessus, puis appuyez sur </i>[<i>Entrée</i>]<i>.</i>"
         self.resultats = QLabel(txt)
-        self.resultats.setMinimumSize(500)
+        self.resultats.setMinimumWidth(500)
         self.ligne_commande = LigneCommande(self, longueur=500, action=self.action)
         vsizer.addWidget(self.ligne_commande)
         vsizer.addWidget(self.resultats)

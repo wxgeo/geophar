@@ -233,7 +233,7 @@ class FenetrePrincipale(QMainWindow):
                     print_error()
                     QMessageBox.warning(self, u"Erreur lors de la fermeture du programme", traceback.format_exc())
                 except UnicodeError:
-                    MessageBox.warning(self, u"Erreur lors de la fermeture du programme", "Impossible d'afficher l'erreur.")
+                    QMessageBox.warning(self, u"Erreur lors de la fermeture du programme", "Impossible d'afficher l'erreur.")
         sys.stdout = sys.__stdout__
         sys.stderr = sys.__stderr__
         if hasattr(self, "fenetre_sortie"):

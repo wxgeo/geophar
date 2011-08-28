@@ -24,7 +24,7 @@ from __future__ import with_statement
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os, time, thread
-from PyQt4.QtGui import QWidget
+from PyQt4.QtGui import QWidget, QVBoxLayout
 
 from .barre_outils import BarreOutils
 from .menu import RSSMenu

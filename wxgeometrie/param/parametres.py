@@ -67,7 +67,14 @@ dependances = {'PyQt4': 'python-qt4', 'matplotlib': 'python-matplotlib', 'numpy'
 latex = False
 latex_unicode = True # (sera éventuellement désactivé ultérieurement, après l'import de wx)
 
-moteur_de_rendu = 'WXAgg' # ou 'Wx' pour supprimer l'anti-crénêlage
+moteur_de_rendu = 'QTAgg' # ou 'QT' pour supprimer l'anti-crénêlage
+
+# Permet de tester les styles sous d'autres plateformes.
+# Styles possibles: 'Windows', 'Motif', 'CDE', 'Plastique', 'GTK+',
+# 'Cleanlooks', 'WindowsXP', 'WindowsVista' et 'Macintosh'.
+# NB: Les 3 derniers styles ne sont possible que sur leur plateforme d'origine.
+style_Qt = None
+
 
 
 # jeu de caractère à utiliser
@@ -174,11 +181,6 @@ afficher_boutons = True  # Possibilité de ne pas afficher les boutons, pour obli
 
 zoom_texte = 1
 zoom_ligne = 1
-
-#bouger_curseur = None
-
-#if bouger_curseur is None:
-#    bouger_curseur = (platform.system() in ('Windows', 'Linux'))
 
 #constantes
 RIEN = 0

@@ -43,7 +43,7 @@ class FenetreOptions(QDialog):
         main_sizer = QVBoxLayout()
         main_sizer.addWidget(self.onglets)
         self.setLayout(main_sizer)
-        dimensions_onglets = []
+        ##dimensions_onglets = []
         self.widgets = {}
         for theme in options:
             panel = QWidget(self.onglets)
@@ -145,7 +145,7 @@ class FenetreOptions(QDialog):
         elif isinstance(type_, tuple):
             return widget.value()
         elif isinstance(type_, list):
-            return widget.currentIndex()
+            return widget.currentText()
         else:
             print type_
             raise NotImplementedError

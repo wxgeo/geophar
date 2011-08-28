@@ -26,6 +26,8 @@ from PyQt4.QtGui import QApplication, QPalette, QColor, QPixmap, QSplashScreen, 
 from PyQt4.QtCore import QLocale, QTranslator, QLibraryInfo, Qt
 
 from ..pylib import path2
+from .. import param
+
 
 class App(QApplication):
     def __init__(self, args=[], **kw):
@@ -35,6 +37,8 @@ class App(QApplication):
         translator.load("qt_" + locale,
                       QLibraryInfo.location(QLibraryInfo.TranslationsPath))
         self.installTranslator(translator)
+        if param.style_Qt:
+            self.setStyle(param.style_Qt)
 
     def boucle(self):
         self.exec_()

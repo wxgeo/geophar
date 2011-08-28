@@ -31,7 +31,7 @@ from webbrowser import open_new_tab
 #from PyQt4.QtCore import QSize, Qt
 
 
-from PyQt4.QtGui import QTabWidget, QToolButton, QIcon
+from PyQt4.QtGui import QTabWidget, QToolButton, QIcon, QMessageBox
 from PyQt4.QtCore import Qt
 import matplotlib.backend_bases as backend_bases
 
@@ -67,16 +67,16 @@ class Onglets(QTabWidget):
 #        palette.setColor(QPalette.WindowText, white)
 #        self.setPalette(palette)
 
-#        ###############################
-#        # Creation de fonctions associees aux entrees du menu "Creer"
-#        self.creer = {}
-#        DG = dialogues_geometrie.__dict__
-#        dialogues = [(nom[8:], DG[nom]) for nom in DG.keys() if nom.startswith("Dialogue")]
-#        for dialogue in dialogues:
-#            def f(event = None, self = self, dialogue = dialogue[1]):
-#                self.creer_objet(dialogue)
-#            self.creer[dialogue[0]] = f
-#        ###############################
+        ###############################
+        # Creation de fonctions associees aux entrees du menu "Creer"
+        self.creer = {}
+        DG = dialogues_geometrie.__dict__
+        dialogues = [(nom[8:], DG[nom]) for nom in DG.keys() if nom.startswith("Dialogue")]
+        for dialogue in dialogues:
+            def f(event = None, self = self, dialogue = dialogue[1]):
+                self.creer_objet(dialogue)
+            self.creer[dialogue[0]] = f
+        ###############################
 
         #TODO: Ajouter un bouton "New Tab"
         newTabButton = QToolButton(self)

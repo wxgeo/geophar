@@ -56,6 +56,7 @@ class MultiButton(QToolButton):
         self.setAutoRaise(True)
 
         self.parent = parent
+        self.selectionnable = selectionnable
 
         # Raccourci clavier pour sélectionner le bouton:
         self.raccourci = raccourci
@@ -65,7 +66,6 @@ class MultiButton(QToolButton):
             sh.setAutoRepeat(not self.selectionnable)
             sh.activated.connect(self.left_click)
 
-        self.selectionnable = selectionnable
         # Liste des différentes fonctionnalités possibles:
         self.liste = list(fonctionnalites)
         # Menu à afficher pour changer de fonctionnalité:
@@ -114,7 +114,8 @@ class MultiButton(QToolButton):
             if selected:
                 previous = self.parent._selected_button
                 self.parent._selected_button = self
-                previous.update_display()
+                if previous is not None:
+                    previous.update_display()
             elif self.selected:
                 # NB: ne pas déselectionner un autre bouton.
                 self.parent._selected_button = None

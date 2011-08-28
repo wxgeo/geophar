@@ -411,6 +411,21 @@ Attributs spéciaux:
         else:
             return [obj for obj in self.values() if isinstance(obj, Objet) and obj.style("visible")]
 
+    def supprimer(self, *objets):
+        u"""Supprime plusieurs objets dans le bon ordre.
+
+        Supprime successivement plusieurs objets après les avoir classé
+        hiérarchiquement. Cela évite d'avoir des erreurs avec certains
+        objets déjà supprimés avec les précédents du fait des dépendances.
+
+        Par exemple, `del feuille.objets.A, feuille.objets.B` renvoie une
+        erreur si l'objet `B` dépend de l'objet `A`, car l'objet `B`
+        n'existe déjà plus au moment où on cherche à le supprimer.
+
+        Nota: La suppression d'un objet qui n'est pas sur la feuille
+        provoque bien toujours une erreur, par contre."""
+        for obj in sorted(objets, key=attrgetter("_hierarchie"), reverse=True):
+            obj.supprimer()
 
     @property
     def noms(self):
@@ -1043,7 +1058,9 @@ class Feuille(object):
         return liste
 
     def nettoyer(self):
-        u"Supprime les objets cachés inutiles."
+        u"""Supprime les objets cachés inutiles.
+
+        Un objet caché est inutile si aucun objet visible ne dépend de lui."""
         objets = sorted((obj for obj in self.liste_objets(True) if not obj.style('visible')),
                             key = attrgetter("_hierarchie"), reverse = True)
         for obj in objets:

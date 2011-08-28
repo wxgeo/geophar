@@ -23,8 +23,8 @@ from __future__ import with_statement
 
 import os, math
 
-from PyQt4.QtCore import Qt, QThread
-from PyQt4.QtGui import QCursor, QDialog, QPixmap
+from PyQt4.QtCore import Qt, QThread, QEvent
+from PyQt4.QtGui import QCursor, QDialog, QPixmap, QCursor
 
 from .. import param
 from ..pylib import uu
@@ -121,3 +121,16 @@ def ctrl_down(event):
 
 def meta_down(event):
     return event.modifiers() & Qt.MetaModifier
+
+def left_down(event):
+    return event.buttons() & Qt.LeftButton
+
+def right_down(event):
+    return event.buttons() & Qt.RightButton
+
+def lieu(event_or_widget):
+    if isinstance(event_or_widget, QEvent):
+        p = event_or_widget.pos()
+    else:
+        p = event_or_widget.mapFromGlobal(QCursor.pos())
+    return p.x(), p.y()
