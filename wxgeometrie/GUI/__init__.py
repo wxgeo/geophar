@@ -23,16 +23,16 @@ import traceback
 
 from .. import param
 
-if not param.py2exe:
-    import wxversion
-    try:
-        if wxversion.checkInstalled(param.version_wxpython):
-            wxversion.select(param.version_wxpython) # version a utiliser de preference
-        else:  # ou bien la version n'est pas trouvee, ou bien on est dans py2exe
-            print u"Attention : impossible de charger la version %s de WxPython." %param.version_wxpython
-    except Exception:
-        if param.debug:
-            print traceback.format_exc()
+import sip
+# PyQt new API (PyQt 4.6+)
+sip.setapi('QDate', 2)
+sip.setapi('QDateTime', 2)
+sip.setapi('QString', 2)
+sip.setapi('QTextStream', 2)
+sip.setapi('QTime', 2)
+sip.setapi('QUrl', 2)
+sip.setapi('QVariant', 2)
+
 
 try:
     import matplotlib

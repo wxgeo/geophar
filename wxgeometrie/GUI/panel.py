@@ -65,9 +65,9 @@ class Panel_simple(QWidget):
         # ._derniere_signature : sert pour les logs (en cas de zoom de souris essentiellement).
         # (cf. geolib/feuille.py pour plus de détails.)
         self._derniere_signature = None
-        if menu:
-            # Création de la barre de menus associée au panel
-            self.menu = self.module._menu_(self)
+        ##if menu:
+            ### Création de la barre de menus associée au panel
+            ##self.menu = self.module._menu_(self)
 
     def message(self, texte = ''):
         self.parent.parent.message(texte)
@@ -210,7 +210,7 @@ class Panel_API_graphique(Panel_simple):
         # La construction du menu nécessite que self.canvas et self.log
         # soient définis, ainsi que self.doc_ouverts.
         self.doc_ouverts = RSSMenu(u"Documents ouverts", [], self.charger_feuille, u"Documents ouverts.")
-        self.menu = self.module._menu_(self)
+        ##self.menu = self.module._menu_(self)
 
         self.barre_outils = BarreOutils(self)
         self.console_geolib = ConsoleGeolib(self)

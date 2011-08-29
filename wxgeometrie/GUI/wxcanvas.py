@@ -184,7 +184,7 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
 
         timer = QTimer(self)
         timer.timeout.connect(self._actualiser_si_necessaire)
-        timer.start(150)
+        timer.start(100)
 
         self.setFocusPolicy(Qt.StrongFocus)
         self.setMouseTracking(True)

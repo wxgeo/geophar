@@ -38,38 +38,37 @@ class DialogueAnimation(QDialog):
         self.setWindowTitle(u"Créer une animation")
         self.parent = parent
         self.feuille_actuelle = self.parent.onglet_actuel.feuille_actuelle
-        p = self.panel = QWidget(self)
 
         self.sizer = sizer = QVBoxLayout()
 
         terme = QHBoxLayout()
         terme.addWidget(QLabel(u"Variable :"))
         self.var = var = QLineEdit()
-        var.setMinimumWidth(100)
+        var.setMinimumWidth(50)
         var.setContextMenuPolicy(Qt.CustomContextMenu)
         var.customContextMenuRequested.connect(self.propositions)
         terme.addWidget(var)
         sizer.addLayout(terme)
 
-        line = QFrame(self)
-        line.setFrameStyle(QFrame.HLine)
-        sizer.addWidget(line)
+        ##line = QFrame(self)
+        ##line.setFrameStyle(QFrame.HLine)
+        ##sizer.addWidget(line)
 
         terme = QHBoxLayout()
         terme.addWidget(QLabel(u"Début :"))
         self.deb = QLineEdit()
         self.deb.setText("0")
-        self.deb.setMinimumWidth(50)
+        self.deb.setMinimumWidth(25)
         terme.addWidget(self.deb)
         terme.addWidget(QLabel(u"Fin :"))
         self.fin = QLineEdit()
         self.fin.setText("1")
-        self.fin.setMinimumWidth(50)
+        self.fin.setMinimumWidth(25)
         terme.addWidget(self.fin)
         terme.addWidget(QLabel(u"Pas :"))
         self.pas = QLineEdit()
         self.pas.setText("0.05")
-        self.pas.setMinimumWidth(50)
+        self.pas.setMinimumWidth(25)
         terme.addWidget(self.pas)
         sizer.addLayout(terme)
 
@@ -77,22 +76,23 @@ class DialogueAnimation(QDialog):
         terme.addWidget(QLabel(u"Période (s) :"))
         self.periode = QLineEdit()
         self.periode.setText("0.1")
-        self.periode.setMinimumWidth(100)
+        self.periode.setMinimumWidth(50)
         terme.addWidget(self.periode)
         sizer.addLayout(terme)
 
-        line = QFrame(self)
-        line.setFrameStyle(QFrame.HLine)
-        sizer.addWidget(line)
+        ##line = QFrame(self)
+        ##line.setFrameStyle(QFrame.HLine)
+        ##sizer.addWidget(line)
 
         boutons = QHBoxLayout()
         self.btn_lancer = QPushButton(u"Animer", clicked=self.Animer)
         boutons.addWidget(self.btn_lancer)
+        boutons.addStretch(1)
         fermer = QPushButton(u"Fermer", clicked=self.close)
         boutons.addWidget(fermer)
         sizer.addLayout(boutons)
 
-        p.setLayout(sizer)
+        self.setLayout(sizer)
 
         self.en_cours = False
 

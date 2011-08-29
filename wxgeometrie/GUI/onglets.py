@@ -31,7 +31,7 @@ from webbrowser import open_new_tab
 #from PyQt4.QtCore import QSize, Qt
 
 
-from PyQt4.QtGui import QTabWidget, QToolButton, QIcon, QMessageBox
+from PyQt4.QtGui import QTabWidget, QToolButton, QIcon, QMessageBox, QFileDialog, QDialog
 from PyQt4.QtCore import Qt
 import matplotlib.backend_bases as backend_bases
 
@@ -48,6 +48,7 @@ from .wxlib import png
 from . import dialogues_geometrie
 from ..API.sauvegarde import FichierGEO, ouvrir_fichierGEO
 from .. import param, modules, geolib
+from ..param import NOMPROG
 from ..pylib import print_error, debug, path2
 from ..param.options import options as param_options
 
@@ -106,7 +107,7 @@ class Onglets(QTabWidget):
             self._liste[0].activer()
 
 
-    def OnOptionsModified(self, evt = None):
+    def OnOptionsModified(self):
         self.actualiser_liste_onglets()
         for parametre in ('decimales', 'unite_angle', 'tolerance'):
             geolib.contexte[parametre] = getattr(param,  parametre)
@@ -158,9 +159,9 @@ class Onglets(QTabWidget):
 
 
     def actualise_onglet(self, onglet):
-        self.parent.setMenuBar(onglet.menu) # change le menu de la fenetre
+        self.parent.setMenuBar(onglet.module._menu_(onglet)) # change le menu de la fenetre
         onglet.changer_titre() # change le titre de la fenetre
-        bar = self.parent.menuBar()
+        ##bar = self.parent.menuBar()
 
 #        if param.plateforme == "Windows":
 #            if onglet.canvas is not None:
@@ -227,21 +228,23 @@ class Onglets(QTabWidget):
 #####################################################################
 
 
+    filtres_save = (u"Fichiers " + NOMPROG + u" (*.geo);;"
+                   u"Fichiers " + NOMPROG + u" compressés (*.geoz);;"
+                   u"Tous les fichiers (*.*)")
 
-
-    def NewFile(self, event = None):
+    def NewFile(self):
         self.onglet_actuel.creer_feuille()
 
 
-    def SaveFile(self, event = None):
+    def SaveFile(self):
         actuelle = self.onglet_actuel.feuille_actuelle # feuille de travail courante
         if actuelle and actuelle.sauvegarde["nom"]:
             self.onglet_actuel.sauvegarder()
         else:
-            self.SaveFileAs(event)
+            self.SaveFileAs()
 
 
-    def SaveFileAs(self, event = None):
+    def SaveFileAs(self):
         actuelle = self.onglet_actuel.feuille_actuelle # feuille de travail courante
         if actuelle and actuelle.sauvegarde["nom"]:
             fichier = actuelle.sauvegarde["nom"] # le nom par defaut est le nom précédent
@@ -252,65 +255,46 @@ class Onglets(QTabWidget):
                 dir = param.repertoire
             else:
                 dir = param.rep_save
-        if param.compresser_geo:
-            wildcard = u"Fichiers WxGéométrie compressés(*.geoz)|*.geoz|Fichiers WxGéométrie (*.geo)|*.geo|Tous les fichiers (*.*)|*.*"
-        else:
-            wildcard = u"Fichiers WxGéométrie (*.geo)|*.geo|Fichiers WxGéométrie compressés(*.geoz)|*.geoz|Tous les fichiers (*.*)|*.*"
-        dlg = wx.FileDialog(
-            self, message = u"Enregistrer sous ...", defaultDir=dir,
-            defaultFile=fichier, wildcard = wildcard, style=wx.SAVE | wx.OVERWRITE_PROMPT | wx.CHANGE_DIR
-            )
-        # dlg.SetFilterIndex(0)   # inutile (par defaut, la valeur est 0).
+        filtre = (u"Fichiers %s compressés (*.geoz)" if param.compresser_geo else u'')
+        path, filtre = QFileDialog.getSaveFileNameAndFilter(self, u"Enregistrer sous ...",
+                                   os.path.join(dir, fichier), self.filtres_save, filtre)
 
-        if dlg.ShowModal() == wx.ID_OK:
-            param.rep_save = os.getcwd()
+        if path:
+            # Sauvegarde le répertoire pour la prochaine fois
+            param.rep_save = os.path.dirname(path)
             if param.rep_open is None:
                 param.rep_open = param.rep_save
             if param.rep_export is None:
                 param.rep_export = param.rep_save
-            os.chdir(param.repertoire)
-            path = dlg.GetPath()
+
             self.onglet_actuel.sauvegarder(path)
 
-        dlg.Destroy()
 
-
-
-    def OpenFile(self, event = None, detecter_module = True):
-        # Attention :
-        # "This dialog is set up to change the current working directory to the path chosen."
-        # on enregistre donc le nouveau getcwd() - "repertoire_ouverture_fichiers = os.getcwd()", pour restaurer ensuite l'ancien
+    def OpenFile(self, detecter_module=True):
         if param.rep_open is None:
             dir = param.repertoire
         else:
             dir = param.rep_open
-        dlg = wx.FileDialog(
-            self, message = u"Choisissez un fichier", defaultDir=dir,
-            defaultFile="", wildcard = u"Fichiers WxGéométrie (*.geo)|*.geo|Fichiers WxGéométrie compressés(*.geoz)|*.geoz|Tous les fichiers (*.*)|*.*", style=wx.OPEN | wx.MULTIPLE | wx.CHANGE_DIR
-            )
-
-        # Show the dialog and retrieve the user response. If it is the OK response,
-        # process the data.
-        if dlg.ShowModal() == wx.ID_OK:
-            param.rep_open = os.getcwd()
+        filtre = (u"Fichiers %s compressés (*.geoz)" if param.compresser_geo else u'')
+        paths, filtre = QFileDialog.getOpenFileNamesAndFilter(self, u"Choisissez un fichier", dir,
+                                             self.filtres_save, filtre)
+        if paths:
+            # Sauvegarde le répertoire pour la prochaine fois
+            param.rep_open = os.path.dirname(paths[0])
             if param.rep_save is None:
                 param.rep_save = param.rep_open
             if param.rep_export is None:
                 param.rep_export = param.rep_open
-            os.chdir(param.repertoire)
-            # This returns a Python list of files that were selected.
-            paths = dlg.GetPaths()
+
             for path in paths:
                 if detecter_module: # on detecte dans quel onglet le fichier doit etre ouvert
                     self.ouvrir(path)
                 else: # on l'ouvre dans l'onglet actuellement ouvert
                     self.onglet_actuel.ouvrir(path) # ouvre tous les fichiers selectionnes
 
-        dlg.Destroy()
 
 
-
-    def OpenFileHere(self, event = None):
+    def OpenFileHere(self):
         u"""Ouvrir le fichier dans le module courant.
 
         Par défaut, sinon, le fichier est ouvert dans le module qui l'a crée."""
@@ -335,7 +319,7 @@ class Onglets(QTabWidget):
             self.parent.message(u"Impossible de déterminer le module adéquat.")
 
 
-    def ExportFile(self, event = None, lieu = None, sauvegarde = False, exporter = True):
+    def ExportFile(self, lieu = None, sauvegarde = False, exporter = True):
         u"""Le paramètre sauvegarde indique qu'il faut faire une sauvegarde simultanée.
         (attention, on ne vérifie pas que le fichier .geo n'existe pas !).
         """
@@ -359,6 +343,11 @@ class Onglets(QTabWidget):
         description_formats = sorted(backend_bases.FigureCanvasBase.filetypes.iteritems())
         formats_supportes = sorted(backend_bases.FigureCanvasBase.filetypes)
 
+
+        def format(typ, description):
+            return typ.upper() + ' - ' + description + ' (.' + typ + ')'
+        filtres = ';;'.join(format(k, v) for k, v in description_formats)
+
         format_par_defaut = ''
         if '.' in fichier:
             format_par_defaut = fichier.split('.', 1)[1]
@@ -366,93 +355,64 @@ class Onglets(QTabWidget):
         if format_par_defaut not in formats_supportes:
             format_par_defaut = 'png'
 
-        def format(typ, description):
-            return typ.upper() + ' - ' + description + ' (.' + typ + ')|*.' + typ
-        filtre = '|'.join(format(k, v) for k, v in description_formats)
+        for filtre in filtres.split(';;'):
+            if filtre.endswith(format_par_defaut + ')'):
+                break
 
-        dlg1 = wx.FileDialog(
-                self,
-                u"Exporter l'image", dir, fichier,
-                filtre,
-                wx.SAVE | wx.OVERWRITE_PROMPT | wx.CHANGE_DIR
-                )
+        filtre = u'PNG - Portable Network Graphics (.png)'
+        path, filtre = QFileDialog.getSaveFileNameAndFilter(self, u"Exporter l'image",
+                                           os.path.join(dir, fichier), filtres,
+                                           filtre)
 
-        dlg1.SetFilterIndex(formats_supportes.index(format_par_defaut))
-        # print formats_supportes.index(format_par_defaut), format_par_defaut, fichier
+        if not path:
+            return # Quitte sans sauvegarder.
 
-        if "." in fichier:
-            ext = fichier.rsplit(".",1)[1]
-            try:
-                dlg1.SetFilterIndex(formats_supportes.index(ext))
-            except ValueError:
-                debug("L'extension n'est pas dans la liste.")
-        try:
-            while 1:
-                if dlg1.ShowModal() == wx.ID_OK:
-                    param.rep_export = os.getcwd()
-                    if param.rep_save is None:
-                        param.rep_save = param.rep_export
-                    if param.rep_open is None:
-                        param.rep_open = param.rep_export
-                    if sauvegarde:
-                        param.rep_save = param.rep_export
-                    os.chdir(param.repertoire)
-                    FileName = dlg1.GetPath()
-                    filename = FileName.lower()
-                    # Check for proper exension
-                    if not any(filename.endswith(extension) for extension in formats_supportes):
-                        FileName += "." + formats_supportes[dlg1.GetFilterIndex()]
-                        filename = FileName.lower()
+        # Sauvegarde le répertoire pour la prochaine fois
+        param.rep_export = os.path.dirname(path)
+        if param.rep_save is None:
+            param.rep_save = param.rep_export
+        if param.rep_open is None:
+            param.rep_open = param.rep_export
+        if sauvegarde:
+            param.rep_save = param.rep_export
 
-                        #~ dlg2 = wx.MessageDialog(self, u"L'extension du fichier\n"
-                        #~ u'doit être\n'
-                        #~ u'png, svg, ps, jpg, bmp, xpm ou eps',
-                          #~ u'Nom de fichier incorrect', wx.OK | wx.ICON_ERROR)
-                        #~ try:
-                            #~ dlg2.ShowModal()
-                        #~ finally:
-                            #~ dlg2.Destroy()
-                    #~ else:
-                        #~ break # now save file
-                    break
-                else: # exit without saving
-                    return False
-        finally:
-            dlg1.Destroy()
+        # Check for proper extension
+        if not any(path.lower().endswith(extension) for extension in formats_supportes):
+            i = filtre.index('(')
+            ext = filtre[i + 1:-1]
+            path += ext
 
         try:
             if sauvegarde:
-                GeoFileName = '.'.join(FileName.split('.')[:-1]) + ('.geoz' if param.compresser_geo else '.geo')
-                self.onglet(lieu).sauvegarder(GeoFileName)
+                geofile_name = path.rsplit('.', 1)[0] + ('.geoz' if param.compresser_geo else '.geo')
+                self.onglet(lieu).sauvegarder(geofile_name)
             # Save Bitmap
             if exporter:
-                self.onglet(lieu).exporter(FileName)
+                self.onglet(lieu).exporter(path)
         except:
             print_error()
             self.parent.message("Erreur lors de l'export.")
-        return FileName
-
-        #return self.onglet(lieu).exporter(FileName)
+        return path
 
 
-    def ExportAndSaveFile(self, event = None, lieu = None):
-        self.ExportFile(event = event, lieu = lieu, sauvegarde = True)
+    def ExportAndSaveFile(self, lieu=None):
+        self.ExportFile(lieu = lieu, sauvegarde = True)
 
 
-    def CloseFile(self, event = None):
+    def CloseFile(self):
         self.onglet_actuel.fermer_feuille()
 
 
-    def PageSetup(self, event = None):
+    def PageSetup(self):
         self.a_venir()
 
-    def Printout(self, event = None):
+    def Printout(self):
         self.a_venir()
 
-    def a_venir(self, event = None):
+    def a_venir(self):
         QMessageBox.information(self, u"A venir !", u"Fonctionnalité non présente pour l'instant !")
 
-    def supprimer(self, event = None):
+    def supprimer(self):
         canvas = self.onglet_actuel.canvas
         dlg = SupprimerObjet(self)
         if (dlg.ShowModal() == wx.ID_OK):
@@ -469,7 +429,7 @@ class Onglets(QTabWidget):
         dlg.Destroy()
 
 
-    def editer(self, event = None):
+    def editer(self):
         feuille = self.onglet_actuel.feuille_actuelle
         if feuille:
             objets = []
@@ -491,30 +451,25 @@ class Onglets(QTabWidget):
 
 
     def creer_objet(self, classe):
+        canvas = self.onglet_actuel.canvas
         dl = classe(self)
-        # this does not return until the dialog is closed.
-        while 1:
-            canvas = self.onglet_actuel.canvas
-            resultat = dl.affiche()
-            if resultat == wx.ID_OK:
-                try:
-                    canvas.executer(dl.commande(), parser = True)
-                    break
-                except NameError:
-                    print_error()
-                    canvas.message(u'Erreur : nom déjà utilisé ou nom réservé.')
-                except:
-                    print_error()
-                    canvas.message(u'Erreur : paramètres incorrects.')
-            else:
+        while dl.affiche() == QDialog.Accepted:
+            try:
+                canvas.executer(dl.commande(), parser = True)
                 break
-        dl.Destroy()
+            except NameError:
+                print_error()
+                canvas.message(u'Erreur : nom déjà utilisé ou nom réservé.')
+            except:
+                print_error()
+                canvas.message(u'Erreur : paramètres incorrects.')
 
-    def Animer(self, event):
+
+    def Animer(self):
         d = DialogueAnimation(self)
         d.show()
 
-    def Histo(self, event):
+    def Histo(self):
         contenu = self.onglet_actuel.feuille_actuelle.sauvegarder()
         h = FenCode(self, u"Contenu interne de la feuille", contenu, self.executer_dans_feuille_courante)
         h.show()
@@ -523,15 +478,15 @@ class Onglets(QTabWidget):
         self.onglet_actuel.creer_feuille()
         self.onglet_actuel.feuille_actuelle.charger(instructions)
 
-    def Proprietes(self, event):
+    def Proprietes(self):
         actuelle = self.onglet_actuel.feuille_actuelle # feuille courante
         ProprietesFeuille(self, actuelle).show()
 
-    def Options(self, evt = None):
+    def Options(self):
         FenetreOptions(self, param_options).show()
 
 
-    def Aide(self, event):
+    def Aide(self):
         open_new_tab(path2("%/doc/help.htm"))
 #        aide = Help(self, path2("%/doc/help.htm"))
 #        aide.show()
@@ -541,22 +496,22 @@ class Onglets(QTabWidget):
         #~ # verifier_version(self)
         #~ self.gestionnaire_de_mises_a_jour.verifier_version()
 
-    def Notes(self, event):
+    def Notes(self):
         self.notes = Notes(self)
         self.notes.show()
 
-    def Licence(self, event):
+    def Licence(self):
         self.licence = Licence(self)
         self.licence.show()
 
-    def Contacter(self, event):
+    def Contacter(self):
         self.formulaire = Contact(self)
         self.formulaire.show()
 
-    def About(self, event):
+    def About(self):
         dialog = About(self)
         dialog.exec_()
 
-    def Informations(self, event):
+    def Informations(self):
         dialog = Informations(self)
         dialog.show()
