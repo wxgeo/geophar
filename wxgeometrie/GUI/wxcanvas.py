@@ -682,9 +682,10 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
             FigureCanvasQTAgg.keyPressEvent(self, event)
 
 
-    def paintEvent(self, event):
-        self.graph.restaurer_dessin()
-        FigureCanvasQTAgg.paintEvent(self, event)
+    ##def paintEvent(self, event):
+        ##self.graph.restaurer_dessin()
+        ##FigureCanvasQTAgg.paintEvent(self, event)
+        ##print 'paint_eVent'
 
     def resizeEvent(self, event):
         self.feuille_actuelle._rafraichir_figures()
