@@ -92,7 +92,8 @@ class Menu(QMenu):
                     titre = contenu[0]
                     shortcut = (QKeySequence(contenu[2]) if contenu[2] else 0)
                     if contenu[3]:
-                        action = self.addAction(titre, partial(contenu[3], contenu[0]), shortcut)
+                        ##action = self.addAction(titre, partial(contenu[3], contenu[0]), shortcut)
+                        action = self.addAction(titre, contenu[3], shortcut)
                     else:
                         action = self.addAction(titre)
                     action.setStatusTip(contenu[1])
@@ -166,7 +167,7 @@ class MenuBar(QMenuBar):
 "imprimer": [u"Imprimer", u"Imprimer la figure géométrique courante.", u"Ctrl+P", self.parent.Printout],
 "proprietes": [u"Propriétés", u"Modifier les informations relatives au document", None, self.parent.Proprietes],
 "fermer":   [u"Fermer", u"Fermer la feuille courante.", u"Ctrl+W", self.parent.CloseFile],
-"quitter":  [u"Quitter", u"Fermer le programme.", u"Alt+F4", self.parent.close],
+"quitter":  [u"Quitter", u"Fermer le programme.", u"Alt+F4", self.parent.parent.close],
 
 
 

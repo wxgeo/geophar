@@ -43,7 +43,6 @@ class FenCode(QDialog):
         self.texte = PythonSTC(self)
 #        self.texte.setMinimumSize(300, 10)
         self.texte.setText(contenu)
-        self.texte.Bind(wx.EVT_CHAR, self.EvtChar) #XXX
 ##        self.texte.SetInsertionPointEnd()
         sizer.addWidget(self.texte)
 

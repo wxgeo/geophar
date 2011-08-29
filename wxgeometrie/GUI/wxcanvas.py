@@ -467,7 +467,7 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
 
     def selection_zone(self, pixel):
         x, y = pixel
-        xmax, ymax = self.GetSize()
+        xmax, ymax = self.dimensions # pixels
         x = max(min(x, xmax), 0)
         y = max(min(y, ymax), 0)
         self.fin_select = self.pix2coo(x, y)
@@ -477,11 +477,6 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
         self.dessiner_ligne([x0,x0,x1,x1,x0], [y0,y1,y1,y0,y0], 'g', linestyle = ":", alpha = 1)
 
         self.rafraichir_affichage(dessin_temporaire = True) # pour ne pas tout rafraichir
-
-
-
-
-
 
 
     def OnSelect(self, x0, x1, y0, y1):
@@ -517,7 +512,7 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
                 actuelle.sauvegarde["export"] = filename
 
         menu = QMenu(self)
-        menu.addTitle(u"Zone sélectionnée")
+        menu.setTitle(u"Zone sélectionnée")
         action = menu.addAction(u'Exporter la zone comme image')
         action.triggered.connect(exporte)
 
@@ -541,7 +536,8 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
                 win.show()
             action.triggered.connect(editer)
 
-        menu.show()
+        ##app.processEvents()
+        menu.exec_(QCursor.pos())
 
         with self.geler_affichage(): # ?
             self.selection_en_gras()

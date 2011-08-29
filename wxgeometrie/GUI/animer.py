@@ -35,7 +35,7 @@ from ..geolib.variables import Variable
 class DialogueAnimation(QDialog):
     def __init__(self, parent):
         QDialog.__init__(self, parent)
-        self.setTitle(u"Créer une animation")
+        self.setWindowTitle(u"Créer une animation")
         self.parent = parent
         self.feuille_actuelle = self.parent.onglet_actuel.feuille_actuelle
         p = self.panel = QWidget(self)
