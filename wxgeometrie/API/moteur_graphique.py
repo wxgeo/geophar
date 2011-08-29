@@ -765,7 +765,7 @@ class Moteur_graphique(object):
         self._dessiner_artistes()
         # Affichage proprement dit (copie du buffer à l'écran)
         if not self.canvas.affichage_gele_en_apparence:
-            self.canvas.blit()
+            self.canvas.blit(self.axes.bbox)
         # Garde en mémoire l'affichage pour éviter de redessiner la fenêtre
         # dans certains cas (fenêtre masquée, etc.)
         if not dessin_temporaire:
@@ -824,7 +824,7 @@ class Moteur_graphique(object):
     def restaurer_dessin(self):
         u'''Restaure le dernier dessin.'''
         self._restaurer(self._dernier_dessin)
-        self.canvas.blit()
+        self.canvas.blit(self.axes.bbox)
 
 
     def _dico_artistes(self):
