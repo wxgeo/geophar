@@ -572,7 +572,7 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
 
         if self.select is not None and not ctrl_down(event):
             menu = MenuActionsObjet(self)
-            menu.exec_()
+            menu.exec_(event.pos())
             if self.select is not None:
                 self.select = None
                 self.selection_en_gras()

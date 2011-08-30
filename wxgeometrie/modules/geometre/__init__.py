@@ -23,10 +23,7 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 
-
-#from GUI import *
 from ...GUI import MenuBar, Panel_API_graphique
-
 
 class GeometreMenuBar(MenuBar):
     def __init__(self, panel):
@@ -37,23 +34,13 @@ class GeometreMenuBar(MenuBar):
         self.ajouter("affichage")
         self.ajouter("autres")
         self.ajouter(u"Outils", [u"options"])
-##        self.ajouter(u"Avancé", [u"historique"], [u"securise"], [u"ligne_commande"], [u"debug"])
         self.ajouter(u"avance1")
         self.ajouter(u"?")
-
-
-
-
-
-
-
-
 
 
 class Geometre(Panel_API_graphique):
 
     __titre__ = u"Géométrie dynamique" # Donner un titre à chaque module
-    #_param_ = _param_
 
     def __init__(self, *args, **kw):
         Panel_API_graphique.__init__(self, *args, **kw)

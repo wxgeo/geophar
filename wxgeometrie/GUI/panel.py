@@ -24,7 +24,7 @@ from __future__ import with_statement
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os, time, thread
-from PyQt4.QtGui import QWidget, QVBoxLayout
+from PyQt4.QtGui import QWidget, QVBoxLayout, QLayout
 
 from .barre_outils import BarreOutils
 from .menu import RSSMenu
@@ -270,10 +270,13 @@ class Panel_API_graphique(Panel_simple):
         return [self.sauvegarder(None, feuille) for feuille in self.feuilles if not feuille.vierge]
 
 
-    def finaliser(self, contenu = None):
+    def finaliser(self, contenu=None):
         if contenu is None:
             contenu = self.canvas
-        self.__sizer_principal.addWidget(contenu)#, 1, wx.LEFT|wx.TOP|wx.GROW
+        if isinstance(contenu, QLayout):
+            self.__sizer_principal.addLayout(contenu, 1)
+        else:
+            self.__sizer_principal.addWidget(contenu, 1)
         self.__sizer_principal.addWidget(self.console_geolib)
         self.setLayout(self.__sizer_principal)
         ##self.adjustSize()

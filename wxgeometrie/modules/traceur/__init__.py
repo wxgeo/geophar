@@ -24,7 +24,10 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 from functools import partial
 import re
-import wx
+
+from PyQt4.QtGui import (QCheckBox, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit,
+                         QGroupBox)
+from PyQt4.QtCore import QObject, pyqtSignal
 
 from ...GUI import MenuBar, Panel_API_graphique
 from ...geolib import Courbe, Fonction
@@ -35,7 +38,11 @@ class TraceurMenuBar(MenuBar):
     def __init__(self, panel):
         MenuBar.__init__(self, panel)
 
-        self.ajouter(u"Fichier", [u"nouveau"], [u"ouvrir"], [u"ouvrir ici"], [u"enregistrer"], [u"enregistrer_sous"], [u"exporter"], [u"exporter&sauver"], None, [u"mise en page"], [u"imprimer"], [u"presse-papier"], None, [u"proprietes"], None, self.panel.doc_ouverts, None, ["fermer"], ["quitter"])
+        self.ajouter(u"Fichier", [u"nouveau"], [u"ouvrir"], [u"ouvrir ici"], [u"enregistrer"],
+                                 [u"enregistrer_sous"], [u"exporter"], [u"exporter&sauver"],
+                                 None, [u"mise en page"], [u"imprimer"], [u"presse-papier"],
+                                 None, [u"proprietes"], None, self.panel.doc_ouverts, None,
+                                 ["fermer"], ["quitter"])
         self.ajouter(u"Editer", ["annuler"], ["refaire"], ["modifier"], ["supprimer"])
         self.ajouter(u"creer")
         self.ajouter("affichage")
@@ -48,6 +55,30 @@ class TraceurMenuBar(MenuBar):
         self.ajouter(u"?")
 
 
+
+class TCheckBox(QCheckBox):
+    enter = pyqtSignal()
+    leave = pyqtSignal()
+
+    def enterEvent(self, event):
+        self.enter.emit()
+        QCheckBox.enterEvent(self, event)
+
+    def leaveEvent(self, event):
+        self.leave.emit()
+        QCheckBox.leaveEvent(self, event)
+
+class TLineEdit(QLineEdit):
+    enter = pyqtSignal()
+    leave = pyqtSignal()
+
+    def enterEvent(self, event):
+        self.enter.emit()
+        QLineEdit.enterEvent(self, event)
+
+    def leaveEvent(self, event):
+        self.leave.emit()
+        QLineEdit.leaveEvent(self, event)
 
 
 class Traceur(Panel_API_graphique):
@@ -64,41 +95,48 @@ class Traceur(Panel_API_graphique):
         self.equations = []
         self.intervalles = []
 
-        self.entrees = QVBoxLayout()
-        self.entrees.addWidget(QLabel(u" Equations :"))
+        eq_box = QGroupBox(u"Équations")
+        entrees = QVBoxLayout()
+        eq_box.setLayout(entrees)
 
         for i in range(self.nombre_courbes):
-                ligne = QHBoxLayout()
+            ligne = QHBoxLayout()
 
-                self.boites.append(QCheckBox(self, label='f%s:'%(i+1)))
-                self.boites[-1].SetValue(True) # Par defaut, les cases sont cochees.
-                self.boites[i].Bind(wx.EVT_CHECKBOX, self.synchronise_et_affiche)
-                # Bug de WxGtk: on ne peut pas attacher simultanément une fonction
-                # aux évènements EVT_CHECKBOX et EVT_ENTER_WINDOW
-                #self.boites[i].Bind(wx.EVT_ENTER_WINDOW, partial(self.MouseOver, i=i))
-                self.boites[i].Bind(wx.EVT_LEAVE_WINDOW, self.MouseOver)
-                ligne.Add(self.boites[i])
+            check = TCheckBox('f%s:'%(i+1))
+            self.boites.append(check)
+            check.setChecked(True) # Par defaut, les cases sont cochees.
+            check.stateChanged.connect(self.synchronise_et_affiche)
+            check.enter.connect(partial(self.select, i))
+            check.leave.connect(self.select)
+            ligne.addWidget(check)
 
-                ligne.addWidget(QLabel("Y ="))
-                self.equations.append(wx.TextCtrl(self, size=(120, -1), style=wx.TE_PROCESS_ENTER))
-                self.equations[i].Bind(wx.EVT_CHAR, partial(self.EvtChar, i=i))
-                self.equations[i].Bind(wx.EVT_ENTER_WINDOW, partial(self.MouseOver, i=i))
-                self.equations[i].Bind(wx.EVT_LEAVE_WINDOW, self.MouseOver)
-                ligne.Add(self.equations[i])
+            ligne.addWidget(QLabel("Y ="))
 
-                ligne.addWidget(QLabel("sur"))
-                self.intervalles.append(wx.TextCtrl(self, size = (100, -1), style = wx.TE_PROCESS_ENTER))
-                self.intervalles[i].Bind(wx.EVT_CHAR, partial(self.EvtChar, i=i))
-                self.intervalles[i].Bind(wx.EVT_ENTER_WINDOW, partial(self.MouseOver, i=i))
-                self.intervalles[i].Bind(wx.EVT_LEAVE_WINDOW, self.MouseOver)
-                ligne.Add(self.intervalles[i])
+            eq = TLineEdit()
+            self.equations.append(eq)
+            eq.setMinimumWidth(120)
+            eq.enter.connect(partial(self.select, i))
+            eq.leave.connect(self.select)
+            eq.returnPressed.connect(partial(self.valider, i))
+            ligne.addWidget(eq)
 
-                self.entrees.addLayout(ligne)
+            ligne.addWidget(QLabel("sur"))
+
+            intervalle = TLineEdit()
+            self.intervalles.append(intervalle)
+            intervalle.setMinimumWidth(100)
+            intervalle.enter.connect(partial(self.select, i))
+            intervalle.leave.connect(self.select)
+            intervalle.returnPressed.connect(partial(self.valider, i))
+            ligne.addWidget(intervalle)
+
+            entrees.addLayout(ligne)
+        entrees.addStretch()
 
         self.sizer = QHBoxLayout()
-        self.sizer.addWidget(self.canvas, 1, wx.LEFT | wx.TOP | wx.GROW, 0)
-        self.sizer.addWidget(self.entrees, 0, wx.ALL|wx.GROW, 5)
-        self.finaliser(contenu = self.sizer)
+        self.sizer.addWidget(self.canvas, 1)
+        self.sizer.addWidget(eq_box)
+        self.finaliser(contenu=self.sizer)
         self._changement_feuille()
 
 
@@ -123,10 +161,10 @@ class Traceur(Panel_API_graphique):
             nom_courbe = 'Cf' + str(i + 1)
             if self.feuille_actuelle.objets.has_key(nom_courbe):
                 objet = self.feuille_actuelle.objets[nom_courbe]
-                self.boites[i].SetValue(objet.style('visible'))
+                self.boites[i].setChecked(objet.style('visible'))
                 expression = objet.fonction.expression
                 if expression.strip():
-                    self.equations[i].SetValue(expression)
+                    self.equations[i].setText(expression)
                     self.boites[i].setEnabled(True)
                 else:
                     self.boites[i].setEnabled(False)
@@ -144,11 +182,11 @@ class Traceur(Panel_API_graphique):
                     parties[j] = re.sub(r"([][])([^][;]+);([^][;]+)([][])", f, partie)
                     j += 1
 
-                self.intervalles[i].SetValue('|'.join(parties))
+                self.intervalles[i].setText('|'.join(parties))
             else:
                 self.boites[i].setEnabled(False)
-                self.equations[i].SetValue('')
-                self.intervalles[i].SetValue('')
+                self.equations[i].setText('')
+                self.intervalles[i].setText('')
 
     def _synchroniser_courbes(self):
         u"""Opération inverse : on synchronise les courbes avec le contenu des champs de texte.
@@ -158,66 +196,59 @@ class Traceur(Panel_API_graphique):
         for i in xrange(self.nombre_courbes):
             nom_courbe = 'Cf' + str(i + 1)
             nom_fonction = 'f' + str(i + 1)
-            expr = self.equations[i].GetValue()
-            ensemble = self.intervalles[i].GetValue()
-            visible = self.boites[i].GetValue()
+            expr = self.equations[i].text()
+            ensemble = self.intervalles[i].text()
+            visible = self.boites[i].isChecked()
             if not expr.strip():
                 visible = False
 #                self.boites[i].Disable()
             if self.feuille_actuelle.objets.has_key(nom_fonction):
-                objets[nom_fonction].modifier_expression_et_ensemble(expression = expr, ensemble = ensemble)
+                objets[nom_fonction].modifier_expression_et_ensemble(expression=expr, ensemble=ensemble)
             else:
                 objets[nom_fonction] = Fonction(expr, ensemble, 'x')
             if self.feuille_actuelle.objets.has_key(nom_courbe):
                 objets[nom_courbe].style(visible = visible)
             else:
                 f = objets[nom_fonction]
-                objets[nom_courbe] = Courbe(f, protege = True, visible = visible, couleur = self.couleurs[i%len(self.couleurs)])
+                objets[nom_courbe] = Courbe(f, protege=True, visible=visible,
+                                            couleur=self.couleurs[i%len(self.couleurs)])
 
-##            self.canvas.regenerer_liste = True
-
-##    def _sauvegarder(self, fgeo):
-##        Panel_API_graphique._sauvegarder(self, fgeo)
-##        fgeo.contenu[u"Courbe"] = [{"Y" : [self.equations[i].GetValue()], u"intervalle" : [self.intervalles[i].GetValue()], u"active" : [str(self.boites[i].GetValue())]} for i in range(self.nombre_courbes)]
-
-
-##    def _ouvrir(self, fgeo):
-##        Panel_API_graphique._ouvrir(self, fgeo)
-##        if fgeo.contenu.has_key(u"Courbe"):
-##            for i in range(min(len(fgeo.contenu[u"Courbe"]), self.nombre_courbes)):
-##                self.equations[i].SetValue(fgeo.contenu[u"Courbe"][i][u"Y"][0])
-##                self.intervalles[i].SetValue(fgeo.contenu[u"Courbe"][i][u"intervalle"][0])
-##                self.boites[i].SetValue(fgeo.contenu[u"Courbe"][i][u"active"][0] == u"True")
-##        self.affiche()
 
     def _ouvrir(self, fgeo):
         Panel_API_graphique._ouvrir(self, fgeo)
         # On synchronise le contenu des champs de texte avec les courbes *à la fin*.
         self._synchroniser_champs()
 
-    def EvtChar(self, event=None, i=None):
-        assert (i is not None)
-        code = (event.GetKeyCode() if event is not None else wx.WXK_RETURN)
+    ##def EvtChar(self, event=None, i=None):
+        ##assert (i is not None)
+        ##code = (event.GetKeyCode() if event is not None else wx.WXK_RETURN)
+##
+        ##if code in (wx.WXK_RETURN, wx.WXK_NUMPAD_ENTER):
+            ##self.boites[i].SetValue(event is None or not event.ShiftDown())
+            ##self.synchronise_et_affiche()
+        ##elif code == wx.WXK_ESCAPE:
+            ##self.boites[i].SetValue(False)
+            ##self.synchronise_et_affiche()
+        ##else:
+            ##event.Skip()
+    def valider(self, i):
+        self.boites[i].setEnabled(True)
+        self.boites[i].setChecked(True)
+        self.synchronise_et_affiche()
+        ##if (self.boites[i].underMouse() or self.equations[i].underMouse() or
+            ##self.intervalles[i].underMouse()):
+            ##self.select(i)
+            # XXX: la courbe ne se met pas en gras
 
-        if code in (wx.WXK_RETURN, wx.WXK_NUMPAD_ENTER):
-            self.boites[i].SetValue(event is None or not event.ShiftDown())
-            self.synchronise_et_affiche()
-        elif code == wx.WXK_ESCAPE:
-            self.boites[i].SetValue(False)
-            self.synchronise_et_affiche()
-        else:
-            event.Skip()
-
-    def MouseOver(self, event=None, i=None):
+    def select(self, i=None):
         if i is None:
             self.canvas.select = None
         else:
             nom_courbe = 'Cf' + str(i + 1)
             self.canvas.select = self.feuille_actuelle.objets.get(nom_courbe, None)
         self.canvas.selection_en_gras()
-        event.Skip()
 
-    def synchronise_et_affiche(self, event = None):
+    def synchronise_et_affiche(self):
         self._synchroniser_courbes()
         self.action_effectuee(u'Courbes modifiées.')
         self.affiche()
@@ -232,6 +263,6 @@ class Traceur(Panel_API_graphique):
         #table.SetDimensions(-1, -1, -1, 300)
 
 
-    def suite(self, event = None):
+    def suite(self):
         suite = suites.CreerSuite(self)
         suite.show()
