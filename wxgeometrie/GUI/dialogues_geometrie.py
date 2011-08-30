@@ -23,8 +23,11 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 from operator import attrgetter
+from functools import partial
 
-from PyQt4.QtGui import QDialog, QVBoxLayout, QHBoxLayout, QFrame
+from PyQt4.QtGui import (QDialog, QVBoxLayout, QHBoxLayout, QFrame, QLabel,
+                         QLineEdit, QPushButton, QMenu)
+from PyQt4.QtCore import Qt
 
 from ..pylib import regsub
 from ..geolib.textes import Texte
@@ -62,13 +65,12 @@ def repr_str(chaine):
 
 # Differentes boites de dialogue pour creer des objets geometriques
 
-# A REECRIRE EN UTILISANT wxGridBagSizer ??
 
 class Dialogue(QDialog):
 
     objet = None # classe associee (utilise pour les boites de dialogue de creation d'objets geometriques)
 
-    def __init__(self, parent, titre="", size=None):#, size=wx.DefaultSize):
+    def __init__(self, parent, titre="", size=None):
         u"""S'il s'agit d'un dialogue pour la création d'objets,
         le titre par défaut est généré automatiquement à partir de l'attribut de classe 'objet'."""
 
@@ -825,7 +827,7 @@ class DialogueReperage(Dialogue):
                     u"Ecart entre deux graduations en ordonnée. Exemple : 2.5")
         self.finalise()
         btn = QPushButton(self, -1, u" Défaut ")
-        btn.Bind(wx.EVT_BUTTON, self.EvtRestaurer)
+        btn.clicked.connect(self.EvtRestaurer)
         btn.setWhatsThis(u"Restaurer les valeurs par défaut.")
         self.box.Add(btn)
         self.sizer.Fit(self)
@@ -835,7 +837,7 @@ class DialogueReperage(Dialogue):
                                        for nom in ("origine", "x", "y")) + \
                u"\ngradu = " + ", ".join(self.champs[nom].text() for nom in ("xgradu", "ygradu"))
 
-    def EvtRestaurer(self, event = None):
+    def EvtRestaurer(self):
         self.champs["origine"].setText(param.repere[0])
         self.champs["x"].setText(param.repere[1])
         self.champs["y"].setText(param.repere[2])
