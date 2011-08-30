@@ -172,6 +172,7 @@ class MenuBar(QMenuBar):
 
 
 "onglet":   [u"Onglet suivant", u"Changer d'onglet.", u"Ctrl+TAB", self.parent.onglet_suivant],
+"plein_ecran": [u"Plein écran", u"Passer en mode plein écran ou revenir en mode normal.", u"F11", self.parent.parent.plein_ecran],
 "debug":    [u"Déboguer", u"Déboguer le programme (afficher les erreurs, ...).", None, self.fenetre.mode_debug, self.fenetre.mode_debug],
 "ligne_commande":    [u"Afficher la ligne de commande", u"Afficher la ligne de commande.", None, self.fenetre.afficher_ligne_commande, self.fenetre.afficher_ligne_commande],
 "options":  [u"Options", u"Paramètres du programme.", None, self.parent.Options],
@@ -285,7 +286,7 @@ class MenuBar(QMenuBar):
 
 
 
-"affichage": [u"Affichage", ["onglet"], None, ["barre_outils"], ["console_geolib"], None, ["repere"], ["quadrillage"], ["orthonorme"], ["reperage"], ["quadrillages"], None, ["zoom_texte"], ["zoom_ligne"], ["zoom_general"], None, ["fenetre"], ["zoomer"], ["dezoomer"], ["orthonormaliser"], [u"zoom_auto"]],
+"affichage": [u"Affichage", ["onglet"], ["plein_ecran"], None, ["barre_outils"], ["console_geolib"], None, ["repere"], ["quadrillage"], ["orthonorme"], ["reperage"], ["quadrillages"], None, ["zoom_texte"], ["zoom_ligne"], ["zoom_general"], None, ["fenetre"], ["zoomer"], ["dezoomer"], ["orthonormaliser"], [u"zoom_auto"]],
 
 "autres":    [u"Autres actions", [u"coder"], [u"decoder"], [u"traces"], None, [u"detecter"], [u"nettoyer"], None, [u"animer"], [u"aimanter"]],
 

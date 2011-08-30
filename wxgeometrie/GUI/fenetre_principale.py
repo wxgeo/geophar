@@ -193,6 +193,9 @@ class FenetrePrincipale(QMainWindow):
             if param.debug:
                 raise
 
+    def plein_ecran(self):
+        u"Bascule en mode plein écran <-> mode normal."
+        self.setWindowState(self.windowState()^Qt.WindowFullScreen)
 
     def closeEvent(self, event):
         self.closing = True
