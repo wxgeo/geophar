@@ -95,7 +95,7 @@ class MiniEditeur:
 
     def key(self, key, txt, modifiers):
         if self:
-            if key == Qt.Key_BackSpace:
+            if key == Qt.Key_Backspace:
                 self.texte = self.texte[:-1]
                 self.display()
             elif key == Qt.Key_Escape:
@@ -681,7 +681,9 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
         if not accept:
             FigureCanvasQTAgg.keyPressEvent(self, event)
 
-
+    def keyReleaseEvent(self, event):
+        # FigureCanvasQTAgg.keyReleaseEvent() est bugué (matplotlib 0.99.1)
+        pass
     ##def paintEvent(self, event):
         ##self.graph.restaurer_dessin()
         ##FigureCanvasQTAgg.paintEvent(self, event)

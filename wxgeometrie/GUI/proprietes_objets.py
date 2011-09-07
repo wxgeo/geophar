@@ -23,14 +23,19 @@ from __future__ import with_statement
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-from PyQt4.QtGui import QWidget, QTabWidget
+from functools import partial
 
-import wx
-from  wx.lib.colourselect import EVT_COLOURSELECT, ColourSelect
+from PyQt4.QtCore import Qt
+from PyQt4.QtGui import (QDialog, QPushButton, QWidget, QLabel, QGroupBox,
+                         QHBoxLayout, QVBoxLayout, QTabWidget, QColor,
+                         QLineEdit, QComboBox, QCheckBox, QRadioButton,
+                         QSpinBox, QTextEdit,
+                         )
 from matplotlib.colors import colorConverter as colorConverter
 
 
-from .wxlib import MyMiniFrame
+from .wxlib import ColorSelecter
+from .app import white_palette
 from .. import param
 from ..pylib import print_error, debug, advanced_split
 from ..geolib.constantes import NOM, FORMULE, TEXTE, RIEN
@@ -59,14 +64,14 @@ class ProprietesAffichage(QWidget):
         if not self.islabel:
             ligne = QHBoxLayout()
             if len(self.objets) == 1:
-                etiquette = QLineEdit()
+                self.etiquette = etiquette = QLineEdit()
                 etiquette.setText(self.objets[0].style("label"))
                 etiquette.setMinimumWidth(200)
-                self.Bind(wx.EVT_TEXT, self.EvtEtiquette, etiquette)
+                etiquette.editingFinished.connect(self.EvtEtiquette)
                 ligne.addWidget(etiquette)
             if [objet for objet in self.objets if objet.etiquette is not None]:
                 editer = QPushButton(u"Style")
-                editer.checked.connect(self.EvtLabelStyle)
+                editer.clicked.connect(self.EvtLabelStyle)
                 ligne.addWidget(editer)
             encadre1.addLayout(ligne)
 
@@ -74,28 +79,28 @@ class ProprietesAffichage(QWidget):
             if objets:
                 leg = objets[0].style("legende")
                 legende = QHBoxLayout()
-                self.radio_nom = wx.RadioButton("Nom", style = wx.RB_GROUP)
-                self.radio_nom.SetValue(0)
-                self.radio_etiquette = wx.RadioButton(u"Texte")
-                self.radio_etiquette.SetValue(0)
-                self.radio_formule = wx.RadioButton(u"Formule")
-                self.radio_formule.SetValue(0)
-                self.radio_aucun = wx.RadioButton(u"Aucun")
-                self.radio_aucun.SetValue(0)
+                self.radio_nom = QRadioButton("Nom")
+                ##self.radio_nom.SetValue(0)
+                self.radio_etiquette = QRadioButton(u"Texte")
+                ##self.radio_etiquette.SetValue(0)
+                self.radio_formule = QRadioButton(u"Formule")
+                ##self.radio_formule.SetValue(0)
+                self.radio_aucun = QRadioButton(u"Aucun")
+                ##self.radio_aucun.SetValue(0)
                 if all(objet.style("legende") == leg for objet in objets):
                     if leg == NOM:
-                        self.radio_nom.SetValue(1)
+                        self.radio_nom.setChecked(True)
                     elif leg == TEXTE:
-                        self.radio_etiquette.SetValue(1)
+                        self.radio_etiquette.setChecked(True)
                     elif leg == FORMULE:
-                        self.radio_formule.SetValue(1)
+                        self.radio_formule.setChecked(True)
                     elif leg == RIEN:
-                        self.radio_aucun.SetValue(1)
+                        self.radio_aucun.setChecked(True)
 
-                self.Bind(wx.EVT_RADIOBUTTON, self.EvtLegende, self.radio_nom)
-                self.Bind(wx.EVT_RADIOBUTTON, self.EvtLegende, self.radio_etiquette)
-                self.Bind(wx.EVT_RADIOBUTTON, self.EvtLegende, self.radio_formule)
-                self.Bind(wx.EVT_RADIOBUTTON, self.EvtLegende, self.radio_aucun)
+                self.radio_nom.toggled.connect(partial(self.EvtLegende, NOM))
+                self.radio_etiquette.toggled.connect(partial(self.EvtLegende, TEXTE))
+                self.radio_formule.toggled.connect(partial(self.EvtLegende, FORMULE))
+                self.radio_aucun.toggled.connect(partial(self.EvtLegende, RIEN))
                 legende.addWidget(self.radio_nom)
                 legende.addWidget(self.radio_etiquette)
                 legende.addWidget(self.radio_formule)
@@ -117,12 +122,13 @@ class ProprietesAffichage(QWidget):
 
             #categorie = objets[0].style("categorie") or "lignes"
             self.liste_styles = getattr(param, "styles_de_" + categorie, [])
-            self.style = QComboBox((100, 50), choices = self.liste_styles)
-            self.Bind(wx.EVT_CHOICE, self.EvtStyle, self.style)
+            self.style = QComboBox()
+            self.style.addItems(self.liste_styles)
+            self.style.currentIndexChanged.connect(self.EvtStyle)
 
             style = objets[0].style("style")
             if style in self.liste_styles and all(objet.style("style") == style for objet in objets):
-                self.style.setSelection(self.liste_styles.index(style)) # on sélectionne le style actuel
+                self.style.setCurrentIndex(self.liste_styles.index(style)) # on sélectionne le style actuel
             choix.addWidget(self.style)
             encadre2.addLayout(choix)
 
@@ -133,12 +139,13 @@ class ProprietesAffichage(QWidget):
             choix.addWidget(QLabel(u"Style des hâchures : "))
 
             self.types_de_hachures = getattr(param, "types_de_hachures", [])
-            self.hachures = QComboBox((100, 50), choices = self.types_de_hachures)
-            self.Bind(wx.EVT_CHOICE, self.EvtHachures, self.hachures)
+            self.hachures = QComboBox()
+            self.hachures.addItems(self.types_de_hachures)
+            self.hachure.currentIndexChanged.connect(self.EvtHachures)
 
             hachures = objets[0].style("hachures")
             if hachures in self.types_de_hachures and all(objet.style("hachures") == hachures for objet in objets):
-                self.hachures.setSelection(self.types_de_hachures.index(hachures)) # on sélectionne les hachures actuelles
+                self.hachures.setCurrentIndex(self.types_de_hachures.index(hachures)) # on sélectionne les hachures actuelles
             choix.addWidget(self.hachures)
             encadre2.addLayout(choix)
 
@@ -152,12 +159,13 @@ class ProprietesAffichage(QWidget):
 
             #categorie = self.objet.style("categorie") or "lignes"
             self.liste_familles = getattr(param, "familles_de_" + categorie, [])
-            self.famille = QComboBox((100, 50), choices = self.liste_familles)
-            self.Bind(wx.EVT_CHOICE, self.EvtFamille, self.famille)
+            self.famille = QComboBox()
+            self.famille.addItems(self.liste_familles)
+            self.famille.currentIndexChanged.connect(self.EvtFamille)
 
             famille = objets[0].style("famille")
             if famille in self.liste_familles and all(objet.style("famille") == famille for objet in objets):
-                self.famille.setSelection(self.liste_familles.index(famille)) # on sélectionne la famille actuelle
+                self.famille.setCurrentIndex(self.liste_familles.index(famille)) # on sélectionne la famille actuelle
 
             choix.addWidget(self.famille)
             encadre2.addLayout(choix)
@@ -169,12 +177,13 @@ class ProprietesAffichage(QWidget):
             choix = QHBoxLayout()
             choix.addWidget(QLabel(u"Couleur de l'objet : "))
             if all(objet.style("couleur") == couleur for objet in objets):
-                couleur = colorConverter.to_rgb(couleur)
-                couleur = tuple(int(255*i) for i in couleur) # conversion du format matplotlib au format wx
+                # conversion du format matplotlib au format Qt
+                r, g, b = colorConverter.to_rgb(couleur)
+                couleur = QColor(int(255*r), int(255*g), int(255*b))
             else:
-                couleur = self.GetBackgroundColour()
-            b = ColourSelect(colour = couleur)
-            b.Bind(EVT_COLOURSELECT, self.OnSelectColour)
+                couleur = None
+            b = ColorSelecter(self, color=couleur)
+            b.colorSelected.connect(self.OnSelectColour)
             choix.addWidget(b)
             encadre2.addLayout(choix)
 
@@ -188,10 +197,11 @@ class ProprietesAffichage(QWidget):
             self.epaisseur.setMinimumSize(30, 50)
             self.epaisseur.setRange(1,10000)
             if all(objet.style("epaisseur") == epaiss for objet in objets):
-                self.epaisseur.SetValue(10*epaiss)
+                self.epaisseur.setValue(10*epaiss)
             else:
-                self.epaisseur.SetValueString("")
-            self.Bind(wx.EVT_TEXT, self.EvtEpaisseur, self.epaisseur)
+                self.epaisseur.setSpecialValueText(' ')
+                print(u'FIXME: cas non géré.')
+            self.epaisseur.valueChanged.connect(self.EvtEpaisseur)
             epaisseur.addWidget(self.epaisseur)
             encadre2.addLayout(epaisseur)
 
@@ -205,10 +215,11 @@ class ProprietesAffichage(QWidget):
             self.taille.setMinimumSize(30, 50)
             self.taille.setRange(1,10000)
             if all(objet.style("taille") == tail for objet in objets):
-                self.taille.SetValue(10*tail)
+                self.taille.setValue(10*tail)
             else:
-                self.taille.SetValueString("")
-            self.Bind(wx.EVT_TEXT, self.EvtTaille, self.taille)
+                self.taille.setSpecialValueText(' ')
+                print(u'FIXME: cas non géré.')
+            self.taille.valueChanged.connect(self.EvtTaille)
             taille.addWidget(self.taille)
             encadre2.addLayout(taille)
 
@@ -222,10 +233,11 @@ class ProprietesAffichage(QWidget):
             self.position.setMinimumSize(30, 50)
             self.position.setRange(0, 100)
             if all(objet.style("position") == pos for objet in objets):
-                self.position.SetValue(100*pos)
+                self.position.setValue(100*pos)
             else:
-                self.position.SetValueString("")
-            self.Bind(wx.EVT_TEXT, self.EvtPosition, self.position)
+                self.position.setSpecialValueText(' ')
+                print(u'FIXME: cas non géré.')
+            self.position.valueChanged.connect(self.EvtPosition)
             position.addWidget(self.position)
             encadre2.addLayout(position)
 
@@ -240,10 +252,11 @@ class ProprietesAffichage(QWidget):
             self.angle.setMinimumSize(30, 50)
             self.angle.setRange(0, 360)
             if all(objet.style("angle") == ang for objet in objets):
-                self.angle.SetValue(ang)
+                self.angle.setValue(ang)
             else:
-                self.angle.SetValueString("")
-            self.Bind(wx.EVT_TEXT, self.EvtAngle, self.angle)
+                self.angle.setSpecialValueText(' ')
+                print(u'FIXME: cas non géré.')
+            self.angle.valueChanged.connect(self.EvtAngle)
             angle.addWidget(self.angle)
             encadre2.addLayout(angle)
 
@@ -260,32 +273,33 @@ class ProprietesAffichage(QWidget):
 
             #categorie = objets[0].style("categorie") or "lignes"
             self.liste_codages = getattr(param, "codage_des_" + categorie, [])
-            self.codage = QComboBox((100, 50), choices = self.liste_codages)
-            self.Bind(wx.EVT_CHOICE, self.EvtCodage, self.codage)
+            self.codage = QComboBox()
+            self.codage.addItems(self.liste_codages)
+            self.codage.currentIndexChanged.connect(self.EvtCodage)
 
             codage = objets[0].style("codage")
             if codage in self.liste_codages and all(objet.style("codage") == codage for objet in objets):
-                self.codage.setSelection(self.liste_codages.index(codage)) # on sélectionne le codage actuel
+                self.codage.setCurrentIndex(self.liste_codages.index(codage)) # on sélectionne le codage actuel
             choix.addWidget(self.codage)
             encadre2.addLayout(choix)
 
 
         boutons = QHBoxLayout()
-        ok = QPushButton(self, wx.ID_OK)
-        ok.checked.connect(self.EvtOk)
+        ok = QPushButton('OK')
+        ok.clicked.connect(self.EvtOk)
         boutons.addWidget(ok)
 
         appliquer = QPushButton(u"Appliquer")
-        appliquer.checked.connect(self.EvtAppliquer)
+        appliquer.clicked.connect(self.EvtAppliquer)
         boutons.addWidget(appliquer)
 
         if not self.islabel:
             supprimer = QPushButton(u"Supprimer")
-            supprimer.checked.connect(self.EvtSupprimer)
+            supprimer.clicked.connect(self.EvtSupprimer)
             boutons.addWidget(supprimer)
 
         annuler = QPushButton(u"Annuler")
-        annuler.checked.connect(self.EvtAnnuler)
+        annuler.clicked.connect(self.EvtAnnuler)
         boutons.addWidget(annuler)
 
         if encadre.count(): # ne pas afficher une rubrique vide !
@@ -300,7 +314,7 @@ class ProprietesAffichage(QWidget):
             encadre2_box = QGroupBox(u"Styles")
             encadre_box.setLayout(encadre2)
             self.sizer.addWidget(encadre2_box)
-        self.sizer.addWidget(boutons)
+        self.sizer.addLayout(boutons)
         self.setLayout(self.sizer)
         ##self.parent.parent.dim1 = self.sizer.CalcMin().Get()
 
@@ -310,7 +324,7 @@ class ProprietesAffichage(QWidget):
         if objets:
             cb = QCheckBox(titre)
             cb.setTristate(True)
-            encadre.addWidget(cb)
+            layout.addWidget(cb)
             verifies = [objet.style(propriete) is True for objet in objets]
             if not any(verifies):
                 etat = Qt.Unchecked
@@ -319,47 +333,40 @@ class ProprietesAffichage(QWidget):
             else:
                 etat = Qt.PartiallyChecked
             cb.setCheckState(etat)
-            cb.stateChanged.connect.checked(partial(self.checked, propriete))
+            cb.stateChanged.connect(partial(self.checked, propriete))
+            cb.stateChanged.connect(partial(cb.setTristate, False))
 
 
-    def EvtLegende(self, event):
-        radio = event.GetEventObject()
-        if radio is self.radio_nom:
-            self.changements["legende"] = NOM
-        elif radio is self.radio_etiquette:
-            self.changements["legende"] = TEXTE
-        elif radio is self.radio_formule:
-            self.changements["legende"] = FORMULE
-        else:
-            self.changements["legende"] = RIEN
+    def EvtLegende(self, valeur):
+        self.changements["legende"] = valeur
 
     def checked(self, propriete, state):
         self.changements[propriete] = (state == Qt.Checked)
 
-    def EvtEtiquette(self, event):
-        self.changements["label"] = event.GetString()
+    def EvtEtiquette(self):
+        self.changements["label"] = self.etiquette.toPlainText()
 
-    def OnSelectColour(self, event):
-        couleur = tuple(i/255 for i in event.GetValue().Get()) # conversion du format wx au format matplotlib
-        self.changements["couleur"] = couleur
+    def OnSelectColour(self, color):
+        # conversion du format Qt au format matplotlib
+        self.changements["couleur"] = color.getRgb()
 
-    def EvtStyle(self, event):
-        self.changements["style"] = self.liste_styles[event.GetSelection()]
+    def EvtStyle(self, index):
+        self.changements["style"] = self.liste_styles[index]
 
-    def EvtHachures(self, event):
-        self.changements["hachures"] = self.types_de_hachures[event.GetSelection()]
+    def EvtHachures(self, index):
+        self.changements["hachures"] = self.types_de_hachures[index]
 
-    def EvtCodage(self, event):
-        self.changements["codage"] = self.liste_codages[event.GetSelection()]
+    def EvtCodage(self, index):
+        self.changements["codage"] = self.liste_codages[index]
 
-    def EvtFamille(self, event):
-        self.changements["famille"] = self.liste_familles[event.GetSelection()]
+    def EvtFamille(self, index):
+        self.changements["famille"] = self.liste_familles[index]
 
-    def EvtOk(self, event):
-        self.EvtAppliquer(event)
-        self.EvtAnnuler(event)
+    def EvtOk(self):
+        self.EvtAppliquer()
+        self.EvtAnnuler()
 
-    def EvtAppliquer(self, event):
+    def EvtAppliquer(self):
         with self.canvas.geler_affichage(actualiser=True, sablier=True):
             try:
                 for objet in self.objets:
@@ -375,11 +382,11 @@ class ProprietesAffichage(QWidget):
                 print_error()
 
 
-    def EvtSupprimer(self, event):
+    def EvtSupprimer(self):
         with self.canvas.geler_affichage(actualiser=True, sablier=True):
             for objet in self.objets:
                 self.canvas.executer(u"del %s" %objet.nom)
-        self.EvtAnnuler(event)
+        self.EvtAnnuler()
 
     def EvtAnnuler(self):
         # Ce qui suit corrige un genre de bug bizarre de wx:
@@ -387,25 +394,25 @@ class ProprietesAffichage(QWidget):
         # la fenêtre principale passe au second plan à la fermeture de la fenêtre de propriétés ?!?
         # (ce qui est très désagréable dès qu'un dossier est ouvert dans l'explorateur, par exemple !)
         # -> à supprimer avec Qt ?
-        self.parent.parent.fenetre_principale.raise()
+        self.parent.parent.fenetre_principale.raise_()
         self.parent.parent.close() # fermeture de la frame
 
-    def EvtLabelStyle(self, event):
+    def EvtLabelStyle(self):
         win = Proprietes(self.parent, [objet.etiquette for objet in self.objets
                                        if objet.etiquette is not None], True)
         win.show()
 
 
-    def EvtEpaisseur(self, event):
+    def EvtEpaisseur(self):
         self.changements["epaisseur"] = self.epaisseur.value()/10
 
-    def EvtTaille(self, event):
+    def EvtTaille(self):
         self.changements["taille"] = self.taille.value()/10
 
-    def EvtAngle(self, event):
+    def EvtAngle(self):
         self.changements["angle"] = self.angle.value()
 
-    def EvtPosition(self, event):
+    def EvtPosition(self):
         self.changements["position"] = self.position.value()/100
 
 
@@ -443,7 +450,7 @@ class ProprietesInfos(QWidget):
         self.parent = parent
         self.objets = parent.objets
         self.sizer = QVBoxLayout()
-        infos = QVBoxLayout()
+        self.infos = infos = QVBoxLayout()
         if len(self.objets) == 1:
             self.objet = self.objets[0]
         else:
@@ -467,7 +474,7 @@ class ProprietesInfos(QWidget):
             infos_box.setLayout(infos)
             self.sizer.addWidget(infos_box)
             actualiser = QPushButton(u"Actualiser")
-            actualiser.checked.connect(self.EvtActualiser)
+            actualiser.clicked.connect(self.EvtActualiser)
             self.sizer.addWidget(actualiser)
         else:
             self.sizer.addWidget(QLabel(str(len(self.objets)) + u" objets sélectionnés."))
@@ -511,24 +518,24 @@ class ProprietesAvance(QWidget):
             style = QVBoxLayout()
             style_box = QGroupBox(u"Style de l'objet")
             style_box.setLayout(style)
-            box.addWidget(QLabel(u"Attention, ne modifiez ce contenu que si vous savez ce que vous faites."))
+            style.addWidget(QLabel(u"Attention, ne modifiez ce contenu que si vous savez ce que vous faites."))
             self.avance = QTextEdit()
             self.avance.setMinimumSize(350, 200)
             self.actualiser()
-            box.addWidget(self.avance)
+            style.addWidget(self.avance)
             self.sizer.addWidget(style_box)
 
             ok = QPushButton('OK')
             appliquer = QPushButton(u"Appliquer")
             actualiser = QPushButton(u"Actualiser")
-            ok.checked.connect(self.EvtOk)
-            appliquer.checked.connect(self.EvtAppliquer)
-            actualiser.checked.connect(self.actualiser)
+            ok.clicked.connect(self.EvtOk)
+            appliquer.clicked.connect(self.EvtAppliquer)
+            actualiser.clicked.connect(self.actualiser)
             boutons = QHBoxLayout()
             boutons.addWidget(ok)
             boutons.addWidget(appliquer)
             boutons.addWidget(actualiser)
-            self.sizer.addWidget(boutons)
+            self.sizer.addLayout(boutons)
 
         self.setLayout(self.sizer)
         ##self.parent.parent.dim3 = self.sizer.CalcMin().Get()
@@ -587,9 +594,7 @@ class Proprietes(QDialog):
         objets[0].titre_complet("du", False)
         self.parent = parent
         self.islabel = islabel
-        self.fenetre_principale = self
-        while hasattr(self.fenetre_principale, "parent"): # detection de la fenetre principale de WxGeometrie.
-            self.fenetre_principale = self.fenetre_principale.parent
+        self.fenetre_principale = self.parent.window()
         self.panel = self.fenetre_principale.onglets.onglet_actuel
         self.canvas = self.panel.canvas
 
@@ -605,7 +610,11 @@ class Proprietes(QDialog):
                 titre = u"des objets"
 #        wx.MiniFrame.__init__(self, parent, -1, u"Propriétés " + titre, style=wx.DEFAULT_FRAME_STYLE | wx.TINY_CAPTION_HORIZ)
         QDialog.__init__(self, parent)
-        QDialog.setWindowTitle(u"Propriétés " + titre)
+        self.setWindowTitle(u"Propriétés " + titre)
+        self.setPalette(white_palette)
         ##self.SetExtraStyle(wx.WS_EX_BLOCK_EVENTS )
+        main = QVBoxLayout()
+        self.setLayout(main)
         self.onglets = OngletsProprietes(self)
+        main.addWidget(self.onglets)
         ##self.SetSize(wx.Size(*(max(dimensions) + 50 for dimensions in zip(self.dim1, self.dim2, self.dim3))))

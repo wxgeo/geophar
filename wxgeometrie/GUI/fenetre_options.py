@@ -29,7 +29,7 @@ from PyQt4.QtGui import (QDialog, QTabWidget, QWidget, QVBoxLayout, QGroupBox,
                          QComboBox, QFileDialog, QLineEdit)
 
 from ..param.options import Section, Parametre
-
+from .app import white_palette
 ##OptionsModifiedEvent, EVT_OPTIONS_MODIFIED = wx.lib.newevent.NewEvent()
 
 class FenetreOptions(QDialog):
@@ -37,6 +37,7 @@ class FenetreOptions(QDialog):
 
     def __init__(self, parent, options):
         QDialog.__init__(self, parent)
+        self.setPalette(white_palette)
         self.setWindowTitle(options.titre)
         self.parent = parent
         self.onglets = QTabWidget(self)

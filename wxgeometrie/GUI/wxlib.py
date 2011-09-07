@@ -21,10 +21,10 @@ from __future__ import with_statement
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 
-import os, math
+import os
 
-from PyQt4.QtCore import Qt, QThread, QEvent
-from PyQt4.QtGui import QCursor, QDialog, QPixmap, QCursor
+from PyQt4.QtCore import Qt, QThread, QEvent, pyqtSignal
+from PyQt4.QtGui import QCursor, QDialog, QPixmap, QPushButton, QColorDialog
 
 from .. import param
 from ..pylib import uu
@@ -140,3 +140,25 @@ def lieu(event_or_widget):
     else:
         p = event_or_widget.mapFromGlobal(QCursor.pos())
     return p.x(), p.y()
+
+class ColorSelecter(QPushButton):
+    u"A bouton used to select a color."
+
+    colorSelected = pyqtSignal('QColor')
+
+    def __init__(self, parent, color=None):
+        QPushButton.__init__(self, parent)
+        self.setColor(color)
+        self.clicked.connect(self.onClick)
+
+    def onClick(self):
+        self.setColor(QColorDialog.getColor(self.color, self, u"Choisissez une couleur"))
+
+
+    def setColor(self, color):
+        self.color = color
+        if color is not None:
+            self.setStyleSheet("ColorSelecter { background-color: %s }"
+                           "ColorSelecter:pressed { background-color: %s }" % (
+                           color.name(), color.light(125).name()))
+        self.colorSelected.emit(color)

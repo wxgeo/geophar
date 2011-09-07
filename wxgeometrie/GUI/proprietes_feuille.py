@@ -139,9 +139,7 @@ class ProprietesFeuille(QDialog):
         self.setWindowTitle(u"Propriétés de " + uu(feuille.nom))
         self.parent = parent
         self.feuille = feuille
-        self.fenetre_principale = self
-        while hasattr(self.fenetre_principale, "parent"): # detection de la fenetre principale de WxGeometrie.
-            self.fenetre_principale = self.fenetre_principale.parent
+        self.fenetre_principale = self.parent.window()
         self.panel = self.fenetre_principale.onglets.onglet_actuel
         self.onglets = OngletsProprietesFeuille(self)
         ##self.SetSize(wx.Size(*(max(dimensions) + 50 for dimensions in zip(self.dim1, self.dim2))))
