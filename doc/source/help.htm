@@ -1,0 +1,879 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html lang="fr"><head>
+<meta content="text/html;charset=ISO-8859-1" http-equiv="Content-Type"><title>Aide de WxG&eacute;om&eacute;trie</title>
+
+<meta content="Nicolas Pourcelot" name="author">
+</head>
+
+<body>
+<center>
+<h1><font color="#222288"><img style="width: 366px; height: 308px;" alt="WxG&eacute;om&eacute;trie" src="images/logo.png"></font></h1>
+Dynamic
+geometry, graph plotter,
+and more for french
+mathematic
+teachers.<br>
+<i>Copyright &copy; 2005-2011
+Nicolas Pourcelot</i><br>
+<br>
+<b>http://wxgeo.free.fr</b>
+</br></center>
+<br>
+<h2>Sommaire</h2>
+<ol>
+<li>
+<h4><a href="#licence">Licence</a></h4>
+</li>
+<li>
+<h4><a href="#installation">Installation</a></h4>
+</li>
+<li>
+<h4><a href="#pas">Premiers pas</a></h4>
+<ol>
+<li><a href="#geometrie">Le module de
+g&eacute;om&eacute;trie dynamique</a></li>
+<li><a href="#courbe">Le traceur de courbes</a></li>
+<li><a href="#calc">La calculatrice</a></li>
+<li><a href="#stats">Le module de statistiques</a></li>
+<li><a href="#probas">Le g&eacute;n&eacute;rateur d'arbres
+de probabilit&eacute;s</a><br></li>
+</ol>
+</li>
+<li>
+<h4><a href="#avance">Utilisation
+avanc&eacute;e</a></h4>
+<ol>
+<li><a href="#param"> Le fichier param.py</a></li>
+<li><a href="#debogage">D&eacute;bogage</a></li>
+<li><a href="#ligne">La ligne de commande
+</a><br></li>
+</ol>
+</li>
+<li>
+<h4><a href="#contrib">Comment contribuer ?</a></h4>
+</li>
+<li>
+<h4><a href="#merci">Remerciements</a></h4>
+</li>
+</ol>
+<h2><a name="licence"></a></h2>
+<h2>I. LICENCE</h2>
+This program is free software; you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the
+Free Software Foundation; either version 2 of the License, or (at your
+option) any later version.<br>
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+General Public License for more details.<br>
+You should have received a copy of the GNU General Public License along
+with this program; if not, write to the Free Software Foundation, Inc.,
+51 Franklin St, Fifth Floor, Boston, MA 02110-1301<br>
+<br>
+Ce programme est un logiciel libre; vous pouvez le
+redistribuer et/ou
+le modifier selon les termes de la GNU General Public Licence telle
+qu'elle a &eacute;t&eacute; publi&eacute;e par la Free
+Software Foundation; soit la version 2 de la licence, ou (au choix)
+toute version ult&eacute;rieure.<br>
+Ce programme est distribu&eacute; dans l'espoir qu'il puisse
+&ecirc;tre
+utile, mais sans aucune garantie, pas m&ecirc;me la garantie
+implicite qu'il
+puisse etre adapt&eacute; &agrave; un usage donn&eacute;.
+Pour plus de pr&eacute;cisions, lisez la
+GNU General Public License.<br>
+Vous avez recu en principe une copie de la GNU General Public License
+en m&ecirc;me temps que ce programme. Si ce n'est pas le cas,
+&eacute;crivez a l'adresse suivante : Free Software Foundation,
+Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301<br>
+<br>
+<br>
+<h2><a name="installation"></a>II.
+INSTALLATION</h2>
+Pour fonctionner, ce programme n&eacute;cessite la configuration
+logicielle suivante :<br>
+<ul>
+<li>Windows 98 ou sup&eacute;rieur, ou une
+distribution
+Linux assez r&eacute;cente.</li>
+<li>Le logiciel
+Python, version 2.4 ou sup&eacute;rieure.<br>
+(Logiciel
+libre, disponible gratuitement sur <font color="#cc6600"><u>http://www.python.org
+</u></font>)<br>
+Sous Linux, une version
+r&eacute;cente est en principe
+d&eacute;j&agrave;
+pr&eacute;sente.</li>
+<li>La librairie graphique
+WxPython,
+version 2.6 (des probl&egrave;mes subsistent avec la version
+2.8 sous Windows).<br>
+(Logiciel libre, disponible gratuitement sur <font color="#cc6600"><u>http://www.wxpython.org</u></font>)<br>
+Sous Linux, une version est en principe deja pr&eacute;sente, mais
+elle n'est
+pas toujours assez r&eacute;cente.</li>
+<li>La
+librairie
+math&eacute;matique numpy<br>
+(Logiciel
+libre, disponible gratuitement sur <u><font color="#cc6600">http://sourceforge.net/project/showfiles.php?group_id=1369&amp;package_id=175103</font></u>)</li>
+<li>La librairie math&eacute;matique Matplotlib, version 0.91.2 ou
+sup&eacute;rieure<br>
+(Logiciel
+libre,
+disponible gratuitement sur <u><font color="#cc6600">http://www.sourceforge.net/projects/matplotlib</font></u>)</li>
+</ul>
+<u><br>
+<br>
+Remarque</u>
+: ces logiciels doivent &ecirc;tre install&eacute;s dans
+l'ordre mentionn&eacute;.<br>
+<br>
+Sous Windows, un red&eacute;marrage du syst&egrave;me
+est
+conseill&eacute; apr&egrave;s ces installations.<br>
+<br>
+Apr&egrave;s avoir t&eacute;l&eacute;charg&eacute; la
+derni&egrave;re
+version de
+WxGeometrie (<u><font color="#cc6600">http://www.sourceforge.net/projects/wxgeometrie</font></u>),
+d&eacute;zippez l'archive dans un r&eacute;pertoire sur lequel
+vous avez
+les permissions n&eacute;cessaires.<br>
+Vous pouvez lancer le programme en double-cliquant sur le fichier
+<i>wxgeometrie.pyw</i> .<br>
+<br>
+<u>Sous Windows :</u><br>
+Il existe d&eacute;sormais un programme d'installation de
+WxG&eacute;om&eacute;trie.
+<br>
+Ce programme n&eacute;cessite un acc&egrave;s
+&agrave; internet, car il
+t&eacute;l&eacute;charge les derni&egrave;res versions de
+Python, et
+des autres librairies n&eacute;cessaires (afin de ne pas alourdir
+inutilement le programme d'installation en incluant
+syst&eacute;matiquement tout).
+<br>
+<br>
+Pour <b>d&eacute;sinstaller</b>
+WxG&eacute;om&eacute;trie, il suffit de supprimer le
+r&eacute;pertoire d'installation du programme.
+En effet, pour l'instant, WxG&eacute;om&eacute;trie
+n'&eacute;crit rien dans la base de registre.<br>
+<br>
+Il existe &eacute;galement une version sans
+installation, qui ne n&eacute;cessite pas la pr&eacute;sence de
+Python.<br>
+Cette
+derni&egrave;re version est surtout livr&eacute;e &agrave;
+des fins de
+d&eacute;monstration (ou pour &ecirc;tre utilis&eacute;e
+sur une clef
+USB, style Framakey) ; elle est&nbsp; probablement moins
+stable
+(si quelqu'un veut reprendre et am&eacute;liorer le projet ?).
+<br>
+<br>
+<br>
+<br>
+<h2><a name="pas"></a>III.
+PREMIERS PAS</h2>
+Certaines options de WxG&eacute;om&eacute;trie ne sont pas
+encore fonctionnelles.<br>
+Il ne s'agit pas de bugs en general, mais, simplement, du fait que ces
+options ne sont pas encore compl&egrave;tement &eacute;crites.
+Ainsi, un certain nombre de boutons et d'entr&eacute;es du menu ne
+provoquent aucune action dans les versions actuelles. Ceci correspond
+&agrave; des fonctionnalit&eacute;s qui seront
+implement&eacute;es dans les prochaines versions.<br>
+<br>
+WxG&eacute;om&eacute;trie est compos&eacute;e de plusieurs modules ; les 5 principaux sont
+:<br>
+<ul>
+<li>Un module de g&eacute;om&eacute;trie dynamique.</li>
+<li>Un traceur de courbes.</li>
+<li>Une calculatrice formelle.</li>
+<li>Un module graphique de statistiques.</li>
+<li>Un g&eacute;n&eacute;rateur d'arbres de probabilit&eacute;s.</li>
+</ul>
+Les autres modules pr&eacute;sents sont fournis &agrave; titre purement exp&eacute;rimental, et ne sont donc pas document&eacute;s ici.
+<br>
+<br>
+<u>Note :</u><br>
+Toutes les fonctionnalit&eacute;s du module de
+g&eacute;om&eacute;trie dynamique sont utilisables dans le
+traceur de courbes ; elles sont aussi (en partie) utilisables dans le module de statistiques.<br>
+<br>
+<h3><a name="geometrie"></a>1.
+Le module de g&eacute;om&eacute;trie dynamique</h3>
+<br>
+<b>Pilotage avec la souris</b><br>
+Vous pouvez pour l'instant faire les actions suivantes :<br>
+<ul>
+<li>cr&eacute;er une nouvelle feuille</li>
+<li>cr&eacute;er
+diff&eacute;rents types de points, de
+droites, de cercles, des vecteurs, des intersections...</li>
+<li>modifier les propri&eacute;t&eacute;s de ces
+diff&eacute;rents objets (changer leur couleur, les masquer...)</li>
+<li>r&eacute;gler la fen&ecirc;tre d'affichage</li>
+<li>orthonormaliser le rep&egrave;re</li>
+<li>annuler une
+ou plusieurs actions</li>
+<li>exporter et sauvegarder la figure</li>
+</ul>
+Utilisation de la souris pour piloter le logiciel :<br>
+<ul>
+<li>Laissez enfonc&eacute; le bouton droit de la souris
+pour
+d&eacute;placer
+la figure.</li>
+<li>La molette de la souris permet de
+zoomer sur la figure.</li>
+<li>En laissant enfonc&eacute;e la touche
+[Ctrl], la molette de la souris permet d'ajuster la taille des textes de
+la figure.</li>
+<li>Laissez enfonc&eacute;e la touche
+[Ctrl], et le bouton gauche de la
+souris, pour s&eacute;lectionner une zone et zoomer dessus.</li>
+<li>Vous
+pouvez d&eacute;placer les points libres de la figure avec la
+souris.</li>
+<li>Placez-vous sur un point, ou un texte, et appuyez sur la
+touche [Entr&eacute;e], pour le renommer.</li>
+<li>Placez-vous sur un objet, et faites un clic droit pour
+&eacute;diter ses propri&eacute;t&eacute;s</li>
+<li>Placez-vous sur un objet, et faites [Suppr] pour le
+supprimer, ou [Maj] + [Suppr] pour le masquer .</li>
+<li>Si vous cr&eacute;ez un point libre en laissant la
+touche [Maj] enfonc&eacute;e, le point se placera sur le
+quadrillage.</li>
+<li>Vous pouvez d&eacute;placer le nom d'un point autour de
+celui-ci en cliquant dessus, la touche [Alt] &eacute;tant
+enfonc&eacute;e.</li>
+</ul>
+<u>Note:</u><br>
+Sous Ubuntu, la touche [Alt] est d&eacute;j&agrave; utilis&eacute;e pour d&eacute;placer la
+fen&ecirc;tre.
+Il est conseill&eacute; de modifier ce comportement :
+dans Syst&egrave;me&gt;Pr&eacute;f&eacute;rence&gt;Fen&ecirc;tres, choisir "Super" comme
+"touche de mouvement".
+<br>
+<br>
+<b>Cr&eacute;ation d'objets via le menu <i>Cr&eacute;er</i></b><br>
+Pour la cr&eacute;ation des objets
+g&eacute;om&eacute;triques, il existe une abondante aide
+contextuelle dans chaque fen&ecirc;tre de cr&eacute;ation
+d'objet.<br>
+Cliquez sur le point d'interrogation en haut de la fen&ecirc;tre,
+puis sur un champ, pour obtenir une aide detaill&eacute;e.<br>
+En cliquant avec le bouton du milieu de la souris dans un champ, vous
+ferez &eacute;galement apparaitre diverses propositions.<br>
+<br>
+Vous pouvez utiliser les notations suivantes : [A B] pour le segment
+[AB],&nbsp;(A B) pour la droite (AB), (A&gt;B) pour le vecteur
+A-&gt;B, ||A&gt;B|| pour sa norme.<br>
+<i>Remarquez l'espace entre les lettres "A" et "B" dans les deux
+premiers
+cas.</i>
+<br>
+<br>
+<br>
+<b>Choisir le mode d'affichage de l'&eacute;tiquette d'un objet</b><br>
+Vous remarquerez que chaque objet poss&egrave;de quatre modes
+d'affichage : nom, texte, formule, ou aucun.<br>
+<img style="width: 430px; height: 482px;" alt="&quot;Fen&ecirc;tre de propri&eacute;t&eacute;&quot;" src="images/ptes_objets.png"><br>
+<br>
+Que signifient ces 4 modes ?<br>
+<ul>
+<li>Mode &laquo; Nom &raquo; : le nom de l'objet est
+affich&eacute;.<br>
+Un nom d'objet doit commencer par une lettre (non
+accentu&eacute;e), suivie de lettres (non
+accentu&eacute;es) et de chiffres.<br>
+Il est forc&eacute;ment unique.<br>
+Certains noms sont r&eacute;serv&eacute;s (<i>e, pi, x, y, t, i, ...</i>
+) </li>
+<li>Mode &laquo; Texte &raquo; : un texte est
+affich&eacute; &agrave; la place du nom.<br>
+Ce mode permet d'associer n'importe quel type de texte &agrave; un
+objet.<br>
+La syntaxe LATEX est &eacute;galement partiellement
+support&eacute;e, dans ce cas, le texte doit &ecirc;tre entre $.<br>
+<u>Exemple :</u><br>
+"$\alpha_{n}$"</li>
+<li>Mode &laquo; Formule &raquo; : le texte
+affich&eacute; est interpr&eacute;t&eacute; comme une
+formule.<br>
+On peut aussi m&eacute;langer du texte
+interpr&eacute;t&eacute; et non
+interpr&eacute;t&eacute;, en mettant les blocs &agrave;
+interpr&eacute;ter entre { }.<br>
+<u>Exemple :</u><br>
+"Le point A a pour abscisse {A.x} et pour ordonn&eacute;e {A.y}."</li>
+<li>Mode &laquo; Aucun &raquo; : rien n'est
+affich&eacute;.</li>
+</ul>
+<br>
+<br>
+<br>
+<b>La ligne de commande</b><br>
+Elle permet de cr&eacute;er rapidement des objet g&eacute;om&eacute;triques. (Personnellement, je l'utilise fr&eacute;quemment).<br>
+Elle fonctionne dans le module g&eacute;ometrie,&nbsp;dans le module
+traceur, et dans le module statistiques.<br>
+<br>
+<u>Utilisation :</u><br>
+Voici quelques exemples qui parleront mieux qu'un long discours...<br>
+<br>
+<u>Exemples</u><br>
+<ol>
+<li> "A=Point(1,2)" ou
+"A=(1,2)"<br>
+Cr&eacute;ation d'un point A de coordonn&eacute;es (1 ; 2).<br>
+</li>
+<li> "u=Vecteur(1,2)" ou
+"u=(1,2)"<br>
+Cr&eacute;ation d'un vecteur u de coordonn&eacute;es (1 ; 2).<br>
+</li>
+<li> "AB=Segment(A,B)" ou
+"AB=[A B]"<br>
+Cr&eacute;ation du segment [AB].
+<br>
+<i>Attention &agrave; l'espace entre les lettres dans le
+deuxi&egrave;me cas.</i>
+</li>
+<li>
+"d=Droite(A,B)" ou "d=(A B)"<br>
+Cr&eacute;ation de la droite (AB).<br>
+<i>Attention &agrave; l'espace entre les lettres dans le
+deuxi&egrave;me cas.</i>
+</li>
+<li> "u=Vecteur(A,B)" ou
+"u=A&gt;B"<br>
+Cr&eacute;ation du vecteur A-&gt;B.</li>
+<li>"M=C+2*(A&gt;B)"<br>
+Cr&eacute;ation du point M v&eacute;rifiant C-&gt;M = 2
+A-&gt;B.<br>
+<i>Les parenth&egrave;ses sont obligatoires.</i>
+</li>
+<li>"fenetre=(-10,10,-5,5)"<br>
+Changement de la fenetre d'affichage (xmin, xmax, ymin, ymax).
+<br>
+<i>Si l'affichage est en mode orthonorm&eacute;, la fen&ecirc;tre sera &eacute;largie pour respecter cette contrainte.</i>
+</li>
+</ol>
+<br>
+
+<h3><a name="courbe"></a>2. Le
+traceur de courbes</h3>
+Vous pouvez pour l'instant faire les actions suivantes :<br>
+<ul>
+<li>r&eacute;gler la
+fen&ecirc;tre d'affichage</li>
+<li>orthonormaliser le
+rep&egrave;re</li>
+<li>utiliser des objets g&eacute;om&eacute;triques</li>
+<li>repr&eacute;senter des suites</li>
+</ul>
+<br>
+Le traceur de courbes
+supporte les fonctions d&eacute;finies par morceau, continues ou
+non.<br>
+<br>
+<u>Exemples</u>
+: <br>
+1) Soit la fonction <i>f</i>,
+d&eacute;finie sur R-{0} par <i>f</i>(<i>x</i>)=1/<i>x</i><br>
+Remplissez les champs de la mani&egrave;re suivante :<br>
+&nbsp;<img style="width: 329px; height: 64px;" alt="[V] Y1= [ 1/x ] sur [ R-{0} ]" src="images/inverse.png"><br>
+<br>
+<i>Notes</i>
+:
+vous remplissez le premier champ avec 1/x (la
+fonction), le deuxi&egrave;me avec l'intervalle de
+d&eacute;finition,
+c'est-&agrave;-dire
+R-{0}.<br>
+<img style="width: 324px; height: 350px;" alt="Graphe de la fonction inverse." src="images/inverse_graphe.png"><br>
+<br>
+2) Soit la fonction&nbsp; <i>f</i>,
+d&eacute;finie sur [-2;0[ par <i>f</i>(<i>x</i>)
+= -1, et sur
+[0;1[ U ]2;3] par <i>f</i>(<i>x</i>) = <i>x</i><br>
+Remplissez les champs de la mani&egrave;re suivante :<br>
+<img style="width: 327px; height: 30px;" alt="[V] Y2= [ -1|x ] sur [ [-2;0[|[0;1[U]2;3] ]" src="images/morceaux.png"><br>
+<br>
+<i>Notes</i>
+:
+Vous remplissez le
+premier champ avec la fonction.<br>
+Comme elle est d&eacute;finie par morceaux, on
+utilise le symbole "|" comme s&eacute;parateur: ce qui donne -1|x.<br>
+Vous
+remplissez le 2&egrave;me champ avec l'intervalle de
+d&eacute;finition.<br>
+Comme elle
+est d&eacute;finie par morceaux, on utilise le symbole "|" comme
+s&eacute;parateur:
+ce qui donne [-2;0[|[0;1[U]2;3].<br>
+<img style="width: 268px; height: 241px;" alt="Graphe d'une fonction affine par morceaux." src="images/morceaux_graphe.png"><br>
+<br>
+<h3><a name="calc"></a>3.
+La calculatrice</h3>
+Son fonctionnement sera assez
+familier pour quiconque a d&eacute;j&agrave; utilis&eacute;
+une calculatrice
+scientifique.<br>
+Elle
+permet de travailler sur des nombres r&eacute;els ou complexes, et de faire du
+calcul formel de niveau lyc&eacute;e.<br>
+<br>
+<br>
+En particulier, on peut d&eacute;velopper, factoriser, d&eacute;river, int&eacute;grer, et
+r&eacute;soudre des (in)&eacute;quations ou des syst&egrave;mes lin&eacute;aires :<br>
+<ul>
+<li>developpe((x-3)(x+sin(x)-4))</li>
+<li>factorise(x*exp(x)+exp(x))</li>
+<li>derive(x^2+x+1)</li>
+<li>integre(x^2+x+1)</li>
+<li>resous(x*exp(x)+exp(x)=0)</li>
+<li>resous(x+3&gt;2-x ou (x-4&lt;=3x+7 et x&gt;0))</li>
+<li>resous(x+3-y=2-x et x-4y=3x+7y-1)</li>
+<br>
+</ul>
+<br>
+<br>
+<u>Nota 1</u> : Pour obtenir le r&eacute;sultat d'un calcul sous forme d&eacute;cimale (calcul approch&eacute;), appuyez sur MAJ+ENTR&Eacute;E au lieu de ENTR&Eacute;E.
+<br>
+<u>Nota 2</u> : On peut faire apparaitre la liste des
+fonctions par un clic-droit dans la zone de saisie, en laissant enonc&eacute;e
+la touche CTRL.
+<br>
+<br>
+Depuis la version 0.120, elle utilise la librairie de calcul formel
+sympy <i>(&copy; 2006-2011 SymPy Development Team)</i>.
+<br>
+<br>
+Des
+variables peuvent
+&ecirc;tre
+utilis&eacute;es pour m&eacute;moriser des valeurs, ou
+d&eacute;finir des fonctions.<br>
+<br>
+<u>Exemples</u>:<br>
+<ul>
+<li>a = 25+7/4</li>
+<li>f(x)=2x+17</li>
+<li>g=f'<br>
+Ici, la fonction g est d&eacute;finie comme la d&eacute;riv&eacute;e de la fonction f.
+<br>
+</li>
+<br>
+</ul>
+<br>
+Notez que certaines variables sont prot&eacute;g&eacute;es (i, e ou E, pi, ...).<br>
+<h3><a name="stats"></a>4. Le
+module statistiques</h3>
+Ce module
+sert essentiellement &agrave; tracer des diagrammes, qui n'existent
+pas
+toujours sur tableur, ou qui y sont incorrectement d&eacute;finis.<br>
+A l'origine,
+ma
+motivation &eacute;tait essentiellement de pouvoir tracer des
+histogrammes, qu'OpenOffice.org&reg; ou Excel&reg; confondent
+avec les
+diagrammes en barre.<br>
+Il fait aussi la diff&eacute;rence
+entre
+diagrammes en barres et en b&acirc;tons (contrairement &agrave;
+ce
+qu'on peut lire souvent, la diff&eacute;rence essentielle n'est pas
+esth&eacute;tique).<br>
+<br>
+Voici
+une pr&eacute;sentation des principaux types de graphiques :<br>
+<br>
+<u><b>Diagrammes
+en barres :</b><br>
+</u>Utilis&eacute;s en
+particulier pour des s&eacute;ries &agrave;
+caract&egrave;re qualitatif.<br>
+<i>Exemple :</i> la
+r&eacute;partition des voyelles dans l'alphabet.<br>
+<br>
+On
+s&eacute;lectionne le mode :<br>
+<img alt="" src="images/diag_barres0.png" height="52" width="184"><br>
+<br>
+On
+ajoute les valeurs et les effectifs (ou fr&eacute;quences) qui leur
+correspondent.<br>
+La
+syntaxe est la suivante : &laquo; effectif * valeur &raquo;
+(valeur
+doit &ecirc;tre entre guillemets, pour des valeurs non
+num&eacute;riques).<br>
+<img alt="" src="images/diag_barres1.png" height="39" width="489"><br>
+Il
+ne reste plus qu'&agrave; compl&eacute;ter la
+l&eacute;gende :<br>
+<img alt="" src="images/diag_barres2.png" height="65" width="586"><br>
+<br>
+Et
+&agrave; appuyer sur [Entr&eacute;e] dans un des champs.<br>
+Le
+r&eacute;sultat est le suivant :<br>
+<img alt="" src="images/diag_barres.png" height="321" width="600"><br>
+<br>
+<u><br>
+<b>Diagrammes
+en b&acirc;tons :</b><br>
+</u>Utilis&eacute;s&nbsp;pour
+des s&eacute;ries &agrave; caract&egrave;re quantitatif
+discret.<br>
+<i>Exemple :</i> la r&eacute;partition des pointures de
+chaussures chez les femmes fran&ccedil;aises adultes (2005).<br>
+<br>
+On
+s&eacute;lectionne le mode :<br>
+<img alt="" src="images/diag_baton_0.png" height="52" width="184"><br>
+<br>
+On
+ajoute les valeurs et les effectifs (ou fr&eacute;quences) qui leur
+correspondent, et on compl&egrave;te la l&eacute;gende :<br>
+<img alt="" src="images/diag_baton_1.png" height="122" width="405"><br>
+<br>
+On presse la touche
+[Entr&eacute;e] dans un des champs.<br>
+Le r&eacute;sultat
+est le suivant :<br>
+<br>
+<img alt="" src="images/diag_baton_2.png" height="233" width="518"><br>
+<u><br>
+<br>
+<b>Histogrammes
+:</b><br>
+</u>Utilis&eacute;s&nbsp;pour des
+s&eacute;ries &agrave; caract&egrave;re quantitatif continu.<br>
+On
+va reprendre l'exemple pr&eacute;c&eacute;dent, en regroupant
+les pointures par classe.<br>
+<br>
+On s&eacute;lectionne
+le mode :<br>
+<img alt="" src="images/histo_0.png" height="50" width="179"><br>
+<br>
+On
+compl&egrave;te la rubrique &laquo; Regroupement par classes
+&raquo;.<br>
+<img alt="" src="images/histo_1.png" height="29" width="397"><br>
+<br>
+Pour les
+histogrammes, il n'y a pas d'ordonn&eacute;e, mais il faut
+pr&eacute;ciser la nature de l'unit&eacute; d'aire.<br>
+<img alt="" src="images/histo_2.png" height="31" width="156"><br>
+<br>
+Et on appuye sur
+[Entr&eacute;e].<br>
+<img alt="" src="images/histo_3.png" height="229" width="525"><br>
+<br>
+<br>
+<u><br>
+<b>Pour
+aller plus loin :<br>
+</b></u>
+<ul>
+<li>A la
+place des valeurs num&eacute;riques, on peut tout &agrave; fait
+ins&eacute;rer des formules.<br>
+<u>Exemple : </u><br>
+<img alt="" src="images/stats_avance.png" height="24" width="432"></li>
+<li>La g&eacute;n&eacute;ration de listes est
+&eacute;galement possible.
+La syntaxe est celle de Python (cf. <i>list comprehensions</i>
+dans la documentation de Python).<br>
+Essayez par exemple de rentrer cette formule : [(rand(),i) for i in
+range(4)].</li>
+<li>Dans Outils, trois
+sous-menus permettent respectivement de cr&eacute;er des
+exp&eacute;riences.<br>
+En particulier, &agrave; titre
+d'exemple, il est possible de simuler des<b> lancers de
+d&eacute;s</b>, et des <b>sondages simples</b>.<br>
+<br>
+N'h&eacute;sitez
+pas &agrave; &eacute;diter le fichier <i>experience.py</i>
+dans <i>modules/statistiques</i>/, et &agrave; y
+ajouter de nouvelles fonctions.<br>
+Vous pourrez&nbsp;ensuite
+r&eacute;aliser vos propres exp&eacute;riences, depuis le menu
+&laquo; Experience &raquo;.<br>
+<img alt="" src="images/stats_experience.png" height="228" width="537"><br>
+Entrez votre formule dans le champ
+&laquo; Experience &raquo; (ici, un lancer de d&eacute;),
+et le nombre d'exp&eacute;riences.<br>
+Eventuellement,
+entrez aussi les valeurs possibles . Pour un lancer de d&eacute;
+par
+exemple, cela permet d'afficher en l&eacute;gende 1, 2, 3, 4, 5 et
+6,<br>
+quand bien m&ecirc;me il n'y aurait aucun &laquo; 4
+&raquo; par exemple.<br>
+<br>
+<i>Notes :</i>&nbsp; <br>
+-
+Pour simuler des lancers de d&eacute;s, mieux vaut utiliser le menu
+sp&eacute;cialement d&eacute;di&eacute; (quelques
+optimisations y ont
+&eacute;t&eacute; faites).<br>
+- La case &laquo;
+lancer une animation &raquo; n'a pas d'effet pour l'instant.<br>
+<br>
+</li>
+</ul>
+<u><b><a name="probas"></a></b></u><br>
+<h3>4. Le g&eacute;n&eacute;rateur d'arbres de probabilit&eacute;s</h3>
+<img alt="" src="images/arbre.png" height="385" width="600"><br>
+Les arbres de probabilit&eacute; sont cod&eacute;s de la mani&egrave;re suivante :
+<br>
+<ul>
+<li>
+La premi&egrave;re ligne (optionnelle) correspond &agrave; la l&eacute;gende.
+<br>
+<br>
+<u>Exemple :</u>
+<br>
+<font color="gray">||Premier tirage|Deuxi&egrave;me tirage</font>
+<br>
+<br>
+<i>(Note :
+l'ajout de barres verticales suppl&eacute;mentaires (AltGr+6) d&eacute;cale la
+l&eacute;gende vers la droite.)</i>
+</li>
+<li>
+Les lignes suivantes correspondent &agrave; l'arbre
+proprement dit.
+<br>
+<ul><li>Le nombre de &gt; correspond au niveau dans l'arbre.</li>
+<li>
+La syntaxe est la suivante :
+<br>
+&laquo; Nom de l'&eacute;v&egrave;nement &raquo; : &laquo; Probabilit&eacute; de l'&eacute;v&egrave;nement &raquo;
+</li></ul>
+<br>
+<u>Exemple :</u>
+<br>
+<font color="gray">omega <br>
+&gt; A:1/4<br>
+&gt;&gt; B:1/5<br>
+&gt;&gt; J:2/5<br>
+&gt;&gt; V:...<br>
+&gt; &amp;A :3/4<br>
+&gt;&gt; B:...<br>
+&gt;&gt; J:...<br>
+&gt;&gt; V:...</font><br>
+Le <b>symbole &amp;</b> indique qu'il s'agit de l'&eacute;v&egrave;nement contraire : &amp;A est ainsi l'&eacute;v&egrave;nement &laquo;A barre&raquo;.
+<br>
+<i>(Note : la syntaxe LaTeX est &eacute;galement accept&eacute;e).</i>
+</li>
+</ul>
+<h2><a name="avance"></a>IV.
+UTILISATION AVANC&Eacute;E</h2>
+<h3><a name="param"></a>1.
+Le fichier param.py</h3>
+Un grand nombre de
+param&egrave;tres peuvent &ecirc;tre modifi&eacute;s dans
+le fichier <i>param.py</i> avec un
+simple &eacute;diteur de textes.<br>
+<u>Exemple: </u><br>
+Remplacez "affiche_axes =
+True" par "affiche_axes = False" pour que les axes ne soient plus
+affich&eacute;s par defaut.<br>
+<br>
+Note : il peut &ecirc;tre parfois n&eacute;cessaire d'effacer le dossier <i>/preferences</i> (qui contient les param&egrave;tres de la session pr&eacute;c&eacute;dente) pour que les changements soient pris en compte.
+
+<h3><a name="debogage"></a>2. D&eacute;bogage</h3>
+Dans le menu Avanc&eacute;&gt;D&eacute;boguer, s&eacute;lectionner &laquo; D&eacute;boguer &raquo; pour faire appara&icirc;tre une fen&ecirc;tre contenant entre autres tous les rapports d'erreurs.
+
+Par ailleurs, le r&eacute;pertoire <i>/log</i> contient les fichiers .log g&eacute;n&eacute;r&eacute;s lors de la derni&egrave;re ex&eacute;cution (actions effectu&eacute;es, messages d'erreurs, etc.)
+
+<h3><a name="ligne"></a>3.
+La
+ligne de commande</h3>
+<u>Introduction:</u><br>
+La ligne de commande sert essentiellement
+&agrave;
+d&eacute;buguer le programme.<br>
+(Ou &agrave; r&eacute;aliser certaines op&eacute;rations
+internes,
+etc...)<br>
+La ligne de commande permet d'ex&eacute;cuter des instructions Python.<br>
+<br>
+Pr&eacute;c&eacute;d&eacute; du symbole <b>&amp;</b>, le
+r&eacute;sultat de la commande sera affich&eacute;
+dans la console. (<i>NB</i> : assurez-vous au pr&eacute;lable que l'option &laquo; D&eacute;boguer &raquo; soit coch&eacute;e, dans le menu Avanc&eacute;&gt;D&eacute;boguer).<br>
+<br>
+<br>
+Les raccourcis suivants sont disponibles :
+<ul>
+<li><i>!p.</i> pour <i>panel.</i></li>
+<li><i>!c.</i> pour <i>canvas.</i></li>
+<li><i>!f.</i> pour <i>feuille.</i></li>
+<li><i>!o.</i> pour <i>objets.</i></li>
+<li><i>!g.</i> pour <i>moteur_graphique.</i></li>
+</ul>
+<br>
+Leur maniement n&eacute;cessite &eacute;videmment de bien conna&icirc;tre l'API de WxG&eacute;om&eacute;trie, et donc de faire un tour dans le code source.
+<br>
+<br>
+<u>Exemples :</u><br>
+1)
+"print 'hello world !'"<br>
+Ceci va afficher 'hello wold !' sur la
+console.<br>
+<i>NB :</i>
+&laquo; &amp; 'hello world !' &raquo; produirait le m&ecirc;me
+resultat.<br>
+2) "print objets.A"<br>
+Affiche, s'il existe, l'objet A dans la
+console.<br>
+<i>NB :</i>
+Cette commande s'abr&egrave;ge de m&ecirc;me en &laquo; &amp; !o.A &raquo;.<br>
+3) "panel.exporter('test.png')"<br>
+Exporte la figure courante en un fichier <i>test.png</i>.<br>
+<i>NB :</i> Forme abr&eacute;g&eacute;e : &laquo; !p.exporter('test.png') &raquo;.
+<br>
+4) "feuille.fenetre = (-5,2,-7,3)"<br>
+Change la fen&ecirc;tre d'affichage en (-5, 2, -7, 3).<br>
+<i>NB :</i> Forme abr&eacute;g&eacute;e : &laquo; !f.fenetre = (-5,2,-7,3) &raquo;.
+<br>
+<br>
+<h2><a name="contrib"></a>V.
+COMMENT CONTRIBUER ?</h2>
+<b>Vous pouvez par exemple :</b><br>
+<ul>
+<li>m'envoyer
+un mail &agrave; l'adresse suivante : <a href="mailto:wxgeo@users.sourceforge.net">wxgeo@users.sourceforge.net</a>,
+en me donnant vos impressions g&eacute;n&eacute;rales.</li>
+<li>corriger les
+&eacute;ventuelles fautes
+d'orthographe.</li>
+<li>me signaler des bugs
+existants, et non r&eacute;pertori&eacute;s sur le tracker <u><font color="#cc6600">http://wxgeo.free.fr/tracker</font></u>
+.</li>
+<li>me proposer
+des corrections de bug :)</li>
+<li>ajouter
+des fonctions math&eacute;matiques &agrave; la
+calculatrice</li>
+<li>impl&eacute;menter la gestion des coniques </li>
+<li>commencer de g&eacute;om&eacute;trie dynamique dans l'espace</li>
+<li>compl&eacute;ter cette
+documentation ou
+cr&eacute;er
+un tutoriel (je manque de temps pour tout faire !)</li>
+</ul>
+<br>
+<br>
+Je suis &eacute;galement ouvert
+&agrave;
+toute autre contribution, et je suis pr&ecirc;t &agrave;
+travailler en &eacute;quipe... :-)<br>
+<br>
+<br>
+<b>Je
+recherche en particulier (liste non exhaustive) :</b><br>
+<ol>
+<li>des
+personnes pour m'aider &agrave; maintenir et &agrave;
+am&eacute;liorer :<br>
+<ul>
+<li>le fonctionnement
+sous Linux :<br>
+tests, cr&eacute;ation de scripts bash
+d'installation, de paquetages .deb ou .rpm, guides utilisateurs,
+etc..., chose que je n'ai pas le temps de faire aussi bien que je le
+souhaiterais.</li>
+<li>le fonctionnement
+sous MacOs X : <br>
+th&eacute;oriquement,
+&ccedil;a devrait tourner
+assez facilement, &nbsp;mais je n'ai jamais eu la
+possibilit&eacute;
+de le tester.<br>
+</li>
+</ul>
+</li>
+<li>des
+personnes int&eacute;ress&eacute;es par la construction de
+nouveaux modules pour WxG&eacute;om&eacute;trie.<br>
+Je
+pense en particulier &agrave; des professeurs de
+math&eacute;matiques, de
+sciences-physiques, de technologie... qui auraient un peu
+d'exp&eacute;rience
+en programmation objet (mais pas n&eacute;cessairement en python :
+python en
+lui-m&ecirc;me s'apprend en une semaine).<br>
+Une
+premi&egrave;re exp&eacute;rience fructueuse a
+d&eacute;j&agrave;
+commenc&eacute;e, en collaboration avec Christophe Vrignaud.<br>
+</li>
+<li>des
+personnes pour me faire remonter des rapports de bugs, ou des
+suggestions. A quelques exceptions pr&egrave;s, les seuls
+&eacute;chos que j'ai pu avoir,
+ce sont les statistiques de sourceforge. Je sais que le projet manque
+encore de maturit&eacute;, mais au fil des versions, il y a
+d&eacute;sormais un peu
+de mati&egrave;re. Toutes les critiques sufisamment
+pr&eacute;cises sont bonnes &agrave;
+prendre. ;-)</li>
+</ol>
+<i><br><br>
+Note :</i>
+&nbsp;une documentation sp&eacute;cifique pour
+d&eacute;veloppeurs se trouve dans le r&eacute;pertoire <i>doc/developpeurs/</i>.<br>
+<br>
+<br>
+<br>
+<h2><a name="merci"></a>VI.
+REMERCIEMENTS</h2>
+<br>
+Sans pr&eacute;tention d'exhaustivit&eacute;, je voudrais remercier :
+<ul>
+<li>Boris Mauricette, pour avoir contribu&eacute; au module de Statistiques (trac&eacute; des quartiles).</li>
+<li>Christophe Bal pour ses commentaires, et pour avoir propos&eacute; la
+syntaxe du module de Probabilit&eacute;s.</li>
+<li>Les d&eacute;veloppeurs de sympy, avec qui j'ai toujours eu des &eacute;changes cordiaux et constructifs, y compris de code.<br>
+Remerciements plus particuliers &agrave; Chris Smith, Vinzent Steinberg et Aaron Meurer.</li>
+<li>Christophe Vrignaud,
+qui a d&eacute;velopp&eacute; et maintenu quelques temps le module Scicalc pour
+Wxg&eacute;om&eacute;trie.
+<li>
+St&eacute;phane Cl&eacute;ment a mis a disposition de Wxg&eacute;om&eacute;trie le wiki de
+l'acad&eacute;mie d'Aix-Marseille.
+</li>
+<li>Tous ceux qui ont
+pris le temps de faire quelques commentaires sur ce programme,
+et
+m'ont encourag&eacute; &agrave; continuer (en particulier dans les premiers temps : mon fr&egrave;re Thomas, Enzo,
+Rhydwen Volsik, Robert Setif...).</li>
+<li>
+Fran&ccedil;ois Lermigeaux, pour les coups de pub occasionnels.
+</li>
+<li>Georges Khaznadar, pour ses nombreux conseils concernant Debian.</li>
+<li>
+Tous ceux qui ont pris le temps de faire des rapports de bugs et des retours.
+</li>
+</ul>
+<br>
+<br>
+Merci enfin &agrave; Sophie pour sa
+patience !<br>
+</body></html>
