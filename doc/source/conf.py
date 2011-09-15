@@ -196,3 +196,7 @@ latex_documents = [
 
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {'http://docs.python.org/': None}
+
+
+# jsMath conf, see http://sphinx.pocoo.org/ext/math.html#module-sphinx.ext.jsmath
+jsmath_path = "jsMath/easy/load.js"
