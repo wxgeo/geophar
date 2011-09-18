@@ -1,5 +1,5 @@
 
-.. image:: images/logo.png
+.. image:: img/logo.png
     :alt: WxGeometrie
 
 =
@@ -226,7 +226,7 @@ B) pour la droite (AB), (A>B) pour le vecteur A->B, ||A>B|| pour sa norme.
 **Choisir le mode d'affichage de l'etiquette d'un objet**
 Vous remarquerez que chaque objet possede quatre modes d'affichage : nom,
 texte, formule, ou aucun.
-.. image:: images/ptes_objets.png
+.. image:: img/ptes_objets.png
     :alt: "Fenetre de propriete"
 
 
@@ -308,20 +308,20 @@ ou non.
 *Exemples* :
 1) Soit la fonction *f*, definie sur R-{0} par *f*(*x*)=1/*x*
 Remplissez les champs de la maniere suivante :
- .. image:: images/inverse.png
+ .. image:: img/inverse.png
     :alt: [V] Y1= [ 1/x ] sur [ R-{0} ]
 
 
 *Notes* : vous remplissez le premier champ avec 1/x (la fonction), le
 deuxieme avec l'intervalle de definition, c'est-a-dire R-{0}.
-.. image:: images/inverse_graphe.png
+.. image:: img/inverse_graphe.png
     :alt: Graphe de la fonction inverse.
 
 
 2) Soit la fonction  *f*, definie sur [-2;0[ par *f*(*x*) = -1, et sur
     [0;1[ U ]2;3] par *f*(*x*) = *x*
 Remplissez les champs de la maniere suivante :
-.. image:: images/morceaux.png
+.. image:: img/morceaux.png
     :alt: [V] Y2= [ -1|x ] sur [ [-2;0[|[0;1[U]2;3] ]
 
 
@@ -331,7 +331,7 @@ separateur: ce qui donne -1|x.
 Vous remplissez le 2eme champ avec l'intervalle de definition.
 Comme elle est definie par morceaux, on utilise le symbole "|" comme
 separateur: ce qui donne [-2;0[|[0;1[U]2;3].
-.. image:: images/morceaux_graphe.png
+.. image:: img/morceaux_graphe.png
     :alt: Graphe d'une fonction affine par morceaux.
 
 
@@ -405,22 +405,22 @@ Voici une presentation des principaux types de graphiques :
 *Exemple :* la repartition des voyelles dans l'alphabet.
 
 On selectionne le mode :
-.. image:: images/diag_barres0.png
+.. image:: img/diag_barres0.png
 
 
 On ajoute les valeurs et les effectifs (ou frequences) qui leur
 correspondent.
 La syntaxe est la suivante : ? effectif * valeur ? (valeur doit etre entre
 guillemets, pour des valeurs non numeriques).
-.. image:: images/diag_barres1.png
+.. image:: img/diag_barres1.png
 
 Il ne reste plus qu'a completer la legende :
-.. image:: images/diag_barres2.png
+.. image:: img/diag_barres2.png
 
 
 Et a appuyer sur [Entree] dans un des champs.
 Le resultat est le suivant :
-.. image:: images/diag_barres.png
+.. image:: img/diag_barres.png
 
 
 *
@@ -430,18 +430,18 @@ Le resultat est le suivant :
 fran?aises adultes (2005).
 
 On selectionne le mode :
-.. image:: images/diag_baton_0.png
+.. image:: img/diag_baton_0.png
 
 
 On ajoute les valeurs et les effectifs (ou frequences) qui leur
 correspondent, et on complete la legende :
-.. image:: images/diag_baton_1.png
+.. image:: img/diag_baton_1.png
 
 
 On presse la touche [Entree] dans un des champs.
 Le resultat est le suivant :
 
-.. image:: images/diag_baton_2.png
+.. image:: img/diag_baton_2.png
 
 *
 
@@ -450,20 +450,20 @@ Le resultat est le suivant :
 On va reprendre l'exemple precedent, en regroupant les pointures par classe.
 
 On selectionne le mode :
-.. image:: images/histo_0.png
+.. image:: img/histo_0.png
 
 
 On complete la rubrique ? Regroupement par classes ?.
-.. image:: images/histo_1.png
+.. image:: img/histo_1.png
 
 
 Pour les histogrammes, il n'y a pas d'ordonnee, mais il faut preciser la
 nature de l'unite d'aire.
-.. image:: images/histo_2.png
+.. image:: img/histo_2.png
 
 
 Et on appuye sur [Entree].
-.. image:: images/histo_3.png
+.. image:: img/histo_3.png
 
 
 
@@ -474,7 +474,7 @@ Et on appuye sur [Entree].
 -   A la place des valeurs numeriques, on peut tout a fait inserer des
     formules.
 *Exemple : *
-.. image:: images/stats_avance.png
+.. image:: img/stats_avance.png
 
 -   La generation de listes est egalement possible. La syntaxe est celle
     de Python (cf. *list comprehensions* dans la documentation de Python).
@@ -489,7 +489,7 @@ N'hesitez pas a editer le fichier *experience.py* dans
 *modules/statistiques*/, et a y ajouter de nouvelles fonctions.
 Vous pourrez ensuite realiser vos propres experiences, depuis le menu ?
 Experience ?.
-.. image:: images/stats_experience.png
+.. image:: img/stats_experience.png
 
 Entrez votre formule dans le champ ? Experience ? (ici, un lancer de de), et
 le nombre d'experiences.
@@ -509,7 +509,7 @@ dedie (quelques optimisations y ont ete faites).
 4. Le generateur d'arbres de probabilites
 ~
 
-.. image:: images/arbre.png
+.. image:: img/arbre.png
 
 Les arbres de probabilite sont codes de la maniere suivante :
 

@@ -11,6 +11,10 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
+   help.rst
+   api.rst
+   format.geo.rst
+
 Indices and tables
 ==================
 

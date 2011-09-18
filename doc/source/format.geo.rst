@@ -1,4 +1,6 @@
 Avant-propos
+============
+
 Le format de fichier de fichier utilisé par geolib respecte les spécifications XML 1.0.
 
 Cependant, je ferais ici deux remarques.
