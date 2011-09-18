@@ -1,11 +1,11 @@
 
 .. image:: img/logo.png
-    :alt: WxGeometrie
+    :alt: WxGéométrie
 
 =
 
 Dynamic geometry, graph plotter, and more for french mathematic teachers.
-*Copyright (C) 2005-2011 Nicolas Pourcelot*
+*Copyright © 2005-2011 Nicolas Pourcelot*
 
 **http://wxgeo.free.fr**
 
@@ -24,19 +24,19 @@ Sommaire
 `Premiers pas`_
 ::::::::::::
 
-    1.  `Le module de geometrie dynamique`_
+    1.  `Le module de géométrie dynamique`_
     2.  `Le traceur de courbes`_
     3.  `La calculatrice`_
     4.  `Le module de statistiques`_
-    5.  `Le generateur d'arbres de probabilites`_
+    5.  `Le générateur d'arbres de probabilités`_
 
 
 4.
-`Utilisation avancee`_
+`Utilisation avancée`_
 :
 
     1.  ` Le fichier param.py`_
-    2.  `Debogage`_
+    2.  `Débogage`_
     3.  `La ligne de commande `_
 
 
@@ -70,13 +70,13 @@ Franklin St, Fifth Floor, Boston, MA 02110-1301
 
 Ce programme est un logiciel libre; vous pouvez le redistribuer et/ou le
 modifier selon les termes de la GNU General Public Licence telle qu'elle a
-ete publiee par la Free Software Foundation; soit la version 2 de la licence,
-ou (au choix) toute version ulterieure.
-Ce programme est distribue dans l'espoir qu'il puisse etre utile, mais sans
-aucune garantie, pas meme la garantie implicite qu'il puisse etre adapte a un
-usage donne. Pour plus de precisions, lisez la GNU General Public License.
-Vous avez recu en principe une copie de la GNU General Public License en meme
-temps que ce programme. Si ce n'est pas le cas, ecrivez a l'adresse suivante
+été publiée par la Free Software Foundation; soit la version 2 de la licence,
+ou (au choix) toute version ultérieure.
+Ce programme est distribué dans l'espoir qu'il puisse être utile, mais sans
+aucune garantie, pas même la garantie implicite qu'il puisse etre adapté à un
+usage donné. Pour plus de précisions, lisez la GNU General Public License.
+Vous avez recu en principe une copie de la GNU General Public License en même
+temps que ce programme. Si ce n'est pas le cas, écrivez a l'adresse suivante
 : Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 02110-1301
 
@@ -85,55 +85,55 @@ temps que ce programme. Si ce n'est pas le cas, ecrivez a l'adresse suivante
 II. INSTALLATION
 ----------------
 
-Pour fonctionner, ce programme necessite la configuration logicielle suivante
+Pour fonctionner, ce programme nécessite la configuration logicielle suivante
 :
 
 
--   Windows 98 ou superieur, ou une distribution Linux assez recente.
--   Le logiciel Python, version 2.4 ou superieure.
+-   Windows 98 ou supérieur, ou une distribution Linux assez récente.
+-   Le logiciel Python, version 2.4 ou supérieure.
 (Logiciel libre, disponible gratuitement sur *http://www.python.org *)
-Sous Linux, une version recente est en principe deja presente.
--   La librairie graphique WxPython, version 2.6 (des problemes
+Sous Linux, une version récente est en principe déjà présente.
+-   La librairie graphique WxPython, version 2.6 (des problèmes
     subsistent avec la version 2.8 sous Windows).
 (Logiciel libre, disponible gratuitement sur *http://www.wxpython.org*)
-Sous Linux, une version est en principe deja presente, mais elle n'est pas
-toujours assez recente.
--   La librairie mathematique numpy
+Sous Linux, une version est en principe deja présente, mais elle n'est pas
+toujours assez récente.
+-   La librairie mathématique numpy
 (Logiciel libre, disponible gratuitement sur *http://sourceforge.net/project/
 showfiles.php?group_id=1369&package_id=175103*)
--   La librairie mathematique Matplotlib, version 0.91.2 ou superieure
+-   La librairie mathématique Matplotlib, version 0.91.2 ou supérieure
 (Logiciel libre, disponible gratuitement sur
 *http://www.sourceforge.net/projects/matplotlib*)
 
 *
 
-Remarque* : ces logiciels doivent etre installes dans l'ordre mentionne.
+Remarque* : ces logiciels doivent être installés dans l'ordre mentionné.
 
-Sous Windows, un redemarrage du systeme est conseille apres ces
+Sous Windows, un redémarrage du système est conseillé après ces
 installations.
 
-Apres avoir telecharge la derniere version de WxGeometrie
-(*http://www.sourceforge.net/projects/wxgeometrie*), dezippez l'archive dans
-un repertoire sur lequel vous avez les permissions necessaires.
+Après avoir téléchargé la dernière version de WxGeometrie
+(*http://www.sourceforge.net/projects/wxgeometrie*), dézippez l'archive dans
+un répertoire sur lequel vous avez les permissions nécessaires.
 Vous pouvez lancer le programme en double-cliquant sur le fichier
 *wxgeometrie.pyw* .
 
 *Sous Windows :*
-Il existe desormais un programme d'installation de WxGeometrie.
-Ce programme necessite un acces a internet, car il telecharge les dernieres
-versions de Python, et des autres librairies necessaires (afin de ne pas
-alourdir inutilement le programme d'installation en incluant systematiquement
+Il existe désormais un programme d'installation de WxGéométrie.
+Ce programme nécessite un accès à internet, car il télécharge les dernières
+versions de Python, et des autres librairies nécessaires (afin de ne pas
+alourdir inutilement le programme d'installation en incluant systématiquement
 tout).
 
-Pour **desinstaller** WxGeometrie, il suffit de supprimer le repertoire
-d'installation du programme. En effet, pour l'instant, WxGeometrie n'ecrit
+Pour **désinstaller** WxGéométrie, il suffit de supprimer le répertoire
+d'installation du programme. En effet, pour l'instant, WxGéométrie n'écrit
 rien dans la base de registre.
 
-Il existe egalement une version sans installation, qui ne necessite pas la
-presence de Python.
-Cette derniere version est surtout livree a des fins de demonstration (ou
-pour etre utilisee sur une clef USB, style Framakey) ; elle est  probablement
-moins stable (si quelqu'un veut reprendre et ameliorer le projet ?).
+Il existe également une version sans installation, qui ne nécessite pas la
+présence de Python.
+Cette dernière version est surtout livrée à des fins de démonstration (ou
+pour être utilisée sur une clef USB, style Framakey) ; elle est  probablement
+moins stable (si quelqu'un veut reprendre et améliorer le projet ?).
 
 
 
@@ -141,32 +141,32 @@ moins stable (si quelqu'un veut reprendre et ameliorer le projet ?).
 III. PREMIERS PAS
 -----------------
 
-Certaines options de WxGeometrie ne sont pas encore fonctionnelles.
+Certaines options de WxGéométrie ne sont pas encore fonctionnelles.
 Il ne s'agit pas de bugs en general, mais, simplement, du fait que ces
-options ne sont pas encore completement ecrites. Ainsi, un certain nombre de
-boutons et d'entrees du menu ne provoquent aucune action dans les versions
-actuelles. Ceci correspond a des fonctionnalites qui seront implementees dans
+options ne sont pas encore complètement écrites. Ainsi, un certain nombre de
+boutons et d'entrées du menu ne provoquent aucune action dans les versions
+actuelles. Ceci correspond à des fonctionnalités qui seront implementées dans
 les prochaines versions.
 
-WxGeometrie est composee de plusieurs modules ; les 5 principaux sont :
+WxGéométrie est composée de plusieurs modules ; les 5 principaux sont :
 
 
--   Un module de geometrie dynamique.
+-   Un module de géométrie dynamique.
 -   Un traceur de courbes.
 -   Une calculatrice formelle.
 -   Un module graphique de statistiques.
--   Un generateur d'arbres de probabilites.
+-   Un générateur d'arbres de probabilités.
 
-Les autres modules presents sont fournis a titre purement experimental, et ne
-sont donc pas documentes ici.
+Les autres modules présents sont fournis à titre purement expérimental, et ne
+sont donc pas documentés ici.
 
 *Note :*
-Toutes les fonctionnalites du module de geometrie dynamique sont utilisables
+Toutes les fonctionnalités du module de géométrie dynamique sont utilisables
 dans le traceur de courbes ; elles sont aussi (en partie) utilisables dans le
 module de statistiques.
 
 
-1. Le module de geometrie dynamique
+1. Le module de géométrie dynamique
 ~~~~~~~~~~~~~~
 
 
@@ -174,90 +174,90 @@ module de statistiques.
 Vous pouvez pour l'instant faire les actions suivantes :
 
 
--   creer une nouvelle feuille
--   creer differents types de points, de droites, de cercles, des
+-   créer une nouvelle feuille
+-   créer différents types de points, de droites, de cercles, des
     vecteurs, des intersections...
--   modifier les proprietes de ces differents objets (changer leur
+-   modifier les propriétés de ces différents objets (changer leur
     couleur, les masquer...)
--   regler la fenetre d'affichage
--   orthonormaliser le repere
+-   régler la fenêtre d'affichage
+-   orthonormaliser le repère
 -   annuler une ou plusieurs actions
 -   exporter et sauvegarder la figure
 
 Utilisation de la souris pour piloter le logiciel :
 
 
--   Laissez enfonce le bouton droit de la souris pour deplacer la figure.
+-   Laissez enfoncé le bouton droit de la souris pour déplacer la figure.
 -   La molette de la souris permet de zoomer sur la figure.
--   En laissant enfoncee la touche [Ctrl], la molette de la souris permet
+-   En laissant enfoncée la touche [Ctrl], la molette de la souris permet
     d'ajuster la taille des textes de la figure.
--   Laissez enfoncee la touche [Ctrl], et le bouton gauche de la souris,
-    pour selectionner une zone et zoomer dessus.
--   Vous pouvez deplacer les points libres de la figure avec la souris.
+-   Laissez enfoncée la touche [Ctrl], et le bouton gauche de la souris,
+    pour sélectionner une zone et zoomer dessus.
+-   Vous pouvez déplacer les points libres de la figure avec la souris.
 -   Placez-vous sur un point, ou un texte, et appuyez sur la touche
-    [Entree], pour le renommer.
--   Placez-vous sur un objet, et faites un clic droit pour editer ses
-    proprietes
+    [Entrée], pour le renommer.
+-   Placez-vous sur un objet, et faites un clic droit pour éditer ses
+    propriétés
 -   Placez-vous sur un objet, et faites [Suppr] pour le supprimer, ou
     [Maj] + [Suppr] pour le masquer .
--   Si vous creez un point libre en laissant la touche [Maj] enfoncee, le
+-   Si vous créez un point libre en laissant la touche [Maj] enfoncée, le
     point se placera sur le quadrillage.
--   Vous pouvez deplacer le nom d'un point autour de celui-ci en cliquant
-    dessus, la touche [Alt] etant enfoncee.
+-   Vous pouvez déplacer le nom d'un point autour de celui-ci en cliquant
+    dessus, la touche [Alt] étant enfoncée.
 
 *Note:*
-Sous Ubuntu, la touche [Alt] est deja utilisee pour deplacer la fenetre. Il
-est conseille de modifier ce comportement : dans Systeme>Preference>Fenetres,
+Sous Ubuntu, la touche [Alt] est déjà utilisée pour déplacer la fenêtre. Il
+est conseillé de modifier ce comportement : dans Système>Préférence>Fenêtres,
 choisir "Super" comme "touche de mouvement".
 
-**Creation d'objets via le menu *Creer***
-Pour la creation des objets geometriques, il existe une abondante aide
-contextuelle dans chaque fenetre de creation d'objet.
-Cliquez sur le point d'interrogation en haut de la fenetre, puis sur un
-champ, pour obtenir une aide detaillee.
+**Création d'objets via le menu *Créer***
+Pour la création des objets géométriques, il existe une abondante aide
+contextuelle dans chaque fenêtre de création d'objet.
+Cliquez sur le point d'interrogation en haut de la fenêtre, puis sur un
+champ, pour obtenir une aide detaillée.
 En cliquant avec le bouton du milieu de la souris dans un champ, vous ferez
-egalement apparaitre diverses propositions.
+également apparaitre diverses propositions.
 
-Vous pouvez utiliser les notations suivantes : [A B] pour le segment [AB], (A
+Vous pouvez utiliser les notations suivantes : [A B] pour le segment [AB], (A
 B) pour la droite (AB), (A>B) pour le vecteur A->B, ||A>B|| pour sa norme.
 *Remarquez l'espace entre les lettres "A" et "B" dans les deux premiers cas.*
 
 
-**Choisir le mode d'affichage de l'etiquette d'un objet**
-Vous remarquerez que chaque objet possede quatre modes d'affichage : nom,
+**Choisir le mode d'affichage de l'étiquette d'un objet**
+Vous remarquerez que chaque objet possède quatre modes d'affichage : nom,
 texte, formule, ou aucun.
 .. image:: img/ptes_objets.png
-    :alt: "Fenetre de propriete"
+    :alt: "Fenêtre de propriété"
 
 
 Que signifient ces 4 modes ?
 
 
--   Mode ? Nom ? : le nom de l'objet est affiche.
-Un nom d'objet doit commencer par une lettre (non accentuee), suivie de
-lettres (non accentuees) et de chiffres.
-Il est forcement unique.
-Certains noms sont reserves (*e, pi, x, y, t, i, ...* )
--   Mode ? Texte ? : un texte est affiche a la place du nom.
-Ce mode permet d'associer n'importe quel type de texte a un objet.
-La syntaxe LATEX est egalement partiellement supportee, dans ce cas, le texte
-doit etre entre $.
+-   Mode « Nom » : le nom de l'objet est affiché.
+Un nom d'objet doit commencer par une lettre (non accentuée), suivie de
+lettres (non accentuées) et de chiffres.
+Il est forcément unique.
+Certains noms sont réservés (*e, pi, x, y, t, i, ...* )
+-   Mode « Texte » : un texte est affiché à la place du nom.
+Ce mode permet d'associer n'importe quel type de texte à un objet.
+La syntaxe LATEX est également partiellement supportée, dans ce cas, le texte
+doit être entre $.
 *Exemple :*
 "$\alpha_{n}$"
--   Mode ? Formule ? : le texte affiche est interprete comme une formule.
-On peut aussi melanger du texte interprete et non interprete, en mettant les
-blocs a interpreter entre { }.
+-   Mode « Formule » : le texte affiché est interprété comme une formule.
+On peut aussi mélanger du texte interprété et non interprété, en mettant les
+blocs à interpréter entre { }.
 *Exemple :*
-"Le point A a pour abscisse {A.x} et pour ordonnee {A.y}."
--   Mode ? Aucun ? : rien n'est affiche.
+"Le point A a pour abscisse {A.x} et pour ordonnée {A.y}."
+-   Mode « Aucun » : rien n'est affiché.
 
 
 
 
 **La ligne de commande**
-Elle permet de creer rapidement des objet geometriques. (Personnellement, je
-l'utilise frequemment).
-Elle fonctionne dans le module geometrie, dans le module traceur, et dans le
+Elle permet de créer rapidement des objet géométriques. (Personnellement, je
+l'utilise fréquemment).
+Elle fonctionne dans le module géometrie, dans le module traceur, et dans le
 module statistiques.
 
 *Utilisation :*
@@ -267,25 +267,25 @@ Voici quelques exemples qui parleront mieux qu'un long discours...
 
 
 1.  "A=Point(1,2)" ou "A=(1,2)"
-Creation d'un point A de coordonnees (1 ; 2).
+Création d'un point A de coordonnées (1 ; 2).
 
 2.  "u=Vecteur(1,2)" ou "u=(1,2)"
-Creation d'un vecteur u de coordonnees (1 ; 2).
+Création d'un vecteur u de coordonnées (1 ; 2).
 
 3.  "AB=Segment(A,B)" ou "AB=[A B]"
-Creation du segment [AB].
-*Attention a l'espace entre les lettres dans le deuxieme cas.*
+Création du segment [AB].
+*Attention à l'espace entre les lettres dans le deuxième cas.*
 4.  "d=Droite(A,B)" ou "d=(A B)"
-Creation de la droite (AB).
-*Attention a l'espace entre les lettres dans le deuxieme cas.*
+Création de la droite (AB).
+*Attention à l'espace entre les lettres dans le deuxième cas.*
 5.  "u=Vecteur(A,B)" ou "u=A>B"
-Creation du vecteur A->B.
+Création du vecteur A->B.
 6.  "M=C+2*(A>B)"
-Creation du point M verifiant C->M = 2 A->B.
-*Les parentheses sont obligatoires.*
+Création du point M vérifiant C->M = 2 A->B.
+*Les parenthèses sont obligatoires.*
 7.  "fenetre=(-10,10,-5,5)"
 Changement de la fenetre d'affichage (xmin, xmax, ymin, ymax).
-*Si l'affichage est en mode orthonorme, la fenetre sera elargie pour
+*Si l'affichage est en mode orthonormé, la fenêtre sera élargie pour
 respecter cette contrainte.*
 
 
@@ -296,41 +296,41 @@ respecter cette contrainte.*
 Vous pouvez pour l'instant faire les actions suivantes :
 
 
--   regler la fenetre d'affichage
--   orthonormaliser le repere
--   utiliser des objets geometriques
--   representer des suites
+-   régler la fenêtre d'affichage
+-   orthonormaliser le repère
+-   utiliser des objets géométriques
+-   représenter des suites
 
 
-Le traceur de courbes supporte les fonctions definies par morceau, continues
+Le traceur de courbes supporte les fonctions définies par morceau, continues
 ou non.
 
 *Exemples* :
-1) Soit la fonction *f*, definie sur R-{0} par *f*(*x*)=1/*x*
-Remplissez les champs de la maniere suivante :
- .. image:: img/inverse.png
+1) Soit la fonction *f*, définie sur R-{0} par *f*(*x*)=1/*x*
+Remplissez les champs de la manière suivante :
+ .. image:: img/inverse.png
     :alt: [V] Y1= [ 1/x ] sur [ R-{0} ]
 
 
 *Notes* : vous remplissez le premier champ avec 1/x (la fonction), le
-deuxieme avec l'intervalle de definition, c'est-a-dire R-{0}.
+deuxième avec l'intervalle de définition, c'est-à-dire R-{0}.
 .. image:: img/inverse_graphe.png
     :alt: Graphe de la fonction inverse.
 
 
-2) Soit la fonction  *f*, definie sur [-2;0[ par *f*(*x*) = -1, et sur
+2) Soit la fonction  *f*, définie sur [-2;0[ par *f*(*x*) = -1, et sur
     [0;1[ U ]2;3] par *f*(*x*) = *x*
-Remplissez les champs de la maniere suivante :
+Remplissez les champs de la manière suivante :
 .. image:: img/morceaux.png
     :alt: [V] Y2= [ -1|x ] sur [ [-2;0[|[0;1[U]2;3] ]
 
 
 *Notes* : Vous remplissez le premier champ avec la fonction.
-Comme elle est definie par morceaux, on utilise le symbole "|" comme
-separateur: ce qui donne -1|x.
-Vous remplissez le 2eme champ avec l'intervalle de definition.
-Comme elle est definie par morceaux, on utilise le symbole "|" comme
-separateur: ce qui donne [-2;0[|[0;1[U]2;3].
+Comme elle est définie par morceaux, on utilise le symbole "|" comme
+séparateur: ce qui donne -1|x.
+Vous remplissez le 2ème champ avec l'intervalle de définition.
+Comme elle est définie par morceaux, on utilise le symbole "|" comme
+séparateur: ce qui donne [-2;0[|[0;1[U]2;3].
 .. image:: img/morceaux_graphe.png
     :alt: Graphe d'une fonction affine par morceaux.
 
@@ -339,14 +339,14 @@ separateur: ce qui donne [-2;0[|[0;1[U]2;3].
 3. La calculatrice
 ~~~~~~~~~~~~~~~~~~
 
-Son fonctionnement sera assez familier pour quiconque a deja utilise une
+Son fonctionnement sera assez familier pour quiconque a déjà utilisé une
 calculatrice scientifique.
-Elle permet de travailler sur des nombres reels ou complexes, et de faire du
-calcul formel de niveau lycee.
+Elle permet de travailler sur des nombres réels ou complexes, et de faire du
+calcul formel de niveau lycée.
 
 
-En particulier, on peut developper, factoriser, deriver, integrer, et
-resoudre des (in)equations ou des systemes lineaires :
+En particulier, on peut développer, factoriser, dériver, intégrer, et
+résoudre des (in)équations ou des systèmes linéaires :
 
 
 -   developpe((x-3)(x+sin(x)-4))
@@ -361,15 +361,15 @@ resoudre des (in)equations ou des systemes lineaires :
 
 
 
-*Nota 1* : Pour obtenir le resultat d'un calcul sous forme decimale (calcul
-approche), appuyez sur MAJ+ENTR?E au lieu de ENTR?E.
+*Nota 1* : Pour obtenir le résultat d'un calcul sous forme décimale (calcul
+approché), appuyez sur MAJ+ENTRÉE au lieu de ENTRÉE.
 *Nota 2* : On peut faire apparaitre la liste des fonctions par un clic-droit
-dans la zone de saisie, en laissant enoncee la touche CTRL.
+dans la zone de saisie, en laissant enoncée la touche CTRL.
 
-Depuis la version 0.120, elle utilise la librairie de calcul formel sympy
-*((C) 2006-2011 SymPy Development Team)*.
+Depuis la version 0.120, elle utilise la librairie de calcul formel sympy *(©
+2006-2011 SymPy Development Team)*.
 
-Des variables peuvent etre utilisees pour memoriser des valeurs, ou definir
+Des variables peuvent être utilisées pour mémoriser des valeurs, ou définir
 des fonctions.
 
 *Exemples*:
@@ -378,91 +378,91 @@ des fonctions.
 -   a = 25+7/4
 -   f(x)=2x+17
 -   g=f'
-Ici, la fonction g est definie comme la derivee de la fonction f.
+Ici, la fonction g est définie comme la dérivée de la fonction f.
 
 
 
 
 
-Notez que certaines variables sont protegees (i, e ou E, pi, ...).
+Notez que certaines variables sont protégées (i, e ou E, pi, ...).
 
 4. Le module statistiques
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Ce module sert essentiellement a tracer des diagrammes, qui n'existent pas
-toujours sur tableur, ou qui y sont incorrectement definis.
-A l'origine, ma motivation etait essentiellement de pouvoir tracer des
-histogrammes, qu'OpenOffice.org? ou Excel? confondent avec les diagrammes en
+Ce module sert essentiellement à tracer des diagrammes, qui n'existent pas
+toujours sur tableur, ou qui y sont incorrectement définis.
+A l'origine, ma motivation était essentiellement de pouvoir tracer des
+histogrammes, qu'OpenOffice.org® ou Excel® confondent avec les diagrammes en
 barre.
-Il fait aussi la difference entre diagrammes en barres et en batons
-(contrairement a ce qu'on peut lire souvent, la difference essentielle n'est
-pas esthetique).
+Il fait aussi la différence entre diagrammes en barres et en bâtons
+(contrairement à ce qu'on peut lire souvent, la différence essentielle n'est
+pas esthétique).
 
-Voici une presentation des principaux types de graphiques :
+Voici une présentation des principaux types de graphiques :
 
 ***Diagrammes en barres :**
-*Utilises en particulier pour des series a caractere qualitatif.
-*Exemple :* la repartition des voyelles dans l'alphabet.
+*Utilisés en particulier pour des séries à caractère qualitatif.
+*Exemple :* la répartition des voyelles dans l'alphabet.
 
-On selectionne le mode :
+On sélectionne le mode :
 .. image:: img/diag_barres0.png
 
 
-On ajoute les valeurs et les effectifs (ou frequences) qui leur
+On ajoute les valeurs et les effectifs (ou fréquences) qui leur
 correspondent.
-La syntaxe est la suivante : ? effectif * valeur ? (valeur doit etre entre
-guillemets, pour des valeurs non numeriques).
+La syntaxe est la suivante : « effectif * valeur » (valeur doit être entre
+guillemets, pour des valeurs non numériques).
 .. image:: img/diag_barres1.png
 
-Il ne reste plus qu'a completer la legende :
+Il ne reste plus qu'à compléter la légende :
 .. image:: img/diag_barres2.png
 
 
-Et a appuyer sur [Entree] dans un des champs.
-Le resultat est le suivant :
+Et à appuyer sur [Entrée] dans un des champs.
+Le résultat est le suivant :
 .. image:: img/diag_barres.png
 
 
 *
-**Diagrammes en batons :**
-*Utilises pour des series a caractere quantitatif discret.
-*Exemple :* la repartition des pointures de chaussures chez les femmes
-fran?aises adultes (2005).
+**Diagrammes en bâtons :**
+*Utilisés pour des séries à caractère quantitatif discret.
+*Exemple :* la répartition des pointures de chaussures chez les femmes
+françaises adultes (2005).
 
-On selectionne le mode :
+On sélectionne le mode :
 .. image:: img/diag_baton_0.png
 
 
-On ajoute les valeurs et les effectifs (ou frequences) qui leur
-correspondent, et on complete la legende :
+On ajoute les valeurs et les effectifs (ou fréquences) qui leur
+correspondent, et on complète la légende :
 .. image:: img/diag_baton_1.png
 
 
-On presse la touche [Entree] dans un des champs.
-Le resultat est le suivant :
+On presse la touche [Entrée] dans un des champs.
+Le résultat est le suivant :
 
 .. image:: img/diag_baton_2.png
 
 *
 
 **Histogrammes :**
-*Utilises pour des series a caractere quantitatif continu.
-On va reprendre l'exemple precedent, en regroupant les pointures par classe.
+*Utilisés pour des séries à caractère quantitatif continu.
+On va reprendre l'exemple précédent, en regroupant les pointures par classe.
 
-On selectionne le mode :
+On sélectionne le mode :
 .. image:: img/histo_0.png
 
 
-On complete la rubrique ? Regroupement par classes ?.
+On complète la rubrique « Regroupement par classes ».
 .. image:: img/histo_1.png
 
 
-Pour les histogrammes, il n'y a pas d'ordonnee, mais il faut preciser la
-nature de l'unite d'aire.
+Pour les histogrammes, il n'y a pas d'ordonnée, mais il faut préciser la
+nature de l'unité d'aire.
 .. image:: img/histo_2.png
 
 
-Et on appuye sur [Entree].
+Et on appuye sur [Entrée].
 .. image:: img/histo_3.png
 
 
@@ -471,62 +471,62 @@ Et on appuye sur [Entree].
 **Pour aller plus loin :
 ***
 
--   A la place des valeurs numeriques, on peut tout a fait inserer des
+-   A la place des valeurs numériques, on peut tout à fait insérer des
     formules.
 *Exemple : *
 .. image:: img/stats_avance.png
 
--   La generation de listes est egalement possible. La syntaxe est celle
+-   La génération de listes est également possible. La syntaxe est celle
     de Python (cf. *list comprehensions* dans la documentation de Python).
 Essayez par exemple de rentrer cette formule : [(rand(),i) for i in
 range(4)].
--   Dans Outils, trois sous-menus permettent respectivement de creer des
-    experiences.
-En particulier, a titre d'exemple, il est possible de simuler des** lancers
-de des**, et des **sondages simples**.
+-   Dans Outils, trois sous-menus permettent respectivement de créer des
+    expériences.
+En particulier, à titre d'exemple, il est possible de simuler des** lancers
+de dés**, et des **sondages simples**.
 
-N'hesitez pas a editer le fichier *experience.py* dans
-*modules/statistiques*/, et a y ajouter de nouvelles fonctions.
-Vous pourrez ensuite realiser vos propres experiences, depuis le menu ?
-Experience ?.
+N'hésitez pas à éditer le fichier *experience.py* dans
+*modules/statistiques*/, et à y ajouter de nouvelles fonctions.
+Vous pourrez ensuite réaliser vos propres expériences, depuis le menu «
+Experience ».
 .. image:: img/stats_experience.png
 
-Entrez votre formule dans le champ ? Experience ? (ici, un lancer de de), et
-le nombre d'experiences.
-Eventuellement, entrez aussi les valeurs possibles . Pour un lancer de de par
-exemple, cela permet d'afficher en legende 1, 2, 3, 4, 5 et 6,
-quand bien meme il n'y aurait aucun ? 4 ? par exemple.
+Entrez votre formule dans le champ « Experience » (ici, un lancer de dé), et
+le nombre d'expériences.
+Eventuellement, entrez aussi les valeurs possibles . Pour un lancer de dé par
+exemple, cela permet d'afficher en légende 1, 2, 3, 4, 5 et 6,
+quand bien même il n'y aurait aucun « 4 » par exemple.
 
 *Notes :*
-- Pour simuler des lancers de des, mieux vaut utiliser le menu specialement
-dedie (quelques optimisations y ont ete faites).
-- La case ? lancer une animation ? n'a pas d'effet pour l'instant.
+- Pour simuler des lancers de dés, mieux vaut utiliser le menu spécialement
+dédié (quelques optimisations y ont été faites).
+- La case « lancer une animation » n'a pas d'effet pour l'instant.
 
 
 
 ******
 
-4. Le generateur d'arbres de probabilites
+4. Le générateur d'arbres de probabilités
 ~
 
 .. image:: img/arbre.png
 
-Les arbres de probabilite sont codes de la maniere suivante :
+Les arbres de probabilité sont codés de la manière suivante :
 
 
--   La premiere ligne (optionnelle) correspond a la legende.
+-   La première ligne (optionnelle) correspond à la légende.
 
 *Exemple :*
-||Premier tirage|Deuxieme tirage
+||Premier tirage|Deuxième tirage
 
-*(Note : l'ajout de barres verticales supplementaires (AltGr+6) decale la
-legende vers la droite.)*
--   Les lignes suivantes correspondent a l'arbre proprement dit.
+*(Note : l'ajout de barres verticales supplémentaires (AltGr+6) décale la
+légende vers la droite.)*
+-   Les lignes suivantes correspondent à l'arbre proprement dit.
 
 
     -   Le nombre de > correspond au niveau dans l'arbre.
     -   La syntaxe est la suivante :
-? Nom de l'evenement ? : ? Probabilite de l'evenement ?
+« Nom de l'évènement » : « Probabilité de l'évènement »
 
 
 *Exemple :*
@@ -539,45 +539,45 @@ omega
 >> B:...
 >> J:...
 >> V:...
-Le **symbole &** indique qu'il s'agit de l'evenement contraire : &A est ainsi
-l'evenement ?A barre?.
-*(Note : la syntaxe LaTeX est egalement acceptee).*
+Le **symbole &** indique qu'il s'agit de l'évènement contraire : &A est ainsi
+l'évènement «A barre».
+*(Note : la syntaxe LaTeX est également acceptée).*
 
 
-IV. UTILISATION AVANC?E
+IV. UTILISATION AVANCÉE
 -
 
 
 1. Le fichier param.py
 ~~~~~~~~~~~~~~~~~~~~~~
 
-Un grand nombre de parametres peuvent etre modifies dans le fichier
-*param.py* avec un simple editeur de textes.
+Un grand nombre de paramètres peuvent être modifiés dans le fichier
+*param.py* avec un simple éditeur de textes.
 *Exemple: *
 Remplacez "affiche_axes = True" par "affiche_axes = False" pour que les axes
-ne soient plus affiches par defaut.
+ne soient plus affichés par defaut.
 
-Note : il peut etre parfois necessaire d'effacer le dossier */preferences*
-(qui contient les parametres de la session precedente) pour que les
+Note : il peut être parfois nécessaire d'effacer le dossier */preferences*
+(qui contient les paramètres de la session précédente) pour que les
 changements soient pris en compte.
-2. Debogage
+2. Débogage
 ~~~~~~
 
-Dans le menu Avance>Deboguer, selectionner ? Deboguer ? pour faire apparaitre
-une fenetre contenant entre autres tous les rapports d'erreurs. Par ailleurs,
-le repertoire */log* contient les fichiers .log generes lors de la derniere
-execution (actions effectuees, messages d'erreurs, etc.)
+Dans le menu Avancé>Déboguer, sélectionner « Déboguer » pour faire apparaître
+une fenêtre contenant entre autres tous les rapports d'erreurs. Par ailleurs,
+le répertoire */log* contient les fichiers .log générés lors de la dernière
+exécution (actions effectuées, messages d'erreurs, etc.)
 3. La ligne de commande
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 *Introduction:*
-La ligne de commande sert essentiellement a debuguer le programme.
-(Ou a realiser certaines operations internes, etc...)
-La ligne de commande permet d'executer des instructions Python.
+La ligne de commande sert essentiellement à débuguer le programme.
+(Ou à réaliser certaines opérations internes, etc...)
+La ligne de commande permet d'exécuter des instructions Python.
 
-Precede du symbole **&**, le resultat de la commande sera affiche dans la
-console. (*NB* : assurez-vous au prelable que l'option ? Deboguer ? soit
-cochee, dans le menu Avance>Deboguer).
+Précédé du symbole **&**, le résultat de la commande sera affiché dans la
+console. (*NB* : assurez-vous au prélable que l'option « Déboguer » soit
+cochée, dans le menu Avancé>Déboguer).
 
 
 Les raccourcis suivants sont disponibles :
@@ -589,22 +589,22 @@ Les raccourcis suivants sont disponibles :
 -   *!g.* pour *moteur_graphique.*
 
 
-Leur maniement necessite evidemment de bien connaitre l'API de WxGeometrie,
+Leur maniement nécessite évidemment de bien connaître l'API de WxGéométrie,
 et donc de faire un tour dans le code source.
 
 *Exemples :*
 1) "print 'hello world !'"
 Ceci va afficher 'hello wold !' sur la console.
-*NB :* ? & 'hello world !' ? produirait le meme resultat.
+*NB :* « & 'hello world !' » produirait le même resultat.
 2) "print objets.A"
 Affiche, s'il existe, l'objet A dans la console.
-*NB :* Cette commande s'abrege de meme en ? & !o.A ?.
+*NB :* Cette commande s'abrège de même en « & !o.A ».
 3) "panel.exporter('test.png')"
 Exporte la figure courante en un fichier *test.png*.
-*NB :* Forme abregee : ? !p.exporter('test.png') ?.
+*NB :* Forme abrégée : « !p.exporter('test.png') ».
 4) "feuille.fenetre = (-5,2,-7,3)"
-Change la fenetre d'affichage en (-5, 2, -7, 3).
-*NB :* Forme abregee : ? !f.fenetre = (-5,2,-7,3) ?.
+Change la fenêtre d'affichage en (-5, 2, -7, 3).
+*NB :* Forme abrégée : « !f.fenetre = (-5,2,-7,3) ».
 
 
 V. COMMENT CONTRIBUER ?
@@ -613,59 +613,59 @@ V. COMMENT CONTRIBUER ?
 **Vous pouvez par exemple :**
 
 
--   m'envoyer un mail a l'adresse suivante :
-    `wxgeo@users.sourceforge.net`_, en me donnant vos impressions generales.
--   corriger les eventuelles fautes d'orthographe.
--   me signaler des bugs existants, et non repertories sur le tracker
+-   m'envoyer un mail à l'adresse suivante :
+    `wxgeo@users.sourceforge.net`_, en me donnant vos impressions générales.
+-   corriger les éventuelles fautes d'orthographe.
+-   me signaler des bugs existants, et non répertoriés sur le tracker
     *http://wxgeo.free.fr/tracker* .
 -   me proposer des corrections de bug :)
--   ajouter des fonctions mathematiques a la calculatrice
--   implementer la gestion des coniques
--   commencer de geometrie dynamique dans l'espace
--   completer cette documentation ou creer un tutoriel (je manque de
+-   ajouter des fonctions mathématiques à la calculatrice
+-   implémenter la gestion des coniques
+-   commencer de géométrie dynamique dans l'espace
+-   compléter cette documentation ou créer un tutoriel (je manque de
     temps pour tout faire !)
 
 
 
-Je suis egalement ouvert a toute autre contribution, et je suis pret a
-travailler en equipe... :-)
+Je suis également ouvert à toute autre contribution, et je suis prêt à
+travailler en équipe... :-)
 
 
 **Je recherche en particulier (liste non exhaustive) :**
 
 
-1.  des personnes pour m'aider a maintenir et a ameliorer :
+1.  des personnes pour m'aider à maintenir et à améliorer :
 
 
     -   le fonctionnement sous Linux :
-tests, creation de scripts bash d'installation, de paquetages .deb ou .rpm,
+tests, création de scripts bash d'installation, de paquetages .deb ou .rpm,
 guides utilisateurs, etc..., chose que je n'ai pas le temps de faire aussi
 bien que je le souhaiterais.
     -   le fonctionnement sous MacOs X :
-theoriquement, ?a devrait tourner assez facilement,  mais je n'ai jamais eu
-la possibilite de le tester.
+théoriquement, ça devrait tourner assez facilement,  mais je n'ai jamais eu
+la possibilité de le tester.
 
 
-2.  des personnes interessees par la construction de nouveaux modules
-    pour WxGeometrie.
-Je pense en particulier a des professeurs de mathematiques, de sciences-
-physiques, de technologie... qui auraient un peu d'experience en
-programmation objet (mais pas necessairement en python : python en lui-meme
+2.  des personnes intéressées par la construction de nouveaux modules
+    pour WxGéométrie.
+Je pense en particulier à des professeurs de mathématiques, de sciences-
+physiques, de technologie... qui auraient un peu d'expérience en
+programmation objet (mais pas nécessairement en python : python en lui-même
 s'apprend en une semaine).
-Une premiere experience fructueuse a deja commencee, en collaboration avec
+Une première expérience fructueuse a déjà commencée, en collaboration avec
 Christophe Vrignaud.
 
 3.  des personnes pour me faire remonter des rapports de bugs, ou des
-    suggestions. A quelques exceptions pres, les seuls echos que j'ai pu
+    suggestions. A quelques exceptions près, les seuls échos que j'ai pu
     avoir, ce sont les statistiques de sourceforge. Je sais que le projet
-    manque encore de maturite, mais au fil des versions, il y a desormais un
-    peu de matiere. Toutes les critiques sufisamment precises sont bonnes a
+    manque encore de maturité, mais au fil des versions, il y a désormais un
+    peu de matière. Toutes les critiques sufisamment précises sont bonnes à
     prendre. ;-)
 
 *
 
-Note :*  une documentation specifique pour developpeurs se trouve dans le
-repertoire *doc/developpeurs/*.
+Note :*  une documentation spécifique pour développeurs se trouve dans le
+répertoire *doc/developpeurs/*.
 
 
 
@@ -674,32 +674,32 @@ VI. REMERCIEMENTS
 -----------------
 
 
-Sans pretention d'exhaustivite, je voudrais remercier :
+Sans prétention d'exhaustivité, je voudrais remercier :
 
--   Boris Mauricette, pour avoir contribue au module de Statistiques
-    (trace des quartiles).
--   Christophe Bal pour ses commentaires, et pour avoir propose la
-    syntaxe du module de Probabilites.
--   Les developpeurs de sympy, avec qui j'ai toujours eu des echanges
+-   Boris Mauricette, pour avoir contribué au module de Statistiques
+    (tracé des quartiles).
+-   Christophe Bal pour ses commentaires, et pour avoir proposé la
+    syntaxe du module de Probabilités.
+-   Les développeurs de sympy, avec qui j'ai toujours eu des échanges
     cordiaux et constructifs, y compris de code.
-Remerciements plus particuliers a Chris Smith, Vinzent Steinberg et Aaron
+Remerciements plus particuliers à Chris Smith, Vinzent Steinberg et Aaron
 Meurer.
--   Christophe Vrignaud, qui a developpe et maintenu quelques temps le
-    module Scicalc pour Wxgeometrie.
--   Stephane Clement a mis a disposition de Wxgeometrie le wiki de
-    l'academie d'Aix-Marseille.
+-   Christophe Vrignaud, qui a développé et maintenu quelques temps le
+    module Scicalc pour Wxgéométrie.
+-   Stéphane Clément a mis a disposition de Wxgéométrie le wiki de
+    l'académie d'Aix-Marseille.
 -   Tous ceux qui ont pris le temps de faire quelques commentaires sur ce
-    programme, et m'ont encourage a continuer (en particulier dans les
-    premiers temps : mon frere Thomas, Enzo, Rhydwen Volsik, Robert
+    programme, et m'ont encouragé à continuer (en particulier dans les
+    premiers temps : mon frère Thomas, Enzo, Rhydwen Volsik, Robert
     Setif...).
--   Fran?ois Lermigeaux, pour les coups de pub occasionnels.
+-   François Lermigeaux, pour les coups de pub occasionnels.
 -   Georges Khaznadar, pour ses nombreux conseils concernant Debian.
 -   Tous ceux qui ont pris le temps de faire des rapports de bugs et des
     retours.
 
 
 
-Merci enfin a Sophie pour sa patience !
+Merci enfin à Sophie pour sa patience !
 
 
 .. _Licence: #licence
