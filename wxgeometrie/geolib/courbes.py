@@ -55,7 +55,8 @@ class Courbe_generique(Objet):
         return False
 
     def _espace_vital(self):
-        return (min(self.xarray), max(self.xarray), min(self.yarray), max(self.yarray))
+        if len(self.xarray) and len(self.yarray):
+            return (min(self.xarray), max(self.xarray), min(self.yarray), max(self.yarray))
 
     @property
     def xarray(self):
