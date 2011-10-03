@@ -168,7 +168,7 @@ def _ajouter_mult_manquants(formule, fonctions = (), verbose = None, mots_cles =
         s = s.strip()
         if s in fonctions:# or s in mots_cles:
             return s
-        elif s[0] == '.' and s[1].isalnum():
+        elif s[0] == '.' and not s[1:].isdigit():
             # Probablement une méthode
             # TODO: améliorer détection en remontant avant le point
             # (pour distinguer entre 2.x(1+x) et a2.x(1+x))
