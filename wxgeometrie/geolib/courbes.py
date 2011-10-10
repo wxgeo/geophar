@@ -28,8 +28,10 @@ from numpy import isnan, isinf, sign, arange, inf, append
 from sympy import oo
 
 from .objet import Objet, Argument, Ref
+from .contexte import contexte
 from .routines import distance_segment
 from .. import param
+from ..pylib import print_error
 
 
 def inf_or_nan(x):
@@ -124,8 +126,7 @@ class Courbe(Courbe_generique):
                     self._xarray = append(self._xarray,  x)
                     self._yarray = append(self._yarray,  y)
 
-                    inf = intervalle.inf
-                    if fenetre[0] < inf < fenetre[1]:
+                    if fenetre[0] < intervalle.inf < fenetre[1]:
                         if ancien_intervalle is None:
                             self._creer_debut_morceau(x, y, intervalle, e_cach)
                         else:
