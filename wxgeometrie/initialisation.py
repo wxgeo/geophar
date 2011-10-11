@@ -19,9 +19,8 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-
-
 import sys, time, os, optparse, itertools, traceback, imp
+from os.path import dirname, realpath
 
 from . import param
 from .param import dependances, NOMPROG, NOMPROG2, LOGO, plateforme, GUIlib
@@ -241,8 +240,8 @@ class SortiesMultiples(object):
             if hasattr(sortie, 'close'):
                 sortie.close()
 
-
-param.EMPLACEMENT = os.getcwdu()
+# Emplacement du module python nommé wxgeometrie
+param.EMPLACEMENT = dirname(realpath(sys._getframe().f_code.co_filename))
 
 
 def path2(chemin):
