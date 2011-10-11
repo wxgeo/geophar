@@ -35,7 +35,6 @@ else:
     sys.stdout = getwriter('utf8')(sys.stdout)
 
 path = join(dirname(realpath(sys._getframe().f_code.co_filename)), 'wxgeometrie')
-os.chdir(path)
 sys.path.insert(0, path)
 
 from wxgeometrie.initialisation import initialiser
