@@ -545,29 +545,41 @@ def resoudre(chaine, variables = (), local_dict = None):
         def evaluer(expression, local_dict = local_dict):
             return eval(expression, local_dict.globals, local_dict)
 
+    # Préformatage:
+    chaine = chaine.replace(')et', ') et').replace(')ou', ') ou').replace('et(', 'et (').replace('ou(', 'ou (')
+    chaine = chaine.replace("==", "=").replace("<>", "!=").replace("=>", ">=").replace("=<", "<=")
+
     if not variables:
+        # Détection des variables dans l'expression
         arguments = chaine.split(',')
         variables = [Symbol(s.strip()) for s in arguments[1:]]
+
         if not variables:
+            # Les variables ne sont pas explicitement indiquées.
+            # On tente de les détecter.
             variables = set()
-            expressions = msplit(arguments[0], ('et', 'ou', '>', '<', '=', '!', ')', '(', '*', '/', '-', '+'))
-            for expr in expressions:
-                if expr.strip():
-##                    print expr
-                    ev = evaluer(expr)
-                    if hasattr(ev, 'atoms') and not isinstance(ev, FunctionClass):
-                        variables.update(ev.atoms(Symbol))
-#            variables = list(evaluer(arguments[0].replace("et","+").replace("ou","+")
-#                            .replace("<", "+").replace(">", "+")
-#                            .replace("=", "+").replace("!", "+")).atoms(Symbol))
+            chaine2tuple = arguments[0]
+            for s in (' et ', ' ou ', '>=', '<=', '==', '!=', '=', '<', '>'):
+                chaine2tuple = chaine2tuple.replace(s, ',')
+
+            def find_all_symbols(e):
+                s = set()
+                if isinstance(e, tuple):
+                    s.update(*(find_all_symbols(elt) for elt in e))
+                else:
+                    s.update(e.atoms(Symbol))
+                return s
+            variables = find_all_symbols(evaluer(chaine2tuple))
+
         chaine = arguments[0]
+
+    ##print 'variables:', variables
 
     if len(variables) > 1:
         return systeme(chaine, local_dict = local_dict)
 #    fin = ",".join(arguments[1:])
 #    if fin:
 #        fin = "," + fin
-    chaine = chaine.replace(')et', ') et').replace(')ou', ') ou').replace('et(', 'et (').replace('ou(', 'ou (')
     debut = ''
     while chaine:
         l = [s for s in split_around_parenthesis(chaine)]
@@ -596,7 +608,6 @@ def resoudre(chaine, variables = (), local_dict = None):
             else:
                 break
     chaine = debut + chaine
-    chaine = chaine.replace("==", "=").replace("<>", "!=").replace("=>", ">=").replace("=<", "<=")
 
     if ">=" in chaine:
         gauche, droite = chaine.split(">=")
