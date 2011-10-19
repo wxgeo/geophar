@@ -6,6 +6,7 @@ from pytest import XFAIL
 from tools.testlib import assertRaises, assertAlmostEqual
 
 from wxgeometrie.mathlib.interprete import Interprete
+from sympy import S
 
 VERBOSE = False
 
@@ -241,3 +242,12 @@ u"""_ = 0
     i.load_state(etat_interne)
     i.evaluer('ln(9)-2ln(3)')
     assertDernier(i, '0')
+
+
+def test_systeme():
+    i = Interprete(verbose = VERBOSE, adapter_separateur=False)
+    i.evaluer("g(x)=a x^3+b x^2 + c x + d")
+    i.evaluer("resoudre(g(-3)=2 et g(1)=6 et g(5)=3 et g'(1)=0)")
+    res = i.derniers_resultats[-1]
+    assert isinstance(res, dict)
+    assertEqual(res, {S('a'): S(1)/128, S('b'): -S(31)/128, S('c'): S(59)/128, S('d'): S(739)/128})
