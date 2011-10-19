@@ -255,11 +255,12 @@ def path2(chemin):
 
 
 # S'assurer que les dossiers log/, session/, etc. existent:
-for emplacement in param.emplacements:
+for emplacement in param.emplacements.values():
     emplacement = path2(emplacement)
     try:
         if not os.path.isdir(emplacement):
             os.mkdir(emplacement)
+            print(u'Création du répertoire : ' + emplacement)
     except IOError:
         print(u"Impossible de créer le répertoire %s !" %emplacement)
 
