@@ -40,6 +40,9 @@ python_min = (2, 6) # version minimale requise
 
 # debuguage (affichage des erreurs + diverses infos)
 debug = True
+# Le logiciel est-il installé ?
+# Cela change les répertoires par défaut (session, etc.)
+install = False
 # affichage ou non des avertissements
 warning = debug
 verbose = 1 # 0, 1, 2 ou 3
@@ -106,38 +109,6 @@ multi_threading = False
 if multi_threading is None:
     multi_threading = (plateforme == 'Windows') # ca ne marche pas avec le serveur X (sous Linux par ex.)
 
-
-# Répertoires par défaut
-# ----------------------
-
-
-# Répertoire où on sauve les fichiers par défaut
-rep_save = None
-# rep_save = repertoire
-# Répertoire où on ouvre les fichiers par défaut
-rep_open = None
-# rep_open = repertoire
-# Répertoire où on exporte les fichiers par défaut
-rep_export = None
-# rep_export = repertoire
-
-
-emplacements = {}
-# % se réfère au dossier contenant WxGeometrie (indiqué par param.EMPLACEMENT)
-# ~ se réfère au répertoire de l'utilisateur (ex: /home/BillG/ sous Linux, ou C:\Documents and Settings\LTorvald\ sous Windows)
-emplacements["log"] = "%/log" # dans log/ par défaut
-emplacements["preferences"] = "%/preferences" # dans preferences/ par défaut
-emplacements["macros"] = "%/macros" # dans macros/ par défaut
-emplacements["session"] = "%/session" # dans session/ par défaut
-# Activer les lignes suivantes pour que les preferences, fichiers log, etc... soient stockés dans le dossier de l'utilisateur.
-#emplacements["log"] = "~/.wxgeometrie/log"
-#emplacements["preferences"] = "~/.wxgeometrie/preferences"
-#emplacements["macros"] = "~/.wxgeometrie/macros"
-#emplacements["session"] = "~/.wxgeometrie/session"
-
-taille_max_log = 10000 # taille max du fichier de log (en Ko)
-
-taille_max_log *= 1024
 
 # Paramètres généraux
 # --------------------
@@ -542,6 +513,29 @@ afficher_console_geolib = False
 # (À désactiver pour faciliter le débogage.)
 adapter_separateur = True
 
+
+
+# Répertoires par défaut
+# ----------------------
+
+# Répertoire où on sauve les fichiers par défaut
+rep_save = None
+# rep_save = repertoire
+# Répertoire où on ouvre les fichiers par défaut
+rep_open = None
+# rep_open = repertoire
+# Répertoire où on exporte les fichiers par défaut
+rep_export = None
+# rep_export = repertoire
+
+
+emplacements = {}
+
+taille_max_log = 10000 # taille max du fichier de log (en Ko)
+
+taille_max_log *= 1024
+
+
 try:
     from .personnaliser import * # permet de générer un fichier personnaliser.py lors de l'installation, ou de la première utilisation, et dont les parametres remplaceront ceux-ci.
 except ImportError:
@@ -549,5 +543,20 @@ except ImportError:
         from .personnaliser_ import *
     except ImportError:
         pass
+
+if install:
+    # Les préférences, fichiers log, etc... sont stockés dans le dossier de l'utilisateur.
+    # ~ se réfère au répertoire de l'utilisateur (ex: /home/BillG/ sous Linux, ou C:\Documents and Settings\LTorvald\ sous Windows)
+    emplacements.setdefault("log", "~/.wxgeometrie/log")
+    emplacements.setdefault("preferences", "~/.wxgeometrie/preferences")
+    emplacements.setdefault("macros", "~/.wxgeometrie/macros")
+    emplacements.setdefault("session", "~/.wxgeometrie/session")
+else:
+    # Utilisation sans installation. Tout est stocké directement dans le dossier wxgeometrie/.
+    # % se réfère au dossier contenant WxGeometrie (indiqué par param.EMPLACEMENT)
+    emplacements.setdefault("log", "%/log") # dans log/ par défaut
+    emplacements.setdefault("preferences", "%/preferences") # dans preferences/ par défaut
+    emplacements.setdefault("macros", "%/macros") # dans macros/ par défaut
+    emplacements.setdefault("session", "%/session") # dans session/ par défaut
 
 print(u'Import des paramètres terminé.')

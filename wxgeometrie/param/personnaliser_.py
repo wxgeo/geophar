@@ -33,3 +33,4 @@ from math import pi
 # Placez ici les modifications que vous souhaitez apporter au fichier de paramétrage.
 
 debug = False
+#install = True
