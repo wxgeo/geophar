@@ -189,3 +189,21 @@ f'(x)                             &             &+     &0                &-     
 % << -1/ln(2) >>
 """
     assert_tabvar(s, tab)
+
+
+def test_issue_pi():
+    s = 'sin(x) sur [-pi;pi]'
+    tab = \
+r'''\[\begin{tabvar}{|C|CCCCC|}
+\hline
+x                                 &-\pi          &      &\frac{\pi}{2}&        &\pi\\
+\hline
+f'(x)                             &              &+     &0            &-       & \\
+\hline
+\niveau{1}{2}\raisebox{0.5em}{$f$}&\niveau{1}{2}0&\croit&1            &\decroit&0\\
+\hline
+\end{tabvar}\]
+% x;f:(-pi;0) << (pi/2;1) >> (pi;0)
+% sin(x) sur [-pi;pi]
+'''
+    assert_tabvar(s, tab)

@@ -27,6 +27,7 @@ import numpy
 
 from sympy import oo, sympify
 from sympy.core.sympify import SympifyError
+import sympy
 
 from ..pylib import print_error, str2
 from .parsers import _convertir_latex_frac
@@ -501,21 +502,24 @@ def formatage_ensemble(chaine, preformatage = True, utiliser_sympy = False):
 
 def conversion_chaine_ensemble(chaine, utiliser_sympy = False):
     chaine = formatage_ensemble(chaine)
-    dico = {"__builtins__": None,
-#            "Frac": Frac,
+    dico = math.__dict__.copy()
+    if utiliser_sympy:
+        dico.update(sympy.__dict__)
+    # À faire en dernier (remplace sympy.Union par intervalles.Union).
+    dico.update({"__builtins__": None,
             "Intervalle": Intervalle,
             "Union": Union,
             "oo": oo,
             "False": False,
             "True": True,
-            }
-    dico.update(math.__dict__)
+            })
     if utiliser_sympy:
         try:
             #print str2(chaine), dico
             return sympify(str2(chaine), dico)
-        except SympifyError:
-            print "Warning: SympifyError in " + str2(chaine)
+        except (SympifyError, TypeError) as e:
+            print "Warning: %s in %s." %(e, str2(chaine))
+            print_error()
     return eval(str2(chaine), dico, dico)
 
 IR = R = Intervalle()
