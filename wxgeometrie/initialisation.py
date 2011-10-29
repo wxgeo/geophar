@@ -385,7 +385,7 @@ try:
         else:
             from .GUI.app import app, splash
             app.nom(NOMPROG)
-            splash_screen = splash(LOGO)
+            splash_screen = splash(path2(LOGO))
 
             from .GUI.fenetre_principale import FenetrePrincipale
             frame = FenetrePrincipale(app, fichier_log = fichier_log)

@@ -25,6 +25,7 @@ from __future__ import with_statement
 
 import re
 import wx
+from PyQt4.QtGui import QVBoxLayout, QLabel, QPushButton, QHBoxLayout
 from ...GUI import MenuBar, Panel_API_graphique
 from ...GUI.proprietes_objets import Proprietes
 

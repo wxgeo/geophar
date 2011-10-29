@@ -147,6 +147,8 @@ class About(QDialog):
 
         panelSizer = QVBoxLayout()
 
+        global LOGO
+        LOGO = path2(LOGO)
         logo = QLabel(self)
         logo.setPixmap(QPixmap(LOGO))
 
@@ -232,4 +234,3 @@ class Licence(WhiteScrolledMessageDialog):
             msg = f.read().decode("utf8")
         msg = msg.replace(u"WxGeometrie", u"WxGéométrie version " + param.version, 1)
         WhiteScrolledMessageDialog.__init__(self, parent, u"Licence", msg)
-
