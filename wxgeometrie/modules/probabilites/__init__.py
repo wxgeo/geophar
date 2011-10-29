@@ -24,11 +24,11 @@ from __future__ import with_statement
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import re
-import wx
-from PyQt4.QtGui import QVBoxLayout, QLabel, QPushButton, QHBoxLayout
+
+from PyQt4.QtGui import QVBoxLayout, QLabel, QPushButton, QHBoxLayout, QMessageBox, QTextEdit
+
 from ...GUI import MenuBar, Panel_API_graphique
 from ...GUI.proprietes_objets import Proprietes
-
 from ...geolib import Segment, Texte, Point, TEXTE
 from ... import param
 
@@ -63,8 +63,9 @@ class Probabilites(Panel_API_graphique):
 
         self.entrees.addWidget(QLabel(u" Instructions :"))
 
-        self.instructions = wx.TextCtrl(self, size = (200, 300), style = wx.TE_MULTILINE)
-        self.instructions.SetValue("""||Tirage 1|Tirage 2|Tirage 3
+        self.instructions = QTextEdit(self)
+        self.instructions.setMinimumSize(200, 300)
+        self.instructions.setPlainText("""||Tirage 1|Tirage 2|Tirage 3
 omega
 >A:0,7
 >>B:0,2
@@ -75,20 +76,20 @@ omega
 >>>G
 >>>H
 >>&E:0,9""")
-        self.entrees.Add(self.instructions)
-        self.appliquer = QPushButton(self, label = u"Générer l'arbre")
-        self.appliquer.Bind(wx.EVT_BUTTON, self.Appliquer)
-        self.entrees.Add(self.appliquer)
+        self.entrees.addWidget(self.instructions)
+        self.appliquer = QPushButton(u"Générer l'arbre", self)
+        self.appliquer.clicked.connect(self.Appliquer)
+        self.entrees.addWidget(self.appliquer)
 
         self.sizer = QHBoxLayout()
-        self.sizer.Add(self.canvas, 1, wx.LEFT | wx.TOP | wx.GROW)
-        self.sizer.Add(self.entrees)
-        self.finaliser(contenu = self.sizer)
+        self.sizer.addWidget(self.canvas)
+        self.sizer.addLayout(self.entrees)
+        self.finaliser(contenu=self.sizer)
 
 
     def _sauvegarder(self, fgeo, feuille = None):
         Panel_API_graphique._sauvegarder(self, fgeo, feuille)
-        fgeo.contenu[u"Instructions"] = [self.instructions.GetValue()]
+        fgeo.contenu[u"Instructions"] = [self.instructions.toPlainText()]
 
 
     def _ouvrir(self, fgeo):
@@ -100,7 +101,7 @@ omega
     def Appliquer(self, event):
         with self.canvas.geler_affichage(actualiser=True, sablier=True):
             self.creer_feuille()
-            instructions = [instruction for instruction in self.instructions.GetValue().split("\n") if instruction]
+            instructions = [instruction for instruction in self.instructions.toPlainText().split("\n") if instruction]
             nbr_colonnes = 0
             if instructions[0].startswith("|"):
                 legende = instructions[0]
@@ -234,13 +235,10 @@ omega
             self.feuille_actuelle.interprete.commande_executee()
 
     def info_proprietes(self, titre):
-        dlg = wx.MessageDialog(self, u"Créez l'arbre au préalable.", titre, wx.OK)
-        dlg.ShowModal()
-        dlg.Destroy()
-
+        QMessageBox.warning(self, titre, u"Créez l'arbre au préalable.")
 
     def proprietes_sommets(self, event = None):
-        objets = self.feuille_actuelle.objets.lister(type = Point)
+        objets = self.feuille_actuelle.objets.lister(type=Point)
         if not objets:
             self.info_proprietes(u'Aucun sommet.')
             return
@@ -250,7 +248,7 @@ omega
 
 
     def proprietes_aretes(self, event = None):
-        objets = self.feuille_actuelle.objets.lister(type = Segment)
+        objets = self.feuille_actuelle.objets.lister(type=Segment)
         if not objets:
             self.info_proprietes(u'Aucune arête.')
             return
@@ -259,7 +257,7 @@ omega
 
 
     def proprietes_titres(self, event = None):
-        objets = self.feuille_actuelle.objets.lister(type = Texte)
+        objets = self.feuille_actuelle.objets.lister(type=Texte)
         if not objets:
             self.info_proprietes(u'Aucun titre.')
             return
