@@ -23,7 +23,9 @@ from __future__ import with_statement
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-import wx
+from PyQt4.QtGui import (QVBoxLayout, QHBoxLayout, QLabel, QLineEdit,
+                         QGroupBox)
+
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib import cm
 from matplotlib.axes import Axes
@@ -129,85 +131,101 @@ class Surfaces(Panel_API_graphique):
         self.entrees = QVBoxLayout()
 
 
-        box = QGroupBox(self, -1, u"Equation")
-        ligne = wx.StaticBoxSizer(box, wx.HORIZONTAL)
+        ligne = QHBoxLayout()
+        box = QGroupBox(u"Equation")
+        box.setLayout(ligne)
         ligne.addWidget(QLabel("Z = "))
-        self.equation = wx.TextCtrl(self, size = (160, -1), style=wx.TE_PROCESS_ENTER)
-        self.equation.Bind(wx.EVT_CHAR, self.EvtChar)
-        ligne.Add(self.equation)
-        self.entrees.addLayout(ligne)
+        self.equation = QLineEdit(self)
+        self.equation.setMinimumWidth(160)
+        self.equation.returnPressed.connect(self.affiche)
+        ligne.addWidget(self.equation)
+        self.entrees.addWidget(box)
 
-        box = QGroupBox(self, -1, u"Abscisse")
-        liste = wx.StaticBoxSizer(box, wx.VERTICAL)
+        box = QGroupBox(u"Abscisse")
+        liste = QVBoxLayout()
+        box.setLayout(liste)
 
         ligne = QHBoxLayout()
         ligne.addWidget(QLabel("Xmin"))
-        self.xmin = wx.TextCtrl(self, value = "-5", size = (160, -1), style=wx.TE_PROCESS_ENTER)
-        self.xmin.Bind(wx.EVT_CHAR, self.EvtChar)
-        ligne.Add(self.xmin)
+        self.xmin = QLineEdit(self)
+        self.xmin.setMinimumWidth(160)
+        self.xmin.setText("-5")
+        self.xmin.returnPressed.connect(self.affiche)
+        ligne.addWidget(self.xmin)
         liste.addLayout(ligne)
 
         ligne = QHBoxLayout()
         ligne.addWidget(QLabel(u"Xmax"))
-        self.xmax = wx.TextCtrl(self, value = "5", size = (160, -1), style=wx.TE_PROCESS_ENTER)
-        self.xmax.Bind(wx.EVT_CHAR, self.EvtChar)
-        ligne.Add(self.xmax)
+        self.xmax = QLineEdit(self)
+        self.xmax.setMinimumWidth(160)
+        self.xmax.setText("5")
+        self.xmax.returnPressed.connect(self.affiche)
+        ligne.addWidget(self.xmax)
         liste.addLayout(ligne)
 
         ligne = QHBoxLayout()
         ligne.addWidget(QLabel(u"Pas"))
-        self.pasX = wx.TextCtrl(self, value = "", size = (160, -1), style=wx.TE_PROCESS_ENTER)
-        self.pasX.Bind(wx.EVT_CHAR, self.EvtChar)
-        ligne.Add(self.pasX)
+        self.pasX = QLineEdit(self)
+        self.pasX.setMinimumWidth(160)
+        self.pasX.returnPressed.connect(self.affiche)
+        ligne.addWidget(self.pasX)
         liste.addLayout(ligne)
 
-        self.entrees.Add(liste)
+        self.entrees.addWidget(box)
 
-        box = QGroupBox(self, -1, u"Ordonnée")
-        liste = wx.StaticBoxSizer(box, wx.VERTICAL)
+        box = QGroupBox(u"Ordonnée")
+        liste = QVBoxLayout()
+        box.setLayout(liste)
 
         ligne = QHBoxLayout()
         ligne.addWidget(QLabel(u"Ymin"))
-        self.ymin = wx.TextCtrl(self, value = "-5", size = (160, -1), style=wx.TE_PROCESS_ENTER)
-        self.ymin.Bind(wx.EVT_CHAR, self.EvtChar)
-        ligne.Add(self.ymin)
+        self.ymin = QLineEdit(self)
+        self.ymin.setMinimumWidth(160)
+        self.ymin.setText("-5")
+        self.ymin.returnPressed.connect(self.affiche)
+        ligne.addWidget(self.ymin)
         liste.addLayout(ligne)
 
         ligne = QHBoxLayout()
         ligne.addWidget(QLabel(u"Ymax"))
-        self.ymax = wx.TextCtrl(self, value = "5", size = (160, -1), style=wx.TE_PROCESS_ENTER)
-        self.ymax.Bind(wx.EVT_CHAR, self.EvtChar)
-        ligne.Add(self.ymax)
+        self.ymax = QLineEdit(self)
+        self.ymax.setMinimumWidth(160)
+        self.ymax.setText("5")
+        self.ymax.returnPressed.connect(self.affiche)
+        ligne.addWidget(self.ymax)
         liste.addLayout(ligne)
 
         ligne = QHBoxLayout()
         ligne.addWidget(QLabel(u"Pas"))
-        self.pasY = wx.TextCtrl(self, value = "", size = (160, -1), style=wx.TE_PROCESS_ENTER)
-        self.pasY.Bind(wx.EVT_CHAR, self.EvtChar)
-        ligne.Add(self.pasY)
+        self.pasY = QLineEdit(self)
+        self.pasY.setMinimumWidth(160)
+        self.pasY.returnPressed.connect(self.affiche)
+        ligne.addWidget(self.pasY)
         liste.addLayout(ligne)
 
-        self.entrees.Add(liste)
+        self.entrees.addWidget(box)
 
-        box = QGroupBox(self, -1, u"Seuils")
-        liste = wx.StaticBoxSizer(box, wx.VERTICAL)
+        box = QGroupBox(u"Seuils")
+        liste = QVBoxLayout()
+        box.setLayout(liste)
 
         ligne = QHBoxLayout()
 #        ligne.Add(wx.StaticText(self, -1, u"Pas"), 0, wx.ALIGN_CENTRE|wx.ALL,5)
-        self.seuils = wx.TextCtrl(self, size = (160, -1), style=wx.TE_PROCESS_ENTER)
-        self.seuils.Bind(wx.EVT_CHAR, self.EvtChar)
-        ligne.Add(self.seuils)
+        self.seuils = QLineEdit(self)
+        self.seuils.setMinimumWidth(160)
+        self.seuils.returnPressed.connect(self.affiche)
+        ligne.addWidget(self.seuils)
         liste.addLayout(ligne)
 #        liste.Add(wx.StaticText(self, -1, u"Exemple : 0.2 (évitez des valeurs trop faibles)."), 0, wx.ALL, 5)
 
-        self.entrees.Add(liste)
+        self.entrees.addWidget(box)
 
 
         #self.dessiner = wx.Button(self, wx.ID_REFRESH)
         #self.entrees.Add(self.dessiner, 0, wx.ALL, 5)
         self.sizer = QHBoxLayout()
-        self.sizer.Add(self.canvas, 1, wx.LEFT | wx.TOP | wx.GROW)
-        self.sizer.Add(self.entrees)
+        self.sizer.addWidget(self.canvas)
+        self.sizer.addLayout(self.entrees)
         self.setLayout(self.sizer)
         self.adjustSize()
         self.ax3d = MyAxes3D(self.canvas.figure)
@@ -224,7 +242,7 @@ class Surfaces(Panel_API_graphique):
         Panel_API_graphique._sauvegarder(self, fgeo, feuille)
         # TODO: implémenter sauvegarde
         return
-        fgeo.contenu[u"Courbe"] = [{"Y" : [self.equations[i].GetValue()], u"intervalle" : [self.intervalles[i].GetValue()], u"active" : [str(self.boites[i].GetValue())]} for i in range(self.nombre_courbes)]
+        fgeo.contenu[u"Courbe"] = [{"Y" : [self.equations[i].text()], u"intervalle" : [self.intervalles[i].text()], u"active" : [str(self.boites[i].text())]} for i in range(self.nombre_courbes)]
 
 
     def _ouvrir(self, fgeo):
@@ -240,28 +258,17 @@ class Surfaces(Panel_API_graphique):
 
 
 
-    def EvtChar(self, event):
-        code = event.GetKeyCode()
-
-        if code == 13:
-            self.affiche()
-        else:
-            event.Skip()
-
-
-
-
     def _affiche(self):
 #            if not hasattr(self, "initialisation_terminee"):
 #                return
-        if not self.equation.GetValue().strip():
+        if not self.equation.text().strip():
             return
-        xmin = eval_safe(self.xmin.GetValue().strip())
-        xmax = eval_safe(self.xmax.GetValue().strip())
-        ymin = eval_safe(self.ymin.GetValue().strip())
-        ymax = eval_safe(self.ymax.GetValue().strip())
+        xmin = eval_safe(self.xmin.text().strip())
+        xmax = eval_safe(self.xmax.text().strip())
+        ymin = eval_safe(self.ymin.text().strip())
+        ymax = eval_safe(self.ymax.text().strip())
 
-        pasX = self.pasX.GetValue().strip()
+        pasX = self.pasX.text().strip()
         if not pasX:
             pasX = self._param_.resolution*(xmax - xmin)
         else:
@@ -269,7 +276,7 @@ class Surfaces(Panel_API_graphique):
         if pasX < self._param_.resolution_minimale*max(xmax - xmin, ymax - ymin):
             pasX = self._param_.resolution_minimale*max(xmax - xmin, ymax - ymin)
             self.canvas.message(u"Attention, le pas est trop petit !")
-        pasY = self.pasY.GetValue().strip()
+        pasY = self.pasY.text().strip()
         if not pasY:
             pasY = self._param_.resolution*(xmax - xmin)
         else:
@@ -284,10 +291,10 @@ class Surfaces(Panel_API_graphique):
             dico = vars(end_user_functions).copy()
             dico.update({'x': X, 'X': X, 'Y': Y, 'y': Y})
             dico.update(dictionnaire_builtins)
-            formule = traduire_formule(self.equation.GetValue(), dico)
+            formule = traduire_formule(self.equation.text(), dico)
             self._Z = Z = eval(formule, dico) + 0*X # conversion des constantes en numpy.ndarray
 
-            seuils_txt = self.seuils.GetValue().strip()
+            seuils_txt = self.seuils.text().strip()
             if seuils_txt:
                 # On récupère et on classe les valeurs
                 seuils = sorted(float(seuil) for seuil in seuils_txt.split(' '))
