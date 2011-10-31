@@ -78,11 +78,6 @@ def partial_track(meth, self, *args, **kw):
 
 
 
-
-
-
-
-
 class Canvas(FigureCanvasAgg):
     u'Partie du canvas indépendante de la librairie graphique (Wx actuellement).'
 
@@ -656,6 +651,9 @@ def %(_nom_)s(self, valeur = no_argument):
             print s + str(_n) + ": " + self.parent.__titre__
             _n[0] += 1
         # </DEBUG>
+        if 0 in self.dimensions:
+            # Fenêtre pas encore affichée (initialisation du programme).
+            return
         try:
             self.graph.dessiner(dessin_temporaire = self._dessin_temporaire,
                         rafraichir_axes = self.feuille_actuelle._repere_modifie)
