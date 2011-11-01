@@ -154,7 +154,7 @@ class Calculatrice(Panel_simple):
         self.corps = corps = QHBoxLayout()
         sizer.addLayout(corps)
         self.gauche = gauche = QVBoxLayout()
-        corps.addLayout(gauche)
+        corps.addLayout(gauche, 1)
         self.resultats = resultats = QTextEdit(self)
         resultats.setMinimumSize(450, 310)
         resultats.setReadOnly(True)

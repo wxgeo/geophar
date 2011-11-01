@@ -26,7 +26,8 @@ from __future__ import with_statement
 import re
 from math import isnan, sqrt
 
-import wx
+from PyQt4.QtGui import QVBoxLayout, QLabel, QGroupBox, QHBoxLayout, QComboBox
+
 from numpy import array
 
 from ...GUI import MenuBar, Panel_API_graphique
@@ -138,46 +139,53 @@ class Statistiques(Panel_API_graphique):
 
         self.entrees = QVBoxLayout()
 
+        self.entrees.addStretch()
+
         self.entrees.addWidget(QLabel(u" Mode graphique :"))
 
-        self.choix = QComboBox(self, -1, (100, 50), choices = self.noms_diagrammes)
+        self.choix = QComboBox()
+        self.choix.addItems(self.noms_diagrammes)
         self.graph = 'barres' # *APRES* que self.choix soit défini.
 
-        self.Bind(wx.EVT_CHOICE, self.EvtChoice, self.choix)
-        self.entrees.Add(self.choix)
+        self.choix.currentIndexChanged.connect(self.EvtChoice)
+        self.entrees.addWidget(self.choix)
+
+        self.entrees.addStretch()
 
         #self.entrees.Add(wx.StaticText(self, -1, ""))
 
-        box = QGroupBox(self, -1, u"Mesures")
-        bsizer = wx.StaticBoxSizer(box, wx.VERTICAL)
+        box = QGroupBox(u"Mesures")
+        bsizer = QVBoxLayout()
+        box.setLayout(bsizer)
 
         #self.entrees.Add(bsizer, 1, wx.EXPAND|wx.ALL, 5)
-        self.entrees.Add(bsizer)
+        self.entrees.addWidget(box)
+        self.entrees.addStretch()
 
-        self._effectif_total = QLabel(self, u" Effectif total:")
-        self._moyenne = QLabel(self, u" Moyenne:")
-        self._mediane = QLabel(self, u" Médiane:")
-        self._mode = QLabel(self, u" Mode:")
-        self._etendue = QLabel(self, u" Etendue:")
-        self._variance = QLabel(self, u" Variance:")
-        self._ecart_type = QLabel(self, u" Ecart-type:" + 30*" ")
+        self._effectif_total = QLabel(u" Effectif total:")
+        self._moyenne = QLabel(u" Moyenne:")
+        self._mediane = QLabel(u" Médiane:")
+        self._mode = QLabel(u" Mode:")
+        self._etendue = QLabel(u" Etendue:")
+        self._variance = QLabel(u" Variance:")
+        self._ecart_type = QLabel(u" Ecart-type:" + 30*" ")
 
-        bsizer.addWidget(self._effectif_total, 0, wx.TOP|wx.LEFT, 9)
-        bsizer.addWidget(self._moyenne, 0, wx.TOP|wx.LEFT, 9)
-        bsizer.addWidget(self._mediane, 0, wx.TOP|wx.LEFT, 9)
-        bsizer.addWidget(self._mode, 0, wx.TOP|wx.LEFT, 9)
-        bsizer.addWidget(self._etendue, 0, wx.TOP|wx.LEFT, 9)
-        bsizer.addWidget(self._variance, 0, wx.TOP|wx.LEFT, 9)
-        bsizer.addWidget(self._ecart_type, 0, wx.ALL, 9)
+        bsizer.addWidget(self._effectif_total)
+        bsizer.addWidget(self._moyenne)
+        bsizer.addWidget(self._mediane)
+        bsizer.addWidget(self._mode)
+        bsizer.addWidget(self._etendue)
+        bsizer.addWidget(self._variance)
+        bsizer.addWidget(self._ecart_type)
 
         haut = QHBoxLayout()
-        haut.Add(self.canvas, 1, wx.LEFT | wx.TOP | wx.GROW)
-        haut.Add(self.entrees)
+        haut.addWidget(self.canvas, 1)
+        haut.addLayout(self.entrees)
 
         self.onglets_bas = OngletsStatistiques(self)
 
         self.sizer = QVBoxLayout()
-        self.sizer.addWidget(haut, 1, wx.GROW)
+        self.sizer.addLayout(haut, 1)
         self.sizer.addWidget(self.onglets_bas, 0)
         self.finaliser(contenu = self.sizer)
 
@@ -198,55 +206,55 @@ class Statistiques(Panel_API_graphique):
         if val is not None:
             assert val in self.types_diagrammes, "Type de diagramme incorrect."
             self._graph = val
-            self.choix.setSelection(self.types_diagrammes.index(self._graph))
+            self.choix.setCurrentIndex(self.types_diagrammes.index(self._graph))
         return self._graph
 
 
 
-    def EvtChoice(self, event):
-        self._graph = self.types_diagrammes[event.GetSelection()]
+    def EvtChoice(self, index):
+        self._graph = self.types_diagrammes[index]
         self.actualiser()
 
 
-    def EvtChar(self, event):
-        code = event.GetKeyCode()
+    ##def EvtChar(self, event):
+        ##code = event.GetKeyCode()
+##
+        ##if code in (wx.WXK_RETURN, wx.WXK_NUMPAD_ENTER):
+            ##self.actualiser()
+        ##else:
+            ##event.Skip()
 
-        if code in (wx.WXK_RETURN, wx.WXK_NUMPAD_ENTER):
-            self.actualiser()
-        else:
-            event.Skip()
-
-    def EvtCheck(self, event):
-        self.param('hachures', self.onglets_bas.autres.hachures.GetValue())
-        self.param('mode_effectifs', self.onglets_bas.autres.mode.GetSelection())
-        self.param('reglage_auto_fenetre', self.onglets_bas.autres.auto.GetValue())
+    def EvtCheck(self, state):
+        self.param('hachures', self.onglets_bas.autres.hachures.isChecked())
+        self.param('mode_effectifs', self.onglets_bas.autres.mode.currentIndex())
+        self.param('reglage_auto_fenetre', self.onglets_bas.autres.auto.isChecked())
         self.actualiser()
 
     def actualiser(self, afficher = True):
         try:
-            self.legende_x = self.onglets_bas.legende.x.GetValue()
-            self.legende_y = self.onglets_bas.legende.y.GetValue()
-            self.legende_a = self.onglets_bas.legende.a.GetValue()
-            self.gradu_x = self.onglets_bas.graduation.x.GetValue()
-            self.gradu_y = self.onglets_bas.graduation.y.GetValue()
-            self.gradu_a = self.onglets_bas.graduation.a.GetValue()
-            self.origine_x = self.onglets_bas.graduation.origine_x.GetValue()
-            self.origine_y = self.onglets_bas.graduation.origine_y.GetValue()
-            self.donnees_valeurs = self.onglets_bas.donnees.valeurs.GetValue()
-            self.onglets_classes = self.onglets_bas.donnees.classes.GetValue()
+            self.legende_x = self.onglets_bas.legende.x.text()
+            self.legende_y = self.onglets_bas.legende.y.text()
+            self.legende_a = self.onglets_bas.legende.a.text()
+            self.gradu_x = self.onglets_bas.graduation.x.text()
+            self.gradu_y = self.onglets_bas.graduation.y.text()
+            self.gradu_a = self.onglets_bas.graduation.a.text()
+            self.origine_x = self.onglets_bas.graduation.origine_x.text()
+            self.origine_y = self.onglets_bas.graduation.origine_y.text()
+            self.donnees_valeurs = self.onglets_bas.donnees.valeurs.text()
+            self.onglets_classes = self.onglets_bas.donnees.classes.text()
 
             # test choix quantiles
-            self.choix_quantiles["mediane"][0] = self.onglets_bas.autresq.mediane.GetValue()
-            self.choix_quantiles["quartiles"][0] = self.onglets_bas.autresq.quartiles.GetValue()
-            self.choix_quantiles["deciles"][0] = self.onglets_bas.autresq.deciles.GetValue()
+            self.choix_quantiles["mediane"][0] = self.onglets_bas.autresq.mediane.text()
+            self.choix_quantiles["quartiles"][0] = self.onglets_bas.autresq.quartiles.text()
+            self.choix_quantiles["deciles"][0] = self.onglets_bas.autresq.deciles.text()
 
             self.classes = []
             self._valeurs = {}
 
             # La chaine va être découpée au niveau des espaces ; on supprime donc les espaces inutiles
-            valeurs = regsub("[ ]*[*][ ]*", self.onglets_bas.donnees.valeurs.GetValue(), "*") # on supprime les espaces autour des '*'
+            valeurs = regsub("[ ]*[*][ ]*", self.onglets_bas.donnees.valeurs.text(), "*") # on supprime les espaces autour des '*'
             valeurs = regsub("[[][^]]*for[^]]*in[^]]*[]]", valeurs, lambda s:s.replace(' ','|')) # une expression du style "[i for i in range(7)]" ne doit pas être découpée au niveau des espaces.
-            classes = self.onglets_bas.donnees.classes.GetValue()
+            classes = self.onglets_bas.donnees.classes.text()
 
 
             for classe in advanced_split(classes.replace(";", ","), " ", symbols = "({})"):

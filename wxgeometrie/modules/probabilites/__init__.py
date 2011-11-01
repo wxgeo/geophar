@@ -82,8 +82,8 @@ omega
         self.entrees.addWidget(self.appliquer)
 
         self.sizer = QHBoxLayout()
-        self.sizer.addWidget(self.canvas)
-        self.sizer.addLayout(self.entrees)
+        self.sizer.addWidget(self.canvas, 1)
+        self.sizer.addLayout(self.entrees, 0)
         self.finaliser(contenu=self.sizer)
 
 

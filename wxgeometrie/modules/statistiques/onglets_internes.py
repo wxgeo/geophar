@@ -27,7 +27,9 @@ from __future__ import with_statement
 
 #from functools import partial
 
-import wx
+from PyQt4.QtGui import (QWidget, QTabWidget, QCheckBox, QGroupBox,
+                         QVBoxLayout, QLabel, QHBoxLayout, QComboBox,
+                         QLayout, QLineEdit)
 
 
 class CstmPanel(QWidget):
@@ -43,28 +45,35 @@ class CstmPanel(QWidget):
         self.adjustSize()
 
     def add(self, item):
-        self.main_sizer.Add(item)
+        if isinstance(item, QLayout):
+            self.main_sizer.addLayout(item)
+        else:
+            self.main_sizer.addWidget(item)
 
 
 class Donnees(CstmPanel):
     def __init__(self, parent):
         CstmPanel.__init__(self, parent)
         sizer = QHBoxLayout()
-        sizer.addWidget(QLabel(u"Effectifs et valeurs associées:  "), 0, wx.ALIGN_CENTER|wx.ALL, 5)
-        self.valeurs = wx.TextCtrl(self, -1, self.main.donnees_valeurs, size=(500, -1), style=wx.TE_PROCESS_ENTER)
+        sizer.addWidget(QLabel(u"Effectifs et valeurs associées:  "))
+        self.valeurs = QLineEdit()
+        self.valeurs.setText(self.main.donnees_valeurs)
+        self.valeurs.setMinimumWidth(500)
         aide = u"Valeurs simples:\n8 8 9 12 17 18\nEffectifs et valeurs:\n2*7 14*8 5*9 1*10\nClasses et effectifs:\n17*[0;10[ 24*[10;20["
         self.valeurs.setToolTip(aide)
-        self.valeurs.Bind(wx.EVT_CHAR, self.main.EvtChar)
-        sizer.Add(self.valeurs)
+        self.valeurs.returnPressed.connect(self.main.actualiser)
+        sizer.addWidget(self.valeurs)
         self.add(sizer)
 
         sizer = QHBoxLayout()
-        self.sc = QLabel(self, u"Regroupement par classes:  ")
-        sizer.Add(self.sc)
-        self.classes = wx.TextCtrl(self, -1, self.main.donnees_classes, size=(500, -1), style=wx.TE_PROCESS_ENTER)
+        self.sc = QLabel(u"Regroupement par classes:  ")
+        sizer.addWidget(self.sc)
+        self.classes = QLineEdit()
+        self.classes.setText(self.main.donnees_classes)
+        self.classes.setMinimumWidth(500)
         self.classes.setToolTip(u"Exemple:\n[0;10[ [10;20[ [20;30[")
-        self.classes.Bind(wx.EVT_CHAR, self.main.EvtChar)
-        sizer.Add(self.classes)
+        self.classes.returnPressed.connect(self.main.actualiser)
+        sizer.addWidget(self.classes)
         self.add(sizer)
 
         self.finaliser()
@@ -74,28 +83,35 @@ class Legende(CstmPanel):
     def __init__(self, parent):
         CstmPanel.__init__(self, parent)
         # Légendes
-        box = QGroupBox(self, -1, u"Légende des axes")
-        sizer = wx.StaticBoxSizer(box, wx.HORIZONTAL)
+        box = QGroupBox(u"Légende des axes")
+        sizer = QHBoxLayout()
+        box.setLayout(sizer)
 
-        self.sx = QLabel(self, u"Abscisses:")
-        sizer.Add(self.sx)
-        self.x = wx.TextCtrl(self, -1, self.main.legende_x, size=(200, -1), style=wx.TE_PROCESS_ENTER)
-        self.x.Bind(wx.EVT_CHAR, self.main.EvtChar)
-        sizer.Add(self.x)
+        self.sx = QLabel(u"Abscisses:")
+        sizer.addWidget(self.sx)
+        self.x = QLineEdit()
+        self.x.setText(self.main.legende_x)
+        self.x.setMinimumWidth(200)
+        self.x.returnPressed.connect(self.main.actualiser)
+        sizer.addWidget(self.x)
 
-        self.sy = QLabel(self, u"Ordonnées:")
-        sizer.Add(self.sy)
-        self.y = wx.TextCtrl(self, -1, self.main.legende_y, size=(200, -1), style=wx.TE_PROCESS_ENTER)
-        self.y.Bind(wx.EVT_CHAR, self.main.EvtChar)
-        sizer.Add(self.y)
+        self.sy = QLabel(u"Ordonnées:")
+        sizer.addWidget(self.sy)
+        self.y = QLineEdit()
+        self.y.setText(self.main.legende_y)
+        self.y.setMinimumWidth(200)
+        self.y.returnPressed.connect(self.main.actualiser)
+        sizer.addWidget(self.y)
 
-        self.sa = QLabel(self, u"Aire:")
-        sizer.Add(self.sa)
-        self.a = wx.TextCtrl(self, -1, self.main.legende_a, size=(100, -1), style=wx.TE_PROCESS_ENTER)
+        self.sa = QLabel(u"Aire:")
+        sizer.addWidget(self.sa)
+        self.a = QLineEdit()
+        self.a.setText(self.main.legende_a)
+        self.a.setMinimumWidth(100)
         self.a.setToolTip(u"Pour les histogrammes.\nIndique en quelle unité s'exprime la quantité.\nExemples:\npersonnes, ampoules, %, $, ...")
-        self.a.Bind(wx.EVT_CHAR, self.main.EvtChar)
-        sizer.Add(self.a)
-        self.add(sizer)
+        self.a.returnPressed.connect(self.main.actualiser)
+        sizer.addWidget(self.a)
+        self.add(box)
 
         self.finaliser()
 
@@ -105,52 +121,64 @@ class Graduation(CstmPanel):
         CstmPanel.__init__(self, parent)
         msizer = QHBoxLayout()
         # Graduations
-        box = QGroupBox(self, -1, u"Taille d'une graduation")
-        sizer = wx.StaticBoxSizer(box, wx.HORIZONTAL)
+        box = QGroupBox(u"Taille d'une graduation")
+        sizer = QHBoxLayout()
+        box.setLayout(sizer)
 
-        self.sx = QLabel(self, u"Abscisses:")
-        sizer.Add(self.sx)
-        self.x = wx.TextCtrl(self, -1, self.main.gradu_x, size=(50, -1), style=wx.TE_PROCESS_ENTER)
+        self.sx = QLabel(u"Abscisses:")
+        sizer.addWidget(self.sx)
+        self.x = QLineEdit()
+        self.x.setText(self.main.gradu_x)
+        self.x.setMinimumWidth(50)
         self.x.setToolTip(u"Graduation en abscisses.")
-        self.x.Bind(wx.EVT_CHAR, self.main.EvtChar)
-        sizer.Add(self.x)
+        self.x.returnPressed.connect(self.main.actualiser)
+        sizer.addWidget(self.x)
 
-        self.sy = QLabel(self, u"Ordonnées:")
-        sizer.Add(self.sy)
-        self.y = wx.TextCtrl(self, -1, self.main.gradu_y, size=(50, -1), style=wx.TE_PROCESS_ENTER)
+        self.sy = QLabel(u"Ordonnées:")
+        sizer.addWidget(self.sy)
+        self.y = QLineEdit()
+        self.y.setText(self.main.gradu_y)
+        self.y.setMinimumWidth(50)
         self.y.setToolTip(u"Graduation en ordonnées.")
-        self.y.Bind(wx.EVT_CHAR, self.main.EvtChar)
-        sizer.Add(self.y)
+        self.y.returnPressed.connect(self.main.actualiser)
+        sizer.addWidget(self.y)
 
-        self.sa = QLabel(self, u"Aire:")
-        sizer.Add(self.sa)
-        self.a = wx.TextCtrl(self, -1, self.main.gradu_a, size=(50, -1), style=wx.TE_PROCESS_ENTER)
+        self.sa = QLabel(u"Aire:")
+        sizer.addWidget(self.sa)
+        self.a = QLineEdit()
+        self.a.setText(self.main.gradu_a)
+        self.a.setMinimumWidth(50)
         self.a.setToolTip(u"Dimensions du carré ou rectangle donnant l'échelle.\nExemple:\n 1 (carré), 1x2 (rectangle)")
-        self.a.Bind(wx.EVT_CHAR, self.main.EvtChar)
-        sizer.Add(self.a)
-        msizer.Add(sizer)
+        self.a.returnPressed.connect(self.main.actualiser)
+        sizer.addWidget(self.a)
+        msizer.addWidget(box)
 
         msizer.addWidget(QLabel('   '))
 
         # Origine
-        box = QGroupBox(self, -1, u"Origine des axes")
-        sizer = wx.StaticBoxSizer(box, wx.HORIZONTAL)
+        box = QGroupBox(u"Origine des axes")
+        sizer = QHBoxLayout()
+        box.setLayout(sizer)
 
-        self.sox = QLabel(self, u"Abscisses:")
-        sizer.Add(self.sox)
-        self.origine_x = wx.TextCtrl(self, -1, self.main.origine_x, size=(50, -1), style=wx.TE_PROCESS_ENTER)
+        self.sox = QLabel(u"Abscisses:")
+        sizer.addWidget(self.sox)
+        self.origine_x = QLineEdit()
+        self.origine_x.setText(self.main.origine_x)
+        self.origine_x.setMinimumWidth(50)
         self.origine_x.setToolTip(u"Origine de l'axe des abscisses.")
-        self.origine_x.Bind(wx.EVT_CHAR, self.main.EvtChar)
-        sizer.Add(self.origine_x)
+        self.origine_x.returnPressed.connect(self.main.actualiser)
+        sizer.addWidget(self.origine_x)
 
-        self.soy = QLabel(self, u"Ordonnées:")
-        sizer.Add(self.soy)
-        self.origine_y = wx.TextCtrl(self, -1, self.main.origine_y, size=(50, -1), style=wx.TE_PROCESS_ENTER)
+        self.soy = QLabel(u"Ordonnées:")
+        sizer.addWidget(self.soy)
+        self.origine_y = QLineEdit()
+        self.origine_y.setText(self.main.origine_y)
+        self.origine_y.setMinimumWidth(50)
         self.origine_y.setToolTip(u"Origine de l'axe des ordonnées.")
-        self.origine_y.Bind(wx.EVT_CHAR, self.main.EvtChar)
-        sizer.Add(self.origine_y)
+        self.origine_y.returnPressed.connect(self.main.actualiser)
+        sizer.addWidget(self.origine_y)
 
-        msizer.Add(sizer)
+        msizer.addWidget(box)
 
         self.add(msizer)
 
@@ -165,35 +193,36 @@ class Autres(CstmPanel):
 
 
         hsizer = QHBoxLayout()
-        self.sm = QLabel(self, u'Affichage des effectifs:  ')
-        hsizer.Add(self.sm, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 0)
-        self.mode = QComboBox(self, -1, (100, 50), choices = (u'tels quels', u'en pourcentages', u'en fréquences'))
-        self.mode.setSelection(self.main.param("mode_effectifs"))
-        self.mode.Bind(wx.EVT_CHOICE, self.main.EvtCheck)
-        hsizer.Add(self.mode, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 0)
+        self.sm = QLabel(u'Affichage des effectifs:  ')
+        hsizer.addWidget(self.sm)
+        self.mode = QComboBox()
+        self.mode.addItems((u'tels quels', u'en pourcentages', u'en fréquences'))
+        self.mode.setCurrentIndex(self.main.param("mode_effectifs"))
+        self.mode.currentIndexChanged.connect(self.main.EvtCheck)
+        hsizer.addWidget(self.mode)
 
-        vsizer.Add(hsizer)
+        vsizer.addLayout(hsizer)
 
-        sizer.Add(vsizer)
+        sizer.addLayout(vsizer)
 
         vsizer = QVBoxLayout()
 
-        #~ self.pourcentages = wx.CheckBox(self, label = u'Effectifs en Pourcentages.   ')
+        #~ self.pourcentages = wx.CheckBox(u'Effectifs en Pourcentages.   ')
         #~ self.pourcentages.SetValue(self.main.param("mode_pourcentages"))
-        #~ self.pourcentages.Bind(wx.EVT_CHECKBOX, self.main.EvtCheck)
-        #~ vsizer.Add(self.pourcentages, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 7)
+        #~ self.pourcentages.stateChanged.connect(self.main.EvtCheck)
+        #~ vsizer.addWidget(self.pourcentages, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 7)
 
-        self.hachures = QCheckBox(self, label = u'Mode noir et blanc (hachures).')
-        self.hachures.SetValue(self.main.param("hachures"))
-        self.hachures.Bind(wx.EVT_CHECKBOX, self.main.EvtCheck)
-        vsizer.Add(self.hachures)
+        self.hachures = QCheckBox(u'Mode noir et blanc (hachures).')
+        self.hachures.setChecked(self.main.param("hachures"))
+        self.hachures.stateChanged.connect(self.main.EvtCheck)
+        vsizer.addWidget(self.hachures)
 
-        self.auto = QCheckBox(self, label = u"Réglage automatique de la fenêtre d'affichage.")
-        self.auto.SetValue(self.main.param("reglage_auto_fenetre"))
-        self.auto.Bind(wx.EVT_CHECKBOX, self.main.EvtCheck)
-        vsizer.Add(self.auto)
+        self.auto = QCheckBox(u"Réglage automatique de la fenêtre d'affichage.")
+        self.auto.setChecked(self.main.param("reglage_auto_fenetre"))
+        self.auto.stateChanged.connect(self.main.EvtCheck)
+        vsizer.addWidget(self.auto)
 
-        sizer.Add(vsizer, 0, wx.LEFT, 7)
+        sizer.addLayout(vsizer, 0)
         self.add(sizer)
 
         self.finaliser()
@@ -202,29 +231,30 @@ class Autres_quantile(CstmPanel):
     def __init__(self, parent):
         CstmPanel.__init__(self, parent)
 
-        box = QGroupBox(self, -1, u"Construction de quantiles")
-        sizer = wx.StaticBoxSizer(box, wx.HORIZONTAL)
+        box = QGroupBox(u"Construction de quantiles")
+        sizer = QHBoxLayout()
+        box.setLayout(sizer)
 
-        self.mediane = QCheckBox(self, label = u'Construire la médiane')
-        self.mediane.SetValue(self.main.choix_quantiles["mediane"][0])
-        self.mediane.Bind(wx.EVT_CHECKBOX, self.main.EvtCheck)
+        self.mediane = QCheckBox(u'Construire la médiane')
+        self.mediane.setChecked(self.main.choix_quantiles["mediane"][0])
+        self.mediane.stateChanged.connect(self.main.EvtCheck)
 
-        sizer.Add(self.mediane)
+        sizer.addWidget(self.mediane)
         sizer.addSpacing(10) # valeur à ajuster
 
-        self.quartiles = QCheckBox(self, label = u'Construire les quartiles')
-        self.quartiles.SetValue(self.main.choix_quantiles["quartiles"][0])
-        self.quartiles.Bind(wx.EVT_CHECKBOX, self.main.EvtCheck)
-        sizer.Add(self.quartiles)
+        self.quartiles = QCheckBox(u'Construire les quartiles')
+        self.quartiles.setChecked(self.main.choix_quantiles["quartiles"][0])
+        self.quartiles.stateChanged.connect(self.main.EvtCheck)
+        sizer.addWidget(self.quartiles)
         sizer.addSpacing(10) # valeur à ajuster
 
-        self.deciles = QCheckBox(self, label = u'Construire les déciles')
-        self.deciles.SetValue(self.main.choix_quantiles["deciles"][0])
-        self.deciles.Bind(wx.EVT_CHECKBOX, self.main.EvtCheck)
-        sizer.Add(self.deciles)
+        self.deciles = QCheckBox(u'Construire les déciles')
+        self.deciles.setChecked(self.main.choix_quantiles["deciles"][0])
+        self.deciles.stateChanged.connect(self.main.EvtCheck)
+        sizer.addWidget(self.deciles)
         sizer.addSpacing(10) # valeur à ajuster
 
-        self.add(sizer)
+        self.add(box)
 
         self.finaliser()
 
@@ -232,7 +262,7 @@ class Autres_quantile(CstmPanel):
 class OngletsStatistiques(QTabWidget):
     def __init__(self, parent):
         self.parent = parent
-        QTabWidget.__init__(self, parent, style=wx.NB_TOP)
+        QTabWidget.__init__(self, parent)
         self.donnees = Donnees(self)
         self.legende = Legende(self)
         self.graduation = Graduation(self)

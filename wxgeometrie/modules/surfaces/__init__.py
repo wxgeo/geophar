@@ -224,7 +224,7 @@ class Surfaces(Panel_API_graphique):
         #self.dessiner = wx.Button(self, wx.ID_REFRESH)
         #self.entrees.Add(self.dessiner, 0, wx.ALL, 5)
         self.sizer = QHBoxLayout()
-        self.sizer.addWidget(self.canvas)
+        self.sizer.addWidget(self.canvas, 1)
         self.sizer.addLayout(self.entrees)
         self.setLayout(self.sizer)
         self.adjustSize()
