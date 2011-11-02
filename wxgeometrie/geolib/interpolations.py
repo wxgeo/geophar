@@ -26,7 +26,7 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 from numpy import array, arange, append
 
-from .objet import Ref, Argument, Arguments
+from .objet import Ref, Arguments#, Argument
 from .courbes import Courbe_generique
 
 from ..pylib import fullrange
@@ -36,60 +36,36 @@ class Interpolation_generique(Courbe_generique):
     u"""Classe mère de toutes les interpolations."""
 
     points = __points = Arguments("Point_generique")
-    debut = __fin = Argument("bool")
-    fin = __debut = Argument("bool")
 
-    _style_defaut = param.segments
+    _style_defaut = param.interpolations
 
     def __init__(self, *points, **styles):
-        debut = styles.pop("debut", True)
-        fin = styles.pop("fin", True)
         self.__points = points = tuple(Ref(pt) for pt in points)
-        self.__debut = debut = Ref(debut)
-        self.__fin = fin = Ref(fin)
         Courbe_generique.__init__(self, **styles)
-
-##    def _extremite_arc(self, x, y, vecteur):
-##        coeff0, coeff1 = self.__canvas__.coeffs()
-##        if coeff0 == 0 or coeff1 == 0:
-##            warning("Resolution d'affichage incorrecte (division par zero).")
-##            return
-##        vecteur = vecteur[0]/-coeff0, vecteur[1]/coeff1
-##        if vecteur[0] == 0:
-##            if vecteur[1] > 0:
-##                angle = math.pi/2
-##            else:
-##                angle = -math.pi/2
-##        else:
-##            angle = math.arctan(vecteur[1]/vecteur[0])
-##            if vecteur[0] < 0:
-##                angle += math.pi
-##        # donne l'angle d'incidence a l'extremite
-##        t = arange(angle - math.pi/2, angle + math.pi/2, 0.05)
-##        R = self.__canvas__.taille["("]
-##
-##        x, y = self.__canvas__.coo2pix(x, y)
-##        return self.__canvas__.pix2coo(x + R*(cos(t) - math.cos(angle)), y + R*(sin(t) - math.sin(angle)))
 
 
     def _affiche_extremites(self, vec_deb = None, vec_fin = None):
         couleur = self.style("couleur")
         niveau = self.style("niveau")
         epaisseur = self.style("epaisseur")
+        debut = self.style("debut")
+        fin = self.style("fin")
+
         # Début de la courbe
         plot = self._representation[-2]
         x, y = self.__points[0].coordonnees
         a, b = self.__points[1].coordonnees
         if vec_deb is None:
-            vec_deb = (x-a, y-b)
-        if self.__debut == True:
+            vec_deb = (a - x, b - y)
+        if debut is True:
             plot.set_data((x,), (y,))
             plot.set(visible=True, color=couleur, marker="o", markeredgecolor=couleur,
                      markersize=2*self.__canvas__.taille["o"], linewidth=epaisseur)
             plot.zorder = niveau
-        elif self.__debut == False:
-            plot.set_data(*self._extremite_arc(x, y, vec_deb))
-            plot.set(visible=True, color=couleur, linewidth=epaisseur)
+        elif debut is False:
+            arc = self.rendu.arc(x, y, vec_deb)
+            plot.set_data(*arc.get_data()) # À TESTER !!
+            plot.set(visible=True, color=couleur, linewidth=epaisseur, marker="")
             plot.zorder = niveau
         else:
             plot.set_visible(False)
@@ -99,16 +75,16 @@ class Interpolation_generique(Courbe_generique):
         x, y = self.__points[-1].coordonnees
         a, b = self.__points[-2].coordonnees
         if vec_fin is None:
-            vec_fin = (x-a, y-b)
-        if self.__fin == True:
+            vec_fin = (a - x, b - y)
+        if fin is True:
             plot.set_data((x,), (y,))
             plot.set(visible=True, color=couleur, marker="o", markeredgecolor=couleur,
                      markersize=2*self.__canvas__.taille["o"], linewidth=epaisseur)
             plot.zorder = niveau
-        elif self.__fin == False:
+        elif fin is False:
             arc = self.rendu.arc(x, y, vec_fin)
-            plot.set_data(arc._x.data, arc._y.data) # À TESTER !!
-            plot.set(visible=True, color=couleur, linewidth=epaisseur)
+            plot.set_data(*arc.get_data()) # À TESTER !!
+            plot.set(visible=True, color=couleur, linewidth=epaisseur, marker="")
             plot.zorder = niveau
         else:
             plot.set_visible(False)
@@ -127,17 +103,11 @@ class Interpolation_lineaire(Interpolation_generique):
     """
 
     points = __points = Arguments("Point_generique")
-    debut = __fin = Argument("bool")
-    fin = __debut = Argument("bool")
 
     def __init__(self, *points, **styles):
         if styles.get("points", None):
             points = styles.pop("points")
-        debut = styles.pop("debut", True)
-        fin = styles.pop("fin", True)
         self.__points = points = tuple(Ref(pt) for pt in points)
-        self.__debut = debut = Ref(debut)
-        self.__fin = fin = Ref(fin)
         Interpolation_generique.__init__(self, *points, **styles)
 
     def _creer_figure(self):
@@ -164,8 +134,23 @@ class Interpolation_lineaire(Interpolation_generique):
             plot.set_data(array((x1, x2)), array((y1, y2)))
             plot.set(color=couleur, linestyle=style, linewidth=epaisseur)
             plot.zorder = niveau
-            self._xarray = append(self._xarray, arange(x1, x2, pas))
-            self._xarray = append(self._xarray, arange(x1, x2, pas))
+            # TODO: améliorer l'algo de détection (notamment si l'échelle
+            # sur les 2 axes n'est pas la même).
+            # FIXME : des bugs demeurent dans la détection, selon la pente (à étudier...)
+            if abs(y2 - y1) > abs(x2 - x1):
+                x_array = arange(x1, x2, pas)
+                a = (y2 - y1)/(x2 - x1)
+                b = y1 - a*x1
+                y_array = a*x_array + b
+            elif abs(y2 - y1) > contexte['tolerance']:
+                y_array = arange(y1, y2, pas)
+                a = (x2 - x1)/(y2 - y1)
+                b = x1 - a*y1
+                x_array = a*y_array + b
+            else:
+                continue
+            self._xarray = append(self._xarray, x_array)
+            self._yarray = append(self._yarray, y_array)
 
         self._affiche_extremites()
 
@@ -181,17 +166,11 @@ class Interpolation_quadratique(Interpolation_generique):
     Pour chaque morceau, x(t)=at²+bt+c et y(t)=dt²+et+f, où t appartient à [0;1].
     """
     points = __points = Arguments("Point_generique")
-    debut = __fin = Argument("bool")
-    fin = __debut = Argument("bool")
 
     def __init__(self, *points, **styles):
-        if styles.get("points", None):
+        if "points" in styles:
             points = styles.pop("points")
-        debut = styles.pop("debut", True)
-        fin = styles.pop("fin", True)
         self.__points = points = tuple(Ref(pt) for pt in points)
-        self.__debut = debut = Ref(debut)
-        self.__fin = fin = Ref(fin)
         Interpolation_generique.__init__(self, *points, **styles)
 
 
@@ -230,7 +209,7 @@ class Interpolation_quadratique(Interpolation_generique):
             dy0 = 2*d + e
 
             self._xarray = append(self._xarray, u)
-            self._xarray = append(self._xarray, v)
+            self._yarray = append(self._yarray, v)
 
         self._affiche_extremites(vec_fin = (dx0, dy0))
 
@@ -247,20 +226,11 @@ class Interpolation_cubique(Interpolation_generique):
     """
 
     points = __points = Arguments("Point_generique")
-    debut = __fin = Argument("bool")
-    fin = __debut = Argument("bool")
-    courbure = __courbure = Argument("Variable_generique")
 
     def __init__(self, *points, **styles):
-        if styles.get("points", None):
+        if "points" in styles:
             points = styles.pop("points")
-        debut = styles.pop("debut", True)
-        fin = styles.pop("fin", True)
-        courbure = styles.pop("courbure", 1)
         self.__points = points = tuple(Ref(pt) for pt in points)
-        self.__debut = debut = Ref(debut)
-        self.__fin = fin = Ref(fin)
-        self.__courbure = courbure = Ref(fin)
         Interpolation_generique.__init__(self, *points, **styles)
 
 
@@ -270,6 +240,9 @@ class Interpolation_cubique(Interpolation_generique):
         niveau = self.style("niveau")
         style = self.style("style")
         epaisseur = self.style("epaisseur")
+        courbure = self.style("courbure")
+        if courbure is None:
+            courbure = 1
         if not self._representation:
             self._representation = [self.rendu.ligne() for i in xrange(n + 1)]
 
@@ -289,7 +262,7 @@ class Interpolation_cubique(Interpolation_generique):
                 dx0 = x1 - x0
                 dy0 = y1 - y0
             else:
-                dx0 = self.__courbure*abs(x1 - x0)
+                dx0 = courbure*abs(x1 - x0)
                 if dx1 != 0:
                     dy0 = dy1/dx1*dx0
                 else:
@@ -302,7 +275,7 @@ class Interpolation_cubique(Interpolation_generique):
                     dx1 = x2 - x0
                 else:
                     dy1 = 0
-                    dx1 = self.__courbure*abs(x1 - x0)
+                    dx1 = courbure*abs(x1 - x0)
             else:
                 dy1 = y1 - y0
                 dx1 = x1 - x0
@@ -321,6 +294,6 @@ class Interpolation_cubique(Interpolation_generique):
             plot.zorder = niveau
 
             self._xarray = append(self._xarray, u)
-            self._xarray = append(self._xarray, v)
+            self._yarray = append(self._yarray, v)
 
         self._affiche_extremites(vec_deb = (dx0, dy0), vec_fin = (dx1, dy1))
