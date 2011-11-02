@@ -219,6 +219,17 @@ segments = {
     "categorie": "lignes",
     "codage": codage_des_lignes[0],
     }
+interpolations = {
+    "couleur": "g",
+    "epaisseur": 1.,
+    "style": "-",
+    "visible": True,
+    "niveau": 3,
+    "categorie": "lignes",
+    "codage": codage_des_lignes[0],
+    "debut": True,
+    "fin": True,
+    }
 droites = {"couleur": "b",
     "epaisseur": 1.,
     "style": "-",
