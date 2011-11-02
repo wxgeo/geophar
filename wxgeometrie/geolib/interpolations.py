@@ -455,8 +455,10 @@ class interpol1():
         show()
 
 
-class Interpolation_Piecewise(Interpolation_generique, interpol1):
+class Interpolation_Par_Morceau(Interpolation_generique, interpol1):
     u"""
+    Une courbe d'interpolation polynomiale par morceaux.
+
     utilise l'interpolation par morceau de scipy pour construire la fonction
     c'est la classe scipy.interpolate.PiecewisePolynomial
 
@@ -472,14 +474,16 @@ class Interpolation_Piecewise(Interpolation_generique, interpol1):
     
     @return : numpy.lib.polynomial
     """
-    def __init__(self,  xl = [], yl = [], derivl = [], *points, **styles):
+    def __init__(self, *points, **styles):
+        derivees = self.styles.pop('derivees', len(points)*[0])
         debut = styles.pop("debut", True)
         fin = styles.pop("fin", True)
         self.__points = points = tuple(Ref(pt) for pt in points)
         self.__debut = debut = Ref(debut)
         self.__fin = fin = Ref(fin)
-        Courbe_generique.__init__(self, **styles)
+        Interpolation_generique.__init__(self, **styles)
 
+        # à modifier
         self.xl = xl
         self.yl = yl
         self.derivl = [frac.Fraction(x) for x in derivl]
@@ -492,3 +496,33 @@ class Interpolation_Piecewise(Interpolation_generique, interpol1):
     def poly_inter(self, xl, yl, derivl):
         yl_cum = [[yl[i], derivl[i]] for i in range(len(yl))]
         return PiecewisePolynomial(xl, yl_cum)
+
+
+    def _creer_figure(self):
+        n = len(self.__points)
+        couleur = self.style("couleur")
+        niveau = self.style("niveau")
+        style = self.style("style")
+        epaisseur = self.style("epaisseur")
+        if not self._representation:
+            self._representation = [self.rendu.ligne() for i in xrange(n + 1)]
+
+        self._xarray = array([])
+        self._yarray = array([])
+
+        if n < 2:
+            return
+
+        pas = self.__canvas__.pas()
+
+        for i in xrange(n - 1):
+            plot = self._representation[i]
+            x1, y1 = self.__points[i].coordonnees
+            x2, y2 = self.__points[i+1].coordonnees
+            plot.set_data(array((x1, x2)), array((y1, y2)))
+            plot.set(color=couleur, linestyle=style, linewidth=epaisseur)
+            plot.zorder = niveau
+            self._xarray = append(self._xarray, arange(x1, x2, pas))
+            self._xarray = append(self._xarray, arange(x1, x2, pas))
+
+        self._affiche_extremites()
