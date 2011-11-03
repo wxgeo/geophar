@@ -28,6 +28,7 @@ from numpy import array, arange, append
 
 from .objet import Ref, Arguments#, Argument
 from .courbes import Courbe_generique
+from .contexte import contexte
 
 from ..pylib import fullrange
 from .. import param
@@ -136,14 +137,14 @@ class Interpolation_lineaire(Interpolation_generique):
             plot.zorder = niveau
             # TODO: améliorer l'algo de détection (notamment si l'échelle
             # sur les 2 axes n'est pas la même).
-            # FIXME : des bugs demeurent dans la détection, selon la pente (à étudier...)
-            if abs(y2 - y1) > abs(x2 - x1):
-                x_array = arange(x1, x2, pas)
+            # Utiliser l'algorithme des segments.
+            if abs(y2 - y1) < abs(x2 - x1):
+                x_array = arange(x1, x2, pas if x1 < x2 else -pas)
                 a = (y2 - y1)/(x2 - x1)
                 b = y1 - a*x1
                 y_array = a*x_array + b
             elif abs(y2 - y1) > contexte['tolerance']:
-                y_array = arange(y1, y2, pas)
+                y_array = arange(y1, y2, pas if y1 < y2 else -pas)
                 a = (x2 - x1)/(y2 - y1)
                 b = x1 - a*y1
                 x_array = a*y_array + b
