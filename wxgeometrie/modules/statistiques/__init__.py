@@ -563,7 +563,7 @@ class Statistiques(Panel_API_graphique):
         self.canvas.dessiner_texte(M + 0.2*(M-m) + dx, dy, self.legende_x, ha = "right")
         dx, dy = self.canvas.dpix2coo(15, -5)
         #ajout des quantiles
-        for  q in ["mediane", "quartiles", "deciles"]:
+        for q in ["mediane", "quartiles", "deciles"]:
             # tracer si les quantiles sont activés
             if self.choix_quantiles[q][0]:
                 freq = self.choix_quantiles[q][1]
@@ -838,16 +838,24 @@ class Statistiques(Panel_API_graphique):
 
         w = 1 if self.param('hachures') else 1.5
 
-        self.canvas.dessiner_ligne([d1, d1], [.4, .6], linewidth = w, color = col('g'))
-        self.canvas.dessiner_ligne([d9, d9], [.4, .6], linewidth = w, color = col('g'))
         self.canvas.dessiner_ligne([q1, q1], [.2, .8], linewidth = w, color = col('b'))
         self.canvas.dessiner_ligne([q3, q3], [.2, .8], linewidth = w, color = col('b'))
         self.canvas.dessiner_ligne([med, med], [.2, .8], linewidth = w, color = col('r'))
-        self.canvas.dessiner_ligne([d1, q1], [.5, .5], color = "k")
-        self.canvas.dessiner_ligne([q3, d9], [.5, .5], color = "k")
         self.canvas.dessiner_ligne([q3, q1], [.2, .2], color = "k")
         self.canvas.dessiner_ligne([q3, q1], [.8, .8], color = "k")
-        self.canvas.dessiner_ligne([m, M], [.5, .5], linestyle = "None", marker = "o", color="k", markerfacecolor = "w")
+        if self.choix_quantiles['deciles'][0]:
+            # Les "moustaches" du diagramme correspondent au 1er et 9e décile
+            self.canvas.dessiner_ligne([m, M], [.5, .5], linestyle = "None", marker = "o", color="k", markerfacecolor = "w")
+            self.canvas.dessiner_ligne([d1, q1], [.5, .5], color = "k")
+            self.canvas.dessiner_ligne([q3, d9], [.5, .5], color = "k")
+            self.canvas.dessiner_ligne([d1, d1], [.4, .6], linewidth = w, color = col('g'))
+            self.canvas.dessiner_ligne([d9, d9], [.4, .6], linewidth = w, color = col('g'))
+        else:
+            # Les "moustaches" du diagramme correspondent au minimum et maximum
+            self.canvas.dessiner_ligne([m, q1], [.5, .5], color = "k")
+            self.canvas.dessiner_ligne([q3, M], [.5, .5], color = "k")
+            self.canvas.dessiner_ligne([m, m], [.4, .6], linewidth = w, color = 'k')
+            self.canvas.dessiner_ligne([M, M], [.4, .6], linewidth = w, color = 'k')
 
 
 #------------------------------------------------------------
