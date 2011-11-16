@@ -32,7 +32,7 @@ from numpy import array
 from ...GUI import MenuBar, Panel_API_graphique
 from .experience import LancerDes, Sondage, ExperienceFrame
 from .onglets_internes import OngletsStatistiques
-from ...mathlib.custom_functions import arrondir
+from ...geolib.routines import arrondir
 from ...pylib import property2, uu, regsub, advanced_split, print_error, eval_restricted
 
 def tst(result):
@@ -826,10 +826,10 @@ class Statistiques(Panel_API_graphique):
         if int(m) == m:
             m = int(m) # pour des raisons esthetiques
         self.origine(m, 0)
-        l = arrondir((M-m)/20)
+        l = arrondir((M - m)/20)
         self.graduations(l, 0)
-        if m <> M:
-            self.fenetre(m - 0.1*(M-m), M + 0.1*(M-m), -0.1, 1.1)
+        if m != M:
+            self.fenetre(m - 0.1*(M - m), M + 0.1*(M - m), -0.1, 1.1)
         else:
             self.fenetre(m - 0.1, M + 0.1, -0.1, 1.1)
 
@@ -838,11 +838,13 @@ class Statistiques(Panel_API_graphique):
 
         w = 1 if self.param('hachures') else 1.5
 
+        # Quartiles
         self.canvas.dessiner_ligne([q1, q1], [.2, .8], linewidth = w, color = col('b'))
         self.canvas.dessiner_ligne([q3, q3], [.2, .8], linewidth = w, color = col('b'))
-        self.canvas.dessiner_ligne([med, med], [.2, .8], linewidth = w, color = col('r'))
-        self.canvas.dessiner_ligne([q3, q1], [.2, .2], color = "k")
-        self.canvas.dessiner_ligne([q3, q1], [.8, .8], color = "k")
+        # Médiane
+        if self.choix_quantiles['mediane'][0]:
+            self.canvas.dessiner_ligne([med, med], [.2, .8], linewidth = w, color = col('r'))
+        # "Moustaches"
         if self.choix_quantiles['deciles'][0]:
             # Les "moustaches" du diagramme correspondent au 1er et 9e décile
             self.canvas.dessiner_ligne([m, M], [.5, .5], linestyle = "None", marker = "o", color="k", markerfacecolor = "w")
@@ -856,6 +858,9 @@ class Statistiques(Panel_API_graphique):
             self.canvas.dessiner_ligne([q3, M], [.5, .5], color = "k")
             self.canvas.dessiner_ligne([m, m], [.4, .6], linewidth = w, color = 'k')
             self.canvas.dessiner_ligne([M, M], [.4, .6], linewidth = w, color = 'k')
+        # Boîte
+        self.canvas.dessiner_ligne([q3, q1], [.2, .2], color = "k")
+        self.canvas.dessiner_ligne([q3, q1], [.8, .8], color = "k")
 
 
 #------------------------------------------------------------
