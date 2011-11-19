@@ -97,7 +97,7 @@ class StatMenuBar(MenuBar):
         self.ajouter("Fichier", ["nouveau"], ["ouvrir"], ["ouvrir ici"], ["enregistrer"], ["enregistrer_sous"], ["exporter"], None, ["mise en page"], ["imprimer"], [u"presse-papier"], None, ["proprietes"], None, self.panel.doc_ouverts, None, ["fermer"], ["quitter"])
         self.ajouter("Editer", ["annuler"], ["refaire"], ["modifier"], ["supprimer"])
         self.ajouter("creer")
-        self.ajouter("Affichage", ["onglet"], None, ["repere"], ["quadrillage"], ["orthonorme"], None, ["fenetre"], ["zoomer"], ["dezoomer"], ["orthonormaliser"])
+        self.ajouter("Affichage", ["onglet"], None, ["barre_outils"], ["console_geolib"])
         self.ajouter("Outils", [u"Expérience", u"Simuler une expérience.", "Alt+Ctrl+E", self.panel.creer_experience], [u"Lancers de dés", u"Simuler des lancers d'un ou de plusieurs dés.", "Ctrl+Shift+D", self.panel.creer_lancer_des], [u"Sondage", u"Simuler un sondage simple.", "Ctrl+Shift+S", self.panel.creer_sondage], None, ["options"])
         self.ajouter(u"avance1")
         self.ajouter("?")
@@ -548,7 +548,7 @@ class Statistiques(Panel_API_graphique):
         u"""
         Courbe des effectifs cumulés croissants si mode = 1, décroissants si mode = -1.
         """
-        if self.axes(x = True, y = True, classes=True):
+        if self.axes(x=True, y=True, classes=True):
             return u"Définissez des classes.\nExemple : [0;10[ [10;20["
 
         valeurs = self.liste_valeurs()
@@ -556,21 +556,21 @@ class Statistiques(Panel_API_graphique):
         l = min([classe[1] - classe[0] for classe in self.classes])
         m, M = self.intervalle_classes()
         hmax = self.total()
-        self.fenetre(m - 0.1*(M-m), M + 0.2*(M-m), -0.1*hmax, 1.1*hmax)
+        self.fenetre(m - 0.1*(M - m), M + 0.2*(M - m), -0.1*hmax, 1.1*hmax)
         self.graduations(l, arrondir(hmax/10))
         self.origine(m, 0)
 
-        #classe with cumulatives eff or freq 2-uple list: y_cum
-        y_cum=[]
+        # Classe with cumulatives eff or freq 2-uple list: y_cum
+        y_cum = []
         couleur = 'k' if self.param('hachures') else 'b'
         for classe in self.classes:
             y_value = [sum([self.valeurs[valeur] for valeur in valeurs if mode*valeur <= mode*classe[i]]) for i in (0, 1)]
             self.canvas.dessiner_ligne(classe, y_value, color = couleur)
             y_cum.append((classe, y_value))
         dx, dy = self.canvas.dpix2coo(-5, -18)
-        self.canvas.dessiner_texte(M + 0.2*(M-m) + dx, dy, self.legende_x, ha = "right")
+        self.canvas.dessiner_texte(M + 0.2*(M - m) + dx, dy, self.legende_x, ha = "right")
         dx, dy = self.canvas.dpix2coo(15, -5)
-        #ajout des quantiles
+        # Ajout des quantiles
         for q in ["mediane", "quartiles", "deciles"]:
             # tracer si les quantiles sont activés
             if self.choix_quantiles[q][0]:
@@ -578,12 +578,12 @@ class Statistiques(Panel_API_graphique):
                 for a in freq:
                     try:
                         (c, y) = self.select_classe(y_cum, a, mode)
-                        self.quantile_plot(c, y, a, couleur = self.choix_quantiles[q][2], style = self.choix_quantiles[q][3])
+                        self.quantile_plot(c, y, a, couleur=self.choix_quantiles[q][2], style=self.choix_quantiles[q][3])
                     except TypeError:
                         # c peut être vide si les classes commencent à une
                         # fcc trop grande.
                         pass
-        #legende
+        # Legende
         legende_y = self.legende_y
         if not legende_y:
             mode = self.param('mode_effectifs')
@@ -596,7 +596,7 @@ class Statistiques(Panel_API_graphique):
         self.canvas.dessiner_texte(m + dx, 1.1*hmax + dy, legende_y, va='top')
 
 
-    def quantile_plot(self, classe, y, a, couleur ='r', style ='-'):
+    def quantile_plot(self, classe, y, a, couleur='r', style='-'):
         u"""
         Trace le a-quantile
 
@@ -612,8 +612,8 @@ class Statistiques(Panel_API_graphique):
         @rtype: None
         """
         a_reel = a*self.total()
-        m = (y[1]-y[0])/(classe[1]-classe[0])
-        x_reg = (a_reel-y[0])/m + classe[0]
+        m = (y[1] - y[0])/(classe[1] - classe[0])
+        x_reg = (a_reel - y[0])/m + classe[0]
         # coordonnées de l'origine
         x0, y0 = self.canvas.origine_axes
         dx, dy = self.canvas.dpix2coo(-5, -18)
@@ -622,7 +622,7 @@ class Statistiques(Panel_API_graphique):
 
         self.canvas.dessiner_ligne([x0, x_reg], [a_reel, a_reel], color = col, linestyle = style)
         self.canvas.dessiner_ligne([x_reg, x_reg], [a_reel, y0], color = col, linestyle = style)
-        self.canvas.dessiner_texte(x_reg, y0+dy, format(x_reg, ".4g"), color = col)
+        self.canvas.dessiner_texte(x_reg, y0 + dy, format(x_reg, ".4g"), color = col)
 
 
     def select_classe(self, liste, a, mode=1):
@@ -742,7 +742,9 @@ class Statistiques(Panel_API_graphique):
             i+=1
 
 
-        self.canvas.dessiner_texte(M + 0.1*(M-m) - 5*self.canvas.coeff(0), -18*self.canvas.coeff(1), self.legende_x, ha = "right")
+        self.canvas.dessiner_texte(M + 0.1*(M - m) - 5*self.canvas.coeff(0),
+                                    -18*self.canvas.coeff(1),
+                                    self.legende_x, ha = "right")
         legende_y = self.legende_y
         if not legende_y:
             mode = self.param('mode_effectifs')
@@ -752,7 +754,8 @@ class Statistiques(Panel_API_graphique):
                 legende_y = u"Pourcentages"
             else:
                 legende_y = u"Fréquences"
-        self.canvas.dessiner_texte(m + 15*self.canvas.coeff(0), 1.1*hmax - 5*self.canvas.coeff(1), legende_y, va = "top")
+        self.canvas.dessiner_texte(m + 15*self.canvas.coeff(0), 1.1*hmax - 5*self.canvas.coeff(1),
+                                    legende_y, va = "top")
 
         self.dessiner_intervalle_confiance()
 
@@ -826,7 +829,11 @@ class Statistiques(Panel_API_graphique):
         d9 = self.decile(9)
         vals = self.liste_valeurs()
         m = vals[0]
+        if isinstance(m, Classe):
+            m = m[0]
         M = vals[-1]
+        if isinstance(M, Classe):
+            M = M[1]
         if str in [type(i) for i in (med, q1, q3, d1, d9)]:
             # self.mediane() ou self.decile() ou... renvoie "calcul impossible."
             return
@@ -855,21 +862,24 @@ class Statistiques(Panel_API_graphique):
         # "Moustaches"
         if self.choix_quantiles['deciles'][0]:
             # Les "moustaches" du diagramme correspondent au 1er et 9e décile
-            self.canvas.dessiner_ligne([m, M], [.5, .5], linestyle = "None", marker = "o", color="k", markerfacecolor = "w")
-            self.canvas.dessiner_ligne([d1, q1], [.5, .5], color = "k")
-            self.canvas.dessiner_ligne([q3, d9], [.5, .5], color = "k")
-            self.canvas.dessiner_ligne([d1, d1], [.4, .6], linewidth = w, color = col('g'))
-            self.canvas.dessiner_ligne([d9, d9], [.4, .6], linewidth = w, color = col('g'))
+            self.canvas.dessiner_ligne([m, M], [.5, .5], linestyle="None", marker="o", color="k", markerfacecolor="w")
+            self.canvas.dessiner_ligne([d1, q1], [.5, .5], color="k")
+            self.canvas.dessiner_ligne([q3, d9], [.5, .5], color="k")
+            self.canvas.dessiner_ligne([d1, d1], [.4, .6], linewidth=w, color=col('g'))
+            self.canvas.dessiner_ligne([d9, d9], [.4, .6], linewidth=w, color=col('g'))
         else:
             # Les "moustaches" du diagramme correspondent au minimum et maximum
-            self.canvas.dessiner_ligne([m, q1], [.5, .5], color = "k")
-            self.canvas.dessiner_ligne([q3, M], [.5, .5], color = "k")
-            self.canvas.dessiner_ligne([m, m], [.4, .6], linewidth = w, color = 'k')
-            self.canvas.dessiner_ligne([M, M], [.4, .6], linewidth = w, color = 'k')
+            self.canvas.dessiner_ligne([m, q1], [.5, .5], color="k")
+            self.canvas.dessiner_ligne([q3, M], [.5, .5], color="k")
+            self.canvas.dessiner_ligne([m, m], [.4, .6], linewidth=w, color='k')
+            self.canvas.dessiner_ligne([M, M], [.4, .6], linewidth=w, color='k')
         # Boîte
-        self.canvas.dessiner_ligne([q3, q1], [.2, .2], color = "k")
-        self.canvas.dessiner_ligne([q3, q1], [.8, .8], color = "k")
+        self.canvas.dessiner_ligne([q3, q1], [.2, .2], color="k")
+        self.canvas.dessiner_ligne([q3, q1], [.8, .8], color="k")
 
+        self.canvas.dessiner_texte(M + 0.1*(M - m) - 5*self.canvas.coeff(0),
+                                    -18*self.canvas.coeff(1),
+                                    self.legende_x, ha = "right")
 
 #------------------------------------------------------------
 #   Infos sur la serie.
@@ -895,6 +905,12 @@ class Statistiques(Panel_API_graphique):
         return " ; ".join(v)
 
     def moyenne(self):
+        u"""Moyenne de la série.
+
+        Si les données de la série sont regroupées par classes, chaque classe
+        est remplacée par son centre de classe, pour calculer une approximation
+        de la moyenne.
+        """
         try:
             return tst(1.*sum([eff*val for val, eff in self.valeurs.items()])/self.total())
         except (ZeroDivisionError, TypeError):
@@ -924,30 +940,38 @@ class Statistiques(Panel_API_graphique):
 
     def mediane(self):
         u"""Correspond à la 'valeur du milieu' quand on ordonne les données.
-        Dans certains cas, en divisant l'effectif par 2, on tombe entre 2 valeurs.
-        Dans ce cas, on convient de prendre la demi-somme de ces valeurs.
-        (ex: tous les effectifs valent un et l'effectif total impair)
+
+        Précisement, la définition retenue ici est la suivante :
+        * si l'effectif total est impair, la médiane est la valeur centrale ;
+        * sinon (effectif total pair), la médiane est la demi-somme des deux
+        valeurs centrales.
 
         Une bonne manière de visualiser la médiane pour des effectifs non entiers
         est de tracer un diagramme en bande."""
-        old_somme = somme = 0
+        somme = 0
         old_val = None
         objectif = self.effectif_total()/2
         for val, effectif in self.liste_valeurs_effectifs():
             somme += effectif
             if somme > objectif:
-                if old_somme == objectif: # la mediane est à cheval sur 2 valeurs
-                    try:
-                        return (old_val + val)/2
-                    except TypeError:
-                        print_error()
-                        return u"Calcul impossible."
+                if isinstance(val, Classe):
+                    # On estime la valeur de la médiane au sein de la classe,
+                    # en l'assimilant au 2e quartile, et en estimant sa
+                    # valeur au prorata de sa position dans la classe.
+                    a, b = val
+                    x = (somme - objectif)/effectif
+                    return x*a + (1 - x)*b
+                else:
+                    if somme - effectif == objectif:
+                        # la mediane est à cheval sur 2 valeurs
+                        try:
+                            return (old_val + val)/2
+                        except TypeError:
+                            print_error()
+                            return u"Calcul impossible."
                 return val
             old_val = val
-            old_somme = somme
         return u"Calcul impossible."
-
-
 
 
 
@@ -962,11 +986,19 @@ class Statistiques(Panel_API_graphique):
 
         somme = 0
         objectif = i/k*self.effectif_total()
+        # objectif : position du quartile au sein de la série.
         for val, effectif in self.liste_valeurs_effectifs():
             somme += effectif
             if somme >= objectif:
-                return val
-
+                if isinstance(val, Classe):
+                    assert effectif
+                    # On estime la valeur du quartile au sein de la classe,
+                    # au prorata de la position du quartile dans la classe.
+                    a, b = val
+                    x = (somme - objectif)/effectif
+                    return x*a + (1 - x)*b
+                else:
+                    return val
 
 
 
