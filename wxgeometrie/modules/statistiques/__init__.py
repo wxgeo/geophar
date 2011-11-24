@@ -97,7 +97,7 @@ class StatMenuBar(MenuBar):
         self.ajouter("Fichier", ["nouveau"], ["ouvrir"], ["ouvrir ici"], ["enregistrer"], ["enregistrer_sous"], ["exporter"], None, ["mise en page"], ["imprimer"], [u"presse-papier"], None, ["proprietes"], None, self.panel.doc_ouverts, None, ["fermer"], ["quitter"])
         self.ajouter("Editer", ["annuler"], ["refaire"], ["modifier"], ["supprimer"])
         self.ajouter("creer")
-        self.ajouter("Affichage", ["onglet"], None, ["barre_outils"], ["console_geolib"])
+        self.ajouter("Affichage", ["onglet"], None, ["barre_outils"], ["console_geolib"], None, ["zoom_texte"], ["zoom_ligne"], ["zoom_general"])
         self.ajouter("Outils", [u"Expérience", u"Simuler une expérience.", "Alt+Ctrl+E", self.panel.creer_experience], [u"Lancers de dés", u"Simuler des lancers d'un ou de plusieurs dés.", "Ctrl+Shift+D", self.panel.creer_lancer_des], [u"Sondage", u"Simuler un sondage simple.", "Ctrl+Shift+S", self.panel.creer_sondage], None, ["options"])
         self.ajouter(u"avance1")
         self.ajouter("?")
