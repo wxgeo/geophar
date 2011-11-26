@@ -29,6 +29,8 @@ from math import cos, sin, hypot, pi, acos
 from .objet import Objet
 from .textes import Texte_generique
 from .routines import angle_vectoriel
+from .points import (Glisseur_arc_cercle, Glisseur_segment, Glisseur_droite,
+                     Glisseur_vecteur, Glisseur_cercle, Glisseur_demidroite,)
 from .. import param
 
 
@@ -52,7 +54,6 @@ class Label_generique(Texte_generique):
         self._parent = ref(parent)
         # self._parent est une fonction qui renvoit parent si il existe encore.
         # Cela évite de le maintenir en vie artificiellement par une référence circulaire !
-        self.suffixe = self.__class__.__name__.split("_", 1)[1]
         self._initialiser_coordonnees()
 
     def _initialiser_coordonnees(self):
@@ -162,19 +163,16 @@ class Label_point(Label_generique):
 
 
 ###########################
-# NOTE IMPORTANTE:
 # Les classes suivantes sont basées sur les classes Glisseur de geolib.
-# Si la classe utilise l'objet Glisseur_segment par exemple, elle DOIT s'appeler Label_segment.
-# Si la classe utilise l'objet Glisseur_machin, elle DOIT s'appeler Label_machin. Etc.
-# (La détection de l'objet à utiliser se fait automatiquement selon le nom de la classe).
 
 
+class Label_glisseur(Label_generique):
+    u"""Classe mère de tous les labels utilisant un objet glisseur.
 
-class Label_segment(Label_generique):
-    u"""L'étiquette d'un segment.
-
-    Attention, la classe ne doit pas être renommée."""
+    `classe` doit contenir le type de glisseur utilisé.
+    """
     defaut = 0.5
+    classe = NotImplemented
 
     def _initialiser_coordonnees(self):
         self.style(_angle_ = pi/4) # les noms de style sont entre "_" pour éviter des conflits avec les styles de Texte.
@@ -186,7 +184,7 @@ class Label_segment(Label_generique):
     def _get_coordonnees(self):
         if self._M is None:
 #            import objets
-            self._M = locals()["Glisseur_" + self.suffixe](self.parent, k = self.style("_k_"))
+            self._M = self.classe(self.parent, k = self.style("_k_"))
         #~ print self._M.coordonnees
         x0, y0 =  self._M.coordonnees
         r = self.style("_rayon_"); a = self.style("_angle_")
@@ -196,7 +194,7 @@ class Label_segment(Label_generique):
     def _set_coordonnees(self, x = None, y = None):
         if self._M is None:
 #            import objets
-            self._M = locals()["Glisseur_" + self.suffixe](self.parent, k = self.style("_k_"))
+            self._M = self.classe(self.parent, k = self.style("_k_"))
         if x is not None:
             self._M.coordonnees = (x, y)
             x0, y0 = self._M.coordonnees # comme _M est un glisseur, ce n'est pas x0 et y0 en général
@@ -209,43 +207,42 @@ class Label_segment(Label_generique):
 
 
 
-class Label_vecteur(Label_segment):
-    u"""L'étiquette d'un vecteur.
+class Label_segment(Label_glisseur):
+    u"""L'étiquette d'un segment."""
 
-    Attention, la classe ne doit pas être renommée."""
-
-
-
-class Label_droite(Label_segment):
-    u"""L'étiquette d'une droite.
-
-    Attention, la classe ne doit pas être renommée."""
+    classe = Glisseur_segment
 
 
 
+class Label_vecteur(Label_glisseur):
+    u"""L'étiquette d'un vecteur."""
 
-class Label_demidroite(Label_segment):
-    """L'étiquette d'une demi-droite.
-
-    Attention, la classe ne doit pas être renommée."""
-
+    classe = Glisseur_vecteur
 
 
+class Label_droite(Label_glisseur):
+    u"""L'étiquette d'une droite."""
+
+    classe = Glisseur_droite
 
 
-class Label_cercle(Label_segment):
-    """L'étiquette d'un cercle.
+class Label_demidroite(Label_glisseur):
+    """L'étiquette d'une demi-droite."""
 
-    Attention, la classe ne doit pas être renommée."""
+    classe = Glisseur_demidroite
+
+
+class Label_cercle(Label_glisseur):
+    """L'étiquette d'un cercle."""
+
     defaut = 0
+    classe = Glisseur_cercle
 
 
+class Label_arc_cercle(Label_glisseur):
+    """L'étiquette d'un arc de cercle."""
 
-
-class Label_arc_cercle(Label_segment):
-    """L'étiquette d'un arc de cercle.
-
-    Attention, la classe ne doit pas être renommée."""
+    classe = Glisseur_arc_cercle
 
 
 #   Autres classes

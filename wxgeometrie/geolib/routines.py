@@ -92,7 +92,12 @@ def vect(A, B):
     #~ return x and round(x/10**floor(log10(abs(x))-n+1))*10**floor(log10(abs(x))-n+1) # Attention au cas x = 0 !
 
 def nchiffres(x, n = 1):
-    u"Arrondi x en fournissant n chiffres significatifs. Ex: nchiffres(2345, 2)."
+    u"""Arrondi x en fournissant n chiffres significatifs.
+
+    >>> from wxgeometrie.geolib.routines import nchiffres
+    >>> nchiffres(2345, 2)
+    2300.0
+    """
     if x:
         k = 10**floor(log10(abs(x))-n+1)
         return round(x/k)*k

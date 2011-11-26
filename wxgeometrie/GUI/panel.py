@@ -31,6 +31,7 @@ from .menu import RSSMenu
 from .console_geolib import ConsoleGeolib
 from .wxlib import BusyCursor
 from .wxcanvas import WxCanvas
+from .app import app
 from ..API.sauvegarde import ouvrir_fichierGEO, FichierGEO
 from ..API.parametres import sauvegarder_module
 
@@ -40,28 +41,6 @@ from ..pylib import debug, path2, print_error, property2, removeend, no_argument
 from ..pylib.rapport import Rapport
 from ..geolib.classeur import Classeur
 from ..geolib.feuille import Feuille
-
-#-----------------------
-#       Panels
-#-----------------------
-
-
-
-#class Canvas_vide:
-#    """Canvas bidon, qui sert pour l'initialisation des classes menu."""
-#    def __getattr__(self, nom):
-#        return None
-#
-#    def __nonzero__(self):
-#        return False
-#
-#    def __repr__(self):
-#        return "<Canvas Vide>"
-#
-#    def __str__(self):
-#        return "<Canvas Vide>"
-
-
 
 
 
@@ -74,13 +53,12 @@ class Panel_simple(wx.Panel):
     # Indique si des modifications ont eu lieu (et s'il faudra donc sauvegarder la session)
     modifie = False
 
-    def __init__(self, parent, module, couleur = None, menu = True, style = wx.TAB_TRAVERSAL|wx.WANTS_CHARS):
+    def __init__(self, parent, module, menu = True, style = wx.TAB_TRAVERSAL|wx.WANTS_CHARS):
         wx.Panel.__init__(self, parent, -1, style = style)
 
         self.module = module
         # wx.NamedColor ne peut pas être appelé avant que wx.App existe.
-        couleur = couleur if couleur else wx.NamedColor(u"WHITE")
-        self.SetBackgroundColour(couleur)
+        self.SetBackgroundColour(wx.WHITE)
         self.parent = parent
         self.nom = self.__class__.__name__.lower()
         self.canvas = None
@@ -94,7 +72,7 @@ class Panel_simple(wx.Panel):
             self.menu = self.module._menu_(self)
 
     def message(self, texte = ''):
-        self.parent.parent.barre.SetStatusText(texte, 0)
+        self.parent.parent.message(texte)
 
     def changer_titre(self, texte = ''):
         self.parent.parent.titre(texte)
@@ -127,7 +105,8 @@ class Panel_simple(wx.Panel):
             self.message(u"Sauvegarde effectuée.")
         except Exception:
             self.message(u"Echec de la sauvegarde.")
-            if param.debug: raise
+            if param.debug:
+                raise
 
 
     def _fichiers_ouverts(self):
@@ -212,12 +191,7 @@ class Panel_simple(wx.Panel):
         u"""Copie le texte dans le presse-papier.
 
         Retourne True si la copie a réussi, False sinon."""
-        clipBoard=wx.TheClipboard
-        if clipBoard.Open():
-            clipBoard.AddData(wx.TextDataObject(texte))
-            clipBoard.Close()
-            return True
-        return False
+        return app.vers_presse_papier(texte)
 
 
 
@@ -226,11 +200,9 @@ class Panel_API_graphique(Panel_simple):
     et pas seulement des bibliothèques, mieux vaut utiliser cette classe.
     Cela concerne essentiellement les modules qui ont besoin de tracer des objets géométriques."""
 
-    def __init__(self, parent, module, couleur = None, BarreOutils = BarreOutils):
-        # wx.NamedColor ne peut pas être appelé avant que wx.App existe.
-        couleur = couleur if couleur else wx.NamedColor(u"WHITE")
+    def __init__(self, parent, module, BarreOutils = BarreOutils):
         extra = {'style': wx.WANTS_CHARS} if param.plateforme == "Windows" else {}
-        Panel_simple.__init__(self, parent, module, couleur = couleur, menu = False, **extra)
+        Panel_simple.__init__(self, parent, module, menu=False, **extra)
 
         # IMPORTANT: contruire toujours dans cet ordre.
         self.feuilles = Classeur(self, log = self.log)
@@ -241,8 +213,8 @@ class Panel_API_graphique(Panel_simple):
         self.doc_ouverts = RSSMenu(parent, u"Documents ouverts", [], self.charger_feuille, u"Documents ouverts.")
         self.menu = self.module._menu_(self)
 
-        self.barre_outils = BarreOutils(self, couleur = couleur)
-        self.console_geolib = ConsoleGeolib(self, couleur = couleur)
+        self.barre_outils = BarreOutils(self, couleur='white')
+        self.console_geolib = ConsoleGeolib(self, couleur='white')
         self.barre_outils.Show(self.param("afficher_barre_outils"))
         self.console_geolib.Show(self.param("afficher_console_geolib"))
 

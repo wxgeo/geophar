@@ -210,9 +210,11 @@ class CustomStrPrinter(StrPrinter):
         string = StrPrinter._print_Float(self, expr)
         return string.replace('e+', '*10^').replace('e-', '*10^-')
 
+    def _print_Union(self, expr):
+        return expr.__str__()
+
     def doprint(self, expr):
         return StrPrinter.doprint(self, expr) if not isinstance(expr, unicode) else expr
-
 
 
 class CustomLatexPrinter(LatexPrinter):

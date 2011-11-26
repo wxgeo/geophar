@@ -6,6 +6,7 @@ from pytest import XFAIL
 from tools.testlib import assertRaises, assertAlmostEqual
 
 from wxgeometrie.mathlib.interprete import Interprete
+from sympy import S
 
 VERBOSE = False
 
@@ -95,6 +96,8 @@ def test_exemples_de_base():
     assert_resultat(r'pi\approx', r'3.14159265358979324',  r'3.14159265358979324', formatage_LaTeX = True)
     assert_resultat('rassemble(1/x+1/(x*(x+1)))', '(x + 2)/(x^2 + x)', r'\frac{x + 2}{x^{2} + x}')
     assert_resultat('factorise(-2 exp(-x) - (3 - 2 x)exp(-x))', '(2 x - 5)exp(-x)', r'\frac{2 x -5}{\mathrm{e}^{x}}')
+    assert_resultat('-x^2+2x-3>>factor', '-x^2 + 2 x - 3')
+    assert_resultat('abs(-24/5 - 2 i/5)', '2 sqrt(145)/5')
 
 @XFAIL
 def test_resolution_complexe():
@@ -198,3 +201,53 @@ def test_issue_185():
     i.evaluer("a=1+I")
     i.evaluer("a z")
     assertDernier(i, 'z*(1 + I)')
+
+
+def test_issue_206():
+    i = Interprete(verbose = VERBOSE)
+    etat_interne = \
+u"""_ = 0
+
+@derniers_resultats = [
+    're(x)',
+    ]"""
+    i.load_state(etat_interne)
+    i.evaluer("-1+\i\sqrt{3}")
+    assertDernier(i, '-1 + 3**(1/2)*I')
+    i.evaluer('-x**2 + 2*x - 3>>factor')
+    assertDernier(i, '-x**2 + 2*x - 3')
+
+
+def test_issue_206_bis():
+    i = Interprete(verbose = VERBOSE)
+    etat_interne = \
+u"""_ = 0
+
+@derniers_resultats = [
+    'Abs(x)',
+    ]"""
+    i.load_state(etat_interne)
+    i.evaluer('abs(-24/5 - 2 i/5)')
+    assertDernier(i, '2*145**(1/2)/5')
+
+
+def test_issue_206_ter():
+    i = Interprete(verbose = VERBOSE)
+    etat_interne = \
+u"""_ = 0
+
+@derniers_resultats = [
+    'atan2(x, y)',
+    ]"""
+    i.load_state(etat_interne)
+    i.evaluer('ln(9)-2ln(3)')
+    assertDernier(i, '0')
+
+
+def test_systeme():
+    i = Interprete(verbose = VERBOSE, adapter_separateur=False)
+    i.evaluer("g(x)=a x^3+b x^2 + c x + d")
+    i.evaluer("resoudre(g(-3)=2 et g(1)=6 et g(5)=3 et g'(1)=0)")
+    res = i.derniers_resultats[-1]
+    assert isinstance(res, dict)
+    assertEqual(res, {S('a'): S(1)/128, S('b'): -S(31)/128, S('c'): S(59)/128, S('d'): S(739)/128})

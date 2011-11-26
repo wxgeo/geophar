@@ -10,7 +10,6 @@ from sympy import (
     zeros, Pow, I, S, Symbol, Tuple, Dummy
 )
 
-from sympy.utilities import iff
 from sympy.core.sympify import sympify
 from sympy.core.cache import cacheit
 from sympy.core.symbol import Dummy
@@ -162,9 +161,9 @@ class AntiSymmetricTensor(TensorSymbol):
     >>> i, j = symbols('i j', below_fermi=True)
     >>> a, b = symbols('a b', above_fermi=True)
     >>> AntiSymmetricTensor('v', (a, i), (b, j))
-    AntiSymmetricTensor(v, Tuple(a, i), Tuple(b, j))
+    AntiSymmetricTensor(v, (a, i), (b, j))
     >>> AntiSymmetricTensor('v', (i, a), (b, j))
-    -AntiSymmetricTensor(v, Tuple(a, i), Tuple(b, j))
+    -AntiSymmetricTensor(v, (a, i), (b, j))
 
     As you can see, the indices are automatically sorted to a canonical form.
 
@@ -234,7 +233,7 @@ class AntiSymmetricTensor(TensorSymbol):
         >>> i, j = symbols('i,j', below_fermi=True)
         >>> a, b = symbols('a,b', above_fermi=True)
         >>> AntiSymmetricTensor('v', (a, i), (b, j))
-        AntiSymmetricTensor(v, Tuple(a, i), Tuple(b, j))
+        AntiSymmetricTensor(v, (a, i), (b, j))
         >>> AntiSymmetricTensor('v', (a, i), (b, j)).symbol
         v
 
@@ -253,9 +252,9 @@ class AntiSymmetricTensor(TensorSymbol):
         >>> i, j = symbols('i,j', below_fermi=True)
         >>> a, b = symbols('a,b', above_fermi=True)
         >>> AntiSymmetricTensor('v', (a, i), (b, j))
-        AntiSymmetricTensor(v, Tuple(a, i), Tuple(b, j))
+        AntiSymmetricTensor(v, (a, i), (b, j))
         >>> AntiSymmetricTensor('v', (a, i), (b, j)).upper
-        Tuple(a, i)
+        (a, i)
 
 
         """
@@ -273,9 +272,9 @@ class AntiSymmetricTensor(TensorSymbol):
         >>> i, j = symbols('i,j', below_fermi=True)
         >>> a, b = symbols('a,b', above_fermi=True)
         >>> AntiSymmetricTensor('v', (a, i), (b, j))
-        AntiSymmetricTensor(v, Tuple(a, i), Tuple(b, j))
+        AntiSymmetricTensor(v, (a, i), (b, j))
         >>> AntiSymmetricTensor('v', (a, i), (b, j)).lower
-        Tuple(b, j)
+        (b, j)
 
         """
         return self.args[2]
@@ -1214,7 +1213,7 @@ class FermionState(FockState):
         >>> p = Symbol('p')
 
         >>> FKet([]).up(a)
-        FockStateFermionKet(Tuple(a))
+        FockStateFermionKet((a,))
 
         A creator acting on vacuum below fermi vanishes
         >>> FKet([]).up(i)
@@ -1266,7 +1265,7 @@ class FermionState(FockState):
         >>> FKet([]).down(i)
         0
         >>> FKet([],4).down(i)
-        FockStateFermionKet(Tuple(i))
+        FockStateFermionKet((i,))
 
         """
         present = i in self.args[0]
@@ -1347,7 +1346,7 @@ class FermionState(FockState):
         return len([ i for i in list if  cls._only_below_fermi(i)])
 
     def _negate_holes(self,list):
-        return tuple([ iff(i<=self.fermi_level, -i, i) for i in list ])
+        return tuple([ -i if i<=self.fermi_level else i for i in list ])
 
     def __repr__(self):
         if self.fermi_level:
@@ -1587,19 +1586,16 @@ class FixedBosonicBasis(BosonicBasis):
         self._build_states()
 
     def _build_particle_locations(self):
-        tup = ["i"+str(i) for i in range(self.n_particles)]
+        tup = ["i%i" % i for i in range(self.n_particles)]
         first_loop = "for i0 in range(%i)" % self.n_levels
         other_loops = ''
-        for i in range(len(tup)-1):
-            temp = "for %s in range(%s + 1) " % (tup[i+1],tup[i])
+        for cur, prev in zip(tup[1:], tup):
+            temp = "for %s in range(%s + 1) " % (cur, prev)
             other_loops = other_loops + temp
-        var = "("
-        for i in tup[:-1]:
-            var = var + i + ","
-        var = var + tup[-1] + ")"
-        cmd = "result = [%s %s %s]" % (var, first_loop, other_loops)
-        exec cmd
-        if self.n_particles==1:
+        tup_string = "(%s)" % ", ".join(tup)
+        list_comp = "[%s %s %s]" % (tup_string, first_loop, other_loops)
+        result = eval(list_comp)
+        if self.n_particles == 1:
             result = [(item,) for item in result]
         self.particle_locations = result
 
@@ -1778,7 +1774,7 @@ class Commutator(Function):
         #
         # Canonical ordering of arguments
         #
-        if cmp(a, b) > 0:
+        if a > b:
             return S.NegativeOne*cls(b, a)
 
 
@@ -2604,6 +2600,7 @@ def _get_ordered_dummies(mul, verbose = False):
         dumstruct = [ fac for fac in fac_dum if d in fac_dum[fac] ]
         other_dums = reduce(lambda x, y: x | y,
                 [ fac_dum[fac] for fac in dumstruct ])
+        fac = dumstruct[-1]
         if other_dums is fac_dum[fac]:
             other_dums = fac_dum[fac].copy()
         other_dums.remove(d)

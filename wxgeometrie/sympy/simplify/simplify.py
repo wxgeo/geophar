@@ -7,9 +7,8 @@ from sympy.core import (Basic, S, C, Add, Mul, Pow, Rational, Integer,
 from sympy.core.compatibility import iterable
 from sympy.core.numbers import igcd
 from sympy.core.function import expand_log
-from sympy.core.compatibility import minkey
 
-from sympy.utilities import all, any, flatten
+from sympy.utilities import flatten
 from sympy.functions import gamma, exp, sqrt, log
 
 from sympy.simplify.cse_main import cse
@@ -278,26 +277,25 @@ def collect(expr, syms, evaluate=True, exact=False):
         >>> f = Function('f') (x)
 
         >>> collect(a*D(f,x) + b*D(f,x), D(f,x))
-        (a + b)*D(f(x), x)
+        (a + b)*Derivative(f(x), x)
 
         >>> collect(a*D(D(f,x),x) + b*D(D(f,x),x), f)
-        (a + b)*D(f(x), x, x)
+        (a + b)*Derivative(f(x), x, x)
 
         >>> collect(a*D(D(f,x),x) + b*D(D(f,x),x), D(f,x), exact=True)
-        a*D(f(x), x, x) + b*D(f(x), x, x)
+        a*Derivative(f(x), x, x) + b*Derivative(f(x), x, x)
 
         >>> collect(a*D(f,x) + b*D(f,x) + a*f + b*f, f,x)
-        (a + b)*f(x) + (a + b)*D(f(x), x)
+        (a + b)*f(x) + (a + b)*Derivative(f(x), x)
 
-        Or you can even match both derivative order and exponent at time::
+        Or you can even match both derivative order and exponent at the same
+        time.
 
         >>> collect(a*D(D(f,x),x)**2 + b*D(D(f,x),x)**2, D(f,x))
-        (a + b)*D(f(x), x, x)**2
+        (a + b)*Derivative(f(x), x, x)**2
 
-
-    == Notes ==
-        - arguments are expected to be in expanded form, so you might have to
-          call expand() prior to calling this function.
+        Note: arguments are expected to be in expanded form, so you might have
+        to call expand() prior to calling this function.
     """
     def make_expression(terms):
         product = []
@@ -391,8 +389,8 @@ def collect(expr, syms, evaluate=True, exact=False):
 
     def parse_expression(terms, pattern):
         """Parse terms searching for a pattern.
-        terms is a list of tuples as returned by parse_terms
-        pattern is an expression
+        terms is a list of tuples as returned by parse_terms;
+        pattern is an expression treated as a product of factors
         """
         pattern = Mul.make_args(pattern)
 
@@ -403,11 +401,19 @@ def collect(expr, syms, evaluate=True, exact=False):
         else:
             pattern = [parse_term(elem) for elem in pattern]
 
+            terms = terms[:] # need a copy
             elems, common_expo, has_deriv = [], None, False
 
             for elem, e_rat, e_sym, e_ord in pattern:
 
+                if elem.is_Number:
+                    # a constant is a match for everything
+                    continue
+
                 for j in range(len(terms)):
+                    if terms[j] is None:
+                        continue
+
                     term, t_rat, t_sym, t_ord = terms[j]
 
                     # keeping track of whether one of the terms had
@@ -415,10 +421,6 @@ def collect(expr, syms, evaluate=True, exact=False):
                     # the expression later
                     if t_ord is not None:
                         has_deriv= True
-
-                    if elem.is_Number:
-                        # a constant is a match for everything
-                        break
 
                     if (term.match(elem) is not None and \
                             (t_sym == e_sym or t_sym is not None and \
@@ -447,14 +449,15 @@ def collect(expr, syms, evaluate=True, exact=False):
                         # found common term so remove it from the expression
                         # and try to match next element in the pattern
                         elems.append(terms[j])
-                        del terms[j]
+                        terms[j] = None
 
                         break
 
                 else:
                     # pattern element not found
                     return None
-            return terms, elems, common_expo, has_deriv
+
+            return filter(None, terms), elems, common_expo, has_deriv
 
     if evaluate:
         if expr.is_Mul:
@@ -474,7 +477,6 @@ def collect(expr, syms, evaluate=True, exact=False):
         syms = [separate(syms)]
 
     collected, disliked = {}, S.Zero
-
     for product in summa:
         terms = [parse_term(i) for i in Mul.make_args(product)]
 
@@ -500,7 +502,6 @@ def collect(expr, syms, evaluate=True, exact=False):
                             index **= elem[2]
                 else:
                     index = make_expression(elems)
-
                 terms = separate(make_expression(terms))
                 index = separate(index)
                 if index in collected.keys():
@@ -744,29 +745,6 @@ def trigsimp(expr, deep=False, recursive=False):
     else:
         result = trigsimp_nonrecursive(expr, deep)
 
-    # do some final simplifications like sin/cos -> tan:
-    a,b,c = map(Wild, 'abc')
-    matchers = (
-            (a*sin(b)**c/cos(b)**c, a*tan(b)**c),
-            (a*tan(b)**c*cos(b)**c, a*sin(b)**c),
-            (a*cot(b)**c*sin(b)**c, a*cos(b)**c),
-            (a*tan(b)**c/sin(b)**c, a/cos(b)**c),
-            (a*cot(b)**c/cos(b)**c, a/sin(b)**c),
-    )
-    for pattern, simp in matchers:
-        res = result.match(pattern)
-        if res is not None:
-            # if c is missing or zero, do nothing:
-            if (not c in res) or res[c] == 0:
-                continue
-            # if "a" contains the argument of sin/cos "b", skip the
-            # simplification:
-            if res[a].has(res[b]):
-                continue
-            # simplify and finish:
-            result = simp.subs(res)
-            break
-
     return result
 
 
@@ -801,10 +779,33 @@ def trigsimp_nonrecursive(expr, deep=False):
         if deep:
             return expr.func(trigsimp_nonrecursive(expr.args[0], deep))
     elif expr.is_Mul:
+        # do some simplifications like sin/cos -> tan:
+        a,b,c = map(Wild, 'abc')
+        matchers = (
+                (a*sin(b)**c/cos(b)**c, a*tan(b)**c),
+                (a*tan(b)**c*cos(b)**c, a*sin(b)**c),
+                (a*cot(b)**c*sin(b)**c, a*cos(b)**c),
+                (a*tan(b)**c/sin(b)**c, a/cos(b)**c),
+                (a*cot(b)**c/cos(b)**c, a/sin(b)**c),
+        )
+        for pattern, simp in matchers:
+            res = expr.match(pattern)
+            if res is not None:
+                # if c is missing or zero, do nothing:
+                if (not c in res) or res[c] == 0:
+                    continue
+                # if "a" contains any of sin("b"), cos("b"), tan("b") or cot("b),
+                # skip the simplification:
+                if res[a].has(cos(res[b]), sin(res[b]), tan(res[b]), cot(res[b])):
+                    continue
+                # simplify and finish:
+                expr = simp.subs(res)
+                break
+        if not expr.is_Mul:
+            return trigsimp_nonrecursive(expr, deep)
         ret = S.One
         for x in expr.args:
             ret *= trigsimp_nonrecursive(x, deep)
-
         return ret
     elif expr.is_Pow:
         return Pow(trigsimp_nonrecursive(expr.base, deep),
@@ -955,7 +956,7 @@ def powdenest(eq, force=False):
           of the exponent can be removed from any term and the gcd of such
           integers can be joined with e
 
-    Setting `force` to True will make symbols that are not explicitly
+    Setting ``force`` to True will make symbols that are not explicitly
     negative behave as though they are positive, resulting in more
     denesting.
 
@@ -1577,29 +1578,30 @@ def simplify(expr, ratio=1.7):
        if (result length)/(input length) > ratio, then input is returned
        unmodified (:func:`count_ops` is used to measure length).
 
-       For example, if ``ratio=1``, `simplify` output can't be longer
+       For example, if ``ratio=1``, ``simplify`` output can't be longer
        than input.
 
        ::
 
-           >>> from sympy import S, simplify, count_ops, oo
-           >>> root = S("(5/2 + 21**(1/2)/2)**(1/3)*(1/2 - I*3**(1/2)/2) \
-                        + 1/((1/2 - I*3**(1/2)/2)*(5/2 + 21**(1/2)/2)**(1/3))")
+            >>> from sympy import S, simplify, count_ops, oo
+            >>> root = S("(5/2 + 21**(1/2)/2)**(1/3)*(1/2 - I*3**(1/2)/2)"
+            ... "+ 1/((1/2 - I*3**(1/2)/2)*(5/2 + 21**(1/2)/2)**(1/3))")
 
        Since ``simplify(root)`` would result in a slightly longer expression,
        root is returned inchanged instead::
 
-           >>> simplify(root, ratio=1) is root
-           True
+            >>> simplify(root, ratio=1) is root
+            True
 
        If ``ratio=oo``, simplify will be applied anyway::
 
-           >>> count_ops(simplify(root, ratio=oo)) > count_ops(root)
-           True
+            >>> count_ops(simplify(root, ratio=oo)) > count_ops(root)
+            True
 
        Note that the shortest expression is not necessary the simplest, so
        setting ``ratio`` to 1 may not be a good idea.
        Heuristically, default value ``ratio=1.7`` seems like a reasonable choice.
+
     """
     expr = sympify(expr)
 
@@ -1631,7 +1633,7 @@ def simplify(expr, ratio=1.7):
         expr = trigsimp(expr)
 
     if expr.has(C.log):
-        expr = minkey([expand_log(expr, deep=True), logcombine(expr)],
+        expr = min([expand_log(expr, deep=True), logcombine(expr)],
                        key=count_ops)
 
     if expr.has(C.CombinatorialFunction, gamma):

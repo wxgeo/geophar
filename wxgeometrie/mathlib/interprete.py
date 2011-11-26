@@ -26,6 +26,7 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 import re, math, types
 import  numpy
 
+import sympy
 from sympy import Symbol, Basic, Float, sympify
 
 from .intervalles import Ensemble
@@ -56,7 +57,7 @@ class LocalDict(dict):
             else:
                 if key == len(key)*'_':
                     return self.globals['ans'](-len(key))
-        return self.globals.get(key, Symbol(key))
+        return self.globals.get(key, sympy.__dict__.get(key, Symbol(key)))
 
     def __setitem__(self, name, value):
         # Pour éviter que l'utilisateur redéfinisse pi, i, e, etc. par mégarde.

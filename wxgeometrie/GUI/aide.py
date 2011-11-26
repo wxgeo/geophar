@@ -30,6 +30,7 @@ import wx
 from .. import param
 from .wxlib import png
 from ..pylib.infos import informations_configuration
+from .app import app
 
 
 
@@ -140,10 +141,7 @@ class Informations(wx.Dialog):
 
 
     def copier(self, event):
-        self.clipBoard=wx.TheClipboard
-        if self.clipBoard.Open():
-            self.clipBoard.AddData(wx.TextDataObject(informations_configuration()))
-        self.clipBoard.Close()
+        app.vers_presse_papier(informations_configuration())
 
 
 

@@ -113,7 +113,7 @@ Matrice = Matrix = Mat = matrix = matrice = mat
 __classement__[u"Algèbre"].append((u"Matrice", "mat", u"Génère une matrice. ex: mat([[1,2],[3,4]]), mat(4,4,0), mat(4,4,2*li+3*co)"))
 
 
-from .sympy import isprime
+from sympy import isprime
 premier = isprime
 __classement__[u"Arithmétique"].append((u"Premier ?", "premier", u"Tester si un nombre est premier."))
 

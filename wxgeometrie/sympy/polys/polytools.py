@@ -1,7 +1,7 @@
 """User-friendly public interface to polynomial functions. """
 
 from sympy.core import (
-    S, Basic, Expr, I, Integer, Add, Mul, Dummy,
+    S, Basic, Expr, I, Integer, Add, Mul, Dummy, Tuple
 )
 
 from sympy.core.sympify import (
@@ -56,17 +56,14 @@ from sympy.polys.polycontext import (
     register_context,
 )
 
-from sympy.mpmath import (
-    polyroots as npolyroots,
-)
-
 from sympy.utilities import (
-    any, all, group,
+    group,
 )
 
 from sympy.ntheory import isprime
 
 import sympy.polys
+import sympy.mpmath
 
 from sympy.polys.domains import FF, QQ
 from sympy.polys.constructor import construct_domain
@@ -2891,7 +2888,7 @@ class Poly(Expr):
         else:
             return group(roots, multiple=False)
 
-    def nroots(f, maxsteps=50, cleanup=True, error=False):
+    def nroots(f, n=15, maxsteps=50, cleanup=True, error=False):
         """
         Compute numerical approximations of roots of ``f``.
 
@@ -2900,29 +2897,40 @@ class Poly(Expr):
         >>> from sympy import Poly
         >>> from sympy.abc import x
 
-        >>> Poly(x**2 - 3).nroots()
+        >>> Poly(x**2 - 3).nroots(n=15)
         [-1.73205080756888, 1.73205080756888]
+        >>> Poly(x**2 - 3).nroots(n=30)
+        [-1.73205080756887729352744634151, 1.73205080756887729352744634151]
 
         """
         if f.is_multivariate:
-            raise MultivariatePolynomialError("can't compute numerical roots of %s" % f)
+            raise MultivariatePolynomialError("can't compute numerical roots "
+                                              "of %s" % f)
 
         if f.degree() <= 0:
             return []
 
+        coeffs = [ coeff.evalf(n=n).as_real_imag() for coeff in f.all_coeffs() ]
+
+        dps = sympy.mpmath.mp.dps
+        sympy.mpmath.mp.dps = n
+
         try:
-            coeffs = [ complex(c) for c in f.all_coeffs() ]
-        except ValueError:
-            raise DomainError("numerical domain expected, got %s" % f.rep.dom)
+            try:
+                coeffs = [ sympy.mpmath.mpc(*coeff) for coeff in coeffs ]
+            except TypeError:
+                raise DomainError("numerical domain expected, got %s" % f.rep.dom)
 
-        result = npolyroots(coeffs, maxsteps=maxsteps, cleanup=cleanup, error=error)
+            result = sympy.mpmath.polyroots(coeffs, maxsteps=maxsteps, cleanup=cleanup, error=error)
 
-        if error:
-            roots, error = result
-        else:
-            roots, error = result, None
+            if error:
+                roots, error = result
+            else:
+                roots, error = result, None
 
-        roots = map(sympify, sorted(roots, key=lambda r: (r.real, r.imag)))
+            roots = map(sympify, sorted(roots, key=lambda r: (r.real, r.imag)))
+        finally:
+            sympy.mpmath.mp.dps = dps
 
         if error is not None:
             return roots, sympify(error)
@@ -3220,9 +3228,9 @@ class Poly(Expr):
         >>> from sympy import Poly
         >>> from sympy.abc import x
 
-        >> Poly(x**2 + x + 1, x, modulus=2).is_irreducible
+        >>> Poly(x**2 + x + 1, x, modulus=2).is_irreducible #doctest: +SKIP
         True
-        >> Poly(x**2 + 1, x, modulus=2).is_irreducible
+        >>> Poly(x**2 + 1, x, modulus=2).is_irreducible #doctest: +SKIP
         False
 
         """
@@ -5096,7 +5104,7 @@ def real_roots(f, multiple=True):
 
     return F.real_roots(multiple=multiple)
 
-def nroots(f, maxsteps=50, cleanup=True, error=False):
+def nroots(f, n=15, maxsteps=50, cleanup=True, error=False):
     """
     Compute numerical approximations of roots of ``f``.
 
@@ -5105,8 +5113,10 @@ def nroots(f, maxsteps=50, cleanup=True, error=False):
     >>> from sympy import nroots
     >>> from sympy.abc import x
 
-    >>> nroots(x**2 - 3)
+    >>> nroots(x**2 - 3, n=15)
     [-1.73205080756888, 1.73205080756888]
+    >>> nroots(x**2 - 3, n=30)
+    [-1.73205080756887729352744634151, 1.73205080756887729352744634151]
 
     """
     try:
@@ -5114,7 +5124,7 @@ def nroots(f, maxsteps=50, cleanup=True, error=False):
     except GeneratorsNeeded:
         raise PolynomialError("can't compute numerical roots of %s, not a polynomial" % f)
 
-    return F.nroots(maxsteps=maxsteps, cleanup=cleanup, error=error)
+    return F.nroots(n=n, maxsteps=maxsteps, cleanup=cleanup, error=error)
 
 def ground_roots(f, *gens, **args):
     """
@@ -5191,7 +5201,7 @@ def cancel(f, *gens, **args):
 
     f = sympify(f)
 
-    if type(f) is not tuple:
+    if not isinstance(f, (tuple, Tuple)):
         if f.is_Number:
             return f
         else:
@@ -5202,14 +5212,14 @@ def cancel(f, *gens, **args):
     try:
         (F, G), opt = parallel_poly_from_expr((p, q), *gens, **args)
     except PolificationFailed, exc:
-        if type(f) is not tuple:
+        if not isinstance(f, (tuple, Tuple)):
             return f
         else:
             return S.One, p, q
 
     c, P, Q = F.cancel(G)
 
-    if type(f) is not tuple:
+    if not isinstance(f, (tuple, Tuple)):
         return c*(P.as_expr()/Q.as_expr())
     else:
         if not opt.polys:

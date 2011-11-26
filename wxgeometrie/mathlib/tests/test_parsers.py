@@ -112,7 +112,9 @@ def test_tous_modes():
     assert_all(r'"""\"+1\" ici, et non \"+n\""""', r'"""\"+1\" ici, et non \"+n\""""')
     # Caractères unicode
     assert_all(u"\u2013x\u22123", "-x-3")
-
+    # * entre un flottant et une parenthese
+    assert_all(u".015(x-50)^2-20", ".015*(x-50)**2-20")
+    assert_all(u"-1.015 (x-50)", "-1.015*(x-50)")
 
 
 
@@ -148,6 +150,7 @@ def test_NBR():
     assert_NBR_SIGNE("+5.056")
     assert_NBR("56")
     assert_NBR(".46")
+    assert_NBR(".015")
     assert_NBR("752.")
     assert_NBR("740.54")
     assert_not_NBR("5-6")

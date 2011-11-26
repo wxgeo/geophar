@@ -19,7 +19,6 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-
 from .angles import Angle_generique, Secteur_angulaire, Angle_oriente, Angle, Angle_libre, Angle_vectoriel
 from .cercles import Cercle_Arc_generique, Arc_generique, Arc_cercle, Arc_points, Arc_oriente, Demicercle, Cercle_generique, Cercle_rayon, Cercle, Cercle_diametre, Cercle_points, Cercle_equation, Disque
 from .classeur import Classeur

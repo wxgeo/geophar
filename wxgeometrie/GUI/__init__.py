@@ -38,15 +38,13 @@ try:
     import matplotlib
     matplotlib.use(param.moteur_de_rendu, warn = False)
     #import pylab # cette ligne semble nécessaire sous Ubuntu Feisty (python 2.5 - matplotlib 0.87.7) ??
-except:
+except Exception:
     print "Warning : Erreur lors de l'import de pylab.\n"
     if param.debug:
         print traceback.format_exc()
 
 
 import wx
-
-#from LIB import *
 
 from .menu import MenuBar
 from .panel import Panel_simple, Panel_API_graphique

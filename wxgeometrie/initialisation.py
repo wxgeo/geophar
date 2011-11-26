@@ -19,11 +19,13 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-
-
 import sys, time, os, optparse, itertools, traceback, imp
+from os.path import dirname, realpath
 
 from . import param
+from .param import dependances, NOMPROG, NOMPROG2, plateforme, GUIlib
+
+nomprog = NOMPROG2.lower()
 
 if param.py2exe:
     # cf. py2exe/boot_common.py
@@ -41,19 +43,20 @@ else:
     # Ne pas faire ces tests avec py2exe (non seulement inutiles, mais en plus ils échouent).
     # Make sure I have the right Python version.
     if sys.version_info[:2] < param.python_min:
-        print u" ** Erreur fatale **\nWxGéométrie nécessite Python %d.%d au minimum. Python %d.%d détecté." % \
-              (param.python_min + sys.version_info[:2])
+        print(u" ** Erreur fatale **")
+        print(NOMPROG + u" nécessite Python %d.%d au minimum.")
+        print(u"Python %d.%d détecté." % (param.python_min + sys.version_info[:2]))
         sys.exit(-1)
 
     # Test for dependencies:
-    dependances = {'wx': 'python-wxgtk2.8', 'matplotlib': 'python-matplotlib', 'numpy': 'python-numpy'}
     for module in dependances:
         try:
             imp.find_module(module)
         except ImportError:
             print(u'** Erreur fatale ** : le module %s doit être installé !' %module)
-            if sys.platform == 'linux2':
-                print("Sous Ubuntu/Debian, tapez 'sudo apt-get install %s' pour installer le module manquant." %dependances[module])
+            if plateforme == 'Linux':
+                print("Sous Ubuntu/Debian, tapez 'sudo apt-get install %s' pour \
+                       installer le module manquant." %dependances[module])
             sys.exit(-1)
 
 
@@ -70,20 +73,21 @@ def gerer_arguments():
 
     parametres_additionnels = {}
 
-    parser = optparse.OptionParser(prog = "WxGeometrie", usage = "usage: %prog [options] [fichiers...]",
-                                                    version = "%prog " + param.version, description = """WxGeometrie est un logiciel de mathematiques de niveau lycee.
+    parser = optparse.OptionParser(prog = NOMPROG2, usage = "usage: %prog [options] [fichiers...]",
+                                   version = "%prog " + param.version,
+                                   description = NOMPROG2 + """ est un logiciel de mathematiques de niveau lycee.
                                                     Il permet notamment de faire de la geometrie dynamique et du calcul formel.""")
     parser.add_option("-a", "--all", action = "store_true", help="detecter tous les modules presents et les integrer au demarrage")
-    parser.add_option("-m", "--modules", help="specifier les modules a charger. ex: wxgeometrie -m traceur,calculatrice")
+    parser.add_option("-m", "--modules", help="specifier les modules a charger. ex: %s -m traceur,calculatrice" %nomprog)
     parser.add_option("-d", "--defaut", action = "store_true", help="utiliser les parametres par defaut, sans tenir compte des preferences")
     parser.add_option("-n", "--nouveau", action = "store_true", help="ouvrir une nouvelle session vierge")
     parser.add_option("-b", "--debug", action = "store_true", help="afficher les eventuels messages d'erreurs lors de l'execution")
     parser.add_option("--nodebug", action = "store_true", help="ne pas afficher les messages d'erreurs lors de l'execution")
     parser.add_option("-w", "--warning", action = "store_true", help="afficher les eventuels avertissements lors de l'execution")
     parser.add_option("--nowarning", action = "store_true", help="ne pas afficher les avertissements lors de l'execution")
-    parser.add_option("-p", "--parametres", help="modifier les parametres. ex: wxgeometrie -p 'tolerance=0.001;version=\"1.0\"'")
+    parser.add_option("-p", "--parametres", help="modifier les parametres. ex: %s -p 'tolerance=0.001;version=\"1.0\"'" %nomprog)
     parser.add_option("-r", "--recompile", action = "store_true", help="supprimer recursivement tous les fichiers .pyc, pour obliger python a recompiler tous les fichiers sources au demarrage.")
-    parser.add_option("-s", "--script", action = "store_true", help="passer en mode script (ie. sans interface graphique). Ex: wxgeometrie -s -i mon_script.txt -o mon_image.png")
+    parser.add_option("-s", "--script", action = "store_true", help="passer en mode script (ie. sans interface graphique). Ex: %s -s -i mon_script.txt -o mon_image.png" %nomprog)
     parser.add_option("-i", "--input", help="(mode script) fichier contenant le script de construction de figure, ou fichier .geo.")
     parser.add_option("-o", "--output", help="(mode script) fichier image. L'extension determine le type de fichier.")
 
@@ -135,7 +139,8 @@ def gerer_arguments():
                     os.remove(os.path.join(root,file))
 
     if (options.input or options.output) and not options.script:
-        print "Warning: options --input et --output incorrectes en dehors du mode script.\nExemple d'utilisation correcte : wxgeometrie -s -i mon_script.txt -o mon_image.png."
+        print("Warning: options --input et --output incorrectes en dehors du mode script.\n"
+              "Exemple d'utilisation correcte : %s -s -i mon_script.txt -o mon_image.png." %nomprog)
 
     arguments = []
 
@@ -151,7 +156,7 @@ def gerer_arguments():
 
     for nom in parametres_additionnels:
         if not hasattr(param, nom):
-            print u"Attention: Paramêtre inconnu : " + nom
+            print(u"Attention: Paramêtre inconnu : " + nom)
 
     return parametres_additionnels, arguments, options
 
@@ -205,10 +210,10 @@ class SortiesMultiples(object):
         chaine = uni.encode(param.encodage)
 #        default_out = (sys.__stdout__ if not param.py2exe else sys.py2exe_stderr)
         # Sous Windows, l'encodage se fait en cp1252, sauf dans console où cp850 est utilisé !
-#        default_out.write(chaine if sys.platform != 'win32' else uni.encode('cp850'))
+#        default_out.write(chaine if plateforme != 'Windows' else uni.encode('cp850'))
         # Sous Windows, l'encodage se fait en cp1252, sauf dans console où cp850 est utilisé !
         if not param.py2exe:
-            sys.__stdout__.write(chaine if sys.platform != 'win32' else uni.encode('cp850'))
+            sys.__stdout__.write(chaine if plateforme != 'Windows' else uni.encode('cp850'))
 
         self.total += len(chaine)
         if self.total - len(chaine) < param.taille_max_log <= self.total:
@@ -235,8 +240,8 @@ class SortiesMultiples(object):
             if hasattr(sortie, 'close'):
                 sortie.close()
 
-
-param.EMPLACEMENT = os.getcwdu()
+# Emplacement du module python nommé wxgeometrie
+param.EMPLACEMENT = dirname(realpath(sys._getframe().f_code.co_filename))
 
 
 def path2(chemin):
@@ -250,11 +255,12 @@ def path2(chemin):
 
 
 # S'assurer que les dossiers log/, session/, etc. existent:
-for emplacement in param.emplacements:
+for emplacement in param.emplacements.values():
     emplacement = path2(emplacement)
     try:
         if not os.path.isdir(emplacement):
-            os.mkdir(emplacement)
+            os.makedirs(emplacement)
+            print(u'Création du répertoire : ' + emplacement)
     except IOError:
         print(u"Impossible de créer le répertoire %s !" %emplacement)
 
@@ -281,7 +287,7 @@ if param.enregistrer_messages and isinstance(sys.stdout, SortiesMultiples):
     try:
         sys.stdout.facultatives.append(SortieTemporaire())
         fichier_log = open(log_filename, 'w')
-        fichier_log.write(u"WxGéométrie version ".encode(param.encodage) + param.version + '\n')
+        fichier_log.write(NOMPROG.encode(param.encodage) + " version " + param.version + '\n')
         fichier_log.write(time.strftime("%d/%m/%Y - %H:%M:%S") + '\n')
         sys.stdout.obligatoires.append(fichier_log)
     except IOError:
@@ -314,11 +320,11 @@ try:
 
     if param.py2exe:
         print sys.path
-        sys.path.extend(('library.zip\\matplotlib', 'library.zip\\wx'))
+        sys.path.extend(('library.zip\\matplotlib', 'library.zip\\' + GUIlib))
 
-    #Test des imports
-    from . import GUI
-    import wx # après GUI (wxversion.select() must be called before wxPython is imported)
+##    #Test des imports
+##    from . import GUI
+##    import wx # après GUI (wxversion.select() must be called before wxPython is imported)
 
     if param.charger_psyco is not False:
         try:
@@ -329,6 +335,7 @@ try:
                 psyco.profile()
         except ImportError:
             pass
+
 
 
     def initialiser():
@@ -357,7 +364,7 @@ try:
                     a_verifier = dict((dicname, getattr(param, dicname)) for dicname in param.a_mettre_a_jour)
                     actualiser_module(param, path)
                     # Certains paramètres peuvent avoir besoin d'une mise à jour
-                    # (en cas de changement de version de wxgéométrie par exemple).
+                    # (en cas de changement de version du programme par exemple).
                     # Cela concerne en particulier les dictionnaires, qui peuvent gagner de nouvelles clés.
                     for dicname in param.a_mettre_a_jour:
                         for key, val in a_verifier[dicname].iteritems():
@@ -370,17 +377,17 @@ try:
         param.__dict__.update(parametres_additionnels)
 
         if options.script:
-            from .GUI.mode_script import wxgeometrie_mode_script
-            msg = wxgeometrie_mode_script(options.input, options.output)
+            from .GUI.mode_script import mode_script
+            msg = mode_script(options.input, options.output)
             if msg:
                 print msg
 
         else:
-            app = wx.PySimpleApp()
-            app.SetAppName(u"WxGéométrie")
+            from .GUI.app import app
+            app.nom(NOMPROG)
 
-            from .GUI.fenetre_principale import WxGeometrie
-            frame = WxGeometrie(app, fichier_log = fichier_log)
+            from .GUI.fenetre_principale import FenetrePrincipale
+            frame = FenetrePrincipale(app, fichier_log = fichier_log)
             if isinstance(sys.stdout, SortiesMultiples):
                 if param.debug:
                     for msg in sys.stdout.facultatives[0]:
@@ -396,13 +403,14 @@ try:
             elif (param.sauver_session or crash) and not options.nouveau:
                 try:
                     if crash:
-                        print(u"WxGéométrie n'a pas été fermé correctement.\nTentative de restauration de la session en cours...")
-                    frame.charger_session()
+                        print(NOMPROG + u" n'a pas été fermé correctement.\n"
+                              "Tentative de restauration de la session en cours...")
+                    frame.gestion.charger_session()
                 except:
                     print(u"Warning: La session n'a pas pu être restaurée.")
                     print_error()
-            frame.Show(True)
-            app.MainLoop()
+            frame.Show()
+            app.boucle()
             sorties.close()
         os.remove(path_lock)
 

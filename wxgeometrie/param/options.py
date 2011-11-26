@@ -29,8 +29,10 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 # [bool] -> CheckListBox
 # ['item1', 'blabla2', ...] -> Choice
 
-import copy
-import param
+from copy import deepcopy
+
+from .modules import modules as _modules, descriptions_modules
+
 
 class Rubrique(list):
     def __init__(self, titre):
@@ -62,10 +64,11 @@ class Parametre(object):
             self.key = None
         self._get = _get
         self._set = _set
-        self.defaut = copy.deepcopy(self.valeur)
+        self.defaut = deepcopy(self.valeur)
         self.texte = _texte
 
     def _get_val(self):
+        from .. import param
         if self.key is None:
             val = getattr(param, self.nom)
         else:
@@ -74,6 +77,7 @@ class Parametre(object):
 
 
     def _set_val(self, val):
+        from .. import param
         val = self._set(val)
         if self.key is None:
             setattr(param, self.nom, val)
@@ -105,9 +109,9 @@ auto.add(u'La valeur 0 désactive la sauvegarde automatique.')
 ## MODULES
 modules = options.add(Theme(u'Modules'))
 liste = modules.add(Section(u'Activer les modules suivants'))
-for nom in param.modules:
+for nom in _modules:
     d = {'modules_actifs__' + nom: bool}
-    liste.add(P(param.descriptions_modules[nom]['titre'], **d))
+    liste.add(P(descriptions_modules[nom]['titre'], **d))
 
 modules.add(u'Nota: les modules non activés par défaut peuvent être non documentés\net/ou encore expérimentaux.')
 

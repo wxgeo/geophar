@@ -27,7 +27,7 @@ from collections import defaultdict
 from random import randint
 from itertools import count
 
-from ...sympy import latex
+from sympy import latex
 
 from ...GUI import MenuBar, Panel_API_graphique
 from ...mathlib.graphes import Graph, colors, colors_dict

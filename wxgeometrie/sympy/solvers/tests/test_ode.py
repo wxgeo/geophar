@@ -5,7 +5,6 @@ from sympy import (Function, dsolve, Symbol, sin, cos, sinh, acos, tan, cosh,
     erf,  diff, Rational, asinh, trigsimp, S, RootOf, Poly, Integral, atan,
     Equality, solve, O, LambertW, Dummy)
 from sympy.abc import x, y, z
-from sympy.core.compatibility import all
 from sympy.solvers.ode import ode_order, homogeneous_order, \
     _undetermined_coefficients_match, classify_ode, checkodesol, constant_renumber
 from sympy.utilities.pytest import XFAIL, skip, raises
@@ -146,6 +145,8 @@ def test_classify_ode():
     assert a == b == c != ()
     assert classify_ode(2*x*f(x)*f(x).diff(x) + (1 + x)*f(x)**2 - exp(x), f(x)) ==\
         ('Bernoulli', 'Bernoulli_Integral')
+    assert 'Riccati_special_minus2' in\
+        classify_ode(2*f(x).diff(x) + f(x)**2 - f(x)/x + 3*x**(-2), f(x))
     raises(ValueError, "classify_ode(x + f(x, y).diff(x).diff(y), f(x, y))")
     # 2077
     k = Symbol('k')
@@ -241,6 +242,12 @@ def test_Bernoulli():
     eq = Eq(x*f(x).diff(x) + f(x) - f(x)**2,0)
     sol = dsolve(eq,f(x), hint='Bernoulli')
     assert sol == Eq(f(x),1/(x*(C1 + 1/x)))
+    assert checkodesol(eq, f(x), sol, order=1, solve_for_func=False)[0]
+
+def test_Riccati_special_minus2():
+    # Type: Riccati special alpha = -2, a*dy/dx + b*y**2 + c*y/x +d/x**2
+    eq = 2*f(x).diff(x) + f(x)**2 - f(x)/x + 3*x**(-2)
+    sol = dsolve(eq,f(x), hint='Riccati_special_minus2')
     assert checkodesol(eq, f(x), sol, order=1, solve_for_func=False)[0]
 
 def test_1st_exact1():

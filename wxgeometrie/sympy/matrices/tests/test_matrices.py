@@ -1,7 +1,7 @@
-from sympy import (symbols, Matrix, SparseMatrix, eye, I, Symbol, Rational, wronskian, cos,
-    sin, exp, hessian, sqrt, zeros, ones, randMatrix, Poly, S, pi, E, I,
-    oo, trigsimp, Integer, block_diag, N, zeros, sympify, Pow, simplify,
-    Min, Max, Abs)
+from sympy import (symbols, Matrix, SparseMatrix, eye, I, Symbol, Rational,
+    Float, wronskian, cos, sin, exp, hessian, sqrt, zeros, ones, randMatrix,
+    Poly, S, pi, E, I, oo, trigsimp, Integer, block_diag, N, zeros, sympify,
+    Pow, simplify, Min, Max, Abs)
 from sympy.matrices.matrices import (ShapeError, MatrixError,
     matrix_multiply_elementwise, diag,
 
@@ -1751,7 +1751,8 @@ def test_condition_number():
 
     M = Matrix([[cos(x), sin(x)], [-sin(x), cos(x)]])
     Mc = M.condition_number()
-    assert all(Mc.subs(x,val)==1 for val in [.2, .5, .1, pi/2, pi, 7*pi/4 ])
+    assert all(Float(1.).epsilon_eq(Mc.subs(x, val).evalf()) for val in \
+            [Rational(1,5), Rational(1, 2), Rational(1, 10), pi/2, pi, 7*pi/4 ])
 
 def test_len():
     assert len(Matrix()) == 0
@@ -1760,3 +1761,20 @@ def test_len():
     assert len(Matrix([[0, 1, 2], [3, 4, 5]])) == 6
     assert Matrix([1])
     assert not Matrix()
+
+def test_equality():
+    A = Matrix(((1,2,3),(4,5,6),(7,8,9)))
+    B = Matrix(((9,8,7),(6,5,4),(3,2,1)))
+    assert A == A[:, :]
+    assert not A != A[:, :]
+    assert not A == B
+    assert A != B
+    assert A != 10
+    assert not A == 10
+
+    # A SparseMatrix can be equal to a Matrix
+    C = SparseMatrix(((1,0,0),(0,1,0),(0,0,1)))
+    D = Matrix(((1,0,0),(0,1,0),(0,0,1)))
+    assert C == D
+    assert not C != D
+
