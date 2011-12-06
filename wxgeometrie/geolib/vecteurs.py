@@ -228,7 +228,13 @@ class Vecteur(Vecteur_generique):
     def _creer_nom_latex(self):
         u"""Crée le nom formaté en LaTeX. Ex: M1 -> $M_1$."""
         Objet._creer_nom_latex(self)
-        nom = "\\vec " + self.nom_latex[1:-1]
+        latex = self.nom_latex[1:-1]
+        if len(latex) == 1:
+            # petite flêche
+            nom = "\\vec " + self.nom_latex[1:-1]
+        else:
+            # grande flêche
+            nom = "\\overrightarrow{" + self.nom_latex[1:-1] + "}"
         self.nom_latex = "$" + nom + "$"
 
 
