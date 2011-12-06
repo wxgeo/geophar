@@ -567,8 +567,8 @@ def %(_nom_)s(self, valeur = no_argument):
     @track
     def quadrillage_millimetre(self, event = None):
         self.quadrillages = (  ((1, 1), ':', 1, 'k'),
-                            ((0.5, 0.5), '-', 0.25, 'k'),
-                            ((0.1, 0.1), '-', 0.1, 'k'),
+                            ((0.5, 0.5), '-', 0.25, 'darkgray'),
+                            ((0.1, 0.1), '-', 0.1, 'gray'),
                             )
 
     @track
@@ -584,7 +584,7 @@ def %(_nom_)s(self, valeur = no_argument):
     def quadrillage_demigraduation(self, event = None):
         ux, uy = self.gradu
         self.quadrillages = (  ((ux, uy), ':', 1, 'k'),
-                                    ((ux/2, uy/2), '-', 0.25, 'k'),
+                                    ((ux/2, uy/2), '-', 0.25, 'darkgray'),
                                     )
 
     @track
