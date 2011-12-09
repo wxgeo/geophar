@@ -283,6 +283,8 @@ def traduire_formule(formule = "", fonctions = (), OOo = True, LaTeX = True, cha
 
     # Différentes façons de rentrer les puissances :
     formule = formule.replace("^", "**").replace(u'²',"**2").replace(u'³',"**3")
+    formule = formule.replace(u'\u2074',"**4").replace(u'\u2075',"**5").replace(u'\u2076',"**6")
+    formule = formule.replace(u'\u2077',"**7").replace(u'\u2078',"**8").replace(u'\u2079',"**9")
 
     # Caractères unicode
     # remplace le tiret long en '-'
