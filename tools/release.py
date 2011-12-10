@@ -75,9 +75,9 @@ with open('param/version.py', 'r') as f:
         if line.startswith('date_version = '):
             contenu.append('date_version = ' + date)
         elif line.startswith('version = '):
-            version_precedente = line[11:].strip()[:-1]
+            version_precedente = line[11:].split('#')[0].strip()[:-1]
             # Changement du numéro de version
-            contenu.append('version = ' + repr(version.replace('_', ' ')))
+            contenu.append('version = ' + repr(version.replace('_', ' ')) + '\n')
         else:
             contenu.append(line)
 
@@ -129,28 +129,28 @@ print(u'\nCréation du paquet...')
 s.cd('..')
 s.rmdir('build_', quiet=True)
 s.rm(archive_gz, quiet=True)
+
+# Création d'un répertoire temporaire build_/
 s.mkdir('build_')
 s.mkdir('build_/wxgeometrie')
-
 
 # Création du tag de release
 tag = 'v' + version
 s.command('git tag -am %s %s' %(repr(options.message or 'Version ' + version), tag))
 
 # Récupération des fichiers via git
-s.cd('wxgeometrie')
-s.command('git archive %s -o ../build_/wxgeometrie.tar' %tag)
-s.cd('../build_')
+s.command('git archive %s -o build_/wxgeometrie.tar' %tag)
+s.cd('build_')
 s.command('tar -xf wxgeometrie.tar --directory wxgeometrie')
 s.rm('wxgeometrie.tar')
 
 # Personnalisation du contenu
-s.cp('../README.md', 'wxgeometrie/README')
-s.cp('../INSTALL', 'wxgeometrie/INSTALL')
-s.cp('../LICENSE', 'wxgeometrie/LICENSE')
-s.mkdir('wxgeometrie/tools')
-s.cp('../tools/scriptlib.py', 'wxgeometrie/tools/scriptlib.py')
+s.cd('wxgeometrie')
+s.rename('README.md', 'README')
+s.rm('MANIFEST.in')
+s.rm('.gitignore')
 s.rename('wxgeometrie/param/personnaliser_.py', 'wxgeometrie/param/personnaliser.py')
+s.cd('..')
 
 # Création de l'archive .tar.gz
 s.command('tar -cf %s wxgeometrie' %archive_tar)
