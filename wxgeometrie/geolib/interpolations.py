@@ -25,7 +25,7 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 # version unicode
 
 
-<<<<<<< HEAD
+
 from numpy import array, arange, append
 # en test ###############
 from numpy import poly1d
@@ -33,9 +33,9 @@ from scipy.interpolate import PiecewisePolynomial
 import fractions as frac
 #########################
 from .objet import Ref, Argument, Arguments
-=======
+
 from .objet import Ref, Arguments#, Argument
->>>>>>> master
+
 from .courbes import Courbe_generique
 from .contexte import contexte
 
@@ -433,7 +433,7 @@ class interpol1():
         show()
 
 
-class Interpolation_Polynomial_Par_Morceau(Interpolation_generique, interpol1):
+class Interpolation_Polynomiale_Par_Morceau(Interpolation_generique, interpol1):
     u"""
     Une courbe d'interpolation polynomiale par morceaux.
 
@@ -452,21 +452,23 @@ class Interpolation_Polynomial_Par_Morceau(Interpolation_generique, interpol1):
     
     @return : numpy.lib.polynomial
     """
-    def __init__(self, *points, **styles):
+    def __init__(self, derivl = [], *points, **styles):
         derivees = self.styles.pop('derivees', len(points)*[0])
         debut = styles.pop("debut", True)
         fin = styles.pop("fin", True)
+        if styles.get("points", None):
+            points = styles.pop("points")
         self.__points = points = tuple(Ref(pt) for pt in points)
         self.__debut = debut = Ref(debut)
         self.__fin = fin = Ref(fin)
         Interpolation_generique.__init__(self, **styles)
 
         # à modifier
-        self.xl = xl
-        self.yl = yl
+        self.xl = [P[0] for P in self.__points]
+        self.yl = [P[1] for P in self.__points]
         self.derivl = [frac.Fraction(x) for x in derivl]
         self.tangentes = []
-        self.interpol = self.poly_inter(xl, yl, derivl)
+        self.interpol = self.poly_inter(self.xl, self.yl, derivl)
         for i in range(len(xl)):
             self.tangentes.append(poly1d([derivl[i], -1*derivl[i]*xl[i]+yl[i]]))
 

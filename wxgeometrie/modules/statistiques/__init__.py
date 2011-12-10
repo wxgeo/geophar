@@ -620,7 +620,7 @@ class Statistiques(Panel_API_graphique):
 
         self.canvas.dessiner_ligne([x0, x_reg], [a_reel, a_reel], color = col, linestyle = style)
         self.canvas.dessiner_ligne([x_reg, x_reg], [a_reel, y0], color = col, linestyle = style)
-        self.canvas.dessiner_texte(x_reg, y0 + dy, format(x_reg, ".4g"), color = col)
+        self.canvas.dessiner_texte(x_reg, y0 + dy, format(x_reg, ".5g"), color = col)
 
 
     def select_classe(self, liste, a, mode=1):

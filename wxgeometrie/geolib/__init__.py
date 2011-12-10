@@ -28,7 +28,7 @@ from .courbes import Courbe_generique, Courbe
 from .feuille import MethodesObjets, Liste_objets, ModeTolerant, Dictionnaire_objets, Interprete_feuille, Historique_feuille, Feuille
 from .formules import Formule
 from .fonctions import Fonction
-from .interpolations import Interpolation_generique, Interpolation_lineaire, Interpolation_quadratique, Interpolation_cubique
+from .interpolations import Interpolation_generique, Interpolation_lineaire, Interpolation_quadratique, Interpolation_cubique, Interpolation_Polynomiale_Par_Morceau
 from .intersections import Intersection_generique, Intersection_droites, Intersection_droite_cercle, Intersection_cercles, Intersection
 from .labels import Label_generique, Label_point, Label_segment, Label_vecteur, Label_droite, Label_demidroite, Label_cercle, Label_arc_cercle, Label_polygone, Label_angle
 from .lignes import Ligne_generique, Segment, Demidroite, Droite_generique, Droite, Point_droite, Droite_vectorielle, Parallele, Perpendiculaire, Mediatrice, Droite_equation, Bissectrice, Point_tangence, Tangente, DemiPlan, Axe, Tangente_courbe
