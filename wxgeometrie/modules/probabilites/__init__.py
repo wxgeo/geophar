@@ -95,7 +95,7 @@ omega
     def _ouvrir(self, fgeo):
         Panel_API_graphique._ouvrir(self, fgeo)
         if fgeo.contenu.has_key(u"Instructions"):
-            self.instructions.SetValue(fgeo.contenu[u"Instructions"][0])
+            self.instructions.setPlainText(fgeo.contenu[u"Instructions"][0])
 
 
     def Appliquer(self, event):

@@ -35,7 +35,7 @@ from matplotlib.colors import colorConverter as colorConverter
 
 
 from .wxlib import ColorSelecter
-from .app import white_palette
+from .app import white_palette, app
 from .. import param
 from ..pylib import print_error, debug, advanced_split
 from ..geolib.constantes import NOM, FORMULE, TEXTE, RIEN
@@ -58,6 +58,7 @@ class ProprietesAffichage(QWidget):
             proprietes = {'fixe': u'Objet fixe', 'visible': u'Objet visible', 'trace': u'Laisser une trace'}
             for propriete, titre in proprietes.items():
                 self.add_checkbox(encadre, propriete, titre)
+            encadre.addStretch()
 
 
         encadre1 = QVBoxLayout()
@@ -105,6 +106,7 @@ class ProprietesAffichage(QWidget):
                 legende.addWidget(self.radio_etiquette)
                 legende.addWidget(self.radio_formule)
                 legende.addWidget(self.radio_aucun)
+                legende.addStretch()
                 encadre1.addWidget(QLabel(u"Afficher : "))
                 encadre1.addLayout(legende)
 
@@ -130,6 +132,7 @@ class ProprietesAffichage(QWidget):
             if style in self.liste_styles and all(objet.style("style") == style for objet in objets):
                 self.style.setCurrentIndex(self.liste_styles.index(style)) # on sélectionne le style actuel
             choix.addWidget(self.style)
+            choix.addStretch()
             encadre2.addLayout(choix)
 
 
@@ -147,6 +150,7 @@ class ProprietesAffichage(QWidget):
             if hachures in self.types_de_hachures and all(objet.style("hachures") == hachures for objet in objets):
                 self.hachures.setCurrentIndex(self.types_de_hachures.index(hachures)) # on sélectionne les hachures actuelles
             choix.addWidget(self.hachures)
+            choix.addStretch()
             encadre2.addLayout(choix)
 
 
@@ -168,6 +172,7 @@ class ProprietesAffichage(QWidget):
                 self.famille.setCurrentIndex(self.liste_familles.index(famille)) # on sélectionne la famille actuelle
 
             choix.addWidget(self.famille)
+            choix.addStretch()
             encadre2.addLayout(choix)
 
 
@@ -185,6 +190,7 @@ class ProprietesAffichage(QWidget):
             b = ColorSelecter(self, color=couleur)
             b.colorSelected.connect(self.OnSelectColour)
             choix.addWidget(b)
+            choix.addStretch()
             encadre2.addLayout(choix)
 
 
@@ -194,8 +200,8 @@ class ProprietesAffichage(QWidget):
             epaisseur = QHBoxLayout()
             epaisseur.addWidget(QLabel(u"Epaisseur (en 10e de pixels) : "))
             self.epaisseur = QSpinBox()
-            self.epaisseur.setMinimumSize(30, 50)
-            self.epaisseur.setRange(1,10000)
+            self.epaisseur.setMinimumWidth(30)
+            self.epaisseur.setRange(1, 10000)
             if all(objet.style("epaisseur") == epaiss for objet in objets):
                 self.epaisseur.setValue(10*epaiss)
             else:
@@ -203,6 +209,7 @@ class ProprietesAffichage(QWidget):
                 print(u'FIXME: cas non géré.')
             self.epaisseur.valueChanged.connect(self.EvtEpaisseur)
             epaisseur.addWidget(self.epaisseur)
+            epaisseur.addStretch()
             encadre2.addLayout(epaisseur)
 
 
@@ -212,7 +219,7 @@ class ProprietesAffichage(QWidget):
             taille = QHBoxLayout()
             taille.addWidget(QLabel(u"Taille (en 10e de pixels) : "))
             self.taille = QSpinBox()
-            self.taille.setMinimumSize(30, 50)
+            self.taille.setMinimumWidth(30)
             self.taille.setRange(1,10000)
             if all(objet.style("taille") == tail for objet in objets):
                 self.taille.setValue(10*tail)
@@ -221,6 +228,7 @@ class ProprietesAffichage(QWidget):
                 print(u'FIXME: cas non géré.')
             self.taille.valueChanged.connect(self.EvtTaille)
             taille.addWidget(self.taille)
+            taille.addStretch()
             encadre2.addLayout(taille)
 
 
@@ -230,7 +238,7 @@ class ProprietesAffichage(QWidget):
             position = QHBoxLayout()
             position.addWidget(QLabel(u"Position de la flêche : "))
             self.position = QSpinBox()
-            self.position.setMinimumSize(30, 50)
+            self.position.setMinimumWidth(30)
             self.position.setRange(0, 100)
             if all(objet.style("position") == pos for objet in objets):
                 self.position.setValue(100*pos)
@@ -239,6 +247,7 @@ class ProprietesAffichage(QWidget):
                 print(u'FIXME: cas non géré.')
             self.position.valueChanged.connect(self.EvtPosition)
             position.addWidget(self.position)
+            position.addStretch()
             encadre2.addLayout(position)
 
 
@@ -249,8 +258,8 @@ class ProprietesAffichage(QWidget):
             angle = QHBoxLayout()
             angle.addWidget(QLabel(u"Angle (en degré) : "))
             self.angle = QSpinBox()
-            self.angle.setMinimumSize(30, 50)
-            self.angle.setRange(0, 360)
+            self.angle.setMinimumWidth(30)
+            self.angle.setRange(-360, 360)
             if all(objet.style("angle") == ang for objet in objets):
                 self.angle.setValue(ang)
             else:
@@ -258,6 +267,7 @@ class ProprietesAffichage(QWidget):
                 print(u'FIXME: cas non géré.')
             self.angle.valueChanged.connect(self.EvtAngle)
             angle.addWidget(self.angle)
+            angle.addStretch()
             encadre2.addLayout(angle)
 
         self.add_checkbox(encadre, 'double_fleche', u"Flêche double")
@@ -308,11 +318,11 @@ class ProprietesAffichage(QWidget):
             self.sizer.addWidget(encadre_box)
         if encadre1.count():
             encadre1_box = QGroupBox(u"Etiquette")
-            encadre_box.setLayout(encadre1)
+            encadre1_box.setLayout(encadre1)
             self.sizer.addWidget(encadre1_box)
         if encadre2.count():
             encadre2_box = QGroupBox(u"Styles")
-            encadre_box.setLayout(encadre2)
+            encadre2_box.setLayout(encadre2)
             self.sizer.addWidget(encadre2_box)
         self.sizer.addLayout(boutons)
         self.setLayout(self.sizer)
@@ -344,11 +354,12 @@ class ProprietesAffichage(QWidget):
         self.changements[propriete] = (state == Qt.Checked)
 
     def EvtEtiquette(self):
-        self.changements["label"] = self.etiquette.toPlainText()
+        self.changements["label"] = self.etiquette.text()
 
     def OnSelectColour(self, color):
         # conversion du format Qt au format matplotlib
-        self.changements["couleur"] = color.getRgb()
+        r, g, b, a = color.getRgb()
+        self.changements["couleur"] = (r/255, g/255, b/255, a/255)
 
     def EvtStyle(self, index):
         self.changements["style"] = self.liste_styles[index]
@@ -475,6 +486,7 @@ class ProprietesInfos(QWidget):
             self.sizer.addWidget(infos_box)
             actualiser = QPushButton(u"Actualiser")
             actualiser.clicked.connect(self.EvtActualiser)
+            self.sizer.addStretch()
             self.sizer.addWidget(actualiser)
         else:
             self.sizer.addWidget(QLabel(str(len(self.objets)) + u" objets sélectionnés."))
@@ -595,7 +607,7 @@ class Proprietes(QDialog):
         self.parent = parent
         self.islabel = islabel
         self.fenetre_principale = self.parent.window()
-        self.panel = self.fenetre_principale.onglets.onglet_actuel
+        self.panel = app.fenetre_principale.onglets.onglet_actuel
         self.canvas = self.panel.canvas
 
         self.objets = objets

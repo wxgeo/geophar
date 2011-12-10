@@ -51,6 +51,10 @@ class App(QApplication):
         self.clipboard().setText(texte)
         return True
 
+    # La fenêtre principale s'enregistre au lancement,
+    # afin qu'on puisse facilement la retrouver.
+    fenetre_principale = None
+
 app = App()
 
 white_palette = QPalette()

@@ -78,6 +78,10 @@ class FenetrePrincipale(QMainWindow):
 #        self.setPalette(palette)
 
         self.application = app # pour acceder a l'application en interne
+        # Pour que toutes les fenêtres puissent simplement retrouver la
+        # fenêtre principale:
+        app.fenetre_principale = self
+
 
         # À créer avant les onglets
         self.fenetre_sortie = PyOnDemandOutputWindow(title = NOMPROG + u" - messages.")
