@@ -432,8 +432,7 @@ class interpol1():
 
 
 class Interpolation_Polynomiale_Par_Morceau(Interpolation_generique, interpol1):
-    u"""
-    Une courbe d'interpolation polynomiale par morceaux.
+    u"""Une courbe d'interpolation polynomiale par morceaux.
 
     utilise l'interpolation par morceau de scipy pour construire la fonction
     c'est la classe scipy.interpolate.PiecewisePolynomial
@@ -461,7 +460,7 @@ class Interpolation_Polynomiale_Par_Morceau(Interpolation_generique, interpol1):
         self.__points = points = tuple(Ref(pt) for pt in points)
         self.__debut = debut = Ref(debut)
         self.__fin = fin = Ref(fin)
-        Interpolation_generique.__init__(self, **styles)
+        Interpolation_generique.__init__(self, *points, **styles)
 
         # à améliorer
         self.xl = [P[0] for P in self.__points]
@@ -489,6 +488,10 @@ class Interpolation_Polynomiale_Par_Morceau(Interpolation_generique, interpol1):
 
         if n < 2:
             return
+        #interpol doit être recalculé à chaque mise à jour
+        self.xl = [P[0] for P in self.__points]
+        self.yl = [P[1] for P in self.__points]
+        self.interpol = self.poly_inter(self.xl, self.yl, len(self.xl)*[0])
 
         pas = self.__canvas__.pas()
         plot = self._representation[0]
@@ -496,7 +499,6 @@ class Interpolation_Polynomiale_Par_Morceau(Interpolation_generique, interpol1):
         x2, y2 = self.__points[-1].coordonnees
         xarray = arange(x1, x2, pas)
         yarray = self.interpol(xarray)
-        print self.__points[0].coordonnees
         plot.set_data(xarray, yarray)
         plot.set(color=couleur, linestyle=style, linewidth=epaisseur)
         plot.zorder = niveau
