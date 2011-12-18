@@ -484,7 +484,7 @@ class Interpolation_Polynomiale_Par_Morceau(Interpolation_generique, interpol1):
         style = self.style("style")
         epaisseur = self.style("epaisseur")
         if not self._representation:
-            self._representation = [self.rendu.ligne() for i in xrange(n + 1)]
+            self._representation = [self.rendu.ligne()]
 
         if n < 2:
             return
