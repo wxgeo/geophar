@@ -34,8 +34,6 @@ import fractions as frac
 #########################
 from .objet import Ref, Argument, Arguments
 
-from .objet import Ref, Arguments#, Argument
-
 from .courbes import Courbe_generique
 from .contexte import contexte
 
@@ -452,8 +450,10 @@ class Interpolation_Polynomiale_Par_Morceau(Interpolation_generique, interpol1):
     
     @return : numpy.lib.polynomial
     """
-    def __init__(self, derivl = [], *points, **styles):
-        derivees = self.styles.pop('derivees', len(points)*[0])
+    points = __points = Arguments("Point_generique")
+
+    def __init__(self, *points, **styles): #, derivl = []
+        self.__derivees = derivees = styles.pop('derivees', len(points)*[0])
         debut = styles.pop("debut", True)
         fin = styles.pop("fin", True)
         if styles.get("points", None):
@@ -463,14 +463,14 @@ class Interpolation_Polynomiale_Par_Morceau(Interpolation_generique, interpol1):
         self.__fin = fin = Ref(fin)
         Interpolation_generique.__init__(self, **styles)
 
-        # à modifier
+        # à améliorer
         self.xl = [P[0] for P in self.__points]
         self.yl = [P[1] for P in self.__points]
-        self.derivl = [frac.Fraction(x) for x in derivl]
-        self.tangentes = []
-        self.interpol = self.poly_inter(self.xl, self.yl, derivl)
-        for i in range(len(xl)):
-            self.tangentes.append(poly1d([derivl[i], -1*derivl[i]*xl[i]+yl[i]]))
+        #self.derivl = [frac.Fraction(x) for x in self.derivees]
+        #self.tangentes = []
+        self.interpol = self.poly_inter(self.xl, self.yl, len(self.xl)*[0])
+        #for i in range(len(xl)):
+        #    self.tangentes.append(poly1d([derivl[i], -1*derivl[i]*xl[i]+yl[i]]))
 
 
     def poly_inter(self, xl, yl, derivl):
@@ -496,10 +496,11 @@ class Interpolation_Polynomiale_Par_Morceau(Interpolation_generique, interpol1):
         x2, y2 = self.__points[-1].coordonnees
         xarray = arange(x1, x2, pas)
         yarray = self.interpol(xarray)
+        print self.__points[0].coordonnees
         plot.set_data(xarray, yarray)
         plot.set(color=couleur, linestyle=style, linewidth=epaisseur)
         plot.zorder = niveau
         self._xarray = xarray
         self._yarray = yarray
         
-        self._affiche_extremites()
+        #self._affiche_extremites()
