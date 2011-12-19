@@ -379,12 +379,16 @@ def %(_nom_)s(self, valeur = no_argument):
 
 
 
-
     def _get_fenetre(self):
-        if self.orthonorme:
+        if self.orthonorme or getattr(self, 'ratio', None) is not None:
+            if self.orthonorme:
+                rat = 1
+            else:
+                rat = self.ratio # x:y -> x/y
+                # ratio est le rapport "unité en abscisse/unité en ordonnée"
             w, h = self.dimensions
             fenetre = self.feuille_actuelle.fenetre
-            coeff0 = (fenetre[1] - fenetre[0])/w
+            coeff0 = rat*(fenetre[1] - fenetre[0])/w
             coeff1 = (fenetre[3] - fenetre[2])/h
             xmin, xmax, ymin, ymax = fenetre
             xcoeff = (coeff1/coeff0 if coeff0 < coeff1 else 1)
@@ -392,13 +396,6 @@ def %(_nom_)s(self, valeur = no_argument):
             x, y, rx, ry = (xmin+xmax)/2., (ymin+ymax)/2., (xmax-xmin)/2., (ymax-ymin)/2.
             return x - xcoeff*rx, x + xcoeff*rx, y - ycoeff*ry, y + ycoeff*ry
         return self.feuille_actuelle.fenetre
-##        if hasattr(self, 'ratio'): # À ÉCRIRE
-##            if self.ratio is not None: # ratio est le
-##                xcoeff = (self.coeff(1)/(self.ratio*self.coeff(0)) if self.ratio*self.coeff(0) < self.coeff(1) else 1)
-##                ycoeff = (1 if (self.ratio*self.coeff(0)) < self.coeff(1) else (self.ratio*self.coeff(0))/self.coeff(1))
-##                xmin, xmax, ymin, ymax = self.fenetre
-##                x, y, rx, ry = (xmin+xmax)/2., (ymin+ymax)/2., (xmax-xmin)/2., (ymax-ymin)/2.
-##                self._changer_fenetre(x - xcoeff*rx, x + xcoeff*rx, y - ycoeff*ry, y + ycoeff*ry)
 
 
     def _set_fenetre(self, xmin_xmax_ymin_ymax):
