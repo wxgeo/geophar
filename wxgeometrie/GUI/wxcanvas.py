@@ -491,47 +491,6 @@ class WxCanvas(FigureCanvasWxAgg, Canvas):
 
 
 
-    def gestion_zoombox(self, pixel):
-        x, y = pixel
-        xmax, ymax = self.GetSize()
-        x = max(min(x, xmax), 0)
-        y = max(min(y, ymax), 0)
-        self.fin_zoom = self.pix2coo(x, y)
-        self.debut_zoom = self.debut_zoom or self.fin_zoom
-        (x0, y0), (x1, y1) = self.debut_zoom, self.fin_zoom
-        if self.orthonorme:
-            if ymax*abs(x0 - x1) > xmax*abs(y0 - y1):
-                y1 = y0 + ymax/xmax*abs(x0 - x1)*cmp(y1, y0)
-            else:
-                x1 = x0 + xmax/ymax*abs(y0 - y1)*cmp(x1, x0)
-            self.fin_zoom = (x1, y1)
-            #if param.bouger_curseur:  # ou comment rendre fou l'utilisateur... ;)
-            #    self.WarpPointer(*self.XYcoo2pix((x1, y1), -1))
-        self.dessiner_polygone([x0,x0,x1,x1], [y0,y1,y1,y0], facecolor='c', edgecolor='c', alpha = .1)
-        self.dessiner_ligne([x0,x0,x1,x1,x0], [y0,y1,y1,y0,y0], 'c', alpha = 1)
-
-        self.rafraichir_affichage(dessin_temporaire = True) # pour ne pas tout rafraichir
-
-
-    def selection_zone(self, pixel):
-        x, y = pixel
-        xmax, ymax = self.GetSize()
-        x = max(min(x, xmax), 0)
-        y = max(min(y, ymax), 0)
-        self.fin_select = self.pix2coo(x, y)
-        self.debut_select = self.debut_select or self.fin_select
-        (x0, y0), (x1, y1) = self.debut_select, self.fin_select
-        self.dessiner_polygone([x0,x0,x1,x1], [y0,y1,y1,y0], facecolor='y', edgecolor='y',alpha = .1)
-        self.dessiner_ligne([x0,x0,x1,x1,x0], [y0,y1,y1,y0,y0], 'g', linestyle = ":", alpha = 1)
-
-        self.rafraichir_affichage(dessin_temporaire = True) # pour ne pas tout rafraichir
-
-
-
-
-
-
-
     def OnSelect(self, x0, x1, y0, y1):
         x0, x1 = min(x0, x1), max(x0, x1)
         y0, y1 = min(y0, y1), max(y0, y1)
