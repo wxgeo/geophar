@@ -31,6 +31,9 @@ from random import shuffle
 import re
 
 import wx
+from PyQt4.QtGui import (QVBoxLayout, QInputDialog, QPushButton,
+                         QTextEdit, QGridLayout, QLabel, QLineEdit, QSpacerItem)
+from PyQt4.QtCore import Qt, QTimer
 
 #from ...GUI.wxlib import MyFont
 from ...GUI import MenuBar, Panel_simple
@@ -60,6 +63,27 @@ u"Û": "U",
 u"ç": "C",
 u"Ç": "C",
 }
+
+
+class CaseLettre(QLineEdit):
+    def __init__(self, parent):
+        self.parent = parent
+        QLineEdit.__init__(self, parent)
+        self.setAlignment(Qt.AlignCenter)
+
+    def keyPressEvent(self, evt):
+        self.parent.message(u'')
+        n = evt.key()
+        if 65 <= n <= 90 or 97 <= n <= 122:
+            c = chr(n).upper()
+            for case in self.parent.cases.values():
+                if case.text() == c:
+                    self.parent.message(u'La lettre %s est déjà utilisée !' %c)
+                    return
+            self.setText(c)
+        elif n in (Qt.Key_Backspace, Qt.Key_Delete):
+            self.clear()
+            ##QLineEdit.keyPressEvent(self, evt)
 
 
 class CryptographieMenuBar(MenuBar):
@@ -99,99 +123,98 @@ class Cryptographie(Panel_simple):
 
         self.sizer = QVBoxLayout()
 
-        font = self.GetFont()
-#        italic = wx.Font(font.GetPointSize(), font.GetFamily(), wx.ITALIC, wx.NORMAL)
-        bold = wx.Font(font.GetPointSize(), font.GetFamily(), wx.NORMAL, wx.BOLD)
-
-        self.textes = QGridLayout(5, 5)
+        self.textes = QGridLayout()
+        self.textes.setSpacing(5)
         size = (400, 300)
 
-        TE_STYLE = wx.TE_MULTILINE|wx.TE_RICH2#|wx.TE_CHARWRAP
+        txt_clair = QLabel(u"<b>Texte en clair</b>")
+        self.clair = QTextEdit()
+        self.clair.setMinimumSize(*size)
+        formater_clair = partial(self.formater, widget=self.clair)
+        self.clair.textChanged.connect(formater_clair)
+        self.clair.cursorPositionChanged.connect(formater_clair)
+        self.copier_clair = QPushButton(u'Copier le texte en clair')
+        self.copier_clair.clicked.connect(partial(self.copier, widget=self.clair))
 
-        txt_clair = QLabel(self, u"Texte en clair")
-        txt_clair.SetFont(bold)
-        self.clair = wx.TextCtrl(self, style=TE_STYLE, size=size)
-        # self.clair.Bind(wx.EVT_LEFT_UP, self.clairLeft)
-        self.clair.Bind(wx.EVT_TEXT, partial(self.formater, widget=self.clair))
-        self.clair.Bind(wx.EVT_LEFT_UP, partial(self.formater, widget=self.clair))
-        self.clair.Bind(wx.EVT_KEY_DOWN, partial(self.formater, widget=self.clair))
-        self.copier_clair = QPushButton(self, label=u'Copier le texte en clair')
-        self.copier_clair.Bind(wx.EVT_BUTTON, partial(self.copier, widget=self.clair))
+        txt_code = QLabel(u"<b>Texte codé</b>")
+        self.code = QTextEdit()
+        self.code.setMinimumSize(*size)
+        self.code.textChanged.connect(self.code_modifie)
+        self.code.cursorPositionChanged.connect(partial(self.formater, widget=self.code))
+        self.copier_code = QPushButton(u'Copier le texte codé')
+        self.copier_code.clicked.connect(partial(self.copier, widget=self.code))
 
-        txt_code = QLabel(self, u"Texte codé")
-        txt_code.SetFont(bold)
-        self.code = wx.TextCtrl(self, style=TE_STYLE, size=size)
-        # self.code.Bind(wx.EVT_LEFT_UP, self.codeLeft)
-        self.code.Bind(wx.EVT_LEFT_UP, partial(self.formater, widget=self.code))
-        self.code.Bind(wx.EVT_TEXT, self.code_modifie)
-        self.code.Bind(wx.EVT_KEY_DOWN, partial(self.formater, widget=self.code))
-        self.copier_code = QPushButton(self, label=u'Copier le texte codé')
-        self.copier_code.Bind(wx.EVT_BUTTON, partial(self.copier, widget=self.code))
+        self.textes.addWidget(txt_clair, 0, 0)
+        self.textes.addItem(QSpacerItem(50, 1), 0, 1)
+        self.textes.addWidget(txt_code, 0, 2)
+        self.textes.addWidget(self.clair, 1, 0)
+        self.textes.addWidget(self.code, 1, 2)
+        self.textes.addWidget(self.copier_code, 2, 2)
+        self.textes.addWidget(self.copier_clair, 2, 0)
 
-        self.textes.Add(txt_clair, (0, 0), flag=wx.ALIGN_CENTER)
-        self.textes.addSpacing((50, 1), (0, 1))
-        self.textes.Add(txt_code, (0, 2), flag=wx.ALIGN_CENTER)
-        self.textes.Add(self.clair, (1, 0), flag=wx.ALIGN_CENTER)
-        self.textes.Add(self.code, (1, 2), flag=wx.ALIGN_CENTER)
-        self.textes.Add(self.copier_code, (2, 2), flag=wx.ALIGN_CENTER)
-        self.textes.Add(self.copier_clair, (2, 0), flag=wx.ALIGN_CENTER)
-
-        self.table = QGridLayout(5, 5)
+        self.table = QGridLayout()
+        self.table.setSpacing(3)
         self.cases = {}
-        size = (30, -1)
-        self.table.addWidget(QLabel(u"Codé:"), (0, 0), flag=wx.ALIGN_CENTER)
-        self.table.addWidget(QLabel(u"Clair:"), (1, 0), flag=wx.ALIGN_CENTER)
+        self.table.addWidget(QLabel(u"Codé : ", self), 0, 0)
+        self.table.addWidget(QLabel(u"Clair : ", self), 1, 0)
+        ##self.table.setColumnStretch(0, 100)
         for i, l in enumerate(majuscules):
-            txtctrl = wx.TextCtrl(self, value=l, size=size, style=wx.TE_READONLY|wx.TE_CENTRE)
-            txtctrl.setEnabled(False)
-            self.table.Add(txtctrl, (0, i + 1))
+            lettre = QLineEdit(l, self)
+            lettre.setAlignment(Qt.AlignCenter)
+            lettre.setReadOnly(True)
+            lettre.setEnabled(False)
+            self.table.addWidget(lettre, 0, i + 1)
+            ##self.table.setColumnStretch(i + 1, 1)
         for i, l in enumerate(majuscules):
-            self.cases[l] = wx.TextCtrl(self, size=size, style=wx.TE_CENTRE)
-            self.cases[l].SetMaxLength(1)
-            self.table.Add(self.cases[l], (1, i + 1))
-            self.cases[l].Bind(wx.EVT_LEFT_DOWN, partial(self.EvtLeftDown, l=l))
-            self.cases[l].Bind(wx.EVT_KEY_DOWN,  partial(self.EvtKey, l=l))
-            self.cases[l].Bind(wx.EVT_TEXT, self.decoder)
-
-        self.sizer.Add(self.textes)
-        self.sizer.Add(self.table)
+            c = self.cases[l] = CaseLettre(self)
+            c.setMaxLength(1)
+            self.table.addWidget(c, 1, i + 1)
+            c.textChanged.connect(self.decoder)
+        self.sizer.addLayout(self.textes)
+        self.sizer.addLayout(self.table)
         self.setLayout(self.sizer)
-        self.adjustSize()
+        ##self.adjustSize()
 
-        couleur_position = wx.Color(255, 205, 179)
-        couleur1 = wx.Color(90, 40, 190)
-        couleur2 = wx.Color(200, 100, 0)
-        black = wx.Color(0, 0, 0)
-        white = wx.Color(255, 255, 255)
-        self.special = wx.TextAttr(wx.NullColour, couleur_position)
-        self.fond = wx.TextAttr(couleur1, wx.NullColour) #"sky blue"
-        self.fond2 = wx.TextAttr(couleur2, wx.NullColour) # "Lime Green"
-        self.defaut = wx.TextAttr(black, white)
+        self.couleur1 = "5A28BE" # sky blue
+        self.couleur2 = "C86400" # Lime Green
+        self.couleur_position = "FFCDB3"
+        self.reg = re.compile("([-A-Za-z]|<##>|</##>)+")
+        ##couleur_position = wx.Color(255, 205, 179) # FFCDB3
+        ##couleur1 = wx.Color(90, 40, 190) # 5A28BE
+        ##couleur2 = wx.Color(200, 100, 0) # C86400
+        ##black = wx.Color(0, 0, 0) # 000000
+        ##white = wx.Color(255, 255, 255) # FFFFFF
+        ##self.special = wx.TextAttr(wx.NullColour, couleur_position)
+        ##self.fond = wx.TextAttr(couleur1, wx.NullColour) #"sky blue"
+        ##self.fond2 = wx.TextAttr(couleur2, wx.NullColour) # "Lime Green"
+        ##self.defaut = wx.TextAttr(black, white)
+##
+        ##self.Bind(wx.EVT_IDLE, self.OnIdle)
+        timer = QTimer(self)
+        timer.timeout.connect(self.OnIdle)
+        timer.start(100)
 
-        self.Bind(wx.EVT_IDLE, self.OnIdle)
 
         # DEBUG:
-        # self.code.SetValue('WR IRAMXPZRHRDZ IK HRYYOVR AL IRYYBKY RYZ NOALWLZR POM WR NOLZ FKR W BD O VOMIR WRY YLVDRY IR PBDAZKOZLBD RZ WRY RYPOARY RDZMR WRY HBZY OWBMY FKR I QOELZKIR BD VMBKPR WRY WRZZMRY ALDF POM ALDF')
+        self.code.setPlainText('WR IRAMXPZRHRDZ IK HRYYOVR AL IRYYBKY RYZ NOALWLZR POM WR NOLZ FKR W BD O VOMIR WRY YLVDRY IR PBDAZKOZLBD RZ WRY RYPOARY RDZMR WRY HBZY OWBMY FKR I QOELZKIR BD VMBKPR WRY WRZZMRY ALDF POM ALDF')
 
     def copier(self, evt=None, widget=None):
-        self.vers_presse_papier(widget.GetValue())
+        self.vers_presse_papier(widget.toPlainText())
 
 
     def DlgModifierCle(self, evt=None):
-        dlg = wx.TextEntryDialog(self, u"La clé doit être une permutation de l'alphabet,\nou un chiffre qui indique de combien l'alphabet est décalé.", u"Modifier la clé", str(self.cle))
-        test = True
-        while test:
-            test = dlg.ShowModal()
-            if test == wx.ID_OK:
+        while True:
+            text, ok = QInputDialog.getText(self, u"Modifier la clé",
+                    u"La clé doit être une permutation de l'alphabet,\n"
+                    u"ou un chiffre qui indique de combien l'alphabet est décalé.",
+                    text=str(self.cle))
+            if ok:
                 try:
-                    self.modifier_cle(dlg.GetValue())
-                    break
+                    self.modifier_cle(text)
                 except:
                     print_error()
-
-            if test == wx.ID_CANCEL:
-                break
-        dlg.Destroy()
+                    continue
+            break
 
 
     @staticmethod
@@ -213,7 +236,7 @@ class Cryptographie(Panel_simple):
 
     def coder(self, evt=None, cle=None, espaces=False):
         cle = (self.cle if cle is None else cle)
-        clair = self.clair.GetValue().upper()
+        clair = self.clair.toPlainText().upper()
         for key, val in dict_accents.items():
             clair = clair.replace(key, val)
         d = dict(zip(majuscules, cle))
@@ -221,7 +244,7 @@ class Cryptographie(Panel_simple):
         code = re.sub(' +', ' ', code)
         if not espaces:
             code = code.replace(' ', '')
-        self.code.SetValue(code)
+        self.code.setPlainText(code)
 
 
     @staticmethod
@@ -236,77 +259,53 @@ class Cryptographie(Panel_simple):
         return ''.join(self._vigenere(l1, l2) for l1, l2 in izip(cycle(cle), msg))
 
 
-    def decoder(self, evt=None):
-        code = self.code.GetValue().upper()
+    def decoder(self, txt=None):
+        code = self.code.toPlainText().upper()
         def f(s):
             if s in majuscules:
-                return self.cases[s].GetValue() or self.symbole
+                return self.cases[s].text() or self.symbole
             return s
 
         clair = ''.join(f(s) for s in code)
-        self.clair.SetValue(clair)
-        if evt is not None:
-            evt.Skip()
+        self.clair.setPlainText(clair)
 
-    def EvtLeftDown(self, evt=None, l=None):
-        self.cases[l].SetFocusFromKbd()
-        self.cases[l].SelectAll()
 
-    def EvtKey(self, evt, l):
-        self.message(u'')
-        n = evt.GetKeyCode()
-        if 65 <= n <= 90 or 97 <= n <= 122:
-            c = chr(n).upper()
-            for case in self.cases.values():
-                if case.GetValue() == c:
-                    self.message(u'La lettre %s est déjà utilisée !' %c)
-                    return
-            self.cases[l].SetValue(c)
-        else:
-            evt.Skip()
+    def code_modifie(self, txt=None):
+        self.decoder(txt)
+        self.formater(txt, widget=self.code)
 
-    def code_modifie(self, evt):
-        self.decoder(evt)
-        self.formater(evt, widget=self.code)
-
-    def formater(self, evt, widget=None):
-        evt.Skip()
+    def formater(self, evt=None, widget=None):
+        ##evt.Skip()
         if self._freeze:
             return
         self._actualiser = widget
 
 
+
     def _formater(self, widget):
+        def colorier(m, col1=[self.couleur1], col2=[self.couleur2]):
+            s = m.group(0)
+            s = "<font color='#%s'>%s</font>" % (col1[0], s)
+            col1[0], col2[0] = col2[0], col1[0]
+            return s
         self._freeze = True
-        txt = widget.GetValue()
-        pos = widget.cursorPosition()
-        if param.plateforme == "Windows":
-            self.copier_clair.SetFocusFromKbd()
+        pos = widget.textCursor().position()
         for w in (self.code, self.clair):
-            w.Freeze()
-            last = w.GetLastPosition()
-            w.SetStyle(0, last, self.defaut)
-            if ' ' in txt:
-                i = 0
-                fond = self.fond
-                fond2 = self.fond2
-                while i < last:
-                    j = txt.find(' ', i)
-                    if j == -1:
-                        j = last
-                    w.SetStyle(i, j, fond)
-                    fond, fond2 = fond2, fond
-                    i = j + 1
-            w.SetStyle(pos, pos + 1, self.special)
-            if param.plateforme == "Windows":
-                wx.CallAfter(w.SetSelection, pos, pos)
-                wx.CallAfter(w.Thaw)
-            else:
-                w.Thaw()
-        widget.SetFocusFromKbd()
+            txt = w.toPlainText()
+            if pos != len(txt):
+                txt = txt[:pos] + '<##>' + txt[pos] + '</##>' + txt[pos + 1:]
+            new_txt = re.sub(self.reg, colorier, txt)
+            new_txt = new_txt.replace("<##>",
+                        "<font style='background-color: #%s;'>" % self.couleur_position).replace(
+                        "</##>", "</font>")
+            w.setHtml(new_txt)
+        cursor = widget.textCursor()
+        cursor.setPosition(pos)
+        widget.setTextCursor(cursor)
         self._freeze = False
         self._actualiser = None
 
-    def OnIdle(self, evt):
+
+    def OnIdle(self, evt=None):
         if self._actualiser is not None and not self.parent.parent.closing:
             self._formater(self._actualiser)
