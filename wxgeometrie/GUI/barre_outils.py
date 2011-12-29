@@ -51,6 +51,9 @@ from ..geolib.objet import Objet
 
 
 class MultiButton(QToolButton):
+    u"""Un bouton possédant plusieurs fonctionnalités, que l'utilisateur
+    peut choisir avec un clic de la souris."""
+
     def __init__(self, parent, raccourci, selectionnable, *fonctionnalites):
         QToolButton.__init__(self, parent)
         self.setAutoRaise(True)
@@ -105,7 +108,13 @@ class MultiButton(QToolButton):
         return self.parent._selected_button is self
 
     def select(self, selected=True, i=None):
-        u"Sélectionne la i-ème fonctionnalité de la liste. Met à jour l'icône."
+        u"""(Dé)sélectionne le bouton.
+
+        Si `i` est différent de `None`, la i-ème fonctionnalité associée
+        au bouton est activée.
+
+        L'icône est automatiquement mise à jour.
+        """
         if i is not None:
             self.index = i
             titre, image, aide, action = self.liste[i]

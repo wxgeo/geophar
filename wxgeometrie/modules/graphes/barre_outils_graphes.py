@@ -29,15 +29,15 @@ from ...geolib import Arc_oriente, Arc_points, Point_generique
 
 
 class BarreOutilsGraphes(BarreOutils):
-    def __init__(self, parent, couleur = None):
-        BarreOutils.__init__(self, parent, couleur)
+    def __init__(self, parent):
+        BarreOutils.__init__(self, parent)
 
 
     def creer_boutons(self):
         self.add("F1", (u"Pointeur", u"fleche4", u"Déplacer ou modifier un objet.", self.curseur),
                   (u"Zoomer", u"zoombox2", u"Recentrer la zone d'affichage.", self.zoombox),
                   (u"Sélectionner", u"selection", u"Sélectionner une partie de la feuille.",
-                  self.selectionner)).display(True)
+                  self.selectionner)).select()
         self.add("F2", (u"Sommet", u"point2",u"Créer un point.", self.point))
         self.add("F3", (u"Arête", u"segment2", u"Créer une arête droite.", self.segment))
         self.add("F4", (u"Arête orientée", u"vecteur", u"Créer une arête orientée droite.", self.vecteur),
