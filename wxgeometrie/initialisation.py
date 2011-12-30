@@ -22,7 +22,16 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 import sys, time, os, optparse, itertools, traceback, imp
 from os.path import dirname, realpath
 
+t0 = time.time()
+
 from . import param
+# Attention, les paramètres importés explicitement ici dans l'espace des noms
+# du module `initialisation` ne pourront pas être modifié en ligne de commande :
+# en effet, pour modifier les paramètres via la ligne de commande,
+# on met à jour l'espace des noms du module param.
+# En particulier, il ne faut *PAS* écrire ``from .param import debug``,
+# car alors, ``$ wxgeometrie -b`` ne prendrait pas en compte le ``-b``
+# lors de l'initialisation.
 from .param import dependances, NOMPROG, NOMPROG2, plateforme, GUIlib
 
 nomprog = NOMPROG2.lower()
@@ -387,6 +396,8 @@ try:
             app.nom(NOMPROG)
 
             from .GUI.fenetre_principale import FenetrePrincipale
+            if param.debug:
+                print("Temps d'initialisation: %f s" % (time.time() - t0))
             frame = FenetrePrincipale(app, fichier_log = fichier_log)
             if isinstance(sys.stdout, SortiesMultiples):
                 if param.debug:
@@ -410,6 +421,8 @@ try:
                     print(u"Warning: La session n'a pas pu être restaurée.")
                     print_error()
             frame.Show()
+            if param.debug:
+                print('Temps de démarrage: %f s' % (time.time() - t0))
             app.boucle()
             sorties.close()
         os.remove(path_lock)
