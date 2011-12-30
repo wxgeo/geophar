@@ -283,8 +283,10 @@ def test_noms_latex():
 
     f.objets.C_prime = Cercle()
     assert(f.objets.C_prime.nom_latex == "$\\mathscr{C}'$")
+    f.objets.u = Vecteur()
+    assert(f.objets.u.nom_latex == "$\\vec u$")
     f.objets.u_prime = Vecteur()
-    assert(f.objets.u_prime.nom_latex == "$\\vec u'$")
+    assert(f.objets.u_prime.nom_latex == "$\\overrightarrow{u'}$")
 
 def test_formules():
     f = Feuille()
