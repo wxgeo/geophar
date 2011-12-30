@@ -394,11 +394,13 @@ try:
         else:
             from .GUI.app import app
             app.nom(NOMPROG)
-
             from .GUI.fenetre_principale import FenetrePrincipale
             if param.debug:
                 print("Temps d'initialisation: %f s" % (time.time() - t0))
             frame = FenetrePrincipale(app, fichier_log = fichier_log)
+            frame.SetTitle(u"WxGéométrie - Chargement en cours, patientez...")
+            #XXX: impossible de modifier le curseur (BusyCursor ou SetCursor
+            # n'ont aucun effet)...
             if isinstance(sys.stdout, SortiesMultiples):
                 if param.debug:
                     for msg in sys.stdout.facultatives[0]:
@@ -422,7 +424,10 @@ try:
                     print_error()
             frame.Show()
             if param.debug:
-                print('Temps de démarrage: %f s' % (time.time() - t0))
+                print('Temps avant affichage de la fenêtre principale: %f s' % (time.time() - t0))
+            frame.onglets.terminer_initialisation()
+            if param.debug:
+                print('Temps de chargement complet: %f s' % (time.time() - t0))
             app.boucle()
             sorties.close()
         os.remove(path_lock)

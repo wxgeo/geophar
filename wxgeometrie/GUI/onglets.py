@@ -47,7 +47,9 @@ class Onglets(wx.Notebook):
         self.parent = parent
         wx.Notebook.__init__(self, parent)
         self.SetBackgroundColour(wx.WHITE)
+        self._liste = [] # liste des onglets
 
+    def terminer_initialisation(self):
         ###############################
         # Creation de fonctions associees aux entrees du menu "Creer"
         self.creer = {}
@@ -61,7 +63,6 @@ class Onglets(wx.Notebook):
 
         self.gestionnaire_de_mises_a_jour = Gestionnaire_mises_a_jour(self)
 
-        self._liste = [] # liste des onglets
 
         # Ajoute les differentes composantes :
         self.actualiser_liste_onglets()
