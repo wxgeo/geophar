@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://web.resource.org/cc/"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://inkscape.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="210mm"
+   height="297mm"
+   id="svg5743"
+   sodipodi:version="0.32"
+   inkscape:version="0.42"
+   sodipodi:docbase="C:\Documents and Settings\Nico\Bureau\version_0.99_en_cours\images\archives"
+   sodipodi:docname="gauche.svg"
+   inkscape:export-filename="C:\Documents and Settings\Nico\Bureau\version_0.99_en_cours\images\gauche.png"
+   inkscape:export-xdpi="90.000000"
+   inkscape:export-ydpi="90.000000">
+  <defs
+     id="defs5745" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="1.0000000"
+     inkscape:cx="375.00000"
+     inkscape:cy="688.46368"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     inkscape:window-width="752"
+     inkscape:window-height="512"
+     inkscape:window-x="154"
+     inkscape:window-y="154" />
+  <metadata
+     id="metadata5748">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Calque 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <rect
+       style="opacity:1.0000000;fill:#ffffb3;fill-opacity:1.0000000;stroke:#ff3930;stroke-width:1.7788461;stroke-miterlimit:4.0000000;stroke-dasharray:none;stroke-opacity:1.0000000"
+       id="rect1312"
+       width="35.221153"
+       height="35.221153"
+       x="224.88942"
+       y="299.25159"
+       rx="5.7990384"
+       ry="5.7990384"
+       inkscape:export-filename="C:\DOCUME~1\Nico\Bureau\VERSIO~1.99_\images\maison.png"
+       inkscape:export-xdpi="90.000000"
+       inkscape:export-ydpi="90.000000" />
+    <g
+       id="g6483"
+       transform="matrix(-0.500000,0.000000,0.000000,0.500000,289.0542,188.4310)">
+      <path
+         transform="matrix(0.104950,0.000000,0.000000,9.270675e-2,72.69928,231.3476)"
+         d="M 236.67727,404.69236 L 236.67727,275.21933 L 236.67727,145.74630 L 348.80421,210.48282 L 460.93114,275.21933 L 348.80420,339.95585 L 236.67727,404.69236 z "
+         inkscape:randomized="0.00000000"
+         inkscape:rounded="0.00000000"
+         inkscape:flatsided="false"
+         sodipodi:arg2="3.1415927"
+         sodipodi:arg1="2.0943951"
+         sodipodi:r2="74.751289"
+         sodipodi:r1="149.50258"
+         sodipodi:cy="275.21933"
+         sodipodi:cx="311.42856"
+         sodipodi:sides="3"
+         id="path5751"
+         style="opacity:1.0000000;fill:#ff3930;fill-opacity:1.0000000"
+         sodipodi:type="star" />
+      <rect
+         y="253.02155"
+         x="65.142860"
+         height="7.6814151"
+         width="41.980106"
+         id="rect5753"
+         style="opacity:1.0000000;fill:#ff3930;fill-opacity:1.0000000" />
+    </g>
+  </g>
+</svg>

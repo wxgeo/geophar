@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20010904//EN"
+"http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg
+   width="210mm"
+   height="297mm"
+   id="svg1"
+   sodipodi:version="0.32"
+   inkscape:version="0.40"
+   sodipodi:docbase="/home/nico/Desktop/version 0.94/images/archives"
+   sodipodi:docname="btn_mod.svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:cc="http://web.resource.org/cc/"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:xml="http://www.w3.org/XML/1998/namespace"
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs
+     id="defs3">
+    <linearGradient
+       id="linearGradient2927">
+      <stop
+         style="stop-color:#0c112f;stop-opacity:1.0000000;"
+         offset="0.0000000"
+         id="stop2928" />
+      <stop
+         style="stop-color:#92aadf;stop-opacity:1.0000000;"
+         offset="0.50000000"
+         id="stop2931" />
+      <stop
+         style="stop-color:#101432;stop-opacity:1.0000000;"
+         offset="1.0000000"
+         id="stop2929" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient2927"
+       id="linearGradient2930"
+       gradientTransform="matrix(0.982638,0.000000,0.000000,1.017669,3.750000,2.898670)"
+       x1="220.35866"
+       y1="501.99014"
+       x2="220.93417"
+       y2="466.86563"
+       gradientUnits="userSpaceOnUse" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient2927"
+       id="linearGradient6731"
+       gradientTransform="matrix(0.982638,0.000000,0.000000,1.017669,3.750000,2.898670)"
+       x1="202.22995"
+       y1="484.42773"
+       x2="237.91199"
+       y2="484.42773"
+       gradientUnits="userSpaceOnUse" />
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="3.0000000"
+     inkscape:cx="168.73351"
+     inkscape:cy="387.02848"
+     inkscape:current-layer="layer1"
+     inkscape:window-width="1280"
+     inkscape:window-height="950"
+     inkscape:window-x="0"
+     inkscape:window-y="26" />
+  <metadata
+     id="metadata4">
+    <rdf:RDF
+       id="RDF5">
+      <cc:Work
+         rdf:about=""
+         id="Work6">
+        <dc:format
+           id="format7">image/svg+xml</dc:format>
+        <dc:type
+           id="type9"
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <rect
+       style="fill:url(#linearGradient2930);fill-opacity:1.0000000;fill-rule:nonzero;stroke:url(#linearGradient6731);stroke-width:2.5625000;stroke-miterlimit:4.0000000;stroke-opacity:1.0000000"
+       id="rect1061"
+       width="32.500000"
+       height="33.750000"
+       x="203.75000"
+       y="479.01086"
+       rx="6.0000000"
+       ry="6.0000000" />
+    <text
+       xml:space="preserve"
+       style="font-size:16.000000;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#ffffff;fill-opacity:1.0000000;stroke:none;stroke-width:1.0000000pt;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1.0000000;font-family:Bitstream Vera Sans;text-anchor:start;writing-mode:lr"
+       x="178.33333"
+       y="469.02884"
+       id="text17430"
+       transform="matrix(0.674194,0.000000,0.000000,1.067298,87.79126,-5.746404)"
+       sodipodi:linespacing="100%"><tspan
+         x="178.33333"
+         y="469.02884"
+         sodipodi:role="line"
+         id="tspan22498">mod</tspan></text>
+    <g
+       id="g22491"
+       transform="translate(-0.865088,2.842171e-14)">
+      <text
+         xml:space="preserve"
+         style="font-size:13.000000;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#fff553;fill-opacity:1.0000000;stroke:none;stroke-width:1.0000000pt;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1.0000000;font-family:Bitstream Vera Sans;text-anchor:start;writing-mode:lr"
+         x="208.33333"
+         y="500.69553"
+         id="text7647"
+         transform="matrix(0.727485,0.000000,0.000000,1.000000,57.96048,7.083326)"
+         sodipodi:linespacing="100%"><tspan
+           x="208.33333"
+           y="500.69553"
+           sodipodi:role="line"
+           id="tspan21244">log</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-size:8.0000000;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#fff553;fill-opacity:1.0000000;stroke:none;stroke-width:1.0000000pt;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1.0000000;font-family:Bitstream Vera Sans;text-anchor:start;writing-mode:lr"
+         x="147.5"
+         y="479.44553"
+         id="text21246"
+         sodipodi:linespacing="100%"
+         transform="matrix(0.810033,0.000000,0.000000,1.000000,104.0205,30.00000)"><tspan
+           sodipodi:role="line"
+           id="tspan21247"
+           x="147.50000"
+           y="479.44553">10</tspan></text>
+    </g>
+  </g>
+</svg>

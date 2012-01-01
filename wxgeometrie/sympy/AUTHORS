@@ -1,0 +1,131 @@
+All people who contributed to SymPy by sending at least a patch or more (in
+the order of the date of their first contribution), except those who
+explicitely didn't want to be mentioned:
+
+Ondrej Certik <ondrej@certik.cz>
+Fabian Pedregosa <fabian@fseoane.net>
+Jurjen N.E. Bos <jnebos@gmail.com>
+Mateusz Paprocki <mattpap@gmail.com>
+Marc-Etienne M.Leveille <protonyc@gmail.com>
+Brian Jorgensen <brian.jorgensen@gmail.com>
+Jason Gedge <inferno1386@gmail.com>
+Robert Schwarz <lethargo@googlemail.com>
+Pearu Peterson <pearu.peterson@gmail.com>
+Fredrik Johansson <fredrik.johansson@gmail.com>
+Chris Wu <chris.wu@gmail.com>
+Ulrich Hecht <ulrich.hecht@gmail.com>
+Goutham Lakshminarayan <dl.goutham@gmail.com>
+David Lawrence <dmlawrence@gmail.com>
+Jaroslaw Tworek <dev.jrx@gmail.com>
+David Marek <h4wk.cz@gmail.com>
+Bernhard R. Link <brlink@debian.org>
+Andrej Tokarčík <androsis@gmail.com>
+Or Dvory <gidesa@gmail.com>
+Saroj Adhikari <adh.saroj@gmail.com>
+Pauli Virtanen <pav@iki.fi>
+Robert Kern <robert.kern@gmail.com>
+James Aspnes <aspnes@cs.yale.edu>
+Nimish Telang <ntelang@gmail.com>
+Abderrahim Kitouni <a.kitouni@gmail.com>
+Pan Peng <pengpanster@gmail.com>
+Friedrich Hagedorn <friedrich_h@gmx.de>
+Elrond der Elbenfuerst <elrond+sympy.org@samba-tng.org>
+Rizgar Mella <rizgar.mella@gmail.com>
+Felix Kaiser <felix.kaiser@fxkr.net>
+Roberto Nobrega <rwnobrega@gmail.com>
+David Roberts <dvdr18@gmail.com>
+Sebastian Krämer <basti.kr@gmail.com>
+Vinzent Steinberg <vinzent.steinberg@gmail.com>
+Riccardo Gori <goriccardo@gmail.com>
+Case Van Horsen <casevh@gmail.com>
+Stepan Roucka <stepan@roucka.eu>
+Ali Raza Syed <arsyed@gmail.com>
+Stefano Maggiolo <s.maggiolo@gmail.com>
+Robert Cimrman <cimrman3@ntc.zcu.cz>
+Bastian Weber <bastian.weber@gmx-topmail.de>
+Sebastian Krause <sebastian.krause@gmx.de>
+Sebastian Kreft <skreft@gmail.com>
+Dan <coolg49964@gmail.com>
+Alan Bromborsky <abrombo@verizon.net>
+Boris Timokhin <qoqenator@gmail.com>
+Robert <average.programmer@gmail.com>
+Andy R. Terrel <aterrel@uchicago.edu>
+Hubert Tsang <intsangity@gmail.com>
+Konrad Meyer <konrad.meyer@gmail.com>
+Henrik Johansson <henjo2006@gmail.com>
+Priit Laes <plaes@plaes.org>
+Freddie Witherden <freddie@witherden.org>
+Brian E. Granger <ellisonbg@gmail.com>
+Andrew Straw <strawman@astraw.com>
+Kaifeng Zhu <cafeeee@gmail.com>
+Ted Horst <ted.horst@earthlink.net>
+Akshay Srinivasan <akshaysrinivasan@gmail.com>
+Aaron Meurer <asmeurer@gmail.com>
+Barry Wardell <barry.wardell@gmail.com>
+Tomasz Buchert <thinred@gmail.com>
+Vinay Kumar <gnulinooks@gmail.com>
+Johann Cohen-Tanugi <johann.cohentanugi@gmail.com>
+Jochen Voss <voss@seehuhn.de>
+Luke Peterson <hazelnusse@gmail.com>
+Chris Smith <smichr@gmail.com>
+Thomas Sidoti <TSidoti@gmail.com>
+Florian Mickler <florian@mickler.org>
+Nicolas Pourcelot <nicolas.pourcelot@gmail.com>
+Ben Goodrich <goodrich.ben@gmail.com>
+Toon Verstraelen <Toon.Verstraelen@UGent.be>
+Ronan Lamy <ronan.lamy@gmail.com>
+James Abbatiello <abbeyj@gmail.com>
+Ryan Krauss <ryanlists@gmail.com>
+Bill Flynn <wflynny@gmail.com>
+Jorn Baayen <jorn.baayen@gmail.com>
+Eh Tan <tan2tan2@gmail.com>
+Renato Coutinho <renato.coutinho@gmail.com>
+Oscar Benjamin
+Øyvind Jensen <jensen.oyvind@gmail.com>
+Julio Idichekop Filho <idichekop@yahoo.com.br>
+Łukasz Pankowski <lukpank@o2.pl>
+Chu-Ching Huang <cchuang@mail.cgu.edu.tw>
+Fernando Perez <Fernando.Perez@berkeley.edu>
+Raffaele De Feo <alberthilbert@gmail.com>
+Christian Muise <christian.muise@gmail.com>
+Matt Curry <mattjcurry@gmail.com>
+Kazuo Thow <kazuo.thow@gmail.com>
+Jezreel Ng <jezreel@gmail.com>
+Matthew Brett <matthew.brett@gmail.com>
+Addison Cugini <ajcugini@gmail.com>
+Nicholas J.S. Kinar <n.kinar@usask.ca>
+Thomas Dixon <thom@thomdixon.org>
+Cristóvão Sousa <crisjss@gmail.com>
+Andre de Fortier Smit <freevryheid@gmail.com>
+Alexey U. Goodchenko <proga@goodok.ru>
+Gary Kerr <gary.kerr@blueyonder.co.uk>
+Sherjil Ozair <sherjilozair@gmail.com>
+Oleksandr Gituliar <gituliar@gmail.com>
+Sean Vig <sean.v.775@gmail.com>
+Prafullkumar P. Tale <hector1618@gmail.com>
+Vladimir Perić <vlada.peric@gmail.com>
+Tom Bachmann <e_mc_h2@web.de>
+Yuri Karadzhov <yuri.karadzhov@gmail.com>
+Vladimir Lagunov <werehuman@gmail.com>
+Matthew Rocklin <mrocklin@cs.uchicago.edu>
+Saptarshi Mandal <sapta.iitkgp@gmail.com>
+Gilbert Gede <gilbertgede@gmail.com>
+Anatolii Koval <weralwolf@gmail.com>
+Tomo Lazovich <lazovich@gmail.com>
+Pavel Fedotov <fedotovp@gmail.com>
+Kibeom Kim <kk1674@nyu.edu>
+Gregory Ksionda <ksiondag846@gmail.com>
+Tomáš Bambas <tomas.bambas@gmail.com>
+Jeremias Yehdegho <j.yehdegho@gmail.com>
+Jack McCaffery <jpmccaffery@gmail.com>
+Luca Weihs <astronomicalcuriosity@gmail.com>
+Shai 'Deshe' Wyborski <shaide@cs.huji.ac.il>
+Thomas Wiecki <thomas.wiecki@gmail.com>
+Óscar Nájera <najera.oscar@gmail.com>
+Mario Pernici <mario.pernici@gmail.com>
+Benjamin McDonald <mcdonald.ben@gmail.com>
+Sam Magura <samtheman132@gmail.com>
+Stefan Krastanov <krastanov.stefan@gmail.com>
+Bradley Froehle <brad.froehle@gmail.com>
+Min Ragan-Kelley <benjaminrk@gmail.com>
+Emma Hogan <ehogan@gemini.edu>
