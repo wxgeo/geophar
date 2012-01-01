@@ -262,19 +262,22 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
         Elle reçoit en argument la position en pixels uniquement (pour ne pas alourdir le traitement).
 
         Exemple de récupération des arguments :
-        si un module appelle self.canvas.interagir(ma_fonction, u"Cliquez n'importe où.", ma_2eme_fonction),
+        si un module appelle
+        ``self.canvas.interagir(ma_fonction, u"Cliquez n'importe où.", ma_2eme_fonction)``,
         le module doit définir :
 
-        def ma_fonction(self, **kw):
-            pixel = kw["pixel"]
-            position = kw["position"]
-            objet_selectionne = kw["selection"]
-            autres_objets_a_proximite = kw["autres"]
-            print u"clic!"
+        .. sourcecode:: python
+        
+            def ma_fonction(self, **kw):
+                pixel = kw["pixel"]
+                position = kw["position"]
+                objet_selectionne = kw["selection"]
+                autres_objets_a_proximite = kw["autres"]
+                print u"clic!"
 
-        def ma_2eme_fonction(self, **kw):
-            pixel = kw["pixel"]
-            print u"ça bouge !"
+            def ma_2eme_fonction(self, **kw):
+                pixel = kw["pixel"]
+                print u"ça bouge !"
 
         """
 
