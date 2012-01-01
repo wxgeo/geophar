@@ -200,3 +200,7 @@ intersphinx_mapping = {'http://docs.python.org/': None}
 
 # jsMath conf, see http://sphinx.pocoo.org/ext/math.html#module-sphinx.ext.jsmath
 jsmath_path = "jsMath/easy/load.js"
+
+
+# Only in 1.0.
+autodoc_default_flags = ['members', 'undoc-members']

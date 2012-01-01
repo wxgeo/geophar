@@ -1,4 +1,6 @@
 # -*- coding: iso-8859-1 -*-
+"""Regroupe la majorité des outils utiles à un professeur de mathématiques."""
+
 from os.path import dirname, realpath, abspath
 import sys
 # XXX: Hack temporaire, permettant de préférer la version locale de sympy.

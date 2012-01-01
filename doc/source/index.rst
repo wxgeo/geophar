@@ -14,6 +14,7 @@ Contents:
    help.rst
    api.rst
    format.geo.rst
+   autodoc.rst
 
 Indices and tables
 ==================
