@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 """Regroupe la majorité des outils utiles à un professeur de mathématiques."""
 
 from os.path import dirname, realpath, abspath
