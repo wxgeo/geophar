@@ -34,7 +34,7 @@ from .menu_objet import MenuActionsObjet
 from .proprietes_objets import Proprietes
 from .wxlib import (BusyCursor, shift_down, alt_down, ctrl_down, left_down,
                    right_down, lieu)
-from .. import param
+import param
 from ..pylib import print_error, debug
 from ..geolib.textes import Texte
 from ..geolib.objet import Objet

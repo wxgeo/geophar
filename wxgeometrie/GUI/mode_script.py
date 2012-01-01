@@ -28,7 +28,7 @@ from ..geolib.feuille import Feuille
 from ..API.canvas import Canvas
 from ..API.sauvegarde import ouvrir_fichierGEO
 from ..pylib import print_error
-from .. import param
+import param
 
 
 def _err(msg, *msgs):

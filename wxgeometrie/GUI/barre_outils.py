@@ -46,7 +46,7 @@ from ..geolib.transformations import Rotation, Homothetie, Translation
 from ..geolib.vecteurs import Vecteur_generique, Vecteur
 from ..geolib.intersections import Intersection_cercles, Intersection_droite_cercle
 from ..geolib.objet import Objet
-##from .. import param
+##import param
 
 
 

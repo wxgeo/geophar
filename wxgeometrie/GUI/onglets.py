@@ -47,7 +47,7 @@ from .proprietes_objets import Proprietes
 from .wxlib import png
 from . import dialogues_geometrie
 from ..API.sauvegarde import FichierGEO, ouvrir_fichierGEO
-from .. import param, modules, geolib
+import param, modules, geolib
 from ..param import NOMPROG
 from ..pylib import print_error, debug, path2
 from ..param.options import options as param_options

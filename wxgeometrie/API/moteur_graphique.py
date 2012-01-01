@@ -36,7 +36,7 @@ from numpy import array, arange, concatenate, cos as ncos, sin as nsin
 from math import cos, sin, atan2, pi, hypot, sqrt, atan
 
 from ..pylib import fullrange, is_in, uu, warning, print_error, tex
-from .. import param
+import param
 
 
 

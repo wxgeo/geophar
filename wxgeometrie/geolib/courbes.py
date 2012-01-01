@@ -30,7 +30,7 @@ from sympy import oo
 from .objet import Objet, Argument, Ref
 from .contexte import contexte
 from .routines import distance_segment
-from .. import param
+import param
 from ..pylib import print_error
 
 

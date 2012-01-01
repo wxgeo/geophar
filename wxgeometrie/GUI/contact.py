@@ -29,7 +29,7 @@ from PyQt4.QtCore import pyqtSignal
 from PyQt4.QtGui import (QHBoxLayout, QVBoxLayout, QCheckBox, QPushButton, QDialog,
                          QTextEdit, QLineEdit, QLabel, QComboBox, QGroupBox,
                          QMessageBox, QWidget,)
-from .. import param
+import param
 from ..pylib import path2
 from ..pylib.bugs_report import rapporter
 from .app import white_palette

@@ -28,7 +28,7 @@ from weakref import ref
 from .routines import nice_display
 
 from ..pylib import uu
-from .. import param
+import param
 
 class Formule(object):
 

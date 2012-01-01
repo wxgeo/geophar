@@ -26,7 +26,7 @@ from PyQt4.QtCore import QObject, pyqtSignal
 from PyQt4.QtGui import QMessageBox
 
 from ..pylib import print_error
-from .. import param
+import param
 from .wxlib import GenericThread
 
 

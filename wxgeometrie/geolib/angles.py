@@ -35,7 +35,7 @@ from .points import Point
 from .routines import nice_display, angle_vectoriel
 from .variables import Variable
 from .vecteurs import Vecteur_libre, Vecteur
-from .. import param
+import param
 
 
 

@@ -39,7 +39,7 @@ from .routines import nice_display
 from .constantes import FORMULE, TEXTE, NOM
 from .formules import Formule
 from .contexte import contexte
-from .. import param
+import param
 
 
 try:

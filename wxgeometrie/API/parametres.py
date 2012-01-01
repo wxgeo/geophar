@@ -29,7 +29,7 @@ from types import NoneType
 
 from . import sauvegarde
 from ..pylib import print_error, eval_safe
-from .. import param
+import param
 
 types_supportes = (int, long, str, unicode, float, bool, NoneType, list, tuple, dict)
 

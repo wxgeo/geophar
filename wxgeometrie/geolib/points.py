@@ -35,7 +35,7 @@ from .objet import Objet_avec_coordonnees, Ref, Argument, Objet, Arguments, \
 from .routines import angle_vectoriel, vect, carre_distance, produit_scalaire, \
                       distance
 
-from .. import param
+import param
 
 
 ################################################################################
