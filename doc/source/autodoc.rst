@@ -113,7 +113,7 @@ wxgeo.geolib
    :members:
    :undoc-members:
 
-# .. automodule:: wxgeometrie.geolib.tests.test_meta
+.. automodule:: wxgeometrie.geolib.tests.test_meta
    :members:
    :undoc-members:
 
