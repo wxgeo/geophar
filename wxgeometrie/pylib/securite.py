@@ -29,7 +29,7 @@ import math # pour avoir droit aux fonctions mathematiques dans eval_restricted 
 import random as module_random# idem
 
 from ..pylib import advanced_split
-from .. import param
+import param
 
 
 def _avertissement(*arg, **kw): print u"Instruction interdite en mode securisé."

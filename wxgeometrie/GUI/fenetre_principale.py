@@ -35,7 +35,7 @@ from ..API.sauvegarde import FichierSession
 from ..API.parametres import sauvegarder_module
 from .gestion_session import GestionnaireSession
 from .onglets import Onglets
-from .. import param
+import param
 NOMPROG = param.NOMPROG
 
 

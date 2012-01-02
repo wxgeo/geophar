@@ -40,7 +40,7 @@ from .routines import nice_display, angle_vectoriel, distance, formatage, trigsh
                       carre_distance_point_ellipse, vect
 from .variables import Mul, Rayon
 from .vecteurs import Vecteur
-from .. import param
+import param
 from ..pylib import fullrange
 
 

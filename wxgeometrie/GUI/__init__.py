@@ -21,7 +21,7 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 import traceback
 
-from .. import param
+import param
 
 import sip
 # PyQt new API (PyQt 4.6+)

@@ -26,7 +26,7 @@ import os
 from PyQt4.QtCore import Qt, QThread, QEvent, pyqtSignal
 from PyQt4.QtGui import QCursor, QDialog, QPixmap, QPushButton, QColorDialog
 
-from .. import param
+import param
 from ..pylib import uu
 from .app import app
 

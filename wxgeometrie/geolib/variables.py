@@ -30,7 +30,7 @@ from .objet import Ref, Argument, Objet, Objet_numerique, souffler, TYPES_REELS,
                    contexte
 from ..pylib import property2, print_error, fullrange, is_in
 from ..mathlib.parsers import VAR_NOT_ATTR, NBR_SIGNE
-from .. import param
+import param
 
 
 class Variable_generique(Objet_numerique):

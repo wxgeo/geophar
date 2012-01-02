@@ -29,7 +29,7 @@ from cStringIO import StringIO
 
 from .filtres import filtre_versions_anterieures
 from ..pylib import print_error, eval_safe, removeend
-from .. import param
+import param
 
 #----------------------------------
 #     DOM pour lire un fichier

@@ -35,7 +35,7 @@ from .app import app
 from ..API.sauvegarde import ouvrir_fichierGEO, FichierGEO
 from ..API.parametres import sauvegarder_module
 
-from .. import param
+import param
 from ..pylib import debug, path2, print_error, property2, removeend, no_argument,\
                     eval_safe
 from ..pylib.rapport import Rapport

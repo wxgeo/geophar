@@ -19,7 +19,7 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-from .. import param # parametres du programme
+import param # parametres du programme
 
 #from fonctions import * # librairie regroupant diverses fonctions "maison"
 #from infos import * # librairie servant a generer des infos sur la configuration (utile pour le debugage)

@@ -27,7 +27,7 @@ import os
 from ..GUI.menu import MenuBar
 from ..GUI.panel import Panel_simple
 from ..API.parametres import actualiser_module
-from .. import param
+import param
 from ..pylib import print_error, str2, path2
 
 def importer_module(nom_module, forcer = False):

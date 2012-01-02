@@ -34,7 +34,7 @@ import warnings, traceback, linecache
 
 from .decorator import decorator
 
-from .. import param # paramètres du programme
+import param # paramètres du programme
 from sympy import sympify
 
 

@@ -27,7 +27,7 @@ from PyQt4.QtGui import QApplication, QPalette, QColor, QPixmap, QSplashScreen, 
 from PyQt4.QtCore import QLocale, QTranslator, QLibraryInfo, Qt
 
 from ..pylib import path2
-from .. import param
+import param
 
 
 class App(QApplication):

@@ -29,7 +29,7 @@ from PyQt4.QtGui import (QPushButton, QDialog, QWidget, QVBoxLayout, QHBoxLayout
 from PyQt4.QtCore import Qt
 import wx
 
-from .. import param
+import param
 from ..param import NOMPROG, LOGO
 from .wxlib import png
 from ..pylib.infos import informations_configuration

@@ -33,7 +33,7 @@ from .points import Point, Point_generique, Point_final
 from .variables import Variable_generique
 from .routines import norme, vect
 
-from .. import param
+import param
 
 
 class Vecteur_generique(Objet_avec_coordonnees):

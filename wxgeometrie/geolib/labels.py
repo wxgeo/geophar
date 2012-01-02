@@ -31,7 +31,7 @@ from .textes import Texte_generique
 from .routines import angle_vectoriel
 from .points import (Glisseur_arc_cercle, Glisseur_segment, Glisseur_droite,
                      Glisseur_vecteur, Glisseur_cercle, Glisseur_demidroite,)
-from .. import param
+import param
 
 
 class Label_generique(Texte_generique):

@@ -39,7 +39,7 @@ from .custom_objects import Matrice, Fonction, ProduitEntiers
 from .internal_functions import extract_var, poly_factor, syms
 from .custom_functions import auto_collect, derivee
 from ..pylib import print_error
-from .. import param
+import param
 
 def expand(expression, variable = None):
     expression = expand_(expression)

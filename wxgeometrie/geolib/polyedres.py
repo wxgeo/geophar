@@ -34,7 +34,7 @@ from .routines import point_dans_enveloppe_convexe, segments_secants, point_dans
 from .transformations import Translation, Rotation
 from .vecteurs import Vecteur
 from ..pylib import is_in, print_error
-from .. import param
+import param
 
 
 ##########################################################################################
