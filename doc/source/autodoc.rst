@@ -153,7 +153,7 @@ wxgeo.GUI
    :members:
    :undoc-members:
 
-# .. automodule:: wxgeometrie.GUI.inspecteur
+.. automodule:: wxgeometrie.GUI.inspecteur
    :members:
    :undoc-members:
 
