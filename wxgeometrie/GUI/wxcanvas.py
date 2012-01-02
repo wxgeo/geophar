@@ -252,7 +252,7 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
     def interagir(self, fonction, aide = None, fonction_bis = None):
         u"""Permet l'interaction du canevas avec un module externe.
 
-        A chaque clic de souris, la fonction indiquée est appelée, avec
+        À chaque clic de souris, la fonction indiquée est appelée, avec
         un certains nombre de paramètres comme arguments :
         objet(s) à proximité, position en coordonnées et en pixels...
 
