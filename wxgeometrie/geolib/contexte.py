@@ -31,7 +31,7 @@ class Contexte(dict):
     u"""Gestionnaire de contexte.
 
     Exemple d'usage:
-    >>> from wxgeometrie.geolib.objet import Contexte
+    >>> from wxgeometrie.geolib.contexte import Contexte
     >>> # Contexte global
     >>> contexte = Contexte(exact = False, decimales = 7)
     >>> # Contexte local
@@ -61,7 +61,7 @@ class Contexte(dict):
         u"""Cette méthode ne doit *JAMAIS* être appelée en dehors d'un contexte 'with'.
 
         Exemple d'usage:
-        >>> from wxgeometrie.geolib.objet import Contexte
+        >>> from wxgeometrie.geolib.contexte import Contexte
         >>> contexte = Contexte(exact = False, decimales = 7)
         >>> with contexte(exact = True):
         ...     print contexte['exact']
