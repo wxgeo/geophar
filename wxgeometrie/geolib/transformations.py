@@ -90,7 +90,7 @@ class Transformation_generique(Objet):
                 #TODO: Dans l'idéal, il faudrait garder (si c'est faisable) la référence dans les autres cas (au moins pour les variables)
                 # cela éviterait un certain nombre de bugs (par ex., si on modifie le rayon d'un cercle défini par une variable, le rayon du cercle image n'est pas modifié !)
                 return self.__call__(objet.objet)
-        if hasattr(objet, "image_par"):
+        elif hasattr(objet, "image_par"):
             return objet.image_par(self)
         raise NotImplementedError,  "L'image de %s par %s n'est pas definie." %(objet.nom_complet, self.nom_complet)
 
