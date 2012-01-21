@@ -35,6 +35,7 @@ import fractions as frac
 from .objet import Ref, Argument, Arguments
 
 from .courbes import Courbe_generique
+from .lignes import Tangente_courbe
 from .contexte import contexte
 
 from ..pylib import fullrange
@@ -431,7 +432,7 @@ class interpol1():
         show()
 
 
-class Interpolation_Polynomiale_Par_Morceau(Interpolation_generique, interpol1):
+class Interpolation_polynomiale_par_morceau(Interpolation_generique, interpol1):
     u"""Une courbe d'interpolation polynomiale par morceaux.
 
     utilise l'interpolation par morceau de scipy pour construire la fonction
@@ -458,16 +459,23 @@ class Interpolation_Polynomiale_Par_Morceau(Interpolation_generique, interpol1):
         if styles.get("points", None):
             points = styles.pop("points")
         self.__points = points = tuple(Ref(pt) for pt in points)
+        # en test: creation des tangentes: dictionnaire
+        # key: nom du point, value: objet Tangente_courbe
+        self.__tangentes = []
+        for i in range(len(points)):
+            dico = {'point': points[i], 'cdir': derivees[i]}
+            self.__tangentes.append(Tangente_courbe(**dico))
+ 
         self.__debut = debut = Ref(debut)
         self.__fin = fin = Ref(fin)
         Interpolation_generique.__init__(self, *points, **styles)
 
         # à améliorer
-        self.xl = [P[0] for P in self.__points]
-        self.yl = [P[1] for P in self.__points]
+        #self.xl = [P[0] for P in self.__points]
+        #self.yl = [P[1] for P in self.__points]
         #self.derivl = [frac.Fraction(x) for x in self.derivees]
         #self.tangentes = []
-        self.interpol = self.poly_inter(self.xl, self.yl, len(self.xl)*[0])
+        #self.interpol = self.poly_inter(self.xl, self.yl, len(self.xl)*[0])
         #for i in range(len(xl)):
         #    self.tangentes.append(poly1d([derivl[i], -1*derivl[i]*xl[i]+yl[i]]))
 
@@ -492,7 +500,15 @@ class Interpolation_Polynomiale_Par_Morceau(Interpolation_generique, interpol1):
         self.xl = [P[0] for P in self.__points]
         self.yl = [P[1] for P in self.__points]
         self.interpol = self.poly_inter(self.xl, self.yl, len(self.xl)*[0])
-
+        # de même les tangentes sont recalculées
+        # il doit y avoir moyen de faire moins de calculs
+        self.__tangentes = []
+        for i in range(len(self.__points)):
+            self.__tangentes.append(Tangente_courbe(point = self.__points[i],\
+                                                        cdir = self.__derivees[i]))
+            #self.__tangentes[i]._creer_figure()
+ 
+        
         pas = self.__canvas__.pas()
         plot = self._representation[0]
         x1, y1 = self.__points[0].coordonnees

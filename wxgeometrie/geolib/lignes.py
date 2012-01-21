@@ -40,6 +40,8 @@ from .transformations import Translation
 
 from .. import param
 from ..pylib import eval_restricted
+
+from sympy import Rational
 ##########################################################################################
 
 ## LIGNES
@@ -997,9 +999,12 @@ class Axe(Droite):
 ## EN TRAVAUX :
 
 
-class Tangente_courbe(Droite_generique):
+class Tangente_courbe(Droite_vectorielle):
     u"""Une tangente à une courbe.
 
-    Une tangente à une courbe de fonction."""
-    def __init__(self, courbe, point):
-        Droite_generique.__init__(self, )
+    Une tangente à une courbe. L'application immédiate se trouve dans les courbes d'interpolation.
+    Mais comme la plus simple à utiliser est l'interpolation par morceau, il vaut mieux initialiser 
+    la tangente avec le point et le nombre dérivé."""
+    def __init__(self, point = None, cdir = None):
+        v = Rational(str(cdir))
+        Droite_vectorielle.__init__(self, point = point, vecteur = Vecteur_libre(x= v.q, y= v.p))
