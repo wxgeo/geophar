@@ -34,7 +34,7 @@ from ..geolib.points import Point_generique, Barycentre, Point, Milieu, Centre,\
                             Centre_gravite, Point_final
 from ..geolib.cercles import Cercle_generique, Cercle, Arc_points,\
                              Arc_oriente, Cercle_diametre, Cercle_rayon, Demicercle,\
-                             Arc_cercle, Disque
+                             Arc_cercle, Disque, Cercle_points
 from ..geolib.lignes import Droite_generique, Segment, Demidroite, Ligne_generique,\
                             Droite, Tangente, Parallele, Perpendiculaire, Bissectrice,\
                             Mediatrice
@@ -372,7 +372,7 @@ class DialogueCercleDiametre(Dialogue):
 
 
 class DialogueCerclePoints(Dialogue):
-    objet = Arc_points
+    objet = Cercle_points
     def __init__(self, parent):
         Dialogue.__init__(self, parent)
         self.ajoute([u"Premier point du cercle :", ("point1", 5, Point_generique)], u"Entrez ici un point du cercle. Exemple : A")
