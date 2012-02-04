@@ -608,7 +608,6 @@ class DialogueAngle(Dialogue):
     def __init__(self, parent):
         Dialogue.__init__(self, parent)
         self.ajoute([u"Créer l'angle :", ("point1", 5, Point_generique), ("point2", 5, Point_generique), ("point3", 5, Point_generique)], u"Entrez les trois sommets de l'angle. Exemple : A B C")
-        self.ajoute([u"Unité :", ("unite", 5)], u"Entrez éventuellement l'unité. Exemple : r, d, g (degré, radian ou grad). Radian par défaut.")
         self.finalise()
 
 class DialogueAngleOriente(Dialogue):
@@ -616,7 +615,6 @@ class DialogueAngleOriente(Dialogue):
     def __init__(self, parent):
         Dialogue.__init__(self, parent)
         self.ajoute([u"Créer l'angle :", ("point1", 5, Point_generique), ("point2", 5, Point_generique), ("point3", 5, Point_generique)], u"Entrez les trois sommets de l'angle. Exemple : A B C")
-        self.ajoute([u"Unité :", ("unite", 5)], u"Entrez l'unité. Exemple : r, d, g (degré, radian ou grad).")
         self.finalise()
 
 class DialogueAngleLibre(Dialogue):
@@ -624,7 +622,7 @@ class DialogueAngleLibre(Dialogue):
     def __init__(self, parent):
         Dialogue.__init__(self, parent)
         self.ajoute([u"Valeur de l'angle :", ("valeur", 5)], u"Entrez la valeur en degré ou en radian de l'angle. Exemple : pi/2, 15°")
-        self.ajoute([u"Unité :", ("unite", 5)], u"Entrez éventuellement l'unité. Exemple : r, d, g (degré, radian ou grad). Radian par défaut.")
+        self.ajoute([u"Unité (facultatif) :", ("unite", 5)], u"Entrez éventuellement l'unité. Exemple : r, d, g (degré, radian ou grad). Radian par défaut.")
         self.finalise()
 
     def commande(self): # gestion du symbole "°"
@@ -633,7 +631,7 @@ class DialogueAngleLibre(Dialogue):
             valeur = valeur[:-1]
             unite = "'d'"
         else:
-            unite = self.champ("unite")
+            unite = repr(self.champ("unite").lower().strip())
         return u"%s=Angle_libre(%s, %s)" %(self.champ("nom"), valeur, unite)
 
 
@@ -642,7 +640,6 @@ class DialogueAngleVectoriel(Dialogue):
     def __init__(self, parent):
         Dialogue.__init__(self, parent)
         self.ajoute([u"Créer l'angle : (", ("vecteur1", 5, Vecteur_generique), ",", ("vecteur2", 5, Vecteur_generique), ")"], u"Entrez les 2 vecteurs. Exemple : u et v, ou A>B et C>D")
-        self.ajoute([u"Unité :", ("unite", 5)], u"Entrez éventuellement l'unité. Exemple : r, d, g (degré, radian ou grad). Radian par défaut.")
         self.finalise()
 
 

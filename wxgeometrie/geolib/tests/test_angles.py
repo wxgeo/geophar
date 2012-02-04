@@ -8,7 +8,7 @@ from tools.testlib import assertAlmostEqual, assertNotAlmostEqual
 
 from wxgeometrie.geolib import (Feuille, Angle_oriente, Angle_vectoriel, Angle_libre,
                                 Secteur_angulaire, Label_angle, Vecteur_libre,
-                                Point, Angle, Variable,
+                                Point, Angle, Variable, contexte,
                                 )
 from wxgeometrie.mathlib.universal_functions import sin as u_sin, cos as u_cos, tan as u_tan
 
@@ -86,3 +86,13 @@ def test_Angle_vectoriel():
     v = Vecteur_libre(-5.75, 12.6)
     a = Angle_vectoriel(u, v)
     assertAlmostEqual(a.val, 2.43538435941)
+
+def test_info():
+    a = Angle_libre(u"30°")
+    assert str(a.deg) == '30'
+    with contexte(unite_angle='d'):
+        assert a.info == u'Angle de valeur 30°'
+    with contexte(unite_angle='r'):
+        assert a.info == u'Angle de valeur pi/6 rad'
+    with contexte(unite_angle='g'):
+        assert a.info == u'Angle de valeur 100/3 grad'
