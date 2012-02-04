@@ -36,7 +36,7 @@ from .routines import nice_display, angle_vectoriel
 from .variables import Variable
 from .vecteurs import Vecteur_libre, Vecteur
 from .. import param
-
+from ..pylib import warning
 
 
 class Angle_generique(Objet_numerique):
@@ -57,7 +57,8 @@ class Angle_generique(Objet_numerique):
     @property
     def degre(self):
         if self.existe:
-            return self.val*180/pi_()
+            val = self.val*180
+            return val/pi if isinstance(val, float) else val/pi_()
     deg = degre
 
     @property
@@ -71,10 +72,10 @@ class Angle_generique(Objet_numerique):
         if unite == 'd':
             val = nice_display(self.degre) + u'\u00B0'
         elif unite == 'g':
-            val = nice_display(self.grad) + " g"
+            val = nice_display(self.grad) + " grad"
         else:
-            val = nice_display(self.rad)
-        return self.nom_complet + u" de valeur "+ val
+            val = nice_display(self.rad) + " rad"
+        return self.nom_complet.rstrip() + u" de valeur " + val
 
 ##    def sin(self):
 ##        return math.sin(self.radian)
@@ -315,6 +316,12 @@ class Angle_libre(Angle_generique):
             if variable[-1]  == u'\u00B0':
                 unite = 'd'
                 variable = variable[:-1]
+                if variable[-1] == u'\u00c2':
+                    # Problème fréquent d'encodage (utf8 interprété comme latin1)
+                    if param.debug:
+                        warning('Angle: encodage incorrect (utf8/latin1).')
+                    variable = variable[:-1]
+
 
         if unite in ('d', 'g'):
             coeff = 180 if unite == 'd' else 200
