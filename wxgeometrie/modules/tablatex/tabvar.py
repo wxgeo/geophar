@@ -89,9 +89,9 @@ def _auto_tabvar(chaine = '', derivee = True, limites = True, decimales = None):
     xmax = sup
 
     # On étudie la dérivée
-    derivee = expr.diff(var)
-    ens_def_deriv = ensemble_definition(derivee, var)
-    solutions = [sol for sol in resoudre(derivee, var) if sol.is_real]
+    df = expr.diff(var)
+    ens_def_deriv = ensemble_definition(df, var)
+    solutions = [sol for sol in resoudre(df, var) if sol.is_real]
 
     # On liste toutes les valeurs remarquables pour la fonction
     # NB: on les convertit toutes au format Sympy, pour qu'il n'y ait pas
@@ -159,12 +159,12 @@ def _auto_tabvar(chaine = '', derivee = True, limites = True, decimales = None):
 
     if param.debug and param.verbose:
         print 'Code TABVar:', code
-    return tabvar(code, derivee = derivee) + '% ' + chaine_initiale + '\n'
+    return tabvar(code, derivee=derivee) + '% ' + chaine_initiale + '\n'
 
 
 
 
-def tabvar(chaine = "", derivee = True, limites = True, decimales = None):
+def tabvar(chaine="", derivee=True, limites=True, decimales=None):
     u"""Indiquer les variations de la fonction.
 
 Exemples :
