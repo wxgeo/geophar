@@ -32,6 +32,8 @@ from .wxlib import GenericThread
 
 
 class Gestionnaire_mises_a_jour(QObject):
+    url = "http://wxgeo.free.fr/wordpress/version"
+
     def __init__(self, parent):
         QObject.__init__(self)
         self.parent = parent
@@ -52,6 +54,7 @@ class Gestionnaire_mises_a_jour(QObject):
                 QMessageBox.information(self.parent, u"Aucune mise à jour trouvée.",
                         u"Aucune mise à jour n'est disponible actuellement.\nConsultez http://wxgeo.free.fr pour plus d'informations.", )
         else:
+            print(u'Connexion impossible à ' + self.url + ' : ' + msg)
             QMessageBox.warning(self.parent, u"Connexion impossible", u"Impossible de vérifier si une nouvelle version existe.")
 
 
@@ -67,7 +70,7 @@ class Gestionnaire_mises_a_jour(QObject):
         update = False
         msg = u'Unknown error.'
         try:
-            filename, headers = urllib.urlretrieve("http://wxgeo.free.fr/wordpress/version")
+            filename, headers = urllib.urlretrieve(self.url)
             f = open(filename)
             version = f.read(60)
             f.close()
@@ -78,8 +81,8 @@ class Gestionnaire_mises_a_jour(QObject):
                 update = True
             else:
                 update = False
-        except Exception as msg:
-            pass
+        except Exception as e:
+            msg = str(e)
             # XXX: print_error() is not thread safe.
 
         self.sent.emit(success, update, version, msg)
