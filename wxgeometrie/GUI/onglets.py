@@ -31,8 +31,9 @@ from webbrowser import open_new_tab
 #from PyQt4.QtCore import QSize, Qt
 
 
-from PyQt4.QtGui import QTabWidget, QToolButton, QIcon, QMessageBox, QFileDialog, QDialog
-from PyQt4.QtCore import Qt
+from PyQt4.QtGui import QTabWidget, QToolButton, QIcon, QMessageBox, QFileDialog, \
+                        QDialog, QMenu
+from PyQt4.QtCore import Qt, QPoint
 import matplotlib.backend_bases as backend_bases
 
 from .aide import About, Informations, Notes, Licence
@@ -57,7 +58,26 @@ class Onglets(QTabWidget):
     def __init__(self, parent):
         self.parent = parent
         QTabWidget.__init__(self, parent)
-        self.setStyleSheet("QTabBar {background:white}, QStackedWidget {background:white}")
+        self.setStyleSheet("""
+QTabBar::tab:selected {
+background: white;
+border: 1px solid #C4C4C3;
+border-bottom-color: white; /* same as the pane color */
+border-top-left-radius: 4px;
+border-top-right-radius: 4px;
+min-width: 8ex;
+padding: 2px;
+padding-left: 7px;
+}
+QStackedWidget {background:white}
+QTabBar QToolButton {
+background:white;
+border: 1px solid #C4C4C3;
+border-bottom-color: white; /* same as the pane color */
+border-top-left-radius: 4px;
+border-top-right-radius: 4px;
+}
+""")
         self.setTabsClosable(True)
         self.setMovable(True)
         self.tabCloseRequested.connect(self.fermer_onglet)
@@ -80,13 +100,13 @@ class Onglets(QTabWidget):
         ###############################
 
         #TODO: Ajouter un bouton "New Tab"
-        newTabButton = QToolButton(self)
+        self.newTabButton = newTabButton = QToolButton(self)
         self.setCornerWidget(newTabButton, Qt.TopRightCorner)
         newTabButton.setCursor(Qt.ArrowCursor)
         newTabButton.setAutoRaise(True)
-        newTabButton.setIcon(QIcon(path2("images/newtab3.png")))
-        #newTabButton.clicked.connect(self.newTab)
-        newTabButton.setToolTip(u"Add page")
+        newTabButton.setIcon(QIcon(path2("%/images/newtab3.png")))
+        newTabButton.clicked.connect(self.afficher_liste_onglets)
+        newTabButton.setToolTip(u"Activer un autre module")
 
         self.gestionnaire_de_mises_a_jour = Gestionnaire_mises_a_jour(self)
 
@@ -125,7 +145,14 @@ class Onglets(QTabWidget):
         if i != j:
             self.moveTab(i, j)
 
-
+    def afficher_liste_onglets(self):
+        menu = QMenu(self)
+        deja_charges = [onglet.__module__.split('.')[-1] for onglet in self]
+        for nom in param.modules:
+            if nom not in deja_charges:
+                action = menu.addAction(param.descriptions_modules[nom]['titre'])
+                ##action.triggered.connect(partial(self.executer, commande))
+        menu.exec_(self.newTabButton.mapToGlobal(QPoint(0,0)))
 
     def nouvel_onglet(self, panel, i = None):
         u"Ajouter un nouvel onglet à la position 'i'."
