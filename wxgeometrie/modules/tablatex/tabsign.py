@@ -28,12 +28,11 @@ import re
 from sympy import oo, nan, Symbol
 
 from .tablatexlib import convertir_en_latex, traduire_latex, test_parentheses,\
-                         maths, extraire_facteurs, resoudre
+                         maths, extraire_facteurs, resoudre, nice_str
 from ...mathlib.intervalles import R, conversion_chaine_ensemble
 from ...mathlib.custom_functions import ensemble_definition, custom_str
 from ...mathlib.interprete import Interprete
 from ... import param
-
 
 def _auto_tabsign(chaine, cellspace = False):
     u"""Génère le code du tableau de signe à partir d'une expression à variable réelle.
@@ -42,7 +41,6 @@ def _auto_tabsign(chaine, cellspace = False):
     ensemble de définition.
     Par ailleurs, ses zéros doivent être calculables pour la librairie sympy.
     """
-    str = custom_str
 
     chaine_initiale = chaine
 
@@ -91,8 +89,8 @@ def _auto_tabsign(chaine, cellspace = False):
         sup = intervalle.sup
         if not intervalle.sup_inclus:
             valeurs_interdites.append(sup)
-        code += ': ' + ('' if (intervalle.inf_inclus or inf == -oo) else '!') + str(inf) + ';' \
-                     + ('' if (intervalle.sup_inclus or sup == oo) else '!') + str(sup)
+        code += ': ' + ('' if (intervalle.inf_inclus or inf == -oo) else '!') + nice_str(inf) + ';' \
+                     + ('' if (intervalle.sup_inclus or sup == oo) else '!') + nice_str(sup)
     xmax = sup
 
 
@@ -117,9 +115,9 @@ def _auto_tabsign(chaine, cellspace = False):
         code += facteur + ':'
         for i, valeur in enumerate(liste_valeurs):
             if valeurs[valeur] == 0:
-                code += str(valeur)
+                code += nice_str(valeur)
             elif valeurs[valeur] == nan:
-                code += '!' + str(valeur)
+                code += '!' + nice_str(valeur)
 
             if i != len(liste_valeurs) - 1:
                 valeur_suivante = liste_valeurs[i + 1]

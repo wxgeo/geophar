@@ -26,7 +26,10 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 ## Cette librairie contient des fonctions mathématiques à usage interne
 
 from math import cos, sin, hypot, ceil, floor, sqrt, pi, log10
+import re
+
 import numpy
+
 from sympy import sqrt as s_sqrt
 from .contexte import contexte
 from ..mathlib.universal_functions import arg as u_arg, sqrt as u_sqrt
@@ -103,6 +106,20 @@ def nchiffres(x, n = 1):
         return round(x/k)*k
     return x # Attention au cas x = 0 !
 
+
+TRAILING_ZEROS = re.compile(r"\.[0-9]*0+(?![0-9])")
+
+def strip_trailing_zeros(s):
+    u""""Supprime tous les zeros inutiles des nombres flottants.
+
+    >>> from wxgeometrie.geolib.routines import strip_trailing_zeros
+    >>> strip_trailing_zeros("4.0000")
+    '4'
+    >>> strip_trailing_zeros("4.200*x + 3.007*y + .010 = 0")
+    '4.2*x + 3.007*y + .01 = 0'
+    """
+    return re.sub(TRAILING_ZEROS, lambda m:m.group().rstrip('0').rstrip('.'), s)
+
 def nice_display(x):
     if isinstance(x, float):
         x = round(x, contexte["decimales"])
@@ -110,7 +127,7 @@ def nice_display(x):
             x = int(x)
     elif hasattr(x, 'valeur'):
         return nice_display(x.valeur)
-    return str(x).replace('**', '^')
+    return strip_trailing_zeros(str(x).replace('**', '^'))
 
 
 
