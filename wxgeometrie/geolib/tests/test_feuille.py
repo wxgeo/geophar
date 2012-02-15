@@ -5,7 +5,7 @@ from __future__ import with_statement
 import re
 from math import cos, pi, e, sqrt
 
-from tools.testlib import assertAlmostEqual, assertRaises
+from tools.testlib import assertAlmostEqual, assertRaises, assertEqual
 from wxgeometrie.geolib.tests.geotestlib import rand_pt
 from wxgeometrie.geolib import (Triangle_rectangle, DescripteurFeuille, Point, Segment,
                     Vecteur, Fonction, Variable, Feuille, Angle, contexte, Arc_cercle,
@@ -330,7 +330,7 @@ def test_info():
         a = o.a = Arc_cercle(A, B, C)
         assert(a.info == u'Arc a de longueur 7.5')
         alpha = o.alpha = Angle(A, B, C)
-        assert(alpha.info == u'Angle alpha de valeur 0.3')
+        assertEqual(alpha.info, u'Angle alpha de valeur 0.3 rad')
     with contexte(decimales = 3):
         assert(a.info == u'Arc a de longueur 7.505')
 

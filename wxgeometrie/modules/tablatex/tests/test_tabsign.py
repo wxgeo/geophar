@@ -303,3 +303,21 @@ $f(x)$    &           & + &      0      & $-$ &     0      & + &           \\
 % f(x)=x^2-3
 '''
     assert_tabsign(s, tab)
+
+
+def test_issue_189():
+    # Tableaux de signes et de variation avec des décimaux
+    s = '2-0.25x'
+    tab = \
+r'''\begin{center}
+\begin{tabular}{|Sc|ScScScScSc|}
+\hline
+$x$        & $-\infty$ &   & $8$ &     & $\oo$ \\
+\hline
+$2-0.25x$  &           & + &  0  & $-$ &       \\
+\hline
+\end{tabular}
+\end{center}
+% x: -oo;oo// 2-0.25 x: ++ 8 -- // 2-0.25x
+% 2-0.25x
+'''
