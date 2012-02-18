@@ -437,28 +437,25 @@ class Interpolation_polynomiale_par_morceau(Interpolation_generique, interpol1):
     Elle utilise l'interpolation par morceau de scipy pour construire la fonction
     c'est la classe scipy.interpolate.PiecewisePolynomial
 
-    elle passe par les points (xl, yl) et avec le nombre derive dans derivl a 
-    l'abs xl abscisses.
+    elle passe par les points (xl, yl) et avec le nombre derive dans derivl à 
+    l'abscisse xl.
 
     exemple::
 
-    >>>A = Point(-1,-2)
-    >>>B = Point(2,1)
-    >>>C = Point(8,-3)
-    >>>d = Interpolation_polynomiale_par_morceau(A,B,C, derivees=[-1,0.5,2])
+    >>> A = Point(-1,-2)
+    >>> B = Point(2,1)
+    >>> C = Point(8,-3)
+    >>> d = Interpolation_polynomiale_par_morceau(A,B,C, derivees=[-1,0.5,2])
     
-    @type xl: list
-    @param xl: abscisses list
-    @type yl: list
-    @param yl: ord list
-    @type derivl: list
-    @param derivl: value of the derivate at each point
+    @type derivee: list
+    @param derivee: value of the diff number at each point
     
     @return : numpy.lib.polynomial
+
     """
     points = __points = Arguments("Point_generique")
 
-    def __init__(self, *points, **styles): #, derivl = []
+    def __init__(self, *points, **styles):
         self.__derivees = derivees = styles.pop('derivees', len(points)*[0])
         debut = styles.pop("debut", True)
         fin = styles.pop("fin", True)
@@ -478,7 +475,10 @@ class Interpolation_polynomiale_par_morceau(Interpolation_generique, interpol1):
         self.__fin = fin = Ref(fin)
         Interpolation_generique.__init__(self, *points, **styles)
 
-    def poly_inter(self, xl, yl, derivl):
+    def _poly_inter(self, xl, yl, derivl):
+        u"""Fonction wrapper vers la fonction de scipy
+
+        """
         yl_cum = [[yl[i], derivl[i]] for i in range(len(yl))]
         return PiecewisePolynomial(xl, yl_cum)
 
@@ -497,7 +497,7 @@ class Interpolation_polynomiale_par_morceau(Interpolation_generique, interpol1):
         #interpol doit être recalculé à chaque mise à jour
         self.xl = [P[0] for P in self.__points]
         self.yl = [P[1] for P in self.__points]
-        self.interpol = self.poly_inter(self.xl, self.yl, self.__derivees)
+        self.interpol = self._poly_inter(self.xl, self.yl, self.__derivees)
         # de même les tangentes sont recalculées
         # il doit y avoir moyen de faire moins de calculs
         self.__tangentes = []
