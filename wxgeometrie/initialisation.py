@@ -350,6 +350,7 @@ try:
     def initialiser():
         from .API.parametres import actualiser_module
         from .pylib import print_error
+        from .geolib import contexte
         # Récupération d'un crash éventuel
         path_lock = path2(param.emplacements['session'] + "/lock")
         crash = os.path.isfile(path_lock)
@@ -378,6 +379,9 @@ try:
                     for dicname in param.a_mettre_a_jour:
                         for key, val in a_verifier[dicname].iteritems():
                             getattr(param, dicname).setdefault(key, val)
+                    # Mise à jour du contexte de geolib:
+                    for parametre in ('decimales', 'unite_angle', 'tolerance'):
+                        contexte[parametre] = getattr(param,  parametre)
                 else:
                     actualiser_module(param, None)
         except:
