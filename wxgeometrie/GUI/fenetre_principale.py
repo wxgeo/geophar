@@ -33,6 +33,7 @@ from ..pylib import uu, print_error, path2, debug, warning
 from ..API.console import Console
 from ..API.sauvegarde import FichierSession
 from ..API.parametres import sauvegarder_module
+from .ligne_commande import LigneCommande
 from .gestion_session import GestionnaireSession
 from .onglets import Onglets
 from .. import param
@@ -103,10 +104,10 @@ class FenetrePrincipale(QMainWindow):
         self.message(u"  Bienvenue !", 1)
         self.message(NOMPROG + u" version " + param.version)
 
-#        #Ligne de commande de débogage
-#        self.ligne_commande = LigneCommande(self, 300, action = self.executer_commande, \
-#                    afficher_bouton = False, legende = 'Ligne de commande :')
-#        self.ligne_commande.setVisible(param.ligne_commande)
+        #Ligne de commande de débogage
+        self.ligne_commande = LigneCommande(self, 300, action = self.executer_commande, \
+                    afficher_bouton = False, legende = 'Ligne de commande :')
+        self.ligne_commande.setVisible(param.ligne_commande)
 
 #        # Creation des onglets et de leur contenu
         self.onglets = Onglets(self)
@@ -115,19 +116,13 @@ class FenetrePrincipale(QMainWindow):
                                       # layout manager
         self.setCentralWidget(self.mainWidget)
         self.mainLayout = QVBoxLayout(self.mainWidget)
+        self.mainLayout.setSpacing(0)
+        self.mainLayout.addWidget(self.ligne_commande, 0)
         self.mainLayout.addWidget(self.onglets)
 
-#        self.__sizer_principal = wx.BoxSizer(wx.VERTICAL)
-#        self.__sizer_principal.Add(self.ligne_commande, 0, wx.LEFT, 5)
-#        self.__sizer_principal.Add(self.onglets, 1, wx.GROW)
-#        self.SetSizer(self.__sizer_principal)
-#        self.Fit()
-#        x_fit, y_fit = self.GetSize()
-#        x_param, y_param = param.dimensions_fenetre
-#        self.SetSize(wx.Size(max(x_fit, x_param), max(y_fit, y_param)))
         self.setMinimumSize(*param.dimensions_fenetre)
 
-#        self.console = Console(self)
+        self.console = Console(self)
 
 #        self.Bind(wx.EVT_CLOSE, self.OnClose)
 
