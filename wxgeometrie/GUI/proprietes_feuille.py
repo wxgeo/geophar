@@ -23,9 +23,10 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 from PyQt4.QtGui import (QWidget, QTabWidget, QGridLayout, QLabel, QLineEdit,
-                         QPushButton, QVBoxLayout, QTextEdit, QDialog)
+                         QPushButton, QVBoxLayout, QTextEdit, QDialog, QGroupBox)
 
 from ..pylib import uu
+
 
 class ProprietesDescription(QWidget):
     def __init__(self, parent):
@@ -70,23 +71,19 @@ class ProprietesDescription(QWidget):
         ok = QPushButton(u'OK', clicked=self.ok)
         appliquer = QPushButton(u"Appliquer", clicked=self.appliquer)
         effacer = QPushButton(u"Effacer", clicked=self.effacer)
-        annuler = QPushButton(u"Annuler", clicked=self.annuler)
+        annuler = QPushButton(u"Annuler", clicked=self.parent.parent.close)
 
         boutons.addWidget(ok, 1, 0)
         boutons.addWidget(appliquer, 1, 1)
         boutons.addWidget(effacer, 1, 2)
         boutons.addWidget(annuler, 1, 3)
-        ##boutons.addWidget(QLabel(''), 2, 1)
-        gbs.addWidget(boutons, 6, 2)
+        gbs.addLayout(boutons, 6, 2)
 
-        ##gbs.SetEmptyCellSize(wx.Size(10, 10))
-        ##boutons.SetEmptyCellSize(wx.Size(4, 4))
         self.setLayout(gbs)
-        ##self.parent.parent.dim1 = self.sizer.CalcMin().Get()
 
     def ok(self):
         self.appliquer()
-        self.close()
+        self.parent.parent.close()
 
     def appliquer(self):
         self.feuille.infos(titre=self.titre.text(), auteur=self.auteur.text(),
@@ -111,12 +108,15 @@ class ProprietesStatistiques(QWidget):
         self.feuille = parent.feuille
 
         sizer = QVBoxLayout()
-        sizer.addWidget(QLabel(u"Informations sur " + uu(self.feuille.nom) + " :"))
-        sizer.addWidget(QLabel(u"Date de création :  " + uu(self.feuille.infos("creation"))))
-        sizer.addWidget(QLabel(u"Dernière modification :  " + uu(self.feuille.infos("modification"))))
-        sizer.addWidget(QLabel(u"Nombre d'objets :  " + str(len(self.feuille.liste_objets(True)))))
+        encadre = QVBoxLayout()
+        encadre_box = QGroupBox(u"Informations sur " + uu(self.feuille.nom) + " :")
+        encadre_box.setLayout(encadre)
+        sizer.addWidget(encadre_box)
+        encadre.addWidget(QLabel(u"Date de création :  " + uu(self.feuille.infos("creation"))))
+        encadre.addWidget(QLabel(u"Dernière modification :  " + uu(self.feuille.infos("modification"))))
+        encadre.addWidget(QLabel(u"Nombre d'objets :  " + str(len(self.feuille.liste_objets(True)))))
+        sizer.addStretch()
         self.setLayout(sizer)
-#        self.parent.parent.dim2 = self.sizer.CalcMin().Get()
 
 
 
@@ -142,4 +142,6 @@ class ProprietesFeuille(QDialog):
         self.fenetre_principale = self.parent.window()
         self.panel = self.fenetre_principale.onglets.onglet_actuel
         self.onglets = OngletsProprietesFeuille(self)
-        ##self.SetSize(wx.Size(*(max(dimensions) + 50 for dimensions in zip(self.dim1, self.dim2))))
+        main = QVBoxLayout()
+        main.addWidget(self.onglets)
+        self.setLayout(main)

@@ -27,10 +27,10 @@ from functools import partial
 
 from PyQt4.QtGui import (QWidget, QToolButton, QInputDialog, QLineEdit, QHBoxLayout,
                          QIcon, QMenu, QShortcut)
-from PyQt4.QtCore import Qt
+##from PyQt4.QtCore import Qt
 
-from .wxlib import png, png_pth
-from ..pylib import is_in, path2
+from .wxlib import png
+from ..pylib import is_in
 from ..geolib.routines import distance
 from ..geolib.textes import Texte_generique
 from ..geolib.points import Point_generique, Barycentre, Point_pondere, Milieu
@@ -119,7 +119,6 @@ class MultiButton(QToolButton):
 
         L'icône est automatiquement mise à jour.
         """
-        print 'barre_outils_select', selected, i
         if i is not None:
             self.index = i
 

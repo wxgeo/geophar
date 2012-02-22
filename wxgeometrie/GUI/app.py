@@ -23,7 +23,7 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 
-from PyQt4.QtGui import QApplication, QPalette, QColor, QPixmap, QSplashScreen, QLabel
+from PyQt4.QtGui import QApplication, QPalette, QColor, QPixmap, QSplashScreen
 from PyQt4.QtCore import QLocale, QTranslator, QLibraryInfo, Qt
 
 from ..pylib import path2

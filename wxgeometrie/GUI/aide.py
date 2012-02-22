@@ -25,13 +25,11 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 
 from PyQt4.QtGui import (QPushButton, QDialog, QWidget, QVBoxLayout, QHBoxLayout,
-                         QLabel, QPalette, QColor, QPixmap, QTextEdit)
+                         QLabel, QPixmap, QTextEdit)
 from PyQt4.QtCore import Qt
-import wx
 
 from .. import param
 from ..param import NOMPROG, LOGO
-from .wxlib import png
 from ..pylib.infos import informations_configuration
 from ..pylib import path2
 from .app import app, white_palette
