@@ -67,7 +67,8 @@ class MultiButton(QToolButton):
             sh = self.shortcut = QShortcut(self)
             sh.setKey(raccourci)
             sh.setAutoRepeat(not self.selectionnable)
-            sh.activated.connect(self.left_click)
+            # NB: `selected=True` est obligatoire ici (mais je ne sais pas pourquoi...)
+            sh.activated.connect(partial(self.select, selected=True))
 
         # Liste des différentes fonctionnalités possibles:
         self.liste = list(fonctionnalites)
@@ -78,7 +79,8 @@ class MultiButton(QToolButton):
 
         ##self.SetBackgroundColour(self.parent.GetBackgroundColour())
         self.select(False, 0)
-        self.clicked.connect(self.left_click)
+        # NB: `selected=True` est obligatoire ici (mais je ne sais pas pourquoi...)
+        self.clicked.connect(partial(self.select, selected=True))
 
 
     def update_menu(self):
@@ -96,7 +98,9 @@ class MultiButton(QToolButton):
                 titre, image, aide, action = entree
                 action = menu.addAction(self.img2icon(image), titre)
                 action.setIconVisibleInMenu(True)
-                action.triggered.connect(partial(self.select, i=i))
+                # NB: `selected=True` est obligatoire ici (sinon, c'est l'argument du
+                # signal `.triggered` qui est passé comme argument ?)
+                action.triggered.connect(partial(self.select, selected=True, i=i))
 
     @staticmethod
     def img2icon(image):
@@ -115,8 +119,10 @@ class MultiButton(QToolButton):
 
         L'icône est automatiquement mise à jour.
         """
+        print 'barre_outils_select', selected, i
         if i is not None:
             self.index = i
+
             titre, image, aide, action = self.liste[i]
             if self.raccourci:
                 aide += " (" + self.raccourci.replace("Shift", "Maj") + ")"
@@ -127,6 +133,8 @@ class MultiButton(QToolButton):
                 self.parent._selected_button = self
                 if previous is not None:
                     previous.update_display()
+                action = self.liste[self.index][3]
+                action(True)
             elif self.selected:
                 # NB: ne pas déselectionner un autre bouton.
                 self.parent._selected_button = None
@@ -144,10 +152,6 @@ class MultiButton(QToolButton):
         self.setIcon(QIcon(pix))
         self.setIconSize(pix.size())
 
-    def left_click(self):
-        self.select(True)
-        action = self.liste[self.index][3]
-        action(True)
 
 
 class BarreOutils(QWidget):
