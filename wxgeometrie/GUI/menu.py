@@ -91,11 +91,10 @@ class Menu(QMenu):
                     # 0->titre, 1->description, 2->raccourci, 3->fonction associee[, 4->cocher ou non]
                     titre = contenu[0]
                     shortcut = (QKeySequence(contenu[2]) if contenu[2] else 0)
+                    action = self.addAction(titre)
                     if contenu[3]:
-                        ##action = self.addAction(titre, partial(contenu[3], contenu[0]), shortcut)
-                        action = self.addAction(titre, contenu[3], shortcut)
-                    else:
-                        action = self.addAction(titre)
+                        action.triggered.connect(contenu[3])
+                        action.setShortcut(shortcut)
                     action.setStatusTip(contenu[1])
                     if len(contenu) == 5:   # le menu contient une case a cocher
                         if contenu[4] == IDEM:
