@@ -25,11 +25,7 @@ from __future__ import with_statement
 
 import os
 from webbrowser import open_new_tab
-
-#from PyQt4.QtGui import (QMainWindow, QApplication, QPlainTextEdit, QIcon, QColor, QPalette,
-#                        QLabel, QWidget, QVBoxLayout, QMessageBox, QTextCursor)
-#from PyQt4.QtCore import QSize, Qt
-
+from functools import partial
 
 from PyQt4.QtGui import QTabWidget, QToolButton, QIcon, QMessageBox, QFileDialog, \
                         QDialog, QMenu
@@ -105,7 +101,7 @@ border-top-right-radius: 4px;
         newTabButton.setCursor(Qt.ArrowCursor)
         newTabButton.setAutoRaise(True)
         newTabButton.setIcon(QIcon(path2("%/images/newtab3.png")))
-        newTabButton.clicked.connect(self.afficher_liste_onglets)
+        newTabButton.clicked.connect(self.popup_activer_module)
         newTabButton.setToolTip(u"Activer un autre module")
 
         self.gestionnaire_de_mises_a_jour = Gestionnaire_mises_a_jour(self)
@@ -115,46 +111,42 @@ border-top-right-radius: 4px;
         # Ajoute les differentes composantes :
         self.actualiser_liste_onglets()
 
-
         # adaptation du titre de l'application et du menu.
         self.currentChanged.connect(self.changer)
-#        self.Bind(wx.EVT_NOTEBOOK_PAGE_CHANGED, self.changer, self)
-#        import fenetre_options
-#        self.Bind(fenetre_options.EVT_OPTIONS_MODIFIED, self.OnOptionsModified)
         if self._liste:
             # affiche le titre et le menu du 1er onglet
             self.actualise_onglet(self._liste[0])
             self._liste[0].activer()
 
 
-    def OnOptionsModified(self):
-        self.actualiser_liste_onglets()
-        for parametre in ('decimales', 'unite_angle', 'tolerance'):
-            geolib.contexte[parametre] = getattr(param,  parametre)
+    # -------------------
+    # Gestion des onglets
+    # -------------------
 
-
-#    def deplacer_onglet(self, i, j):
-#        u"Déplacer un onglet de la position 'i' à la position 'j'."
-#        if i != j:
-#            panel = self._liste.pop(i)
-#            self._liste.insert(j, panel)
-#            self.removeTab(i)
-#            self.insertTab(j, panel, panel.__titre__)
-    def deplacer_onglet(self, i, j):
-        u"Déplacer un onglet de la position 'i' à la position 'j'."
-        if i != j:
-            self.moveTab(i, j)
-
-    def afficher_liste_onglets(self):
-        menu = QMenu(self)
+    def popup_activer_module(self):
+        menu = QMenu(u"Module à activer", self)
         deja_charges = [onglet.__module__.split('.')[-1] for onglet in self]
         for nom in param.modules:
             if nom not in deja_charges:
                 action = menu.addAction(param.descriptions_modules[nom]['titre'])
-                ##action.triggered.connect(partial(self.executer, commande))
-        menu.exec_(self.newTabButton.mapToGlobal(QPoint(0,0)))
+                action.triggered.connect(partial(self.activer_module, nom, selectionner=True))
+        menu.exec_(self.newTabButton.mapToGlobal(QPoint(0, self.newTabButton.height())))
 
-    def nouvel_onglet(self, panel, i = None):
+    def activer_module(self, nom, selectionner=True):
+        if param.modules_actifs[nom]:
+            print(u'Le module %s est déjà activé.' %nom)
+        else:
+            param.modules_actifs[nom] = True
+            module = modules.importer_module(nom)
+            if module is None:
+                print(u"Warning: Impossible d'importer le module %s." %nom)
+            else:
+                panel = module._panel_(self, module)
+                self.nouvel_onglet(panel)
+                if selectionner:
+                    self.changer_onglet(panel)
+
+    def nouvel_onglet(self, panel, i=None):
         u"Ajouter un nouvel onglet à la position 'i'."
         if i is None:
             self._liste.append(panel)
@@ -164,11 +156,17 @@ border-top-right-radius: 4px;
             self.insertTab(i, panel, panel.__titre__)
         setattr(self, panel.module._nom_, panel)
 
+    def deplacer_onglet(self, i, j):
+        u"Déplacer un onglet de la position 'i' à la position 'j'."
+        if i != j:
+            self.tabBar.moveTab(i, j)
+
     def fermer_onglet(self, i):
         u"Fermer l'onglet situé en position 'i'."
         panel = self._liste.pop(i)
         delattr(self, panel.module._nom_)
         self.deleteTab(i)
+        param.modules_actifs[panel.nom] = False
 
     def deleteTab(self, i):
         tab = self.widget(i)
@@ -188,7 +186,6 @@ border-top-right-radius: 4px;
     def actualise_onglet(self, onglet):
         self.parent.setMenuBar(onglet.module._menu_(onglet)) # change le menu de la fenetre
         onglet.changer_titre() # change le titre de la fenetre
-        ##bar = self.parent.menuBar()
 
 #        if param.plateforme == "Windows":
 #            if onglet.canvas is not None:
@@ -225,26 +222,23 @@ border-top-right-radius: 4px;
         self.setCurrentIndex(onglet)
 
 
-    def actualiser_liste_onglets(self,  evt = None):
-        # Tous les onglets situés avant 'pos' sont classés
+    def actualiser_liste_onglets(self):
+        # `pos` indique la progression du classement:
+        # tous les onglets situés avant `pos` sont déjà classés.
         pos = 0
         for nom in param.modules:
             module = modules.importer_module(nom)
             if module is not None:
-                absent = True
                 for i, panel in enumerate(self._liste[pos:]):
                     if panel.module is module:
                         # Déplacer le panel en position pos
                         self.deplacer_onglet(pos + i, pos)
-                        # InsertPage(self, n, page, text, select, imageId)
-                        # RemovePage(self, n)
                         # Mettre à jour la position
                         pos += 1
-                        absent = False
-                if absent:
+                        break
+                else:
                     # Créer un onglet en position pos
                     self.nouvel_onglet(module._panel_(self, module), pos)
-                    # AddPage(self, page, text, select, imageId) uhk
                     # Mettre à jour la position
                     pos += 1
         # Supprimer tous les onglets qui sont situés après pos
@@ -252,8 +246,9 @@ border-top-right-radius: 4px;
             self.fermer_onglet(pos)
 
 
-#####################################################################
-
+    # -------------------
+    # Sauvegardes, export
+    # -------------------
 
     filtres_save = (u"Fichiers " + NOMPROG + u" (*.geo);;"
                    u"Fichiers " + NOMPROG + u" compressés (*.geoz);;"
@@ -425,10 +420,12 @@ border-top-right-radius: 4px;
     def ExportAndSaveFile(self, lieu=None):
         self.ExportFile(lieu = lieu, sauvegarde = True)
 
-
     def CloseFile(self):
         self.onglet_actuel.fermer_feuille()
 
+    # ----------
+    # Impression
+    # ----------
 
     def PageSetup(self):
         self.a_venir()
@@ -438,6 +435,11 @@ border-top-right-radius: 4px;
 
     def a_venir(self):
         QMessageBox.information(self, u"A venir !", u"Fonctionnalité non présente pour l'instant !")
+
+
+    # ---------------------------------------------
+    # Boîtes de dialogue liées à la feuille ouverte
+    # ---------------------------------------------
 
     def supprimer(self):
         canvas = self.onglet_actuel.canvas
@@ -509,19 +511,23 @@ border-top-right-radius: 4px;
         actuelle = self.onglet_actuel.feuille_actuelle # feuille courante
         ProprietesFeuille(self, actuelle).show()
 
-    def Options(self):
-        FenetreOptions(self, param_options).show()
 
+    # -------------------------
+    # Autres boîtes de dialogue
+    # -------------------------
+
+    def Options(self):
+        fen_options = FenetreOptions(self, param_options)
+        fen_options.options_modified.connect(self.apply_options)
+        fen_options.show()
+
+    def apply_options(self):
+        self.actualiser_liste_onglets()
+        for parametre in ('decimales', 'unite_angle', 'tolerance'):
+            geolib.contexte[parametre] = getattr(param, parametre)
 
     def Aide(self):
         open_new_tab(path2("%/doc/help.htm"))
-#        aide = Help(self, path2("%/doc/help.htm"))
-#        aide.show()
-
-    #~ def Verifier_version(self, event):
-        #~ # from GUI.nouvelles_versions import verifier_version # à deplacer ?
-        #~ # verifier_version(self)
-        #~ self.gestionnaire_de_mises_a_jour.verifier_version()
 
     def Notes(self):
         self.notes = Notes(self)

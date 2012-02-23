@@ -197,6 +197,9 @@ class FenetrePrincipale(QMainWindow):
         self.setWindowState(self.windowState()^Qt.WindowFullScreen)
 
     def closeEvent(self, event):
+        self.activateWindow()
+        self.showNormal()
+        self.raise_()
         self.closing = True
         if not param.fermeture_instantanee: # pour des tests rapides
             try:
