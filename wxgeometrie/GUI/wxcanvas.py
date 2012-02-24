@@ -33,7 +33,7 @@ from .app import app
 from .menu_objet import MenuActionsObjet
 from .proprietes_objets import Proprietes
 from .wxlib import (BusyCursor, shift_down, alt_down, ctrl_down, left_down,
-                   right_down, lieu)
+                   right_down, lieu, PopUpMenu)
 from .. import param
 from ..pylib import print_error, debug
 from ..geolib.textes import Texte
@@ -477,8 +477,7 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
                 self.exporter(nom = filename, zone = (x0, x1, y0, y1))
                 actuelle.sauvegarde["export"] = filename
 
-        menu = QMenu(self)
-        menu.setTitle(u"Zone sélectionnée")
+        menu = PopUpMenu(u"Zone sélectionnée", self, 'crayon')
         action = menu.addAction(u'Exporter la zone comme image')
         action.triggered.connect(exporte)
 

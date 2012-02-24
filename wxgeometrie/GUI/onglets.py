@@ -41,7 +41,7 @@ from .inspecteur import FenCode
 from .nouvelles_versions import Gestionnaire_mises_a_jour
 from .proprietes_feuille import ProprietesFeuille
 from .proprietes_objets import Proprietes
-from .wxlib import png
+from .wxlib import png, PopUpMenu
 from . import dialogues_geometrie
 from ..API.sauvegarde import FichierGEO, ouvrir_fichierGEO
 from .. import param, modules, geolib
@@ -101,7 +101,7 @@ border-top-right-radius: 4px;
         newTabButton.setAutoRaise(True)
         newTabButton.setIcon(QIcon(path2("%/images/newtab3.png")))
         newTabButton.clicked.connect(self.popup_activer_module)
-        newTabButton.setToolTip(u"Activer un autre module")
+        newTabButton.setToolTip(u"Activer un autre onglet")
 
         # Bouton "Fermer l'onglet"
         self.closeTabButton = closeTabButton = QToolButton(self)
@@ -109,8 +109,8 @@ border-top-right-radius: 4px;
         closeTabButton.setCursor(Qt.ArrowCursor)
         closeTabButton.setAutoRaise(True)
         closeTabButton.setIcon(QIcon(path2("%/images/closetab.png")))
-        closeTabButton.clicked.connect(self.fermer_onglet)
-        closeTabButton.setToolTip(u"Activer un autre module")
+        closeTabButton.clicked.connect(partial(self.fermer_onglet, None))
+        closeTabButton.setToolTip(u"Fermer l'onglet courant")
 
         self.gestionnaire_de_mises_a_jour = Gestionnaire_mises_a_jour(self)
 
@@ -132,7 +132,7 @@ border-top-right-radius: 4px;
     # -------------------
 
     def popup_activer_module(self):
-        menu = QMenu(u"Module à activer", self)
+        menu = PopUpMenu(u"Module à activer", self, 'crayon')
         deja_charges = [onglet.__module__.split('.')[-1] for onglet in self]
         for nom in param.modules:
             if nom not in deja_charges:
@@ -164,16 +164,18 @@ border-top-right-radius: 4px;
             self.insertTab(i, panel, panel.__titre__)
         setattr(self, panel.module._nom_, panel)
         if self.count() > 1:
-            self.closeTabButton.setEnabled()
+            self.closeTabButton.setEnabled(True)
 
     def deplacer_onglet(self, i, j):
         u"Déplacer un onglet de la position 'i' à la position 'j'."
         if i != j:
             self.tabBar.moveTab(i, j)
 
-    def fermer_onglet(self, i):
+    def fermer_onglet(self, i=None):
         u"Fermer l'onglet situé en position 'i'."
         if self.count() > 1:
+            if i is None:
+                i = self.currentIndex()
             panel = self._liste.pop(i)
             delattr(self, panel.module._nom_)
             self.deleteTab(i)

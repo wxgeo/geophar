@@ -24,7 +24,8 @@ from __future__ import with_statement
 import os
 
 from PyQt4.QtCore import Qt, QThread, QEvent, pyqtSignal
-from PyQt4.QtGui import QCursor, QDialog, QPixmap, QPushButton, QColorDialog
+from PyQt4.QtGui import (QCursor, QDialog, QPixmap, QPushButton, QColorDialog,
+                         QMenu, QFont, QIcon)
 
 from .. import param
 from ..pylib import uu
@@ -141,6 +142,7 @@ def lieu(event_or_widget):
         p = event_or_widget.mapFromGlobal(QCursor.pos())
     return p.x(), p.y()
 
+
 class ColorSelecter(QPushButton):
     u"A bouton used to select a color."
 
@@ -154,7 +156,6 @@ class ColorSelecter(QPushButton):
     def onClick(self):
         self.setColor(QColorDialog.getColor(self.color, self, u"Choisissez une couleur"))
 
-
     def setColor(self, color):
         self.color = color
         if color is not None:
@@ -162,3 +163,29 @@ class ColorSelecter(QPushButton):
                            "ColorSelecter:pressed { background-color: %s }" % (
                            color.name(), color.light(125).name()))
         self.colorSelected.emit(color)
+
+
+class PopUpMenu(QMenu):
+    u"""Un menu avec un titre visible."""
+
+    def __init__(self, title, parent, icon=None):
+        QMenu.__init__(self, title, parent)
+        if icon is None:
+            title = u'\u2022 ' + title
+            self._title = self.addAction(title)
+        else:
+            if isinstance(icon, basestring):
+                ##icon = QIcon(png(icon))
+                icon = QIcon(png_pth(icon))
+            self._title = self.addAction(icon, title)
+        self._title.setEnabled(False)
+        self._title.setIconVisibleInMenu(True)
+        font = QFont()
+        font.setBold(True)
+        font.setStyle(QFont.StyleItalic)
+        self._title.setFont(font)
+        self.addSeparator()
+
+    def setTitle(self, title):
+        self._title.setText(title)
+        QMenu.setTitle(title)
