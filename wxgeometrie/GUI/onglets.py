@@ -62,8 +62,7 @@ border-bottom-color: white; /* same as the pane color */
 border-top-left-radius: 4px;
 border-top-right-radius: 4px;
 min-width: 8ex;
-padding: 2px;
-padding-left: 7px;
+padding: 7px;
 }
 QStackedWidget {background:white}
 QTabBar QToolButton {
@@ -74,9 +73,9 @@ border-top-left-radius: 4px;
 border-top-right-radius: 4px;
 }
 """)
-        self.setTabsClosable(True)
+        self.setTabsClosable(False)
         self.setMovable(True)
-        self.tabCloseRequested.connect(self.fermer_onglet)
+        ##self.tabCloseRequested.connect(self.fermer_onglet)
 #        palette = QPalette()
 #        white = QColor(Qt.white)
 #        palette.setColor(QPalette.Window, white)
@@ -95,14 +94,23 @@ border-top-right-radius: 4px;
             self.creer[dialogue[0]] = f
         ###############################
 
-        #TODO: Ajouter un bouton "New Tab"
+        # Bouton "Nouvel onglet"
         self.newTabButton = newTabButton = QToolButton(self)
-        self.setCornerWidget(newTabButton, Qt.TopRightCorner)
+        self.setCornerWidget(newTabButton, Qt.TopLeftCorner)
         newTabButton.setCursor(Qt.ArrowCursor)
         newTabButton.setAutoRaise(True)
         newTabButton.setIcon(QIcon(path2("%/images/newtab3.png")))
         newTabButton.clicked.connect(self.popup_activer_module)
         newTabButton.setToolTip(u"Activer un autre module")
+
+        # Bouton "Fermer l'onglet"
+        self.closeTabButton = closeTabButton = QToolButton(self)
+        self.setCornerWidget(closeTabButton, Qt.TopRightCorner)
+        closeTabButton.setCursor(Qt.ArrowCursor)
+        closeTabButton.setAutoRaise(True)
+        closeTabButton.setIcon(QIcon(path2("%/images/closetab.png")))
+        closeTabButton.clicked.connect(self.fermer_onglet)
+        closeTabButton.setToolTip(u"Activer un autre module")
 
         self.gestionnaire_de_mises_a_jour = Gestionnaire_mises_a_jour(self)
 
@@ -155,6 +163,8 @@ border-top-right-radius: 4px;
             self._liste.insert(i, panel)
             self.insertTab(i, panel, panel.__titre__)
         setattr(self, panel.module._nom_, panel)
+        if self.count() > 1:
+            self.closeTabButton.setEnabled()
 
     def deplacer_onglet(self, i, j):
         u"Déplacer un onglet de la position 'i' à la position 'j'."
@@ -163,10 +173,13 @@ border-top-right-radius: 4px;
 
     def fermer_onglet(self, i):
         u"Fermer l'onglet situé en position 'i'."
-        panel = self._liste.pop(i)
-        delattr(self, panel.module._nom_)
-        self.deleteTab(i)
-        param.modules_actifs[panel.nom] = False
+        if self.count() > 1:
+            panel = self._liste.pop(i)
+            delattr(self, panel.module._nom_)
+            self.deleteTab(i)
+            param.modules_actifs[panel.nom] = False
+        if self.count() <= 1:
+            self.closeTabButton.setEnabled(False)
 
     def deleteTab(self, i):
         tab = self.widget(i)
