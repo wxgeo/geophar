@@ -286,7 +286,8 @@ class WxCanvas(FigureCanvasWxAgg, Canvas):
         if self.interaction:
             pixel = event.GetPositionTuple()
             self.detecter(pixel)
-            self.interaction(selection = self.select, autres = self.selections, position = self.coordonnees(event), pixel = pixel)
+            self.interaction(selection = self.select, autres = self.selections,
+                             position = self.coordonnees(event), pixel = pixel)
             self.detecter(pixel) # XXX: toujours utile ?
 
 
