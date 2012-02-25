@@ -14,7 +14,7 @@ from wxgeometrie.geolib import (Point, Polygone, Milieu, Label_polygone, Barycen
                                 Carre, Polygone_regulier, Carre_centre,
                                 Triangle_equilateral_centre, Polygone_regulier_centre,
                                 Losange, Mediatrice, Triangle_isocele_rectangle,
-                                Triangle_rectangle,
+                                Triangle_rectangle, contexte,
                                 )
 
 # def test_Cote():
@@ -268,8 +268,21 @@ def test_Triangle_isocele():
     assertAlmostEqual(t1.point3.xy, (-1, 1))
     t2 = Triangle_isocele((0, 0), (2, 0), pi/3)
     assertAlmostEqual(t2.point3.xy, (2*cos(pi/3), 2*sin(pi/3)))
+    with contexte(unite_angle='d'):
+        t2.point3.xy = (0, 9)
+        assertAlmostEqual(t2.point3.xy, (0, 2))
+    with contexte(unite_angle='r'):
+        t2.point3.xy = (0, 9)
+        assertAlmostEqual(t2.point3.xy, (0, 2))
 
 def test_Triangle_rectangle():
     t = Triangle_rectangle(rand_pt(), rand_pt(), pi/7)
     a = Angle(t.point1, t.point3, t.point2)
     assertAlmostEqual(a.degre, 90)
+
+def test_issue_215():
+    # Quand les angles sont en degré, les valeurs par défaut des triangles isocèles sont incorrectes
+    with contexte(unite_angle='d'):
+        for i in range(10):
+            t = Triangle_isocele()
+            assert abs(t.angle.rad) > pi/6

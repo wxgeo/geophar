@@ -29,6 +29,7 @@ from .points import Point_generique, Point, Point_rotation, Point_translation,\
                     Point_homothetie, Point_reflexion
 from .angles import Angle_generique, Angle_libre
 from .vecteurs import Vecteur_generique, Vecteur_libre
+from .routines import radian
 
 
 
@@ -107,9 +108,11 @@ class Rotation(Transformation_generique):
     centre = __centre = Argument("Point_generique", defaut='Point(0, 0)')
     angle = __angle = Argument("Angle_generique")
 
-    def __init__(self, centre = None, angle = pi/6, unite = None, **styles):
+    def __init__(self, centre=None, angle=None, unite=None, **styles):
         if unite is None:
             unite = contexte['unite_angle']
+        if angle is None:
+            angle = radian(pi/6)
         if not isinstance(angle, Angle_generique):
             angle = Angle_libre(angle, unite = unite)
         self.__centre = centre = Ref(centre)
