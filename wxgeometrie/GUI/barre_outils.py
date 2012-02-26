@@ -139,13 +139,20 @@ class MultiButton(QToolButton):
                 self.parent._selected_button = None
             if len(self.liste) > 1:
                 self.update_menu()
+        elif selected:
+            self.liste[0][3]()
         self.update_display()
 
-    def update_display(self):
+    def update_display(self, as_selected=None):
         u"""Change l'icône du bouton, selon la fonction sélectionnée, et le fait
-            que le bouton soit activé ou non."""
+            que le bouton soit activé ou non.
+
+            Il est possible de forcer l'affichage du bouton comme s'il était
+            sélectionné, en passant l'option `as_selected=True`.
+            Cela sert pour le bouton sauvegarde par exemple.
+            """
         image = self.liste[self.index][1]
-        if self.selected:
+        if self.selected or as_selected:
             image += '_'
         pix = png(image)
         self.setIcon(QIcon(pix))
@@ -173,6 +180,7 @@ class BarreOutils(QWidget):
         if self.parent.param('afficher_boutons'):
             self.creer_boutons()
 
+        self.sizer.addStretch()
         self.setLayout(self.sizer)
         self.adjustSize()
 
@@ -298,7 +306,7 @@ class BarreOutils(QWidget):
 
     def rafraichir(self):
         u"Appelé par le parent pour rafraichir la barre d'outils."
-        self.btn_sauver.select(not self.feuille_actuelle.modifiee)
+        self.btn_sauver.update_display(as_selected=(not self.feuille_actuelle.modifiee))
 
 
     def initialiser(self):
