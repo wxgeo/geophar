@@ -30,7 +30,7 @@ from numpy import roots as nroots
 from sympy import Mul, Float, Basic, Poly, together, expand, powsimp, roots,\
                     sympify, div, Symbol
 from ..pylib import warning
-from .. import param
+import param
 
 
 def _simplify(expr):

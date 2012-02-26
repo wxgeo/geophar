@@ -28,7 +28,7 @@ import re
 from .objet import Objet_numerique, Objet, contexte, ArgumentNonModifiable, \
                    Argument, Ref
 
-#from .. import param
+#import param
 from ..pylib import is_in, property2
 from ..mathlib.intervalles import preformatage_geolib_ensemble, formatage_ensemble
 from ..mathlib.parsers import VAR_NOT_ATTR, traduire_formule

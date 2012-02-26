@@ -36,7 +36,7 @@ from matplotlib.colors import colorConverter as colorConverter
 
 from .wxlib import ColorSelecter
 from .app import white_palette
-from .. import param
+import param
 from ..pylib import print_error, debug, advanced_split
 from ..geolib.constantes import NOM, FORMULE, TEXTE, RIEN
 from ..geolib.routines import nice_display

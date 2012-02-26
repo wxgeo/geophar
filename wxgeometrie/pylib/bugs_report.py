@@ -21,7 +21,7 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 import urllib
 
-from .. import param
+import param
 from .infos import informations_configuration
 from .fonctions import uu
 

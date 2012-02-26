@@ -40,7 +40,7 @@ from .transformations import Rotation
 from .routines import point_dans_polygone, distance
 
 from ..pylib import is_in, print_error
-from .. import param
+import param
 
 
 

@@ -5,7 +5,7 @@ import re
 from os import walk, listdir
 from os.path import isfile, join
 
-from pytest import XFAIL
+from sympy.utilities.pytest import XFAIL
 
 from tools.testlib import WXGEODIR
 from wxgeometrie.geolib import G, objet

@@ -34,7 +34,7 @@ from .intervalles import Intervalle, vide, Union, R
 from .custom_objects import Temps, CustomLatexPrinter, CustomStrPrinter, Fonction
 from .internal_functions import extract_var, count_syms
 from ..pylib import msplit, split_around_parenthesis
-from .. import param
+import param
 
 
 

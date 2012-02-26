@@ -31,7 +31,7 @@ from .courbes import Courbe_generique
 from .contexte import contexte
 
 from ..pylib import fullrange
-from .. import param
+import param
 
 class Interpolation_generique(Courbe_generique):
     u"""Classe mère de toutes les interpolations."""

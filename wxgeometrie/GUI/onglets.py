@@ -47,8 +47,9 @@ from .proprietes_objets import Proprietes
 from .wxlib import png
 from . import dialogues_geometrie
 from ..API.sauvegarde import FichierGEO, ouvrir_fichierGEO
-from .. import param, modules, geolib
-from ..param import NOMPROG
+import param
+# The two next modules prevent autodoc to import wxgeometrie.GUI.onglets properly.
+import modules, geolib
 from ..pylib import print_error, debug, path2
 from ..param.options import options as param_options
 
@@ -228,8 +229,8 @@ class Onglets(QTabWidget):
 #####################################################################
 
 
-    filtres_save = (u"Fichiers " + NOMPROG + u" (*.geo);;"
-                   u"Fichiers " + NOMPROG + u" compressés (*.geoz);;"
+    filtres_save = (u"Fichiers " + param.NOMPROG + u" (*.geo);;"
+                   u"Fichiers " + param.NOMPROG + u" compressés (*.geoz);;"
                    u"Tous les fichiers (*.*)")
 
     def NewFile(self):

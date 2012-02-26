@@ -37,7 +37,7 @@ from ..mathlib import end_user_functions
 from ..pylib import print_error, split_around_parenthesis, regsub,\
                     securite
 from .parsers import simplifier_ecriture, NBR, traduire_formule
-from .. import param
+import param
 
 class LocalDict(dict):
     globals = {}

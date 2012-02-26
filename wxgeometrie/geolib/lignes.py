@@ -38,7 +38,7 @@ from .vecteurs import Vecteur_unitaire, Vecteur, Vecteur_libre, Vecteur_generiqu
 from .labels import Label_droite, Label_demidroite, Label_segment
 from .transformations import Translation
 
-from .. import param
+import param
 from ..pylib import eval_restricted
 ##########################################################################################
 

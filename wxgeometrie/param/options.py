@@ -68,7 +68,7 @@ class Parametre(object):
         self.texte = _texte
 
     def _get_val(self):
-        from .. import param
+        import param
         if self.key is None:
             val = getattr(param, self.nom)
         else:
@@ -77,7 +77,7 @@ class Parametre(object):
 
 
     def _set_val(self, val):
-        from .. import param
+        import param
         val = self._set(val)
         if self.key is None:
             setattr(param, self.nom, val)

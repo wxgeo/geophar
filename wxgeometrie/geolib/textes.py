@@ -32,7 +32,7 @@ from .objet import Objet_avec_coordonnees, Argument, Ref, Objet, \
 from .constantes import RIEN, TEXTE
 
 from ..pylib import uu, warning
-from .. import param
+import param
 
 
 class Texte_generique(Objet_avec_coordonnees):

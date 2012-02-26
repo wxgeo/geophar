@@ -53,7 +53,7 @@ from ..geolib.intersections import Intersection_cercles, Intersection_droite_cer
 from ..geolib.interpolations import Interpolation_lineaire, Interpolation_quadratique
 from ..geolib.variables import Variable
 from ..geolib.objet import Objet
-from .. import param
+import param
 
 
 def repr_str(chaine):

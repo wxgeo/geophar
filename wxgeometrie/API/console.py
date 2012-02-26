@@ -34,7 +34,7 @@ from __future__ import with_statement
 
 #  Il faudra donner a l'utilisateur la possibilite d'autoriser la macro ponctuellement, ou meme de changer le parametre de securite
 
-from .. import param
+import param
 
 
 

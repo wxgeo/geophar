@@ -22,7 +22,7 @@ from __future__ import with_statement
 
 import time
 from ..pylib import uu, print_error
-from .. import param
+import param
 
 class Rapport(list):
     def __init__(self, fichier_log = None, frequence_archivage = 100):

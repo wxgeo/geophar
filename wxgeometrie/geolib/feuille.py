@@ -54,7 +54,7 @@ from .variables import Variable
 from .constantes import FORMULE, NOM, RIEN
 
 from .pseudo_canvas import _pseudocanvas
-from .. import param
+import param
 from .. import mathlib
 from ..pylib.securite import keywords_interdits_presents, keywords_interdits
 

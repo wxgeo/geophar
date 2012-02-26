@@ -30,7 +30,7 @@ from time import sleep
 from ..pylib import uu, print_error, path2, debug, warning
 from ..API.sauvegarde import FichierSession
 from ..API.parametres import sauvegarder_module
-from .. import param
+import param
 
 
 class GestionnaireSession(object):
