@@ -49,6 +49,13 @@ class LigneDecoree(LineCollection):
         if kw:
             self.set(**kw)
 
+    # XXX: matplotlib LineCollection.set_alpha() seems to be broken
+    # (Matplotlib 0.99.1.1)
+    def set_alpha(self, alpha):
+        r, v, b, a = self.get_color()[0]
+        self.set_color((r, v, b, alpha))
+
+
     def set(self, **kw):
         maj = kw.pop('maj', True)
         for nom in self._parametres:

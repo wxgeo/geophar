@@ -25,14 +25,11 @@ from __future__ import with_statement
 
 import os
 from webbrowser import open_new_tab
+from functools import partial
 
-#from PyQt4.QtGui import (QMainWindow, QApplication, QPlainTextEdit, QIcon, QColor, QPalette,
-#                        QLabel, QWidget, QVBoxLayout, QMessageBox, QTextCursor)
-#from PyQt4.QtCore import QSize, Qt
-
-
-from PyQt4.QtGui import QTabWidget, QToolButton, QIcon, QMessageBox, QFileDialog, QDialog
-from PyQt4.QtCore import Qt
+from PyQt4.QtGui import QTabWidget, QToolButton, QIcon, QMessageBox, QFileDialog, \
+                        QDialog, QMenu
+from PyQt4.QtCore import Qt, QPoint
 import matplotlib.backend_bases as backend_bases
 
 from .aide import About, Informations, Notes, Licence
@@ -44,7 +41,7 @@ from .inspecteur import FenCode
 from .nouvelles_versions import Gestionnaire_mises_a_jour
 from .proprietes_feuille import ProprietesFeuille
 from .proprietes_objets import Proprietes
-from .wxlib import png
+from .wxlib import png, PopUpMenu
 from . import dialogues_geometrie
 from ..API.sauvegarde import FichierGEO, ouvrir_fichierGEO
 import param
@@ -58,10 +55,28 @@ class Onglets(QTabWidget):
     def __init__(self, parent):
         self.parent = parent
         QTabWidget.__init__(self, parent)
-        self.setStyleSheet("QTabBar {background:white}, QStackedWidget {background:white}")
-        self.setTabsClosable(True)
+        self.setStyleSheet("""
+QTabBar::tab:selected {
+background: white;
+border: 1px solid #C4C4C3;
+border-bottom-color: white; /* same as the pane color */
+border-top-left-radius: 4px;
+border-top-right-radius: 4px;
+min-width: 8ex;
+padding: 7px;
+}
+QStackedWidget {background:white}
+QTabBar QToolButton {
+background:white;
+border: 1px solid #C4C4C3;
+border-bottom-color: white; /* same as the pane color */
+border-top-left-radius: 4px;
+border-top-right-radius: 4px;
+}
+""")
+        self.setTabsClosable(False)
         self.setMovable(True)
-        self.tabCloseRequested.connect(self.fermer_onglet)
+        ##self.tabCloseRequested.connect(self.fermer_onglet)
 #        palette = QPalette()
 #        white = QColor(Qt.white)
 #        palette.setColor(QPalette.Window, white)
@@ -80,14 +95,23 @@ class Onglets(QTabWidget):
             self.creer[dialogue[0]] = f
         ###############################
 
-        #TODO: Ajouter un bouton "New Tab"
-        newTabButton = QToolButton(self)
-        self.setCornerWidget(newTabButton, Qt.TopRightCorner)
+        # Bouton "Nouvel onglet"
+        self.newTabButton = newTabButton = QToolButton(self)
+        self.setCornerWidget(newTabButton, Qt.TopLeftCorner)
         newTabButton.setCursor(Qt.ArrowCursor)
         newTabButton.setAutoRaise(True)
-        newTabButton.setIcon(QIcon(path2("images/newtab3.png")))
-        #newTabButton.clicked.connect(self.newTab)
-        newTabButton.setToolTip(u"Add page")
+        newTabButton.setIcon(QIcon(path2("%/images/newtab3.png")))
+        newTabButton.clicked.connect(self.popup_activer_module)
+        newTabButton.setToolTip(u"Activer un autre onglet")
+
+        # Bouton "Fermer l'onglet"
+        self.closeTabButton = closeTabButton = QToolButton(self)
+        self.setCornerWidget(closeTabButton, Qt.TopRightCorner)
+        closeTabButton.setCursor(Qt.ArrowCursor)
+        closeTabButton.setAutoRaise(True)
+        closeTabButton.setIcon(QIcon(path2("%/images/closetab.png")))
+        closeTabButton.clicked.connect(partial(self.fermer_onglet, None))
+        closeTabButton.setToolTip(u"Fermer l'onglet courant")
 
         self.gestionnaire_de_mises_a_jour = Gestionnaire_mises_a_jour(self)
 
@@ -96,39 +120,42 @@ class Onglets(QTabWidget):
         # Ajoute les differentes composantes :
         self.actualiser_liste_onglets()
 
-
         # adaptation du titre de l'application et du menu.
         self.currentChanged.connect(self.changer)
-#        self.Bind(wx.EVT_NOTEBOOK_PAGE_CHANGED, self.changer, self)
-#        import fenetre_options
-#        self.Bind(fenetre_options.EVT_OPTIONS_MODIFIED, self.OnOptionsModified)
         if self._liste:
             # affiche le titre et le menu du 1er onglet
             self.actualise_onglet(self._liste[0])
             self._liste[0].activer()
 
 
-    def OnOptionsModified(self):
-        self.actualiser_liste_onglets()
-        for parametre in ('decimales', 'unite_angle', 'tolerance'):
-            geolib.contexte[parametre] = getattr(param,  parametre)
+    # -------------------
+    # Gestion des onglets
+    # -------------------
 
+    def popup_activer_module(self):
+        menu = PopUpMenu(u"Module à activer", self, 'crayon')
+        deja_charges = [onglet.__module__.split('.')[-1] for onglet in self]
+        for nom in param.modules:
+            if nom not in deja_charges:
+                action = menu.addAction(param.descriptions_modules[nom]['titre'])
+                action.triggered.connect(partial(self.activer_module, nom, selectionner=True))
+        menu.exec_(self.newTabButton.mapToGlobal(QPoint(0, self.newTabButton.height())))
 
-#    def deplacer_onglet(self, i, j):
-#        u"Déplacer un onglet de la position 'i' à la position 'j'."
-#        if i != j:
-#            panel = self._liste.pop(i)
-#            self._liste.insert(j, panel)
-#            self.removeTab(i)
-#            self.insertTab(j, panel, panel.__titre__)
-    def deplacer_onglet(self, i, j):
-        u"Déplacer un onglet de la position 'i' à la position 'j'."
-        if i != j:
-            self.moveTab(i, j)
+    def activer_module(self, nom, selectionner=True):
+        if param.modules_actifs[nom]:
+            print(u'Le module %s est déjà activé.' %nom)
+        else:
+            param.modules_actifs[nom] = True
+            module = modules.importer_module(nom)
+            if module is None:
+                print(u"Warning: Impossible d'importer le module %s." %nom)
+            else:
+                panel = module._panel_(self, module)
+                self.nouvel_onglet(panel)
+                if selectionner:
+                    self.changer_onglet(panel)
 
-
-
-    def nouvel_onglet(self, panel, i = None):
+    def nouvel_onglet(self, panel, i=None):
         u"Ajouter un nouvel onglet à la position 'i'."
         if i is None:
             self._liste.append(panel)
@@ -137,12 +164,25 @@ class Onglets(QTabWidget):
             self._liste.insert(i, panel)
             self.insertTab(i, panel, panel.__titre__)
         setattr(self, panel.module._nom_, panel)
+        if self.count() > 1:
+            self.closeTabButton.setEnabled(True)
 
-    def fermer_onglet(self, i):
+    def deplacer_onglet(self, i, j):
+        u"Déplacer un onglet de la position 'i' à la position 'j'."
+        if i != j:
+            self.tabBar.moveTab(i, j)
+
+    def fermer_onglet(self, i=None):
         u"Fermer l'onglet situé en position 'i'."
-        panel = self._liste.pop(i)
-        delattr(self, panel.module._nom_)
-        self.deleteTab(i)
+        if self.count() > 1:
+            if i is None:
+                i = self.currentIndex()
+            panel = self._liste.pop(i)
+            delattr(self, panel.module._nom_)
+            self.deleteTab(i)
+            param.modules_actifs[panel.nom] = False
+        if self.count() <= 1:
+            self.closeTabButton.setEnabled(False)
 
     def deleteTab(self, i):
         tab = self.widget(i)
@@ -162,7 +202,6 @@ class Onglets(QTabWidget):
     def actualise_onglet(self, onglet):
         self.parent.setMenuBar(onglet.module._menu_(onglet)) # change le menu de la fenetre
         onglet.changer_titre() # change le titre de la fenetre
-        ##bar = self.parent.menuBar()
 
 #        if param.plateforme == "Windows":
 #            if onglet.canvas is not None:
@@ -199,26 +238,23 @@ class Onglets(QTabWidget):
         self.setCurrentIndex(onglet)
 
 
-    def actualiser_liste_onglets(self,  evt = None):
-        # Tous les onglets situés avant 'pos' sont classés
+    def actualiser_liste_onglets(self):
+        # `pos` indique la progression du classement:
+        # tous les onglets situés avant `pos` sont déjà classés.
         pos = 0
         for nom in param.modules:
             module = modules.importer_module(nom)
             if module is not None:
-                absent = True
                 for i, panel in enumerate(self._liste[pos:]):
                     if panel.module is module:
                         # Déplacer le panel en position pos
                         self.deplacer_onglet(pos + i, pos)
-                        # InsertPage(self, n, page, text, select, imageId)
-                        # RemovePage(self, n)
                         # Mettre à jour la position
                         pos += 1
-                        absent = False
-                if absent:
+                        break
+                else:
                     # Créer un onglet en position pos
                     self.nouvel_onglet(module._panel_(self, module), pos)
-                    # AddPage(self, page, text, select, imageId) uhk
                     # Mettre à jour la position
                     pos += 1
         # Supprimer tous les onglets qui sont situés après pos
@@ -226,8 +262,9 @@ class Onglets(QTabWidget):
             self.fermer_onglet(pos)
 
 
-#####################################################################
-
+    # -------------------
+    # Sauvegardes, export
+    # -------------------
 
     filtres_save = (u"Fichiers " + param.NOMPROG + u" (*.geo);;"
                    u"Fichiers " + param.NOMPROG + u" compressés (*.geoz);;"
@@ -399,10 +436,12 @@ class Onglets(QTabWidget):
     def ExportAndSaveFile(self, lieu=None):
         self.ExportFile(lieu = lieu, sauvegarde = True)
 
-
     def CloseFile(self):
         self.onglet_actuel.fermer_feuille()
 
+    # ----------
+    # Impression
+    # ----------
 
     def PageSetup(self):
         self.a_venir()
@@ -412,6 +451,11 @@ class Onglets(QTabWidget):
 
     def a_venir(self):
         QMessageBox.information(self, u"A venir !", u"Fonctionnalité non présente pour l'instant !")
+
+
+    # ---------------------------------------------
+    # Boîtes de dialogue liées à la feuille ouverte
+    # ---------------------------------------------
 
     def supprimer(self):
         canvas = self.onglet_actuel.canvas
@@ -483,19 +527,23 @@ class Onglets(QTabWidget):
         actuelle = self.onglet_actuel.feuille_actuelle # feuille courante
         ProprietesFeuille(self, actuelle).show()
 
-    def Options(self):
-        FenetreOptions(self, param_options).show()
 
+    # -------------------------
+    # Autres boîtes de dialogue
+    # -------------------------
+
+    def Options(self):
+        fen_options = FenetreOptions(self, param_options)
+        fen_options.options_modified.connect(self.apply_options)
+        fen_options.show()
+
+    def apply_options(self):
+        self.actualiser_liste_onglets()
+        for parametre in ('decimales', 'unite_angle', 'tolerance'):
+            geolib.contexte[parametre] = getattr(param, parametre)
 
     def Aide(self):
         open_new_tab(path2("%/doc/help.htm"))
-#        aide = Help(self, path2("%/doc/help.htm"))
-#        aide.show()
-
-    #~ def Verifier_version(self, event):
-        #~ # from GUI.nouvelles_versions import verifier_version # à deplacer ?
-        #~ # verifier_version(self)
-        #~ self.gestionnaire_de_mises_a_jour.verifier_version()
 
     def Notes(self):
         self.notes = Notes(self)

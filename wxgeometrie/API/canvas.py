@@ -374,12 +374,16 @@ def %(_nom_)s(self, valeur = no_argument):
 
 
 
-
     def _get_fenetre(self):
-        if self.orthonorme:
+        if self.orthonorme or getattr(self, 'ratio', None) is not None:
+            if self.orthonorme:
+                rat = 1
+            else:
+                rat = self.ratio # x:y -> x/y
+                # ratio est le rapport "unité en abscisse/unité en ordonnée"
             w, h = self.dimensions
             fenetre = self.feuille_actuelle.fenetre
-            coeff0 = (fenetre[1] - fenetre[0])/w
+            coeff0 = rat*(fenetre[1] - fenetre[0])/w
             coeff1 = (fenetre[3] - fenetre[2])/h
             xmin, xmax, ymin, ymax = fenetre
             xcoeff = (coeff1/coeff0 if coeff0 < coeff1 else 1)
@@ -387,13 +391,6 @@ def %(_nom_)s(self, valeur = no_argument):
             x, y, rx, ry = (xmin+xmax)/2., (ymin+ymax)/2., (xmax-xmin)/2., (ymax-ymin)/2.
             return x - xcoeff*rx, x + xcoeff*rx, y - ycoeff*ry, y + ycoeff*ry
         return self.feuille_actuelle.fenetre
-##        if hasattr(self, 'ratio'): # À ÉCRIRE
-##            if self.ratio is not None: # ratio est le
-##                xcoeff = (self.coeff(1)/(self.ratio*self.coeff(0)) if self.ratio*self.coeff(0) < self.coeff(1) else 1)
-##                ycoeff = (1 if (self.ratio*self.coeff(0)) < self.coeff(1) else (self.ratio*self.coeff(0))/self.coeff(1))
-##                xmin, xmax, ymin, ymax = self.fenetre
-##                x, y, rx, ry = (xmin+xmax)/2., (ymin+ymax)/2., (xmax-xmin)/2., (ymax-ymin)/2.
-##                self._changer_fenetre(x - xcoeff*rx, x + xcoeff*rx, y - ycoeff*ry, y + ycoeff*ry)
 
 
     def _set_fenetre(self, xmin_xmax_ymin_ymax):
@@ -567,8 +564,8 @@ def %(_nom_)s(self, valeur = no_argument):
     @track
     def quadrillage_millimetre(self, event = None):
         self.quadrillages = (  ((1, 1), ':', 1, 'k'),
-                            ((0.5, 0.5), '-', 0.25, 'k'),
-                            ((0.1, 0.1), '-', 0.1, 'k'),
+                            ((0.5, 0.5), '-', 0.25, 'darkgray'),
+                            ((0.1, 0.1), '-', 0.1, 'gray'),
                             )
 
     @track
@@ -584,7 +581,7 @@ def %(_nom_)s(self, valeur = no_argument):
     def quadrillage_demigraduation(self, event = None):
         ux, uy = self.gradu
         self.quadrillages = (  ((ux, uy), ':', 1, 'k'),
-                                    ((ux/2, uy/2), '-', 0.25, 'k'),
+                                    ((ux/2, uy/2), '-', 0.25, 'darkgray'),
                                     )
 
     @track
@@ -599,6 +596,46 @@ def %(_nom_)s(self, valeur = no_argument):
     @track
     def quadrillage_defaut(self, event = None):
         self.quadrillages = self.param("quadrillages", defaut = True)
+
+
+# Sélection d'une zone
+######################
+
+    def gestion_zoombox(self, pixel):
+        x, y = pixel
+        xmax, ymax = self.dimensions
+        x = max(min(x, xmax), 0)
+        y = max(min(y, ymax), 0)
+        self.fin_zoom = self.pix2coo(x, y)
+        self.debut_zoom = self.debut_zoom or self.fin_zoom
+        (x0, y0), (x1, y1) = self.debut_zoom, self.fin_zoom
+        if self.orthonorme or getattr(self, 'ratio', None) is not None:
+            rymax = (ymax if self.orthonorme else ymax*self.ratio)
+            if rymax*abs(x0 - x1) > xmax*abs(y0 - y1):
+                y1 = y0 + rymax/xmax*abs(x0 - x1)*cmp(y1, y0)
+            else:
+                x1 = x0 + xmax/rymax*abs(y0 - y1)*cmp(x1, x0)
+            self.fin_zoom = (x1, y1)
+            #if param.bouger_curseur:  # ou comment rendre fou l'utilisateur... ;)
+            #    self.WarpPointer(*self.XYcoo2pix((x1, y1), -1))
+        self.dessiner_polygone([x0,x0,x1,x1], [y0,y1,y1,y0], facecolor='c', edgecolor='c', alpha = .1)
+        self.dessiner_ligne([x0,x0,x1,x1,x0], [y0,y1,y1,y0,y0], 'c', alpha = 1)
+
+        self.rafraichir_affichage(dessin_temporaire = True) # pour ne pas tout rafraichir
+
+
+    def selection_zone(self, pixel):
+        x, y = pixel
+        xmax, ymax = self.dimensions
+        x = max(min(x, xmax), 0)
+        y = max(min(y, ymax), 0)
+        self.fin_select = self.pix2coo(x, y)
+        self.debut_select = self.debut_select or self.fin_select
+        (x0, y0), (x1, y1) = self.debut_select, self.fin_select
+        self.dessiner_polygone([x0,x0,x1,x1], [y0,y1,y1,y0], facecolor='y', edgecolor='y',alpha = .1)
+        self.dessiner_ligne([x0,x0,x1,x1,x0], [y0,y1,y1,y0,y0], 'g', linestyle = ":", alpha = 1)
+
+        self.rafraichir_affichage(dessin_temporaire = True) # pour ne pas tout rafraichir
 
 
 # Evenements concernant directement la feuille

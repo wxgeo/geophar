@@ -32,14 +32,14 @@ from ..geolib.textes import Texte_generique
 from ..geolib.points import Point_generique
 from .proprietes_objets import Proprietes
 from ..pylib import print_error
+from .wxlib import PopUpMenu
 
 
-class MenuActionsObjet(QMenu):
+class MenuActionsObjet(PopUpMenu):
     def __init__(self, canvas):
-        QMenu.__init__(self)
+        PopUpMenu.__init__(self, canvas.select.nom_complet, canvas, 'crayon')
         self.canvas = canvas
         select = canvas.select
-        self.setTitle(canvas.select.nom_complet)
 
         for obj in canvas.selections:
             if obj is not select:

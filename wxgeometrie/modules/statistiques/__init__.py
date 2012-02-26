@@ -31,7 +31,7 @@ from PyQt4.QtGui import QVBoxLayout, QLabel, QGroupBox, QHBoxLayout, QComboBox
 from numpy import array
 
 from ...GUI import MenuBar, Panel_API_graphique
-from .experience import LancerDes, Sondage, ExperienceFrame
+from .experience import LancerDes, Sondage, ExperienceFrame, alea, sondage, de
 from .onglets_internes import OngletsStatistiques
 from ...geolib.routines import arrondir
 from ...pylib import property2, uu, regsub, advanced_split, print_error, eval_restricted

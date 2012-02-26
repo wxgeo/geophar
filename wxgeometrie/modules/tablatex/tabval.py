@@ -107,6 +107,7 @@ un retour à la ligne (si le tableau est trop long).
         expression = traduire_latex(expression)
 
         def formater(expr):
+            assert isinstance(expr, float)
             s = str(expr).rstrip('0')
             if s[-1] == '.':
                 s = s[:-1]

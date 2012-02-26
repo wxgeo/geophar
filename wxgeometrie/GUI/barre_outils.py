@@ -22,15 +22,15 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-import math
+from math import pi
 from functools import partial
 
 from PyQt4.QtGui import (QWidget, QToolButton, QInputDialog, QLineEdit, QHBoxLayout,
                          QIcon, QMenu, QShortcut)
-from PyQt4.QtCore import Qt
+##from PyQt4.QtCore import Qt
 
-from .wxlib import png, png_pth
-from ..pylib import is_in, path2
+from .wxlib import png
+from ..pylib import is_in
 from ..geolib.routines import distance
 from ..geolib.textes import Texte_generique
 from ..geolib.points import Point_generique, Barycentre, Point_pondere, Milieu
@@ -45,12 +45,15 @@ from ..geolib.angles import Angle_generique, Angle, Angle_oriente, Secteur_angul
 from ..geolib.transformations import Rotation, Homothetie, Translation
 from ..geolib.vecteurs import Vecteur_generique, Vecteur
 from ..geolib.intersections import Intersection_cercles, Intersection_droite_cercle
-from ..geolib.objet import Objet
-##import param
+from ..geolib.objet import Objet, contexte
+##from .. import param
 
 
 
 class MultiButton(QToolButton):
+    u"""Un bouton possédant plusieurs fonctionnalités, que l'utilisateur
+    peut choisir avec un clic de la souris."""
+
     def __init__(self, parent, raccourci, selectionnable, *fonctionnalites):
         QToolButton.__init__(self, parent)
         self.setAutoRaise(True)
@@ -64,7 +67,8 @@ class MultiButton(QToolButton):
             sh = self.shortcut = QShortcut(self)
             sh.setKey(raccourci)
             sh.setAutoRepeat(not self.selectionnable)
-            sh.activated.connect(self.left_click)
+            # NB: `selected=True` est obligatoire ici (mais je ne sais pas pourquoi...)
+            sh.activated.connect(partial(self.select, selected=True))
 
         # Liste des différentes fonctionnalités possibles:
         self.liste = list(fonctionnalites)
@@ -75,7 +79,8 @@ class MultiButton(QToolButton):
 
         ##self.SetBackgroundColour(self.parent.GetBackgroundColour())
         self.select(False, 0)
-        self.clicked.connect(self.left_click)
+        # NB: `selected=True` est obligatoire ici (mais je ne sais pas pourquoi...)
+        self.clicked.connect(partial(self.select, selected=True))
 
 
     def update_menu(self):
@@ -93,7 +98,9 @@ class MultiButton(QToolButton):
                 titre, image, aide, action = entree
                 action = menu.addAction(self.img2icon(image), titre)
                 action.setIconVisibleInMenu(True)
-                action.triggered.connect(partial(self.select, i=i))
+                # NB: `selected=True` est obligatoire ici (sinon, c'est l'argument du
+                # signal `.triggered` qui est passé comme argument ?)
+                action.triggered.connect(partial(self.select, selected=True, i=i))
 
     @staticmethod
     def img2icon(image):
@@ -105,9 +112,16 @@ class MultiButton(QToolButton):
         return self.parent._selected_button is self
 
     def select(self, selected=True, i=None):
-        u"Sélectionne la i-ème fonctionnalité de la liste. Met à jour l'icône."
+        u"""(Dé)sélectionne le bouton.
+
+        Si `i` est différent de `None`, la i-ème fonctionnalité associée
+        au bouton est activée.
+
+        L'icône est automatiquement mise à jour.
+        """
         if i is not None:
             self.index = i
+
             titre, image, aide, action = self.liste[i]
             if self.raccourci:
                 aide += " (" + self.raccourci.replace("Shift", "Maj") + ")"
@@ -118,27 +132,32 @@ class MultiButton(QToolButton):
                 self.parent._selected_button = self
                 if previous is not None:
                     previous.update_display()
+                action = self.liste[self.index][3]
+                action(True)
             elif self.selected:
                 # NB: ne pas déselectionner un autre bouton.
                 self.parent._selected_button = None
             if len(self.liste) > 1:
                 self.update_menu()
+        elif selected:
+            self.liste[0][3]()
         self.update_display()
 
-    def update_display(self):
+    def update_display(self, as_selected=None):
         u"""Change l'icône du bouton, selon la fonction sélectionnée, et le fait
-            que le bouton soit activé ou non."""
+            que le bouton soit activé ou non.
+
+            Il est possible de forcer l'affichage du bouton comme s'il était
+            sélectionné, en passant l'option `as_selected=True`.
+            Cela sert pour le bouton sauvegarde par exemple.
+            """
         image = self.liste[self.index][1]
-        if self.selected:
+        if self.selected or as_selected:
             image += '_'
         pix = png(image)
         self.setIcon(QIcon(pix))
         self.setIconSize(pix.size())
 
-    def left_click(self):
-        self.select(True)
-        action = self.liste[self.index][3]
-        action(True)
 
 
 class BarreOutils(QWidget):
@@ -161,6 +180,7 @@ class BarreOutils(QWidget):
         if self.parent.param('afficher_boutons'):
             self.creer_boutons()
 
+        self.sizer.addStretch()
         self.setLayout(self.sizer)
         self.adjustSize()
 
@@ -286,7 +306,7 @@ class BarreOutils(QWidget):
 
     def rafraichir(self):
         u"Appelé par le parent pour rafraichir la barre d'outils."
-        self.btn_sauver.select(not self.feuille_actuelle.modifiee)
+        self.btn_sauver.update_display(as_selected=(not self.feuille_actuelle.modifiee))
 
 
     def initialiser(self):
@@ -316,7 +336,8 @@ class BarreOutils(QWidget):
         Si editer != None, le nom de l'objet est édité (par défaut, seulement les points, droites et textes),
         afin de permettre de le renommer dans la foulee.
         Si init = True, le cache des selections est initialise."""
-        self.canvas.executer("_ = " + instruction)
+        with contexte(unite_angle='r'):
+            self.canvas.executer("_ = " + instruction)
         if init:
             self.initialiser()
         if editer == "defaut":
@@ -379,7 +400,6 @@ class BarreOutils(QWidget):
         self.interagir(None)
 
 
-
     def zoombox(self, event = False, **kw):
         u"Mode zoom."
         if event is not False:
@@ -398,13 +418,12 @@ class BarreOutils(QWidget):
                 self.canvas.message(u"Cliquez pour délimiter le début de la zone à afficher.")
                 self.debut_zoombox = None
 
+
     def zoombox_onmotion(self, **kw):
         if self.debut_zoombox is not None:
             self.canvas.debut_zoom = self.debut_zoombox
             self.canvas.gestion_zoombox(kw["pixel"])
             self.canvas.debut_zoom = None
-
-
 
 
     def selectionner(self, event = False, **kw):
@@ -424,6 +443,7 @@ class BarreOutils(QWidget):
                 self.canvas.OnSelect(x0, x1, y0, y1)
                 self.canvas.message(u"Cliquez pour délimiter le début de la zone à sélectionner.")
                 self.debut_selection = None
+
 
     def selectionner_onmotion(self, **kw):
         if self.debut_selection is not None:
@@ -962,7 +982,8 @@ class BarreOutils(QWidget):
                 A = self.cache[0]
                 B = self.feuille_actuelle.point_temporaire()
                 I = Milieu(A, B)
-                self.feuille_actuelle.objet_temporaire(PrevisualisationPolygone(A, B, Rotation(I, math.pi/3)(B), A))
+                C = Rotation(I, pi/3, unite='r')(B)
+                self.feuille_actuelle.objet_temporaire(PrevisualisationPolygone(A, B, C, A))
             elif len(self.cache) == 2:
                 self.feuille_actuelle.objet_temporaire(None)
                 self.executer(u"Triangle_rectangle(%s,%s, pi/6)" %(self.cache[0].nom, self.cache[1].nom))
@@ -984,7 +1005,8 @@ class BarreOutils(QWidget):
             if len(self.cache) == 1:
                 A = self.cache[0]
                 B = self.feuille_actuelle.point_temporaire()
-                self.feuille_actuelle.objet_temporaire(PrevisualisationPolygone(A, B, Rotation(A, math.pi/5)(B), A))
+                C = Rotation(A, pi/5, unite='r')(B)
+                self.feuille_actuelle.objet_temporaire(PrevisualisationPolygone(A, B, C, A))
             elif len(self.cache) == 2:
                 self.feuille_actuelle.objet_temporaire(None)
                 self.executer(u"Triangle_isocele(%s,%s, pi/5)" %(self.cache[0].nom, self.cache[1].nom))
@@ -1007,7 +1029,8 @@ class BarreOutils(QWidget):
                 A = self.cache[0]
                 B = self.feuille_actuelle.point_temporaire()
                 I = Milieu(A, B)
-                self.feuille_actuelle.objet_temporaire(PrevisualisationPolygone(A, B, Rotation(I, math.pi/2)(B), A))
+                C = Rotation(I, pi/2, unite='r')(B)
+                self.feuille_actuelle.objet_temporaire(PrevisualisationPolygone(A, B, C, A))
             elif len(self.cache) == 2:
                 self.feuille_actuelle.objet_temporaire(None)
                 self.executer(u"Triangle_isocele_rectangle(%s,%s)" %(self.cache[0].nom, self.cache[1].nom))
@@ -1029,7 +1052,8 @@ class BarreOutils(QWidget):
             if len(self.cache) == 1:
                 A = self.cache[0]
                 B = self.feuille_actuelle.point_temporaire()
-                self.feuille_actuelle.objet_temporaire(PrevisualisationPolygone(A, B, Rotation(A, math.pi/3)(B), A))
+                C = Rotation(A, pi/3, unite='r')(B)
+                self.feuille_actuelle.objet_temporaire(PrevisualisationPolygone(A, B, C, A))
             elif len(self.cache) == 2:
                 self.feuille_actuelle.objet_temporaire(None)
                 self.executer(u"Triangle_equilateral(%s,%s)" %(self.cache[0].nom, self.cache[1].nom))
@@ -1051,7 +1075,7 @@ class BarreOutils(QWidget):
             if len(self.cache) == 1:
                 A = self.cache[0]
                 B = self.feuille_actuelle.point_temporaire()
-                C = Homothetie(B, 1.4)(Rotation(B, -math.pi/2)(A))
+                C = Homothetie(B, 1.4)(Rotation(B, -pi/2, unite='r')(A))
                 D = Barycentre((A, 1), (B, -1), (C, 1))
                 self.feuille_actuelle.objet_temporaire(PrevisualisationPolygone(A, B, C, D, A))
             elif len(self.cache) == 2:
@@ -1075,7 +1099,7 @@ class BarreOutils(QWidget):
             if len(self.cache) == 1:
                 B = self.cache[0]
                 C = self.feuille_actuelle.point_temporaire()
-                A = Rotation(B, math.pi/5)(C)
+                A = Rotation(B, pi/5, unite='r')(C)
                 D = Barycentre((A, 1), (B, -1), (C, 1))
                 self.feuille_actuelle.objet_temporaire(PrevisualisationPolygone(A, B, C, D, A))
             elif len(self.cache) == 2:
@@ -1099,7 +1123,9 @@ class BarreOutils(QWidget):
             if len(self.cache) == 1:
                 A = self.cache[0]
                 B = self.feuille_actuelle.point_temporaire()
-                self.feuille_actuelle.objet_temporaire(PrevisualisationPolygone(A, B, Rotation(B, -math.pi/2)(A), Rotation(A, math.pi/2)(B), A))
+                C = Rotation(B, -pi/2, unite='r')(A)
+                D = Rotation(A, pi/2, unite='r')(B)
+                self.feuille_actuelle.objet_temporaire(PrevisualisationPolygone(A, B, C, D, A))
             elif len(self.cache) == 2:
                 self.feuille_actuelle.objet_temporaire(None)
                 self.executer(u"Carre(%s,%s)" %(self.cache[0].nom, self.cache[1].nom))
@@ -1119,11 +1145,13 @@ class BarreOutils(QWidget):
                 self.cache.append(self.point(**kw))
 
             if 1 <= len(self.cache) <= 2:
-                self.feuille_actuelle.objet_temporaire(PrevisualisationPolygone(*(self.cache + [self.feuille_actuelle.point_temporaire()])))
+                points = self.cache + [self.feuille_actuelle.point_temporaire()]
+                self.feuille_actuelle.objet_temporaire(PrevisualisationPolygone(*points))
             elif len(self.cache) == 3:
                 self.executer(u"Triangle(" + ",".join(obj.nom for obj in self.cache) + ")")
         elif len(self.cache):
-            self.feuille_actuelle.objet_temporaire(PrevisualisationPolygone(*(self.cache + [self.feuille_actuelle.point_temporaire()])))
+            points = self.cache + [self.feuille_actuelle.point_temporaire()]
+            self.feuille_actuelle.objet_temporaire(PrevisualisationPolygone(*points))
         else:
             self.feuille_actuelle.objet_temporaire(None)
 
@@ -1141,10 +1169,10 @@ class BarreOutils(QWidget):
                 self.cache.append(self.point(**kw))
 
             if len(self.cache) == 2:
-                self.feuille_actuelle.objet_temporaire(PrevisualisationPolygone(*(self.cache + [self.feuille_actuelle.point_temporaire(),\
-                Barycentre(Point_pondere(self.cache[0], 1), \
-                                         Point_pondere(self.cache[1], -1), \
-                                         Point_pondere(self.feuille_actuelle.point_temporaire(), 1))])))
+                A, B = self.cache
+                C = self.feuille_actuelle.point_temporaire()
+                D = Barycentre((A, 1), (B, -1), (C, 1))
+                self.feuille_actuelle.objet_temporaire(PrevisualisationPolygone(A, B, C, D))
             elif len(self.cache) == 3:
                 self.executer(u"Parallelogramme(" + ",".join(obj.nom for obj in self.cache) + ")")
 
@@ -1179,7 +1207,8 @@ class BarreOutils(QWidget):
                     tmp = tmp[-1]
                     tmp.points = tmp.points[:-1] + (self.cache[-1], self.feuille_actuelle.point_temporaire())
                 else:
-                    self.feuille_actuelle.objet_temporaire(PrevisualisationPolygone(*(self.cache + [self.feuille_actuelle.point_temporaire()])))
+                    points = self.cache + [self.feuille_actuelle.point_temporaire()]
+                    self.feuille_actuelle.objet_temporaire(PrevisualisationPolygone(*points))
         elif self.cache:
             # Recliquer sur un objet le supprime du cache (cf. self.test())
             tmp = self.feuille_actuelle.objet_temporaire()[-1]

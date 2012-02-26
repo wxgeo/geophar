@@ -35,7 +35,8 @@ from .points import Point
 from .routines import nice_display, angle_vectoriel
 from .variables import Variable
 from .vecteurs import Vecteur_libre, Vecteur
-import param
+from .. import param
+from ..pylib import warning
 
 
 
@@ -57,7 +58,8 @@ class Angle_generique(Objet_numerique):
     @property
     def degre(self):
         if self.existe:
-            return self.val*180/pi_()
+            val = self.val*180
+            return val/pi if isinstance(val, float) else val/pi_()
     deg = degre
 
     @property
@@ -71,40 +73,11 @@ class Angle_generique(Objet_numerique):
         if unite == 'd':
             val = nice_display(self.degre) + u'\u00B0'
         elif unite == 'g':
-            val = nice_display(self.grad) + " g"
+            val = nice_display(self.grad) + " grad"
         else:
-            val = nice_display(self.rad)
-        return self.nom_complet + u" de valeur "+ val
+            val = nice_display(self.rad) + " rad"
+        return self.nom_complet.rstrip() + u" de valeur " + val
 
-##    def sin(self):
-##        return math.sin(self.radian)
-##
-##    def cos(self):
-##        return math.cos(self.radian)
-##
-##    def tan(self):
-##        return math.tan(self.radian)
-
-
-##    def _changer_unite(self, unite = None):
-##        u"Change l'unité de l'angle en effectuant les adaptations nécessaires."
-##        if unite is not None:
-##            self._recalculer = True
-##            for objet in self.heritiers():
-##                objet._recalculer = True
-##                if objet.etiquette:
-##                    objet.etiquette._recalculer = True
-##            self.__unite = self._choix_unite(unite)
-##        else:
-##            return self.__unite
-
-##    unite = property(_changer_unite, _changer_unite)
-
-
-##    _conversion = {  "r": {"r":1., "d":180./pi, "g":200./pi},
-##                    "g": {"r":pi/200., "d":180./200., "g":1.},
-##                    "d": {"r":pi/180., "d":1., "g":200./180.}}
-##    # utilisation: t*conversation["r"]["d"] pour convertir t de radian en degré.
 
     @staticmethod
     def _convertir(objet):
@@ -115,13 +88,6 @@ class Angle_generique(Objet_numerique):
         if not isinstance(objet, Variable):
             objet = Variable._convertir(objet)
         return Angle_libre(objet, unite = unite)
-##        raise TypeError, "%s must be of type 'Variable'" %objet
-
-##%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%##
-######################### REPRENDRE ICI (FIN DE TRAVAUX) ############################
-##%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%##
-
-
 
 
 
@@ -300,7 +266,6 @@ class Angle_libre(Angle_generique):
     variable = __variable = Argument("Variable_generique", defaut = lambda: uniform(0, 2*pi))
 
     def __init__(self, variable = None, unite = None, **styles):
-
         # Gestion des unités d'angle (degré et grad)
         if unite is None:
             unite = contexte['unite_angle']
@@ -315,6 +280,17 @@ class Angle_libre(Angle_generique):
             if variable[-1]  == u'\u00B0':
                 unite = 'd'
                 variable = variable[:-1]
+                if variable[-1] == u'\u00c2':
+                    # Problème fréquent d'encodage (utf8 interprété comme latin1)
+                    if param.debug:
+                        warning('Angle: encodage incorrect (utf8/latin1).')
+                    variable = variable[:-1]
+            elif variable.endswith(' rad'):
+                unite = 'r'
+                variable = variable[:-4]
+            elif variable.endswith(' grad'):
+                unite = 'g'
+                variable = variable[:-5]
 
         if unite in ('d', 'g'):
             coeff = 180 if unite == 'd' else 200
@@ -328,7 +304,13 @@ class Angle_libre(Angle_generique):
                 variable *= pi/coeff
 
         self.__variable = variable = Ref(variable)
-        Angle_generique.__init__(self)
+        # Quel que soit le contexte (radian ou degré), les angles sont
+        # stockés en interne en radian. Pour que `repr(angle)` puisse
+        # être correctement évalué si le contexte est en degré, il faut
+        # qu'apparaisse dans les paramètres `unite='r'`.
+        # Le plus simple, c'est de le faire via le dictionnaire `styles`.
+        styles['unite'] = 'r'
+        Angle_generique.__init__(self, **styles)
 
     def _creer_figure(self):
         pass  # les angles libres ne sont pas affichés.
@@ -352,7 +334,7 @@ class Angle_vectoriel(Angle_generique):
     def __init__(self, vecteur1 = None, vecteur2 = None, **styles):
         self.__vecteur1 = vecteur1 = Ref(vecteur1)
         self.__vecteur2 = vecteur2 = Ref(vecteur2)
-        Angle_generique.__init__(self)
+        Angle_generique.__init__(self, **styles)
 
 
     def _conditions_existence(self):

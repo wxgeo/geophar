@@ -37,7 +37,7 @@ from ..geolib.points import Point_generique, Barycentre, Point, Milieu, Centre,\
                             Centre_gravite, Point_final
 from ..geolib.cercles import Cercle_generique, Cercle, Arc_points,\
                              Arc_oriente, Cercle_diametre, Cercle_rayon, Demicercle,\
-                             Arc_cercle, Disque
+                             Arc_cercle, Disque, Cercle_points
 from ..geolib.lignes import Droite_generique, Segment, Demidroite, Ligne_generique,\
                             Droite, Tangente, Parallele, Perpendiculaire, Bissectrice,\
                             Mediatrice
@@ -360,7 +360,7 @@ class DialogueCercleDiametre(Dialogue):
 
 
 class DialogueCerclePoints(Dialogue):
-    objet = Arc_points
+    objet = Cercle_points
     def __init__(self, parent):
         Dialogue.__init__(self, parent)
         self.ajoute([u"Premier point du cercle :", ("point1", 5, Point_generique)], u"Entrez ici un point du cercle. Exemple : A")
@@ -608,7 +608,6 @@ class DialogueAngle(Dialogue):
     def __init__(self, parent):
         Dialogue.__init__(self, parent)
         self.ajoute([u"Créer l'angle :", ("point1", 5, Point_generique), ("point2", 5, Point_generique), ("point3", 5, Point_generique)], u"Entrez les trois sommets de l'angle. Exemple : A B C")
-        self.ajoute([u"Unité :", ("unite", 5)], u"Entrez éventuellement l'unité. Exemple : r, d, g (degré, radian ou grad). Radian par défaut.")
         self.finalise()
 
 class DialogueAngleOriente(Dialogue):
@@ -616,7 +615,6 @@ class DialogueAngleOriente(Dialogue):
     def __init__(self, parent):
         Dialogue.__init__(self, parent)
         self.ajoute([u"Créer l'angle :", ("point1", 5, Point_generique), ("point2", 5, Point_generique), ("point3", 5, Point_generique)], u"Entrez les trois sommets de l'angle. Exemple : A B C")
-        self.ajoute([u"Unité :", ("unite", 5)], u"Entrez l'unité. Exemple : r, d, g (degré, radian ou grad).")
         self.finalise()
 
 class DialogueAngleLibre(Dialogue):
@@ -624,7 +622,7 @@ class DialogueAngleLibre(Dialogue):
     def __init__(self, parent):
         Dialogue.__init__(self, parent)
         self.ajoute([u"Valeur de l'angle :", ("valeur", 5)], u"Entrez la valeur en degré ou en radian de l'angle. Exemple : pi/2, 15°")
-        self.ajoute([u"Unité :", ("unite", 5)], u"Entrez éventuellement l'unité. Exemple : r, d, g (degré, radian ou grad). Radian par défaut.")
+        self.ajoute([u"Unité (facultatif) :", ("unite", 5)], u"Entrez éventuellement l'unité. Exemple : r, d, g (degré, radian ou grad). Radian par défaut.")
         self.finalise()
 
     def commande(self): # gestion du symbole "°"
@@ -633,7 +631,7 @@ class DialogueAngleLibre(Dialogue):
             valeur = valeur[:-1]
             unite = "'d'"
         else:
-            unite = self.champ("unite")
+            unite = repr(self.champ("unite").lower().strip())
         return u"%s=Angle_libre(%s, %s)" %(self.champ("nom"), valeur, unite)
 
 
@@ -642,7 +640,6 @@ class DialogueAngleVectoriel(Dialogue):
     def __init__(self, parent):
         Dialogue.__init__(self, parent)
         self.ajoute([u"Créer l'angle : (", ("vecteur1", 5, Vecteur_generique), ",", ("vecteur2", 5, Vecteur_generique), ")"], u"Entrez les 2 vecteurs. Exemple : u et v, ou A>B et C>D")
-        self.ajoute([u"Unité :", ("unite", 5)], u"Entrez éventuellement l'unité. Exemple : r, d, g (degré, radian ou grad). Radian par défaut.")
         self.finalise()
 
 

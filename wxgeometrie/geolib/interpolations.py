@@ -156,6 +156,10 @@ class Interpolation_lineaire(Interpolation_generique):
         self._affiche_extremites()
 
 
+    def image_par(self, transformation):
+        # FIXME: l'image n'est plus correcte si le nombre de points est modifié ensuite
+        # Par exemple, interp = Interpolation_lineaire(A, B), puis interp.points = (A, B, C)
+        return self.__class__(*(transformation(point) for point in self.__points))
 
 
 

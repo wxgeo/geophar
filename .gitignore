@@ -50,10 +50,8 @@ wxgeometrie/test.py
 # À ne pas inclure **pour l'instant**
 tools/isympy
 tools/others/
-tools/pytest.py
-tools/runtests.py
+tools/isympy_
 tools/strip_whitespace.py
-tools/test.py
 wxgeometrie/tests/
 ressources_annexes/
 wxgeometrie/developpeurs/

@@ -33,8 +33,8 @@ from .app import app
 from .menu_objet import MenuActionsObjet
 from .proprietes_objets import Proprietes
 from .wxlib import (BusyCursor, shift_down, alt_down, ctrl_down, left_down,
-                   right_down, lieu)
-import param
+                   right_down, lieu, PopUpMenu)
+from .. import param
 from ..pylib import print_error, debug
 from ..geolib.textes import Texte
 from ..geolib.objet import Objet
@@ -267,7 +267,7 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
         le module doit définir :
 
         .. sourcecode:: python
-        
+
             def ma_fonction(self, **kw):
                 pixel = kw["pixel"]
                 position = kw["position"]
@@ -295,7 +295,8 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
         if self.interaction:
             pixel = lieu(event)
             self.detecter(pixel)
-            self.interaction(selection = self.select, autres = self.selections, position = self.coordonnees(event), pixel = pixel)
+            self.interaction(selection = self.select, autres = self.selections,
+                             position = self.coordonnees(event), pixel = pixel)
             self.detecter(pixel) # XXX: toujours utile ?
 
 
@@ -448,40 +449,6 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
 
 
 
-    def gestion_zoombox(self, pixel):
-        x, y = pixel
-        xmax, ymax = self.dimensions # en pixels
-        x = max(min(x, xmax), 0)
-        y = max(min(y, ymax), 0)
-        self.fin_zoom = self.pix2coo(x, y)
-        self.debut_zoom = self.debut_zoom or self.fin_zoom
-        (x0, y0), (x1, y1) = self.debut_zoom, self.fin_zoom
-        if self.orthonorme:
-            if ymax*abs(x0 - x1) > xmax*abs(y0 - y1):
-                y1 = y0 + ymax/xmax*abs(x0 - x1)*cmp(y1, y0)
-            else:
-                x1 = x0 + xmax/ymax*abs(y0 - y1)*cmp(x1, x0)
-            self.fin_zoom = (x1, y1)
-        self.dessiner_polygone([x0,x0,x1,x1], [y0,y1,y1,y0], facecolor='c', edgecolor='c', alpha = .1)
-        self.dessiner_ligne([x0,x0,x1,x1,x0], [y0,y1,y1,y0,y0], 'c', alpha = 1)
-
-        self.rafraichir_affichage(dessin_temporaire = True) # pour ne pas tout rafraichir
-
-
-    def selection_zone(self, pixel):
-        x, y = pixel
-        xmax, ymax = self.dimensions # pixels
-        x = max(min(x, xmax), 0)
-        y = max(min(y, ymax), 0)
-        self.fin_select = self.pix2coo(x, y)
-        self.debut_select = self.debut_select or self.fin_select
-        (x0, y0), (x1, y1) = self.debut_select, self.fin_select
-        self.dessiner_polygone([x0,x0,x1,x1], [y0,y1,y1,y0], facecolor='y', edgecolor='y',alpha = .1)
-        self.dessiner_ligne([x0,x0,x1,x1,x0], [y0,y1,y1,y0,y0], 'g', linestyle = ":", alpha = 1)
-
-        self.rafraichir_affichage(dessin_temporaire = True) # pour ne pas tout rafraichir
-
-
     def OnSelect(self, x0, x1, y0, y1):
         x0, x1 = min(x0, x1), max(x0, x1)
         y0, y1 = min(y0, y1), max(y0, y1)
@@ -514,8 +481,7 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
                 self.exporter(nom = filename, zone = (x0, x1, y0, y1))
                 actuelle.sauvegarde["export"] = filename
 
-        menu = QMenu(self)
-        menu.setTitle(u"Zone sélectionnée")
+        menu = PopUpMenu(u"Zone sélectionnée", self, 'crayon')
         action = menu.addAction(u'Exporter la zone comme image')
         action.triggered.connect(exporte)
 
@@ -575,7 +541,7 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
 
         if self.select is not None and not ctrl_down(event):
             menu = MenuActionsObjet(self)
-            menu.exec_(event.pos())
+            menu.exec_(event.globalPos())
             if self.select is not None:
                 self.select = None
                 self.selection_en_gras()

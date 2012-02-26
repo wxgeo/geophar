@@ -696,7 +696,7 @@ def linreg(serie1, serie2, coeffs = None):
     Retourne les coefficients a et b de l'équation y=ax+b
      de la droite de régression par la méthode des moindres carrés.
 
-     >>> from mathlib.custom_functions import linreg
+     >>> from wxgeometrie.mathlib.custom_functions import linreg
      >>> linreg((85.6,84.5,81,80.2,72.8,71.2,73,48.1),(78.7,77.6,75.2,71.1,67.7,66.3,59.1,46.8))
      (0.849191825268073, 4.50524942626518)
      """

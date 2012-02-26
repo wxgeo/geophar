@@ -60,7 +60,7 @@ class Graph(dict):
     u"""A graph representation.
 
     Graph are stored as a dictionary:
-    >>> from mathlib.graphes import Graph
+    >>> from wxgeometrie.mathlib.graphes import Graph
     >>> g = Graph({'A': {'B':[1],'C':[2],'D':[3]}, 'B': {'A':[4],'C':[2]}, 'C':{}, 'D':{}}, oriented=True)
 
     For convenience, they may be entered as a string:

@@ -22,7 +22,8 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-import wx
+from PyQt4.QtGui import (QWidget, QSpinBox, QCheckBox, QPushButton,
+                         QVBoxLayout, QLabel, QHBoxLayout, QLineEdit)
 from numpy.random import rand
 from numpy import sum
 # NB: numpy.sum est 100 fois plus rapide que __builtin__.sum !
@@ -55,88 +56,58 @@ class ExperienceFrame(MyMiniFrame):
     def __init__(self, parent):
 
         MyMiniFrame.__init__(self, parent, u"Simulation d'une expérience")
-        self.SetExtraStyle(wx.WS_EX_BLOCK_EVENTS )
         self.parent = parent
-
-        p = self.panel = QWidget(self)
 
         sizer = QVBoxLayout()
         exp = QHBoxLayout()
-        exp.addWidget(QLabel(p, -1, u"Experience:"))
-        self.experience = wx.TextCtrl(p, -1, "", size=(120, -1))
-        self.experience.Bind(wx.EVT_CHAR, self.EvtChar)
-        exp.Add(self.experience)
-        sizer.addWidget(exp)
+        exp.addWidget(QLabel(u"Experience:"))
+        self.experience = QLineEdit()
+        self.experience.setMinimumWidth(120)
+        self.experience.returnPressed.connect(self.actualiser)
+        exp.addWidget(self.experience)
+        sizer.addLayout(exp)
 
         nbr = QHBoxLayout()
-        nbr.addWidget(QLabel(p, -1, u"Nombre d'expériences:"))
-        sc = self.sc = QSpinBox(p, -1, "", (30, 50))
-        sc.SetRange(1,100000)
-        sc.SetValue(5)
-        self.sc.Bind(wx.EVT_CHAR, self.EvtChar)
-        self.Bind(wx.EVT_SPINCTRL, self.EvtSpin, sc)
-        self.Bind(wx.EVT_TEXT, self.EvtSpinText, sc)
-        #n = wx.TextCtrl(p, -1, "", size=(100, -1))
-        nbr.Add(sc)
-        sizer.addWidget(nbr)
+        nbr.addWidget(QLabel(u"Nombre d'expériences:"))
+        sc = self.sc = QSpinBox()
+        sc.setRange(1, 100000)
+        sc.setValue(5)
+        sc.valueChanged.connect(self.actualiser)
+        nbr.addWidget(sc)
+        sizer.addLayout(nbr)
 
         val = QHBoxLayout()
-        val.addWidget(QLabel(p, -1, u"Valeurs possibles:"))
-        self.valeurs = wx.TextCtrl(p, -1, "", size=(120, -1))
-        self.valeurs.Bind(wx.EVT_CHAR, self.EvtChar)
-        val.Add(self.valeurs)
-        sizer.addWidget(val)
+        val.addWidget(QLabel(u"Valeurs possibles:"))
+        self.valeurs = QLineEdit()
+        self.valeurs.setMinimumWidth(120)
+        self.valeurs.returnPressed.connect(self.actualiser)
+        val.addWidget(self.valeurs)
+        sizer.addLayout(val)
 
-#        self.iconfiance = wx.CheckBox(p, -1, "Afficher l'intervalle de confiance")
-#        sizer.Add(self.iconfiance, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5)
-#        self.Bind(wx.EVT_CHECKBOX, self.EvtCheckBox, self.iconfiance)
-
-        self.cb = QCheckBox(p, -1, u"Lancer une animation:")
+        self.cb = QCheckBox(u"Lancer une animation:")
         sizer.addWidget(self.cb)
-        self.Bind(wx.EVT_CHECKBOX, self.EvtCheckBox, self.cb)
+        self.cb.stateChanged.connect(self.actualiser)
 
         boutons = QHBoxLayout()
-        fermer = QPushButton(p, -1, u"Fermer")
-        boutons.Add(fermer)
-        lancer = QPushButton(p, -1, u"Lancer l'experience")
-        boutons.Add(lancer)
-        self.Bind(wx.EVT_BUTTON, self.OnCloseMe, fermer)
-        self.Bind(wx.EVT_BUTTON, self.actualiser, lancer)
+        fermer = QPushButton(u"Fermer")
+        boutons.addWidget(fermer)
+        lancer = QPushButton(u"Lancer l'experience")
+        boutons.addWidget(lancer)
+        fermer.clicked.connect(self.close)
+        lancer.clicked.connect(self.actualiser)
 
-        sizer.addWidget(boutons)
-        p.setLayout(sizer)
-        self.SetClientSize(p.GetSize())
+        sizer.addLayout(boutons)
+        self.setLayout(sizer)
+
 
     def actualiser(self, event = None):
-        n = self.sc.GetValue()
-        exp = self.experience.GetValue()
-        vals = msplit(self.valeurs.GetValue(), (" ", ",", ";"))
+        n = self.sc.value()
+        exp = self.experience.text()
+        vals = msplit(self.valeurs.text(), (" ", ",", ";"))
+        print alea
         if exp:
             self.parent.experience(exp, n, [eval(val) for val in vals if val])
 
-
-
-
-    def OnCloseMe(self, event):
-        self.close()
-
-    def EvtCheckBox(self, event):
-        self.actualiser()
-
-    def EvtSpin(self, event):
-        self.actualiser()
-
-    def EvtSpinText(self, event):
-        pass
-    #    self.actualiser()
-
-    def EvtChar(self, event):
-        code = event.GetKeyCode()
-
-        if code == 13:
-            self.actualiser()
-        else:
-            event.Skip()
 
 
 
@@ -147,55 +118,49 @@ class LancerDes(MyMiniFrame):
         MyMiniFrame.__init__(self, parent, u"Simulation de lancers de dés")
         self.parent = parent
 
-        p = self.panel = QWidget(self)
-
         sizer = QVBoxLayout()
-        sizer.addWidget(QLabel(p, -1, u"On simule le lancer d'un ou plusieurs dés"), 0, wx.LEFT|wx.TOP|wx.RIGHT|wx.ALIGN_CENTER_VERTICAL, 5)
-        sizer.addWidget(QLabel(p, -1, u"à 6 faces, et on étudie la somme des points."))
+        sizer.addWidget(QLabel(u"On simule le lancer d'un ou plusieurs dés"))
+        sizer.addWidget(QLabel(u"à 6 faces, et on étudie la somme des points."))
         exp = QHBoxLayout()
-        exp.addWidget(QLabel(p, -1, u"Nombre de dés:"))
-        ex = self.experience = QSpinBox(p, -1, "",  (30, 50))
-        ex.SetRange(1, 100000)
-        ex.SetValue(1)
-        ex.Bind(wx.EVT_CHAR, self.EvtChar)
-        self.Bind(wx.EVT_SPINCTRL, self.EvtSpin, ex)
-        self.Bind(wx.EVT_TEXT, self.EvtSpinText, ex)
-        exp.Add(self.experience)
-        sizer.addWidget(exp)
+        exp.addWidget(QLabel(u"Nombre de dés:"))
+        ex = self.experience = QSpinBox()
+        ex.setRange(1, 100000)
+        ex.setValue(1)
+        ex.valueChanged.connect(self.actualiser)
+        exp.addWidget(self.experience)
+        sizer.addLayout(exp)
 
         nbr = QHBoxLayout()
-        nbr.addWidget(QLabel(p, -1, u"Nombre de lancers:"))
-        sc = self.sc = QSpinBox(p, -1, "", (30, 50))
-        sc.SetRange(1, 100000)
-        sc.SetValue(1)
-        self.sc.Bind(wx.EVT_CHAR, self.EvtChar)
-        self.Bind(wx.EVT_SPINCTRL, self.EvtSpin, sc)
-        self.Bind(wx.EVT_TEXT, self.EvtSpinText, sc)
-        nbr.Add(sc)
-        sizer.addWidget(nbr)
+        nbr.addWidget(QLabel(u"Nombre de lancers:"))
+        sc = self.sc = QSpinBox()
+        sc.setRange(1, 100000)
+        sc.setValue(1)
+        self.sc.valueChanged.connect(self.actualiser)
+        nbr.addWidget(sc)
+        sizer.addLayout(nbr)
 
-        self.cb = QCheckBox(p, -1, u"Conserver les valeurs")
+        self.cb = QCheckBox(u"Conserver les valeurs")
         sizer.addWidget(self.cb)
 
 
         boutons = QHBoxLayout()
-        fermer = QPushButton(p, -1, u"Fermer")
-        boutons.Add(fermer)
-        lancer = QPushButton(p, -1, u"Lancer l'expérience")
-        boutons.Add(lancer)
-        self.Bind(wx.EVT_BUTTON, self.OnCloseMe, fermer)
-        self.Bind(wx.EVT_BUTTON, self.actualiser, lancer)
+        fermer = QPushButton(u"Fermer")
+        boutons.addWidget(fermer)
+        lancer = QPushButton(u"Lancer l'expérience")
+        boutons.addWidget(lancer)
+        fermer.clicked.connect(self.close)
+        lancer.clicked.connect(self.actualiser)
 
-        sizer.addWidget(boutons)
-        p.setLayout(sizer)
-        self.SetClientSize(p.GetSize())
+        sizer.addLayout(boutons)
+        self.setLayout(sizer)
+
 
     def actualiser(self, event = None):
-        if not self.cb.GetValue():
+        if not self.cb.isChecked():
             self.parent.actualiser(False)
         self.parent.graph = 'batons'
-        n = self.sc.GetValue()
-        des = self.experience.GetValue()
+        n = self.sc.value()
+        des = self.experience.value()
         for val in range(des, 6*des + 1):
             self.parent.ajouter_valeur(val, 0)
         self.parent.ajouter_valeurs(*[de(des) for i in xrange(n)])
@@ -208,131 +173,67 @@ class LancerDes(MyMiniFrame):
 
 
 
-    def OnCloseMe(self, event):
-        self.close()
-
-
-    def EvtSpin(self, event):
-        self.actualiser()
-
-    def EvtSpinText(self, event):
-        pass
-
-    def EvtChar(self, event):
-        code = event.GetKeyCode()
-
-        if code == 13:
-            self.actualiser()
-        else:
-            event.Skip()
-
-
-
-
-
-
 class Sondage(MyMiniFrame):
     def __init__(self, parent):
 
         MyMiniFrame.__init__(self, parent, u"Simulation d'un sondage")
         self.parent = parent
 
-        p = self.panel = QWidget(self)
-
         sizer = QVBoxLayout()
-        sizer.addWidget(QLabel(p, -1, u"On simule un sondage simple (réponse par oui ou non)."), 0, wx.LEFT|wx.TOP|wx.RIGHT|wx.ALIGN_CENTER_VERTICAL, 5)
-        sizer.addWidget(QLabel(p, -1, u"Exemple: \"préférez-vous le candidat A au candidat B ?\""))
+        sizer.addWidget(QLabel(u"On simule un sondage simple (réponse par oui ou non)."))
+        sizer.addWidget(QLabel(u"Exemple: \"préférez-vous le candidat A au candidat B ?\""))
         exp = QHBoxLayout()
-        exp.addWidget(QLabel(p, -1, u"Pourcentage de réponses affirmatives sur l'ensemble de la population:"))
-        ex = self.experience = QSpinBox(p, -1, "",  (30, 50))
-        ex.SetRange(0,100)
-        ex.SetValue(50)
-        ex.Bind(wx.EVT_CHAR, self.EvtChar)
-        self.Bind(wx.EVT_SPINCTRL, self.EvtSpin, ex)
-        self.Bind(wx.EVT_TEXT, self.EvtSpinText, ex)
-        exp.Add(self.experience)
-        sizer.addWidget(exp)
+        exp.addWidget(QLabel(u"Pourcentage de réponses affirmatives sur l'ensemble de la population:"))
+        ex = self.experience = QSpinBox()
+        ex.setRange(0, 100)
+        ex.setValue(50)
+        ex.valueChanged.connect(self.actualiser)
+        exp.addWidget(self.experience)
+        sizer.addLayout(exp)
 
         nbr = QHBoxLayout()
-        nbr.addWidget(QLabel(p, -1, u"Taille de l'echantillon:"))
-        sc = self.sc1 = QSpinBox(p, -1, "", (30, 50))
-        sc.SetRange(1, 100000)
-        sc.SetValue(1000)
-        sc.Bind(wx.EVT_CHAR, self.EvtChar)
-        self.Bind(wx.EVT_SPINCTRL, self.EvtSpin, sc)
-        self.Bind(wx.EVT_TEXT, self.EvtSpinText, sc)
-        nbr.Add(sc)
-        sizer.addWidget(nbr)
+        nbr.addWidget(QLabel(u"Taille de l'echantillon:"))
+        sc = self.sc1 = QSpinBox()
+        sc.setRange(1, 100000)
+        sc.setValue(1000)
+        sc.valueChanged.connect(self.actualiser)
+        nbr.addWidget(sc)
+        sizer.addLayout(nbr)
 
-        self.cb = QCheckBox(p, -1, u"Afficher l'intervalle de confiance")
+        self.cb = QCheckBox(u"Afficher l'intervalle de confiance")
         sizer.addWidget(self.cb)
-        self.Bind(wx.EVT_CHECKBOX, self.EvtCheckBox, self.cb)
+        self.cb.stateChanged.connect(self.EvtCheckBox)
 
 
         nbr = QHBoxLayout()
-        nbr.addWidget(QLabel(p, -1, u"Nombre de sondages:"))
-        sc = self.sc2 = QSpinBox(p, -1, "", (30, 50))
-        sc.SetRange(1,100000)
-        sc.SetValue(1)
-        sc.Bind(wx.EVT_CHAR, self.EvtChar)
-        self.Bind(wx.EVT_SPINCTRL, self.EvtSpin, sc)
-        self.Bind(wx.EVT_TEXT, self.EvtSpinText, sc)
-        nbr.Add(sc)
-        sizer.addWidget(nbr)
+        nbr.addWidget(QLabel(u"Nombre de sondages:"))
+        sc = self.sc2 = QSpinBox()
+        sc.setRange(1, 100000)
+        sc.setValue(1)
+        sc.valueChanged.connect(self.actualiser)
+        nbr.addWidget(sc)
+        sizer.addLayout(nbr)
 
 
         boutons = QHBoxLayout()
-        fermer = QPushButton(p, -1, u"Fermer")
-        boutons.Add(fermer)
-        lancer = QPushButton(p, -1, u"Lancer l'experience")
-        boutons.Add(lancer)
-        self.Bind(wx.EVT_BUTTON, self.OnCloseMe, fermer)
-        self.Bind(wx.EVT_BUTTON, self.actualiser, lancer)
+        fermer = QPushButton(u"Fermer")
+        boutons.addWidget(fermer)
+        lancer = QPushButton(u"Lancer l'experience")
+        boutons.addWidget(lancer)
+        fermer.clicked.connect(self.close)
+        lancer.clicked.connect(self.actualiser)
 
-        sizer.addWidget(boutons)
-        p.setLayout(sizer)
-        self.SetClientSize(p.GetSize())
-
-
-
-##    def actualiser(self, event = None):
-##        self.parent.actualiser(False)
-##        self.parent.graph = 1
-##        self.parent.choix.SetSelection(self.parent.graph)
-##        echantillon = self.sc1.GetValue()
-##        n = self.sc2.GetValue()
-##        esperance = self.experience.GetValue()
-##        self.parent.ajouter_valeurs(*[sondage(esperance, echantillon) for i in xrange(n)])
-##        self.parent.calculer()
-##        self.parent.legende_x = u"résultat des sondages (en %)"
-##        self.parent.legende_y = u"nombre de sondages"
-##        self.parent.affiche()
-####        self.mem = self.parent.canvas.graph.en_cache()
-##        if self.cb.GetValue():
-##            self.parent.intervalle_confiance(echantillon)
-##            self.parent.canvas.rafraichir_affichage(dessin_temporaire = True)
-##
-##
-##
-##    def EvtCheckBox(self, event):
-##        echantillon = self.sc1.GetValue()
-##        if self.cb.GetValue():
-##            self.parent.intervalle_confiance(echantillon)
-####        else:
-####            self.parent.canvas.graph.restaurer(self.mem)
-####            self.parent.canvas.affiche()
-###        self.parent.canvas.rafraichir_affichage(dessin_temporaire = self.cb.GetValue())
-##        self.parent.canvas.rafraichir_affichage(dessin_temporaire = True)
-
+        sizer.addLayout(boutons)
+        self.setLayout(sizer)
 
 
     def actualiser(self, event = None):
         self.parent.actualiser(False)
         self.parent.graph = 'batons'
-        echantillon = self.sc1.GetValue()
-        n = self.sc2.GetValue()
-        esperance = self.experience.GetValue()
-        self.parent.ajouter_valeurs(*(sondage(esperance, echantillon) for i in xrange(n)))
+        echantillon = self.sc1.value()
+        n = self.sc2.value()
+        esperance = self.experience.value()
+        self.parent.ajouter_valeurs(*[sondage(esperance, echantillon) for i in xrange(n)])
         self.parent.calculer()
         self.parent.legende_x = u"résultat des sondages (en %)"
         self.parent.legende_y = u"nombre de sondages"
@@ -340,27 +241,10 @@ class Sondage(MyMiniFrame):
 
 
     def EvtCheckBox(self, event):
-        echantillon = self.sc1.GetValue()
-        if self.cb.GetValue():
-            self.parent.intervalle_confiance = echantillon
-        else:
-            self.parent.intervalle_confiance = None
+        echantillon = self.sc1.value()
+        self.parent.intervalle_confiance = (echantillon if self.cb.isChecked() else None)
         self.parent.affiche()
 
-    def OnCloseMe(self, event):
+    def closeEvent(self, event):
         self.parent.intervalle_confiance = None
-        self.close()
 
-    def EvtSpin(self, event):
-        self.actualiser()
-
-    def EvtSpinText(self, event):
-        pass
-
-    def EvtChar(self, event):
-        code = event.GetKeyCode()
-
-        if code == 13:
-            self.actualiser()
-        else:
-            event.Skip()

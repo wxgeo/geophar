@@ -5,7 +5,7 @@ from __future__ import with_statement
 import re
 from math import cos, pi, e, sqrt
 
-from tools.testlib import assertAlmostEqual, assertRaises
+from tools.testlib import assertAlmostEqual, assertRaises, assertEqual
 from wxgeometrie.geolib.tests.geotestlib import rand_pt
 from wxgeometrie.geolib import (Triangle_rectangle, DescripteurFeuille, Point, Segment,
                     Vecteur, Fonction, Variable, Feuille, Angle, contexte, Arc_cercle,
@@ -283,8 +283,10 @@ def test_noms_latex():
 
     f.objets.C_prime = Cercle()
     assert(f.objets.C_prime.nom_latex == "$\\mathscr{C}'$")
+    f.objets.u = Vecteur()
+    assert(f.objets.u.nom_latex == "$\\vec u$")
     f.objets.u_prime = Vecteur()
-    assert(f.objets.u_prime.nom_latex == "$\\vec u'$")
+    assert(f.objets.u_prime.nom_latex == "$\\overrightarrow{u'}$")
 
 def test_formules():
     f = Feuille()
@@ -328,7 +330,7 @@ def test_info():
         a = o.a = Arc_cercle(A, B, C)
         assert(a.info == u'Arc a de longueur 7.5')
         alpha = o.alpha = Angle(A, B, C)
-        assert(alpha.info == u'Angle alpha de valeur 0.3')
+        assertEqual(alpha.info, u'Angle alpha de valeur 0.3 rad')
     with contexte(decimales = 3):
         assert(a.info == u'Arc a de longueur 7.505')
 

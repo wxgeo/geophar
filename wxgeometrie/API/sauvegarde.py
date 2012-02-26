@@ -76,11 +76,11 @@ class FichierGEO(object):
 
             # 1er cas: contenu vide -> assimile a du texte.
             if not node.childNodes:
-                return ""
+                return u""
 
             # 2eme cas: le contenu est purement du texte.
             if not "Element" in [subnode.__class__.__name__ for subnode in node.childNodes]:
-                return node.childNodes[0].nodeValue.strip("\n").replace("&lt;", "<").replace("&gt;", ">").replace("&amp;", "&").encode(param.encodage) # un certain nombres de fonctions python supportent encore mal l'unicode (par exemple, f(**{u"a":3}) ne fonctionne pas)
+                return node.childNodes[0].nodeValue.strip("\n").replace("&lt;", "<").replace("&gt;", ">").replace("&amp;", "&")
 
             # 3eme cas: le contenu est un ensemble de balises -> regroupees dans un dictionnaire.
             # ce qui n'est pas entre deux balises est ignore.
