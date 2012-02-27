@@ -22,7 +22,11 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-import wx
+from PyQt4.QtGui import (QPushButton, QWidget, QLabel, QSpinBox,
+                         QHBoxLayout, QVBoxLayout,
+                         QLineEdit, QComboBox, QFrame,
+                         )
+
 from ...GUI.wxlib import MyMiniFrame
 from ...geolib import Point, Segment, Droite, RIEN, TEXTE
 from ...pylib import eval_safe
@@ -31,72 +35,80 @@ from ...pylib import eval_safe
 class CreerSuite(MyMiniFrame):
     def __init__(self, parent):
         MyMiniFrame.__init__(self, parent, u"Représenter une suite")
-        self.SetExtraStyle(wx.WS_EX_BLOCK_EVENTS )
+        ##self.SetExtraStyle(wx.WS_EX_BLOCK_EVENTS )
         self.parent = parent
         self._param_ = self.parent._param_
-        p = self.panel = QWidget(self)
+        ##p = self.panel = QWidget(self)
 
         self.sizer = sizer = QVBoxLayout()
-        sizer.addWidget(QLabel(p, -1, u"Choisissez le mode de génération de la suite :"), 0, wx.ALIGN_LEFT|wx.ALL,5)
-        self.mode = QComboBox(p, -1, (100, 50), choices = [u"u(n+1)=f(u(n))", u"u(n)=f(n)"])
-        self.mode.setSelection(0)
-        self.Bind(wx.EVT_CHOICE, self.EvtChoixMode, self.mode)
-        sizer.addWidget(self.mode, 0, wx.ALIGN_LEFT|wx.ALL,5)
+        sizer.addWidget(QLabel(u"Choisissez le mode de génération de la suite :"))
+        self.mode = QComboBox()
+        self.mode.addItems([u"u(n+1)=f(u(n))", u"u(n)=f(n)"])
+        self.mode.setCurrentIndex(0)
+        self.mode.currentIndexChanged.connect(self.EvtChoixMode)
+        sizer.addWidget(self.mode)
 
         f = QHBoxLayout()
-        f.addWidget(QLabel(p, -1, u"Choisissez la fonction f :"), 0, wx.ALIGN_LEFT|wx.ALIGN_CENTER_VERTICAL|wx.ALL,5)
-        self.fonction = QComboBox(p, -1, (100, 50), choices = ["Y" + str(i+1) for i in xrange(self.parent.nombre_courbes)])
-        self.fonction.setSelection(0)
-        self.Bind(wx.EVT_CHOICE, self.EvtChoixFonction, self.fonction)
-        f.Add(self.fonction, 0, wx.ALIGN_LEFT|wx.ALIGN_CENTER_VERTICAL|wx.ALL,5)
-        sizer.addWidget(f)
+        f.addWidget(QLabel(u"Choisissez la fonction f :"))
+        self.fonction = QComboBox()
+        self.fonction.addItems(["Y" + str(i+1) for i in xrange(self.parent.nombre_courbes)])
+        self.fonction.setCurrentIndex(0)
+        self.fonction.currentIndexChanged.connect(self.EvtChoixFonction)
+        f.addWidget(self.fonction)
+        sizer.addLayout(f)
 
         start = QHBoxLayout()
-        start.addWidget(QLabel(p, -1, u"Commencer pour n ="), 0, wx.ALIGN_LEFT|wx.ALIGN_CENTER_VERTICAL|wx.ALL,5)
-        self.n0 = QSpinBox(p, -1, "", size = (50, -1))
-        self.n0.SetRange(0, 1000000)
-        self.n0.SetValue(0)
-        start.Add(self.n0, 0, wx.ALIGN_LEFT|wx.ALIGN_CENTER_VERTICAL|wx.ALL,5)
-        sizer.addWidget(start)
+        start.addWidget(QLabel(u"Commencer pour n ="))
+        self.n0 = QSpinBox()
+        self.n0.setRange(0, 1000000)
+        self.n0.setValue(0)
+        start.addWidget(self.n0)
+        sizer.addLayout(start)
 
-        self.terme = terme = QHBoxLayout()
-        terme.addWidget(QLabel(p, -1, u"Terme initial :"), 0, wx.ALIGN_LEFT|wx.ALIGN_CENTER_VERTICAL|wx.ALL,5)
-        self.un0 =  wx.TextCtrl(p, -1, "1", size=(100, -1))
-        terme.Add(self.un0, 0, wx.ALIGN_LEFT|wx.ALIGN_CENTER_VERTICAL|wx.ALL,5)
-        sizer.addWidget(terme)
+        terme = QHBoxLayout()
+        self.label_init = QLabel(u"Terme initial :")
+        terme.addWidget(self.label_init)
+        self.un0 =  QLineEdit("1")
+        self.un0.setMinimumWidth(100)
+        terme.addWidget(self.un0)
+        sizer.addLayout(terme)
 
-        sizer.addWidget(wx.StaticLine(p, -1, style=wx.LI_HORIZONTAL), 0, wx.GROW|wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5)
+        ligne = QFrame()
+        ligne.setFrameStyle(QFrame.HLine|QFrame.Raised)
+        ##sizer.addWidget(wx.StaticLine(p, -1, style=wx.LI_HORIZONTAL), 0, wx.GROW|wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5)
 
         nbr = QHBoxLayout()
-        nbr.addWidget(QLabel(p, -1, u"Construire les"), 0, wx.ALIGN_LEFT|wx.ALIGN_CENTER_VERTICAL
-|wx.ALL,5)
-        self.termes = QSpinBox(p, -1, "", size = (50, -1))
-        self.termes.SetRange(0, 100)
-        self.termes.SetValue(5)
-        nbr.Add(self.termes, 0, wx.ALIGN_LEFT|wx.ALIGN_CENTER_VERTICAL|wx.ALL,5)
-        nbr.addWidget(QLabel(p, -1, u"premiers termes."), 0, wx.ALIGN_LEFT|wx.ALIGN_CENTER_VERTICAL|wx.ALL,5)
-        sizer.addWidget(nbr)
+        nbr.addWidget(QLabel(u"Construire les"))
+        self.termes = QSpinBox()
+        self.termes.setRange(0, 100)
+        self.termes.setValue(5)
+        nbr.addWidget(self.termes)
+        nbr.addWidget(QLabel(u"premiers termes."))
+        sizer.addLayout(nbr)
 
-        sizer.addWidget(wx.StaticLine(p, -1, style=wx.LI_HORIZONTAL), 0, wx.GROW|wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5)
+        ligne = QFrame()
+        ligne.setFrameStyle(QFrame.HLine|QFrame.Raised)
+
+        sizer.addWidget(ligne)
 
         #p.SetSizer(sizer)
         boutons = QHBoxLayout()
-        fermer = QPushButton(p, -1, u"Fermer")
-        boutons.Add(fermer)
-        lancer = QPushButton(p, -1, u"Créer")
-        boutons.Add(lancer)
-        self.Bind(wx.EVT_BUTTON, self.OnCloseMe, fermer)
-        self.Bind(wx.EVT_BUTTON, self.Creer, lancer)
-        sizer.addWidget(boutons)
+        fermer = QPushButton(u"Fermer")
+        boutons.addWidget(fermer)
+        lancer = QPushButton(u"Créer")
+        boutons.addWidget(lancer)
+        fermer.clicked.connect(self.close)
+        lancer.clicked.connect(self.Creer)
+        sizer.addLayout(boutons)
 
-        p.setLayout(sizer)
-        self.SetClientSize(p.GetSize())
-
-
+        self.setLayout(sizer)
+        ##self.SetClientSize(p.GetSize())
 
 
 
-    def Creer(self, event = None):
+
+
+    def Creer(self):
 ##        self.parent.creer_feuille() # nouvelle feuille de travail
         # style des lignes :
         style, epaisseur = self._param_.style_suites_recurrentes
@@ -107,14 +119,14 @@ class CreerSuite(MyMiniFrame):
 #            self.parent.suites = {}
 
         objets = self.parent.feuille_actuelle.objets
-        i=self.fonction.GetSelection()
+        i = self.fonction.currentIndex()
         nom_courbe = 'Cf' + str(i + 1)
 
         if objets.has_key(nom_courbe):
             courbe = objets[nom_courbe]
             fonction = courbe.fonction
-        elif self.parent.boites[i].GetValue():
-            self.parent.EvtChar(i=i)
+        elif self.parent.boites[i].text():
+            self.parent.valider(i=i)
             courbe = objets[nom_courbe]
             fonction = courbe.fonction
         else:
@@ -122,15 +134,15 @@ class CreerSuite(MyMiniFrame):
             raise KeyError,  "courbe inexistante : %s" %nom_courbe
 
 
-        if self.mode.GetSelection() == 0: # cas des suites définies par récurrence
-            u0 = eval_safe(self.un0.GetValue())
-            n0 = self.n0.GetValue()
+        if self.mode.currentIndex() == 0: # cas des suites définies par récurrence
+            u0 = eval_safe(self.un0.text())
+            n0 = self.n0.value()
 
             objets.suiteDroited = Droite(Point(0, 0), Point(1, 1), legende = TEXTE, label = "$y\ =\ x$")
             M = objets.suitePointM0 = Point(u0, 0, legende = TEXTE, label = "$u_%s$" %(n0))
 #            self.parent.suites["u"] = [d, M]
 
-            for i in xrange(self.termes.GetValue() - 1):
+            for i in xrange(self.termes.value() - 1):
                 # (Attention, ça ne va pas marcher pour les fonctions définies par morceau)
                 u1 = fonction(u0)
                 N = Point(u0, u1, legende = RIEN, visible = self._param_.afficher_points_de_construction)
@@ -154,9 +166,9 @@ class CreerSuite(MyMiniFrame):
             self.parent.canvas.zoom_auto()
 
         else:   # suites définies explicitement
-            n0 = self.n0.GetValue()
+            n0 = self.n0.text()
 #            self.parent.suites[u"u"] = []
-            for i in xrange(n0, n0 + self.termes.GetValue()):
+            for i in xrange(n0, n0 + self.termes.text()):
                 yi = fonction(i)
                 M = Point(i, 0, legende = TEXTE, label = str(i))
                 N = Point(i, yi, legende = RIEN)
@@ -172,16 +184,15 @@ class CreerSuite(MyMiniFrame):
 
 
 
-    def EvtChoixMode(self, event):
-        if event.GetSelection() == 1:
-            self.terme.ShowItems(False)
+    def EvtChoixMode(self, index):
+        if index == 1:
+            self.label_init.hide()
+            self.un0.hide()
         else:
-            self.terme.ShowItems(True)
+            self.un0.show()
+            self.label_init.show()
 
-    def EvtChoixFonction(self, event):
-        n = event.GetSelection()
+
+    def EvtChoixFonction(self, index):
         for i in xrange(self.parent.nombre_courbes):
-            self.parent.boites[i].SetValue(i == n)
-
-    def OnCloseMe(self, event):
-        self.close()
+            self.parent.boites[i].setChecked(i==index)

@@ -24,7 +24,7 @@ import re
 from cStringIO import StringIO
 
 from PyQt4.QtCore import Qt, QTimer
-from PyQt4.QtGui import QMenu, QCursor, QImage
+from PyQt4.QtGui import QCursor, QImage
 from numpy import array
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg
 

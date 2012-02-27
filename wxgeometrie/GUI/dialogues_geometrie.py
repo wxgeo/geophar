@@ -153,7 +153,7 @@ class Dialogue(QDialog):
 
         btn = QPushButton(u"Annuler", clicked=self.close)
         btn.setWhatsThis(u"Quitter sans rien changer.")
-        self.box.Add(btn)
+        self.box.addWidget(btn)
 
         self.sizer.addLayout(self.box)
 
@@ -826,8 +826,8 @@ class DialogueReperage(Dialogue):
         btn = QPushButton(self, -1, u" Défaut ")
         btn.clicked.connect(self.EvtRestaurer)
         btn.setWhatsThis(u"Restaurer les valeurs par défaut.")
-        self.box.Add(btn)
-        self.sizer.Fit(self)
+        self.box.addWidget(btn)
+        ##self.sizer.Fit(self)
 
     def commande(self):
         return u"repere = " + ", ".join(repr_str(self.champs[nom].text())

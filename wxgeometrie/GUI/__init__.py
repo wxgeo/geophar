@@ -43,9 +43,6 @@ except Exception:
     if param.debug:
         print traceback.format_exc()
 
-
-import wx
-
 from .menu import MenuBar
 from .panel import Panel_simple, Panel_API_graphique
 

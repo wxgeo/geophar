@@ -33,7 +33,7 @@ from .wxlib import png
 from ..pylib import is_in
 from ..geolib.routines import distance
 from ..geolib.textes import Texte_generique
-from ..geolib.points import Point_generique, Barycentre, Point_pondere, Milieu
+from ..geolib.points import Point_generique, Barycentre, Milieu
 from ..geolib.cercles import Arc_generique, Cercle_generique, Cercle, Arc_points,\
                              Arc_oriente, Cercle_diametre, Cercle_points, Demicercle,\
                              Arc_cercle

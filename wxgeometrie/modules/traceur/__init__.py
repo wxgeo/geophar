@@ -27,7 +27,7 @@ import re
 
 from PyQt4.QtGui import (QCheckBox, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit,
                          QGroupBox)
-from PyQt4.QtCore import QObject, pyqtSignal
+from PyQt4.QtCore import pyqtSignal
 
 from ...GUI import MenuBar, Panel_API_graphique
 from ...geolib import Courbe, Fonction
