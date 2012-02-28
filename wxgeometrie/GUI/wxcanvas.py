@@ -182,13 +182,27 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
         ##self.Bind(wx.EVT_MOTION, self.EventOnMotion)
         ##self.Bind(wx.EVT_IDLE, self.OnIdle)
 
-        timer = QTimer(self)
-        timer.timeout.connect(self._actualiser_si_necessaire)
-        timer.start(100)
+        self._timer = QTimer(self)
+        self._timer.timeout.connect(self._actualiser_si_necessaire)
+        self._timer.setInterval(100)
 
         self.setFocusPolicy(Qt.StrongFocus)
         self.setMouseTracking(True)
 
+
+    def activer_affichage(self):
+        u"""Activer l'affichage.
+
+        Cette méthode est appelée lorsque l'onglet devient actif."""
+        self._timer.start()
+
+
+    def desactiver_affichage(self):
+        u"""Désactiver l'affichage.
+
+        Cette méthode est appelée lorsque  l'onglet devient inactif.
+        Cela évite de solliciter le processeur pour rien."""
+        self._timer.stop()
 
 
     @property

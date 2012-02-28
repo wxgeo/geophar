@@ -320,6 +320,7 @@ class Calculatrice(Panel_simple):
 
 
     def activer(self):
+        Panel_simple.activer(self)
         # Actions à effectuer lorsque l'onglet devient actif
         self.entree.setFocus()
 

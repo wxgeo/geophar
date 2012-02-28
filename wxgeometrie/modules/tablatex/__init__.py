@@ -160,6 +160,7 @@ class TabLaTeX(Panel_simple):
         self.limites.stateChanged.connect(regler_limites)
 
     def activer(self):
+        Panel_simple.activer(self)
         # Actions à effectuer lorsque l'onglet devient actif
         self.entree.setFocus()
 

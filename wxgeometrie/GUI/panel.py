@@ -174,9 +174,17 @@ class Panel_simple(QWidget):
             self._derniere_signature = signature
 
 
-    def activer(self, event = None):
-        u"Actions à effectuer lorsque l'onglet du module est sélectionné. À surclasser."
-        pass
+    def activer(self):
+        u"""Actions à effectuer lorsque l'onglet du module est sélectionné.
+
+        À surclasser éventuellement."""
+
+
+    def desactiver(self):
+        u"""Actions à effectuer lorsque l'onglet du module est désélectionné.
+
+        À surclasser éventuellement."""
+
 
     def reinitialiser(self):
         u"""Réinitialise le module (ferme les travaux en cours, etc.).
@@ -478,14 +486,14 @@ class Panel_API_graphique(Panel_simple):
                 self.adjustSize()
         return self.param("afficher_barre_outils")
 
-    def afficher_console_geolib(self, afficher = None):
+    def afficher_console_geolib(self, afficher=None):
         u"Afficher ou non la ligne de commande de la feuille."
         if afficher is not None:
             if isinstance(afficher, bool):
                 self._param_.afficher_console_geolib = afficher
             else:
                 self._param_.afficher_console_geolib = not self.param("afficher_console_geolib")
-            with self.canvas.geler_affichage(actualiser = True):
+            with self.canvas.geler_affichage(actualiser=True):
                 self.console_geolib.setVisible(self.param("afficher_console_geolib"))
                 if self.param("afficher_console_geolib"):
                     self.console_geolib.ligne_commande.setFocus()
@@ -493,8 +501,18 @@ class Panel_API_graphique(Panel_simple):
         return self.param("afficher_console_geolib")
 
 
-    def activer(self, event = None):
-        u"Actions à effectuer lorsque l'onglet du module est sélectionné. À surclasser."
+    def activer(self):
+        u"""Actions à effectuer lorsque l'onglet du module est sélectionné.
+
+        À surclasser éventuellement."""
+        self.canvas.activer_affichage()
         if self.param("afficher_console_geolib"):
         #if gettattr(self._param_, "afficher_console_geolib", False):
             self.console_geolib.setFocus()
+
+
+    def desactiver(self):
+        u"""Actions à effectuer lorsque l'onglet du module est désélectionné.
+
+        À surclasser éventuellement."""
+        self.canvas.desactiver_affichage()

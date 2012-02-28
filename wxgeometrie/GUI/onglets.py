@@ -119,12 +119,16 @@ border-top-right-radius: 4px;
         # Ajoute les differentes composantes :
         self.actualiser_liste_onglets()
 
+        # Le signal `.currentChanged` ne transmet pas le numéro de l'onglet
+        # précédemment actif, il faut donc le garder manuellement en mémoire.
+        self._index = -1
         # adaptation du titre de l'application et du menu.
         self.currentChanged.connect(self.changer)
         if self._liste:
             # affiche le titre et le menu du 1er onglet
-            self.actualise_onglet(self._liste[0])
-            self._liste[0].activer()
+            self.changer(0)
+            ##self.actualise_onglet(self._liste[0])
+            ##self._liste[0].activer()
 
 
     # -------------------
@@ -196,6 +200,12 @@ border-top-right-radius: 4px;
             # Actions personnalisées lors de la sélection
             onglet.activer()
     #        wx.CallLater(10, onglet.activer)
+        if self._index != -1:
+            ancien_onglet = self._liste[self._index]
+            ancien_onglet.desactiver()
+        self._index = index
+
+
 
 
     def actualise_onglet(self, onglet):

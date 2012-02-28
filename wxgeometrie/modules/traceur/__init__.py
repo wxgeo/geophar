@@ -141,6 +141,7 @@ class Traceur(Panel_API_graphique):
 
 
     def activer(self):
+        Panel_API_graphique.activer(self)
         # Actions à effectuer lorsque l'onglet devient actif
         self.equations[0].setFocus()
 
