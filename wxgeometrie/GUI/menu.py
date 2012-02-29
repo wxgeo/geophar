@@ -267,7 +267,7 @@ class MenuBar(QMenuBar):
 
 "fenetre":  [u"Réglage de la fenêtre", u"Réglage de la fenêtre d'affichage.", u"Alt+Ctrl+F", self.parent.creer["Fenetre"]],
 "zoomer":   [u"Zoomer", u"Se rapprocher de la figure.", u"Ctrl+PGUP", self.canvas.zoom_in],
-"dezoomer": [u"Dézoomer", u"S'éloigner de la figure.", u"Ctrl+PGDN", self.canvas.zoom_out],
+"dezoomer": [u"Dézoomer", u"S'éloigner de la figure.", u"Ctrl+PGDOWN", self.canvas.zoom_out],
 "orthonormaliser":  [u"Orthonormaliser", u"Obtenir un repère orthonormal.", u"Alt+Ctrl+O", self.canvas.orthonormer],
 "zoom_auto":  [u"Zoom intelligent", u"Réglage automatique de la fenêtre d'affichage.", u"Alt+Ctrl+A", self.canvas.zoom_auto],
 

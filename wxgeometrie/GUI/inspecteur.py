@@ -28,6 +28,20 @@ from PyQt4.QtCore import Qt
 
 from .pythonSTC import PythonSTC
 
+class EditeurPython(PythonSTC):
+    def __init__(self, parent):
+        super(EditeurPython, self).__init__(parent)
+        self.parent = parent
+
+    def keyPressEvent(self, event):
+        print "test!!!"
+        key = event.key()
+        if key == Qt.Key_Escape:
+            self.parent.close()
+        elif key == Qt.Key_F5:
+            self.parent.executer()
+        else:
+            super(EditeurPython, self).keyPressEvent(event)
 
 
 class FenCode(QDialog):
@@ -40,7 +54,7 @@ class FenCode(QDialog):
         sizer = QVBoxLayout()
         self.parent = parent
         self.fonction_modif = fonction_modif
-        self.texte = PythonSTC(self)
+        self.texte = EditeurPython(self)
 #        self.texte.setMinimumSize(300, 10)
         self.texte.setText(contenu)
 ##        self.texte.SetInsertionPointEnd()
@@ -62,14 +76,6 @@ class FenCode(QDialog):
         self.texte.setFocus()
 
 
-    def keyPressedEvent(self, event):
-        key = event.key()
-        if key == Qt.Key_Escape:
-            self.close()
-        elif key == Qt.Key_F5:
-            self.executer()
-        else:
-            QDialog.keyPressedEvent(self, event)
 
 
     def executer(self, event = None):

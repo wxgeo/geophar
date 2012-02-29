@@ -145,7 +145,7 @@ class Dialogue(QDialog):
             ##btn = wx.ContextHelpButton(self)
             ##self.box.Add(btn)
 
-        btn = QPushButton(u" Créer " if self.objet else u"Enregistrer")
+        btn = QPushButton(u" Créer " if self.objet else u"Enregistrer", clicked=self.accept)
         btn.setWhatsThis(u"Créer l'objet." if self.objet else u"Enregistrer les modifications.")
         ##btn.SetDefault()
         #XXX: Action à ajouter !!
