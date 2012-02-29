@@ -27,7 +27,7 @@ from functools import partial
 
 #import wx
 from PyQt4.QtGui import (QHBoxLayout, QVBoxLayout, QCheckBox, QIcon, QPushButton,
-                         QTextEdit, QMenu, QLabel, QSpinBox, QCursor)
+                         QTextEdit, QMenu, QLabel, QSpinBox, QCursor, QTextCursor)
 from PyQt4.QtCore import Qt
 
 #from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigureCanvas
@@ -344,7 +344,11 @@ class Calculatrice(Panel_simple):
 
             self.entree.historique = eval_safe(calc["Historique"][0])
 #            self.interprete.derniers_resultats = securite.eval_safe(calc["Resultats"][0])
-            self.resultats.setPlainText(calc["Affichage"][0] + "\n")
+            resultats = calc["Affichage"][0]
+            if resultats:
+                resultats += '\n\n'
+            self.resultats.setPlainText(resultats)
+            self.resultats.moveCursor(QTextCursor.End)
             self.interprete.load_state(calc["Etat_interne"][0])
 
             liste = calc["Options"][0].items()
@@ -426,10 +430,12 @@ class Calculatrice(Panel_simple):
             # Évite le décalage entre la première ligne et les suivantes (matrices)
             if "\n" in resultat and not aide:
                 resultat = "\n" + "\n".join(20*" " + ligne for ligne in resultat.split("\n"))
+            self.resultats.moveCursor(QTextCursor.End)
             self.resultats.insertPlainText(u" Calcul n\xb0" + numero + " :   "
                                                         + uu(commande) + u"\n Résultat :"
                                                         + " "*(4+len(numero))
                                                         + resultat + "\n__________________\n\n")
+            self.resultats.moveCursor(QTextCursor.End)
             self.message(u"Calcul effectué." + self.interprete.warning)
             self.entree.clear()
 #            self.resultats.setCursorPosition(len(self.resultats.plainText()))
