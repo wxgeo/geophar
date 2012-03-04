@@ -27,8 +27,9 @@ from functools import partial
 
 from PyQt4.QtGui import (QDialog, QVBoxLayout, QHBoxLayout, QFrame, QLabel,
                          QLineEdit, QPushButton, QMenu)
-from PyQt4.QtCore import Qt
+from PyQt4.QtCore import Qt, QSize
 
+from .wxlib import MultipleChoiceDialog
 from ..pylib import regsub
 from ..geolib.textes import Texte
 from ..geolib.points import Point_generique, Barycentre, Point, Milieu, Centre,\
@@ -844,14 +845,17 @@ class DialogueReperage(Dialogue):
 
 ################################################################################
 
-#TODO: -> Qt
-##class SupprimerObjet(wx.lib.dialogs.MultipleChoiceDialog):
-    ##def __init__(self, parent):
-        ##liste = parent.onglet_actuel.feuille_actuelle.inventaire()
-        ##wx.lib.dialogs.MultipleChoiceDialog.__init__(self, parent, u"Sélectionnez les objets à supprimer", u"Supprimer", liste, size=(250,400))
-##
-##
-##class EditerObjet(wx.lib.dialogs.MultipleChoiceDialog):
-    ##def __init__(self, parent):
-        ##liste = parent.onglet_actuel.feuille_actuelle.inventaire()
-        ##wx.lib.dialogs.MultipleChoiceDialog.__init__(self, parent, u"Sélectionnez les objets à editer", u"Editer", liste, size=(250,400))
+
+
+class SupprimerObjet(MultipleChoiceDialog):
+    def __init__(self, parent):
+        liste = parent.onglet_actuel.feuille_actuelle.inventaire()
+        MultipleChoiceDialog.__init__(self, parent, u"Supprimer", u"Sélectionnez les objets à supprimer :", liste)
+        ##self.setSizeHint(QSize(250, 400))
+
+
+class EditerObjet(MultipleChoiceDialog):
+    def __init__(self, parent):
+        liste = parent.onglet_actuel.feuille_actuelle.inventaire()
+        MultipleChoiceDialog.__init__(self, parent, u"Editer", u"Sélectionnez les objets à éditer :", liste)
+        ##self.setSizeHint(QSize(250, 400))

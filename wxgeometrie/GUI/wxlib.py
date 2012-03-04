@@ -25,7 +25,8 @@ import os
 
 from PyQt4.QtCore import Qt, QThread, QEvent, pyqtSignal
 from PyQt4.QtGui import (QCursor, QDialog, QPixmap, QPushButton, QColorDialog,
-                         QMenu, QFont, QIcon)
+                         QMenu, QFont, QIcon, QVBoxLayout, QLabel, QListWidget,
+                         QDialogButtonBox, QAbstractItemView,)
 
 from .. import param
 from ..pylib import uu
@@ -189,3 +190,25 @@ class PopUpMenu(QMenu):
     def setTitle(self, title):
         self._title.setText(title)
         QMenu.setTitle(title)
+
+
+class MultipleChoiceDialog(QDialog):
+    def __init__(self, parent, title, text, items):
+        QDialog.__init__(self, parent)
+        self.setWindowTitle(title)
+        self.layout = QVBoxLayout()
+        label = QLabel(text)
+        self.layout.addWidget(label)
+        self.listwidget = QListWidget(self)
+        self.listwidget.setSelectionMode(QAbstractItemView.ExtendedSelection)
+        for item in items:
+            self.listwidget.addItem(item)
+        self.layout.addWidget(self.listwidget)
+        buttonBox = QDialogButtonBox(QDialogButtonBox.Ok|QDialogButtonBox.Cancel)
+        buttonBox.accepted.connect(self.accept)
+        buttonBox.rejected.connect(self.reject)
+        self.layout.addWidget(buttonBox)
+        self.setLayout(self.layout)
+
+    def selectedItems(self):
+        return self.listwidget.selectedItems()

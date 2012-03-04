@@ -35,7 +35,7 @@ import matplotlib.backend_bases as backend_bases
 from .aide import About, Informations, Notes, Licence
 from .animer import DialogueAnimation
 from .contact import Contact
-#from .dialogues_geometrie import EditerObjet, SupprimerObjet
+from .dialogues_geometrie import EditerObjet, SupprimerObjet
 from .fenetre_options import FenetreOptions
 from .inspecteur import FenCode
 from .nouvelles_versions import Gestionnaire_mises_a_jour
@@ -469,18 +469,17 @@ border-top-right-radius: 4px;
     def supprimer(self):
         canvas = self.onglet_actuel.canvas
         dlg = SupprimerObjet(self)
-        if (dlg.ShowModal() == wx.ID_OK):
+        if dlg.exec_() == QDialog.Accepted:
             with canvas.geler_affichage(actualiser=True, sablier=True):
-                for selection in dlg.GetValueString():
+                for selection in dlg.selectedItems():
                     try:
                         # Il est normal que des erreurs soient renvoyées
                         # si un objet dépendant d'un autre est déjà supprimé.
-                        objet = selection.split()[1]
+                        objet = selection.text().split()[1]
                         canvas.feuille_actuelle.objets[objet].supprimer()
                     except Exception:
                         print_error()
                 canvas.feuille_actuelle.interprete.commande_executee()
-        dlg.Destroy()
 
 
     def editer(self):
@@ -488,19 +487,17 @@ border-top-right-radius: 4px;
         if feuille:
             objets = []
             dlg = EditerObjet(self)
-            val = dlg.ShowModal()
-            if val == wx.ID_OK:
-                objets = [feuille.objets[selection.split()[1]] for selection in dlg.GetValueString()]
-            dlg.Destroy()
+            if dlg.exec_() == QDialog.Accepted:
+                objets = [feuille.objets[selection.text().split()[1]] for selection in dlg.selectedItems()]
 
             if objets:
                 win = Proprietes(self, objets)
                 win.show()
-                def fermeture(event, win = win):
-                    win.Unbind(wx.EVT_CLOSE)
-                    win.close()
-                    self.editer()
-                win.Bind(wx.EVT_CLOSE, fermeture)
+                ##def fermeture(event, win = win):
+                    ##win.Unbind(wx.EVT_CLOSE)
+                    ##win.close()
+                    ##self.editer()
+                ##win.Bind(wx.EVT_CLOSE, fermeture)
         #self.parent.Raise()
 
 
