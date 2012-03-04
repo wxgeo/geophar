@@ -851,11 +851,11 @@ class SupprimerObjet(MultipleChoiceDialog):
     def __init__(self, parent):
         liste = parent.onglet_actuel.feuille_actuelle.inventaire()
         MultipleChoiceDialog.__init__(self, parent, u"Supprimer", u"Sélectionnez les objets à supprimer :", liste)
-        ##self.setSizeHint(QSize(250, 400))
+        ##self.resize(QSize(250, 400))
 
 
 class EditerObjet(MultipleChoiceDialog):
     def __init__(self, parent):
         liste = parent.onglet_actuel.feuille_actuelle.inventaire()
         MultipleChoiceDialog.__init__(self, parent, u"Editer", u"Sélectionnez les objets à éditer :", liste)
-        ##self.setSizeHint(QSize(250, 400))
+        ##self.resize(QSize(250, 400))

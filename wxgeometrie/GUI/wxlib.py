@@ -23,10 +23,10 @@ from __future__ import with_statement
 
 import os
 
-from PyQt4.QtCore import Qt, QThread, QEvent, pyqtSignal
+from PyQt4.QtCore import Qt, QThread, QEvent, pyqtSignal, QSize
 from PyQt4.QtGui import (QCursor, QDialog, QPixmap, QPushButton, QColorDialog,
                          QMenu, QFont, QIcon, QVBoxLayout, QLabel, QListWidget,
-                         QDialogButtonBox, QAbstractItemView,)
+                         QDialogButtonBox, QAbstractItemView, QPalette,)
 
 from .. import param
 from ..pylib import uu
@@ -151,19 +151,26 @@ class ColorSelecter(QPushButton):
 
     def __init__(self, parent, color=None):
         QPushButton.__init__(self, parent)
+        self.parent = parent
         self.setColor(color)
         self.clicked.connect(self.onClick)
+        self.setMinimumSize(QSize(25, 25))
+        self.setMaximumSize(QSize(25, 25))
 
     def onClick(self):
         self.setColor(QColorDialog.getColor(self.color, self, u"Choisissez une couleur"))
 
     def setColor(self, color):
-        self.color = color
-        if color is not None:
-            self.setStyleSheet("ColorSelecter { background-color: %s }"
-                           "ColorSelecter:pressed { background-color: %s }" % (
-                           color.name(), color.light(125).name()))
-        self.colorSelected.emit(color)
+        if color is None:
+            color = self.parent.palette().color(QPalette.Active, QPalette.Window)
+        if color.isValid():
+            # Couleur invalide -> l'utilisateur a cliqué sur "Annuler"
+            self.color = color
+            if color is not None:
+                self.setStyleSheet("ColorSelecter { border-radius: 4px; background-color: %s }"
+                               "ColorSelecter:hover { background-color: %s }" % (
+                               color.name(), color.light(125).name()))
+            self.colorSelected.emit(color)
 
 
 class PopUpMenu(QMenu):
