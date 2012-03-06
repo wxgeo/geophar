@@ -336,8 +336,12 @@ class Graph(dict):
             return oo, []
 
 
-    def latex_Dijkstra(self, start, end):
-        nodes = sorted(self)
+    def latex_Dijkstra(self, start, end, nodes=None):
+        if nodes is None:
+            nodes = sorted(self)
+        else:
+            if set(nodes) != set(self):
+                raise ValueError, "Nodes do not match."
         code = u"On applique l'algorithme de Moore-Dijkstra~:\n\n"
         code += r'\begin{tabular}{|*{%s}{c|}}\hline' %len(self)
         code += '\n' + '&'.join(('$%s$' %node) for node in nodes) + r'\\\hline\hline' + '\n'
@@ -347,13 +351,16 @@ class Graph(dict):
         visited = {start: [0, [start]]}
         # format: {node: [distance from start, [previous node, alternative previous node, ...]]}
 
-        # Nodes which will not change anymore:
+        # Nodes which will not change anymore (shorter path from start has been found):
         archived = {}
 
         while current != end and visited:
             def str2(val):
                 # 2.0 -> "2" ; 2.3 -> "2,3"
-                return str(20.).rstrip('0').rstrip('.').replace('.', ',')
+                val = str(val)
+                if '.' in val:
+                    val = val.rstrip('0').rstrip('.').replace('.', ',')
+                return val
 
             def format(node):
                 def _format(node):
@@ -372,13 +379,18 @@ class Graph(dict):
             # We select the node having the smallest distance
             for neighbor in self[current]:
                 if neighbor not in archived:
+                    # best distance found until now between neighbor and start
                     distance = visited.get(neighbor, [oo])[0]
+                    # new distance found using current node:
+                    # distance(start, current) + distance(current, neighbor)
                     new_distance = archived[current][0] + min(self[current][neighbor])
+                    # replace with new distance only if better
                     if new_distance < distance:
                         visited[neighbor] = [new_distance, [current]]
                     elif new_distance == distance:
                         visited[neighbor][1].append(current)
             current = min(visited.items(), key = lambda x:x[1][0])[0]
+
         code += '&'.join(format(node) for node in nodes) + r'\\\hline' + '\n'
         code += '\\end{tabular}\n'
         if visited.has_key(current):
@@ -395,7 +407,7 @@ class Graph(dict):
                             final_paths.add((previous,) + path)
                         else:
                             in_progress.add((previous,) + path)
-        distance = archived[current][0]
+        distance = str2(archived[current][0])
         paths = ', '.join('$' + '-'.join(path) + '$' for path in final_paths)
         plur1 = ('x' if len(final_paths) > 1 else '')
         plur2 = ('s' if len(final_paths) > 1 else '')
