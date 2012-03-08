@@ -26,6 +26,10 @@ import os, sys, time, re, types
 from optparse import OptionParser
 import scriptlib as s
 
+_module_path = os.path.split(os.path.realpath(sys._getframe().f_code.co_filename))[0]
+
+s.cd(_module_path + '/../wxgeometrie')
+
 parser = OptionParser(prog='release.py', usage="usage: %prog [options] release_number")
 parser.add_option("-o", "--output", dest="output", default='..',
                   help="store output archive as FILE", metavar="FILE")
@@ -41,7 +45,10 @@ parser.add_option("-q", "--quiet",
 (options, args) = parser.parse_args()
 
 if len(args) != 1:
-    parser.error("fournir un (et un seul) argument (numero de version)")
+    s.cd('..')
+    sys.path.append(os.getcwd())
+    from wxgeometrie.param import version
+    parser.error("fournir un (et un seul) argument (numero de version).\nVersion actuelle: " + version)
 version = args[0]
 
 def version_interne(version):
@@ -54,9 +61,6 @@ def test_version(version):
     if re.match(reg, version):
         return version
 
-_module_path = os.path.split(os.path.realpath(sys._getframe().f_code.co_filename))[0]
-
-s.cd(_module_path + '/../wxgeometrie')
 
 sys.path.insert(0, os.getcwd())
 
