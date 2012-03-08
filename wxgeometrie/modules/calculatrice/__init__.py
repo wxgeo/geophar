@@ -165,7 +165,7 @@ class Calculatrice(Panel_simple):
         self.axes = axes = self.figure.add_axes([0, 0, 1, 1], frameon=False)
         axes.axison = False
         self.pp_texte = axes.text(0.5, 0.5, "", horizontalalignment='center', verticalalignment='center', transform = axes.transAxes, size=18)
-        gauche.addWidget(self.visualisation) # wx.ALL|wx.ALIGN_CENTER
+        gauche.addWidget(self.visualisation)
         self.visualisation.setContextMenuPolicy(Qt.CustomContextMenu)
         self.visualisation.customContextMenuRequested.connect(self.EvtMenuVisualisation)
 
@@ -238,8 +238,8 @@ class Calculatrice(Panel_simple):
         pave.addLayout(ligne)
         self.cb_calcul_exact = QCheckBox(self)
         self.cb_calcul_exact.setChecked(not self.param("calcul_exact"))
-        ligne.addWidget(self.cb_calcul_exact) #, flag = wx.ALIGN_CENTER_VERTICAL)
-        ligne.addWidget(QLabel(u"Valeur approchée."))#, flag = wx.ALIGN_CENTER_VERTICAL)
+        ligne.addWidget(self.cb_calcul_exact)
+        ligne.addWidget(QLabel(u"Valeur approchée."))
         ligne.addStretch()
 
         self.cb_calcul_exact.stateChanged.connect(self.EvtCalculExact)
@@ -249,16 +249,16 @@ class Calculatrice(Panel_simple):
         pave.addLayout(ligne)
         self.cb_notation_sci = QCheckBox(self)
         self.cb_notation_sci.setChecked(self.param("ecriture_scientifique"))
-        ligne.addWidget(self.cb_notation_sci)#, flag = wx.ALIGN_CENTER_VERTICAL)
+        ligne.addWidget(self.cb_notation_sci)
         self.st_notation_sci = QLabel(u"Écriture scientifique (arrondie à ")
-        ligne.addWidget(self.st_notation_sci)#, flag = wx.ALIGN_CENTER_VERTICAL)
+        ligne.addWidget(self.st_notation_sci)
         self.sc_decimales = sd = QSpinBox(self)
         # size = (45, -1)
         sd.setRange(0, 11)
         self.sc_decimales.setValue(self.param("ecriture_scientifique_decimales"))
-        ligne.addWidget(self.sc_decimales)#, flag = wx.ALIGN_CENTER_VERTICAL)
+        ligne.addWidget(self.sc_decimales)
         self.st_decimales = QLabel(u" décimales).")
-        ligne.addWidget(self.st_decimales)#, flag = wx.ALIGN_CENTER_VERTICAL)
+        ligne.addWidget(self.st_decimales)
         ligne.addStretch()
         self.EvtCalculExact()
 
@@ -270,8 +270,8 @@ class Calculatrice(Panel_simple):
         pave.addLayout(ligne)
         self.cb_copie_automatique = QCheckBox(self)
         self.cb_copie_automatique.setChecked(self.param("copie_automatique"))
-        ligne.addWidget(self.cb_copie_automatique)#, flag = wx.ALIGN_CENTER_VERTICAL)
-        ligne.addWidget(QLabel(u"Copie du résultat dans le presse-papier."))#, flag = wx.ALIGN_CENTER_VERTICAL)
+        ligne.addWidget(self.cb_copie_automatique)
+        ligne.addWidget(QLabel(u"Copie du résultat dans le presse-papier."))
         ligne.addStretch()
 
         self.cb_copie_automatique.stateChanged.connect(self.EvtCopieAutomatique)
@@ -310,7 +310,6 @@ class Calculatrice(Panel_simple):
             ligne.addStretch()
 
         self.setLayout(self.sizer)
-#        self.adjustSize()
 
         #TODO:
 #        self.entree.texte.Bind(wx.EVT_RIGHT_DOWN, self.EvtMenu)

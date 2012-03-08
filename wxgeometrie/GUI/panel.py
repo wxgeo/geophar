@@ -53,7 +53,7 @@ class Panel_simple(QWidget):
     # Indique si des modifications ont eu lieu (et s'il faudra donc sauvegarder la session)
     modifie = False
 
-    def __init__(self, parent, module, menu = True): # style = wx.TAB_TRAVERSAL|wx.WANTS_CHARS
+    def __init__(self, parent, module, menu = True):
         QWidget.__init__(self, parent)
         self.module = module
 #        self.setStyleSheet("background-color:white")
@@ -208,7 +208,6 @@ class Panel_API_graphique(Panel_simple):
     Cela concerne essentiellement les modules qui ont besoin de tracer des objets géométriques."""
 
     def __init__(self, parent, module, BarreOutils = BarreOutils):
-        # extra = {'style': wx.WANTS_CHARS} if param.plateforme == "Windows" else {}
         Panel_simple.__init__(self, parent, module, menu=False)
 
         # IMPORTANT: contruire toujours dans cet ordre.
@@ -422,7 +421,7 @@ class Panel_API_graphique(Panel_simple):
             code = "\n".join(lignes)
 
         if param.multi_threading:
-            thread.start_new_thread(self.canvas.executer, (code + "\nwx.Yield()",))
+            thread.start_new_thread(self.canvas.executer, (code,))
         else:
             self.canvas.executer(code)
 

@@ -42,13 +42,11 @@ from .contexte import contexte
 from .. import param
 
 
-try:
-    import wx
-    souffler = wx.YieldIfNeeded
-except ImportError:
-    wx = None
-    def souffler():
-        pass
+# XXX: Comment traduire wx.YieldIfNeeded() pour PyQt ?
+# Ou alors, est-ce inutile avec PyQt ?
+def souffler():
+    pass
+    # wx.YieldIfNeeded()
 
 
 class _(object):

@@ -30,12 +30,10 @@ from itertools import cycle, izip
 from random import shuffle
 import re
 
-import wx
 from PyQt4.QtGui import (QVBoxLayout, QInputDialog, QPushButton,
                          QTextEdit, QGridLayout, QLabel, QLineEdit, QSpacerItem)
 from PyQt4.QtCore import Qt, QTimer
 
-#from ...GUI.wxlib import MyFont
 from ...GUI import MenuBar, Panel_simple
 from ...pylib import print_error
 from ... import param
@@ -196,7 +194,7 @@ class Cryptographie(Panel_simple):
 
 
         # DEBUG:
-        self.code.setPlainText('WR IRAMXPZRHRDZ IK HRYYOVR AL IRYYBKY RYZ NOALWLZR POM WR NOLZ FKR W BD O VOMIR WRY YLVDRY IR PBDAZKOZLBD RZ WRY RYPOARY RDZMR WRY HBZY OWBMY FKR I QOELZKIR BD VMBKPR WRY WRZZMRY ALDF POM ALDF')
+        ##self.code.setPlainText('WR IRAMXPZRHRDZ IK HRYYOVR AL IRYYBKY RYZ NOALWLZR POM WR NOLZ FKR W BD O VOMIR WRY YLVDRY IR PBDAZKOZLBD RZ WRY RYPOARY RDZMR WRY HBZY OWBMY FKR I QOELZKIR BD VMBKPR WRY WRZZMRY ALDF POM ALDF')
 
     def copier(self, evt=None, widget=None):
         self.vers_presse_papier(widget.toPlainText())

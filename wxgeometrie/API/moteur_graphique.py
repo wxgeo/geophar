@@ -26,7 +26,7 @@ from string import ascii_lowercase
 
 from matplotlib.colors import colorConverter
 from matplotlib.transforms import Bbox
-from matplotlib.backends.backend_wxagg import FigureCanvasAgg
+from matplotlib.backends.backend_qt4agg import FigureCanvasAgg
 from matplotlib.lines import Line2D
 from matplotlib.collections import LineCollection
 from matplotlib.patches import Polygon, Circle, FancyArrowPatch

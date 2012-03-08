@@ -23,14 +23,17 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-# version unicode
-
 import sys
-import wx
 import matplotlib
 import os
 import platform
 import locale
+import PyQt4.QtCore as qt
+
+try:
+    from ..param import NOMPROG
+except Exception:
+    NOMPROG = u"Logiciel"
 
 
 class dossier(object):
@@ -54,6 +57,9 @@ def informations_configuration():
     dossier_os.repertoire = os.getcwd()
     dossier_os.processeur = os.environ.get("PROCESSOR_IDENTIFIER", "?")
     dossier_os.version = platform.platform().replace("-", " ")
+
+    #TODO (?): parse /proc/cpuinfo and /proc/meminfo if platform is Linux
+
     if dossier_os.version.startswith("Windows"):
         dossier_os.distribution = "%s.%s build %s (%s) - %s" %sys.getwindowsversion()
     elif dossier_os.version.startswith("Linux"):
@@ -95,14 +101,9 @@ def informations_configuration():
 
 
 
-    dossier_wxpython = dossier("WxPython")
-    dossier_wxpython.portage = "  ".join(wx.PlatformInfo[1:])
-    dossier_wxpython.version = wx.VERSION_STRING
-
-    # Le code suivant provoque un Memory Leak de WxPython :
-#    __p__ = wx.PlatformInformation()
-#    dossier_wxpython.architecture = __p__.GetArchName() + "  " + __p__.GetEndiannessName()
-#    dossier_wxpython.os = "%s  %s.%s" %(__p__.GetOperatingSystemFamilyName(), __p__.GetOSMajorVersion(), __p__.GetOSMinorVersion())
+    dossier_pyqt = dossier("PyQt")
+    dossier_pyqt.portage = "PyQt %s (%s) %s bits" %(qt.PYQT_VERSION_STR, qt.PYQT_VERSION, qt.QSysInfo.WordSize)
+    dossier_pyqt.version = 'Qt %s (%s)' %(qt.QT_VERSION_STR, qt.QT_VERSION)
 
     dossier_matplotlib = dossier("Matplolib")
     dossier_matplotlib.version = matplotlib.__version__
@@ -142,7 +143,7 @@ def informations_configuration():
     except Exception:
         dossier_psyco.version = "#ERREUR#"
 
-    dossier_wxgeometrie = dossier("Wxgeometrie")
+    dossier_wxgeometrie = dossier(NOMPROG)
     try:
         import param
         dossier_wxgeometrie.version = param.version
@@ -151,6 +152,6 @@ def informations_configuration():
 
 
     return (dossier_os.contenu() + dossier_local.contenu() + dossier_python.contenu()
-                                + dossier_wxpython.contenu() + dossier_matplotlib.contenu()
+                                + dossier_pyqt.contenu() + dossier_matplotlib.contenu()
                                 + dossier_sympy.contenu() + dossier_psyco.contenu()
                                 + dossier_wxgeometrie.contenu())
