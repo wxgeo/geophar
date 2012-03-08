@@ -27,8 +27,23 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 import os
 import sys
+import re
+import subprocess
 
-def gs(chaine = '', case = True, exclude_comments = True, extensions = (".py", ".pyw"), exclude_prefixe = ("tmp_", "Copie"), exclude_suffixe = ("_OLD", "(copie)"), exclude_dir = ('sympy', 'tools', 'BAZAR', 'OLD'), maximum = 100, codec="latin1", statistiques = False, replace=None):
+# ----- User config -----
+IGNORE = ('*tmp_*', '*(OLD|BAZAR)*', '*sympy/*', '*modules/traceur/tableau.py', '*/(pyshell|idle).pyw')
+DEFAULT_EDITOR = 'geany'
+# XXX: move this outside the script
+# ------------------------
+
+#TODO: provide default IGNORE by autodetecting .gitignore content, if any.
+
+
+patterns = filter(None, ('(' + pattern.replace('*', '.*').strip() + ')' for pattern in IGNORE))
+IGNORE_RE = re.compile('|'.join(patterns))
+SUPPORTED_EDITORS = ('geany', 'gedit')
+
+def gs(chaine='', case=True, exclude_comments=True, extensions=(".py", ".pyw"), maximum=100, codec="latin1", statistiques=False, replace=None, color=None, edit_with=None):
     u"""Parcourt le répertoire courant et les sous-répertoire, à la recherche des fichiers dont l'extension
     est comprise dans 'extensions', mais passe les répertoires et les fichiers dont le nom commence par un préfixe
     de 'exclude_prefixe', ou finit par un suffixe de 'exclude_suffixe'.
@@ -37,29 +52,34 @@ def gs(chaine = '', case = True, exclude_comments = True, extensions = (".py", "
     Le nombre maximal de lignes renvoyées est fixé par 'maximum', afin d'éviter de saturer le système.
     Si ce nombre est dépassé (ie. toutes les occurences de 'chaine' ne sont pas affichées), la fonction renvoie False, sinon, True.
     """
+    if color is None:
+        color = sys.platform.startswith('linux')
+    if color:
+        def blue(s):
+            return '\033[1;36m' + s + '\033[0m'
+        def red(s):
+            return '\033[0;31m' + s + '\033[0m'
+        def green(s):
+            return '\033[0;32m' + s + '\033[0m'
+        def green2(s):
+            return '\033[1;32m' + s + '\033[0m'
+    else:
+        green = blue = red = green2 = (lambda s:s)
+
     if not chaine:
         statistiques = True
     if not case:
         chaine = chaine.lower()
     if replace is not None:
         assert case
-    repertoires = os.walk(os.getcwd())
+    cwd = os.getcwd()
+    repertoires = os.walk(cwd)
+    print ("Searching in " + green(cwd) + "...")
+    end_root_pos = len(cwd) + 1
+    print('')
     fichiers = []
     for root, dirs, files in repertoires:
-        #print root
-        if any((os.sep + prefixe in root) for prefixe in exclude_prefixe):
-            continue
-        if any((os.sep + dir + os.sep) in root for dir in exclude_dir):
-            continue
-        if any(root.endswith(os.sep + dir) for dir in exclude_dir):
-            continue
-        if any(root.endswith(suffixe) for suffixe in exclude_suffixe):
-            continue
-        if any((suffixe + os.sep) in root for suffixe in exclude_suffixe):
-            continue
-        files = [f for f in files if not any(f.startswith(prefixe) for prefixe in exclude_prefixe) and not any(f.endswith(suffixe + extension) for suffixe in exclude_suffixe for extension in extensions)]
         files = [f for f in files if f[f.rfind("."):] in extensions]
-
         fichiers += [root + os.sep + f for f in files]
     # nombre de lignes de code au total
     N = 0
@@ -74,6 +94,8 @@ def gs(chaine = '', case = True, exclude_comments = True, extensions = (".py", "
     # Nombre d'occurences trouvées.
     occurences = 0
     for f in fichiers:
+        if re.search(IGNORE_RE, f):
+            continue
         F += 1
         with open(f, "r") as fichier:
             lignes = []
@@ -94,19 +116,54 @@ def gs(chaine = '', case = True, exclude_comments = True, extensions = (".py", "
                         B += 1
                     continue
                 if (exclude_comments and s.lstrip().startswith("#")):
+                    # comment line
                     continue
                 if not case:
                     s = s.lower()
-                if s.find(chaine) != -1:
+                pos = s.find(chaine)
+                if pos != -1:
+                    if exclude_comments:
+                        substr = s[:pos]
+                        if '#' in substr:
+                            # test if the substring found was inside a comment
+                            # at the end of the line.
+                            # You have to be carefull, because `#` may be
+                            # inside a string...
+                            # TODO: handle triple quotes.
+                            mode = None
+                            for c in substr:
+                                if c in "'\"#":
+                                    if mode is None:
+                                        mode = c
+                                        if c == '#':
+                                            continue
+                                    elif mode == c:
+                                        mode = None
+                            if mode == '#':
+                                # substring found inside a comment
+                                continue
+
                     found = True
                     occurences += 1
                     if replace is not None:
                         lignes[-1] = s.replace(chaine, replace)
-                    print u"in %s " %f
-                    print u"line " + unicode(n + 1) + ":   " + s.decode(codec)
+                    print u"\u2022 in " + green(f[:end_root_pos]) + green2(f[end_root_pos:])
+                    s = s[:pos] + blue(s[pos:pos+len(chaine)]) + s[pos+len(chaine):]
+                    print u"  line " + unicode(n + 1) + ":   " + s.decode(codec)
+
+                    if edit_with is not None:
+                        if edit_with not in SUPPORTED_EDITORS:
+                            print(edit_with + ' is currently not supported.')
+                            print('Supported editors : ' + ','.join(SUPPORTED_EDITORS))
+                        elif edit_with == 'geany':
+                            command = 'geany -l %s %s' %(n + 1, f)
+                        elif edit_with == 'gedit':
+                            command = 'gedit +%s %s' %(n + 1, f)
+                        subprocess.call(command, shell=True)
+
                     n_lignes += 1
                     if n_lignes > maximum:
-                        print "Maximum output exceeded...!"
+                        print red("Maximum output exceeded...!")
                         return False
         if replace is not None and found:
             with open(f, 'w') as fichier:
@@ -165,12 +222,22 @@ def usage():
 
 if __name__ == "__main__":
     args = sys.argv[1:]
-    if not args:
+    if not args or args[0] in ('-h', '--help'):
         usage()
-    if args[0] == '-r':
+    elif '-r' in args:
+        args.remove('-r')
         if len(args) < 3:
             usage()
-        print gr(args[1], args[2])
+        kw = dict(arg.split('=', 1) for arg in args[3:])
+        print gr(args[1], args[2], **kw)
     else:
+        if '-e' in args:
+            args.remove('-e')
+            args.append('edit_with=' + DEFAULT_EDITOR)
+        if '-c' in args:
+            args.remove('-c')
+            args.append('color=True')
+        options = (arg.split('=', 1) for arg in args[1:])
+        kw = dict((key, eval(val)) for key, val in options)
         print "\n=== Recherche de %s ===\n" %repr(args[0])
-        print gs(args[0])
+        print gs(args[0], **kw)
