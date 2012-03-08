@@ -310,11 +310,6 @@ class Calculatrice(Panel_simple):
             ligne.addStretch()
 
         self.setLayout(self.sizer)
-
-        #TODO:
-#        self.entree.texte.Bind(wx.EVT_RIGHT_DOWN, self.EvtMenu)
-#        self.visualisation.Bind(wx.EVT_RIGHT_DOWN, self.EvtMenuVisualisation)
-
         self.initialiser()
 
 
