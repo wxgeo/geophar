@@ -43,19 +43,23 @@ patterns = filter(None, ('(' + pattern.replace('*', '.*').strip() + ')' for patt
 IGNORE_RE = re.compile('|'.join(patterns))
 SUPPORTED_EDITORS = ('geany', 'gedit')
 
-def gs(chaine='', case=True, exclude_comments=True, extensions=(".py", ".pyw"), maximum=100, codec="latin1", statistiques=False, replace=None, color=None, edit_with=None):
+def gs(chaine='', case=True, exclude_comments=True, extensions=(".py", ".pyw"),
+        maximum=100, codec="latin1", statistiques=False, replace=None, color=None, edit_with=None):
     u"""Parcourt le répertoire courant et les sous-répertoire, à la recherche des fichiers dont l'extension
     est comprise dans 'extensions', mais passe les répertoires et les fichiers dont le nom commence par un préfixe
     de 'exclude_prefixe', ou finit par un suffixe de 'exclude_suffixe'.
     Pour chaque fichier trouvé, renvoie toutes les lignes où 'chaine' se trouve.
     (Par défaut, la casse est prise en compte, sinon, il suffit de modifier la valeur de 'case'.)
     Le nombre maximal de lignes renvoyées est fixé par 'maximum', afin d'éviter de saturer le système.
-    Si ce nombre est dépassé (ie. toutes les occurences de 'chaine' ne sont pas affichées), la fonction renvoie False, sinon, True.
+    Si ce nombre est dépassé (ie. toutes les occurences de 'chaine' ne sont pas affichées),
+    la fonction renvoie False, sinon, True.
     """
     if color is None:
         color = sys.platform.startswith('linux')
     if color:
         def blue(s):
+            return '\033[0;36m' + s + '\033[0m'
+        def blue2(s):
             return '\033[1;36m' + s + '\033[0m'
         def red(s):
             return '\033[0;31m' + s + '\033[0m'
@@ -63,8 +67,12 @@ def gs(chaine='', case=True, exclude_comments=True, extensions=(".py", ".pyw"), 
             return '\033[0;32m' + s + '\033[0m'
         def green2(s):
             return '\033[1;32m' + s + '\033[0m'
+        def yellow(s):
+            return '\033[0;33m' + s + '\033[0m'
+        def white(s):
+            return '\033[1;37m' + s + '\033[0m'
     else:
-        green = blue = red = green2 = (lambda s:s)
+        green = blue = white = blue2 = red = green2 = yellow = (lambda s:s)
 
     if not chaine:
         statistiques = True
@@ -99,7 +107,7 @@ def gs(chaine='', case=True, exclude_comments=True, extensions=(".py", ".pyw"), 
         F += 1
         with open(f, "r") as fichier:
             lignes = []
-            found = False
+            results = []
             for n, s in enumerate(fichier):
                 if replace is not None:
                     lignes.append(s)
@@ -143,13 +151,11 @@ def gs(chaine='', case=True, exclude_comments=True, extensions=(".py", ".pyw"), 
                                 # substring found inside a comment
                                 continue
 
-                    found = True
                     occurences += 1
                     if replace is not None:
                         lignes[-1] = s.replace(chaine, replace)
-                    print u"\u2022 in " + green(f[:end_root_pos]) + green2(f[end_root_pos:])
-                    s = s[:pos] + blue(s[pos:pos+len(chaine)]) + s[pos+len(chaine):]
-                    print u"  line " + unicode(n + 1) + ":   " + s.decode(codec)
+                    s = s[:pos] + blue2(s[pos:pos+len(chaine)]) + s[pos+len(chaine):]
+                    results.append(u"  \u25E6 line " + white(unicode(n + 1)) + ":   " + s.decode(codec))
 
                     if edit_with is not None:
                         if edit_with not in SUPPORTED_EDITORS:
@@ -163,20 +169,28 @@ def gs(chaine='', case=True, exclude_comments=True, extensions=(".py", ".pyw"), 
 
                     n_lignes += 1
                     if n_lignes > maximum:
-                        print red("Maximum output exceeded...!")
-                        return False
-        if replace is not None and found:
-            with open(f, 'w') as fichier:
-                for l in lignes:
-                    fichier.write(l)
+                        return red("Maximum output exceeded...!")
+
+        if results:
+            print u"\u2022 in " + green(f[:end_root_pos]) + green2(f[end_root_pos:])
+            for result in results:
+                print(result.rstrip())
+
+            if replace is not None:
+                with open(f, 'w') as fichier:
+                    for l in lignes:
+                        fichier.write(l)
 
     if statistiques:
         # C - 20*F : on décompte les préambules de tous les fichiers
-        return str(N) + " lignes de code\n" + str(C) + " lignes de commentaires (" + str(C - 20*F) + " hors licence)\n" + str(B) + " lignes vides\n" + str(F) + " fichiers"
+        return (blue(str(N) + " lignes de code\n")
+                + str(C) + " lignes de commentaires (" + str(C - 20*F) + " hors licence)\n"
+                + str(B) + " lignes vides\n"
+                + str(F) + " fichiers")
     if replace is None:
-        return u"%s occurence(s) trouvée(s)." %occurences
+        return blue(u"\n-> %s occurence(s) trouvée(s)." %occurences)
     else:
-        return u"%s occurence(s) de %s remplacée(s) par %s." %(occurences, repr(chaine), repr(replace))
+        return blue(u"%s occurence(s) de %s remplacée(s) par %s." %(occurences, repr(chaine), repr(replace)))
 
 
 def gr(chaine, chaine_bis, exceptions = (), extensions = (".py", ".pyw"), fake=True):
@@ -188,7 +202,8 @@ def gr(chaine, chaine_bis, exceptions = (), extensions = (".py", ".pyw"), fake=T
     y = yes = True
     n = no = False
     txt_exceptions = ("but " + ", ".join(exceptions) + " " if exceptions else "")
-    b = input("Warning: Replace string '%s' by string '%s' in ALL files %s[y/n] ?" %(chaine, chaine_bis, txt_exceptions))
+    b = input("Warning: Replace string '%s' by string '%s' in ALL files %s[y/n] ?"
+                %(chaine, chaine_bis, txt_exceptions))
     if b is not True:
         return "Nothing done."
     repertoires=os.walk(os.getcwd())
@@ -222,22 +237,31 @@ def usage():
 
 if __name__ == "__main__":
     args = sys.argv[1:]
+    kw = {}
     if not args or args[0] in ('-h', '--help'):
         usage()
     elif '-r' in args:
         args.remove('-r')
         if len(args) < 3:
             usage()
-        kw = dict(arg.split('=', 1) for arg in args[3:])
+        kw.update(arg.split('=', 1) for arg in args[3:])
         print gr(args[1], args[2], **kw)
     else:
         if '-e' in args:
             args.remove('-e')
-            args.append('edit_with=' + DEFAULT_EDITOR)
+            kw['edit_with'] = DEFAULT_EDITOR
         if '-c' in args:
             args.remove('-c')
-            args.append('color=True')
+            kw['color'] = True
+        if '-s' in args:
+            args.remove('-s')
+            args.insert(0, '')
+            kw['statistiques'] = True
         options = (arg.split('=', 1) for arg in args[1:])
-        kw = dict((key, eval(val)) for key, val in options)
-        print "\n=== Recherche de %s ===\n" %repr(args[0])
+        kw.update((key, eval(val)) for key, val in options)
+        ##print kw
+        title = "\n=== Recherche de %s ===\n" %repr(args[0])
+        if sys.platform.startswith('linux'):
+            title = '\033[1;37m' + title + '\033[0m'
+        print title
         print gs(args[0], **kw)
