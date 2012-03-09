@@ -140,13 +140,18 @@ class Canvas(FigureCanvasAgg):
             setattr(self, parametre, self.param(parametre))
 
 
-    def exporter(self, nom, dpi = None, zone = None, echelle = None):
+    def exporter(self, fichier, format=None, dpi=None, zone=None, echelle=None):
         u"""Export de la feuille sous forme d'un fichier (png, eps, ...).
+
+        fichier: le fichier lui-même, ou son emplacement.
+        format: le format de l'image (PNG, SVG, ...).
+                Inutile si le nom du fichier est donné avec une extension connue.
         dpi : résolution souhaitée (en dot par inch)
         zone = (xmin, xmax, ymin, ymax) : pour n'exporter qu'une partie de la feuille (png seulement).
         echelle = (x, y) : nombre de cm pour une unité en abscisse ; en ordonnée"""
 
-        nom = str2(nom) # la méthode savefig ne gère pas l'unicode
+        if isinstance(fichier, unicode):
+            fichier = str2(fichier) # la méthode savefig ne gère pas l'unicode
         dpi = dpi or param.dpi_export
 
         if self.editeur is not None:
@@ -158,7 +163,7 @@ class Canvas(FigureCanvasAgg):
         afficher_objets_caches = self.afficher_objets_caches
         self.afficher_objets_caches = False
 
-        self.graph.exporter(nom = nom, dpi = dpi, zone = zone, echelle = echelle)
+        self.graph.exporter(fichier=fichier, format=format, dpi=dpi, zone=zone, echelle=echelle)
 
         self.afficher_objets_caches = afficher_objets_caches
         self.selection_en_gras()

@@ -26,7 +26,7 @@ from string import ascii_lowercase
 
 from matplotlib.colors import colorConverter
 from matplotlib.transforms import Bbox
-from matplotlib.backends.backend_qt4agg import FigureCanvasAgg
+from matplotlib.backends.backend_agg import FigureCanvasAgg
 from matplotlib.lines import Line2D
 from matplotlib.collections import LineCollection
 from matplotlib.patches import Polygon, Circle, FancyArrowPatch
@@ -802,9 +802,9 @@ class Moteur_graphique(object):
         return Bbox(((x0, y0), (x1, y1)))
 
 
-    def exporter(self, nom, dpi = None, zone = None, echelle = None):
+    def exporter(self, fichier, format=None, dpi=None, zone=None, echelle=None):
         u"Exporter la figure."
-        with self.canvas.geler_affichage(seulement_en_apparence = True, actualiser = False):
+        with self.canvas.geler_affichage(seulement_en_apparence=True, actualiser=False):
             # (Nota: le réglage de la fenêtre ne sert en fait qu'en l'absence de GUI.)
             self._regler_fenetre()
             # NB: ajuster l'échelle *avant* de convertir la zone
@@ -814,7 +814,7 @@ class Moteur_graphique(object):
                 with CollecterArtistes(self):
                     with ZoomArtistes(self.axes, self.zoom_texte, self.zoom_ligne):
                         # Export proprement dit:
-                        self.canvas.figure.savefig(nom, dpi = dpi, bbox_inches = zone)
+                        self.canvas.figure.savefig(fichier, format=format, dpi=dpi, bbox_inches=zone)
 
 
     def exporter_tikz(self, chiffres_significatifs = 4):

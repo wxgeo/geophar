@@ -239,7 +239,7 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
 
     def Copy_to_Clipboard(self):
         output = StringIO()
-        self.figure.savefig(output, format='png')
+        self.exporter(output, format='png')
         img = QImage()
         img.loadFromData(output.getvalue(), 'PNG')
         app.clipboard().setImage(img)
