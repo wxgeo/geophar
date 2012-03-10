@@ -26,10 +26,12 @@ from __future__ import with_statement
 import os
 from webbrowser import open_new_tab
 from functools import partial
+from cStringIO import StringIO
 
 from PyQt4.QtGui import QTabWidget, QToolButton, QIcon, QMessageBox, QFileDialog, \
                         QDialog, QPainter, QPrintDialog, QPrinter
-from PyQt4.QtCore import Qt, QPoint
+from PyQt4.QtCore import Qt, QPoint, QByteArray, QRectF
+from PyQt4.QtSvg import QSvgRenderer
 import matplotlib.backend_bases as backend_bases
 
 from .aide import About, Informations, Notes, Licence
@@ -456,6 +458,7 @@ border-top-right-radius: 4px;
         self.a_venir()
 
     def Printout(self):
+        # Autre piste : utiliser QSvg
         printer = QPrinter(QPrinter.HighResolution)
         dialog = QPrintDialog(printer, self)
         dialog.setOption(QPrintDialog.PrintPageRange, False)
@@ -464,20 +467,45 @@ border-top-right-radius: 4px;
         dialog.setWindowTitle("Imprimer le document")
         if (dialog.exec_() == QDialog.Accepted):
             painter = QPainter(printer)
-            psize = printer.pageRect(QPrinter.Inch)
-            # QSizeF -> tuple
-            tsize = float(psize.width())*2.54, float(psize.height())*2.54
-            print printer.resolution(), tsize
-            img = self.onglet_actuel.canvas.as_QImage(dpi=printer.resolution(),
-                                                      taille=tsize,
-                                                      keep_ratio=True)
-            size = img.size()
-            rect = painter.viewport()
-            size.scale(rect.size(), Qt.KeepAspectRatio)
-            painter.setViewport(rect.x(), rect.y(), size.width(), size.height())
-            painter.setWindow(img.rect())
-            painter.drawImage(0, 0, img)
+            self.onglet_actuel.canvas.exporter('/home/nicolas/tmp.svg')
+            svg = QSvgRenderer('/home/nicolas/tmp.svg', self)
+            size = svg.defaultSize()
+            size.scale(painter.viewport().size(), Qt.KeepAspectRatio)
+            rect = QRectF(0, 0, size.width(), size.height())
+            svg.render(painter, rect)
             painter.end()
+        ##if (dialog.exec_() == QDialog.Accepted):
+            ##painter = QPainter(printer)
+            ##s = StringIO()
+            ##self.onglet_actuel.canvas.exporter(s, format='svg')
+            ##svg = QSvgRenderer(QByteArray(s.read()))
+            ##svg.render(painter)
+            ##painter.end()
+
+
+    ##def Printout(self):
+        ##printer = QPrinter(QPrinter.HighResolution)
+        ##dialog = QPrintDialog(printer, self)
+        ##dialog.setOption(QPrintDialog.PrintPageRange, False)
+        ##dialog.setOption(QPrintDialog.PrintToFile, True)
+        ##dialog.setOption(QPrintDialog.PrintShowPageSize, True)
+        ##dialog.setWindowTitle("Imprimer le document")
+        ##if (dialog.exec_() == QDialog.Accepted):
+            ##painter = QPainter(printer)
+            ##psize = printer.pageRect(QPrinter.Inch)
+            ### QSizeF -> tuple
+            ##tsize = float(psize.width())*2.54, float(psize.height())*2.54
+            ##print printer.resolution(), tsize
+            ##img = self.onglet_actuel.canvas.as_QImage(dpi=printer.resolution(),
+                                                      ##taille=tsize,
+                                                      ##keep_ratio=True)
+            ##size = img.size()
+            ##rect = painter.viewport()
+            ##size.scale(rect.size(), Qt.KeepAspectRatio)
+            ##painter.setViewport(rect.x(), rect.y(), size.width(), size.height())
+            ##painter.setWindow(img.rect())
+            ##painter.drawImage(0, 0, img)
+            ##painter.end()
 
     def a_venir(self):
         QMessageBox.information(self, u"A venir !", u"Fonctionnalité non présente pour l'instant !")
