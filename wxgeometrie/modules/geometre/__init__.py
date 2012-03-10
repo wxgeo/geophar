@@ -28,7 +28,11 @@ from ...GUI import MenuBar, Panel_API_graphique
 class GeometreMenuBar(MenuBar):
     def __init__(self, panel):
         MenuBar.__init__(self, panel)
-        self.ajouter(u"Fichier", [u"nouveau"], [u"ouvrir"], [u"ouvrir ici"], [u"enregistrer"], [u"enregistrer_sous"], [u"exporter"], [u"exporter&sauver"], None, [u"mise en page"], [u"imprimer"], [u"presse-papier"], None, [u"proprietes"], None, self.panel.doc_ouverts, None, [u"fermer"], [u"quitter"])
+        self.ajouter(u"Fichier", [u"nouveau"], [u"ouvrir"], [u"ouvrir ici"],
+                    [u"enregistrer"], [u"enregistrer_sous"], [u"exporter"],
+                    [u"exporter&sauver"], None, [u"imprimer"], [u"presse-papier"],
+                    None, [u"proprietes"], None, self.panel.doc_ouverts, None,
+                    [u"fermer"], [u"quitter"])
         self.ajouter(u"Editer", [u"annuler"], [u"refaire"], [u"modifier"], [u"supprimer"])
         self.ajouter(u"creer")
         self.ajouter("affichage")

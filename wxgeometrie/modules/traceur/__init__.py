@@ -40,7 +40,7 @@ class TraceurMenuBar(MenuBar):
 
         self.ajouter(u"Fichier", [u"nouveau"], [u"ouvrir"], [u"ouvrir ici"], [u"enregistrer"],
                                  [u"enregistrer_sous"], [u"exporter"], [u"exporter&sauver"],
-                                 None, [u"mise en page"], [u"imprimer"], [u"presse-papier"],
+                                 None, [u"imprimer"], [u"presse-papier"],
                                  None, [u"proprietes"], None, self.panel.doc_ouverts, None,
                                  ["fermer"], ["quitter"])
         self.ajouter(u"Editer", ["annuler"], ["refaire"], ["modifier"], ["supprimer"])

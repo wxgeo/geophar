@@ -162,7 +162,7 @@ class MenuBar(QMenuBar):
 "enregistrer_sous":  [u"Enregistrer sous...", u"Enregistrer le document sous un nouveau nom.", u"Alt+Ctrl+S", self.parent.SaveFileAs],
 "exporter": [u"Exporter...", u"Exporter l'image.", u"Ctrl+E", self.parent.ExportFile],
 "exporter&sauver": [u"Exporter et sauver", u"Exporter l'image, et sauvegarder le document.", u"Alt+Ctrl+E", self.parent.ExportAndSaveFile],
-"mise en page": [u"Paramètres d'impression", u"Régler les paramètres d'impression.", None, self.parent.PageSetup],
+##"mise en page": [u"Paramètres d'impression", u"Régler les paramètres d'impression.", None, self.parent.PageSetup],
 "imprimer": [u"Imprimer", u"Imprimer la figure géométrique courante.", u"Ctrl+P", self.parent.Printout],
 "proprietes": [u"Propriétés", u"Modifier les informations relatives au document", None, self.parent.Proprietes],
 "fermer":   [u"Fermer", u"Fermer la feuille courante.", u"Ctrl+W", self.parent.CloseFile],
@@ -187,7 +187,7 @@ class MenuBar(QMenuBar):
         }
 
 
-        self.menus["fichier"] = ["Fichier", ["nouveau"], ["ouvrir"], ["ouvrir ici"], ["enregistrer"], ["enregistrer_sous"], ["exporter"], ["exporter&sauver"], None, ["mise en page"], ["imprimer"], None, ["fermer"], ["quitter"]]
+        self.menus["fichier"] = ["Fichier", ["nouveau"], ["ouvrir"], ["ouvrir ici"], ["enregistrer"], ["enregistrer_sous"], ["exporter"], ["exporter&sauver"], None, ["imprimer"], None, ["fermer"], ["quitter"]]
 
 
         self.menus["avance1"] = [u"Avancé", [u"historique"], [u"ligne_commande"], [u"debug"]]

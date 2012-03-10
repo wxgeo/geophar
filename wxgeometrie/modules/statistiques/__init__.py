@@ -94,7 +94,10 @@ class StatMenuBar(MenuBar):
     def __init__(self, panel):
         MenuBar.__init__(self, panel)
 
-        self.ajouter("Fichier", ["nouveau"], ["ouvrir"], ["ouvrir ici"], ["enregistrer"], ["enregistrer_sous"], ["exporter"], None, ["mise en page"], ["imprimer"], [u"presse-papier"], None, ["proprietes"], None, self.panel.doc_ouverts, None, ["fermer"], ["quitter"])
+        self.ajouter("Fichier", ["nouveau"], ["ouvrir"], ["ouvrir ici"],
+                    ["enregistrer"], ["enregistrer_sous"], ["exporter"], None,
+                    ["imprimer"], [u"presse-papier"], None, ["proprietes"], None,
+                    self.panel.doc_ouverts, None, ["fermer"], ["quitter"])
         self.ajouter("Editer", ["annuler"], ["refaire"], ["modifier"], ["supprimer"])
         self.ajouter("creer")
         self.ajouter("Affichage", ["onglet"], None, ["barre_outils"], ["console_geolib"], None, ["zoom_texte"], ["zoom_ligne"], ["zoom_general"])

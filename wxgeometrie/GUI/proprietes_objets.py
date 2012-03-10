@@ -144,7 +144,7 @@ class ProprietesAffichage(QWidget):
             self.types_de_hachures = getattr(param, "types_de_hachures", [])
             self.hachures = QComboBox()
             self.hachures.addItems(self.types_de_hachures)
-            self.hachure.currentIndexChanged.connect(self.EvtHachures)
+            self.hachures.currentIndexChanged.connect(self.EvtHachures)
 
             hachures = objets[0].style("hachures")
             if hachures in self.types_de_hachures and all(objet.style("hachures") == hachures for objet in objets):

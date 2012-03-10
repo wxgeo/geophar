@@ -454,11 +454,14 @@ border-top-right-radius: 4px;
     # Impression
     # ----------
 
-    def PageSetup(self):
-        self.a_venir()
+    ##def PageSetup(self):
+        ##self.a_venir()
 
     def Printout(self):
-        # Autre piste : utiliser QSvg
+        # Version utilisant QSvg
+        # Fixme: l'alpha n'est pas bien rendu
+        # (le fond des polygones est absent)
+        # Le fond est bien présent après export avec matplotlib pourtant.
         printer = QPrinter(QPrinter.HighResolution)
         dialog = QPrintDialog(printer, self)
         dialog.setOption(QPrintDialog.PrintPageRange, False)
@@ -467,20 +470,16 @@ border-top-right-radius: 4px;
         dialog.setWindowTitle("Imprimer le document")
         if (dialog.exec_() == QDialog.Accepted):
             painter = QPainter(printer)
-            self.onglet_actuel.canvas.exporter('/home/nicolas/tmp.svg')
-            svg = QSvgRenderer('/home/nicolas/tmp.svg', self)
-            size = svg.defaultSize()
-            size.scale(painter.viewport().size(), Qt.KeepAspectRatio)
-            rect = QRectF(0, 0, size.width(), size.height())
-            svg.render(painter, rect)
-            painter.end()
-        ##if (dialog.exec_() == QDialog.Accepted):
-            ##painter = QPainter(printer)
-            ##s = StringIO()
-            ##self.onglet_actuel.canvas.exporter(s, format='svg')
-            ##svg = QSvgRenderer(QByteArray(s.read()))
-            ##svg.render(painter)
-            ##painter.end()
+            try:
+                output = StringIO()
+                self.onglet_actuel.canvas.exporter(output, format='svg')
+                svg = QSvgRenderer(QByteArray(output.getvalue()), self)
+                size = svg.defaultSize()
+                size.scale(painter.viewport().size(), Qt.KeepAspectRatio)
+                rect = QRectF(0, 0, size.width(), size.height())
+                svg.render(painter, rect)
+            finally:
+                painter.end()
 
 
     ##def Printout(self):
