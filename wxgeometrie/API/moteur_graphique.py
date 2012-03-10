@@ -464,42 +464,66 @@ class CollecterArtistes(object):
 
 
 class AjusterEchelle(object):
-    def __init__(self, moteur_graphique, echelle):
+    def __init__(self, moteur_graphique, echelle=None, taille=None, keep_ratio=False):
         self.moteur_graphique = moteur_graphique
         self.echelle = echelle
+        self.taille = taille
+        self.keep_ratio = keep_ratio
+        assert (echelle is None) or (taille is None), "On ne peut fixer simultanement l'echelle et la taille."
 
     def __enter__(self):
-        if self.echelle is not None:
-            m = self.moteur_graphique
+        if self.echelle is None and self.taille is None:
+            return
+
+        m = self.moteur_graphique
+        self.taille_precedente = tuple(m.canvas.figure.get_size_inches()) # faire une copie !!
+
+        if self.taille is None:
             xe, ye = self.echelle
             xmin, xmax, ymin, ymax = m.canvas.fenetre
             l, h = m.canvas.dimensions_fenetre
-            # Conversion en inches : 1 inch = 2.54 cm
-            x = xe*l/2.54
-            y = ye*h/2.54
-            self.taille_precedente = tuple(m.canvas.figure.get_size_inches()) # faire une copie !!
-            m.canvas.figure.set_size_inches(x, y)
-            # on redessine à cause du changement d'échelle (le ratio a pu être modifié)
-            if m.canvas.dimensions is None:
-                m.canvas._dimensions = 850*xe, 850*h/l*ye
+            x = xe*l
+            y = ye*h
+        else:
+            x, y = self.taille
+        if self.keep_ratio:
+            # On réduit l'image pour préserver le ratio
+            x_, y_ = self.taille_precedente
+            assert x and y, "Image de dimensions nulles !"
+            xscale = x_/x
+            yscale = y_/y
+            if xscale < yscale:
+                y_ *= xscale/yscale
+            elif yscale < xscale:
+                x_ *= yscale/xscale
+
+        # Conversion en inches : 1 inch = 2.54 cm
+        x /= 2.54
+        y /= 2.54
+        m.canvas.figure.set_size_inches(x, y)
+        # on redessine à cause du changement d'échelle (le ratio a pu être modifié)
+        if m.canvas.dimensions is None:
+            m.canvas._dimensions = 850*xe, 850*h/l*ye
+        else:
+            L, H = m.canvas.dimensions
+            # on conserve la plus grande des dimensions
+            if H < L:
+                m.canvas._dimensions = L, L*h/l
             else:
-                L, H = m.canvas.dimensions
-                # on conserve la plus grande des dimensions
-                if H < L:
-                    m.canvas._dimensions = L, L*h/l
-                else:
-                    m.canvas._dimensions = H*l/h, H
-            m.canvas.feuille_actuelle._rafraichir_figures()
-            m.dessiner(rafraichir_axes = True)
+                m.canvas._dimensions = H*l/h, H
+        m.canvas.feuille_actuelle._rafraichir_figures()
+        m.dessiner(rafraichir_axes = True)
+
 
     def __exit__(self, type, value, traceback):
-        if self.echelle is not None:
-            m = self.moteur_graphique
-            m.canvas._dimensions = None
-            m.canvas.feuille_actuelle._rafraichir_figures()
-            m.dessiner(rafraichir_axes = True)
-            # On remet la figure dans son état d'origine
-            m.canvas.figure.set_size_inches(self.taille_precedente)
+        if self.echelle is None and self.taille is None:
+            return
+        m = self.moteur_graphique
+        m.canvas._dimensions = None
+        m.canvas.feuille_actuelle._rafraichir_figures()
+        m.dessiner(rafraichir_axes = True)
+        # On remet la figure dans son état d'origine
+        m.canvas.figure.set_size_inches(self.taille_precedente)
 
 
 
@@ -802,13 +826,13 @@ class Moteur_graphique(object):
         return Bbox(((x0, y0), (x1, y1)))
 
 
-    def exporter(self, fichier, format=None, dpi=None, zone=None, echelle=None):
+    def exporter(self, fichier, format=None, dpi=None, zone=None, echelle=None, taille=None, keep_ratio=False):
         u"Exporter la figure."
         with self.canvas.geler_affichage(seulement_en_apparence=True, actualiser=False):
             # (Nota: le réglage de la fenêtre ne sert en fait qu'en l'absence de GUI.)
             self._regler_fenetre()
             # NB: ajuster l'échelle *avant* de convertir la zone
-            with AjusterEchelle(self, echelle):
+            with AjusterEchelle(self, echelle, taille, keep_ratio):
                 if zone:
                     zone = self._convertir_zone(zone)
                 with CollecterArtistes(self):

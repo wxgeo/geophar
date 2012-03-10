@@ -140,15 +140,20 @@ class Canvas(FigureCanvasAgg):
             setattr(self, parametre, self.param(parametre))
 
 
-    def exporter(self, fichier, format=None, dpi=None, zone=None, echelle=None):
+    def exporter(self, fichier, format=None, dpi=None, zone=None, echelle=None, taille=None, keep_ratio=False):
         u"""Export de la feuille sous forme d'un fichier (png, eps, ...).
 
-        fichier: le fichier lui-même, ou son emplacement.
-        format: le format de l'image (PNG, SVG, ...).
-                Inutile si le nom du fichier est donné avec une extension connue.
-        dpi : résolution souhaitée (en dot par inch)
-        zone = (xmin, xmax, ymin, ymax) : pour n'exporter qu'une partie de la feuille (png seulement).
-        echelle = (x, y) : nombre de cm pour une unité en abscisse ; en ordonnée"""
+        :param string,unicode,file fichier: le fichier lui-même, ou son emplacement.
+        :param format: le format de l'image (PNG, SVG, ...).
+                       Inutile si le nom du fichier est donné avec une extension connue.
+        :param int,float dpi: résolution souhaitée (en dot par inch)
+        :param tuple zone: (xmin, xmax, ymin, ymax) : pour n'exporter qu'une partie de la feuille (png seulement).
+        :param tuple echelle: (x, y) : nombre de cm pour une unité en abscisse ; en ordonnée
+        :param tuple taille: (largeur, hauteur) : taille de l'image en cm.
+        :param bool keep_ratio: indique si le ratio doit être préservé en cas de redimensionnement.
+
+        Les paramètres `echelle` et `taille` ne peuvent être fournis simultanément.
+        """
 
         if isinstance(fichier, unicode):
             fichier = str2(fichier) # la méthode savefig ne gère pas l'unicode
@@ -163,7 +168,7 @@ class Canvas(FigureCanvasAgg):
         afficher_objets_caches = self.afficher_objets_caches
         self.afficher_objets_caches = False
 
-        self.graph.exporter(fichier=fichier, format=format, dpi=dpi, zone=zone, echelle=echelle)
+        self.graph.exporter(fichier=fichier, format=format, dpi=dpi, zone=zone, echelle=echelle, taille=taille, keep_ratio=keep_ratio)
 
         self.afficher_objets_caches = afficher_objets_caches
         self.selection_en_gras()

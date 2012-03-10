@@ -28,7 +28,7 @@ from webbrowser import open_new_tab
 from functools import partial
 
 from PyQt4.QtGui import QTabWidget, QToolButton, QIcon, QMessageBox, QFileDialog, \
-                        QDialog, QMenu
+                        QDialog, QPainter, QPrintDialog, QPrinter
 from PyQt4.QtCore import Qt, QPoint
 import matplotlib.backend_bases as backend_bases
 
@@ -41,7 +41,7 @@ from .inspecteur import FenCode
 from .nouvelles_versions import Gestionnaire_mises_a_jour
 from .proprietes_feuille import ProprietesFeuille
 from .proprietes_objets import Proprietes
-from .wxlib import png, PopUpMenu
+from .wxlib import PopUpMenu
 from . import dialogues_geometrie
 from ..API.sauvegarde import FichierGEO, ouvrir_fichierGEO
 from .. import param, modules, geolib
@@ -456,7 +456,23 @@ border-top-right-radius: 4px;
         self.a_venir()
 
     def Printout(self):
-        self.a_venir()
+        printer = QPrinter()
+        dialog = QPrintDialog(printer, self)
+        dialog.setOption(QPrintDialog.PrintPageRange, False)
+        dialog.setOption(QPrintDialog.PrintToFile, True)
+        dialog.setOption(QPrintDialog.PrintShowPageSize, True)
+        dialog.setWindowTitle("Imprimer le document")
+        if (dialog.exec_() == QDialog.Accepted):
+            dpi = printer.resolution()
+            img = self.onglet_actuel.canvas.as_QImage()
+            painter = QPainter(printer)
+            rect = painter.viewport()
+            size = img.size()
+            size.scale(rect.size(), Qt.KeepAspectRatio)
+            painter.setViewport(rect.x(), rect.y(), size.width(), size.height())
+            painter.setWindow(img.rect())
+            painter.drawImage(0, 0, img)
+            painter.end()
 
     def a_venir(self):
         QMessageBox.information(self, u"A venir !", u"Fonctionnalité non présente pour l'instant !")
