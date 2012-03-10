@@ -489,30 +489,32 @@ class AjusterEchelle(object):
         if self.keep_ratio:
             # On réduit l'image pour préserver le ratio
             x_, y_ = self.taille_precedente
-            assert x and y, "Image de dimensions nulles !"
-            xscale = x_/x
-            yscale = y_/y
+            assert x_ and y_, "Image de dimensions nulles !"
+            xscale = x/x_
+            yscale = y/y_
             if xscale < yscale:
-                y_ *= xscale/yscale
+                y *= xscale/yscale
             elif yscale < xscale:
-                x_ *= yscale/xscale
+                x *= yscale/xscale
+            print x,y, x_, y_
 
         # Conversion en inches : 1 inch = 2.54 cm
         x /= 2.54
         y /= 2.54
         m.canvas.figure.set_size_inches(x, y)
-        # on redessine à cause du changement d'échelle (le ratio a pu être modifié)
-        if m.canvas.dimensions is None:
-            m.canvas._dimensions = 850*xe, 850*h/l*ye
-        else:
-            L, H = m.canvas.dimensions
-            # on conserve la plus grande des dimensions
-            if H < L:
-                m.canvas._dimensions = L, L*h/l
+        if self.taille is None:
+            # on redessine à cause du changement d'échelle (le ratio a pu être modifié)
+            if m.canvas.dimensions is None:
+                m.canvas._dimensions = 850*xe, 850*h/l*ye
             else:
-                m.canvas._dimensions = H*l/h, H
-        m.canvas.feuille_actuelle._rafraichir_figures()
-        m.dessiner(rafraichir_axes = True)
+                L, H = m.canvas.dimensions
+                # on conserve la plus grande des dimensions
+                if H < L:
+                    m.canvas._dimensions = L, L*h/l
+                else:
+                    m.canvas._dimensions = H*l/h, H
+            m.canvas.feuille_actuelle._rafraichir_figures()
+            m.dessiner(rafraichir_axes = True)
 
 
     def __exit__(self, type, value, traceback):

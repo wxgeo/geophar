@@ -456,18 +456,23 @@ border-top-right-radius: 4px;
         self.a_venir()
 
     def Printout(self):
-        printer = QPrinter()
+        printer = QPrinter(QPrinter.HighResolution)
         dialog = QPrintDialog(printer, self)
         dialog.setOption(QPrintDialog.PrintPageRange, False)
         dialog.setOption(QPrintDialog.PrintToFile, True)
         dialog.setOption(QPrintDialog.PrintShowPageSize, True)
         dialog.setWindowTitle("Imprimer le document")
         if (dialog.exec_() == QDialog.Accepted):
-            dpi = printer.resolution()
-            img = self.onglet_actuel.canvas.as_QImage()
             painter = QPainter(printer)
-            rect = painter.viewport()
+            psize = printer.pageRect(QPrinter.Inch)
+            # QSizeF -> tuple
+            tsize = float(psize.width())*2.54, float(psize.height())*2.54
+            print printer.resolution(), tsize
+            img = self.onglet_actuel.canvas.as_QImage(dpi=printer.resolution(),
+                                                      taille=tsize,
+                                                      keep_ratio=True)
             size = img.size()
+            rect = painter.viewport()
             size.scale(rect.size(), Qt.KeepAspectRatio)
             painter.setViewport(rect.x(), rect.y(), size.width(), size.height())
             painter.setWindow(img.rect())

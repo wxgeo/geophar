@@ -237,15 +237,15 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
         with BusyCursor():
             Canvas.exporter(self, *args, **kw)
 
-    def as_QImage(self, dpi=None):
+    def as_QImage(self, **kw):
         output = StringIO()
-        self.exporter(output, format='png', dpi=dpi)
+        self.exporter(output, format='png', **kw)
         img = QImage()
         img.loadFromData(output.getvalue(), 'PNG')
         return img
 
-    def Copy_to_Clipboard(self):
-        app.clipboard().setImage(self.as_QImage())
+    def Copy_to_Clipboard(self, **kw):
+        app.clipboard().setImage(self.as_QImage(**kw))
 
 
 #    Gestion des evenements (essentiellement la souris).
