@@ -55,7 +55,8 @@ def informations_configuration():
     dossier_os.processeur = os.environ.get("PROCESSOR_IDENTIFIER", "?")
     dossier_os.version = platform.platform().replace("-", " ")
     if dossier_os.version.startswith("Windows"):
-        dossier_os.distribution = "%s.%s build %s (%s) - %s" %sys.getwindowsversion()
+        dossier_os.distribution = "%s.%s build %s (%s) - %s" %tuple(sys.getwindowsversion())
+        # Il faut convertir en tuple sous Python 2.7
     elif dossier_os.version.startswith("Linux"):
         try:
             f = open("/etc/lsb-release")
