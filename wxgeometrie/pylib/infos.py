@@ -61,7 +61,8 @@ def informations_configuration():
     #TODO (?): parse /proc/cpuinfo and /proc/meminfo if platform is Linux
 
     if dossier_os.version.startswith("Windows"):
-        dossier_os.distribution = "%s.%s build %s (%s) - %s" %sys.getwindowsversion()
+        dossier_os.distribution = "%s.%s build %s (%s) - %s" %tuple(sys.getwindowsversion())
+        # Il faut convertir en tuple sous Python 2.7
     elif dossier_os.version.startswith("Linux"):
         try:
             f = open("/etc/lsb-release")
