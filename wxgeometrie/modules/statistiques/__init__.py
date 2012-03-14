@@ -134,7 +134,7 @@ class Statistiques(Panel_API_graphique):
         self.origine_y = ''
         self.donnees_valeurs = ''
         self.donnees_classes = ''
-        self.intervalle_confiance = None
+        self.intervalle_fluctuation = None
         #test dico quantiles
         self.choix_quantiles = {"mediane": [True, [0.5], 'r', '-'], \
                                     "quartiles": [True, [0.25, 0.75], 'b', '--'],\
@@ -456,8 +456,8 @@ class Statistiques(Panel_API_graphique):
 
 
 
-    def dessiner_intervalle_confiance(self):
-        n = self.intervalle_confiance
+    def dessiner_intervalle_fluctuation(self):
+        n = self.intervalle_fluctuation
         if n is None:
             return
         m = self.moyenne(); f = m/100.
@@ -760,7 +760,7 @@ class Statistiques(Panel_API_graphique):
         self.canvas.dessiner_texte(m + 15*self.canvas.coeff(0), 1.1*hmax - 5*self.canvas.coeff(1),
                                     legende_y, va = "top")
 
-        self.dessiner_intervalle_confiance()
+        self.dessiner_intervalle_fluctuation()
 
 
     def diagramme_bande(self):

@@ -200,7 +200,7 @@ class Sondage(MyMiniFrame):
         nbr.addWidget(sc)
         sizer.addLayout(nbr)
 
-        self.cb = QCheckBox(u"Afficher l'intervalle de confiance")
+        self.cb = QCheckBox(u"Afficher l'intervalle de fluctuation")
         sizer.addWidget(self.cb)
         self.cb.stateChanged.connect(self.EvtCheckBox)
 
@@ -242,9 +242,9 @@ class Sondage(MyMiniFrame):
 
     def EvtCheckBox(self, event):
         echantillon = self.sc1.value()
-        self.parent.intervalle_confiance = (echantillon if self.cb.isChecked() else None)
+        self.parent.intervalle_fluctuation = (echantillon if self.cb.isChecked() else None)
         self.parent.affiche()
 
     def closeEvent(self, event):
-        self.parent.intervalle_confiance = None
+        self.parent.intervalle_fluctuation = None
 
