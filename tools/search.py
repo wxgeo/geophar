@@ -193,38 +193,6 @@ def gs(chaine='', case=True, exclude_comments=True, extensions=(".py", ".pyw"),
         return blue(u"%s occurence(s) de %s remplacée(s) par %s." %(occurences, repr(chaine), repr(replace)))
 
 
-def gr(chaine, chaine_bis, exceptions = (), extensions = (".py", ".pyw"), fake=True):
-    u"""Remplace 'chaine' par 'chaine_bis' dans tous les fichiers dont l'extension (.txt, .bat, ...)
-    est comprise dans 'extensions', et n'est pas comprise dans 'exceptions'.
-
-    Deprecated. Use gs() instead.
-    """
-    y = yes = True
-    n = no = False
-    txt_exceptions = ("but " + ", ".join(exceptions) + " " if exceptions else "")
-    b = input("Warning: Replace string '%s' by string '%s' in ALL files %s[y/n] ?"
-                %(chaine, chaine_bis, txt_exceptions))
-    if b is not True:
-        return "Nothing done."
-    repertoires=os.walk(os.getcwd())
-    fichiers = []
-    for r in repertoires:
-        fichiers += [r[0] + os.sep + f for f in r[2] if f[f.rfind("."):] in extensions and f not in exceptions]
-    n_lignes = 0
-    occurences = 0 # nombre de remplacements effectués
-    for f in fichiers:
-        fichier = open(f, "r")
-        s = fichier.read()
-        fichier.close()
-        k = s.count(chaine)
-        occurences += k
-        if k and not fake:
-            fichier = open(f, "w")
-            s = fichier.write(s.replace(chaine, chaine_bis))
-            fichier.close()
-    return u"%s remplacement(s) effectué(s)." %occurences
-
-
 def usage():
     print u"""\n    === Usage ===\n
     - Rechercher la chaîne 'hello' dans le code :
@@ -240,28 +208,28 @@ if __name__ == "__main__":
     kw = {}
     if not args or args[0] in ('-h', '--help'):
         usage()
-    elif '-r' in args:
-        args.remove('-r')
-        if len(args) < 3:
+    if '-r' in args:
+        i = args.index('-r')
+        # L'argument suivant est la chaîne de substitution.
+        if len(args) < i + 2:
             usage()
-        kw.update(arg.split('=', 1) for arg in args[3:])
-        print gr(args[1], args[2], **kw)
-    else:
-        if '-e' in args:
-            args.remove('-e')
-            kw['edit_with'] = DEFAULT_EDITOR
-        if '-c' in args:
-            args.remove('-c')
-            kw['color'] = True
-        if '-s' in args:
-            args.remove('-s')
-            args.insert(0, '')
-            kw['statistiques'] = True
-        options = (arg.split('=', 1) for arg in args[1:])
-        kw.update((key, eval(val)) for key, val in options)
-        ##print kw
-        title = "\n=== Recherche de %s ===\n" %repr(args[0])
-        if sys.platform.startswith('linux'):
-            title = '\033[1;37m' + title + '\033[0m'
-        print title
-        print gs(args[0], **kw)
+        kw['replace'] = args.pop(i + 1)
+        args.pop(i) # on supprimer le '-r'
+    if '-e' in args:
+        args.remove('-e')
+        kw['edit_with'] = DEFAULT_EDITOR
+    if '-c' in args:
+        args.remove('-c')
+        kw['color'] = True
+    if '-s' in args:
+        args.remove('-s')
+        args.insert(0, '')
+        kw['statistiques'] = True
+    options = (arg.split('=', 1) for arg in args[1:])
+    kw.update((key, eval(val)) for key, val in options)
+    ##print kw
+    title = "\n=== Recherche de %s ===\n" %repr(args[0])
+    if sys.platform.startswith('linux'):
+        title = '\033[1;37m' + title + '\033[0m'
+    print title
+    print gs(args[0], **kw)
