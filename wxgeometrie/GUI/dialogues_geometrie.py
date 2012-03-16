@@ -824,7 +824,7 @@ class DialogueReperage(Dialogue):
         self.ajoute([u"axe des ordonnées :", ("ygradu", 10, None, 1, round(gradu[1], 4))],
                     u"Ecart entre deux graduations en ordonnée. Exemple : 2.5")
         self.finalise()
-        btn = QPushButton(self, -1, u" Défaut ")
+        btn = QPushButton(u" Défaut ")
         btn.clicked.connect(self.EvtRestaurer)
         btn.setWhatsThis(u"Restaurer les valeurs par défaut.")
         self.box.addWidget(btn)
