@@ -133,10 +133,12 @@ class TabLaTeX(Panel_simple):
         self.type_tableau.currentIndexChanged.connect(self.EvtChoix)
         self.EvtChoix()
 
-        copier_code = partial(self.vers_presse_papier, texte=self.code_tableau.toPlainText())
+        def copier_code():
+            return self.vers_presse_papier(self.code_tableau.toPlainText())
         self.copier_code.clicked.connect(copier_code)
 
-        copier_entete = partial(self.vers_presse_papier, texte=self.code_entete.text())
+        def copier_entete():
+            return self.vers_presse_papier(self.code_entete.text())
         self.copier_entete.clicked.connect(copier_entete)
 
         def regler_mode_copie():
