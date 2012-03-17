@@ -228,36 +228,40 @@ class Statistiques(Panel_API_graphique):
             ##event.Skip()
 
     def EvtCheck(self, state):
-        self.param('hachures', self.onglets_bas.autres.hachures.isChecked())
-        self.param('mode_effectifs', self.onglets_bas.autres.mode.currentIndex())
-        self.param('reglage_auto_fenetre', self.onglets_bas.autres.auto.isChecked())
+        self.param('hachures', self.onglets_bas.tab_reglages.hachures.isChecked())
+        self.param('mode_effectifs', self.onglets_bas.tab_reglages.mode.currentIndex())
+        self.param('reglage_auto_fenetre', self.onglets_bas.tab_reglages.auto.isChecked())
         self.actualiser()
 
     def actualiser(self, afficher = True):
         try:
-            self.legende_x = self.onglets_bas.legende.x.text()
-            self.legende_y = self.onglets_bas.legende.y.text()
-            self.legende_a = self.onglets_bas.legende.a.text()
-            self.gradu_x = self.onglets_bas.graduation.x.text()
-            self.gradu_y = self.onglets_bas.graduation.y.text()
-            self.gradu_a = self.onglets_bas.graduation.a.text()
-            self.origine_x = self.onglets_bas.graduation.origine_x.text()
-            self.origine_y = self.onglets_bas.graduation.origine_y.text()
-            self.donnees_valeurs = self.onglets_bas.donnees.valeurs.text()
-            self.onglets_classes = self.onglets_bas.donnees.classes.text()
+            onglets = self.onglets_bas
+            self.legende_x = onglets.tab_legende.x.text()
+            self.legende_y = onglets.tab_legende.y.text()
+            self.legende_a = onglets.tab_legende.a.text()
+            self.gradu_x = onglets.tab_graduation.x.text()
+            self.gradu_y = onglets.tab_graduation.y.text()
+            self.gradu_a = onglets.tab_graduation.a.text()
+            self.origine_x = onglets.tab_graduation.origine_x.text()
+            self.origine_y = onglets.tab_graduation.origine_y.text()
+            self.donnees_valeurs = onglets.tab_donnees.valeurs.text()
+            self.onglets_classes = onglets.tab_donnees.classes.text()
 
             # test choix quantiles
-            self.choix_quantiles["mediane"][0] = self.onglets_bas.autresq.mediane.text()
-            self.choix_quantiles["quartiles"][0] = self.onglets_bas.autresq.quartiles.text()
-            self.choix_quantiles["deciles"][0] = self.onglets_bas.autresq.deciles.text()
+            self.choix_quantiles["mediane"][0] = onglets.tab_quantiles.mediane.isChecked()
+            self.choix_quantiles["quartiles"][0] = onglets.tab_quantiles.quartiles.isChecked()
+            self.choix_quantiles["deciles"][0] = onglets.tab_quantiles.deciles.isChecked()
 
+            # On récupère les données de la série statistique
             self.classes = []
             self._valeurs = {}
 
             # La chaine va être découpée au niveau des espaces ; on supprime donc les espaces inutiles
-            valeurs = regsub("[ ]*[*][ ]*", self.onglets_bas.donnees.valeurs.text(), "*") # on supprime les espaces autour des '*'
-            valeurs = regsub("[[][^]]*for[^]]*in[^]]*[]]", valeurs, lambda s:s.replace(' ','|')) # une expression du style "[i for i in range(7)]" ne doit pas être découpée au niveau des espaces.
-            classes = self.onglets_bas.donnees.classes.text()
+            # on supprime les espaces autour des '*'
+            valeurs = regsub("[ ]*[*][ ]*", onglets.tab_donnees.valeurs.text(), "*")
+            # une expression du style "[i for i in range(7)]" ne doit pas être découpée au niveau des espaces.
+            valeurs = regsub("[[][^]]*for[^]]*in[^]]*[]]", valeurs, lambda s:s.replace(' ','|'))
+            classes = onglets.tab_donnees.classes.text()
 
 
             for classe in advanced_split(classes.replace(";", ","), " ", symbols = "({})"):
@@ -1071,14 +1075,14 @@ class Statistiques(Panel_API_graphique):
             gradu_a = gradu['a'][0]
             mode_graphique = diagramme["mode_graphique"][0]
 
-            self.onglets_bas.legende.x.SetValue(legende_x)
-            self.onglets_bas.legende.y.SetValue(legende_y)
-            self.onglets_bas.legende.a.SetValue(legende_a)
-            self.onglets_bas.graduation.x.SetValue(gradu_x)
-            self.onglets_bas.graduation.y.SetValue(gradu_y)
-            self.onglets_bas.graduation.a.SetValue(gradu_a)
-            self.onglets_bas.donnees.valeurs.SetValue(valeurs)
-            self.onglets_bas.donnees.classes.SetValue(classes)
+            self.onglets_bas.tab_legende.x.SetValue(legende_x)
+            self.onglets_bas.tab_legende.y.SetValue(legende_y)
+            self.onglets_bas.tab_legende.a.SetValue(legende_a)
+            self.onglets_bas.tab_graduation.x.SetValue(gradu_x)
+            self.onglets_bas.tab_graduation.y.SetValue(gradu_y)
+            self.onglets_bas.tab_graduation.a.SetValue(gradu_a)
+            self.onglets_bas.tab_donnees.valeurs.SetValue(valeurs)
+            self.onglets_bas.tab_donnees.classes.SetValue(classes)
             print('mode_graphique', mode_graphique)
             self.graph = mode_graphique
 
