@@ -111,10 +111,10 @@ class Cryptographie(Panel_simple):
         Panel_simple.__init__(self, *args, **kw)
 
         self._freeze = False
-        self._actualiser = None
+        self.widget_modifie = None
 
         # La clé est la permutation de l'alphabet actuellement utilisée
-        self.cle = self.generer_cle()
+        self.generer_cle()
 
         # Signe indiquant un caractère non déchiffré
         self.symbole = '-' # '.'
@@ -215,11 +215,10 @@ class Cryptographie(Panel_simple):
             break
 
 
-    @staticmethod
-    def generer_cle(evt=None):
+    def generer_cle(self):
         l = list(majuscules)
         shuffle(l)
-        return ''.join(l)
+        self.cle = ''.join(l)
 
 
     def modifier_cle(self, cle):
@@ -276,34 +275,44 @@ class Cryptographie(Panel_simple):
         ##evt.Skip()
         if self._freeze:
             return
-        self._actualiser = widget
+        self.widget_modifie = widget
 
 
 
-    def _formater(self, widget):
+    def _formater(self, widget_modifie):
+        # Impossible de formater les 2 textes de la même manière s'ils
+        # ne sont pas de la même longueur.
+        # Cela ne devrait se produire que temporairement (par ex.,
+        # l'utilisateur copie un nouveau texte)
+        if len(self.code.toPlainText()) != len(self.clair.toPlainText()):
+            if self.code.toPlainText() and self.clair.toPlainText():
+                print(u'Warning: le message codé et le message en clair ne sont '
+                      u'pas de même longueur.')
+            return
+
         def colorier(m, col1=[self.couleur1], col2=[self.couleur2]):
             s = m.group(0)
             s = "<font color='#%s'>%s</font>" % (col1[0], s)
             col1[0], col2[0] = col2[0], col1[0]
             return s
         self._freeze = True
-        pos = widget.textCursor().position()
+        pos = widget_modifie.textCursor().position()
         for w in (self.code, self.clair):
             txt = w.toPlainText()
             if pos != len(txt):
                 txt = txt[:pos] + '<##>' + txt[pos] + '</##>' + txt[pos + 1:]
             new_txt = re.sub(self.reg, colorier, txt)
             new_txt = new_txt.replace("<##>",
-                        "<font style='background-color: #%s;'>" % self.couleur_position).replace(
-                        "</##>", "</font>")
+                        "<font style='background-color: #%s;'>" % self.couleur_position)
+            new_txt = new_txt.replace("</##>", "</font>")
             w.setHtml(new_txt)
-        cursor = widget.textCursor()
+        cursor = widget_modifie.textCursor()
         cursor.setPosition(pos)
-        widget.setTextCursor(cursor)
+        widget_modifie.setTextCursor(cursor)
         self._freeze = False
-        self._actualiser = None
+        self.widget_modifie = None
 
 
     def OnIdle(self, evt=None):
-        if self._actualiser is not None and not self.parent.parent.closing:
-            self._formater(self._actualiser)
+        if self.widget_modifie is not None and not self.parent.parent.closing:
+            self._formater(self.widget_modifie)
