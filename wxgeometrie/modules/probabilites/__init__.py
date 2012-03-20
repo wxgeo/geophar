@@ -333,7 +333,7 @@ omega
                 lignes.insert(i, niveau*">" + evt1)
 
         print "test", "\n".join(lignes)
-        self.instructions.SetValue("\n".join(lignes))
+        self.instructions.setPlainText("\n".join(lignes))
 
 
 

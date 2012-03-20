@@ -1075,14 +1075,14 @@ class Statistiques(Panel_API_graphique):
             gradu_a = gradu['a'][0]
             mode_graphique = diagramme["mode_graphique"][0]
 
-            self.onglets_bas.tab_legende.x.SetValue(legende_x)
-            self.onglets_bas.tab_legende.y.SetValue(legende_y)
-            self.onglets_bas.tab_legende.a.SetValue(legende_a)
-            self.onglets_bas.tab_graduation.x.SetValue(gradu_x)
-            self.onglets_bas.tab_graduation.y.SetValue(gradu_y)
-            self.onglets_bas.tab_graduation.a.SetValue(gradu_a)
-            self.onglets_bas.tab_donnees.valeurs.SetValue(valeurs)
-            self.onglets_bas.tab_donnees.classes.SetValue(classes)
+            self.onglets_bas.tab_legende.x.setText(legende_x)
+            self.onglets_bas.tab_legende.y.setText(legende_y)
+            self.onglets_bas.tab_legende.a.setText(legende_a)
+            self.onglets_bas.tab_graduation.x.setText(gradu_x)
+            self.onglets_bas.tab_graduation.y.setText(gradu_y)
+            self.onglets_bas.tab_graduation.a.setText(gradu_a)
+            self.onglets_bas.tab_donnees.valeurs.setText(valeurs)
+            self.onglets_bas.tab_donnees.classes.setText(classes)
             print('mode_graphique', mode_graphique)
             self.graph = mode_graphique
 
