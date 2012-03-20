@@ -134,7 +134,7 @@ class MenuActionsObjet(PopUpMenu):
         sizer.addWidget(QLabel(u"Note: le code LATEX doit etre entre $$. Ex: $\\alpha$"))
 
         dlg.text = QTextEdit(dlg)
-        dlg.setPlainText(old_label)
+        dlg.text.setPlainText(old_label)
         dlg.setMinimumSize(300, 50)
         sizer.addWidget(dlg.text)
 
