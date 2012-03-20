@@ -492,7 +492,7 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
             # ne pas faire l'export, mais récupérer juste le nom
 
             if filename:
-                self.exporter(nom = filename, zone = (x0, x1, y0, y1))
+                self.exporter(filename, zone = (x0, x1, y0, y1))
                 actuelle.sauvegarde["export"] = filename
 
         menu = PopUpMenu(u"Zone sélectionnée", self, 'crayon')
