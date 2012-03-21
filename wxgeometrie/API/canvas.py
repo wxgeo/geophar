@@ -611,41 +611,44 @@ def %(_nom_)s(self, valeur = no_argument):
 # Sélection d'une zone
 ######################
 
-    def gestion_zoombox(self, pixel):
+    def _rectangle_selection(self, debut, pixel, linestyle='-', facecolor='y', edgecolor='y', respect_ratio=False):
         x, y = pixel
         xmax, ymax = self.dimensions
-        x = max(min(x, xmax), 0)
-        y = max(min(y, ymax), 0)
-        self.fin_zoom = self.pix2coo(x, y)
-        self.debut_zoom = self.debut_zoom or self.fin_zoom
-        (x0, y0), (x1, y1) = self.debut_zoom, self.fin_zoom
-        if self.orthonorme or getattr(self, 'ratio', None) is not None:
+        # Pour des questions d'arrondi lors de la conversion pixel -> coordonnée,
+        # on met 0.1 au lieu de 0 comme valeur minimale en pixel (0+ en fait).
+        x = max(min(x, xmax - 1), 0.1)
+        y = max(min(y, ymax - 1), 0.1)
+        x1, y1 = self.pix2coo(x, y)
+        x0, y0 = (debut if debut else (x1, y1))
+        if respect_ratio and self.orthonorme or getattr(self, 'ratio', None) is not None:
             rymax = (ymax if self.orthonorme else ymax*self.ratio)
             if rymax*abs(x0 - x1) > xmax*abs(y0 - y1):
                 y1 = y0 + rymax/xmax*abs(x0 - x1)*cmp(y1, y0)
             else:
                 x1 = x0 + xmax/rymax*abs(y0 - y1)*cmp(x1, x0)
-            self.fin_zoom = (x1, y1)
-            #if param.bouger_curseur:  # ou comment rendre fou l'utilisateur... ;)
-            #    self.WarpPointer(*self.XYcoo2pix((x1, y1), -1))
-        self.dessiner_polygone([x0,x0,x1,x1], [y0,y1,y1,y0], facecolor='c', edgecolor='c', alpha = .1)
-        self.dessiner_ligne([x0,x0,x1,x1,x0], [y0,y1,y1,y0,y0], 'c', alpha = 1)
+
+        # Exceptionnellement, il faut ici effacer manuellement le graphisme.
+        # En effet, il n'est pas garanti qu'il y ait un rafraichissement
+        # de l'affichage à chaque fois que le rectangle de sélection change.
+        # Si l'on n'efface pas manuellement l'affichage, on risque donc d'avoir
+        # deux rectangles de sélection différents affichés simultanément.
+        self.graph._effacer_artistes()
+        self.dessiner_polygone([x0, x0, x1, x1], [y0, y1, y1, y0], facecolor=facecolor, edgecolor=edgecolor, alpha=.1)
+        self.dessiner_ligne([x0, x0, x1, x1, x0], [y0, y1, y1, y0, y0], edgecolor, linestyle=linestyle, alpha=1)
 
         self.rafraichir_affichage(dessin_temporaire = True) # pour ne pas tout rafraichir
+        return (x0, y0), (x1, y1)
 
+
+    def gestion_zoombox(self, pixel):
+        self.debut_zoom, self.fin_zoom = self._rectangle_selection(
+                self.debut_zoom, pixel, facecolor='c', edgecolor='c',
+                respect_ratio=True)
 
     def selection_zone(self, pixel):
-        x, y = pixel
-        xmax, ymax = self.dimensions
-        x = max(min(x, xmax), 0)
-        y = max(min(y, ymax), 0)
-        self.fin_select = self.pix2coo(x, y)
-        self.debut_select = self.debut_select or self.fin_select
-        (x0, y0), (x1, y1) = self.debut_select, self.fin_select
-        self.dessiner_polygone([x0,x0,x1,x1], [y0,y1,y1,y0], facecolor='y', edgecolor='y',alpha = .1)
-        self.dessiner_ligne([x0,x0,x1,x1,x0], [y0,y1,y1,y0,y0], 'g', linestyle = ":", alpha = 1)
-
-        self.rafraichir_affichage(dessin_temporaire = True) # pour ne pas tout rafraichir
+        self.debut_select, self.fin_select = self._rectangle_selection(
+                self.debut_select, pixel, facecolor='y', edgecolor='g',
+                linestyle=':')
 
 
 # Evenements concernant directement la feuille
