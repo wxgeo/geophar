@@ -41,6 +41,11 @@ def test_preformatage_geolib_ensemble():
 def test_intervalle():
     assert(str(Intervalle(8) + Intervalle(9)) == '[8;+oo[')
     assert(str(Intervalle("{0}")) == '{0}')
+    # Remplacement automatique de la virgule par un point si possible
+    # FIXME: supprimer les décimales inutiles (zéros)
+    assert(str(Intervalle("[2,5;3,5]")) == '[2.50000000000000;3.50000000000000]')
+    # En cas d'ambiguité, la virgule reste un séparateur entre deux nombres
+    assert(str(Intervalle("R-{2,3}")) == ']-oo;2[U]2;3[U]3;+oo[')
 
 def test_evalf():
     i = intervalles.conversion_chaine_ensemble(']-oo;-2]U[1/4;1/2[')
