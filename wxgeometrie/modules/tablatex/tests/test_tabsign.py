@@ -321,3 +321,19 @@ $2-0.25x$  &           & + &  0  & $-$ &       \\
 % x: -oo;oo// 2-0.25 x: ++ 8 -- // 2-0.25x
 % 2-0.25x
 '''
+
+def test_intervalle_virgule():
+    s = 'h(x)=x^2-x/2-3 sur [-2,5;3,5]'
+    tab = \
+r'''\begin{center}
+\begin{tabular}{|Sc|ScScScScScScSc|}
+\hline
+$x$                   & $-2,5$ &   & $-\frac{3}{2}$ &     & $2$ &   & $3,5$ \\
+\hline
+$h(x)$                &        & + &       0        & $-$ &  0  & + &       \\
+\hline
+\end{tabular}
+\end{center}
+% x: -2,5;3,5// x^2-x/2-3: ++ -3/2 -- 2 ++ // h(x)
+% h(x)=x^2-x/2-3 sur [-2,5;3,5]
+'''
