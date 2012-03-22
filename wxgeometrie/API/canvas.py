@@ -305,8 +305,11 @@ class Canvas(FigureCanvasAgg):
 
     def geler_affichage(self, geler=True, actualiser=False, seulement_en_apparence=False, sablier=False):
         u"""À utiliser au sein d'un contexte 'with':
-        with self.geler_affichage():
-            ...
+
+            .. sourcecode:: python
+            with self.geler_affichage():
+                # some action
+
         Si actualiser = True, l'affichage est rafraichi au dégel.
         Si seulement_en_apparence = True, l'affichage n'est pas gelé en interne, mais les modifications
         ne s'affichent pas à l'écran (le gain de vitesse est alors négligeable, mais esthétiquement ça évite

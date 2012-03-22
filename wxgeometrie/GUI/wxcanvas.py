@@ -269,7 +269,7 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
     def interagir(self, fonction, aide = None, fonction_bis = None):
         u"""Permet l'interaction du canevas avec un module externe.
 
-        A chaque clic de souris, la fonction indiquée est appelée, avec
+        À chaque clic de souris, la fonction indiquée est appelée, avec
         un certains nombre de paramètres comme arguments :
         objet(s) à proximité, position en coordonnées et en pixels...
 
@@ -279,19 +279,22 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
         Elle reçoit en argument la position en pixels uniquement (pour ne pas alourdir le traitement).
 
         Exemple de récupération des arguments :
-        si un module appelle self.canvas.interagir(ma_fonction, u"Cliquez n'importe où.", ma_2eme_fonction),
+        si un module appelle
+        ``self.canvas.interagir(ma_fonction, u"Cliquez n'importe où.", ma_2eme_fonction)``,
         le module doit définir :
 
-        def ma_fonction(self, **kw):
-            pixel = kw["pixel"]
-            position = kw["position"]
-            objet_selectionne = kw["selection"]
-            autres_objets_a_proximite = kw["autres"]
-            print u"clic!"
+        .. sourcecode:: python
 
-        def ma_2eme_fonction(self, **kw):
-            pixel = kw["pixel"]
-            print u"ça bouge !"
+            def ma_fonction(self, **kw):
+                pixel = kw["pixel"]
+                position = kw["position"]
+                objet_selectionne = kw["selection"]
+                autres_objets_a_proximite = kw["autres"]
+                print u"clic!"
+
+            def ma_2eme_fonction(self, **kw):
+                pixel = kw["pixel"]
+                print u"ça bouge !"
 
         """
 

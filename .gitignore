@@ -5,6 +5,10 @@
 # *.[oa]
 # *~
 
+# Répertoire de compilations
+
+build/
+
 # Types à exclure
 *~
 *.bak

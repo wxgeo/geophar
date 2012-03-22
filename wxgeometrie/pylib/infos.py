@@ -128,7 +128,7 @@ def informations_configuration():
         import psyco
         dossier_psyco.version = ".".join(str(elt) for elt in psyco.version_info)
         try:
-            import param
+            from .. import param
             if param.charger_psyco is False:
                 dossier_psyco.utilisation = "unused"
             elif param.charger_psyco is None:
@@ -146,7 +146,7 @@ def informations_configuration():
 
     dossier_wxgeometrie = dossier(NOMPROG)
     try:
-        import param
+        from .. import param
         dossier_wxgeometrie.version = param.version
     except Exception:
         dossier_wxgeometrie.version = "?"

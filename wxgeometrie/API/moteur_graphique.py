@@ -193,14 +193,14 @@ class FlecheCourbe(FlecheGenerique):
 class Codage(LigneDecoree):
     u'''Objet graphique servant à coder les segments et arcs de même longueur.
 
-    Paramètres:
-    - taille: taille du symbole (en pixels).
-    - angle: angle relatif au segment, en degrés, pour les symboles / et X.
-    - position: position du symbole (couple de coordonnées).
-    - direction: couple (dx, dy) donnant l'orientation du segment.
-      Ce couple est exprimé en coordonnées (et non en pixels).
-    - marge: si la longueur en pixels correspondant à (dx, dy) est inférieure
-      à la marge + la taille du codage, le codage n'est pas affiché.
+        Paramètres:
+        * taille: taille du symbole (en pixels).
+        * angle: angle relatif au segment, en degrés, pour les symboles / et X.
+        * position: position du symbole (couple de coordonnées).
+        * direction: couple (dx, dy) donnant l'orientation du segment.
+          Ce couple est exprimé en coordonnées (et non en pixels).
+        * marge: si la longueur en pixels correspondant à (dx, dy) est inférieure
+          à la marge + la taille du codage, le codage n'est pas affiché.
     '''
     style = '/'
     taille = 10

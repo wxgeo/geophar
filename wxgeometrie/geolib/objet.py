@@ -217,7 +217,7 @@ class Cache(object):
     Si le mot-clé n'existe pas, le dictionnaire est mis à jour à l'aide de la
     fonction et de ses arguments.
     À noter que la fonction n'est *PAS* executée si le dictionnaire contient la clé,
-    ce qui n'est pas le cas de dict.get(clef, fonction(*args, **kw)) bien sûr.
+    ce qui n'est pas le cas de ``dict.get(clef, fonction(*args, **kw))`` bien sûr.
     D'où l'intérêt du cache.
     """
 
@@ -859,11 +859,11 @@ class Objet(object):
     def style(self, nom_style = None, **kwargs):
         u"""Renvoie le ou les styles demandés, ou modifie les styles de l'objet.
 
-        - nom_style est un nom de style, ou une liste de noms de styles:
+        * ``nom_style`` est un nom de style, ou une liste de noms de styles:
         La propriété correspondante est recherchée dans self._style.
         Ex: couleur, taille = A.style(('couleur', 'taille'))
 
-        - **kw sert à modifier des styles.
+        * ``**kw`` sert à modifier des styles.
         Ex: A.style(couleur = 'blue')
         """
         if kwargs:# or defaut:

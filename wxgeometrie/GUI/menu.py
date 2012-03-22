@@ -113,7 +113,7 @@ class Menu(QMenu):
 class MenuBar(QMenuBar):
     u"""Remplace la classe QMenuBar pour créer une barre de menu propre à chaque module.
 
-    La méthode de base est 'ajouter(self, *menu)', où menu est une liste.
+    La méthode de base est ``ajouter(self, *menu)``, où menu est une liste.
     Exemple1:
     menu =  ["Outils",
                 ["Options", "Parametres du programme", "Ctrl+O", fonction1],
