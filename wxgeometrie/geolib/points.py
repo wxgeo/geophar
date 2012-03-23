@@ -1087,10 +1087,6 @@ class Glisseur_cercle(Glisseur_generique):
 
 
 
-
-
-
-
 class Glisseur_arc_cercle(Glisseur_generique):
     u"""Un point sur un arc de cercle.
 
@@ -1149,6 +1145,30 @@ class Glisseur_arc_cercle(Glisseur_generique):
                 return 0.5
         else:
             return 0
+
+
+
+
+class Glisseur_courbe_interpolation(Glisseur_generique):
+    u"""Un point sur une courbe d'interpolation.
+    Point pouvant 'glisser' sur une courbe::
+
+    >>>G = Glisseur_courbe_interpolation(f,-2)
+    """
+
+    courbe = __courbe = Argument("Interpolation_polynomiale_par_morceau")
+    #parametre = k = __k = Argument("Variable_generique")
+
+    def __init__(self, courbe, x = None, **styles):
+        self.__courbe = courbe = Ref(courbe)
+        self.__x = x
+        Glisseur_generique.__init__(self, objet = courbe, k = x, **styles)
+
+    def _get_coordonnees(self):
+        return self.k, self.__courbe.interpol(self.k)
+
+    def _conversion_coordonnees_parametre(self, x, y):
+        return x
 
 
 

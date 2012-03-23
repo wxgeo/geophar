@@ -323,10 +323,10 @@ class Interpolation_polynomiale_par_morceau(Interpolation_generique):
     >>> C = Point(8,-3)
     >>> d = Interpolation_polynomiale_par_morceau(A,B,C, derivees=[-1,0.5,2])
     
-    @type derivee: list
-    @param derivee: value of the diff number at each point
+    :type derivee: list
+    :param derivee: value of the diff number at each point
     
-    @return : numpy.lib.polynomial
+    :rtype : numpy.lib.polynomial
 
     """
     points = __points = Arguments("Point_generique")
