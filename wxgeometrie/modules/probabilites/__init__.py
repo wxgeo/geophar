@@ -61,8 +61,6 @@ class Probabilites(Panel_API_graphique):
     def __init__(self, *args, **kw):
         Panel_API_graphique.__init__(self, *args, **kw)
 
-        self.couleurs = u"bgrmkcy"
-
         self.entrees = QVBoxLayout()
 
         self.entrees.addWidget(QLabel(u" Instructions :"))
