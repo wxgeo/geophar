@@ -356,6 +356,21 @@ textes = {
     "alignement_vertical": "center",
     "alignement_horizontal": "center",
     }
+boutons = {
+    "couleur": 'k',
+    "couleur_fond": (.3, .8, .9),
+    "epaisseur": 1,
+    "taille": 18.,
+    "style": "normal",
+    "visible": True,
+    "angle": 0,
+    "legende": TEXTE,
+    "fixe": False,
+    "categorie": "widgets",
+    "niveau": 10,
+    "alignement_vertical": "center",
+    "alignement_horizontal": "center",
+    }
 labels = {
     "couleur": "k",
     "epaisseur": 6, # 1 -> 9
