@@ -330,6 +330,7 @@ class Interpolation_polynomiale_par_morceau(Interpolation_generique):
 
     """
     points = __points = Arguments("Point_generique")
+    deriveees = __derivees = Arguments("à compléter")
 
     def __init__(self, *points, **styles):
         self.__derivees = derivees = styles.pop('derivees', len(points)*[0])

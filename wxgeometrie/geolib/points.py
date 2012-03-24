@@ -1153,19 +1153,19 @@ class Glisseur_courbe_interpolation(Glisseur_generique):
     u"""Un point sur une courbe d'interpolation.
     Point pouvant 'glisser' sur une courbe::
 
-    >>>G = Glisseur_courbe_interpolation(f,-2)
+    >>> G = Glisseur_courbe_interpolation(f, x= -2)
     """
 
     courbe = __courbe = Argument("Interpolation_polynomiale_par_morceau")
-    #parametre = k = __k = Argument("Variable_generique")
+    parametre = k = __k = Argument("Variable_generique")
 
-    def __init__(self, courbe, x = None, **styles):
-        self.__courbe = courbe = Ref(courbe)
-        self.__x = x
-        Glisseur_generique.__init__(self, objet = courbe, k = x, **styles)
+    def __init__(self, courbe, k = None, **styles):
+        if k is None:
+            k = uniform(courbe.__points[0][0], courbe.__points[-1][0])
+        Glisseur_generique.__init__(self, objet = courbe, k = k, **styles)
 
     def _get_coordonnees(self):
-        return self.k, self.__courbe.interpol(self.k)
+        return self.__k, self.__objet.interpol(self.__k)
 
     def _conversion_coordonnees_parametre(self, x, y):
         return x
