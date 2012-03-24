@@ -41,7 +41,7 @@ DEFAULT_EDITOR = 'geany'
 
 patterns = filter(None, ('(' + pattern.replace('*', '.*').strip() + ')' for pattern in IGNORE))
 IGNORE_RE = re.compile('|'.join(patterns))
-SUPPORTED_EDITORS = ('geany', 'gedit')
+SUPPORTED_EDITORS = ('geany', 'gedit', 'nano', 'vim', 'emacs', 'kate')
 
 def gs(chaine='', case=True, exclude_comments=True, extensions=(".py", ".pyw"),
         maximum=100, codec="latin1", statistiques=False, replace=None, color=None, edit_with=None):
@@ -161,10 +161,10 @@ def gs(chaine='', case=True, exclude_comments=True, extensions=(".py", ".pyw"),
                         if edit_with not in SUPPORTED_EDITORS:
                             print(edit_with + ' is currently not supported.')
                             print('Supported editors : ' + ','.join(SUPPORTED_EDITORS))
-                        elif edit_with == 'geany':
-                            command = 'geany -l %s %s' %(n + 1, f)
-                        elif edit_with == 'gedit':
-                            command = 'gedit +%s %s' %(n + 1, f)
+                        elif edit_with in ('geany', 'kate'):
+                            command = '%s -l %s %s' %(edit_with, n + 1, f)
+                        else:
+                            command = '%s +%s %s' %(edit_with, n + 1, f)
                         subprocess.call(command, shell=True)
 
                     n_lignes += 1
