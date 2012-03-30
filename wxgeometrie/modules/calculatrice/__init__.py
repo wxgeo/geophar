@@ -75,47 +75,6 @@ class CalculatriceMenuBar(MenuBar):
         titre, nom, doc = contenu
         return [titre, doc, "", partial(self.panel.insere, nom=nom, parentheses=parentheses)]
 
-#    def generer_fonction(self, nom, parenthese = True):
-#        def f(event = None, panel = self.panel, nom = nom, parenthese = parenthese):
-#            entree = panel.entree
-#            deb, fin = panel.entree.getSelection()
-#            if parenthese:
-#                panel.entree.setCursorPosition(fin)
-#                panel.entree.insert(")")
-#                panel.entree.setCursorPosition(deb)
-#                panel.entree.insert(nom + "(")
-#                panel.entree.setFocus()
-#                if deb == fin:
-#                    final = fin + len(nom) + 1
-#                else:
-#                    final = fin + len(nom) + 2
-#            else:
-#                panel.entree.insert(nom)
-#                final = fin + len(nom)
-#            panel.entree.setFocus()
-#            panel.entree.setCursorPosition(final)
-#            panel.entree.setSelection(final, final)
-#        return f
-
-#    def insere(event=None, nom=nom, parentheses=parentheses):
-#        entree = self.panel.entree
-#        deb, fin = panel.entree.getSelection()
-#        if parenthese:
-#            panel.entree.setCursorPosition(fin)
-#            panel.entree.insert(")")
-#            panel.entree.setCursorPosition(deb)
-#            panel.entree.insert(nom + "(")
-#            panel.entree.setFocus()
-#            if deb == fin:
-#                final = fin + len(nom) + 1
-#            else:
-#                final = fin + len(nom) + 2
-#        else:
-#            panel.entree.insert(nom)
-#            final = fin + len(nom)
-#        panel.entree.setFocus()
-#        panel.entree.setCursorPosition(final)
-#        panel.entree.setSelection(final, final)
 
 
 
@@ -138,11 +97,6 @@ class Calculatrice(Panel_simple):
                                 simpify = True,
                                 )
 
-##        self.entrees = wx.BoxSizer(wx.HORIZONTAL)
-##        self.entree = wx.TextCtrl(self, size = (550, -1), style = wx.TE_PROCESS_ENTER)
-##        self.entrees.Add(self.entree, 1, wx.ALL|wx.GROW, 5)
-##        self.valider = wx.Button(self, wx.ID_OK)
-##        self.entrees.Add(self.valider, 0, wx.ALL, 5)
         self.entree = entree = LigneCommande(self, longueur = 550, action = self.affichage_resultat)
         entree.setToolTip(u"[Maj]+[Entrée] pour une valeur approchée.")
         self.entree.texte.setContextMenuPolicy(Qt.CustomContextMenu)
