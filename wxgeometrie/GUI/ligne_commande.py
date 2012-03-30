@@ -34,15 +34,13 @@ class LigneCommande(QWidget):
         self.parent = parent
         self.action = action
         QWidget.__init__(self, parent)
-#        self.SetBackgroundColour(self.parent.GetBackgroundColour())
 
         sizer = QHBoxLayout()
         self.texte = QLineEdit()
         self.texte.setMinimumWidth(longueur)
-        self.texte.returnPressed.connect(self.EvtButton)
         self.bouton = QPushButton('OK' if texte is None else texte)
         self.bouton.setVisible(afficher_bouton)
-        self.bouton.clicked.connect(self.EvtButton)
+        self.bouton.clicked.connect(self.valider)
 
         if legende is not None:
             sizer.addWidget(QLabel(legende, self))
@@ -94,7 +92,8 @@ class LigneCommande(QWidget):
     def setToolTip(self, tip):
         self.texte.setToolTip(tip)
 
-    def EvtButton(self, event=None):
+    def valider(self, **kw):
+        # kw: shift|alt|meta|control=True|False'
         commande = unicode(self.text())
         self.position = None
         if commande:
@@ -102,9 +101,6 @@ class LigneCommande(QWidget):
         elif self.historique:
             # Appuyer une deuxième fois sur [Entrée] permet de répéter l'action précédente.
             commande = self.historique[-1]
-        kw = {}
-        for modifier in ('shift', 'alt', 'meta', 'control'):
-            kw[modifier] = getattr(event, modifier.capitalize() + 'Down', lambda: None)()
         self.action(commande, **kw)
 
 
@@ -137,5 +133,13 @@ class LigneCommande(QWidget):
             elif self.position < len(self.historique) - 1:
                 self.position += 1
                 self.texte.setText(self.historique[self.position])
+        elif key in (Qt.Key_Enter, Qt.Key_Return):
+            modifiers = event.modifiers()
+            kw = {'shift': modifiers & Qt.ShiftModifier,
+                  'alt': modifiers & Qt.AltModifier,
+                  'meta': modifiers & Qt.MetaModifier,
+                  'control': modifiers & Qt.ControlModifier,
+                      }
+            self.valider(**kw)
         else:
             self.position = None
