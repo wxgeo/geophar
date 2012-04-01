@@ -330,7 +330,7 @@ class Interpolation_polynomiale_par_morceau(Interpolation_generique):
 
     """
     points = __points = Arguments("Point_generique")
-    deriveees = __derivees = Arguments("à compléter")
+    # derivees = __derivees = Arguments("int, float")
 
     def __init__(self, *points, **styles):
         self.__derivees = derivees = styles.pop('derivees', len(points)*[0])
@@ -377,12 +377,11 @@ class Interpolation_polynomiale_par_morceau(Interpolation_generique):
         self.interpol = self._poly_inter(self.xl, self.yl, self.__derivees)
         # de même les tangentes sont recalculées
         # il doit y avoir moyen de faire moins de calculs
-        self.__tangentes = []
-        for i in range(len(self.__points)):
-            self.__tangentes.append(Tangente_courbe(point = self.__points[i],\
-                                                        cdir = self.__derivees[i]))
-            #self.__tangentes[i]._creer_figure()
- 
+        # self.__tangentes = []
+        # for i in range(len(self.__points)):
+        #     self.__tangentes.append(Tangente_courbe(point = self.__points[i],\
+        #                                                 cdir = self.__derivees[i]))
+        #     #self.__tangentes[i]._creer_figure()
         
         pas = self.__canvas__.pas()
         plot = self._representation[0]
