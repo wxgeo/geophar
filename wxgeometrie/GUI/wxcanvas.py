@@ -564,6 +564,8 @@ class WxCanvas(FigureCanvasWxAgg, Canvas):
             x, y = self.select.coordonnees
             x1, y1 = self.coordonnees(event)
             self.decalage_coordonnees = x - x1, y - y1
+        if getattr(self.select, 'on_left_click', None) is not None:
+            self.select.on_left_click()
 
 
     def OnLeftUp(self, event):
