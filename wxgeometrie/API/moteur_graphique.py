@@ -29,7 +29,7 @@ from matplotlib.transforms import Bbox
 from matplotlib.backends.backend_agg import FigureCanvasAgg
 from matplotlib.lines import Line2D
 from matplotlib.collections import LineCollection
-from matplotlib.patches import Polygon, Circle, FancyArrowPatch
+from matplotlib.patches import Polygon, Circle, FancyArrowPatch, FancyBboxPatch
 from matplotlib.text import Text
 from matplotlib.axes import Axes
 from numpy import array, arange, concatenate, cos as ncos, sin as nsin
@@ -700,11 +700,16 @@ class Moteur_graphique(object):
         self._ajouter_objet(self.codage(**kw))
 
     def cercle(self, xy=(0, 0), r=1, **kw):
-        circle = Circle(xy, r, **kw)
-        return circle
+        return Circle(xy, r, **kw)
 
     def ajouter_cercle(self, xy=(0, 0), r=1, **kw):
         self._ajouter_objet(self.cercle(xy, r, **kw))
+
+    def rectangle(self, xy=(0, 0), w=1, h=1, **kw):
+        return FancyBboxPatch(xy, w, h, **kw)
+
+    def ajouter_rectangle(self, xy=(0, 0), w=1, h=1, **kw):
+        self._ajouter_objet(self.rectangle(xy, w, h, **kw))
 
     def angle(self, **kw):
         return Angle(canvas=self.canvas, **kw)

@@ -88,6 +88,62 @@ class Bouton(Texte_generique, Objet_avec_coordonnees_modifiables):
         # TODO : utiliser FancyBboxPatch
         # http://matplotlib.sourceforge.net/examples/pylab_examples/fancybox_demo.html
 
+    def _creer_figure(self):
+        x, y = self.coordonnees
+        if not self._representation:
+            self._representation = [self.rendu.texte(), self.rendu.rectangle()]
+        Texte_generique._creer_figure(self)
+        text, rect = self._representation
+        rect.set_visible(True)
+        can = self.__canvas__
+        box = text.get_window_extent(can.get_renderer())
+        w, h = can.dpix2coo(box.width, box.height)
+        niveau = self.style("niveau")
+        marge = self.style("marge")
+        ##if av == "left":
+            ##x += w
+        ##elif av == "right":
+            ##x -= w
+        ##if ah == "top":
+            ##y -= h
+        ##elif ah == "bottom":
+            ##y += h
+        mx, my = can.dpix2coo(marge, marge) # marge verticale et horizontale (en pixels)
+        rect.set_width(w + 2*mx)
+        rect.set_height(h + 2*my)
+        rect.set_x(self.x - .5*w - mx)
+        rect.set_y(self.y - .5*h - my)
+        fond = self.style('couleur_fond')
+        rect.set(facecolor=fond, edgecolor=self._foncer(fond))
+        rect.zorder = niveau
+        # TODO : utiliser FancyBboxPatch
+        # http://matplotlib.sourceforge.net/examples/pylab_examples/fancybox_demo.html
+
+
+    ##def _distance_inf(self, x, y, d):
+        ##d += self.style("marge")
+        ##xmin, xmax, ymin, ymax = self._boite()
+        ##return xmin - d - 3 < x < xmax + d + 3 and ymin - d < y < ymax + d
+
+    def _boite(self):
+        # Note : ymin et ymax "permutent" souvent car les transformations appliquées inversent l'orientation.
+        can = self.__canvas__
+        l, h = can.dimensions
+        box = self.figure[1].get_window_extent(can.get_renderer())
+        xmin = box.xmin
+        ymax = h - box.ymin
+        xmax = box.xmax
+        ymin = h - box.ymax
+        return xmin, xmax, ymin, ymax
+
+    def _distance_inf(self, x, y, d):
+        # Pour cliquer sur un bouton, il faut que la distance soit nulle.
+        return Texte_generique._distance_inf(self, x, y, 0)
+
+        ##d += self.style("marge")
+        ##xmin, xmax, ymin, ymax = self._boite()
+        ##return xmin - d - 3 < x < xmax + d + 3 and ymin - d < y < ymax + d
+
 
     def _en_gras(self, booleen):
         fond = self.style('couleur_fond')
