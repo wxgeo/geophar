@@ -352,6 +352,7 @@ textes = {
     "niveau": 7,
     "alignement_vertical": "center",
     "alignement_horizontal": "center",
+    "alpha": 1,
     }
 boutons = {
     "couleur": 'k',

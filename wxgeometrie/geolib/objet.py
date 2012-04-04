@@ -1200,10 +1200,11 @@ class Objet(object):
 ##            self.__trace__ = []
 ##        return self.__trace__
 
-    # NB: cette fonction est définie pour tous les objets.
-    # (Pour les objets invisibles (variables), elle n'a aucun effet).
     def _creer_figure(self):
-        pass
+        u"""Cette fonction est à surclasser pour les objets ayant une
+        représentation graphique.
+        Sinon, l'objet sera invisible (exemple: `geolib.Variable`)."""
+        return NotImplemented
 
     def figure_perimee(self):
         self.__figure_perimee = True
@@ -1218,23 +1219,34 @@ class Objet(object):
 
     @property
     def figure(self):
+        u"""La représentation graphique associée à l'objet.
+
+        La figure est une liste d'objets graphiques pour matplotlib :
+        tous les items de la liste sont du type `matplotlib.artist.Artist`.
+
+        La figure bénéficie d'un système de cache : elle n'est pas recrée
+        à chaque fois, mais seulement lorsqu'elle a été marquée comme périmée.
+        La méthode interne ._creer_figure()
+        """
         if self.__figure_perimee and self.__feuille__ is not None:
             with contexte(exact = False):
-                visible = self.style("visible")
+                # Utiliser self.visible, et non self.style('visible'),
+                # car self.visible est customisé pour les étiquettes.
+                visible = self.visible
                 if self.existe and (visible or self.__feuille__.afficher_objets_caches):
                     # Remet alpha à 1 par défaut :
                     # la transparence a peut-être été modifiée si l'objet était auparavant invisible
-                    for representation in self._representation:
-                        representation.set_alpha(1)
+                    for artist in self._representation:
+                        artist.set_alpha(1)
                     self._creer_figure()
                     # Styles supplémentaires (pour le débugage essentiellement)
                     extra = self.style("extra")
                     if extra:
-                        for representation in self._representation:
-                            representation.set(**extra)
+                        for artist in self._representation:
+                            artist.set(**extra)
                     if not visible:
-                        for representation in self._representation:
-                            representation.set_alpha(.4*representation.get_alpha())
+                        for artist in self._representation:
+                            artist.set_alpha(.4*artist.get_alpha())
                     self._creer_trace()
                 else:
                     self._representation = []

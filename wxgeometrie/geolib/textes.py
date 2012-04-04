@@ -71,6 +71,7 @@ class Texte_generique(Objet_avec_coordonnees):
         text.set_x(x)
         text.set_y(y)
         text.set_color(self.style("couleur"))
+        text.set_alpha(self.style('alpha'))
         font = text.get_fontproperties()
         font.set_size(self.style("taille"))
         #font.set_stretch(self.style("largeur"))  # mal gere par matploltib (version 0.87)
