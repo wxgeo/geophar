@@ -308,12 +308,12 @@ class Interpolation_cubique(Interpolation_generique):
         self._affiche_extremites(vec_deb = (dx0, dy0), vec_fin = (dx1, dy1))
 
 
-class Interpolation_polynomiale_par_morceau(Interpolation_generique):
+class Interpolation_polynomiale_par_morceaux(Interpolation_generique):
     u"""Une courbe d'interpolation polynomiale par morceaux.
     Elle utilise l'interpolation par morceau de scipy pour construire la fonction
     c'est la classe scipy.interpolate.PiecewisePolynomial
 
-    elle passe par les points (xl, yl) et avec le nombre derive dans derivl à 
+    elle passe par les points (xl, yl) et avec le nombre derive dans derivl à
     l'abscisse xl.
 
     exemple::
@@ -321,11 +321,11 @@ class Interpolation_polynomiale_par_morceau(Interpolation_generique):
     >>> A = Point(-1,-2)
     >>> B = Point(2,1)
     >>> C = Point(8,-3)
-    >>> d = Interpolation_polynomiale_par_morceau(A,B,C, derivees=[-1,0.5,2])
-    
+    >>> d = Interpolation_polynomiale_par_morceaux(A,B,C, derivees=[-1,0.5,2])
+
     :type derivee: list
     :param derivee: value of the diff number at each point
-    
+
     :rtype : numpy.lib.polynomial
 
     """
@@ -342,12 +342,12 @@ class Interpolation_polynomiale_par_morceau(Interpolation_generique):
         # en test: creation des tangentes: dictionnaire
         # key: nom du point, value: objet Tangente_courbe
         self.__tangentes = []
-        # boucle avec ruse enumerate 
+        # boucle avec ruse enumerate
         # cf http://docs.python.org/tutorial/datastructures.html#dictionaries
         for i, P in enumerate(points):
             dico = {'point': P, 'cdir': self.__derivees[i]}
             self.__tangentes.append(Tangente_courbe(**dico))
- 
+
         self.__debut = debut = Ref(debut)
         self.__fin = fin = Ref(fin)
         Interpolation_generique.__init__(self, *points, **styles)
@@ -382,7 +382,7 @@ class Interpolation_polynomiale_par_morceau(Interpolation_generique):
         #     self.__tangentes.append(Tangente_courbe(point = self.__points[i],\
         #                                                 cdir = self.__derivees[i]))
         #     #self.__tangentes[i]._creer_figure()
-        
+
         pas = self.__canvas__.pas()
         plot = self._representation[0]
         x1, y1 = self.__points[0].coordonnees
@@ -394,5 +394,14 @@ class Interpolation_polynomiale_par_morceau(Interpolation_generique):
         plot.zorder = niveau
         self._xarray = xarray
         self._yarray = yarray
-        
+
         #self._affiche_extremites()
+
+    @property
+    def xmin(self):
+        return self.__points[0].x if self.__points else None
+
+    @property
+    def xmax(self):
+        return self.__points[-1].x if self.__points else None
+

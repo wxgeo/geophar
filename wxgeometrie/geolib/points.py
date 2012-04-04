@@ -1156,19 +1156,18 @@ class Glisseur_courbe_interpolation(Glisseur_generique):
     >>> G = Glisseur_courbe_interpolation(f, k= -2)
     """
 
-    courbe = __courbe = Argument("Interpolation_polynomiale_par_morceau")
+    courbe = __courbe = Argument("Interpolation_polynomiale_par_morceaux")
     parametre = k = __k = Argument("Variable_generique")
 
     def __init__(self, courbe, k = None, **styles):
         if k is None:
-            k = uniform(courbe.__points[0][0], courbe.__points[-1][0])
-        self.__objet = Ref(courbe)
+            k = uniform(courbe.xmin, courbe.xmax)
+        self.__courbe = Ref(courbe)
         self.__k = k = Ref(k)
-        #self.__k = Ref(k)
-        Glisseur_generique.__init__(self, objet = courbe, k = k, **styles)
+        Glisseur_generique.__init__(self, objet=courbe, k=k, **styles)
 
     def _get_coordonnees(self):
-        return self.__k, self.__objet.interpol(self.__k)
+        return self.__k, self.__courbe.interpol(self.__k)
 
     def _conversion_coordonnees_parametre(self, x, y):
         return x
