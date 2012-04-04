@@ -32,6 +32,7 @@ from .routines import angle_vectoriel
 from .points import (Glisseur_arc_cercle, Glisseur_segment, Glisseur_droite,
                      Glisseur_vecteur, Glisseur_cercle, Glisseur_demidroite,)
 from .. import param
+from ..pylib import property2
 
 
 class Label_generique(Texte_generique):
@@ -62,6 +63,13 @@ class Label_generique(Texte_generique):
     @property
     def parent(self):
         return self._parent()
+
+    @property2
+    def visible(self, val = None):
+        if val is not None:
+            assert isinstance(val, bool)
+            self.style(visible = val)
+        return self.style('visible') and self.parent.style('visible')
 
     def _epix2coo(self, x, y):
         u"Conversion des écarts de pixels en écarts de coordonnées."
