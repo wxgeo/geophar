@@ -203,10 +203,6 @@ class TabLaTeX(Panel_simple):
                 raise
 
 
-
-
-
-
     def EvtChoix(self, event = None):
         self._param_.mode = self.type_tableau.GetSelection()
         if self._param_.mode == 0:

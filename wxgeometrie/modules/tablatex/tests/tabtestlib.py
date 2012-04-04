@@ -1,8 +1,8 @@
 # -*- coding: iso-8859-1 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
-def assert_tableau(func, chaine, code_latex):
-    code = func(chaine)
+def assert_tableau(func, chaine, code_latex, **options):
+    code = func(chaine, **options)
     if code != code_latex:
         print "-------"
         print "ERREUR:"

@@ -30,6 +30,7 @@ from sympy.core.sympify import SympifyError
 import sympy
 
 from ..pylib import print_error, str2
+from .. import param
 from .parsers import _convertir_latex_frac
 
 
@@ -202,7 +203,7 @@ class Union(Ensemble):
         Chaque extrémité est donnée sous la forme de couples (_float, _str),
         où _str peut prendre les valeurs ".", ")", "(" ou "o".
         Exemple :
-        >>> from mathlib.intervalles import conversion_chaine_ensemble
+        >>> from wxgeometrie.mathlib.intervalles import conversion_chaine_ensemble
         >>> E = conversion_chaine_ensemble("]-oo;3[U]3;4]U]5;+oo[")
         >>> E.extremites(0, 10)
         [(3, 'o'), (4, '.'), (5, ')')]
@@ -388,12 +389,30 @@ class Intervalle(Union):
             return float(self.inf) < float(y) < float(self.sup) or (y == self.inf and self.inf_inclus) or (y == self.sup and self.sup_inclus)
 
 
+def _remplacer_virgule(chaine):
+    u"""Remplacement intelligent de la virgule par un point ou un point-virgule.
 
+    Dans la mesure du possible, essaie de deviner si la virgule est utilisée
+    comme séparateur décimal, ou entre deux valeurs.
+    Dans la majorité des cas, cela permet de corriger une utilisation
+    incorrecte de la virgule comme séparateur décimal."""
+    if ',' not in chaine:
+        return chaine
+    elif ';' in chaine and '.' not in chaine:
+        if param.debug:
+            print(u"Warning (autocorrection): '" + chaine + "'\n"
+                "Utilisation incorrecte d'une virgule.\n"
+                u"Utilisez le point comme séparateur décimal, ou modifiez les options.\n"
+                u"Enfin, ne mélangez pas les virgules et les points virgules.")
+        return chaine.replace(',', '.')
+    else:
+        return chaine.replace(',', ';')
 
 
 def preformatage_ensemble(chaine):
     u"""Formatage léger (qui reste humainement lisible)."""
-    chaine = chaine.replace(" ", "").replace(",", ";")
+    chaine = chaine.replace(" ", "")
+    chaine = _remplacer_virgule(chaine)
 
     # Traduction du LaTeX
     # On enlève le \ devant les commandes latex mathématiques usuelles
@@ -431,7 +450,8 @@ def preformatage_geolib_ensemble(chaine):
     ]1;2 -> afficher l'extrémité en 1 (arc), mais pas en 2.
     """
     chaine = re.sub('[ ]+', ' ', chaine)
-    chaine = chaine.replace(',', ';').replace('\\', '-')
+    chaine = _remplacer_virgule(chaine)
+    chaine = chaine.replace('\\', '-')
     chaine = re.sub(r"(?<=[][])\+(?=[][])", 'U', chaine)
 
     extremites_cachees = []
@@ -495,9 +515,6 @@ def formatage_ensemble(chaine, preformatage = True, utiliser_sympy = False):
     chaine = re.sub("[{][-+*/0-9.A-Za-z)(;]+[}]", f2, chaine)
 
     return chaine
-
-
-
 
 
 def conversion_chaine_ensemble(chaine, utiliser_sympy = False):

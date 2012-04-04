@@ -26,24 +26,31 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 import re
 
-from sympy import sympify, oo, nan, limit, Symbol
+from sympy import sympify, oo, nan, limit, Symbol, Float
 
-from .tablatexlib import convertir_en_latex, test_parentheses, resoudre
+from .tablatexlib import convertir_en_latex, test_parentheses, resoudre, nice_str
 from ...mathlib.custom_functions import ensemble_definition, custom_str
 from ...mathlib.intervalles import R, conversion_chaine_ensemble
 from ...mathlib.interprete import Interprete
 from ... import param
 
 
-def _auto_tabvar(chaine = '', derivee = True, limites = True, decimales = None):
+def _auto_tabvar(chaine='', derivee=True, limites=True, decimales=3):
     u"""Génère le code du tableau de variations d'une fonction à variable réelle.
 
     On suppose que la fonction est de classe C1 sur tout intervalle ouvert de son
     ensemble de définition.
     Par ailleurs, les zéros de sa dérivée doivent être calculables pour la librairie sympy.
+
+    Pour les valeurs approchées, on conserve par défaut 3 chiffres après la virgule.
+    En mettant `decimales=2`, on peut par exemple afficher seulement 2 chiffres
+    après la virgule, etc.
     """
-    # TODO: gérer le paramètre 'decimales'
-    str = custom_str
+    def nice_str2(x):
+        if decimales is not None and isinstance(x, (float, Float)):
+            x = round(x, decimales)
+        return nice_str(x)
+
     chaine_initiale = chaine
 
     # Ensemble de définition
@@ -89,9 +96,9 @@ def _auto_tabvar(chaine = '', derivee = True, limites = True, decimales = None):
     xmax = sup
 
     # On étudie la dérivée
-    derivee = expr.diff(var)
-    ens_def_deriv = ensemble_definition(derivee, var)
-    solutions = [sol for sol in resoudre(derivee, var) if sol.is_real]
+    df = expr.diff(var)
+    ens_def_deriv = ensemble_definition(df, var)
+    solutions = [sol for sol in resoudre(df, var) if sol.is_real]
 
     # On liste toutes les valeurs remarquables pour la fonction
     # NB: on les convertit toutes au format Sympy, pour qu'il n'y ait pas
@@ -113,19 +120,19 @@ def _auto_tabvar(chaine = '', derivee = True, limites = True, decimales = None):
     if param.debug and param.verbose:
         print "liste_valeurs", liste_valeurs, valeurs, set(valeurs), [type(val) for val in valeurs]
     for i, valeur in enumerate(liste_valeurs):
-        code_point = '(' + str(valeur) + ';'
+        code_point = '(' + nice_str2(valeur) + ';'
         if valeur == xmin:
             lim_plus = limit(expr, var, valeur, dir = '+')
             if valeur != -oo and valeur in valeurs_interdites:
                 code_point += '|'
             # On n'affiche les limites que si 'limites == True'
             if limites or (valeur != -oo and valeur not in valeurs_interdites):
-                code_point += str(lim_plus)
+                code_point += nice_str2(lim_plus)
         elif valeur == xmax:
             lim_moins = limit(expr, var, valeur, dir = '-')
             # On n'affiche les limites que si 'limites == True'
             if limites or (valeur != +oo and valeur not in valeurs_interdites):
-                code_point += str(lim_moins)
+                code_point += nice_str2(lim_moins)
             if valeur != +oo and valeur in valeurs_interdites:
                 code_point += '|'
         else:
@@ -134,13 +141,13 @@ def _auto_tabvar(chaine = '', derivee = True, limites = True, decimales = None):
                 lim_plus = limit(expr, var, valeur, dir = '+')
                 lim_moins = limit(expr, var, valeur, dir = '-')
                 if limites:
-                    code_point += str(lim_moins) + '|' + str(lim_plus)
+                    code_point += nice_str2(lim_moins) + '|' + nice_str2(lim_plus)
                 else:
                     code_point += '|'
             else:
                 # On calcule simplement l'image
                 lim_moins = lim_plus = expr.subs(var, valeur)
-                code_point += str(lim_moins)
+                code_point += nice_str2(lim_moins)
         if valeur not in (-oo, oo) and valeur not in ens_def_deriv:
             # La dérivée n'est pas définie en cette valeur
             code_point += ';|'
@@ -159,12 +166,12 @@ def _auto_tabvar(chaine = '', derivee = True, limites = True, decimales = None):
 
     if param.debug and param.verbose:
         print 'Code TABVar:', code
-    return tabvar(code, derivee = derivee) + '% ' + chaine_initiale + '\n'
+    return tabvar(code, derivee=derivee) + '% ' + chaine_initiale + '\n'
 
 
 
 
-def tabvar(chaine = "", derivee = True, limites = True, decimales = None):
+def tabvar(chaine="", derivee=True, limites=True, decimales=3):
     u"""Indiquer les variations de la fonction.
 
 Exemples :
@@ -177,7 +184,7 @@ f: (-oo;3) << (1;2;0) << (3;+oo|-oo) << (5;2) >> (+oo;-oo)
     #ligne_variable = ligne_derivee = ligne_fonction = ""
 
     if not ':' in chaine and not '>>' in chaine and not '==' in chaine and not '<<' in chaine:
-        return _auto_tabvar(chaine, derivee = derivee, limites = limites, decimales = decimales)
+        return _auto_tabvar(chaine, derivee=derivee, limites=limites, decimales=decimales)
 
     chaine = chaine.replace("-oo", "-\\infty").replace("+oo", "+\\infty")
 
@@ -296,7 +303,7 @@ f: (-oo;3) << (1;2;0) << (3;+oo|-oo) << (5;2) >> (+oo;-oo)
         ligne_variable += "&"
         if debut:
             debut = False
-            ligne_fonction += "&\\niveau{" + str(1-niveaux[portion][0]) +"}{" + str(ecart_maximal+1) + "}"
+            ligne_fonction += "&\\niveau{" + str(1 - niveaux[portion][0]) +"}{" + str(ecart_maximal + 1) + "}"
         else:
             ligne_fonction += "&"
         ligne_derivee += "&"
@@ -334,7 +341,7 @@ f: (-oo;3) << (1;2;0) << (3;+oo|-oo) << (5;2) >> (+oo;-oo)
                 if len(vals_fonc) == 2: # x est une valeur interdite pour f(x)
                     portion += 1 # on change de portion
                     ligne_fonction += en_latex(vals_fonc[0]) + "&\\dbarre&" \
-                                    + "\\niveau{" + str(1-niveaux[portion][0]) +"}{" + str(ecart_maximal+1) + "}" \
+                                    + "\\niveau{" + str(1 - niveaux[portion][0]) +"}{" + str(ecart_maximal + 1) + "}" \
                                     + en_latex(vals_fonc[1])
                 else:
                     ligne_fonction += " &" + en_latex(vals_fonc[0]) + "&"

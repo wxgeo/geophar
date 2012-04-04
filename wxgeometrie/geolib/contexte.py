@@ -31,7 +31,7 @@ class Contexte(dict):
     u"""Gestionnaire de contexte.
 
     Exemple d'usage:
-    >>> from wxgeometrie.geolib.objet import Contexte
+    >>> from wxgeometrie.geolib.contexte import Contexte
     >>> # Contexte global
     >>> contexte = Contexte(exact = False, decimales = 7)
     >>> # Contexte local
@@ -42,11 +42,12 @@ class Contexte(dict):
     False
     """
 
-    __slots__ = '__local_dicts', '__no_direct_call'
+    __slots__ = '__local_dicts', '__no_direct_call', '__parent'
 
-    def __init__(self, **kw):
+    def __init__(self, parent=None, **kw):
         dict.__init__(self, **kw)
         self.__local_dicts = []
+        self.__parent = parent
         # Surveille que la méthode .__call__() ne soit jamais appelée directement
         self.__no_direct_call = True
 
@@ -55,13 +56,30 @@ class Contexte(dict):
         for dico in reversed(self.__local_dicts):
             if dico.has_key(key):
                 return dico[key]
-        return dict.__getitem__(self, key)
+        if dict.has_key(self, key):
+            return dict.__getitem__(self, key)
+        elif self.__parent is not None:
+            return self.__parent[key]
+        raise KeyError, key
+
+    def get(self, key, default=None):
+        try:
+            return self[key]
+        except KeyError:
+            return default
+
+    def new(self):
+        u"""Crée un nouveau contexte-fils, qui hérite de celui-ci.
+
+        Toutes les clés non trouvées du contexte-fils sont ensuite
+        cherchées dans le contexte père."""
+        return self.__class__(parent=self)
 
     def __call__(self, **kw):
         u"""Cette méthode ne doit *JAMAIS* être appelée en dehors d'un contexte 'with'.
 
         Exemple d'usage:
-        >>> from wxgeometrie.geolib.objet import Contexte
+        >>> from wxgeometrie.geolib.contexte import Contexte
         >>> contexte = Contexte(exact = False, decimales = 7)
         >>> with contexte(exact = True):
         ...     print contexte['exact']

@@ -97,7 +97,7 @@ class FenetrePrincipale(wx.Frame):
         self.SetDropTarget(ReceptionDeFichiers(self))
         self.SetFocus()
 
-        self.Bind (wx.EVT_IDLE, self.OnIdle)
+        self.Bind(wx.EVT_IDLE, self.OnIdle)
 
         # closing == True si l'application est en train d'être fermée
         self.closing = False

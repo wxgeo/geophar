@@ -5,8 +5,8 @@ from wxgeometrie.modules.tablatex.tests.tabtestlib import assert_tableau
 from wxgeometrie.modules.tablatex.tabvar import tabvar
 
 
-def assert_tabvar(chaine, code_latex):
-    assert_tableau(tabvar, chaine, code_latex)
+def assert_tabvar(chaine, code_latex, **options):
+    assert_tableau(tabvar, chaine, code_latex, **options)
 
 
 def test_mode_manuel():
@@ -207,3 +207,51 @@ f'(x)                             &              &+     &0            &-       &
 % sin(x) sur [-pi;pi]
 '''
     assert_tabvar(s, tab)
+
+
+def test_options():
+    s = 'f(x)=4 x^{2} - 24 x + 11'
+    options = {'derivee': False, 'limites': False}
+    tab = \
+r'''\[\begin{tabvar}{|C|CCCCC|}
+\hline
+x                                    &-\infty      &        &3  &      &+\infty\\
+\hline
+\niveau{1}{2}\raisebox{0.5em}{$f(x)$}&\niveau{2}{2}&\decroit&-25&\croit&\\
+\hline
+\end{tabvar}\]
+% x;f(x):(-oo;) >> (3;-25) << (+oo;)
+% f(x)=4 x^{2} - 24 x + 11
+'''
+    assert_tabvar(s, tab, **options)
+
+
+def test_issue_189():
+    # Tableaux de signes et de variation avec des décimaux
+    s = 'f(x) = (x -4)\e^{-0,25x+5} sur [4;20]'
+    options = {'derivee': False, 'decimales': 3}
+    tab = \
+r'''\[\begin{tabvar}{|C|CCCCC|}
+\hline
+x                                    &4             &      &8     &        &20\\
+\hline
+\niveau{1}{2}\raisebox{0.5em}{$f(x)$}&\niveau{1}{2}0&\croit&80,342&\decroit&16\\
+\hline
+\end{tabvar}\]
+% x;f(x) :(4;0) << (8;80,342) >> (20;16)
+% f(x) = (x -4)\e^{-0,25x+5} sur [4;20]
+'''
+    assert_tabvar(s, tab, **options)
+    options = {'derivee': False, 'decimales': 2}
+    tab = \
+r'''\[\begin{tabvar}{|C|CCCCC|}
+\hline
+x                                    &4             &      &8    &        &20\\
+\hline
+\niveau{1}{2}\raisebox{0.5em}{$f(x)$}&\niveau{1}{2}0&\croit&80,34&\decroit&16\\
+\hline
+\end{tabvar}\]
+% x;f(x) :(4;0) << (8;80,34) >> (20;16)
+% f(x) = (x -4)\e^{-0,25x+5} sur [4;20]
+'''
+    assert_tabvar(s, tab, **options)

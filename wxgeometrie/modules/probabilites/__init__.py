@@ -30,6 +30,7 @@ from ...GUI.proprietes_objets import Proprietes
 
 from ...geolib import Segment, Texte, Point, TEXTE
 from ... import param
+from .repetition import repetition_experiences
 
 
 class ProbaMenuBar(MenuBar):
@@ -99,7 +100,7 @@ omega
     def Appliquer(self, event):
         with self.canvas.geler_affichage(actualiser=True, sablier=True):
             self.creer_feuille()
-            instructions = [instruction for instruction in self.instructions.GetValue().split("\n") if instruction]
+            instructions = [instruction for instruction in self.instructions.GetValue().split("\n") if instruction.strip()]
             nbr_colonnes = 0
             if instructions[0].startswith("|"):
                 legende = instructions[0]
@@ -108,6 +109,29 @@ omega
             else:
                 legende = None
                 self.canvas.fenetre = -.1, 1.1, -.1, 1.1
+
+            # Répétition d'expériences aléatoires indépendantes
+            #
+            # Ex:
+            # >> A:  1/3
+            # >> &A: 2/3
+            #
+            # équivaut à:
+            #
+            # > A_1:   1/3
+            # >> A_2:  1/3
+            # >> &A_2: 2/3
+            # > &A_1:  2/3
+            # >> A_2:  1/3
+            # >> &A_2: 2/3
+            if instructions[0].startswith('>>'):
+                profondeur = len(instructions[0]) - len(instructions[0].lstrip('>'))
+                evenements = {}
+                for instruction in instructions:
+                    assert instruction.startswith(profondeur*'>')
+                    nom, proba = instruction[profondeur:].split(':')
+                    evenements[nom.strip()] = proba.strip()
+                instructions = repetition_experiences(_profondeur=profondeur, _numeroter=True, **evenements).split('\n')
 
             for instruction in instructions:
                 if instruction.startswith(">"):
