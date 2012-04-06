@@ -322,6 +322,7 @@ class Interpolation_polynomiale_par_morceaux(Interpolation_generique):
 
     exemple::
 
+    >>> from wxgeometrie import *
     >>> A = Point(-1,-2)
     >>> B = Point(2,1)
     >>> C = Point(8,-3)
@@ -334,23 +335,25 @@ class Interpolation_polynomiale_par_morceaux(Interpolation_generique):
 
     """
     points = __points = Arguments("Point_generique")
-    # derivees = __derivees = Arguments("int, float")
+    derivees = __derivees = Arguments("Variable_generique")
 
     def __init__(self, *points, **styles):
-        self.__derivees = derivees = styles.pop('derivees', len(points)*[0])
+        derivees = styles.pop('derivees', len(points)*[0])
+        # TODO: valeurs par défaut "intelligentes" pour les nombres dérivés.
         debut = styles.pop("debut", True)
         fin = styles.pop("fin", True)
         if styles.get("points", None):
             points = styles.pop("points")
         self.__points = points = tuple(Ref(pt) for pt in points)
+        self.__derivees = derivees = tuple(Ref(d) for d in derivees)
         # en test: creation des tangentes: dictionnaire
         # key: nom du point, value: objet Tangente_courbe
-        self.__tangentes = []
+        ##self.__tangentes = []
         # boucle avec ruse enumerate
         # cf http://docs.python.org/tutorial/datastructures.html#dictionaries
-        for i, P in enumerate(points):
-            dico = {'point': P, 'cdir': self.__derivees[i]}
-            self.__tangentes.append(Tangente_courbe(**dico))
+        ##for i, P in enumerate(points):
+            ##dico = {'point': P, 'cdir': self.__derivees[i]}
+            ##self.__tangentes.append(Tangente_courbe(**dico))
 
         self.__debut = debut = Ref(debut)
         self.__fin = fin = Ref(fin)
@@ -363,6 +366,12 @@ class Interpolation_polynomiale_par_morceaux(Interpolation_generique):
         yl_cum = [[yl[i], derivl[i]] for i in range(len(yl))]
         return PiecewisePolynomial(xl, yl_cum)
 
+    def interpol(self, val):
+        # interpol doit être recalculé à chaque mise à jour
+        # FIXME: utiliser un système de cache.
+        self.xl = [P[0] for P in self.__points]
+        self.yl = [P[1] for P in self.__points]
+        return self._poly_inter(self.xl, self.yl, self.__derivees)(val)
 
     def _creer_figure(self):
         n = len(self.__points)
@@ -375,10 +384,6 @@ class Interpolation_polynomiale_par_morceaux(Interpolation_generique):
 
         if n < 2:
             return
-        #interpol doit être recalculé à chaque mise à jour
-        self.xl = [P[0] for P in self.__points]
-        self.yl = [P[1] for P in self.__points]
-        self.interpol = self._poly_inter(self.xl, self.yl, self.__derivees)
         # de même les tangentes sont recalculées
         # il doit y avoir moyen de faire moins de calculs
         # self.__tangentes = []

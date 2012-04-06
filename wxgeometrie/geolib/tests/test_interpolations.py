@@ -38,4 +38,8 @@ def test_Interpolation_polynomiale_par_morceaux():
     C = Point(-0.50558069381598791, -1.0768726223271674)
     D = Point(2.6437405731523356, 1.1545323363505182)
     inter = Interpolation_polynomiale_par_morceaux(A, B, C, D)
-    M = Glisseur_courbe_interpolation(inter, M)
+    M = Glisseur_courbe_interpolation(inter, 2)
+    assert M.xy[0] == 2
+    P = Point(inter)
+    assert P.y == inter.interpol(float(P.x))
+

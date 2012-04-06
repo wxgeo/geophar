@@ -29,7 +29,7 @@ from .wxlib import png
 from ..pylib import is_in
 from ..geolib.routines import distance
 from ..geolib.textes import Texte_generique
-from ..geolib.points import Point_generique, Barycentre, Point_pondere, Milieu
+from ..geolib.points import Point_generique, Barycentre, Point_pondere, Milieu, Point
 from ..geolib.cercles import Arc_generique, Cercle_generique, Cercle, Arc_points,\
                              Arc_oriente, Cercle_diametre, Cercle_points, Demicercle,\
                              Arc_cercle
@@ -42,7 +42,7 @@ from ..geolib.transformations import Rotation, Homothetie, Translation
 from ..geolib.vecteurs import Vecteur_generique, Vecteur
 from ..geolib.intersections import Intersection_cercles, Intersection_droite_cercle
 from ..geolib.objet import Objet, contexte
-from .. import param
+from .. import param, geolib
 
 
 
@@ -466,16 +466,16 @@ class BarreOutils(wx.Panel):
                     self.executer(u"Point(*%s, **%s)" % (position, self.style(nom_style)), editer=editer, init = False)
                 else:
                     snom = selection.nom
-                    if isinstance(selection, Cercle_generique):
-                        self.executer(u"Glisseur_cercle(%s, %s)" %(snom, position), editer=editer, init = False)
-                    elif isinstance(selection, Segment):
-                        self.executer(u"Glisseur_segment(%s, %s)" %(snom, position), editer=editer, init = False)
-                    elif isinstance(selection, Droite_generique):
-                        self.executer(u"Glisseur_droite(%s, %s)" %(snom, position), editer=editer, init = False)
-                    elif isinstance(selection, Demidroite):
-                        self.executer(u"Glisseur_demidroite(%s, %s)" %(snom, position), editer=editer, init = False)
-                    elif isinstance(selection, Arc_generique):
-                        self.executer(u"Glisseur_arc_cercle(%s, %s)" %(snom, position), editer=editer, init = False)
+                    # On regarde si le point peut être construit sur l'objet sélectionné.
+                    # Par exemple, si l'objet sélectionné est une droite, on construit
+                    # un glisseur sur la droite, au lieu d'un point 'normal'.
+                    # Par contre, si l'objet sélectionné est un texte, il n'y a pas de
+                    # glisseur correspondant, donc on ne tient pas compte de l'objet
+                    # sélectionné, et on construit simplement un point 'normal'.
+                    for type_objet, type_glisseur in Point._glisseurs.iteritems():
+                        if isinstance(selection, getattr(geolib, type_objet)):
+                            self.executer(u"%s(%s, %s)" %(type_glisseur, snom, position), editer=editer, init = False)
+                            break
                     else:
                         self.executer(u"Point(%s, %s)" % position, editer=editer, init = False)
                 # On retourne le nom de l'objet créé
