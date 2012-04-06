@@ -22,7 +22,16 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 import sys, time, os, optparse, itertools, traceback, imp
 from os.path import dirname, realpath
 
+t0 = time.time()
+
 from . import param
+# Attention, les paramètres importés explicitement ici dans l'espace des noms
+# du module `initialisation` ne pourront pas être modifié en ligne de commande :
+# en effet, pour modifier les paramètres via la ligne de commande,
+# on met à jour l'espace des noms du module param.
+# En particulier, il ne faut *PAS* écrire ``from .param import debug``,
+# car alors, ``$ wxgeometrie -b`` ne prendrait pas en compte le ``-b``
+# lors de l'initialisation.
 from .param import dependances, NOMPROG, NOMPROG2, plateforme, GUIlib
 
 nomprog = NOMPROG2.lower()
@@ -341,6 +350,7 @@ try:
     def initialiser():
         from .API.parametres import actualiser_module
         from .pylib import print_error
+        from .geolib import contexte
         # Récupération d'un crash éventuel
         path_lock = path2(param.emplacements['session'] + "/lock")
         crash = os.path.isfile(path_lock)
@@ -369,6 +379,9 @@ try:
                     for dicname in param.a_mettre_a_jour:
                         for key, val in a_verifier[dicname].iteritems():
                             getattr(param, dicname).setdefault(key, val)
+                    # Mise à jour du contexte de geolib:
+                    for parametre in ('decimales', 'unite_angle', 'tolerance'):
+                        contexte[parametre] = getattr(param,  parametre)
                 else:
                     actualiser_module(param, None)
         except:
@@ -385,9 +398,17 @@ try:
         else:
             from .GUI.app import app
             app.nom(NOMPROG)
-
             from .GUI.fenetre_principale import FenetrePrincipale
+            if param.debug:
+                print("Temps d'initialisation: %f s" % (time.time() - t0))
             frame = FenetrePrincipale(app, fichier_log = fichier_log)
+            frame.SetTitle(u"WxGéométrie - Chargement en cours, patientez...")
+            #XXX: impossible de modifier le curseur (BusyCursor ou SetCursor
+            # n'ont aucun effet)...
+            frame.Show()
+            if param.debug:
+                print('Temps avant affichage de la fenêtre principale: %f s' % (time.time() - t0))
+            frame.onglets.terminer_initialisation()
             if isinstance(sys.stdout, SortiesMultiples):
                 if param.debug:
                     for msg in sys.stdout.facultatives[0]:
@@ -409,7 +430,8 @@ try:
                 except:
                     print(u"Warning: La session n'a pas pu être restaurée.")
                     print_error()
-            frame.Show()
+            if param.debug:
+                print('Temps de chargement complet: %f s' % (time.time() - t0))
             app.boucle()
             sorties.close()
         os.remove(path_lock)

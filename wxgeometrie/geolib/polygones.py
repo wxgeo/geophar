@@ -37,17 +37,12 @@ from .objet import Arguments, Argument, ArgumentNonModifiable, Ref, Objet, \
 from .points import Point_generique, Point, Point_equidistant, Point_pondere, \
                     Barycentre
 from .transformations import Rotation
-from .routines import point_dans_polygone, distance
+from .routines import point_dans_polygone, distance, radian
 
 from ..pylib import is_in, print_error
 from .. import param
 
 
-
-
-##########################################################################################
-
-# Polygones
 
 
 class Cote(Segment):
@@ -746,7 +741,7 @@ class Losange(Parallelogramme):
 
     point1 = __point1 = Argument("Point_generique", defaut = Point)
     point2 = __point2 = Argument("Point_generique", defaut = Point)
-    angle = __angle = Argument("Angle_generique", defaut = lambda:uniform(pi/6, pi/4) + randint(0, 1)*pi/2)
+    angle = __angle = Argument("Angle_generique", defaut = lambda:radian(uniform(pi/6, pi/4) + randint(0, 1)*pi/2))
 
     def __init__(self, point1 = None, point2 = None, angle = None, **styles):
         self.__point1 = point1 = Ref(point1)
@@ -791,7 +786,7 @@ class Polygone_regulier_centre(Polygone_generique):
             n = 3 + abs(int(normalvariate(0,4)))
         # il ne faut pas utiliser de référence (Ref), car n n'est pas modifiable :
         self.__n = n
-        points = (Rotation(centre, '2*pi*' + str(i) + '/' + str(n))(sommet) for i in xrange(1, n))
+        points = (Rotation(centre, '2*pi*' + str(i) + '/' + str(n), unite='r')(sommet) for i in xrange(1, n))
         Polygone_generique.__init__(self, sommet, *points, **styles)
 
 
@@ -811,7 +806,8 @@ class Triangle_equilateral_centre(Triangle):
     def __init__(self, centre = None, sommet = None, **styles):
         self.__centre = centre = Ref(centre)
         self.__sommet = sommet = Ref(sommet)
-        Triangle.__init__(self, sommet, Rotation(centre, '2*pi/3')(sommet), Rotation(centre, '4*pi/3')(sommet), **styles)
+        Triangle.__init__(self, sommet, Rotation(centre, '2*pi/3', unite='r')(sommet),
+                          Rotation(centre, '4*pi/3', unite='r')(sommet), **styles)
 
 
 
@@ -829,7 +825,9 @@ class Carre_centre(Quadrilatere):
     def __init__(self, centre = None, sommet = None, **styles):
         self.__centre = centre = Ref(centre)
         self.__sommet = sommet = Ref(sommet)
-        Quadrilatere.__init__(self, sommet, Rotation(centre, 'pi/2')(sommet), Rotation(centre, 'pi')(sommet), Rotation(centre, '3*pi/2')(sommet), **styles)
+        Quadrilatere.__init__(self, sommet, Rotation(centre, 'pi/2', unite='r')(sommet),
+                              Rotation(centre, 'pi', unite='r')(sommet),
+                              Rotation(centre, '3*pi/2', unite='r')(sommet), **styles)
 
 
 
@@ -870,7 +868,7 @@ class Polygone_regulier(Polygone_generique):
         # il ne faut pas utiliser de référence (Ref), car n n'est pas modifiable :
         self.__n = n
         angle = '(2-' + str(n) + ')*pi/' + str(n)
-        point3 = Rotation(point2, angle)(point1)
+        point3 = Rotation(point2, angle, unite='r')(point1)
         # Auparavant, tous les sommets étaient construits ainsi récursivement
         # mais la taille de str(Polygone_regulier.points[i])
         # croissait alors exponentiellement avec i (elle doublait à chaque itération) !
@@ -878,7 +876,7 @@ class Polygone_regulier(Polygone_generique):
         self.__centre = centre = Point_equidistant(point1, point2, point3)
         for i in xrange(3, n):
             angle = '2*pi*' + str(i) + '/' + str(n)
-            points.append(Rotation(centre, angle)(point1))
+            points.append(Rotation(centre, angle, unite='r')(point1))
         Polygone_generique.__init__(self, *points, **styles)
 
     @property
@@ -898,7 +896,7 @@ class Triangle_equilateral(Triangle):
     def __init__(self, point1 = None, point2 = None, **styles):
         self.__point1 = point1 = Ref(point1)
         self.__point2 = point2 = Ref(point2)
-        Triangle.__init__(self, point1, point2, Rotation(point1, 'pi/3')(point2), **styles)
+        Triangle.__init__(self, point1, point2, Rotation(point1, 'pi/3', unite='r')(point2), **styles)
 
 
 
@@ -916,8 +914,8 @@ class Carre(Quadrilatere):
     def __init__(self, point1 = None, point2 = None, **styles):
         self.__point1 = point1 = Ref(point1)
         self.__point2 = point2 = Ref(point2)
-        point3 = Rotation(point2, '-pi/2')(point1)
-        Quadrilatere.__init__(self, point1, point2, point3, Rotation(point1, 'pi/2')(point2), **styles)
+        point3 = Rotation(point2, '-pi/2', unite='r')(point1)
+        Quadrilatere.__init__(self, point1, point2, point3, Rotation(point1, 'pi/2', unite='r')(point2), **styles)
 
 
 
@@ -931,7 +929,7 @@ class Sommet_triangle_isocele(Point_generique):
 
     sommet_principal = __sommet_principal = Argument("Point_generique", defaut = Point)
     point2 = __point2 = Argument("Point_generique", defaut = Point)
-    angle = __angle = Argument("Angle_generique", defaut = lambda:uniform(pi/6, pi/4) + randint(0, 1)*pi/2)
+    angle = __angle = Argument("Angle_generique", defaut = lambda:radian(uniform(pi/6, pi/4) + randint(0, 1)*pi/2))
 
     def __init__(self, sommet_principal, point2, angle, **styles):
         self.__sommet_principal = sommet_principal = Ref(sommet_principal)
@@ -951,17 +949,18 @@ class Sommet_triangle_isocele(Point_generique):
             return zC.real, zC.imag
 
     def _set_coordonnees(self, x, y):
-        zA = self.__sommet_principal.z
-        zB = self.__point2.z
-        z = x + 1j*y
-        try:
-            if issympy(zA, zB):
-                self.__angle = sarg((z - zA)/(zB - zA))
-            else:
-                self.__angle = clog((z - zA)/(zB - zA)).imag
-        except (OverflowError, ZeroDivisionError):
-            if param.debug:
-                print_error()
+        with contexte(unite_angle='r'):
+            zA = self.__sommet_principal.z
+            zB = self.__point2.z
+            z = x + 1j*y
+            try:
+                if issympy(zA, zB):
+                    self.__angle = sarg((z - zA)/(zB - zA))
+                else:
+                    self.__angle = clog((z - zA)/(zB - zA)).imag
+            except (OverflowError, ZeroDivisionError):
+                if param.debug:
+                    print_error()
 
 
 
@@ -970,9 +969,9 @@ class Triangle_isocele(Triangle):
 
     Un triangle isocèle défini par son sommet principal, un autre sommet, et son angle principal (sens direct)."""
 
-    sommet_principal = __sommet_principal = Argument("Point_generique", defaut = Point)
-    point2 = __point2 = Argument("Point_generique", defaut = Point)
-    angle = __angle = Argument("Angle_generique", defaut = lambda:uniform(pi/6, pi/4) + randint(0, 1)*pi/2)
+    sommet_principal = __sommet_principal = Argument("Point_generique", defaut=Point)
+    point2 = __point2 = Argument("Point_generique", defaut=Point)
+    angle = __angle = Argument("Angle_generique", defaut = lambda:radian(uniform(pi/6, pi/4) + randint(0, 1)*pi/2))
 
     def __init__(self, sommet_principal = None, point2 = None, angle = None, **styles):
         self.__sommet_principal = sommet_principal = Ref(sommet_principal)
@@ -993,7 +992,7 @@ class Sommet_triangle_rectangle(Point_generique):
 
     point1 = __point1 = Argument("Point_generique", defaut = Point)
     point2 = __point2 = Argument("Point_generique", defaut = Point)
-    angle = __angle = Argument("Angle_generique", defaut = lambda:uniform(pi/6, pi/3))
+    angle = __angle = Argument("Angle_generique", defaut = lambda:radian(uniform(pi/6, pi/3)))
 
     def __init__(self, point1, point2, angle, **styles):
         self.__point1 = point1 = Ref(point1)
@@ -1014,18 +1013,19 @@ class Sommet_triangle_rectangle(Point_generique):
             return zC.real, zC.imag
 
     def _set_coordonnees(self, x, y):
-        zA = self.__point1.z
-        zB = self.__point2.z
-        zI = (zA + zB)/2
-        z = x + 1j*y
-        try:
-            if issympy(zI):
-                self.__angle = sarg((z - zI)/(zB - zI))/2
-            else:
-                self.__angle = clog((z - zI)/(zB - zI)).imag/2
-        except (OverflowError, ZeroDivisionError):
-            if param.debug:
-                print_error()
+        with contexte(unite_angle='r'):
+            zA = self.__point1.z
+            zB = self.__point2.z
+            zI = (zA + zB)/2
+            z = x + 1j*y
+            try:
+                if issympy(zI):
+                    self.__angle = sarg((z - zI)/(zB - zI))/2
+                else:
+                    self.__angle = clog((z - zI)/(zB - zI)).imag/2
+            except (OverflowError, ZeroDivisionError):
+                if param.debug:
+                    print_error()
 
 
 
@@ -1036,7 +1036,7 @@ class Triangle_rectangle(Triangle):
 
     point1 = __point1 = Argument("Point_generique", defaut = Point)
     point2 = __point2 = Argument("Point_generique", defaut = Point)
-    angle = __angle = Argument("Angle_generique", defaut = lambda:uniform(pi/7, pi/5))
+    angle = __angle = Argument("Angle_generique", defaut = lambda:radian(uniform(pi/7, pi/5)))
 
     def __init__(self, point1 = None, point2 = None, angle = None, **styles):
         self.__point1 = point1 = Ref(point1)

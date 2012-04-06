@@ -193,7 +193,6 @@ class Point_generique(Objet_avec_coordonnees):
 
 
 
-
 class Point(Objet_avec_coordonnees_modifiables, Point_generique):
     u"""Un point libre.
 
@@ -208,27 +207,28 @@ class Point(Objet_avec_coordonnees_modifiables, Point_generique):
     abscisse = x = __x = Argument("Variable_generique", defaut = lambda: normalvariate(0, 10))
     ordonnee = y = __y = Argument("Variable_generique", defaut = lambda: normalvariate(0, 10))
 
+    _glisseurs = {'Droite_generique': 'Glisseur_droite',
+                  'Segment': 'Glisseur_segment',
+                  'Demidroite': 'Glisseur_demidroite',
+                  'Cercle_generique': 'Glisseur_cercle',
+                  'Arc_generique': 'Glisseur_arc_cercle',
+                  'Interpolation_polynomiale_par_morceaux': 'Glisseur_courbe_interpolation',
+                  }
+
     def __new__(cls, *args, **kw):
         if len(args) == 1:
-            from .cercles import Arc_generique, Cercle_generique
-            from .lignes import Segment, Droite_generique, Demidroite
-            if isinstance(args[0], Droite_generique):
-                newclass = Glisseur_droite
-            elif isinstance(args[0], Segment):
-                newclass = Glisseur_segment
-            elif isinstance(args[0], Demidroite):
-                newclass = Glisseur_demidroite
-            elif isinstance(args[0], Cercle_generique):
-                newclass = Glisseur_cercle
-            elif isinstance(args[0], Arc_generique):
-                newclass = Glisseur_arc_cercle
-            else:
-                return object.__new__(cls)
-        else:
-            return object.__new__(cls)
-        glisseur = newclass.__new__(newclass, *args, **kw)
-        glisseur.__init__(*args, **kw)
-        return glisseur
+            from .. import geolib
+            # On regarde si le point peut être construit sur l'objet sélectionné.
+            # Par exemple, si l'objet sélectionné est une droite, on construit
+            # un glisseur sur la droite, au lieu d'un point 'normal'.
+            # Par contre, si l'objet sélectionné est un texte, il n'y a pas de
+            # glisseur correspondant, donc on ne tient pas compte de l'objet
+            # sélectionné, et on construit simplement un point 'normal'.
+            for type_objet, type_glisseur in cls._glisseurs.iteritems():
+                if isinstance(args[0], getattr(geolib, type_objet)):
+                    return getattr(geolib, type_glisseur)(*args, **kw)
+        return object.__new__(cls)
+
 
     def __init__(self, x = None, y = None, **styles):
         x, y, styles = self._recuperer_x_y(x, y, styles)
@@ -236,7 +236,6 @@ class Point(Objet_avec_coordonnees_modifiables, Point_generique):
         self.__y = y = Ref(y)
         Objet_avec_coordonnees_modifiables.__init__(self, x, y, **styles)
         Point_generique.__init__(self, **styles)
-
 
 
     def _set_feuille(self):
@@ -259,10 +258,6 @@ class Point(Objet_avec_coordonnees_modifiables, Point_generique):
             self.coordonnees = objet.coordonnees
         else:
             raise TypeError, "L'objet n'est pas un point."
-
-
-
-
 
 
 
@@ -304,7 +299,7 @@ class Barycentre(Point_generique):
     def __init__(self, *points_ponderes, **styles):
         if styles.get("points_ponderes", None):
             points_ponderes = styles.pop("points_ponderes")
-        self.__points_ponderes = __points_ponderes = tuple(Ref(obj) for obj in points_ponderes)
+        self.__points_ponderes = points_ponderes = tuple(Ref(obj) for obj in points_ponderes)
         Point_generique.__init__(self, **styles)
 
 
@@ -1156,22 +1151,22 @@ class Glisseur_courbe_interpolation(Glisseur_generique):
     >>> G = Glisseur_courbe_interpolation(f, k= -2)
     """
 
-    courbe = __courbe = Argument("Interpolation_polynomiale_par_morceau")
-    parametre = k = __k = Argument("Variable_generique")
+    courbe = __courbe = Argument("Interpolation_polynomiale_par_morceaux")
+    parametre = x = __x = Argument("Variable_generique")
 
-    def __init__(self, courbe, k = None, **styles):
-        if k is None:
-            k = uniform(courbe.__points[0][0], courbe.__points[-1][0])
-        self.__objet = Ref(courbe)
-        self.__k = k = Ref(k)
-        #self.__k = Ref(k)
-        Glisseur_generique.__init__(self, objet = courbe, k = k, **styles)
+    def __init__(self, courbe, x=None, **styles):
+        if x is None:
+            x = uniform(courbe.xmin, courbe.xmax)
+        self.__courbe = Ref(courbe)
+        self.__x = x = Ref(self._initialiser_k(x))
+        Glisseur_generique.__init__(self, objet=courbe, k=x, **styles)
 
     def _get_coordonnees(self):
-        return self.__k, self.__objet.interpol(self.__k)
+        return self.__x, self.__courbe.interpol(float(self.__x))
 
     def _conversion_coordonnees_parametre(self, x, y):
-        return x
+        # On s'assure qu'on est bien toujours xmin < x < xmax
+        return max(min(x, self.__courbe.xmax), self.__courbe.xmin)
 
 
 
@@ -1195,6 +1190,7 @@ class Nuage_generique(Objet):
                 point.style(**kwargs)
         else:
             Objet.style(self, nom_style, **kwargs)
+
 
 
 

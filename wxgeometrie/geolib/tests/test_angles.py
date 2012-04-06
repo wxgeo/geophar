@@ -8,7 +8,7 @@ from tools.testlib import assertAlmostEqual, assertNotAlmostEqual
 
 from wxgeometrie.geolib import (Feuille, Angle_oriente, Angle_vectoriel, Angle_libre,
                                 Secteur_angulaire, Label_angle, Vecteur_libre,
-                                Point, Angle, Variable,
+                                Point, Angle, Variable, contexte,
                                 )
 from wxgeometrie.mathlib.universal_functions import sin as u_sin, cos as u_cos, tan as u_tan
 
@@ -59,18 +59,6 @@ def test_Angle_libre():
     assertNotAlmostEqual(a.val, a.grad)
     b = Angle_libre(u"45°")
     assertAlmostEqual(b.rad, math.pi/4)
-##        print "%% FEUILLE %%"
-##        f = geolib.Feuille()
-##        print f, type(f)
-##        p = Point(40, 20)
-##        print p,  type(p), id(p)
-##        f.objets.A = p
-##        print f.objets.A, type(f.objets.A), id(f.objets.A)
-##        v = Variable("A.x+5")
-##        print v, type(v)
-##        f.objets.k = v
-##        f.objets.c = Angle_libre(f.objets.k, "d")
-##        assertAlmostEqual(b.rad, c.rad)
     f = Feuille()
     f.objets.A = Point(40, 20)
     f.objets.k = Variable("A.x+5")
@@ -80,9 +68,31 @@ def test_Angle_libre():
     assertAlmostEqual(b.rad, f.objets.c.rad)
     assertAlmostEqual(f.objets.d.rad, f.objets.c.rad)
 
-
 def test_Angle_vectoriel():
     u = Vecteur_libre(5.458, -2.546)
     v = Vecteur_libre(-5.75, 12.6)
     a = Angle_vectoriel(u, v)
     assertAlmostEqual(a.val, 2.43538435941)
+
+def test_contexte_degre():
+    with contexte(unite_angle='d'):
+        a = Angle_libre('pi rad')
+        assertAlmostEqual(a.deg, 180)
+        a = Angle_libre('100 grad')
+        assertAlmostEqual(a.deg, 90)
+        b = Angle_libre(30)
+        assertAlmostEqual(b.rad, math.pi/6)
+        # En interne, tout doit être stocké en radians
+        assert float(b.val) == float(b.rad)
+        # On doit avoir eval(repr(b)) == b
+        assertAlmostEqual(eval(repr(b)).deg, 30)
+
+def test_info():
+    a = Angle_libre(u"30°")
+    assert str(a.deg) == '30'
+    with contexte(unite_angle='d'):
+        assert a.info == u'Angle de valeur 30°'
+    with contexte(unite_angle='r'):
+        assert a.info == u'Angle de valeur pi/6 rad'
+    with contexte(unite_angle='g'):
+        assert a.info == u'Angle de valeur 100/3 grad'

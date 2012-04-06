@@ -88,18 +88,19 @@ class Graphes(Panel_API_graphique):
         dic = {}
         # Ex: {"A": {"B":[1], "C":[2, 5]}, "B": {}, "C": {"A": [2], "C": [1]}}
         for sommet in self.feuille_actuelle.objets.points:
-            d_sommet = defaultdict(list)
-            for arete in aretes:
-                A, B = arete.extremites
-                if sommet is A:
-                    d_sommet[B.nom].append(poids(arete))
-                elif sommet is B:
-                    d_sommet[A.nom].append(poids(arete))
-            for arete in aretes_orientees:
-                A, B = arete.extremites
-                if sommet is A:
-                    d_sommet[B.nom].append(poids(arete))
-            dic[sommet.nom] = d_sommet
+            if sommet.visible:
+                d_sommet = defaultdict(list)
+                for arete in aretes:
+                    A, B = arete.extremites
+                    if sommet is A:
+                        d_sommet[B.nom].append(poids(arete))
+                    elif sommet is B:
+                        d_sommet[A.nom].append(poids(arete))
+                for arete in aretes_orientees:
+                    A, B = arete.extremites
+                    if sommet is A:
+                        d_sommet[B.nom].append(poids(arete))
+                dic[sommet.nom] = d_sommet
 
         self.graph = Graph(dic, oriented=bool(aretes_orientees))
 

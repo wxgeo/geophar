@@ -264,7 +264,7 @@ class Sondage(MyMiniFrame):
         nbr.Add(sc, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5)
         sizer.Add(nbr)
 
-        self.cb = wx.CheckBox(p, -1, u"Afficher l'intervalle de confiance")
+        self.cb = wx.CheckBox(p, -1, u"Afficher l'intervalle de fluctuation")
         sizer.Add(self.cb, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5)
         self.Bind(wx.EVT_CHECKBOX, self.EvtCheckBox, self.cb)
 
@@ -342,13 +342,13 @@ class Sondage(MyMiniFrame):
     def EvtCheckBox(self, event):
         echantillon = self.sc1.GetValue()
         if self.cb.GetValue():
-            self.parent.intervalle_confiance = echantillon
+            self.parent.intervalle_fluctuation = echantillon
         else:
-            self.parent.intervalle_confiance = None
+            self.parent.intervalle_fluctuation = None
         self.parent.affiche()
 
     def OnCloseMe(self, event):
-        self.parent.intervalle_confiance = None
+        self.parent.intervalle_fluctuation = None
         self.Close(True)
 
     def EvtSpin(self, event):

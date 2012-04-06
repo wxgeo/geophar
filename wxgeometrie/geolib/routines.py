@@ -26,10 +26,25 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 ## Cette librairie contient des fonctions mathématiques à usage interne
 
 from math import cos, sin, hypot, ceil, floor, sqrt, pi, log10
+import re
+
 import numpy
+
 from sympy import sqrt as s_sqrt
 from .contexte import contexte
 from ..mathlib.universal_functions import arg as u_arg, sqrt as u_sqrt
+
+
+
+def radian(val):
+    unite = contexte['unite_angle']
+    if unite == 'd':
+        return 180*val/pi
+    elif unite == 'g':
+        return 200*val/pi
+    assert unite == 'r'
+    return val
+
 
 ## Fonctions rapides destinées essentiellement à géolib
 
@@ -90,37 +105,6 @@ def vect(A, B):
     #~ u"Arrondi x en fournissant n chiffres significatifs. Ex: nchiffres(2345, 2)."
 
     #~ return x and round(x/10**floor(log10(abs(x))-n+1))*10**floor(log10(abs(x))-n+1) # Attention au cas x = 0 !
-
-def nchiffres(x, n = 1):
-    u"""Arrondi x en fournissant n chiffres significatifs.
-
-    >>> from wxgeometrie.geolib.routines import nchiffres
-    >>> nchiffres(2345, 2)
-    2300.0
-    """
-    if x:
-        k = 10**floor(log10(abs(x))-n+1)
-        return round(x/k)*k
-    return x # Attention au cas x = 0 !
-
-def nice_display(x):
-    if isinstance(x, float):
-        x = round(x, contexte["decimales"])
-        if abs(x - int(x)) < contexte["tolerance"]:
-            x = int(x)
-    elif hasattr(x, 'valeur'):
-        return nice_display(x.valeur)
-    return str(x).replace('**', '^')
-
-
-
-def arrondir(x):
-    u"""Arrondi le nombre : un seul chiffre significatif, compris entre 1 et 5.
-    Transforme automatiquement le nombre en entier selon le cas."""
-    n = nchiffres(x, sqrt(.5))
-    if int(n) == n:
-        n = int(n)
-    return n
 
 
 def array_zip(*args):
@@ -341,6 +325,56 @@ def distance_segment(M, A, B, d):
             return (x - xA)**2 + (y - yA)**2 < d**2
     else:
         return False
+
+
+# ----------------------
+# Fonctions de formatage
+# ----------------------
+
+def nchiffres(x, n = 1):
+    u"""Arrondi x en fournissant n chiffres significatifs.
+
+    >>> from wxgeometrie.geolib.routines import nchiffres
+    >>> nchiffres(2345, 2)
+    2300.0
+    """
+    if x:
+        k = 10**floor(log10(abs(x))-n+1)
+        return round(x/k)*k
+    return x # Attention au cas x = 0 !
+
+
+TRAILING_ZEROS = re.compile(r"\.[0-9]*0+(?![0-9])")
+
+def strip_trailing_zeros(s):
+    u""""Supprime tous les zeros inutiles des nombres flottants.
+
+    >>> from wxgeometrie.geolib.routines import strip_trailing_zeros
+    >>> strip_trailing_zeros("4.0000")
+    '4'
+    >>> strip_trailing_zeros("4.200*x + 3.007*y + .010 = 0")
+    '4.2*x + 3.007*y + .01 = 0'
+    """
+    return re.sub(TRAILING_ZEROS, lambda m:m.group().rstrip('0').rstrip('.'), s)
+
+
+def nice_display(x):
+    if isinstance(x, float):
+        x = round(x, contexte["decimales"])
+        if abs(x - int(x)) < contexte["tolerance"]:
+            x = int(x)
+    elif hasattr(x, 'valeur'):
+        return nice_display(x.valeur)
+    return strip_trailing_zeros(str(x).replace('**', '^'))
+
+
+def arrondir(x):
+    u"""Arrondi le nombre : un seul chiffre significatif, compris entre 1 et 5.
+    Transforme automatiquement le nombre en entier selon le cas."""
+    n = nchiffres(x, sqrt(.5))
+    if int(n) == n:
+        n = int(n)
+    return n
 
 
 def formatage(eqn):
