@@ -23,7 +23,7 @@ from __future__ import with_statement
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-import re, math
+import re, math, types
 from types import FunctionType, BuiltinFunctionType, TypeType
 
 import numpy
@@ -367,6 +367,8 @@ class BaseArgument(object):
             def convert(chaine):
                 if hasattr(G, chaine):
                     return getattr(G, chaine)
+                elif hasattr(types, chaine):
+                    return getattr(types, chaine)
                 else:
                     return __builtins__[chaine]
             self.types = tuple(convert(elt.strip()) for elt in self.types.split(","))

@@ -22,9 +22,8 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-# version unicode
 
-
+from operator import attrgetter
 
 from numpy import array, arange, append
 # en test ###############
@@ -40,6 +39,8 @@ from .contexte import contexte
 
 from ..pylib import fullrange
 from .. import param
+
+
 
 class Interpolation_generique(Courbe_generique):
     u"""Classe mère de toutes les interpolations."""
@@ -97,10 +98,6 @@ class Interpolation_generique(Courbe_generique):
             plot.zorder = niveau
         else:
             plot.set_visible(False)
-
-
-
-
 
 
 
@@ -229,8 +226,6 @@ class Interpolation_quadratique(Interpolation_generique):
 
 
 
-
-
 class Interpolation_cubique(Interpolation_generique):
     u"""Une interpolation cubique.
 
@@ -334,18 +329,15 @@ class Interpolation_polynomiale_par_morceaux(Interpolation_generique):
     :rtype : numpy.lib.polynomial
 
     """
-    points = __points = Arguments("Point_generique")
-    derivees = __derivees = Arguments("Variable_generique")
+    points = __points = Arguments("Point_interpolation")
 
     def __init__(self, *points, **styles):
-        derivees = styles.pop('derivees', len(points)*[0])
         # TODO: valeurs par défaut "intelligentes" pour les nombres dérivés.
         debut = styles.pop("debut", True)
         fin = styles.pop("fin", True)
         if styles.get("points", None):
             points = styles.pop("points")
         self.__points = points = tuple(Ref(pt) for pt in points)
-        self.__derivees = derivees = tuple(Ref(d) for d in derivees)
         # en test: creation des tangentes: dictionnaire
         # key: nom du point, value: objet Tangente_courbe
         ##self.__tangentes = []
@@ -354,9 +346,6 @@ class Interpolation_polynomiale_par_morceaux(Interpolation_generique):
         ##for i, P in enumerate(points):
             ##dico = {'point': P, 'cdir': self.__derivees[i]}
             ##self.__tangentes.append(Tangente_courbe(**dico))
-
-        self.__debut = debut = Ref(debut)
-        self.__fin = fin = Ref(fin)
         Interpolation_generique.__init__(self, *points, **styles)
 
     def _poly_inter(self, xl, yl, derivl):
@@ -366,15 +355,58 @@ class Interpolation_polynomiale_par_morceaux(Interpolation_generique):
         yl_cum = [[yl[i], derivl[i]] for i in range(len(yl))]
         return PiecewisePolynomial(xl, yl_cum)
 
+
+    def _derivees(self):
+        derivees = []
+        points = self.points_tries
+        n = len(points)
+        for i, P in enumerate(points):
+            if P.derivee is None:
+                if n == 1:
+                    derivees.append(0)
+                elif i == 0:
+                    # Premier point de la courbe
+                    A, B = points[:2]
+                    dy = B.y - A.y
+                    dx = B.x - A.x
+                    derivees.append(dy/dx if dx else 0)
+                elif i == n - 1:
+                    # Dernier point de la courbe
+                    A, B = points[-2:]
+                    dy = B.y - A.y
+                    dx = B.x - A.x
+                    derivees.append(dy/dx if dx else 0)
+                else:
+                    # Il y a (au moins) un point avant et un point après
+                    A, B, C = points[i - 1:i + 2]
+                    if B.y >= max(A.y, C.y) or B.y <= min(A.y, C.y):
+                        derivees.append(0)
+                    else:
+                        dy = C.y - A.y
+                        dx = C.x - A.x
+                        derivees.append(dy/dx if dx else 0)
+            else:
+                derivees.append(P.derivee)
+        return derivees
+
+
+    @property
+    def points_tries(self):
+        # TODO: mise en cache
+        return sorted(self.__points, key=attrgetter('x'))
+
+
     def interpol(self, val):
         # interpol doit être recalculé à chaque mise à jour
         # FIXME: utiliser un système de cache.
-        self.xl = [P[0] for P in self.__points]
-        self.yl = [P[1] for P in self.__points]
-        return self._poly_inter(self.xl, self.yl, self.__derivees)(val)
+        points = self.points_tries
+        xl = [P[0] for P in points]
+        yl = [P[1] for P in points]
+        return self._poly_inter(xl, yl, self._derivees())(val)
 
     def _creer_figure(self):
-        n = len(self.__points)
+        points = self.points_tries
+        n = len(points)
         couleur = self.style("couleur")
         niveau = self.style("niveau")
         style = self.style("style")
@@ -394,9 +426,9 @@ class Interpolation_polynomiale_par_morceaux(Interpolation_generique):
 
         pas = self.__canvas__.pas()
         plot = self._representation[0]
-        x1, y1 = self.__points[0].coordonnees
-        x2, y2 = self.__points[-1].coordonnees
-        xarray = arange(x1, x2, pas)
+        x1, y1 = points[0].coordonnees
+        x2, y2 = points[-1].coordonnees
+        xarray = fullrange(x1, x2, pas)
         yarray = self.interpol(xarray)
         plot.set_data(xarray, yarray)
         plot.set(color=couleur, linestyle=style, linewidth=epaisseur)
@@ -408,9 +440,9 @@ class Interpolation_polynomiale_par_morceaux(Interpolation_generique):
 
     @property
     def xmin(self):
-        return self.__points[0].x if self.__points else None
+        return self.points_tries[0].x if self.__points else None
 
     @property
     def xmax(self):
-        return self.__points[-1].x if self.__points else None
+        return self.points_tries[-1].x if self.__points else None
 

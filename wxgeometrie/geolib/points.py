@@ -1170,6 +1170,37 @@ class Glisseur_courbe_interpolation(Glisseur_generique):
 
 
 
+class Point_interpolation(Point_generique):
+    u"""Un point avec une pente associée.
+
+    Usage interne : les points d'interpolation sont utilisés pour la construction
+    des courbes d'interpolation."""
+
+    point = __point = Argument("Point_generique", defaut = Point)
+    derivee = __derivee = Argument("Variable_generique,NoneType", defaut = None)
+
+    @staticmethod
+    def _convertir(objet):
+        if isinstance(objet, Point_generique):
+            return Point_interpolation(objet)
+        elif hasattr(objet, "__iter__"):
+            return Point_interpolation(*objet)
+        raise TypeError, "'" + str(type(objet)) + "' object is not iterable"
+
+    def __init__(self, point = None, derivee = None, **styles):
+##        if derivee is None:
+##            derivee = 1
+        self.__point = point = Ref(point)
+        self.__derivee = derivee = Ref(derivee)
+        Point_generique.__init__(self, **styles)
+
+    def __iter__(self):
+        return iter((self.__point, self.__derivee))
+
+    def _get_coordonnees(self):
+        return self.__point.xy
+
+
 class Nuage_generique(Objet):
     u"""Un nuage de points generique.
 
