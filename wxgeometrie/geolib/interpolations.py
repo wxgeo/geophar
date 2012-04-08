@@ -382,9 +382,22 @@ class Interpolation_polynomiale_par_morceaux(Interpolation_generique):
                     if B.y >= max(A.y, C.y) or B.y <= min(A.y, C.y):
                         derivees.append(0)
                     else:
-                        dy = C.y - A.y
-                        dx = C.x - A.x
-                        derivees.append(dy/dx if dx else 0)
+                        dy1 = B.y - A.y
+                        dx1 = B.x - A.x
+                        der1 = (dy1/dx1 if dx1 else 0)
+                        dy2 = C.y - B.y
+                        dx2 = C.x - B.x
+                        der2 = (dy2/dx2 if dx2 else 0)
+                        # On prend la pente la plus faible, de façon à être sûr
+                        # qu'à gauche et à droite du point considéré, la courbe d'interpolation
+                        # reste comprise en ordonnées entre le point considéré et
+                        # le point suivant.
+                        # Cela facilite la construction d'extrema :
+                        # si A, B, C sont trois points d'interpolation,
+                        # avec B.y < A.y et B.y < C.y, alors on est assuré que
+                        # la courbe ne descendra pas en dessous de B.y sur
+                        # l'intervalle [A.x, C.x].
+                        derivees.append(der1 if abs(der1) < abs(der2) else der2)
             else:
                 derivees.append(P.derivee)
         return derivees
