@@ -233,10 +233,13 @@ class Texte(Texte_generique, Objet_avec_coordonnees_modifiables):
         Objet._set_feuille(self)
 
     def _en_gras(self, booleen):
-        if booleen:
-            self.figure[0]._bbox = {'alpha': 0.5, 'linewidth': 1, 'fill': False}
-        else:
-            self.figure[0]._bbox = None
+        figure = self.figure
+        if figure:
+            # La figure est vide si l'objet est masqué.
+            if booleen:
+                figure[0]._bbox = {'alpha': 0.5, 'linewidth': 1, 'fill': False}
+            else:
+                figure[0]._bbox = None
 
 
     def image_par(self, transformation):
