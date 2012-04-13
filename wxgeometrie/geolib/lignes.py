@@ -39,7 +39,7 @@ from .labels import Label_droite, Label_demidroite, Label_segment
 from .transformations import Translation
 
 from .. import param
-from ..pylib import eval_restricted
+from ..pylib import eval_restricted, fullrange
 
 from sympy import Rational
 ##########################################################################################
@@ -1008,3 +1008,32 @@ class Tangente_courbe(Droite_vectorielle):
     def __init__(self, point = None, cdir = None):
         v = Rational(str(cdir))
         Droite_vectorielle.__init__(self, point = point, vecteur = Vecteur_libre(x= v.q, y= v.p))
+
+
+class Tangente_courbe_interpolation(Droite_vectorielle):
+    u"""Une tangente à une courbe de type interpolation polynomiale par morceau.
+
+    Le coefficient directeur est estimé par approximation numérique avec taux de variation
+    sur un pas  self.__canvas__.pas().
+
+    :type courbe: Interpolation_polynomiale_par_morceaux
+    :param courbe: la courbe sur laquelle va se placer la tangente
+    :type x: float
+    :param x: position du point de tangence en abscisse; doit être entre xmin et xmax.
+
+    exemple::
+
+    >>> A = Point(-1,-2)
+    >>> B = Point(2,1)
+    >>> C = Point(8,-3)
+    >>> d = Interpolation_polynomiale_par_morceaux(A,B,C, derivees=[-1,0.5,2])
+    >>> t = Tangente_courbe_interpolation(d, 5)
+
+    """
+    def __init__(self, courbe, x = None):
+        pas = courbe.__canvas__.pas() # (courbe.xmax - courbe.xmin) / 100.
+        dx = fullrange(x, x + pas, pas)
+        dy = courbe.interpol(dx)
+        P = Point(dx[0], dy[0])
+        v = Rational(str((dy[1] - dy[0]) / (dx[1] - dx[0])))
+        Droite_vectorielle.__init__(self, point = P, vecteur = Vecteur_libre(x= v.q, y= v.p))
