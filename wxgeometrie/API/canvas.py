@@ -117,13 +117,17 @@ class Canvas(FigureCanvasAgg):
         # Ne pas utiliser directement.
         # Si on met la valeur a True, self.rafraichir_affichage() fonctionne toujours,
         # mais les changements ne s'affichent pas à l'écran.
-        # Cela permet d'effectuer un certain nombre d'actions sans que l'utilisateur s'en apercoive (pas de clignotement de l'affichage).
+        # Cela permet d'effectuer un certain nombre d'actions sans que l'utilisateur s'en apercoive
+        # (pas de clignotement de l'affichage).
         # Par contre, le gain de temps est négligeable par rapport à un vrai gel de l'affichage.
         # En particulier, cela sert pour exporter une figure.
 
 
         self.graph = Moteur_graphique(self)
-        self.parametres = [u"taille", u"gradu", u"afficher_axes", u"afficher_quadrillage", u"afficher_fleches", u"repere", u"resolution", u"origine_axes", u"utiliser_repere", u"quadrillages", u"couleur_papier_millimetre", u"liste_axes", u"orthonorme", u"grille_aimantee", u"zoom_texte", "zoom_ligne"]
+        self.parametres = [u"taille", u"gradu", u"afficher_axes", u"afficher_quadrillage",
+                           u"afficher_fleches", u"repere", u"resolution", u"origine_axes",
+                           u"utiliser_repere", u"quadrillages", u"couleur_papier_millimetre",
+                           u"liste_axes", u"orthonorme", u"grille_aimantee", u"zoom_texte", "zoom_ligne"]
         self.liste_objets_en_gras = WeakList()
         self.initialiser()
 
@@ -566,15 +570,18 @@ def %(_nom_)s(self, valeur = no_argument):
     @track
     def repere_Oij(self, event = None):
         self.repere = ('O', 'i', 'j')
+        self.gerer_parametre_afficher_axes(True)
 
     @track
     def repere_OIJ(self, event = None):
         self.repere = ('O', 'I', 'J')
+        self.gerer_parametre_afficher_axes(True)
 
     @track
     def repere_011(self, event = None):
         ux, uy = self.gradu
         self.repere = ('0', str(ux), str(uy))
+        self.gerer_parametre_afficher_axes(True)
 
 
     @track
@@ -583,6 +590,7 @@ def %(_nom_)s(self, valeur = no_argument):
                             ((0.5, 0.5), '-', 0.25, 'darkgray'),
                             ((0.1, 0.1), '-', 0.1, 'gray'),
                             )
+        self.gerer_parametre_afficher_quadrillage(True)
 
     @track
     def quadrillage_millimetre_colore(self, event = None, couleur = None):
@@ -592,6 +600,7 @@ def %(_nom_)s(self, valeur = no_argument):
                                     ((0.5, 0.5), '-', 0.25, couleur),
                                     ((0.1, 0.1), '-', 0.1, couleur),
                                     )
+        self.gerer_parametre_afficher_quadrillage(True)
 
     @track
     def quadrillage_demigraduation(self, event = None):
@@ -599,6 +608,7 @@ def %(_nom_)s(self, valeur = no_argument):
         self.quadrillages = (  ((ux, uy), ':', 1, 'k'),
                                     ((ux/2, uy/2), '-', 0.25, 'darkgray'),
                                     )
+        self.gerer_parametre_afficher_quadrillage(True)
 
     @track
     def quadrillage_demigraduation_colore(self, event = None, couleur = None):
@@ -608,10 +618,12 @@ def %(_nom_)s(self, valeur = no_argument):
         self.quadrillages = (  ((ux, uy), ':', 1, couleur),
                                     ((ux/2, uy/2), '-', 0.25, couleur),
                                     )
+        self.gerer_parametre_afficher_quadrillage(True)
 
     @track
     def quadrillage_defaut(self, event = None):
         self.quadrillages = self.param("quadrillages", defaut = True)
+        self.gerer_parametre_afficher_quadrillage(True)
 
 
 # Sélection d'une zone
