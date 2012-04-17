@@ -19,7 +19,7 @@ def test_repetition_un_niveau():
 
 def test_repetition_plusieurs_niveaux():
     s = rep(3, **{'S': '3/4'})
-    but = '''>S_1:3/4
+    resultat = '''>S_1:3/4
 >>S_2:3/4
 >>>S_3:3/4
 >>>&S_3:1/4
@@ -37,8 +37,9 @@ def test_repetition_plusieurs_niveaux():
 
 def test_repetition_sans_numeroter():
     rep2 = partial(rep, 2, False)
+
     s = rep2(A=.5, B=.3, C=.2)
-    but = '''>A:0,5
+    resultat = '''>A:0,5
 >>A:0,5
 >>B:0,3
 >>C:0,2
@@ -50,11 +51,29 @@ def test_repetition_sans_numeroter():
 >>A:0,5
 >>B:0,3
 >>C:0,2'''
-    assertEqual(s, but)
+    assertEqual(s, resultat)
+
     s = rep2(**{'&A': .6})
-    but = '''>A:0,4
+    resultat = '''>A:0,4
 >>A:0,4
 >>&A:0,6
 >&A:0,6
 >>A:0,4
 >>&A:0,6'''
+
+    s = rep(3, False, **{'F': '', 'G': ''})
+    resultat = '''>F:
+>>F:
+>>>F:
+>>>G:
+>>G:
+>>>F:
+>>>G:
+>G:
+>>F:
+>>>F:
+>>>G:
+>>G:
+>>>F:
+>>>G:'''
+    assertEqual(s, resultat)

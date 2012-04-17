@@ -112,7 +112,7 @@ def repetition_experiences(_profondeur=3, _numeroter=True, **evenements):
             if lines[i - 1].startswith((niveau - 1)*'>'):
                 for nom in evenements_tries:
                     proba = evenements[nom]
-                    p = nice_str(proba)
+                    p = nice_str(proba) if proba != '' else ''
                     lines.insert(i, prefixe + nom + suffixe + ':' + p)
             assert len(lines) < 10000
     return '\n'.join(lines).strip()
