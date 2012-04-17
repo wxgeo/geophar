@@ -33,6 +33,7 @@ import numpy
 from sympy import sqrt as s_sqrt
 from .contexte import contexte
 from ..mathlib.universal_functions import arg as u_arg, sqrt as u_sqrt
+from ..mathlib.custom_functions import custom_str
 
 
 
@@ -398,3 +399,30 @@ def formatage(eqn):
               .replace("+ -", "- ").replace('- 1 x', '- x').replace('- 1 y', '- y')\
               .replace('+ 1 x', '+ x').replace('+ 1 y', '+ y')\
               .replace('+ 0 x ', '').replace('+ 0 y ', '').replace('+ 0 ', '')
+
+
+def nice_str(x):
+    u"""Convertit en chaîne de caractères les objets mathématiques.
+
+    Améliore le formatage de ces objets:
+      * Supprime les 0 inutiles.
+
+        >>> from wxgeometrie.geolib.routines import nice_str
+        >>> nice_str(8.0)
+        8
+
+      * Remplace le point par une virgule pour les décimaux.
+
+        >>> nice_str(8.2)
+        8,2
+
+      * Personnalise un peu l'affichage de certains objets sympy,
+        pour correspndre aux notations française.
+
+        >>> from sympy import oo, log
+        >>> nice_str(oo)
+        +oo
+        >>> nice_str(log(7))
+        ln(7)
+    ."""
+    return strip_trailing_zeros(custom_str(x)).replace('.', ',')

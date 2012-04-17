@@ -31,7 +31,7 @@ from ...GUI import MenuBar, Panel_API_graphique
 from ...GUI.proprietes_objets import Proprietes
 from ...geolib import Segment, Texte, Point, TEXTE
 from ... import param
-from .repetition import repetition_experiences
+from .repetition import DialogRepetition, repetition_experiences
 
 
 class ProbaMenuBar(MenuBar):
@@ -44,9 +44,23 @@ class ProbaMenuBar(MenuBar):
                     None, [u"proprietes"], None, self.panel.doc_ouverts, None, ["fermer"], ["quitter"])
         self.ajouter(u"Editer", ["annuler"], ["refaire"], ["modifier"], ["supprimer"])
         self.ajouter(u"creer")
-        self.ajouter(u"Affichage", ["onglet"], None, ["repere"], ["quadrillage"], ["orthonorme"], None, ["zoom_texte"], ["zoom_ligne"], ["zoom_general"], None, ["fenetre"], ["zoomer"], ["dezoomer"], ["orthonormaliser"], [u"zoom_auto"])
-        self.ajouter(u"Autres actions", [u"detecter"])
-        self.ajouter(u"Outils", [u"Style des sommets", u"Modifier le style des sommets de l'arbre.", None, self.panel.proprietes_sommets], [u"Style des arêtes", u"Modifier le style des arêtes de l'arbre.", None, self.panel.proprietes_aretes], [u"Style de la légende", u"Modifier le style des titres de chaque niveau.", None, self.panel.proprietes_titres], None, [u"options"])
+        self.ajouter(u"Affichage", ["onglet"], None, ["repere"], ["quadrillage"],
+                                   ["orthonorme"], None, ["zoom_texte"],
+                                   ["zoom_ligne"], ["zoom_general"], None,
+                                   ["fenetre"], ["zoomer"], ["dezoomer"],
+                                   ["orthonormaliser"], [u"zoom_auto"])
+        self.ajouter(u"Autres actions", [u"detecter"],
+                                   [u"Répétition d'expériences indépendantes",
+                                    u"Construire un arbre correspondant à la répétition d'expériences aléatoires indépendantes.",
+                                    None, self.panel.repeter_experiences_independantes])
+        self.ajouter(u"Outils", [u"Style des sommets", u"Modifier le style des sommets de l'arbre.",
+                                 None, self.panel.proprietes_sommets],
+                                [u"Style des arêtes", u"Modifier le style des arêtes de l'arbre.",
+                                 None, self.panel.proprietes_aretes],
+                                [u"Style de la légende", u"Modifier le style des titres de chaque niveau.",
+                                 None, self.panel.proprietes_titres],
+                                None,
+                                [u"options"])
 ##        self.ajouter(u"Avancé", [u"historique"], [u"securise"], [u"ligne_commande"], [u"debug"])
         self.ajouter(u"avance1")
         self.ajouter(u"?")
@@ -183,7 +197,8 @@ omega
                     return 1
 
             ramifications = sum(compter_ramifications(branche) for branche in arbre)
-            print ramifications
+            if param.debug:
+                print("Nombre de ramifications: " + str(ramifications))
 
             def formater_texte(texte):
                 if texte:
@@ -238,7 +253,11 @@ omega
                         self.feuille_actuelle.objets.add(s)
                     return M, txt_segm
                 else:
-                    M = creer_point(n/(nbr_colonnes - 1), 1 - ramification[0]/(ramifications - 1), txt_pt)
+                    if ramifications > 1:
+                        y = 1 - ramification[0]/(ramifications - 1)
+                    else:
+                        y = .5
+                    M = creer_point(n/(nbr_colonnes - 1), y, txt_pt)
                     ramification[0] += 1
                     self.feuille_actuelle.objets.add(M)
                     return M, txt_segm
@@ -289,6 +308,10 @@ omega
         win = Proprietes(self, objets)
         win.show()
 
+
+    def repeter_experiences_independantes(self):
+        dlg = DialogRepetition(self)
+        dlg.show()
 
     def _affiche(self):
         pass

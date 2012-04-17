@@ -42,7 +42,15 @@ def assertNotAlmostEqual(x, y):
 
 def assertEqual(x, y):
     if x != y:
-        print "ERREUR: ",  x, " != ", y
+        print('''
+--------------
+ *** FAIL ***
+-> Output:
+%s
+-> Expected:
+%s
+--------------
+''' %(x, y))
     assert (x == y)
 
 assertEq = assertEqual

@@ -30,9 +30,9 @@ from sympy import oo, nan
 
 from ...mathlib import universal_functions as maths
 from ...mathlib.parsers import traduire_formule, simplifier_ecriture
-from ...mathlib.custom_functions import nul, custom_str
+from ...mathlib.custom_functions import nul
 from ...pylib import find_closing_bracket, advanced_split
-from ...geolib.routines import strip_trailing_zeros
+from ...geolib.routines import nice_str
 from ... import param
 
 
@@ -46,10 +46,6 @@ maths.e = math.e
 
 resoudre = functools.partial(nul, intervalle = False)
 # resoudre = sympy.solve
-
-def nice_str(x):
-    "Convertit 8.0 en '8' par exemple."
-    return strip_trailing_zeros(custom_str(x)).replace('.', ',')
 
 #TODO: déplacer autant que possibles ces fonctions vers le parser de mathlib.
 
