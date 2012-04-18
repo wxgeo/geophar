@@ -539,6 +539,12 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
         else:
             FigureCanvasQTAgg.mousePressEvent(self, event)
 
+    def mouseDoubleClickEvent(self, event):
+        self.detecter(lieu(event))
+        if isinstance(self.select, Texte):
+            menu = MenuActionsObjet(self)
+            menu.etiquette()
+
 
     def left_down(self, event):
         # Patch pour l'utilisation avec un dispositif de pointage absolu (tablette graphique ou TNI)
