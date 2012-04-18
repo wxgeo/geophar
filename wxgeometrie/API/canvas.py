@@ -267,6 +267,12 @@ class Canvas(FigureCanvasAgg):
         return self.coeff(0), self.coeff(1)
     ## </DESUET> ##
 
+    def txt_box(self, matplotlib_text):
+        u"""Retourne l'espace (rectangulaire) occupé par le texte.
+
+        Retourne un objet Bbox, possédant des attributs xmin, xmax, ymin,
+        ymax, height et width. (En pixels)."""
+        return matplotlib_text.get_window_extent(self.get_renderer())
 
     def coo2pix(self, x, y):
         u"""Convertit des coordonnées en pixel."""

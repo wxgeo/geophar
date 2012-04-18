@@ -109,7 +109,7 @@ class Texte_generique(Objet_avec_coordonnees):
         else:
             fill.set_visible(True)
             can = self.__canvas__
-            box = text.get_window_extent(can.get_renderer())
+            box = can.txt_box(text)
             w, h = can.dpix2coo(.5*box.width, .5*box.height)
             if av == "left":
                 x += w
@@ -131,7 +131,7 @@ class Texte_generique(Objet_avec_coordonnees):
         # Note : ymin et ymax "permutent" souvent car les transformations appliquées inversent l'orientation.
         can = self.__canvas__
         l, h = can.dimensions
-        box = self.figure[0].get_window_extent(can.get_renderer())
+        box = can.txt_box(self.figure[0])
         xmin = box.xmin
         ymax = h - box.ymin
         xmax = box.xmax

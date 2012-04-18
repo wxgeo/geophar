@@ -551,11 +551,11 @@ class Moteur_graphique(object):
         return self.canvas.zoom_texte
 
     def _ajouter_objet(self, artiste):
-        self.axes.add_artist(artiste)
+        return self.axes.add_artist(artiste)
 
     def _ajouter_objets(self, liste_artistes):
-        for artiste in liste_artistes:
-            self.axes.add_artist(artiste)
+        return [self.axes.add_artist(artiste) for artiste in liste_artistes]
+
 
     def ajouter(self, artiste):
         u"""Ajoute un artiste (objet graphique de matplotlib) à dessiner.
@@ -585,7 +585,7 @@ class Moteur_graphique(object):
         return ligne
 
     def ajouter_ligne(self, x = (0, 1), y = (1, 0), color = 'b', pixel = False, **kw):
-        self._ajouter_objet(self.ligne(x, y, pixel, color=color, **kw))
+        return self._ajouter_objet(self.ligne(x, y, pixel, color=color, **kw))
 
 
     def polygone(self, x = (0, 1, 1, 0), y = (1, 0, 0, 1), pixel = False, **kw):
@@ -601,7 +601,7 @@ class Moteur_graphique(object):
 ##        if kw.pop('color', None):
 ##            warning("Utiliser desormais 'facecolor' ou 'edgecolor' au lieu de 'couleur'.")
 ##            facecolor = color
-        self._ajouter_objet(self.polygone(x, y, pixel, facecolor=facecolor, **kw))
+        return self._ajouter_objet(self.polygone(x, y, pixel, facecolor=facecolor, **kw))
 
 
     def texte(self, x=0, y=0, txt=u'hello !', pixel=False, **kw):
@@ -617,7 +617,7 @@ class Moteur_graphique(object):
         return texte
 
     def ajouter_texte(self, x=0, y=0, txt=u'hello !', pixel=False, **kw):
-        self._ajouter_objet(self.texte(x, y, txt, pixel, **kw))
+        return self._ajouter_objet(self.texte(x, y, txt, pixel, **kw))
 
 
     def arc(self, x, y, vecteur, **kw):
@@ -648,7 +648,7 @@ class Moteur_graphique(object):
                           pixel=True, **kw)
 
     def ajouter_arc(self, x, y, vecteur, color='k', **kw):
-        self._ajouter_objet(self.arc(x, y, vecteur, color, **kw))
+        return self._ajouter_objet(self.arc(x, y, vecteur, color, **kw))
 
 
 
@@ -668,7 +668,7 @@ class Moteur_graphique(object):
         # et la largeur du trait doit être celle d'une courbe (1 par défaut).
 
     def ajouter_point(self, x, y, plein=True, **kw):
-        self._ajouter_objet(self.point(x, y, plein, **kw))
+        return self._ajouter_objet(self.point(x, y, plein, **kw))
 
 
 #    def _fleche_matplotlib(self, x0=0, y0=0, x1=1, y1=1, **kw):
@@ -685,43 +685,43 @@ class Moteur_graphique(object):
         return Fleche(xy0=xy0, xy1=xy1, canvas=self.canvas, **kw)
 
     def ajouter_fleche(self, x0=0, y0=0, x1=1, y1=1, **kw):
-        self._ajouter_objet(self.fleche(x0, y0, x1, y1, **kw))
+        return self._ajouter_objet(self.fleche(x0, y0, x1, y1, **kw))
 
     def fleche_courbe(self, **kw):
         return FlecheCourbe(canvas=self.canvas, **kw)
 
     def ajouter_fleche_courbe(self, **kw):
-        self._ajouter_objet(self.fleche_courbe(**kw))
+        return self._ajouter_objet(self.fleche_courbe(**kw))
 
     def codage(self, **kw):
         return Codage(canvas=self.canvas, **kw)
 
     def ajouter_codage(self, **kw):
-        self._ajouter_objet(self.codage(**kw))
+        return self._ajouter_objet(self.codage(**kw))
 
     def cercle(self, xy=(0, 0), r=1, **kw):
         return Circle(xy, r, **kw)
 
     def ajouter_cercle(self, xy=(0, 0), r=1, **kw):
-        self._ajouter_objet(self.cercle(xy, r, **kw))
+        return self._ajouter_objet(self.cercle(xy, r, **kw))
 
     def rectangle(self, xy=(0, 0), w=1, h=1, **kw):
         return FancyBboxPatch(xy, w, h, **kw)
 
     def ajouter_rectangle(self, xy=(0, 0), w=1, h=1, **kw):
-        self._ajouter_objet(self.rectangle(xy, w, h, **kw))
+        return self._ajouter_objet(self.rectangle(xy, w, h, **kw))
 
     def angle(self, **kw):
         return Angle(canvas=self.canvas, **kw)
 
     def ajouter_angle(self, **kw):
-        self._ajouter_objet(self.angle(**kw))
+        return self._ajouter_objet(self.angle(**kw))
 
     def codage_angle(self, **kw):
         return CodageAngle(canvas=self.canvas, **kw)
 
     def ajouter_codage_angle(self, **kw):
-        self._ajouter_objet(self.codage_angle(**kw))
+        return self._ajouter_objet(self.codage_angle(**kw))
 
 
 

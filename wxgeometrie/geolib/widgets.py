@@ -42,7 +42,7 @@ class Bouton(Texte_generique, Objet_avec_coordonnees_modifiables):
     abscisse = x = __x = Argument("Variable_generique", defaut=0)
     ordonnee = y = __y = Argument("Variable_generique", defaut=0)
 
-    def __init__(self, x, y, texte, **styles):
+    def __init__(self, texte=' ', x=None, y=None, **styles):
         x, y, styles = self._recuperer_x_y(x, y, styles)
         texte = uu(texte)
 
@@ -63,7 +63,7 @@ class Bouton(Texte_generique, Objet_avec_coordonnees_modifiables):
         text, fill, plot = self._representation
         fill.set_visible(True)
         can = self.__canvas__
-        box = text.get_window_extent(can.get_renderer())
+        box = can.txt_box(text)
         w, h = can.dpix2coo(.5*box.width, .5*box.height)
         niveau = self.style("niveau")
         ##if av == "left":
@@ -96,7 +96,7 @@ class Bouton(Texte_generique, Objet_avec_coordonnees_modifiables):
         text, rect = self._representation
         rect.set_visible(True)
         can = self.__canvas__
-        box = text.get_window_extent(can.get_renderer())
+        box = can.txt_box(text)
         w, h = can.dpix2coo(box.width, box.height)
         niveau = self.style("niveau")
         marge = self.style("marge")
@@ -129,7 +129,7 @@ class Bouton(Texte_generique, Objet_avec_coordonnees_modifiables):
         # Note : ymin et ymax "permutent" souvent car les transformations appliquées inversent l'orientation.
         can = self.__canvas__
         l, h = can.dimensions
-        box = self.figure[1].get_window_extent(can.get_renderer())
+        box = can.txt_box(self.figure[1])
         xmin = box.xmin
         ymax = h - box.ymin
         xmax = box.xmax
