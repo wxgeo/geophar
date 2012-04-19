@@ -33,7 +33,16 @@ from PyQt4.QtGui import QVBoxLayout, QLabel, QPushButton, QHBoxLayout, QMessageB
 from ...GUI import MenuBar, Panel_API_graphique
 from ...GUI.proprietes_objets import Proprietes
 from ...geolib import Segment, Texte, Point, TEXTE
+from ...mathlib.parsers import convertir_en_latex
 from ... import param
+
+
+class Champ(Texte):
+    def label(self, *args, **kw):
+        txt = Texte.label(self, *args, **kw)
+        if not txt.strip():
+            return u'\u20DB'
+        return convertir_en_latex(txt)
 
 
 
@@ -66,7 +75,7 @@ class ExercicesTableauxSignes(Panel_API_graphique):
         ##"(nx+n)(nx+n)|nx+n"
         # numerateur|denominateur
         # facteur1, facteur2,...|facteur1, facteur2,...
-        # n: entier, f: fraction
+        # n: entier, q: fraction, d: decimal
         self.canvas.fixe = True
 
         self.entrees = QVBoxLayout()
@@ -107,11 +116,11 @@ class ExercicesTableauxSignes(Panel_API_graphique):
         return expression.replace('*', '')
 
     def generer_expression(self):
-        self.expression = re.sub('n', self.new_int, self.pattern)
-        num, den = self.expression.split('|')
+        expression = re.sub('n', self.new_int, self.pattern)
+        num, den = expression.split('|')
         self.numerateur = num.split(',')
         self.denominateur = den.split(',')
-        # Génération du code LaTeX:
+        # Génération de l'expression:
         if len(self.numerateur) > 1:
             num = ''.join(self._formater(facteur) for facteur in self.numerateur)
         else:
@@ -121,27 +130,11 @@ class ExercicesTableauxSignes(Panel_API_graphique):
         else:
             den = self.denominateur[0] if self.denominateur else '1'
         if den == '1':
-            self.expression_latex = num
+            self.expression = num
         else:
-            self.expression_latex = r'\frac{%s}{%s}' %(num, den)
-        print self.expression, self.numerateur, self.denominateur, self.expression_latex
+            self.expression = '(%s)/(%s)' %(num, den)
+        print self.expression, self.numerateur, self.denominateur
 
-
-    def dessiner_tableau(self, lignes=4):
-        self.canvas.fenetre = 0, 10, 0, 10
-        self.canvas.dessiner_ligne((1, 9, 9, 1 , 1), (1, 1, 9, 9, 1), 'k')
-        for i in xrange(1, lignes):
-            y = 1 + i*8/lignes
-            self.canvas.dessiner_ligne((1, 9), (y, y), 'k')
-
-    def dessiner_tableau(self):
-        w, h = self.canvas.dimensions
-        self.feuille_actuelle.expression = Texte(self.expression_latex, 0, 0)
-        self.canvas.fenetre = 0, w, 0, h
-        self.canvas.dessiner_ligne((1, 9, 9, 1 , 1), (1, 1, 9, 9, 1), 'k')
-        for i in xrange(1, lignes):
-            y = 1 + i*8/lignes
-            self.canvas.dessiner_ligne((1, 9), (y, y), 'k')
 
     def dessiner_tableau(self):
         can = self.canvas
@@ -154,6 +147,9 @@ class ExercicesTableauxSignes(Panel_API_graphique):
             return can.dessiner_ligne((10, width - 10), (y, y), 'k', **kw)
 
         dessiner_texte = partial(can.dessiner_texte, size=18, va='top')
+
+        facteurs = [convertir_en_latex(expr, mode=None)
+                    for expr in self.numerateur + self.denominateur]
 
         # -------------------------------------------------------------
         # |     x      | -oo        val1     ...     valn          +oo |
@@ -176,7 +172,7 @@ class ExercicesTableauxSignes(Panel_API_graphique):
         # marge entre le bord de la case et le texte
         marge = 5
         h = 10
-        for txt in chain(['x'], self.numerateur, self.denominateur, [self.expression_latex]):
+        for txt in chain(['x'], facteurs, [convertir_en_latex(self.expression, mode=None)]):
             dessiner_ligne_h(height - h)
             h += marge
             hauteurs.append(h)
@@ -203,7 +199,7 @@ class ExercicesTableauxSignes(Panel_API_graphique):
         dessiner_ligne_v(col1)
 
         # On dessine les cases
-        n = len(self.numerateur) + len(self.denominateur)
+        n = len(facteurs)
         largeur_restante = width - 10 - col1 - 2*marge
         for i in xrange(1, n):
             dessiner_ligne_v(col1 + i/n*largeur_restante, alpha=.15)
@@ -214,6 +210,10 @@ class ExercicesTableauxSignes(Panel_API_graphique):
         dessiner_texte(width - 10 - marge, h, '$+\\infty$', ha='right')
 
         h = tab_height + 2*marge
-        for expression in chain(self.numerateur, self.denominateur):
+        for expression in facteurs:
             txt = dessiner_texte(10, h, r'$\bullet\,' + expression + r'\,=\,0\,\,\Longleftrightarrow\,\,x\,=\,$')
+            t = Champ('ok', 250, h)
+            self.feuille_actuelle.objets.add(t)
+            dessiner_texte(220, h, u'\u2713', color='g') # 263A  00D8
+            dessiner_texte(240, h, u'\u2639', color='r') #u'\u26A0'
             h += can.txt_box(txt).height + 2*marge
