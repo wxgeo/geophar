@@ -4,9 +4,15 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #from tools.testlib import *
 
 import re
+
+from pytest import XFAIL
+
 from wxgeometrie.mathlib import universal_functions
 from wxgeometrie.mathlib.parsers import (traduire_formule, NBR, NBR_SIGNE, VAR,
-                                        VAR_NOT_ATTR, NBR_OR_VAR, _arguments_latex)
+                                        VAR_NOT_ATTR, NBR_OR_VAR, _arguments_latex,
+                                        convertir_en_latex)
+from tools.testlib import assertEqual
+
 
 liste_fonctions = [key for key in universal_functions.__dict__.keys() if "_" not in key]
 liste_fonctions.append("limite")
@@ -178,3 +184,25 @@ def test_search_VAR_NOT_ATTR():
 def test_arguments_LaTeX():
     assert_arg_latex('2{x+1}+4', '2', '{x+1}', '+4')
     assert_arg_latex('{x+2}5+4x-17^{2+x}', '{x+2}', '5', '+4x-17^{2+x}')
+
+
+# Tests conversion chaine -> LaTeX
+def assert_conv(input, output):
+    assertEqual(convertir_en_latex(input), '$%s$' %output)
+
+def test_convertir_en_LaTeX():
+    assert_conv('2*x', '2 x')
+    assert_conv('2*x+3', '2 x+3')
+    assert_conv('2/3', r'\frac{2}{3}')
+    assert_conv('(x+1)/(2*x)', r'\frac{x+1}{2 x}')
+    assert_conv('(x(x+1))/(2*x*(x+2)*(x**25+7*x+5))*(x+3)', r'\frac{x(x+1)}{2 x (x+2) (x^{25}+7 x+5)} (x+3)')
+    assert_conv('x**-3.5+x**2*y-x**(2*y)', 'x^{-3.5}+x^{2} y-x^{2 y}')
+
+@XFAIL
+def test_parentheses_inutiles():
+    assert_conv('(x+1)', 'x+1')
+    assert_conv('(x(x+1))', 'x (x+1)')
+    assert_conv('(((x)))', 'x')
+
+def test_convertir_en_LaTeX_mode_None():
+    assertEqual(convertir_en_latex('2*x', mode=None), '2 x')

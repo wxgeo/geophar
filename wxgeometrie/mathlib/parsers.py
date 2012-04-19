@@ -442,8 +442,11 @@ def simplifier_ecriture(formule):
 ##    return formule
 
 
-def convertir_en_latex(chaine):
-    u"Convertit une chaine représentant un calcul en code LaTeX."
+def convertir_en_latex(chaine, mode='$'):
+    u"""Convertit une chaine représentant un calcul en code LaTeX.
+
+    modes actuels: '$', None
+    """
     #TODO: problème avec les puissances qui contiennent des fractions
     #TODO: incorporer cette fonction à mathlib, et mettre en place des tests unitaires
     #TODO: c'est assez lent, à optimiser ?
@@ -584,10 +587,11 @@ def convertir_en_latex(chaine):
     #chaine = re.sub(r'\^\([-0-9.]+\)', lambda m: '^{' + m.group()[2:-1] + '}', chaine)
     chaine = re.sub(r'\^-?[0-9.]+', lambda m: '^{' + m.group()[1:] + '}', chaine)
 
-
 ##    if param.debug:
 ##        print 'Temps pour conversion LaTeX:', time.time()- time0
-    return "$" + chaine + "$"
+    if mode == '$':
+        chaine = "$" + chaine + "$"
+    return chaine
 
 
 
