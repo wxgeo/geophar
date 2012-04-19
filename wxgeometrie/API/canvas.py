@@ -234,6 +234,9 @@ class Canvas(FigureCanvasAgg):
     def rectangle(self, **kw):
         return self.graph.rectangle(**kw)
 
+    def decoration_texte(self, **kw):
+        return self.graph.decoration_texte(**kw)
+
     def dessiner(self, objet):
         self.graph.ajouter(objet)
 

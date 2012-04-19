@@ -49,18 +49,19 @@ class Texte_generique(Objet_avec_coordonnees):
 
     def _creer_figure(self):
         if not self._representation:
-            self._representation = [self.rendu.texte(), self.rendu.polygone()]
+            self._representation = [self.rendu.texte(), self.rendu.decoration_texte()]
         text = self._representation[0]
-        fill = self._representation[1]
+        rect = self._representation[1]
         texte = (self.label() if self.label_temporaire is None else self.label_temporaire + '...')
         if not texte:
             text.set_visible(False)
-            fill.set_visible(False)
+            rect.set_visible(False)
             return
         else:
             text.set_visible(True)
         x, y = self.coordonnees
         fond = self.style("fond")
+        cadre = self.style('cadre')
         niveau = self.style("niveau")
         av = self.style("alignement_vertical")
         ah = self.style("alignement_horizontal")
@@ -104,27 +105,18 @@ class Texte_generique(Objet_avec_coordonnees):
         text.set_verticalalignment(av)
         text.set_horizontalalignment(ah)
         text.zorder = niveau + .001
-        if fond is None:
-            fill.set_visible(False)
+        fond = 'b'
+        cadre = 'k'
+        if fond is None and cadre is None:
+            rect.set_visible(False)
         else:
-            fill.set_visible(True)
-            can = self.__canvas__
-            box = can.txt_box(text)
-            w, h = can.dpix2coo(.5*box.width, .5*box.height)
-            if av == "left":
-                x += w
-            elif av == "right":
-                x -= w
-            if ah == "top":
-                y -= h
-            elif ah == "bottom":
-                y += h
-            mx, my = can.dpix2coo(2, 2) # marge verticale et horizontale (en pixels)
-            w += mx
-            h += my
-            fill.xy = [(x - w, y - h), (x - w, y + h), (x + w, y + h), (x + w, y - h)]
-            fill.set(facecolor=fond, edgecolor=fond)
-            fill.zorder = niveau
+            # Matplotlib: None donne le style par défaut,
+            # 'none' désactive l'affichage.
+            if fond is None:
+                fond = 'none'
+            elif cadre is None:
+                cadre = 'none'
+            rect.set(visible=True, texte=text, facecolor=fond, edgecolor=cadre, zorder=niveau, alpha=.2)
         #debug(font.__dict__)
 
     def _boite(self):

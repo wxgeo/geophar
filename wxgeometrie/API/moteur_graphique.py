@@ -374,6 +374,50 @@ class CodageAngle(Codage):
 
 
 
+class DecorationTexte(FancyBboxPatch):
+    u"""Encadrement et fond associé à un texte.
+
+    En cas de zoom sur le texte, la taille du texte change,
+    et la taille du cadre est alors automatiquement recalculée
+    (ce qui n'est pas le cas pour Polygon ou FancyBboxPatch).
+    """
+    def __init__(self, canvas, texte_associe=None, **kw):
+        self.canvas = canvas
+        self.texte = texte_associe
+        FancyBboxPatch.__init__(self, (0, 0), 2, 2, **kw)
+        if texte_associe is not None:
+            self._maj_data()
+
+    def set(self, **kw):
+        maj = kw.pop('maj', True)
+        pad = kw.pop('pad', None)
+        texte = kw.pop('texte', None)
+        scale = kw.pop('scale', None)
+        ##for nom in self._parametres:
+            ##if kw.has_key(nom):
+                ##setattr(self, nom, kw.pop(nom))
+        if pad:
+            self.set_boxstyle(pad=pad)
+        if texte:
+            self.texte = texte
+        if scale:
+            self.set_mutation_scale(scale)
+        if kw:
+            FancyBboxPatch.set(self, **kw)
+        if maj:
+            self._maj_data()
+
+    def _maj_data(self):
+        print 'MAJ'
+        box = self.canvas.txt_box(self.texte)
+        px, py = box.min
+        x, y = self.canvas.pix2coo(px, self.canvas.dimensions[1] - py)
+        w, h = self.canvas.dpix2coo(box.width, box.height)
+        print x, y, w, h
+        FancyBboxPatch.set(self, x=x, y=y, width=w, height=h)
+
+
+
 class ZoomArtistes(object):
     def __init__(self, axes, zoom_texte, zoom_ligne):
         self.zoom_texte = zoom_texte
@@ -394,7 +438,7 @@ class ZoomArtistes(object):
                 if artiste._visible:
                     ID = id(artiste)
                     if self.regler_textes:
-                         if isinstance(artiste, Text):
+                        if isinstance(artiste, Text):
                             size = self.size[ID] = artiste.get_size()
                             artiste.set_size(size*self.zoom_texte)
                     if self.regler_lignes:
@@ -418,6 +462,14 @@ class ZoomArtistes(object):
                             elif isinstance(artiste, LigneDecoree):
                                 taille = self.taille[ID] = artiste.taille
                                 artiste.set(taille=self.zoom_ligne*taille)
+            # Réglages à effectuer après les autres
+            for artiste in self.artistes:
+                if artiste._visible:
+                    if self.regler_textes:
+                        if isinstance(artiste, DecorationTexte):
+                            # L'objet DécorationTexte doit être adapté
+                            # **après** l'objet Text correspondant.
+                            artiste.set(scale=self.zoom_texte)
         return self.artistes
 
     def __exit__(self, type, value, traceback):
@@ -440,8 +492,12 @@ class ZoomArtistes(object):
                                 angle.set(taille=self.taille[ID],
                                         rayon=self.rayon[ID])
                                 artiste._maj_data()
-                            elif isinstance(artiste, LigneDecoree):
-                                artiste.set(taille=self.taille[ID])
+            # Réglages à effectuer après les autres
+            for artiste in self.artistes:
+                if artiste._visible:
+                    if self.regler_textes:
+                        if isinstance(artiste, DecorationTexte):
+                            artiste.set(scale=1)
 
 
 class CollecterArtistes(object):
@@ -723,6 +779,11 @@ class Moteur_graphique(object):
     def ajouter_codage_angle(self, **kw):
         return self._ajouter_objet(self.codage_angle(**kw))
 
+    def decoration_texte(self, **kw):
+        return DecorationTexte(canvas=self.canvas, **kw)
+
+    def ajouter_decoration_texte(self, **kw):
+        return self._ajouter_objet(self.decoration_texte(**kw))
 
 
 

@@ -206,6 +206,11 @@ class Rendu(object):
         artiste._cree_par = self.parent
         return artiste
 
+    def decoration_texte(self, *args, **kw):
+        artiste = self.canvas.decoration_texte(*args, **kw)
+        artiste._cree_par = self.parent
+        return artiste
+
     def _pixel(self, point = None):
         if point is None:
             point = self.parent
