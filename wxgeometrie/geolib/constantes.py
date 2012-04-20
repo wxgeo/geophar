@@ -23,12 +23,12 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-# version unicode
 
 NONE = RIEN = 0
 NAME = NOM = 1
 TEXT = TEXTE = 2
 FORMULE = 3
+MATH = 4
 DEBUT = 0
 MILIEU = 0.5
 FIN = 1

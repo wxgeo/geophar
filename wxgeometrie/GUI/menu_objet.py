@@ -27,7 +27,7 @@ from PyQt4.QtGui import (QDialog, QVBoxLayout, QHBoxLayout, QFrame, QLineEdit,
                          QMenu,)
 from PyQt4.QtCore import Qt
 
-from ..geolib.constantes import NOM, FORMULE, TEXTE, RIEN
+from ..geolib.constantes import NOM, FORMULE, TEXTE, RIEN, MATH
 from ..geolib.textes import Texte_generique
 from ..geolib.points import Point_generique
 from .proprietes_objets import Proprietes
@@ -65,8 +65,14 @@ class MenuActionsObjet(PopUpMenu):
         action = self.addAction(msg)
         action.triggered.connect(self.etiquette)
 
-        action = self.addAction((u"Masquer" if select.label() else u"Afficher") + u" nom/texte")
-        action.triggered.connect(self.masquer_nom)
+        if isinstance(select, Texte_generique):
+            action = self.addAction(u"Formatage mathématique" if select.style('formatage') == RIEN
+                                            else u"Formatage par défaut")
+            action.triggered.connect(self.mode_formatage)
+        else:
+            action = self.addAction((u"Masquer" if select.label() else u"Afficher") + u" nom/texte")
+            action.triggered.connect(self.masquer_nom)
+
 
         self.addSeparator()
 
@@ -182,6 +188,11 @@ class MenuActionsObjet(PopUpMenu):
             else:
                 mode = NOM
         self.executer(u"%s.style(legende = %s)" %(select.nom, mode))
+
+    def mode_formatage(self):
+        select = self.canvas.select
+        actuel = select.style('formatage')
+        select.style(formatage=(MATH if actuel == RIEN else RIEN))
 
     def redefinir(self):
         u"""Redéfinit l'objet (si possible).

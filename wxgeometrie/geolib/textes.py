@@ -29,9 +29,10 @@ from math import cos, sin
 
 from .objet import Objet_avec_coordonnees, Argument, Ref, Objet, \
                    Objet_avec_coordonnees_modifiables
-from .constantes import RIEN, TEXTE
+from .constantes import RIEN, TEXTE, MATH
 
 from ..pylib import uu, warning
+from ..mathlib.parsers import convertir_en_latex
 from .. import param
 
 
@@ -114,7 +115,8 @@ class Texte_generique(Objet_avec_coordonnees):
                 fond = 'none'
             elif cadre is None:
                 cadre = 'none'
-            rect.set(visible=True, texte=text, facecolor=fond, edgecolor=cadre, zorder=niveau)
+            rect.set(visible=True, texte=text, facecolor=fond, edgecolor=cadre,
+                     zorder=niveau, pad=self.style('pad'), alpha=self.style('alpha_fond'))
 
 
     def _boite(self):
@@ -143,6 +145,17 @@ class Texte_generique(Objet_avec_coordonnees):
     def _distance_inf(self, x, y, d):
         xmin, xmax, ymin, ymax = self._boite()
         return xmin - d < x < xmax + d and ymin - d < y < ymax + d
+
+    def encadrer(self, couleur='k', couleur_fond=None, alpha=1):
+        if not couleur:
+            couleur = None
+        self.style(cadre=couleur, fond=couleur_fond, alpha_fond=alpha)
+
+    def label(self, *args, **kw):
+        lbl = super(Texte_generique, self).label(*args, **kw)
+        if self.style("formatage") == MATH:
+            lbl = convertir_en_latex(lbl)
+        return lbl
 
 
 

@@ -158,6 +158,7 @@ RIEN = 0
 NOM = 1
 TEXTE = 2
 FORMULE = 3
+MATH = 4
 DEBUT = 0
 MILIEU = 0.5
 FIN = 1
@@ -356,6 +357,9 @@ textes = {
     "alignement_vertical": "center",
     "alignement_horizontal": "center",
     "alpha": 1,
+    "pad": 2, # distance entre le texte et le cadre, en pixels
+    "alpha_fond": 1,
+    "formatage": RIEN,
     }
 boutons = {
     "couleur": 'k',
