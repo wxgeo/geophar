@@ -105,8 +105,6 @@ class Texte_generique(Objet_avec_coordonnees):
         text.set_verticalalignment(av)
         text.set_horizontalalignment(ah)
         text.zorder = niveau + .001
-        fond = 'b'
-        cadre = 'k'
         if fond is None and cadre is None:
             rect.set_visible(False)
         else:
@@ -116,8 +114,8 @@ class Texte_generique(Objet_avec_coordonnees):
                 fond = 'none'
             elif cadre is None:
                 cadre = 'none'
-            rect.set(visible=True, texte=text, facecolor=fond, edgecolor=cadre, zorder=niveau, alpha=.2)
-        #debug(font.__dict__)
+            rect.set(visible=True, texte=text, facecolor=fond, edgecolor=cadre, zorder=niveau)
+
 
     def _boite(self):
         # Note : ymin et ymax "permutent" souvent car les transformations appliquées inversent l'orientation.

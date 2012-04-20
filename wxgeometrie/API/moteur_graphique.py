@@ -384,7 +384,9 @@ class DecorationTexte(FancyBboxPatch):
     def __init__(self, canvas, texte_associe=None, **kw):
         self.canvas = canvas
         self.texte = texte_associe
+        self.pad = 6
         FancyBboxPatch.__init__(self, (0, 0), 2, 2, **kw)
+        self.set_boxstyle('square,pad=0')
         if texte_associe is not None:
             self._maj_data()
 
@@ -396,11 +398,11 @@ class DecorationTexte(FancyBboxPatch):
         ##for nom in self._parametres:
             ##if kw.has_key(nom):
                 ##setattr(self, nom, kw.pop(nom))
-        if pad:
-            self.set_boxstyle(pad=pad)
-        if texte:
+        if pad is not None:
+            self.pad = pad
+        if texte is not None:
             self.texte = texte
-        if scale:
+        if scale is not None:
             self.set_mutation_scale(scale)
         if kw:
             FancyBboxPatch.set(self, **kw)
@@ -408,12 +410,35 @@ class DecorationTexte(FancyBboxPatch):
             self._maj_data()
 
     def _maj_data(self):
-        print 'MAJ'
-        box = self.canvas.txt_box(self.texte)
-        px, py = box.min
-        x, y = self.canvas.pix2coo(px, self.canvas.dimensions[1] - py)
-        w, h = self.canvas.dpix2coo(box.width, box.height)
-        print x, y, w, h
+        txt = self.texte
+        can = self.canvas
+        box = can.txt_box(txt)
+        pw, ph = box.width, box.height
+        # Bizarrement, `px, py = box.min` ne fonctionne pas lors du
+        # premier affichage (juste après la création du texte).
+        # On réimplémenter la détection du coin en bas à gauche
+        # selon l'alignement du texte.
+        px, py = can.coo2pix(*txt.get_position())
+        va = txt.get_va()
+        ha = txt.get_ha()
+        if ha == 'right':
+            px -= pw
+        elif ha == 'center':
+            px -= .5*pw
+        if va == 'top':
+            py += ph
+        elif va == 'center':
+            py += .5*ph
+        elif va == 'bottom':
+            py += 0
+
+        pad = self.pad*self.get_mutation_scale()
+        px -= pad
+        py += pad
+        pw += 2*pad
+        ph += 2*pad
+        x, y = can.pix2coo(px, py)
+        w, h = can.dpix2coo(pw, ph)
         FancyBboxPatch.set(self, x=x, y=y, width=w, height=h)
 
 
