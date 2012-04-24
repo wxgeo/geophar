@@ -253,6 +253,14 @@ class Canvas(FigureCanvasAgg):
     def dimensions(self):
         return self._dimensions
 
+    @property
+    def largeur(self):
+        return self.dimensions[0]
+
+    @property
+    def hauteur(self):
+        return self.dimensions[1]
+
     def pas(self):
         #print 'pas:', self.fenetre, self.resolution
         return (self.fenetre[1] - self.fenetre[0])/(self.resolution)

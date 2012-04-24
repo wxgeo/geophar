@@ -41,7 +41,7 @@ from .textes import Texte_generique, Texte, Texte_transformation_generique, Text
 from .transformations import Transformation_generique, Rotation, Translation, Reflexion, Homothetie, Symetrie_centrale
 from .variables import Variable_generique, Variable, Rayon, Mul, Add
 from .vecteurs import Vecteur_generique, Vecteur, Vecteur_libre, Vecteur_unitaire, Somme_vecteurs, Extremite, Representant
-from .widgets import Bouton
+from .widgets import Bouton, Champ
 
 
 for _obj in vars().values():

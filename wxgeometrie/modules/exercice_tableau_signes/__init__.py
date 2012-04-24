@@ -30,19 +30,18 @@ from functools import partial
 
 from PyQt4.QtGui import QVBoxLayout, QLabel, QPushButton, QHBoxLayout, QMessageBox, QTextEdit
 
+from sympy import S, solve
+
 from ...GUI import MenuBar, Panel_API_graphique
 from ...GUI.proprietes_objets import Proprietes
-from ...geolib import Segment, Texte, Point, TEXTE
+from ...geolib import Segment, Texte, Point, Champ, TEXTE
+from ...geolib.routines import nice_str
+from ...pylib import OrderedDict, print_error
 from ...mathlib.parsers import convertir_en_latex
 from ... import param
 
 
-class Champ(Texte):
-    def label(self, *args, **kw):
-        txt = Texte.label(self, *args, **kw)
-        if not txt.strip():
-            return u'\u20DB'
-        return convertir_en_latex(txt)
+
 
 
 
@@ -95,7 +94,7 @@ class ExercicesTableauxSignes(Panel_API_graphique):
 
     def _sauvegarder(self, fgeo, feuille = None):
         Panel_API_graphique._sauvegarder(self, fgeo, feuille)
-        fgeo.contenu[u"Instructions"] = [self.instructions.toPlainText()]
+        ##fgeo.contenu[u"Instructions"] = [self.instructions.toPlainText()]
 
 
     def _ouvrir(self, fgeo):
@@ -148,8 +147,8 @@ class ExercicesTableauxSignes(Panel_API_graphique):
 
         dessiner_texte = partial(can.dessiner_texte, size=18, va='top')
 
-        facteurs = [convertir_en_latex(expr, mode=None)
-                    for expr in self.numerateur + self.denominateur]
+        facteurs = OrderedDict((convertir_en_latex(expr, mode=None), expr)
+                    for expr in self.numerateur + self.denominateur)
 
         # -------------------------------------------------------------
         # |     x      | -oo        val1     ...     valn          +oo |
@@ -209,11 +208,25 @@ class ExercicesTableauxSignes(Panel_API_graphique):
         dessiner_texte(col1 + marge, h, '$-\\infty$')
         dessiner_texte(width - 10 - marge, h, '$+\\infty$', ha='right')
 
-        h = tab_height + 2*marge
+        # On écrit en dessous du tableau les équations à résoudre
+        h = tab_height + 3*marge
         for expression in facteurs:
-            txt = dessiner_texte(10, h, r'$\bullet\,' + expression + r'\,=\,0\,\,\Longleftrightarrow\,\,x\,=\,$')
-            t = Champ('ok', 250, h)
+            txt = dessiner_texte(10, height - h, r'$\bullet\,' + expression + r'\,=\,0\,\,\Longleftrightarrow\,\,x\,=\,$')
+            box = can.txt_box(txt)
+            resultat = nice_str(solve(S(facteurs[expression]))[0])
+            print resultat
+            t = Champ('1', 18 + box.width, height - h - .5*box.height,
+                      alignement_horizontal='left', alignement_vertical='center',
+                      attendu=resultat)
             self.feuille_actuelle.objets.add(t)
-            dessiner_texte(220, h, u'\u2713', color='g') # 263A  00D8
-            dessiner_texte(240, h, u'\u2639', color='r') #u'\u26A0'
-            h += can.txt_box(txt).height + 2*marge
+            ##dessiner_texte(220, height - h, u'\u2713', color='g') # 263A  00D8
+            ##dessiner_texte(240, height - h, u'\u2639', color='r') #u'\u26A0'
+            h += box.height + 2*marge
+
+            txt = dessiner_texte(30, height - h, r'La fonction affine $x\mapsto %s$ est strictement' %expression)
+            h += can.txt_box(txt).height + 4*marge
+
+        self.feuille_actuelle.interprete.commande_executee()
+        self.feuille_actuelle.objets._.encadrer('r')
+
+

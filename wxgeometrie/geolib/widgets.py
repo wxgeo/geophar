@@ -24,8 +24,8 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 
 from .objet import Objet_avec_coordonnees_modifiables, Argument, Ref
-from .textes import Texte_generique
-from ..pylib import uu
+from .textes import Texte_generique, Texte
+from ..pylib import uu, print_error
 from .. import param
 
 
@@ -167,3 +167,57 @@ class Bouton(Texte_generique, Objet_avec_coordonnees_modifiables):
         g = .75*g
         b = .75*b
         return r, g, b
+
+
+
+class Champ(Texte):
+    _style_defaut = param.champs
+
+    texte = __texte = Argument("basestring", Texte._get_texte, Texte._set_texte)
+    abscisse = x = __x = Argument("Variable_generique", defaut = lambda: normalvariate(0,10))
+    ordonnee = y = __y = Argument("Variable_generique", defaut = lambda: normalvariate(0,10))
+
+    def __init__(self, texte="", x=None, y=None, **styles):
+        self.__texte = texte = Ref(texte)
+        self.__x = x = Ref(x)
+        self.__y = y = Ref(y)
+
+        Texte.__init__(self, texte, x, y, **styles)
+
+    def label(self, *args, **kw):
+        txt = Texte.label(self, *args, **kw)
+        if not txt.strip():
+            txt = '...' # u'\u20DB'
+        return txt
+
+    def _creer_figure(self):
+        print 'label::', self.label()
+        if not self._representation:
+            self._representation = [self.rendu.texte(), self.rendu.decoration_texte(), self.rendu.texte()]
+        Texte._creer_figure(self)
+        can = self.__canvas__
+        box = can.txt_box(self._representation[0])
+        px, py = box.max
+        print type(can.height)
+        x, y = can.pix2coo(px + 5, can.hauteur - py)
+        txt = self._representation[2]
+        lbl = self.style('label').replace(' ', '').replace(',', '.')
+        attendu = self.style('attendu')
+        if attendu is None or not lbl:
+            txt.set(visible=False)
+        else:
+            print repr(lbl), repr(attendu)
+            correct = False
+            txt.set(visible=True, x=x, y=y, va='top', ha='left')
+            if attendu == lbl:
+                correct = True
+            else:
+                try:
+                    if abs(eval(attendu) - eval(lbl)) < param.tolerance:
+                        correct = True
+                except Exception:
+                    print_error()
+            if correct:
+                txt.set(text=u'\u2713', color='g') # 263A  00D8
+            else:
+                txt.set(text=u'\u2639', color='r') #u'\u26A0'

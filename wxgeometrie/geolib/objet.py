@@ -643,6 +643,16 @@ class Objet(object):
     Note : elle n'est pas utilisable en l'état, mais doit être surclassée.
     """
 
+    # Les slots ne sont **pas** compatibles avec les weakreferences.
+    ##__slots__ = ('__arguments__', '__feuille__', '__compteur_hierarchie__',
+        ##'_prefixe_nom', '_utiliser_coordonnees_approchees', '_label_temporaire',
+        ##'_affichage_depend_de_la_fenetre', '_enregistrer_sur_la_feuille_par_defaut',
+        ##'__contexte', '_style_defaut', '_initialisation_minimale', 'protege',
+        ##'etiquette', '_pointable', '_modifiable', '_deplacable', '__nom', 'nom_latex',
+        ##'_cache', '_representation', '_trace', '_trace_x', '_trace_y', '_gras',
+        ##'__figure_perimee', '_label_correct', 'rendu', 'vassaux', '_ancetres',
+        ##'_valeurs_par_defaut')
+
     __arguments__ = () # cf. geolib/__init__.py
     __feuille__ = DescripteurFeuille()
     __compteur_hierarchie__ = 0
@@ -680,6 +690,7 @@ class Objet(object):
     # Les labels ont une initialisation minimale
     _initialisation_minimale = False
 
+
     def __init__(self, **styles):
         # ---------------------------------------------------------------------
         # PARTIE 1 de l'initialisation :
@@ -703,7 +714,6 @@ class Objet(object):
             self._creer_style_par_defaut()
 
             # Parametres par defauts
-            # TODO: renommer _representation en _representation
             self._representation = []
             self._trace = []
             self._trace_x = []
@@ -1257,42 +1267,6 @@ class Objet(object):
         return self._representation
 
 
-##    def creer_figure(self):
-##        u"Construit la représentation graphique de l'objet (mais ne rafraichit pas l'affichage par défaut)."
-##        # si l'objet n'a pas de nom (''), c'est que c'est une construction intermediaire
-##        # il ne faut donc pas l'afficher.
-##        if self.__feuille__ is not None:
-##            #~ nom = self.nom
-##            canvas = self.__canvas__
-##
-##            with contexte(exact = False):
-##                if (self.__feuille__.contient_objet(self) or self.__feuille__.contient_objet_temporaire(self)) and canvas:
-##                    if self.etiquette is not None:
-##                        self.etiquette.creer_figure()
-##                    visible = self.style("visible")
-##                    if self.existe and (visible or self.__feuille__.afficher_objets_caches):
-##                        # Remet alpha à 1 par défaut :
-##                        # la transparence a peut-être été modifiée si l'objet était auparavant invisible
-##                        for representation in self._representation:
-##                            representation.set_alpha(1)
-##
-##                        self._creer_figure()
-##                        # Styles supplémentaires (pour le débugage essentiellement)
-##                        extra = self.style("extra")
-##                        if extra:
-##                            for representation in self._representation:
-##                                representation.set(**extra)
-##                        if not visible:
-##                            for representation in self._representation:
-##                                representation.set_alpha(.4*representation.get_alpha())
-##                        self._creer_trace()
-##
-##                    else:
-##                        self._representation = []
-##                self.__feuille__.affichage_perime()
-
-
-
     def effacer_trace(self):
         self._trace = []
         self._trace_x = []
@@ -1640,7 +1614,8 @@ class Objet(object):
 class Objet_avec_coordonnees(Objet):
     u"""Un objet ayant des coordonnées (ex: points, vecteurs, ...).
 
-    Usage interne : permet aux objets en héritant d'offrir un accès facile pour l'utilisateur final aux coordonnées via __call__."""
+    Usage interne : permet aux objets en héritant d'offrir un accès facile
+    pour l'utilisateur final aux coordonnées via __call__."""
 
     _style_defaut = {} # en cas d'héritage multiple, cela évite que le style de Objet efface d'autres styles
 

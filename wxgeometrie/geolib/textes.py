@@ -27,12 +27,15 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 from random import uniform, normalvariate
 from math import cos, sin
 
+from matplotlib.pyparsing import ParseFatalException
+
 from .objet import Objet_avec_coordonnees, Argument, Ref, Objet, \
                    Objet_avec_coordonnees_modifiables
 from .constantes import RIEN, TEXTE, MATH
 
 from ..pylib import uu, warning
 from ..mathlib.parsers import convertir_en_latex
+from ..pylib import mathtext_parser
 from .. import param
 
 
@@ -155,6 +158,13 @@ class Texte_generique(Objet_avec_coordonnees):
         lbl = super(Texte_generique, self).label(*args, **kw)
         if self.style("formatage") == MATH:
             lbl = convertir_en_latex(lbl)
+        # TODO: add support for a CUSTOM mode, to use a custom
+        # formating function.
+        if '$' in lbl:
+            try:
+                mathtext_parser(lbl)
+            except ParseFatalException:
+                lbl = lbl.replace('$', r'\$')
         return lbl
 
 
@@ -173,7 +183,7 @@ class Texte(Texte_generique, Objet_avec_coordonnees_modifiables):
 
     def _set_texte(self, value):
         if isinstance(value, basestring) and value != "" and hasattr(self, "_style"):
-            self.style(label = value)
+            self.style(label=uu(value))
         return value
 
     def _get_texte(self, value):
@@ -185,10 +195,13 @@ class Texte(Texte_generique, Objet_avec_coordonnees_modifiables):
 
     def __init__(self, texte = "", x = None, y = None, **styles):
         x, y, styles = self._recuperer_x_y(x, y, styles)
-        texte = uu(texte)
-
-        if texte != "":
-            styles["label"] = texte
+        if isinstance(texte, Ref):
+            if texte != "":
+                styles["label"] = texte.objet
+        else:
+            texte = uu(texte)
+            if texte != "":
+                styles["label"] = texte
 
         self.__texte = texte = Ref(texte)
         self.__x = x = Ref(x)

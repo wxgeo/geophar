@@ -361,6 +361,9 @@ textes = {
     "alpha_fond": 1,
     "formatage": RIEN,
     }
+champs = {
+    "formatage": MATH,
+    }
 boutons = {
     "couleur": 'k',
     "couleur_fond": (.3, .8, .9),
