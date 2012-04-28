@@ -28,8 +28,7 @@ from PyQt4.QtGui import (QDialog, QVBoxLayout, QHBoxLayout, QFrame, QLineEdit,
 from PyQt4.QtCore import Qt
 
 from ..geolib.constantes import NOM, FORMULE, TEXTE, RIEN, MATH
-from ..geolib.textes import Texte_generique
-from ..geolib.points import Point_generique
+from ..geolib import Texte_generique, Point_generique, Champ
 from .proprietes_objets import Proprietes
 from ..pylib import print_error
 from .wxlib import PopUpMenu
@@ -126,12 +125,38 @@ class MenuActionsObjet(PopUpMenu):
                     continue
             break
 
+
     def etiquette(self):
         select = self.canvas.select
         old_style = select.style().copy()
         old_label = select.style(u"label")
         if old_label is None:   # le style label n'existe pas pour l'objet
             return
+
+        # ----------------
+        # Cas particuliers
+        # ----------------
+
+        if isinstance(select, Champ):
+            if select.style('choix'):
+                choix = select.style('choix')
+                try:
+                    index = choix.index(select.texte)
+                except ValueError:
+                    index = 0
+                text, ok = QInputDialog.getItem(self.canvas, u"Choisir une valeur",
+                                u"Réponse :", choix, index, False)
+            else:
+                text, ok = QInputDialog.getText(self.canvas, u"Éditer le champ",
+                            u"Réponse :", QLineEdit.Normal, select.texte)
+            if ok:
+                select.label(text)
+            return
+
+
+        # -----------
+        # Cas général
+        # -----------
 
         dlg = QDialog(self.canvas)
         dlg.setWindowTitle("Changer la légende de l'objet (texte quelconque)")

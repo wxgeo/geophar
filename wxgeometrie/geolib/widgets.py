@@ -22,6 +22,7 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
+from sympy import S
 
 from .objet import Objet_avec_coordonnees_modifiables, Argument, Ref
 from .textes import Texte_generique, Texte
@@ -171,6 +172,17 @@ class Bouton(Texte_generique, Objet_avec_coordonnees_modifiables):
 
 
 class Champ(Texte):
+    u"""Un champ de texte.
+
+    Un champ de texte éditable en double-cliquant dessus.
+    On lui associe également un validateur.
+
+    La liste des propositions peut être passée via le keyword `choix`.
+    >>> from wxgeometrie import Choix
+    >>> c = Choix('', 10, 5, choix=['oui', 'non', 'sans opinion'])
+    >>> c.style('choix')
+    ['oui', 'non', 'sans opinion']
+    """
     _style_defaut = param.champs
 
     texte = __texte = Argument("basestring", Texte._get_texte, Texte._set_texte)
@@ -186,12 +198,12 @@ class Champ(Texte):
 
     def label(self, *args, **kw):
         txt = Texte.label(self, *args, **kw)
-        if not txt.strip():
+        if not txt.strip('$ \n'):
             txt = '...' # u'\u20DB'
         return txt
 
     def _creer_figure(self):
-        print 'label::', self.label()
+        ##print 'champ-label::', self.label()
         if not self._representation:
             self._representation = [self.rendu.texte(), self.rendu.decoration_texte(), self.rendu.texte()]
         Texte._creer_figure(self)
@@ -213,7 +225,7 @@ class Champ(Texte):
                 correct = True
             else:
                 try:
-                    if abs(eval(attendu) - eval(lbl)) < param.tolerance:
+                    if abs(float(S(attendu) - S(lbl))) < param.tolerance:
                         correct = True
                 except Exception:
                     print_error()
@@ -221,3 +233,27 @@ class Champ(Texte):
                 txt.set(text=u'\u2713', color='g') # 263A  00D8
             else:
                 txt.set(text=u'\u2639', color='r') #u'\u26A0'
+
+
+##class Choix(Champ):
+    ##u"""Une liste de propositions.
+
+    ##Une liste de propositions éditable en double-cliquant dessus.
+    ##On lui associe également un validateur.
+
+    ##La liste des propositions doit être passée via le keyword `choix`.
+    ##>>> from wxgeometrie import Choix
+    ##>>> c = Choix('', 10, 5, choix=['oui', 'non', 'sans opinion'])
+    ##>>> c.style('choix')
+    ##['oui', 'non', 'sans opinion']
+    ##"""
+    ##texte = __texte = Argument("basestring", Texte._get_texte, Texte._set_texte)
+    ##abscisse = x = __x = Argument("Variable_generique", defaut = lambda: normalvariate(0,10))
+    ##ordonnee = y = __y = Argument("Variable_generique", defaut = lambda: normalvariate(0,10))
+
+    ##def __init__(self, texte="", x=None, y=None, **styles):
+        ##self.__texte = texte = Ref(texte)
+        ##self.__x = x = Ref(x)
+        ##self.__y = y = Ref(y)
+
+        ##Champ.__init__(self, texte, x, y, **styles)

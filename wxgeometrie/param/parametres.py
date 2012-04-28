@@ -363,6 +363,7 @@ textes = {
     }
 champs = {
     "formatage": MATH,
+    "fixe": True,
     }
 boutons = {
     "couleur": 'k',

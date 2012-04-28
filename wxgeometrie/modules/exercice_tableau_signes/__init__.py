@@ -145,10 +145,28 @@ class ExercicesTableauxSignes(Panel_API_graphique):
         def dessiner_ligne_h(y, **kw):
             return can.dessiner_ligne((10, width - 10), (y, y), 'k', **kw)
 
-        dessiner_texte = partial(can.dessiner_texte, size=18, va='top')
+        def dessiner_champ(x, y, resultat, **kw):
+            va = kw.pop('va', 'center')
+            ha = kw.pop('ha', 'center')
+            ##Cls = Choix if 'choix' in kw else Champ
+            t = Champ('', x, y, couleur='b',
+                      alignement_horizontal=ha, alignement_vertical=va,
+                      attendu=resultat, **kw)
+            self.feuille_actuelle.objets.add(t)
 
-        facteurs = OrderedDict((convertir_en_latex(expr, mode=None), expr)
-                    for expr in self.numerateur + self.denominateur)
+
+        dessiner_texte = partial(can.dessiner_texte, size=18, va='center')
+
+        facteurs_latex = OrderedDict((expr, convertir_en_latex(expr, mode=None))
+                                for expr in self.numerateur + self.denominateur)
+        facteurs_sols = OrderedDict((expr, solve(S(expr))[0]) for expr in facteurs_latex)
+        facteurs_diff = OrderedDict((expr, S(expr).diff()) for expr in facteurs_latex)
+
+        # --------
+        # Consigne
+        # --------
+
+        expression_latex = convertir_en_latex(self.expression, mode=None)
 
         # -------------------------------------------------------------
         # |     x      | -oo        val1     ...     valn          +oo |
@@ -162,6 +180,14 @@ class ExercicesTableauxSignes(Panel_API_graphique):
         # | Expression |                                               |
         # -------------------------------------------------------------
 
+        # valeurs remarquables de x
+        sols = sorted(set(facteurs_sols.values()))
+        print(sols)
+
+        # -----------------
+        # Tableau de signes
+        # -----------------
+
         # Hauteur de chaque ligne
         hauteurs = []
         # Objets texte de matplotlib
@@ -171,16 +197,22 @@ class ExercicesTableauxSignes(Panel_API_graphique):
         # marge entre le bord de la case et le texte
         marge = 5
         h = 10
-        for txt in chain(['x'], facteurs, [convertir_en_latex(self.expression, mode=None)]):
+        # on dessine les lignes verticales et les textes de la 1ère colonne.
+        for txt in chain(['x'], facteurs_latex.values(), [expression_latex]):
             dessiner_ligne_h(height - h)
-            h += marge
             hauteurs.append(h)
-            txt = dessiner_texte(10, height - h, '$%s$' %txt, ha='center')
-            txts.append(txt)
+            h += marge
+            y = height - h
+            txt = dessiner_texte(10, y, '$%s$' %txt, ha='center')
             box = can.txt_box(txt)
-            h += box.height + marge
+            hauteur_txt = max(box.height, 25)
+            txt.set_y(y - .5*hauteur_txt)
+            txts.append(txt)
+
+            h += hauteur_txt + marge
             largeur_max = max(largeur_max, box.width)
         dessiner_ligne_h(height - h)
+        hauteurs.append(h)
 
         tab_height = h
 
@@ -191,6 +223,7 @@ class ExercicesTableauxSignes(Panel_API_graphique):
         def dessiner_ligne_v(x, **kw):
             return can.dessiner_ligne((x, x), (height - 10, height - tab_height) , 'k', **kw)
 
+        # Bords verticaux du tableau
         dessiner_ligne_v(10)
         dessiner_ligne_v(width - 10)
         # Trait vertical à la fin de la première colonne
@@ -198,35 +231,69 @@ class ExercicesTableauxSignes(Panel_API_graphique):
         dessiner_ligne_v(col1)
 
         # On dessine les cases
-        n = len(facteurs)
+        n = len(sols)
         largeur_restante = width - 10 - col1 - 2*marge
-        for i in xrange(1, n):
-            dessiner_ligne_v(col1 + i/n*largeur_restante, alpha=.15)
+        largeur_case = largeur_restante/(n + 1)
+        choix = ['', '0', u'\u2551']
+        for i, sol in enumerate(sols):
+            x = col1 + (i + 1)*largeur_case
+            dessiner_ligne_v(x, alpha=.15)
+            resultat = nice_str(sol)
+            dessiner_champ(x, height - .5*(10 + hauteurs[1]), resultat=resultat)
+            resultat_final = '0'
+            for k, expr in enumerate(facteurs_sols):
+                if facteurs_sols[expr] == sol:
+                    if expr in self.numerateur:
+                        resultat = '0'
+                    else:
+                        resultat = resultat_final = u'\u2551'
+                else:
+                    resultat = ''
+                ##signe = is sol - 1
+                h = .5*(hauteurs[k + 1] + hauteurs[k + 2])
+                dessiner_champ(x, height - h, resultat=resultat, choix=choix)
+            h = .5*(hauteurs[-1] + hauteurs[-2])
+            dessiner_champ(x, height - h, resultat=resultat_final, choix=choix)
 
         # On place -oo et +oo
-        h = height - marge - 10
+        h = height - .5*(hauteurs[0] + hauteurs[1])
         dessiner_texte(col1 + marge, h, '$-\\infty$')
         dessiner_texte(width - 10 - marge, h, '$+\\infty$', ha='right')
 
+        # -------------------------------
+        # Équations en dessous du tableau
+        # -------------------------------
+
+        choix = ['', u'décroissante', u'croissante']
+
         # On écrit en dessous du tableau les équations à résoudre
-        h = tab_height + 3*marge
-        for expression in facteurs:
-            txt = dessiner_texte(10, height - h, r'$\bullet\,' + expression + r'\,=\,0\,\,\Longleftrightarrow\,\,x\,=\,$')
+        h = tab_height + 5*marge
+        for expression, latex in facteurs_latex.items():
+            if facteurs_diff[expression] == 0:
+                continue # Fonction constante
+
+            txt = dessiner_texte(10, height - h, r'$\bullet\,' + latex +
+                                    r'\,=\,0\,\,\Longleftrightarrow\,\,x\,=\,$')
             box = can.txt_box(txt)
-            resultat = nice_str(solve(S(facteurs[expression]))[0])
+            resultat = nice_str(facteurs_sols[expression])
             print resultat
-            t = Champ('1', 18 + box.width, height - h - .5*box.height,
-                      alignement_horizontal='left', alignement_vertical='center',
-                      attendu=resultat)
-            self.feuille_actuelle.objets.add(t)
+            dessiner_champ(18 + box.width, height - h,
+                                            ha='left', resultat=resultat)
             ##dessiner_texte(220, height - h, u'\u2713', color='g') # 263A  00D8
             ##dessiner_texte(240, height - h, u'\u2639', color='r') #u'\u26A0'
             h += box.height + 2*marge
 
-            txt = dessiner_texte(30, height - h, r'La fonction affine $x\mapsto %s$ est strictement' %expression)
-            h += can.txt_box(txt).height + 4*marge
+            txt = dessiner_texte(30, height - h, u'Sur $\u211D$, la fonction affine $x\\mapsto %s$ est strictement' %latex)
+            box = can.txt_box(txt)
+            sens = (u'décroissante' if facteurs_diff[expression] < 0 else u'croissante')
+            dessiner_champ(35 + box.width, height - h, ha='left', choix=choix, resultat=sens)
+            h += box.height + 4*marge
 
         self.feuille_actuelle.interprete.commande_executee()
-        self.feuille_actuelle.objets._.encadrer('r')
+        ##self.feuille_actuelle.objets._.encadrer('r')
 
 
+    def autocompleter(self):
+        for t in self.feuille_actuelle.objets.lister(type=Champ):
+            t.texte = t.style('attendu', color='g')
+        self.feuille_actuelle.interprete.commande_executee()

@@ -860,10 +860,14 @@ class Moteur_graphique(object):
         if dessin_temporaire:
             self._restaurer(self._dernier_dessin)
         else:
-            self._objets_fixes, self._objets_mobiles = self.canvas.feuille_actuelle.lister_figures()
             if objet_deplace is None or rafraichir_axes:
                 # Cas par défaut : on dessine tout.
                 self._creer_arriere_plan(rafraichir_axes)
+                # Le contenu de `self.canvas.feuille_actuelle.lister_figures()`
+                # peut être mofifié par `self._creer_arriere_plan(rafraichir_axes)`.
+            self._objets_fixes, self._objets_mobiles = self.canvas.feuille_actuelle.lister_figures()
+            if objet_deplace is None or rafraichir_axes:
+                # Cas par défaut : on dessine tout.
                 self._ajouter_objets(self._objets_fixes)
             elif objet_deplace is self._dernier_objet_deplace:
                 # Un cache spécifique existe déjà : on l'utilise.
