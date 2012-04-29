@@ -27,7 +27,8 @@ from itertools import chain, izip_longest
 
 from sympy import Expr
 
-from ..pylib import regsub, split_around_parenthesis, debug, find_closing_bracket
+from ..pylib import (regsub, split_around_parenthesis, debug,
+                     find_closing_bracket, warning)
 from .. import param
 
 
@@ -442,11 +443,8 @@ def simplifier_ecriture(formule):
 ##    return formule
 
 
-def convertir_en_latex(chaine, mode='$'):
-    u"""Convertit une chaine représentant un calcul en code LaTeX.
 
-    modes actuels: '$', None
-    """
+def _convertir_en_latex(chaine):
     #TODO: problème avec les puissances qui contiennent des fractions
     #TODO: incorporer cette fonction à mathlib, et mettre en place des tests unitaires
     #TODO: c'est assez lent, à optimiser ?
@@ -498,7 +496,11 @@ def convertir_en_latex(chaine, mode='$'):
                 break
         if debut_numerateur is None:
             debut_numerateur = 0
-        assert fin_numerateur is not None, "Numerateur introuvable"
+
+        if fin_numerateur is None:
+            if param.debug:
+                warning("Expression incorrecte: numerateur introuvable.")
+            return chaine
 
         # On détecte la fonction qui précède éventuellement la parenthèse
         # par exemple, sqrt(2)/2 -> le numérateur est 'sqrt(2)', et pas '(2)'
@@ -548,7 +550,10 @@ def convertir_en_latex(chaine, mode='$'):
         if fin_denominateur is None:
            fin_denominateur = len(chaine)  - 1
 
-        assert debut_denominateur is not None, "Denominateur introuvable"
+        if debut_denominateur is None:
+            if param.debug:
+                warning("Expression incorrecte: denominateur introuvable.")
+            return chaine
 
         denominateur = chaine[i + 1:fin_denominateur + 1].strip()
         if chaine[fin_denominateur+1:].startswith('^'):
@@ -592,11 +597,15 @@ def convertir_en_latex(chaine, mode='$'):
 
 ##    if param.debug:
 ##        print 'Temps pour conversion LaTeX:', time.time()- time0
-    if mode == '$':
-        chaine = "$" + chaine + "$"
     return chaine
 
 
+def convertir_en_latex(chaine, mode='$'):
+    u"""Convertit une chaine représentant un calcul en code LaTeX.
 
-
-
+    modes actuels: '$', None
+    """
+    chaine = _convertir_en_latex(chaine)
+    if mode == '$':
+        chaine = "$" + chaine + "$"
+    return chaine

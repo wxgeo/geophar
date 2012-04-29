@@ -199,6 +199,15 @@ def test_convertir_en_LaTeX():
     assert_conv('x**-3.5+x**2*y-x**(2*y)', 'x^{-3.5}+x^{2} y-x^{2 y}')
     assert_conv('(9*x+3/7)/(-8*x-6)', r'\frac{9 x+\frac{3}{7}}{-8 x-6}')
 
+def test_convertir_en_LaTeX_bad_expression():
+    # Par défaut, quand l'expression n'est pas valide, la valeur
+    # retournée doit être la valeur entrée.
+    # XXX: Rajouter les dollars ?
+    assert_conv('2/', '2/')
+    assert_conv('/', '/')
+    assert_conv('-+', '-+')
+
+
 @XFAIL
 def test_parentheses_inutiles():
     assert_conv('(x+1)', 'x+1')
