@@ -197,6 +197,7 @@ def test_convertir_en_LaTeX():
     assert_conv('(x+1)/(2*x)', r'\frac{x+1}{2 x}')
     assert_conv('(x(x+1))/(2*x*(x+2)*(x**25+7*x+5))*(x+3)', r'\frac{x(x+1)}{2 x (x+2) (x^{25}+7 x+5)} (x+3)')
     assert_conv('x**-3.5+x**2*y-x**(2*y)', 'x^{-3.5}+x^{2} y-x^{2 y}')
+    assert_conv('(9*x+3/7)/(-8*x-6)', r'\frac{9 x+\frac{3}{7}}{-8 x-6}')
 
 @XFAIL
 def test_parentheses_inutiles():

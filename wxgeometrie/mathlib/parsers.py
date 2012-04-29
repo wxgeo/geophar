@@ -494,7 +494,7 @@ def convertir_en_latex(chaine, mode='$'):
             elif chaine[k] == '^':
                 puissance = chaine[k:fin_numerateur + 1]
             elif parentheses == 0 and fin_numerateur is not None:
-                debut_numerateur = k+1
+                debut_numerateur = k + 1
                 break
         if debut_numerateur is None:
             debut_numerateur = 0
@@ -539,8 +539,11 @@ def convertir_en_latex(chaine, mode='$'):
                 if parentheses == 0:
                     fin_denominateur = k
                     break
+                elif parentheses < 0:
+                    fin_denominateur = k - 1
+                    break
             elif parentheses == 0 and debut_denominateur is not None:
-                fin_denominateur = k-1
+                fin_denominateur = k - 1
                 break
         if fin_denominateur is None:
            fin_denominateur = len(chaine)  - 1
