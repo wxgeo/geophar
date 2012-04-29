@@ -37,6 +37,7 @@ from .wxlib import (BusyCursor, shift_down, alt_down, ctrl_down, left_down,
 from .. import param
 from ..pylib import print_error, debug
 from ..geolib.textes import Texte
+from ..geolib.widgets import Champ
 from ..geolib.objet import Objet
 from ..geolib.constantes import NOM
 
@@ -542,6 +543,7 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
     def mouseDoubleClickEvent(self, event):
         self.detecter(lieu(event))
         if isinstance(self.select, Texte):
+            # Un double-clic permet d'éditer un texte.
             menu = MenuActionsObjet(self)
             menu.etiquette()
 
@@ -558,6 +560,11 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
             self.decalage_coordonnees = x - x1, y - y1
         if getattr(self.select, 'on_left_click', None) is not None:
             self.select.on_left_click()
+        elif isinstance(self.select, Champ):
+            # Un simple clic suffit pour éditer un champ.
+            menu = MenuActionsObjet(self)
+            menu.etiquette()
+
 
 
     def right_down(self, event):

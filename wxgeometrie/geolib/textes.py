@@ -176,11 +176,6 @@ class Texte(Texte_generique, Objet_avec_coordonnees_modifiables):
 
     Un texte à afficher"""
 
-##    _style_defaut = param.textes
-##    _prefixe_nom = "t"
-
-
-
     def _set_texte(self, value):
         if isinstance(value, basestring) and value != "" and hasattr(self, "_style"):
             self.style(label=uu(value))

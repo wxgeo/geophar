@@ -23,6 +23,7 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 from sympy import S
+from sympy.core.sympify import SympifyError
 
 from .objet import Objet_avec_coordonnees_modifiables, Argument, Ref
 from .textes import Texte_generique, Texte
@@ -198,7 +199,7 @@ class Champ(Texte):
 
     def label(self, *args, **kw):
         txt = Texte.label(self, *args, **kw)
-        if not txt.strip('$ \n'):
+        if not txt.strip('$\n'):
             txt = '...' # u'\u20DB'
         return txt
 
@@ -210,7 +211,6 @@ class Champ(Texte):
         can = self.__canvas__
         box = can.txt_box(self._representation[0])
         px, py = box.max
-        print type(can.height)
         x, y = can.pix2coo(px + 5, can.hauteur - py)
         txt = self._representation[2]
         lbl = self.style('label').replace(' ', '').replace(',', '.')
@@ -218,42 +218,29 @@ class Champ(Texte):
         if attendu is None or not lbl:
             txt.set(visible=False)
         else:
-            print repr(lbl), repr(attendu)
-            correct = False
             txt.set(visible=True, x=x, y=y, va='top', ha='left')
-            if attendu == lbl:
-                correct = True
-            else:
-                try:
-                    if abs(float(S(attendu) - S(lbl))) < param.tolerance:
-                        correct = True
-                except Exception:
-                    print_error()
+            correct = self.correct
             if correct:
                 txt.set(text=u'\u2713', color='g') # 263A  00D8
             else:
                 txt.set(text=u'\u2639', color='r') #u'\u26A0'
+            if getattr(self, 'on_validate', None) is not None:
+                self.on_validate(correct)
 
-
-##class Choix(Champ):
-    ##u"""Une liste de propositions.
-
-    ##Une liste de propositions éditable en double-cliquant dessus.
-    ##On lui associe également un validateur.
-
-    ##La liste des propositions doit être passée via le keyword `choix`.
-    ##>>> from wxgeometrie import Choix
-    ##>>> c = Choix('', 10, 5, choix=['oui', 'non', 'sans opinion'])
-    ##>>> c.style('choix')
-    ##['oui', 'non', 'sans opinion']
-    ##"""
-    ##texte = __texte = Argument("basestring", Texte._get_texte, Texte._set_texte)
-    ##abscisse = x = __x = Argument("Variable_generique", defaut = lambda: normalvariate(0,10))
-    ##ordonnee = y = __y = Argument("Variable_generique", defaut = lambda: normalvariate(0,10))
-
-    ##def __init__(self, texte="", x=None, y=None, **styles):
-        ##self.__texte = texte = Ref(texte)
-        ##self.__x = x = Ref(x)
-        ##self.__y = y = Ref(y)
-
-        ##Champ.__init__(self, texte, x, y, **styles)
+    @property
+    def correct(self):
+        attendu = self.style('attendu').replace(' ', '').replace(',', '.')
+        lbl = self.style('label').replace(' ', '').replace(',', '.')
+        if attendu is None:
+            return
+        elif attendu == lbl:
+            return True
+        else:
+            try:
+                if abs(float(S(attendu) - S(lbl))) < param.tolerance:
+                    return True
+            except (SympifyError, ValueError):
+                pass
+            except Exception:
+                print_error()
+        return False
