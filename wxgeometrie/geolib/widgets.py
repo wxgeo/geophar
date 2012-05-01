@@ -197,6 +197,13 @@ class Champ(Texte):
 
         Texte.__init__(self, texte, x, y, **styles)
 
+        # Permet de conserver la valeur precedente de `self.correct`.
+        # Lorsque l'utilisateur entre un nouveau résultat, on peut ainsi
+        # savoir si celui-ci était déjà correct, ou si le résultat est
+        # devenu correct (il peut y avoir plusieurs résultats corrects).
+        self.__correct_old = self.correct
+
+
     def label(self, *args, **kw):
         txt = Texte.label(self, *args, **kw)
         if not txt.strip('$\n'):
@@ -225,7 +232,9 @@ class Champ(Texte):
             else:
                 txt.set(text=u'\u2639', color='r') #u'\u26A0'
             if getattr(self, 'on_validate', None) is not None:
-                self.on_validate(correct)
+                self.on_validate(champ=self, correct=correct,
+                                 correct_old=self.__correct_old)
+                self.__correct_old = correct
 
     @property
     def correct(self):

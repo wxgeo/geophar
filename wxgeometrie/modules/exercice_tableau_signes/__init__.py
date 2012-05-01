@@ -247,7 +247,7 @@ border-radius: 5px; border-color:%s; background-color: %s }"""
                 t = Champ('', x, height - y, couleur='b',
                        alignement_horizontal=ha, alignement_vertical=va,
                        attendu=resultat, taille=size, **kw)
-                t.on_validate = (lambda correct: self.compter_points(correct=correct))
+                t.on_validate = self.compter_points
                 self.feuille_actuelle.objets[nom] = t
             else:
                 t = self.feuille_actuelle.objets[nom]
@@ -470,9 +470,10 @@ border-radius: 5px; border-color:%s; background-color: %s }"""
     a = property(autocompleter)
 
     def compter_points(self, **kw):
-        if 'correct' in kw:
+        if 'correct' in kw and 'correct_old' in kw:
             if kw['correct']:
-                self.points += 1
+                if not kw['correct_old']:
+                    self.points += 1
             else:
                 self.points -= 1
                 self.erreurs += 1
