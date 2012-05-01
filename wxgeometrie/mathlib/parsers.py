@@ -689,7 +689,8 @@ def _convertir_en_latex(chaine):
     # --------------------
     # Autres remplacements
     # --------------------
-    chaine = re.sub(r"(?<!\w|\\)(pi|oo|e|sin|cos|tan|ln|log|exp|sqrt)(?!\w)", lambda m:"\\" + m.group(), chaine)
+    chaine = re.sub(r"(?<!\w|\\)(pi|e|sin|cos|tan|ln|log|exp|sqrt)(?!\w)", lambda m:"\\" + m.group(), chaine)
+    chaine = re.sub(r"(?<!\w|\\)oo(?!\w)", lambda m:"\\infty", chaine)
     for func in ('sqrt', '^'):
         i = 0
         while True:
