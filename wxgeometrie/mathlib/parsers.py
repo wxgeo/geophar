@@ -27,8 +27,8 @@ from itertools import chain, izip_longest
 
 from sympy import Expr
 
-from ..pylib import (regsub, split_around_parenthesis, debug,
-                     find_closing_bracket, warning)
+from ..pylib.fonctions import (regsub, split_around_parenthesis, debug,
+                     find_closing_bracket, warning, rreplace)
 from .. import param
 
 
@@ -81,7 +81,7 @@ VAR_NOT_ATTR = "(?:(?<![.A-Za-z0-9_])[A-Za-z_][A-Za-z0-9_]*)"
 ##VAR_NOT_ATTR_compile = re.compile(VAR_NOT_ATTR)
 ##NBR = "([+-]?[ ]?(([0-9]+[.]?)|([0-9]*[.][0-9]+)))"
 # Nombre avec un signe éventuel devant
-NBR_SIGNE = "(?:(?<![.A-Za-z0-9_])(?:[+-]?[ ]?(?:[0-9]*[.][0-9]+|[0-9]+[.]?)))"
+NBR_SIGNE = "(?:(?<![.A-Za-z0-9_])(?:(((?<=[*/^])|^)[+-])?[ ]?(?:[0-9]*[.][0-9]+|[0-9]+[.]?)))"
 # Nombre sans signe
 NBR = "(?:(?<![.A-Za-z0-9_])(?:[0-9]*[.][0-9]+|[0-9]+[.]?))"
 # Nombre sans signe ou variable
@@ -443,161 +443,275 @@ def simplifier_ecriture(formule):
 ##    return formule
 
 
+def _fast_closing_bracket_search(string, start=0):
+    u"""Recherche rudimentaire de la parenthèse fermante correspondante.
+
+    Les parenthèses imbriquées sont gérées, mais pas la détection des chaînes de
+    caractères qui peuvent fausser les résultats.
+    Tant que cette fonction est appliquée à des expressions mathématiques,
+    cela ne pose pas problème.
+
+    La recherche commence à partir de la position `start`, qui doit correspondre
+    à une parenthèse ouvrante dans la chaîne.
+
+    Retourne la position de la parenthèse fermante.
+    """
+    # k : position de la 1ère parenthèse rencontrée
+    k = start + 1
+    # level : profondeur des parenthèses imbriquées.
+    level = 1
+    while True:
+        i = string.find('(', k)
+        j = string.find(')', k)
+        if i == j == -1:
+            # Plus aucune parenthèse.
+            raise ValueError, "No matching parenthesis, or string doesn't start with `(`."
+        elif i < j and i != -1:
+            # La 1ère parenthèse rencontrée est ouvrante `(`.
+            level += 1
+            k = i + 1
+        else:
+            # La 1ère parenthèse rencontrée est fermante `)`.
+            level -= 1
+            k = j + 1
+        if level == 0:
+            return k
+
+
+def _fast_opening_bracket_search(string):
+    u"""Recherche rudimentaire de la parenthèse ouvrante correspondante.
+
+    Puisqu'on cherche la parenthèse ouvrante, la recherche s'effectue donc
+    de droite à gauche.
+
+    Les parenthèses imbriquées sont gérées, mais pas la détection des chaînes de
+    caractères qui peuvent fausser les résultats.
+    Tant que cette fonction est appliquée à des expressions mathématiques,
+    cela ne pose pas problème.
+
+    La chaîne doit se terminer par une parenthèse fermante.
+
+    Retourne la position de la parenthèse ouvrante.
+    """
+    # k : position de la 1ère parenthèse rencontrée
+    k = -1
+    # level : profondeur des parenthèses imbriquées.
+    level = 1
+    while True:
+        i = string.rfind('(', None, k)
+        j = string.rfind(')', None, k)
+        if i == j == -1:
+            # Plus aucune parenthèse.
+            raise ValueError, "No matching parenthesis, or string doesn't end with `)`."
+        elif i > j:
+            # La 1ère parenthèse rencontrée est ouvrante `(`.
+            level -= 1
+            k = i
+        else:
+            # La 1ère parenthèse rencontrée est fermante `)`.
+            level += 1
+            k = j
+        if level == 0:
+            return k
+
+
+def _strip_parenthesis(string):
+    u"""Supprime les parenthèses autour de l'expression, si elles correspondent."""
+    while string and string[0] == '(':
+        if _fast_closing_bracket_search(string) == len(string):
+            string = string[1:-1]
+        else:
+            break
+    return string
+
+
+def _rechercher_numerateur(chaine):
+    u"""Part de la fin de la chaîne, et remonte la chaîne pour chercher
+    le plus grand groupe possible pouvant correspondre à un numérateur.
+
+    Retourne la position du début du numérateur dans la chaîne.
+
+    La chaîne doit être préparée au préalable. En particulier, l'opérateur utilisé
+    pour les puissances est  `^`, et non `**`, et les espaces autour des opérateurs
+    / et ^ sont supprimés.
+    """
+    if not chaine:
+        return
+    fonctions = ('cos', 'sin', 'tan', 'ln', 'log', 'exp', 'sqrt')
+    if chaine[-1] == ')':
+        try:
+            deb = _fast_opening_bracket_search(chaine)
+            # Si les parenthèses sont précédées par une fonction, la fonction
+            # fait aussi partie du numérateur. Par exemple, dans `cos(x)/2`,
+            # le numérateur est `cos(x)`, et pas seulement `(x)`.
+            for fonction in fonctions:
+                if chaine.endswith(fonction, 0, deb):
+                    deb -= len(fonction)
+        except ValueError:
+            # Parenthésage incorrect.
+            return
+    else:
+        # Le caractère @ est utilisé par `_convertir_en_latex` pour remplacer les
+        # fractions déjà détectées.
+        m = re.search('(%s|@)$' % NBR_SIGNE_OR_VAR, chaine)
+        if m is None:
+            # Rien qui ressemble à un numérateur
+            return
+        deb = m.start()
+    # La puissance est prioritaire sur la division.
+    # Dans une expression du genre `2^x/3`, le numérateur est `2^x`, et non `x`.
+    if deb != 0 and chaine[deb - 1] == '^':
+        deb = _rechercher_numerateur(chaine[:deb - 1])
+    elif deb > 1 and chaine[deb - 2:deb] == '^-':
+        deb = _rechercher_numerateur(chaine[:deb - 2])
+    return deb
+
+
+def _rechercher_denominateur(chaine):
+    u"""Part de la fin de la chaîne, et remonte la chaîne pour chercher
+    le plus grand groupe possible pouvant correspondre à un numérateur.
+
+    Retourne la position du début du numérateur dans la chaîne.
+
+    La chaîne doit être préparée au préalable. En particulier, l'opérateur utilisé
+    pour les puissances est  `^`, et non `**`, et les espaces autour des opérateurs
+    / et ^ sont supprimés.
+    """
+    if not chaine:
+        return
+    fonctions = ('cos', 'sin', 'tan', 'ln', 'log', 'exp', 'sqrt')
+    # Si le dénominateur commence par un nom de fonction, on continue à chercher
+    # après ce nom...
+    fin = 0
+    for fonction in fonctions:
+        if chaine.startswith(fonction):
+            fin += len(fonction)
+    if chaine[fin] == '(':
+        try:
+            fin += _fast_closing_bracket_search(chaine[fin:])
+        except ValueError:
+            # Parenthésage incorrect.
+            return
+    else:
+        m = re.search('(%s)' % NBR_SIGNE_OR_VAR, chaine[fin:])
+        if m is None:
+            # Rien qui ressemble à un numérateur
+            return
+        fin += m.end()
+    # La puissance est prioritaire sur la division.
+    # Dans une expression du genre `2^x/3`, le numérateur est `2^x`, et non `x`.
+    if fin < len(chaine) and chaine[fin] == '^':
+        fin += _rechercher_denominateur(chaine[fin + 1:]) + 1
+    elif chaine[fin:fin + 2] == '^-':
+        fin += _rechercher_denominateur(chaine[fin + 2:]) + 2
+    return fin
+
 
 def _convertir_en_latex(chaine):
     #TODO: problème avec les puissances qui contiennent des fractions
-    #TODO: incorporer cette fonction à mathlib, et mettre en place des tests unitaires
     #TODO: c'est assez lent, à optimiser ?
     # (environ 0.5ms en conditions réelles, avec 10 à 20 appels par tableau).
 ##    time0 = time.time()
+
+    # Puissances
     chaine = chaine.replace("**", "^")
+
+    # --------------------------------
+    # Suppression des espaces inutiles
+    # --------------------------------
+    # Les espaces inutiles ne sont pas gênants en LaTeX, mais leur suppresion
+    # simplifie le traitement ultérieur de la chaîne de caractères.
     chaine = re.sub(r'[ ]+', ' ', chaine)
-    # inutile en LaTeX, mais ça peut simplifier certaines expressions regulieres
     chaine = re.sub(r'[ ]?/[ ]?', '/', chaine)
     chaine = re.sub(r'[ ]?\^[ ]?', '^', chaine)
+    chaine = re.sub(r'[ ]?\([ ]?', '(', chaine)
+    chaine = re.sub(r'[ ]?\)[ ]?', ')', chaine)
 
-    fonctions = ('cos', 'sin', 'tan', 'ln', 'log', 'exp', 'sqrt', '^')
-
+    # ------------------------
+    # Conversion des fractions
+    # ------------------------
     # On traite maintenant le (délicat) cas des fractions,
-    # ie. 2/3, mais aussi (pi+3)/(5-e), ou cos(2)/3
+    # ie. 2/3, mais aussi (pi+3)/(5-e)^2, ou cos(2)/3
     securite = 1000
-    while "/" in chaine:
-        securite -= 1
-        if securite < 0:
-            raise RuntimeError, "Boucle probablement infinie."
-        i = chaine.find("/")
+    while '/' in chaine:
+        # Voir plus bas l'explication pour les 2 `while` imbriqués.
+        fractions = []
+        while '/' in chaine:
+            securite -= 1
+            if securite < 0:
+                raise RuntimeError, "Boucle probablement infinie."
+            i = chaine.find("/")
+            # Début de la fraction
+            deb = _rechercher_numerateur(chaine[:i])
+            if deb is None:
+                if param.debug:
+                    warning("Expression incorrecte: numerateur introuvable.")
+                return chaine
+            # Fin de la fraction
+            _fin = _rechercher_denominateur(chaine[i + 1:])
+            if _fin is None:
+                if param.debug:
+                    warning("Expression incorrecte: denominateur introuvable.")
+                return chaine
+            fin = i + 1 + _fin
 
-        # analyse des caractères précédents, pour localiser le numérateur
-        k = i
-        parentheses = 0
-        # indices correspondants au début et à la fin du numérateur
-        debut_numerateur = fin_numerateur = None
-        #  exposant éventuel du numérateur
-        puissance = ''
+            # Suppression des parenthèses inutiles.
+            numerateur = _strip_parenthesis(chaine[deb:i])
+            denominateur = _strip_parenthesis(chaine[i + 1:fin])
+            fractions.append(r'\frac{%s}{%s}' % (numerateur, denominateur))
+            # On marque la position de la fraction en la remplaçant par `@`,
+            # au lieu de la remplacer directement par le code LaTeX.
+            # En effet, un mixte de code LaTeX et de code Python serait trop
+            # délicat à traiter.
+            # Ce n'est qu'une fois qu'on aura identifié toutes les fractions
+            # qu'on remplacera tous les `@` par les fractions correspondantes.
+            chaine = chaine[:deb] + '@' + chaine[fin:]
 
-        while k > 0:
-            k -= 1
-            if chaine[k].isalnum():
-                if fin_numerateur is None:
-                    fin_numerateur = k
-            elif chaine[k] == ")":
-                if parentheses == 0:
-                    fin_numerateur = k
-                parentheses += 1
-            elif chaine[k] == "(":
-                parentheses -= 1
-                if parentheses == 0:
-                    debut_numerateur = k
-                    break
-            elif chaine[k] == '^':
-                puissance = chaine[k:fin_numerateur + 1]
-            elif parentheses == 0 and fin_numerateur is not None:
-                debut_numerateur = k + 1
-                break
-        if debut_numerateur is None:
-            debut_numerateur = 0
+            # Il se peut qu'après avoir effectué ce remplacement, il reste des `/`
+            # en fin de chaîne, à l'intérieur du dénominateur d'une grande fraction.
+            # Dans ce cas, on recommence le processus (d'où les 2 `while` imbriqués).
+            # La chaîne contient alors un mixte de fractions LaTeX et de fractions
+            # Python.
+            # Cependant, dans ce cas précis, ce n'est pas gênant : ce qui importe
+            # en effet, pour que `_rechercher_numerateur` et `_rechercher_denominateur`
+            # détectent bien le numérateur et le dénominateur d'une fraction Python,
+            # c'est qu'il n'y ait pas de fraction LaTeX imbriquée dedans.
+            # Et c'est bien le cas : comme le parser fonctionne de gauche à droite,
+            # et remplace chaque fraction trouvée par `@`, les fractions Python
+            # qui restent sont forcément contenues dans un dénominateur
+            # d'une fraction LaTeX, qui a été remplacée par `@` avant que son
+            # dénominateur ait pu être parsé.
 
-        if fin_numerateur is None:
-            if param.debug:
-                warning("Expression incorrecte: numerateur introuvable.")
-            return chaine
+        for fraction in reversed(fractions):
+            chaine = rreplace(chaine, '@', fraction, 1)
+        assert '@' not in chaine
 
-        # On détecte la fonction qui précède éventuellement la parenthèse
-        # par exemple, sqrt(2)/2 -> le numérateur est 'sqrt(2)', et pas '(2)'
-        # TODO: réécrire tout ça plus proprement
-        for func in fonctions:
-            n = len(func)
-            if chaine[:debut_numerateur].endswith(func) and\
-                    (debut_numerateur == n or not chaine[debut_numerateur-n-1].isalpha()):
-                debut_numerateur -= n
-
-        numerateur = chaine[debut_numerateur : fin_numerateur+1].strip()
-        if numerateur[0] == "(":
-            if puissance:
-                numerateur += puissance
-            else:
-                numerateur = numerateur[1:-1]
-
-
-        # analyse des caractères suivants, pour localiser le dénominateur
-        k = i
-        parentheses = 0
-        # indices correspondants au début et à la fin du numérateur
-        debut_denominateur = fin_denominateur = None
-        # exposant éventuel du dénominateur
-        puissance = ''
-
-        while k < len(chaine) - 1:
-            k += 1
-            if chaine[k].isalnum():
-                if debut_denominateur is None:
-                    debut_denominateur = k
-            elif chaine[k] == "(":
-                if parentheses == 0:
-                    debut_denominateur = k
-                parentheses += 1
-            elif chaine[k] == ")":
-                parentheses -= 1
-                if parentheses == 0:
-                    fin_denominateur = k
-                    break
-                elif parentheses < 0:
-                    fin_denominateur = k - 1
-                    break
-            elif parentheses == 0 and debut_denominateur is not None:
-                fin_denominateur = k - 1
-                break
-        if fin_denominateur is None:
-           fin_denominateur = len(chaine)  - 1
-
-        if debut_denominateur is None:
-            if param.debug:
-                warning("Expression incorrecte: denominateur introuvable.")
-            return chaine
-
-        denominateur = chaine[i + 1:fin_denominateur + 1].strip()
-        if chaine[fin_denominateur+1:].startswith('^'):
-            m = re.match('[(][A-Za-z0-9.]+[)]|[A-Za-z0-9.]+', chaine[fin_denominateur + 2:])
-            if m is not None:
-                puissance = '^' + m.group()
-                fin_denominateur += m.end() + 1
-        if denominateur[0] == "(":
-            if puissance:
-                denominateur += puissance
-            else:
-                denominateur = denominateur[1:-1]
-
-        if len(chaine) >= 10000:
-            if param.verbose:
-                print "Code en cours :"
-                print chaine
-            raise RuntimeError, 'Memory Leak probable.'
-        # remplacement de la fraction python par une fraction LaTeX
-        chaine = chaine[:debut_numerateur] + r"\frac{" + numerateur + "}{" + denominateur + "}" + chaine[fin_denominateur+1:]
-
-    assert securite >= 0
-
-    # Autres remplacements :
+    # --------------------
+    # Autres remplacements
+    # --------------------
     chaine = re.sub(r"(?<!\w|\\)(pi|oo|e|sin|cos|tan|ln|log|exp|sqrt)(?!\w)", lambda m:"\\" + m.group(), chaine)
-    for func in fonctions:
+    for func in ('sqrt', '^'):
         i = 0
         while True:
             i = chaine.find(func + '(', i)
             if i == -1:
                 break
-            i += len(func) + 1
-            j = find_closing_bracket(chaine, start = i , brackets = '()')
-            chaine = chaine[:i-1] + '{' + chaine[i:j] + '}' + chaine[j+1:]
+            i += len(func)
+            j = _fast_closing_bracket_search(chaine, start=i)
+            if j is None:
+                if param.debug:
+                    warning("Expression incorrecte: %s." % chaine)
+                return chaine
+            chaine = chaine[:i] + '{' + chaine[i + 1:j - 1] + '}' + chaine[j:]
 
     chaine = chaine.replace("*", " ")
 
     # Puissances : 2^27 -> 2^{27}
-    #chaine = re.sub(r'\^\([-0-9.]+\)', lambda m: '^{' + m.group()[2:-1] + '}', chaine)
-    chaine = re.sub(r'\^-?[0-9.]+', lambda m: '^{' + m.group()[1:] + '}', chaine)
+    chaine = re.sub(r'(?<=\^)' + NBR_SIGNE, lambda m: '{' + m.group() + '}', chaine)
 
 ##    if param.debug:
 ##        print 'Temps pour conversion LaTeX:', time.time()- time0
-    return chaine
+    return _strip_parenthesis(chaine)
 
 
 def convertir_en_latex(chaine, mode='$'):

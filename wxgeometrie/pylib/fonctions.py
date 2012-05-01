@@ -364,6 +364,16 @@ def rstrip_(s, end):
     return s
 
 
+# http://stackoverflow.com/questions/2556108/rreplace-how-to-replace-the-last-occurence-of-an-expression-in-a-string
+def rreplace(s, old, new, count):
+    u"""rreplace (s, old, new, count) -> string
+
+    Return a copy of string S with the first count occurrences of substring
+    old replaced by new, starting from right to left."""
+    return new.join(s.rsplit(old, count))
+
+
+
 def split_geoname(name):
     u"""Tente de décomposer un nom d'objet géométrique en plusieurs noms.
 
@@ -579,7 +589,8 @@ def path2(chemin):
 
 
 
-# L'idée de compiler en une fois pour toute les expressions regulières n'est pas avantageuse : le temps gagné ainsi est perdu à rechercher les entrées dans le dictionnaire.
+# L'idée de compiler en une fois pour toute les expressions regulières n'est pas avantageuse :
+# le temps gagné ainsi est perdu à rechercher les entrées dans le dictionnaire.
 
 #~ def regsub(regular_exp, main_string, action = ""):
     #~ u"""Transforme la chaine "main_string" :

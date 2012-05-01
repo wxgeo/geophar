@@ -10,7 +10,9 @@ from pytest import XFAIL
 from wxgeometrie.mathlib import universal_functions
 from wxgeometrie.mathlib.parsers import (traduire_formule, NBR, NBR_SIGNE, VAR,
                                         VAR_NOT_ATTR, NBR_OR_VAR, _arguments_latex,
-                                        convertir_en_latex)
+                                        convertir_en_latex, _fast_closing_bracket_search,
+                                        _fast_opening_bracket_search,
+                                        _rechercher_numerateur, _rechercher_denominateur)
 from tools.testlib import assertEqual
 
 
@@ -92,7 +94,8 @@ def test_tous_modes():
     assert_all("(x+1)x(x+3)", "(x+1)*x*(x+3)")
     assert_all("sin(x+1)x(x+3)", "sin(x+1)*x*(x+3)")
     assert_all("(x+1)cos(x+3)", "(x+1)*cos(x+3)")
-    assert_all("-1.5x^(-2)+ab+3ab(2x+y)+x(y(z+1)))2(x)", "-1.5*x**(-2)+ab+3*ab*(2*x+y)+x*(y*(z+1)))*2*(x)")
+    assert_all("-1.5x^(-2)+ab+3ab(2x+y)+x(y(z+1)))2(x)",
+               "-1.5*x**(-2)+ab+3*ab*(2*x+y)+x*(y*(z+1)))*2*(x)")
     assert_all(u"3x³-2x²y-2x==5y", "3*x**3-2*x**2*y-2*x==5*y")
     assert_all(u"25%*12 mod 5", "25/100*12%5")
     assert_all(u"(25%*12)mod 5", "(25/100*12)%5")
@@ -142,12 +145,15 @@ def test_mode_LaTeX():
     assert_latex("\\tfrac{2+x}{3}", "((2+x)/(3))")
     assert_latex("\\dfrac{2x^2+x-7}{6-4x}", "((2*x**2+x-7)/(6-4*x))")
     assert_latex("-\\frac12-\\dfrac4{(6-4x)^2}", "-(1/2)-(4/((6-4*x)**2))")
-    assert_latex("\\left((1+10~\\%)(1+5~\\%)(1-7~\\%)\\right)^{\\frac{1}{3} }", "((1+10/100)*(1+5/100)*(1-7/100))**(((1)/(3)))")
+    assert_latex("\\left((1+10~\\%)(1+5~\\%)(1-7~\\%)\\right)^{\\frac{1}{3} }",
+                 "((1+10/100)*(1+5/100)*(1-7/100))**(((1)/(3)))")
     assert_latex("\\text{0.7}\\times (-50)^2-9\\times (-50)+200", "(0.7)*(-50)**2-9*(-50)+200")
     assert_latex("\\ln(2)+\\exp(3)+\\log(\\pi+1)", "ln(2)+exp(3)+log(pi+1)")
     assert_latex("x\ge1\le3", "x>=1<=3")
-    assert_latex(r"100\left(\left(1+\dfrac{50}{100}\right)^\frac{1}{10}-1\right)", "100*((1+((50)/(100)))**((1)/(10))-1)")
-    assert_latex("M = \\begin{pmatrix}\n0,6 & 0,4\\\\\n0,75& 0,25\\\\\n\\end{pmatrix}", 'M=mat([[0,6,0,4],[0,75,0,25]])')
+    assert_latex(r"100\left(\left(1+\dfrac{50}{100}\right)^\frac{1}{10}-1\right)",
+                 "100*((1+((50)/(100)))**((1)/(10))-1)")
+    assert_latex("M = \\begin{pmatrix}\n0,6 & 0,4\\\\\n0,75& 0,25\\\\\n\\end{pmatrix}",
+                 'M=mat([[0,6,0,4],[0,75,0,25]])')
 
 def test_NBR():
     assert_NBR_SIGNE("-2.56")
@@ -193,11 +199,23 @@ def assert_conv(input, output):
 def test_convertir_en_LaTeX():
     assert_conv('2*x', '2 x')
     assert_conv('2*x+3', '2 x+3')
+    assert_conv('x**-3.5+x**2*y-x**(2*y)+8', 'x^{-3.5}+x^{2} y-x^{2 y}+8')
+
+def test_convertir_en_LaTeX_fractions():
     assert_conv('2/3', r'\frac{2}{3}')
     assert_conv('(x+1)/(2*x)', r'\frac{x+1}{2 x}')
-    assert_conv('(x(x+1))/(2*x*(x+2)*(x**25+7*x+5))*(x+3)', r'\frac{x(x+1)}{2 x (x+2) (x^{25}+7 x+5)} (x+3)')
-    assert_conv('x**-3.5+x**2*y-x**(2*y)', 'x^{-3.5}+x^{2} y-x^{2 y}')
+    assert_conv('(x(x+1))/(2*x*(x+2)*(x**25+7*x+5))*(x+3)',
+                r'\frac{x(x+1)}{2 x (x+2) (x^{25}+7 x+5)} (x+3)')
+    assert_conv('2/3x', r'\frac{2}{3}x')
+    assert_conv('2/0.4', r'\frac{2}{0.4}')
+
+def test_convertir_en_LaTeX_fractions_imbriquees():
     assert_conv('(9*x+3/7)/(-8*x-6)', r'\frac{9 x+\frac{3}{7}}{-8 x-6}')
+    assert_conv('2/3/4', r'\frac{\frac{2}{3}}{4}')
+    assert_conv('25/(4/7)+8/pi', r'\frac{25}{\frac{4}{7}}+\frac{8}{\pi}')
+    assert_conv('(2/3)/(25/(4/7)+8/pi)',
+                r'\frac{\frac{2}{3}}{\frac{25}{\frac{4}{7}}+\frac{8}{\pi}}')
+
 
 def test_convertir_en_LaTeX_bad_expression():
     # Par défaut, quand l'expression n'est pas valide, la valeur
@@ -208,11 +226,57 @@ def test_convertir_en_LaTeX_bad_expression():
     assert_conv('-+', '-+')
 
 
-@XFAIL
 def test_parentheses_inutiles():
     assert_conv('(x+1)', 'x+1')
-    assert_conv('(x(x+1))', 'x (x+1)')
+    assert_conv('(x(x+1))', 'x(x+1)')
     assert_conv('(((x)))', 'x')
 
 def test_convertir_en_LaTeX_mode_None():
     assertEqual(convertir_en_latex('2*x', mode=None), '2 x')
+
+def assert_search(input, expected):
+    i = _fast_closing_bracket_search(input)
+    assertEqual(input[:i], expected)
+
+def test_fast_closing_bracket_search():
+    assert_search('(ok)', '(ok)')
+    assert_search('(ok)+3', '(ok)')
+    assert_search('(x+(x-3(x-4))+(x-7))-x(x+8)', '(x+(x-3(x-4))+(x-7))')
+
+def assert_backsearch(input, expected):
+    i = _fast_opening_bracket_search(input)
+    assertEqual(input[i:], expected)
+
+def test_fast_opening_bracket_search():
+    assert_backsearch('(ok)', '(ok)')
+    assert_backsearch('3+(ok)', '(ok)')
+    assert_backsearch('x(x+8)-(x+(x-3(x-4))+(x-7))', '(x+(x-3(x-4))+(x-7))')
+
+def assert_numerateur(input, expected):
+    i = _rechercher_numerateur(input)
+    assert i is not None
+    assertEqual(input[i:], expected)
+
+def test_rechercher_numerateur():
+    assert_numerateur('2', '2')
+    assert_numerateur('-2', '-2')
+    assert_numerateur('1+2', '2')
+    assert_numerateur('cos(x)', 'cos(x)')
+    assert_numerateur('x-2^cos(x)', '2^cos(x)')
+    assert_numerateur('3-(x+1)^(x-2^cos(x))', '(x+1)^(x-2^cos(x))')
+    assert_numerateur('3-@', '@')
+    assert_numerateur('(4/7)+8', '8')
+    assert_numerateur('@+8', '8')
+
+def assert_denominateur(input, expected):
+    i = _rechercher_denominateur(input)
+    assert i is not None
+    assertEqual(input[:i], expected)
+
+def test_rechercher_denominateur():
+    assert_denominateur('2', '2')
+    assert_denominateur('-2', '-2')
+    assert_denominateur('1+2', '1')
+    assert_denominateur('cos(x)-x', 'cos(x)')
+    assert_denominateur('2^cos(x)-x', '2^cos(x)')
+    assert_denominateur('(x+1)^(x-2^cos(x))-3', '(x+1)^(x-2^cos(x))')
