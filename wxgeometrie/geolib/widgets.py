@@ -202,6 +202,7 @@ class Champ(Texte):
         # savoir si celui-ci était déjà correct, ou si le résultat est
         # devenu correct (il peut y avoir plusieurs résultats corrects).
         self.__correct_old = self.correct
+        self.__label_old = self.style('label')
 
 
     def label(self, *args, **kw):
@@ -231,10 +232,11 @@ class Champ(Texte):
                 txt.set(text=u'\u2713', color='g') # 263A  00D8
             else:
                 txt.set(text=u'\u2639', color='r') #u'\u26A0'
-            if getattr(self, 'on_validate', None) is not None:
+            if getattr(self, 'on_validate', None) is not None and lbl != self.__label_old:
                 self.on_validate(champ=self, correct=correct,
                                  correct_old=self.__correct_old)
                 self.__correct_old = correct
+                self.__label_old = lbl
 
     @property
     def correct(self):

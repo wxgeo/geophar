@@ -42,7 +42,11 @@ from ...mathlib.parsers import convertir_en_latex
 from ... import param
 
 
-
+# TODO:
+# - ajouter un bonus substantiel si les résultats sont donnés
+#   sous forme de fraction simplifiée.
+# - possibilité de définir facilement les niveaux (fichier texte externe ?)
+# - gestion des carrés, des nombres seuls
 
 
 
@@ -50,16 +54,14 @@ class TabMenuBar(MenuBar):
     def __init__(self, panel):
         MenuBar.__init__(self, panel)
 
-        self.ajouter(u"Fichier", [u"nouveau"], [u"ouvrir"], [u"ouvrir ici"],
+        self.ajouter(u"Fichier", [u"Recommencer", u"Recommencer au niveau 0.", u"Ctrl+N", panel.nouvelle_partie],
+                    [u"ouvrir"],
                     [u"enregistrer"], [u"enregistrer_sous"], [u"exporter"],
                     [u"exporter&sauver"], None, [u"imprimer"], [u"presse-papier"],
-                    None, [u"proprietes"], None, self.panel.doc_ouverts, None, ["fermer"], ["quitter"])
+                    None, [u"proprietes"], None, ["fermer"], ["quitter"])
         self.ajouter(u"Editer", ["annuler"], ["refaire"], ["modifier"], ["supprimer"])
-        self.ajouter(u"creer")
-        self.ajouter(u"Affichage", ["onglet"], None, ["repere"], ["quadrillage"], ["orthonorme"], None, ["zoom_texte"], ["zoom_ligne"], ["zoom_general"], None, ["fenetre"], ["zoomer"], ["dezoomer"], ["orthonormaliser"], [u"zoom_auto"])
-        self.ajouter(u"Autres actions", [u"detecter"])
+        self.ajouter(u"Affichage", ["onglet"], None, ["zoom_texte"], ["zoom_ligne"], ["zoom_general"])
         self.ajouter(u"Outils", [u"options"])
-##        self.ajouter(u"Avancé", [u"historique"], [u"securise"], [u"ligne_commande"], [u"debug"])
         self.ajouter(u"avance1")
         self.ajouter(u"?")
 
@@ -98,25 +100,30 @@ class ExercicesTableauxSignes(Panel_API_graphique):
         self.sizer.addLayout(self.entrees, 0.2)
         self.finaliser(contenu=self.sizer)
 
-        self.points = 0
-        self.niveau = -1
-        self.erreurs = 0
         self.niveaux = ["n*x+z", "-n*x+q", "1|q*x+z", "z*x+z,z*x+z", "z*x+q|z*x+z",
                         "z*x+z,z*x+z|z*x+z", "z*x+z,z*x+z|z*x+z,z*x+z"]
 
+        self.nouvelle_partie()
+
+
+    def nouvelle_partie(self):
+        self.score = 0
+        self.niveau = -1
+        self.erreurs = 0
         self.niveau_suivant()
 
 
     def niveau_suivant(self):
+        self.niveau += 1
         self.btn_niveau.setEnabled(False)
         self.felicitations.setStyleSheet(
             """QLabel {background-color: white; padding: 5px; border-radius: 5px;
             color:white;}""")
-        self.fermer_feuille()
-        self.niveau += 1
+        self.fermer_feuilles()
         self.update_panneau()
         self.pattern = self.niveaux[self.niveau]
         self.generer_expression()
+
 
     def update_panneau(self):
         self.panneau.setStyleSheet(
@@ -125,17 +132,31 @@ border-radius: 5px; border-color:%s; background-color: %s }"""
 %(QColor(30, 144, 255).name(), QColor(176, 226, 255).name())
                         )
         self.panneau.setText((u"<p><b><i>Niveau :</i> %s</b></p>" % self.niveau) +
-                                 (u"<p><b><i>Points :</i> %s</b></p>" % self.points) +
+                                 (u"<p><b><i>Points :</i> %s</b></p>" % self.score) +
                                  (u"<p><i>Erreurs :</i> %s</p>" % self.erreurs))
 
     def _sauvegarder(self, fgeo, feuille = None):
         Panel_API_graphique._sauvegarder(self, fgeo, feuille)
-        ##fgeo.contenu[u"Instructions"] = [self.instructions.toPlainText()]
+        fgeo.contenu[u"niveau"] = [str(self.niveau)]
+        fgeo.contenu[u"expression"] = [self.raw_expression]
+        fgeo.contenu[u"score"] = [str(self.score)]
+        fgeo.contenu[u"erreurs"] = [str(self.erreurs)]
 
     def _ouvrir(self, fgeo):
+        # Il ne doit y avoir qu'une seule feuille ouverte à la fois.
+        # XXX: intégrer cette fonctionnalité directement au Panel.
+        self.fermer_feuilles()
         Panel_API_graphique._ouvrir(self, fgeo)
-        if fgeo.contenu.has_key(u"Instructions"):
-            self.instructions.setPlainText(fgeo.contenu[u"Instructions"][0])
+        if fgeo.contenu.has_key(u"expression"):
+            self.generer_expression(expr=fgeo.contenu[u"expression"][0])
+            ##self.dessiner_tableau()
+        if fgeo.contenu.has_key(u"niveau"):
+            self.niveau = int(fgeo.contenu[u"niveau"][0])
+        if fgeo.contenu.has_key(u"score"):
+            self.score = int(fgeo.contenu[u"score"][0])
+        if fgeo.contenu.has_key(u"erreurs"):
+            self.erreurs = int(fgeo.contenu[u"erreurs"][0])
+        self.update_panneau()
 
     def _affiche(self):
         self.dessiner_tableau()
@@ -169,7 +190,12 @@ border-radius: 5px; border-color:%s; background-color: %s }"""
             expression = '(' + expression + ')'
         return expression.replace('*', '')
 
-    def generer_expression(self):
+    def generer_expression(self, expr=None):
+        u"""Génère une expression aléatoire en fonction respectant le format
+        en cours.
+
+        Si `expr` a une valeur, l'expression reprend la valeur de `expr`.
+        """
         # Génération de l'expression:
         x = S('x')
         k = 0
@@ -177,10 +203,14 @@ border-radius: 5px; border-color:%s; background-color: %s }"""
             k += 1
             # 10000 essais au maximum
             assert k < 10000
-            expression = re.sub('n', self.naturel, self.pattern)
-            expression = re.sub('z', self.relatif, expression)
-            expression = re.sub('d', self.decimal, expression)
-            expression = re.sub('q', self.rationnel, expression)
+            if expr is None:
+                expression = re.sub('n', self.naturel, self.pattern)
+                expression = re.sub('z', self.relatif, expression)
+                expression = re.sub('d', self.decimal, expression)
+                expression = re.sub('q', self.rationnel, expression)
+            else:
+                expression = expr
+            self.raw_expression = expression
             expression = expression.replace('+-', '-').replace('-+', '-')
             if '|' in expression:
                 num, den = expression.split('|')
@@ -215,7 +245,7 @@ border-radius: 5px; border-color:%s; background-color: %s }"""
             self.expression = num
         else:
             self.expression = '(%s)/(%s)' %(num, den)
-        print self.expression, self.numerateur, self.denominateur
+        ##print self.expression, self.numerateur, self.denominateur
 
 
     def dessiner_tableau(self):
@@ -247,7 +277,6 @@ border-radius: 5px; border-color:%s; background-color: %s }"""
                 t = Champ('', x, height - y, couleur='b',
                        alignement_horizontal=ha, alignement_vertical=va,
                        attendu=resultat, taille=size, **kw)
-                t.on_validate = self.compter_points
                 self.feuille_actuelle.objets[nom] = t
             else:
                 t = self.feuille_actuelle.objets[nom]
@@ -256,6 +285,7 @@ border-radius: 5px; border-color:%s; background-color: %s }"""
                 t.style(couleur='b',
                        alignement_horizontal=ha, alignement_vertical=va,
                        attendu=resultat, taille=size, **kw)
+            t.on_validate = self.compter_points
             # Compteur qui s'incrémente à chaque nouveau champ.
             # Le but est que chaque champ ait un identifiant unique.
             compteur[0] += 1
@@ -470,15 +500,18 @@ border-radius: 5px; border-color:%s; background-color: %s }"""
     a = property(autocompleter)
 
     def compter_points(self, **kw):
-        if 'correct' in kw and 'correct_old' in kw:
+        if 'correct' in kw and 'correct_old' in kw and 'champ' in kw:
             if kw['correct']:
                 if not kw['correct_old']:
-                    self.points += 1
+                    if not kw['champ'].style('choix'):
+                        # C'est plus dur s'il n'y a pas de choix proposé
+                        self.score += 1
+                    self.score += 1
             else:
-                self.points -= 1
+                self.score -= 1
                 self.erreurs += 1
         if all(obj.correct for obj in self.feuille_actuelle.objets.lister(type=Champ)):
-            self.points += 10*self.niveau
+            self.score += 10*(self.niveau + 1)
             if self.niveau + 1 < len(self.niveaux):
                 self.btn_niveau.setEnabled(True)
                 self.btn_niveau.setFocus(True)
