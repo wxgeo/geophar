@@ -147,6 +147,10 @@ border-top-right-radius: 4px;
         menu.exec_(self.newTabButton.mapToGlobal(QPoint(0, self.newTabButton.height())))
 
     def activer_module(self, nom, selectionner=True):
+        u"""Active le module `nom`.
+
+        Retourne `True` si le module a bien été activé (ou est déjà actif),
+        `False` sinon."""
         if param.modules_actifs[nom]:
             print(u'Le module %s est déjà activé.' %nom)
         else:
@@ -154,11 +158,12 @@ border-top-right-radius: 4px;
             module = modules.importer_module(nom)
             if module is None:
                 print(u"Warning: Impossible d'importer le module %s." %nom)
-            else:
-                panel = module._panel_(self, module)
-                self.nouvel_onglet(panel)
-                if selectionner:
-                    self.changer_onglet(panel)
+                return False
+            panel = module._panel_(self, module)
+            self.nouvel_onglet(panel)
+            if selectionner:
+                self.changer_onglet(panel)
+        return True
 
     def nouvel_onglet(self, panel, i=None):
         u"Ajouter un nouvel onglet à la position 'i'."
@@ -359,13 +364,15 @@ border-top-right-radius: 4px;
             fichier, message = ouvrir_fichierGEO(fichier)
             self.parent.message(message)
         module = self.onglet(fichier.module)
-        if module is not None:
-            if not en_arriere_plan:
-                self.changer_onglet(module) # affiche cet onglet
-            module.ouvrir(fichier) # charge le fichier dans le bon onglet
-            #print_error()
-        else:
-            self.parent.message(u"Impossible de déterminer le module adéquat.")
+        if module is None:
+            if self.activer_module(fichier.module, selectionner=(not en_arriere_plan)):
+                module = self.onglet(fichier.module)
+            else:
+                self.parent.message(u"Le module '%s' n'a pas été trouvé." % fichier.module)
+                return
+        if not en_arriere_plan:
+            self.changer_onglet(module) # affiche cet onglet
+        module.ouvrir(fichier) # charge le fichier dans le bon onglet
 
 
     def ExportFile(self, lieu = None, sauvegarde = False, exporter = True):

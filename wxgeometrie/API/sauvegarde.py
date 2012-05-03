@@ -174,6 +174,8 @@ class FichierGEO(object):
 
         f = None
         if not os.path.exists(path):
+            if param.debug:
+                print('Incorrect path: ' + repr(path))
             return None, u"Le fichier n'existe pas."
         try:
             f = open(path, "rU")

@@ -54,17 +54,6 @@ class PyOnDemandOutputWindow(QPlainTextEdit):
         self.insertPlainText(s.decode(param.encodage)) # again assuming QPlainTextEdit
 
 
-#class ReceptionDeFichiers(wx.FileDropTarget):
-#    def __init__(self, window):
-#        wx.FileDropTarget.__init__(self)
-#        self.window = window
-
-#    def OnDropFiles(self, x, y, filenames):
-#        for filename in filenames:
-#            if filename.endswith(u".geo") or filename.endswith(u".geoz"):
-#                self.window.onglets.ouvrir(filename)
-
-
 
 class FenetrePrincipale(QMainWindow):
 
@@ -124,9 +113,7 @@ class FenetrePrincipale(QMainWindow):
 
         self.console = Console(self)
 
-#        self.Bind(wx.EVT_CLOSE, self.OnClose)
-
-#        self.SetDropTarget(ReceptionDeFichiers(self))
+        self.setAcceptDrops(True)
         self.setFocus()
 
 #        self.Bind (wx.EVT_IDLE, self.OnIdle)
@@ -137,9 +124,24 @@ class FenetrePrincipale(QMainWindow):
         self.gestion = GestionnaireSession(self.onglets)
 
 
-    def OnIdle(self, evt):
-        self.gestion.autosave()
+    ##def OnIdle(self, evt):
+        ##self.gestion.autosave()
 
+    def dragEnterEvent(self, event):
+        if event.mimeData().hasUrls():
+            if any(url.path().endswith('.geo') or url.path().endswith('.geoz')
+                    for url in event.mimeData().urls()):
+                event.accept()
+            else:
+                event.ignore()
+        else:
+            event.ignore()
+
+    def dropEvent(self, event):
+        assert event.mimeData().hasUrls()
+        for url in event.mimeData().urls():
+            if url.path().endswith('.geo') or url.path().endswith('.geoz'):
+                self.onglets.ouvrir(unicode(url.path()))
 
     def afficher_ligne_commande(self, afficher=None):
         u"Afficher ou non la ligne de commande."
