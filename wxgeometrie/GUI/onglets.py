@@ -151,8 +151,11 @@ border-top-right-radius: 4px;
 
         Retourne `True` si le module a bien été activé (ou est déjà actif),
         `False` sinon."""
-        if param.modules_actifs[nom]:
-            print(u'Le module %s est déjà activé.' %nom)
+        if nom not in param.modules_actifs:
+            print(u"Warning: Le module %s n'a pas été trouvé." %repr(nom))
+            return False
+        elif param.modules_actifs[nom]:
+            print(u'Le module %s est déjà activé.' %repr(nom))
         else:
             param.modules_actifs[nom] = True
             module = modules.importer_module(nom)

@@ -58,7 +58,8 @@ class Panel_simple(QWidget):
         self.module = module
 #        self.setStyleSheet("background-color:white")
         self.parent = parent
-        self.nom = self.__class__.__name__.lower()
+        ##self.nom = self.__class__.__name__.lower()
+        self.nom = self.module.__name__.rsplit('.', 1)[-1]
         self.canvas = None
         path = path2(param.emplacements['log'] + "/" + self.nom + u"_historique.log")
         self.log = Rapport(path)
