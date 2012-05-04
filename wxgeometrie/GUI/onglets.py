@@ -121,14 +121,14 @@ border-top-right-radius: 4px;
         # Ajoute les differentes composantes :
         self.actualiser_liste_onglets()
 
-        # Le signal `.currentChanged` ne transmet pas le numéro de l'onglet
-        # précédemment actif, il faut donc le garder manuellement en mémoire.
-        self._index = -1
+        # Usage interne : le signal `.currentChanged` ne transmet pas le numéro de l'onglet
+        # précédemment actif, il faut donc garder manuellement en mémoire l'onglet actif.
+        self._ancien_onglet = None
         # adaptation du titre de l'application et du menu.
-        self.currentChanged.connect(self.changer)
+        self.currentChanged.connect(self.evt_changer)
         if self._liste:
             # affiche le titre et le menu du 1er onglet
-            self.changer(0)
+            self.evt_changer(0)
             ##self.actualise_onglet(self._liste[0])
             ##self._liste[0].activer()
 
@@ -138,6 +138,7 @@ border-top-right-radius: 4px;
     # -------------------
 
     def popup_activer_module(self):
+        u"""Affiche un menu permettant d'activer des modules."""
         menu = PopUpMenu(u"Module à activer", self, 'crayon')
         deja_charges = [onglet.__module__.split('.')[-1] for onglet in self]
         for nom in param.modules:
@@ -181,12 +182,12 @@ border-top-right-radius: 4px;
             self.closeTabButton.setEnabled(True)
 
     def deplacer_onglet(self, i, j):
-        u"Déplacer un onglet de la position 'i' à la position 'j'."
+        u"Déplace l'onglet situé en position `i` à la position `j`."
         if i != j:
             self.tabBar.moveTab(i, j)
 
     def fermer_onglet(self, i=None):
-        u"Fermer l'onglet situé en position 'i'."
+        u"Ferme l'onglet situé en position `i`."
         if self.count() > 1:
             if i is None:
                 i = self.currentIndex()
@@ -198,33 +199,33 @@ border-top-right-radius: 4px;
             self.closeTabButton.setEnabled(False)
 
     def deleteTab(self, i):
+        u"""Supprime le ième onglet.
+
+        Ne pas utiliser directement ; utiliser `fermer_onglet()` à la place."""
         tab = self.widget(i)
         self.removeTab(i)
         tab.close()
         tab.deleteLater()
 
-    def changer(self, index):
+    def evt_changer(self, index):
+        u"""Actions effectuées lorsqu'on change d'onglet."""
+        if self._ancien_onglet is not None:
+            self._ancien_onglet.desactiver()
         if index != -1:
             onglet = self._liste[index]
             self.actualise_onglet(onglet)
-            # Actions personnalisées lors de la sélection
+            # Le module nouvellement sélectionné peut exécuter
+            # des actions personnalisées à cette occasion.
             onglet.activer()
-    #        wx.CallLater(10, onglet.activer)
-        if self._index != -1:
-            ancien_onglet = self._liste[self._index]
-            ancien_onglet.desactiver()
-        self._index = index
-
+            self._ancien_onglet = onglet
+        else:
+            self._ancien_onglet = None
 
 
 
     def actualise_onglet(self, onglet):
         self.parent.setMenuBar(onglet.module._menu_(onglet)) # change le menu de la fenetre
         onglet.changer_titre() # change le titre de la fenetre
-
-#        if param.plateforme == "Windows":
-#            if onglet.canvas is not None:
-#                onglet.canvas.execute_on_idle(onglet.canvas.graph.restaurer_dessin)
 
 
     def onglet(self, nom):
@@ -249,7 +250,9 @@ border-top-right-radius: 4px;
         return iter(self._liste)
 
     def changer_onglet(self, onglet):
-        u"onglet : l'onglet proprement dit, ou son nom, ou son numéro."
+        u"""Changer d'onglet actif.
+
+        `onglet` : l'onglet proprement dit, ou son nom, ou son numéro."""
         if type(onglet) in (str, unicode):
             onglet = self._liste.index(getattr(self, onglet.lower()))
         elif type(onglet) not in (int, long):
