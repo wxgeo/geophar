@@ -32,13 +32,14 @@ from PyQt4.QtGui import (QVBoxLayout, QLabel, QPushButton, QHBoxLayout,
                          QMessageBox, QTextEdit, QColor)
 
 from sympy import S, solve, gcd
+from sympy.core.sympify import SympifyError
 
 from ...GUI import MenuBar, Panel_API_graphique
 from ...GUI.proprietes_objets import Proprietes
 from ...geolib import Segment, Texte, Point, Champ, TEXTE
 from ...geolib.routines import nice_str
 from ...pylib import OrderedDict, print_error
-from ...mathlib.parsers import convertir_en_latex
+from ...mathlib.parsers import convertir_en_latex, NBR_SIGNE
 from ... import param
 
 
@@ -110,6 +111,8 @@ class ExercicesTableauxSignes(Panel_API_graphique):
         self.score = 0
         self.niveau = -1
         self.erreurs = 0
+        self.canvas.afficher_axes = False
+        self.canvas.afficher_quadrillage = False
         self.niveau_suivant()
 
 
@@ -285,7 +288,8 @@ border-radius: 5px; border-color:%s; background-color: %s }"""
                 t.style(couleur='b',
                        alignement_horizontal=ha, alignement_vertical=va,
                        attendu=resultat, taille=size, **kw)
-            t.on_validate = self.compter_points
+            t.evt_valider = self.compter_points
+            t.valider = self._valider
             # Compteur qui s'incrémente à chaque nouveau champ.
             # Le but est que chaque champ ait un identifiant unique.
             compteur[0] += 1
@@ -499,12 +503,39 @@ border-radius: 5px; border-color:%s; background-color: %s }"""
 
     a = property(autocompleter)
 
+    @staticmethod
+    def _valider(reponse, attendu):
+        attendu = attendu.replace(' ', '').replace(',', '.')
+        reponse = reponse.replace(' ', '').replace(',', '.')
+        if attendu == reponse:
+            return True
+        else:
+            try:
+                if abs(float(S(attendu) - S(reponse))) < param.tolerance:
+                    return True
+            except (SympifyError, ValueError):
+                pass
+            except Exception:
+                print_error()
+        return False
+
+
+    @staticmethod
+    def _calcul_effectue(expr):
+        expr = expr.replace(',', '.')
+        return bool(re.match("(%s|%s/%s)$" % (NBR_SIGNE, NBR_SIGNE, NBR_SIGNE), expr))
+
     def compter_points(self, **kw):
         if 'correct' in kw and 'correct_old' in kw and 'champ' in kw:
+            champ = kw['champ']
             if kw['correct']:
                 if not kw['correct_old']:
-                    if not kw['champ'].style('choix'):
-                        # C'est plus dur s'il n'y a pas de choix proposé
+                    if not champ.style('choix'):
+                        # C'est plus dur s'il n'y a pas de choix proposé.
+                        # On accorde une bonification si le résultat est
+                        # un minimum simplifié.
+                        if self._calcul_effectue(champ.label()):
+                            self.score += 3
                         self.score += 1
                     self.score += 1
             else:
