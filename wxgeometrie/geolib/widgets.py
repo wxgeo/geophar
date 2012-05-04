@@ -23,7 +23,6 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 from sympy import S
-from sympy.core.sympify import SympifyError
 
 from .objet import Objet_avec_coordonnees_modifiables, Argument, Ref
 from .textes import Texte_generique, Texte
@@ -176,11 +175,51 @@ class Champ(Texte):
     u"""Un champ de texte.
 
     Un champ de texte éditable en double-cliquant dessus.
-    On lui associe également un validateur.
 
-    La liste des propositions peut être passée via le keyword `choix`.
-    >>> from wxgeometrie import Choix
-    >>> c = Choix('', 10, 5, choix=['oui', 'non', 'sans opinion'])
+    Le champ peut être encadré par du texte, via les mots-clefs `prefixe`
+    (texte à gauche) et `suffixe` (texte à droite).
+    On peut également lui associer un résultat attendu, via le mot-clef `attendu`.
+
+    >>> from wxgeometrie import Champ
+    >>> c = Champ('modifiez moi', 10, 5, prefixe="1+1=", attendu="2", suffixe=" (entrer le resultat)")
+    >>> c.style("attendu")
+    '2'
+
+    Si un résultat est attendu, alors le texte rentré par l'utilisateur passera
+    un test de validation. Si le résultat passe le test, un check vert est
+    affiché à côté, sinon, un smiley :-( rouge est affiché.
+
+    Par défaut, pour être validé, il faut que le résultat soit exactement
+    conforme au texte attendu.
+
+    >>> c.texte = "2.0"
+    >>> c.correct
+    False
+
+    Cependant, il est possible de définir un test de validation personnalisé.
+
+    >>> def test(reponse, attendu):
+            return float(reponse) == float(attendu)
+    >>> c.valider = test
+    >>> c.texte = "2.0"
+    >>> c.correct
+    True
+
+    On peut aussi associer une action à la validation.
+
+    >>> def action(self, **kw):
+            if kw['correct']:
+                print('Bravo !')
+            else:
+                print('Essaie encore...')
+    >>> c.evt_valider = action
+
+    Cet action sera effectuée au moment de l'affichage de l'objet, si
+    celui-ci passe le test de validation.
+
+    Enfin, une liste des propositions peut être passée via le mot-clef `choix`.
+
+    >>> c = Champ('', 10, 5, choix=['oui', 'non', 'sans opinion'])
     >>> c.style('choix')
     ['oui', 'non', 'sans opinion']
     """
@@ -189,6 +228,12 @@ class Champ(Texte):
     texte = __texte = Argument("basestring", Texte._get_texte, Texte._set_texte)
     abscisse = x = __x = Argument("Variable_generique", defaut = lambda: normalvariate(0,10))
     ordonnee = y = __y = Argument("Variable_generique", defaut = lambda: normalvariate(0,10))
+
+    # Il est possible d'attacher un test de validation personnalisé à l'objet.
+    valider = None
+    # Par ailleurs, on peut attacher à l'objet une action qui sera appelée après
+    # chaque test de validation.
+    evt_valider = None
 
     def __init__(self, texte="", x=None, y=None, **styles):
         self.__texte = texte = Ref(texte)
@@ -209,7 +254,9 @@ class Champ(Texte):
         txt = Texte.label(self, *args, **kw)
         if not txt.strip('$\n'):
             txt = '...' # u'\u20DB'
-        return txt
+        prefixe = self.style('prefixe')
+        suffixe = self.style('suffixe')
+        return (prefixe or '') + txt + (suffixe or '')
 
     def _creer_figure(self):
         ##print 'champ-label::', self.label()
@@ -232,26 +279,20 @@ class Champ(Texte):
                 txt.set(text=u'\u2713', color='g') # 263A  00D8
             else:
                 txt.set(text=u'\u2639', color='r') #u'\u26A0'
-            if getattr(self, 'on_validate', None) is not None and lbl != self.__label_old:
-                self.on_validate(champ=self, correct=correct,
+            if getattr(self, 'evt_valider', None) is not None and lbl != self.__label_old:
+                self.evt_valider(champ=self, correct=correct,
                                  correct_old=self.__correct_old)
                 self.__correct_old = correct
                 self.__label_old = lbl
 
     @property
     def correct(self):
-        attendu = self.style('attendu').replace(' ', '').replace(',', '.')
-        lbl = self.style('label').replace(' ', '').replace(',', '.')
+        attendu = self.style('attendu')
         if attendu is None:
             return
-        elif attendu == lbl:
-            return True
+        if self.valider is None:
+            # Validation basique par défaut
+            return (attendu == self.style('label'))
         else:
-            try:
-                if abs(float(S(attendu) - S(lbl))) < param.tolerance:
-                    return True
-            except (SympifyError, ValueError):
-                pass
-            except Exception:
-                print_error()
-        return False
+            # Méthode de validation personnalisée
+            return self.valider(self.style('label'), attendu)
