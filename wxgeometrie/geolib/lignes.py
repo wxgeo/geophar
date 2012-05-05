@@ -197,7 +197,7 @@ class Ligne_generique(Objet_avec_equation):
         if len(points) == 4:
             return points[:2] # Mxmin et Mxmax ne peuvent être confondus.
         elif len(points) == 3:
-            if points[1] == Mxmax:
+            if points[0] == Mxmin and points[1] == Mxmax:
                 return points[:2] # Mxmin et Mxmax ne peuvent être confondus.
             return points[1:] # Mymin et Mymax non plus.
         else:
