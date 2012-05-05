@@ -36,6 +36,7 @@ from sympy.core.sympify import SympifyError
 
 from ...GUI import MenuBar, Panel_API_graphique
 from ...GUI.proprietes_objets import Proprietes
+from ...GUI.wxlib import BusyCursor
 from ...geolib import Segment, Texte, Point, Champ, TEXTE
 from ...geolib.routines import nice_str
 from ...pylib import OrderedDict, print_error
@@ -55,13 +56,13 @@ class TabMenuBar(MenuBar):
     def __init__(self, panel):
         MenuBar.__init__(self, panel)
 
-        self.ajouter(u"Fichier", [u"Recommencer", u"Recommencer au niveau 0.", u"Ctrl+N", panel.nouvelle_partie],
+        self.ajouter(u"Fichier", [u"Recommencer", u"Recommencer au niveau 0.", u"Ctrl+N", panel.reinitialiser],
                     [u"ouvrir"],
                     [u"enregistrer"], [u"enregistrer_sous"], [u"exporter"],
                     [u"exporter&sauver"], None, [u"imprimer"], [u"presse-papier"],
                     None, [u"proprietes"], None, ["fermer"], ["quitter"])
         self.ajouter(u"Editer", ["annuler"], ["refaire"], ["modifier"], ["supprimer"])
-        self.ajouter(u"Affichage", ["onglet"], None, ["zoom_texte"], ["zoom_ligne"], ["zoom_general"])
+        self.ajouter(u"Affichage", ["onglet"], ["plein_ecran"], None, ["zoom_texte"], ["zoom_ligne"], ["zoom_general"])
         self.ajouter(u"Outils", [u"options"])
         self.ajouter(u"avance1")
         self.ajouter(u"?")
@@ -84,6 +85,11 @@ class ExercicesTableauxSignes(Panel_API_graphique):
         self.entrees.addSpacing(30)
 
         self.panneau = QLabel('')
+        self.panneau.setStyleSheet(
+            """QLabel { padding: 10px; border-width: 2px; border-style:solid;
+            border-radius: 5px; border-color:%s; background-color: %s }"""
+            %(QColor(30, 144, 255).name(), QColor(176, 226, 255).name())
+                        )
         self.entrees.addWidget(self.panneau)
 
         self.entrees.addStretch()
@@ -101,13 +107,16 @@ class ExercicesTableauxSignes(Panel_API_graphique):
         self.sizer.addLayout(self.entrees, 0.2)
         self.finaliser(contenu=self.sizer)
 
+        # Ne pas éditer les champs/textes avec [Entrée]
+        self.canvas.editeur.active = False
+
         self.niveaux = ["n*x+z", "-n*x+q", "1|q*x+z", "z*x+z,z*x+z", "z*x+q|z*x+z",
                         "z*x+z,z*x+z|z*x+z", "z*x+z,z*x+z|z*x+z,z*x+z"]
 
-        self.nouvelle_partie()
+        self.reinitialiser()
 
 
-    def nouvelle_partie(self):
+    def reinitialiser(self):
         self.score = 0
         self.niveau = -1
         self.erreurs = 0
@@ -129,14 +138,28 @@ class ExercicesTableauxSignes(Panel_API_graphique):
 
 
     def update_panneau(self):
-        self.panneau.setStyleSheet(
-"""QLabel { padding: 10px; border-width: 2px; border-style:solid;
-border-radius: 5px; border-color:%s; background-color: %s }"""
-%(QColor(30, 144, 255).name(), QColor(176, 226, 255).name())
-                        )
         self.panneau.setText((u"<p><b><i>Niveau :</i> %s</b></p>" % self.niveau) +
                                  (u"<p><b><i>Points :</i> %s</b></p>" % self.score) +
                                  (u"<p><i>Erreurs :</i> %s</p>" % self.erreurs))
+        champs = self.feuille_actuelle.objets.lister(type=Champ)
+        if champs and all(obj.correct for obj in champs):
+            if self.niveau + 1 < len(self.niveaux):
+                self.btn_niveau.setEnabled(True)
+                self.btn_niveau.setFocus(True)
+                self.felicitations.setText(u'<p><b>Félicitations !</b></p>' +
+                                           u'<p>Passer au niveau %s</p>' %(self.niveau + 1))
+                self.felicitations.setStyleSheet(
+                    """QLabel {background-color: %s; padding: 5px;
+                       border-radius: 5px;
+                       color:white;}""" %QColor(255, 153, 0).name())
+
+            else:
+                self.felicitations.setText(u'<p><b>Félicitations !</b></p>' +
+                                           u'<p>Dernier niveau terminé !</p>')
+                self.felicitations.setStyleSheet(
+                    """QLabel {background-color: %s; padding: 5px; border-radius: 5px;
+                    color:white;}""" %QColor(102, 205, 0).name())
+
 
     def _sauvegarder(self, fgeo, feuille = None):
         Panel_API_graphique._sauvegarder(self, fgeo, feuille)
@@ -161,8 +184,10 @@ border-radius: 5px; border-color:%s; background-color: %s }"""
             self.erreurs = int(fgeo.contenu[u"erreurs"][0])
         self.update_panneau()
 
+
     def _affiche(self):
-        self.dessiner_tableau()
+        with BusyCursor():
+            self.dessiner_tableau()
 
     def naturel(self, m=None):
         u'''Retourne un entier entre 2 et 15.'''
@@ -248,12 +273,43 @@ border-radius: 5px; border-color:%s; background-color: %s }"""
             self.expression = num
         else:
             self.expression = '(%s)/(%s)' %(num, den)
-        ##print self.expression, self.numerateur, self.denominateur
+
+        # On génère tous les dictionnaires utiles à la construction du tableau
+        self.expression_latex = convertir_en_latex(self.expression, mode=None)
+        num = '*'.join('(' + s + ')' for s in self.numerateur)
+        den = '*'.join('(' + s + ')' for s in self.denominateur)
+        if den and num:
+            self.expression_sympy = S('(%s)/(%s)' %(num, den))
+        elif num:
+            self.expression_sympy = S('(%s)' %num)
+        else:
+            assert den
+            self.expression_sympy = S('1/(%s)' %den)
+
+        self.facteurs_latex = fact_latex = OrderedDict((expr, convertir_en_latex(expr, mode=None))
+                                for expr in self.numerateur + self.denominateur)
+        self.facteurs_sympy = fact_sympy = OrderedDict((expr, S(expr)) for expr in fact_latex)
+        self.facteurs_sols = OrderedDict((expr, solve(fact_sympy[expr])[0]) for expr in fact_latex)
+        self.facteurs_diff = OrderedDict((expr, fact_sympy[expr].diff()) for expr in fact_latex)
+
+        # valeurs remarquables de x
+        self.sols = sorted(set(self.facteurs_sols.values()))
+        if param.debug:
+            print('(Exercice tableau de signes) Liste des solutions: ' + str(self.sols))
+
 
 
     def dessiner_tableau(self):
         ##self.fermer_feuille()
         can = self.canvas
+        expression_latex = self.expression_latex
+        expression_sympy = self.expression_sympy
+        facteurs_latex = self.facteurs_latex
+        facteurs_sympy = self.facteurs_sympy
+        facteurs_sols = self.facteurs_sols
+        facteurs_diff = self.facteurs_diff
+        sols = self.sols
+
 
         # Lorsque l'affichage est actualisé (fenêtre redimensionnée par
         # exemple), le champ n'est pas récréé, mais seulement mis à jour.
@@ -300,22 +356,6 @@ border-radius: 5px; border-color:%s; background-color: %s }"""
             size = kw.pop('size', 16)
             return can.dessiner_texte(x, height - y, texte, size=size, va=va, **kw)
 
-        expression_latex = convertir_en_latex(self.expression, mode=None)
-        num = '*'.join('(' + s + ')' for s in self.numerateur)
-        den = '*'.join('(' + s + ')' for s in self.denominateur)
-        if den and num:
-            expression_sympy = S('(%s)/(%s)' %(num, den))
-        elif num:
-            expression_sympy = S('(%s)' %num)
-        else:
-            assert den
-            expression_sympy = S('1/(%s)' %den)
-
-        facteurs_latex = OrderedDict((expr, convertir_en_latex(expr, mode=None))
-                                for expr in self.numerateur + self.denominateur)
-        facteurs_sympy = OrderedDict((expr, S(expr)) for expr in facteurs_latex)
-        facteurs_sols = OrderedDict((expr, solve(facteurs_sympy[expr])[0]) for expr in facteurs_latex)
-        facteurs_diff = OrderedDict((expr, facteurs_sympy[expr].diff()) for expr in facteurs_latex)
 
         # Paramètre d'espacement (marge entre le bord d'une case et le texte).
         marge = 4
@@ -345,7 +385,7 @@ border-radius: 5px; border-color:%s; background-color: %s }"""
                                     r'\,=\,0\,\,\Longleftrightarrow\,\,x\,=\,$')
             box = can.txt_box(txt)
             resultat = nice_str(facteurs_sols[expression])
-            print resultat
+            ##print resultat
             dessiner_champ(18 + box.width, h, ha='left', resultat=resultat)
             ##dessiner_texte(220, height - h, u'\u2713', color='g') # 263A  00D8
             ##dessiner_texte(240, height - h, u'\u2639', color='r') #u'\u26A0'
@@ -372,9 +412,6 @@ border-radius: 5px; border-color:%s; background-color: %s }"""
         # | Expression |                                               |
         # -------------------------------------------------------------
 
-        # valeurs remarquables de x
-        sols = sorted(set(facteurs_sols.values()))
-        print(sols)
 
         # -----------------
         # Tableau de signes
@@ -493,7 +530,7 @@ border-radius: 5px; border-color:%s; background-color: %s }"""
                 h = .5*(hauteurs[-2] + hauteurs[-1])
                 dessiner_champ(x, h, resultat=signe, choix=choix)
 
-        self.feuille_actuelle.interprete.commande_executee()
+        ##self.feuille_actuelle.interprete.commande_executee()
         ##self.feuille_actuelle.objets._.encadrer('r')
 
     def autocompleter(self):
@@ -543,21 +580,4 @@ border-radius: 5px; border-color:%s; background-color: %s }"""
                 self.erreurs += 1
         if all(obj.correct for obj in self.feuille_actuelle.objets.lister(type=Champ)):
             self.score += 10*(self.niveau + 1)
-            if self.niveau + 1 < len(self.niveaux):
-                self.btn_niveau.setEnabled(True)
-                self.btn_niveau.setFocus(True)
-                self.felicitations.setText(u'<p><b>Félicitations !</b></p>' +
-                                           u'<p>Passer au niveau %s</p>' %(self.niveau + 1))
-                self.felicitations.setStyleSheet(
-                    """QLabel {background-color: %s; padding: 5px;
-                       border-radius: 5px;
-                       color:white;}""" %QColor(255, 153, 0).name())
-
-            else:
-                self.felicitations.setText(u'<p><b>Félicitations !</b></p>' +
-                                           u'<p>Dernier niveau terminé !</p>')
-                self.felicitations.setStyleSheet(
-                    """QLabel {background-color: %s; padding: 5px; border-radius: 5px;
-                    color:white;}""" %QColor(102, 205, 0).name())
-            ##self.fermer_feuille()
         self.update_panneau()
