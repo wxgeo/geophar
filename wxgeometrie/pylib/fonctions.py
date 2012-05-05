@@ -735,6 +735,7 @@ def full_trace(f, *args, **kw):
         print '-------------------\n'
     return f(*args, **kw)
 
+
 def deprecated(message = ''):
     "A decorator for deprecated functions"
     @decorator

@@ -70,11 +70,13 @@ class Panel_simple(QWidget):
             ### Création de la barre de menus associée au panel
             ##self.menu = self.module._menu_(self)
 
+
     def message(self, texte = ''):
         self.parent.parent.message(texte)
 
     def changer_titre(self, texte = ''):
-        print 'changer_titre...'
+        if param.debug:
+            print('Nouveau titre: ' + texte)
         self.parent.parent.titre(texte)
 
 
@@ -87,6 +89,8 @@ class Panel_simple(QWidget):
             if not isinstance(fichier, FichierGEO):
                 fichier, message = ouvrir_fichierGEO(fichier)
                 self.message(message)
+            if param.debug:
+                print(u'Module "%s": ouverture du fichier "%s".' % (self.nom, fichier.nom))
             self._ouvrir(fichier) # instance de FichierGEO
 
 
@@ -111,7 +115,6 @@ class Panel_simple(QWidget):
 
     def _fichiers_ouverts(self):
         return [self.sauvegarder(None)]
-
 
 
     def _ouvrir(self, fgeo):
