@@ -36,60 +36,6 @@ from .app import app, white_palette
 
 
 
-#class Help(wx.Frame):
-#    def __init__(self, parent, path):
-#        wx.Frame.__init__(self, parent, size=wx.Size(700,610))
-
-#        self.path = path
-
-#        self.SetBackgroundColour(wx.Colour(255, 225, 153))
-#        self.html = html.HtmlWindow(self, -1, style=wx.NO_FULL_REPAINT_ON_RESIZE)
-#        self.html.SetRelatedFrame(self, u" %s ")
-#        #self.html.SetRelatedStatusBar(0)
-
-#        self.printer = html.HtmlEasyPrinting()
-
-#        self.box = QVBoxLayout()
-
-#        subbox = QHBoxLayout()
-
-#        icones = [(u"maison",u"Page d'accueil.", self.OnHome), (u"gauche", u"Page precedente.", self.OnBack), (u"droite", u"Page suivante.", self.OnForward), (u"print", u"Imprimer la page.", self.OnPrint)]
-
-#        for i in range(len(icones)):
-#            icone = icones[i]
-#            bmp = png(icone[0])
-#            bouton = wx.BitmapButton(self, -1, bmp, style=wx.NO_BORDER)
-#            bouton.SetBackgroundColour(self.GetBackgroundColour())
-#            subbox.Add(bouton, 0, wx.ALL,5)
-#            bouton.setToolTip(icone[1])
-#            bouton.Bind(wx.EVT_BUTTON, icone[2])
-
-
-
-#        self.box.Add(subbox, 0)
-#        self.box.Add(self.html, 1, wx.GROW)
-#        self.setLayout(self.box)
-#        self.SetAutoLayout(True)
-
-#        self.OnHome(None)
-
-
-#    def OnHome(self, event):
-#        self.html.LoadPage(self.path)
-
-
-
-#    def OnBack(self, event):
-#        self.html.HistoryBack()
-
-
-#    def OnForward(self, event):
-#        self.html.HistoryForward()
-
-
-#    def OnPrint(self, event):
-#        self.printer.GetPrintData().SetPaperId(wx.PAPER_LETTER)
-#        self.printer.PrintFile(self.html.GetOpenedPage())
 
 
 class Informations(QDialog):
@@ -188,6 +134,7 @@ class About(QDialog):
         topSizer.addWidget(panel)
 
         self.setLayout(topSizer)
+
 
 
 class WhiteScrolledMessageDialog(QDialog):
