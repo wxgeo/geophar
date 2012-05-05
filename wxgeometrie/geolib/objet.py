@@ -643,15 +643,14 @@ class Objet(object):
     Note : elle n'est pas utilisable en l'état, mais doit être surclassée.
     """
 
-    # Les slots ne sont **pas** compatibles avec les weakreferences.
-    ##__slots__ = ('__arguments__', '__feuille__', '__compteur_hierarchie__',
-        ##'_prefixe_nom', '_utiliser_coordonnees_approchees', '_label_temporaire',
-        ##'_affichage_depend_de_la_fenetre', '_enregistrer_sur_la_feuille_par_defaut',
-        ##'__contexte', '_style_defaut', '_initialisation_minimale', 'protege',
-        ##'etiquette', '_pointable', '_modifiable', '_deplacable', '__nom', 'nom_latex',
-        ##'_cache', '_representation', '_trace', '_trace_x', '_trace_y', '_gras',
-        ##'__figure_perimee', '_label_correct', 'rendu', 'vassaux', '_ancetres',
-        ##'_valeurs_par_defaut')
+    __slots__ = ('__arguments__', '__feuille__', '__compteur_hierarchie__',
+        '_prefixe_nom', '_utiliser_coordonnees_approchees', '_label_temporaire',
+        '_affichage_depend_de_la_fenetre', '_enregistrer_sur_la_feuille_par_defaut',
+        '__contexte', '_style_defaut', '_initialisation_minimale', 'protege',
+        'etiquette', '_pointable', '_modifiable', '_deplacable', '__nom', 'nom_latex',
+        '_cache', '_representation', '_trace', '_trace_x', '_trace_y', '_gras',
+        '__figure_perimee', '_label_correct', 'rendu', 'vassaux', '_ancetres',
+        '_valeurs_par_defaut', '__weakref__')
 
     __arguments__ = () # cf. geolib/__init__.py
     __feuille__ = DescripteurFeuille()
