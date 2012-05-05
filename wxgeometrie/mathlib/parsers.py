@@ -616,6 +616,12 @@ def _convertir_en_latex(chaine):
     # Puissances
     chaine = chaine.replace("**", "^")
 
+    # On remplace +- par -, -- par +, --- par -, etc.
+    def simpl(m):
+        return '-' if m.group(0).count('-')%2 else '+'
+    chaine = re.sub('[-+]{2,}', simpl, chaine).lstrip('+')
+
+
     # --------------------------------
     # Suppression des espaces inutiles
     # --------------------------------
@@ -716,9 +722,13 @@ def _convertir_en_latex(chaine):
 
 
 def convertir_en_latex(chaine, mode='$'):
-    u"""Convertit une chaine représentant un calcul en code LaTeX.
+    u"""Convertit une chaine représentant un calcul en Python, en du code LaTeX.
 
     modes actuels: '$', None
+
+    L'intérêt de ne pas passer par sympy, c'est que le code n'a pas besoin
+    d'être évalué. Si le code était évalué par sympy, cela pourrait modifier
+    l'ordre des termes (par exemple, transformer `2-x` en `-x+2`).
     """
     chaine = _convertir_en_latex(chaine)
     if mode == '$':

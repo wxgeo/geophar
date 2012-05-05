@@ -192,7 +192,10 @@ def test_arguments_LaTeX():
     assert_arg_latex('{x+2}5+4x-17^{2+x}', '{x+2}', '5', '+4x-17^{2+x}')
 
 
+# --------------------------------
 # Tests conversion chaine -> LaTeX
+# --------------------------------
+
 def assert_conv(input, output):
     assertEqual(convertir_en_latex(input), '$%s$' %output)
 
@@ -200,6 +203,7 @@ def test_convertir_en_LaTeX():
     assert_conv('2*x', '2 x')
     assert_conv('2*x+3', '2 x+3')
     assert_conv('x**-3.5+x**2*y-x**(2*y)+8', 'x^{-3.5}+x^{2} y-x^{2 y}+8')
+    assert_conv('--x+-----3--y', 'x-3+y')
 
 def test_convertir_en_LaTeX_fractions():
     assert_conv('2/3', r'\frac{2}{3}')
@@ -218,12 +222,14 @@ def test_convertir_en_LaTeX_fractions_imbriquees():
 
 
 def test_convertir_en_LaTeX_bad_expression():
-    # Par défaut, quand l'expression n'est pas valide, la valeur
-    # retournée doit être la valeur entrée.
-    # XXX: Rajouter les dollars ?
+    # XXX: Par défaut, quand l'expression n'est pas valide, la valeur
+    # retournée doit être la valeur entrée ??
+    # Pour l'instant, aucun comportement clair n'est défini lorsqu'une
+    # expression mathématiques invalide est entrée.
+    # Simplement, le parser ne doit pas planter.
     assert_conv('2/', '2/')
     assert_conv('/', '/')
-    assert_conv('-+', '-+')
+    assert_conv('-+', '-')
 
 
 def test_parentheses_inutiles():
