@@ -192,6 +192,7 @@ defaut_objets = {
     "visible": True,
     "label": "",
     "niveau": 0,
+    "afficher_info": True,
     }
 widgets = {"bidon":1,
     }

@@ -45,12 +45,17 @@ class MiniEditeur:
     def __init__(self, parent):
         self.parent = parent
         self.objet = None
+        self.active = True
 
 
     def init(self, objet, mode = 0):
         u"""Edition d'un nouvel objet.
         mode = 0: édition du nom de l'objet
         mode = 1: édition de l'étiquette de l'objet"""
+        if not self.active:
+            if param.debug:
+                print(u"Éditeur fermé (%s)." %objet.nom)
+            return
         self.close() # finalise l'éventuelle édition en cours
         self.texte = ""
         self.objet = objet
@@ -324,10 +329,12 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
     def pointable(self, obj): # indique si un objet possede des coordonnees
         return isinstance(obj, Objet) and obj._pointable
 
-
     def infos(self):
-        self.message(self.select.info if self.select is not None else '')
-
+        # Utiliser `_style` et non `style` pour un accès rapide.
+        if self.select is not None and self.select._style['afficher_info']:
+            self.message(self.select.info)
+        else:
+            self.message('')
 
     def detecter(self, position = None):
         u"""Détecte les objets à proximité de la position indiquée.
