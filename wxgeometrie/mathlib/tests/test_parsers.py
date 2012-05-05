@@ -230,6 +230,8 @@ def test_convertir_en_LaTeX_bad_expression():
     assert_conv('2/', '2/')
     assert_conv('/', '/')
     assert_conv('-+', '-')
+    # Un signe plus ou un signe moins isolé peuvent être utiles
+    assert_conv('+', '+')
 
 
 def test_parentheses_inutiles():

@@ -619,7 +619,9 @@ def _convertir_en_latex(chaine):
     # On remplace +- par -, -- par +, --- par -, etc.
     def simpl(m):
         return '-' if m.group(0).count('-')%2 else '+'
-    chaine = re.sub('[-+]{2,}', simpl, chaine).lstrip('+')
+    chaine = re.sub('[-+]{2,}', simpl, chaine)
+    if chaine != '+':
+        chaine = chaine.lstrip('+')
 
 
     # --------------------------------
