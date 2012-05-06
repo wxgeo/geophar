@@ -145,6 +145,8 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
         u"Si fixe = True, l'utilisateur ne peut pas zoomer ou recadrer la fenêtre d'affichage avec la souris."
 
         self.parent = parent
+        # fenetre_principale>onglets>panel>canvas
+        self.fenetre_principale = self.parent.parent.parent
         # initialisation dans cet ordre (self.figure doit être défini pour initialiser FigureCanvas)
         Canvas.__init__(self, couleur_fond = self.param("couleur_fond"))
         FigureCanvasQTAgg.__init__(self, self.figure)
@@ -155,31 +157,38 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
             ##self.SetWindowStyle(wx.WANTS_CHARS)
             ##self.Refresh()
 
-        self.debut_zoom = None
+        # Message à afficher en dehors des affichages temporaires
+        self._message_remanent = ''
         # Utilisé pour zoomer avec Ctrl + Clic gauche (contiendra la position initiale)
-        self.debut_select = None
+        self.debut_zoom = None
         # Utilisé pour sélectionner simultanément plusieurs objets avec Alt + Clic gauche (pos. initiale)
-        self.debut_shift = None
+        self.debut_select = None
         # Utilisé pour translater le contenu de la fenêtre (position initiale)
-        self.redetecter = True
+        self.debut_shift = None
         # Rechercher les objets à proximité du pointeur
+        self.redetecter = True
 
-        self.select_memoire = None
         # Objet devant être prochainement sélectionné (en cas de "litige" entre 2 objets)
-        self.etiquette_selectionnee = None # étiquette couramment séléctionnée
+        self.select_memoire = None
+        # Étiquette couramment séléctionnée
+        self.etiquette_selectionnee = None
+        # Bloquer le zoom possible
         self.fixe = fixe
-        self.interaction = None
         # Fonction à lancer au prochain clic de souris (au lieu des actions par défaut)
-        self.interaction_deplacement = None
+        self.interaction = None
         # Fonction à lancer au prochain déplacement de souris (au lieu des actions par défaut)
-        self.editeur = MiniEditeur(self) # edite les noms et etiquettes des points, textes, etc.
+        self.interaction_deplacement = None
+        # Autoriser les objets à être éditer par un clic droit.
+        self.edition_par_clic_droit = True
+        # Édite les noms et étiquettes des points, textes, etc.
+        self.editeur = MiniEditeur(self)
 
         # Paramètres temporaires d'affichage
         self._dessin_temporaire = False
 
 
-        self.sel = []
         # Liste ordonnée (pour la détection) des objets de la feuille actuelle.
+        self.sel = []
         self.motion_event = None
         self.wheel_event_count = 0
         self.wheel_ctrl_event_count = 0
@@ -218,8 +227,12 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
     def param(self, *args, **kw):
         return self.parent.param(*args, **kw)
 
-    def message(self, txt, lieu = 0):
-        self.window().message(txt, lieu) # cf. geometrie.py
+    def message(self, txt, lieu=0, temporaire=True):
+        if not temporaire:
+            self._message_remanent = txt
+        if not txt:
+            txt = self._message_remanent
+        self.fenetre_principale.message(txt, lieu) # cf. geometrie.py
 
     def _curseur(self, sablier):
         if sablier:
@@ -310,8 +323,9 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
             self.setCursor(Qt.WhatsThisCursor)
         else:
             self.setCursor(Qt.ArrowCursor)
-        if aide is not None:
-            self.message(aide)
+        if aide is None:
+            aide = ''
+        self.message(aide, temporaire=False)
 
 
     def signal(self, event = None):
@@ -579,8 +593,9 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
         self.detecter(lieu(event))
 
         if self.select is not None and not ctrl_down(event):
-            menu = MenuActionsObjet(self)
-            menu.exec_(event.globalPos())
+            if self.edition_par_clic_droit:
+                menu = MenuActionsObjet(self)
+                menu.exec_(event.globalPos())
             if self.select is not None:
                 self.select = None
                 self.selection_en_gras()
