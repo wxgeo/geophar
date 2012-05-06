@@ -99,6 +99,11 @@ def vect(A, B):
     xB, yB = B
     return xB - xA, yB - yA
 
+def det(vec1, vec2):
+    u"Déterminant de deux vecteurs du plan."
+    x1, y1 = vec1
+    x2, y2 = vec2
+    return x1*y2 - x2*y1
 
 ## Fonctions de formatage (pour l'affichage entre autres)
 
