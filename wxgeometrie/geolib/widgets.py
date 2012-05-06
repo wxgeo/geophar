@@ -22,7 +22,8 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-from sympy import S
+##from sympy import S
+from random import normalvariate
 
 from .objet import Objet_avec_coordonnees_modifiables, Argument, Ref
 from .textes import Texte_generique, Texte
@@ -207,14 +208,18 @@ class Champ(Texte):
 
     On peut aussi associer une action à la validation.
 
-    >>> def action(self, **kw):
+    >>> def action(**kw):
             if kw['correct']:
                 print('Bravo !')
             else:
                 print('Essaie encore...')
     >>> c.evt_valider = action
+    >>> c.texte = "2"
+    Bravo !
+    >>> c.texte = "3"
+    Essaie encore...
 
-    Cet action sera effectuée au moment de l'affichage de l'objet, si
+    Cet action sera effectuée lorsque le texte du champ est modifié, si
     celui-ci passe le test de validation.
 
     Enfin, une liste des propositions peut être passée via le mot-clef `choix`.
@@ -246,8 +251,8 @@ class Champ(Texte):
         # Lorsque l'utilisateur entre un nouveau résultat, on peut ainsi
         # savoir si celui-ci était déjà correct, ou si le résultat est
         # devenu correct (il peut y avoir plusieurs résultats corrects).
-        self.__correct_old = self.correct
-        self.__label_old = self.style('label')
+        self._correct_old = self.correct = self._test_correct()
+        ##self.__label_old = self.style('label')
 
 
     def label(self, *args, **kw):
@@ -257,6 +262,19 @@ class Champ(Texte):
         prefixe = self.style('prefixe')
         suffixe = self.style('suffixe')
         return (prefixe or '') + txt + (suffixe or '')
+
+
+    def style(self, *args, **kw):
+        label_change = ('label' in kw and kw['label'] != self._style['label'])
+        val = Texte.style(self, *args, **kw)
+        if label_change and getattr(self, 'evt_valider', None) is not None:
+            self._correct_old = self.correct
+            self.correct = self._test_correct()
+            self.evt_valider(champ=self, correct=self.correct,
+                             correct_old=self._correct_old)
+        return val
+
+
 
     def _creer_figure(self):
         ##print 'champ-label::', self.label()
@@ -274,19 +292,18 @@ class Champ(Texte):
             txt.set(visible=False)
         else:
             txt.set(visible=True, x=x, y=y, va='top', ha='left')
-            correct = self.correct
-            if correct:
+            if self.correct:
                 txt.set(text=u'\u2713', color='g') # 263A  00D8
             else:
                 txt.set(text=u'\u2639', color='r') #u'\u26A0'
-            if getattr(self, 'evt_valider', None) is not None and lbl != self.__label_old:
-                self.evt_valider(champ=self, correct=correct,
-                                 correct_old=self.__correct_old)
-                self.__correct_old = correct
-                self.__label_old = lbl
+            ##if getattr(self, 'evt_valider', None) is not None and lbl != self.__label_old:
+                ##self.evt_valider(champ=self, correct=correct,
+                                 ##correct_old=self.__correct_old)
+                ##self.__correct_old = correct
+                ##self.__label_old = lbl
 
-    @property
-    def correct(self):
+
+    def _test_correct(self):
         attendu = self.style('attendu')
         if attendu is None:
             return

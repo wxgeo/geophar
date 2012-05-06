@@ -177,7 +177,7 @@ class Texte(Texte_generique, Objet_avec_coordonnees_modifiables):
     Un texte à afficher"""
 
     def _set_texte(self, value):
-        if isinstance(value, basestring) and value != "" and hasattr(self, "_style"):
+        if isinstance(value, basestring) and value != '' and hasattr(self, "_style"):
             self.style(label=uu(value))
         return value
 
@@ -203,6 +203,7 @@ class Texte(Texte_generique, Objet_avec_coordonnees_modifiables):
         self.__y = y = Ref(y)
 
         Objet_avec_coordonnees_modifiables.__init__(self, x, y, **styles)
+
 
     def style(self, *args, **kw):
         if kw.get("legende") == RIEN:
@@ -243,6 +244,7 @@ class Texte(Texte_generique, Objet_avec_coordonnees_modifiables):
             self.__y = uniform(ymin, ymax)
 #            self._valeurs_par_defaut.discard("_Point__x")
         Objet._set_feuille(self)
+
 
     def _en_gras(self, booleen):
         figure = self.figure
