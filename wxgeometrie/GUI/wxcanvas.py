@@ -45,14 +45,14 @@ class MiniEditeur:
     def __init__(self, parent):
         self.parent = parent
         self.objet = None
-        self.active = True
+        self.actif = True
 
 
     def init(self, objet, mode = 0):
         u"""Edition d'un nouvel objet.
         mode = 0: édition du nom de l'objet
         mode = 1: édition de l'étiquette de l'objet"""
-        if not self.active:
+        if not self.actif:
             if param.debug:
                 print(u"Éditeur fermé (%s)." %objet.nom)
             return

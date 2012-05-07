@@ -36,7 +36,7 @@ from sympy.core.sympify import SympifyError
 
 from ...GUI import MenuBar, Panel_API_graphique
 from ...GUI.proprietes_objets import Proprietes
-from ...geolib import Segment, Texte, Point, Droite, Champ, TEXTE
+from ...geolib import Segment, Texte, Point, Droite, Champ, TEXTE, NOM
 from ...geolib.routines import nice_str, det, vect
 from ...pylib import OrderedDict, print_error
 from ...mathlib.parsers import convertir_en_latex, traduire_formule
@@ -102,10 +102,6 @@ class ExercicesEquationsDroites(Panel_API_graphique):
         self.sizer.addLayout(self.entrees, 0.2)
         self.finaliser(contenu=self.sizer)
 
-        # Ne pas éditer les champs/textes avec [Entrée]
-        self.canvas.editeur.active = False
-        # Ne pas éditer les objets par un clic droit
-        self.canvas.edition_par_clic_droit = False
         self.reinitialiser()
 
 
@@ -118,7 +114,7 @@ class ExercicesEquationsDroites(Panel_API_graphique):
         self.niveau_suivant()
 
 
-    def niveau_suivant(self):
+    def niveau_suivant(self, niveau=None):
         # On ferme toutes les feuilles ouvertes (inutile en principe),
         # et on en ouvre une nouvelle.
         self.fermer_feuilles()
@@ -129,8 +125,15 @@ class ExercicesEquationsDroites(Panel_API_graphique):
         self.canvas.ratio = None
         self.canvas.repere = ('O', 'i', 'j')
         self.afficher_barre_outils(False)
+        # Ne pas éditer les champs/textes avec [Entrée]
+        self.canvas.editeur.actif = False
+        # Ne pas éditer les objets par un clic droit
+        self.canvas.edition_par_clic_droit = False
         # Et on change de niveau...
-        self.niveau += 1
+        if niveau is None:
+            self.niveau += 1
+        else:
+            self.niveau = niveau
         if param.debug:
             print("== Niveau %s ==" % self.niveau)
         getattr(self, 'niveau%s' % self.niveau)()
@@ -141,6 +144,7 @@ class ExercicesEquationsDroites(Panel_API_graphique):
             color:white;}""")
         self.update_panneau()
 
+    n = niveau_suivant
 
     # ------------------------------------------------------
     # Niveaux 1 à 7 : lecture graphique d'équation de droite
@@ -310,6 +314,7 @@ class ExercicesEquationsDroites(Panel_API_graphique):
         self.canvas.quadrillage_defaut()
         self.afficher_barre_outils(True)
         self.canvas.grille_aimantee = True
+        ##self.canvas.editeur.actif = True
 
 
         # Point d'intersection
@@ -377,6 +382,7 @@ class ExercicesEquationsDroites(Panel_API_graphique):
         for nom, eq in (('d1', eq1), ('d2', eq2)):
             if nom in self.feuille_actuelle.objets.noms:
                 d = self.feuille_actuelle.objets[nom]
+                d.style(legende=NOM)
                 champ = self.feuille_actuelle.objets['champ_cache_' + nom]
                 M, N = d
                 M = (int(M.x), int(M.y))
