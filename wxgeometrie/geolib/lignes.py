@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+#  -*- coding: iso-8859-1 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------#######
@@ -1027,13 +1027,54 @@ class Tangente_courbe_interpolation(Droite_vectorielle):
     >>> B = Point(2,1)
     >>> C = Point(8,-3)
     >>> d = Interpolation_polynomiale_par_morceaux(A,B,C, derivees=[-1,0.5,2])
-    >>> t = Tangente_courbe_interpolation(d, 5)
+    >>> t = Tangente_courbe_interpolation(d, x= -2 )
 
     """
+    
+    courbe = Argument('Interpolation_polynomiale_par_morceaux')
+
     def __init__(self, courbe, x = None):
         pas = courbe.__canvas__.pas() # (courbe.xmax - courbe.xmin) / 100.
         dx = fullrange(x, x + pas, pas)
         dy = courbe.interpol(dx)
         P = Point(dx[0], dy[0])
-        v = Rational(str((dy[1] - dy[0]) / (dx[1] - dx[0])))
-        Droite_vectorielle.__init__(self, point = P, vecteur = Vecteur_libre(x= v.q, y= v.p))
+        v = (dy[1] - dy[0]) / (dx[1] - dx[0])
+        Droite_vectorielle.__init__(self, point = P, vecteur = Vecteur_libre(x= 1, y= v))
+
+
+
+class Tangente_glisseur_interpolation(Droite_equation):
+    u"""Une tangente à une courbe de type interpolation polynomiale par morceau, et qui glisse.
+
+    Le coefficient directeur est estimé par approximation numérique avec taux de variation
+    sur un pas  self.__canvas__.pas().
+
+    :type courbe: Interpolation_polynomiale_par_morceaux
+    :param courbe: la courbe sur laquelle va se placer la tangente
+    :type P: Glisseur_courbe_interpolation
+    :param P: Point de type glisseur sur la courbe.
+
+    exemple::
+    >>> d = Interpolation_polynomiale_par_morceaux(A,B,C, derivees=[-1,0.5,2])
+    >>> P = Glisseur_courbe_interpolation(d)
+    >>> d1 = Tangente_glisseur_interpolation(d, P)
+
+    """
+    
+    courbe = Argument('Interpolation_polynomiale_par_morceaux')
+    glisseur = Argument('Glisseur_courbe_interpolation')
+
+    def __init__(self, courbe, P = None):
+        pas = courbe.__canvas__.pas() # (courbe.xmax - courbe.xmin) / 100.
+        dx = fullrange(P.x.contenu, P.x.contenu + pas, pas)
+        dy = courbe.interpol(dx)
+        glisseur = P
+        v = (dy[1] - dy[0]) / (dx[1] - dx[0])
+        Droite_equation.__init__(self, a= -v, b= 1, c= -P.y + v*P.x.contenu )
+
+   #  def _get_equation(self):
+   #      pas = self.courbe.__canvas__.pas() # (courbe.xmax - courbe.xmin) / 100.
+   #      dx = fullrange(self.glisseur.x.contenu, self.glisseur.x.contenu + pas, pas)
+   #      dy = self.courbe.interpol(dx)
+   #      v = (dy[1] - dy[0]) / (dx[1] - dx[0])
+   #      return -v, 1, -self.glisseur.y + v*self.glisseur.x.contenu
