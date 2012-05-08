@@ -22,10 +22,12 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-
+import re
 from collections import defaultdict
 from random import randint
 from itertools import count
+
+from PyQt4.QtGui import QInputDialog, QLineEdit
 
 from sympy import latex
 
@@ -131,25 +133,46 @@ class Graphes(Panel_API_graphique):
         for sommets, colorname, i in zip(self.graph.coloring(), colors(), count()):
             couleur = colors_dict.get(colorname, (rnd(), rnd(), rnd()))
             for sommet in sommets:
-                self.feuille_actuelle.objets[sommet].style(couleur=rgb(*couleur), style=symbs[i%len(symbs)])
+                self.feuille_actuelle.objets[sommet].style(couleur=rgb(*couleur),
+                                                           style=symbs[i%len(symbs)])
         self.feuille_actuelle.interprete.commande_executee()
         self.latex_WelshPowell(creer=False)
 
     def latex_Dijkstra(self, event=None, creer=True, start=None, end=None):
+        ask = not (start and end)
         if creer:
             self.creer_graphe()
         if start is None:
             start = min(self.graph.nodes)
         if end is None:
             end = max(self.graph.nodes)
+        if ask:
+            while True:
+                txt, ok = QInputDialog.getText(self, "Précisez le départ et l'arrivée.",
+                        "Entrez le sommet départ et le sommet d'arrivée (séparés par un espace).",
+                        QLineEdit.Normal, '%s %s' % (start, end))
+                if not ok:
+                    return
+                try:
+                    start, end = re.split('[ ]*[, ][ ]*', txt.strip())
+                    break
+                except Exception:
+                    print_error()
+
         latex_ = self.graph.latex_Dijkstra(start, end)
         self.vers_presse_papier(latex_)
+        self.code_copie()
 
     def latex_WelshPowell(self, event=None, creer=True, first_nodes=()):
         if creer:
-            self.creer_graph()
+            self.creer_graphe()
         latex_ = self.graph.latex_WelshPowell(*first_nodes)
         self.vers_presse_papier(latex_)
+        self.code_copie()
 
     def latex_Matrix(self, event=None, creer=True):
         self.vers_presse_papier(latex(self.matrice(creer=creer)))
+        self.code_copie()
+
+    def code_copie(self):
+        self.canvas.message(u"Code LaTeX copié dans le presse-papier.")
