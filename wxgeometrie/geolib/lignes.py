@@ -1034,7 +1034,7 @@ class Tangente_courbe_interpolation(Droite_vectorielle):
     courbe = Argument('Interpolation_polynomiale_par_morceaux')
 
     def __init__(self, courbe, x = None):
-        pas = courbe.__canvas__.pas() # (courbe.xmax - courbe.xmin) / 100.
+        pas = courbe.__canvas__.pas()
         dx = fullrange(x, x + pas, pas)
         dy = courbe.interpol(dx)
         P = Point(dx[0], dy[0])
@@ -1055,26 +1055,31 @@ class Tangente_glisseur_interpolation(Droite_equation):
     :param P: Point de type glisseur sur la courbe.
 
     exemple::
+
+    >>> A = Point(-1,-2)
+    >>> B = Point(2,1)
+    >>> C = Point(8,-3)
     >>> d = Interpolation_polynomiale_par_morceaux(A,B,C, derivees=[-1,0.5,2])
     >>> P = Glisseur_courbe_interpolation(d)
     >>> d1 = Tangente_glisseur_interpolation(d, P)
 
     """
     
-    courbe = Argument('Interpolation_polynomiale_par_morceaux')
-    glisseur = Argument('Glisseur_courbe_interpolation')
+    courbe = __courbe = Argument('Interpolation_polynomiale_par_morceaux')
+    glisseur = __glisseur = Argument('Glisseur_courbe_interpolation')
 
     def __init__(self, courbe, P = None):
-        pas = courbe.__canvas__.pas() # (courbe.xmax - courbe.xmin) / 100.
+        pas = courbe.__canvas__.pas()
         dx = fullrange(P.x.contenu, P.x.contenu + pas, pas)
         dy = courbe.interpol(dx)
-        glisseur = P
+        self.__courbe = Ref(courbe)
+        self.__glisseur = Ref(P)
         v = (dy[1] - dy[0]) / (dx[1] - dx[0])
         Droite_equation.__init__(self, a= -v, b= 1, c= -P.y + v*P.x.contenu )
 
-   #  def _get_equation(self):
-   #      pas = self.courbe.__canvas__.pas() # (courbe.xmax - courbe.xmin) / 100.
-   #      dx = fullrange(self.glisseur.x.contenu, self.glisseur.x.contenu + pas, pas)
-   #      dy = self.courbe.interpol(dx)
-   #      v = (dy[1] - dy[0]) / (dx[1] - dx[0])
-   #      return -v, 1, -self.glisseur.y + v*self.glisseur.x.contenu
+    def _get_equation(self):
+        pas = self.courbe.__canvas__.pas()
+        dx = fullrange(self.glisseur.x.contenu, self.glisseur.x.contenu + pas, pas)
+        dy = self.courbe.interpol(dx)
+        v = (dy[1] - dy[0]) / (dx[1] - dx[0])
+        return -v, 1, -self.glisseur.y + v*self.glisseur.x.contenu
