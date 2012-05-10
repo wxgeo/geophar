@@ -553,7 +553,7 @@ def _rechercher_numerateur(chaine):
     else:
         # Le caractère @ est utilisé par `_convertir_en_latex` pour remplacer les
         # fractions déjà détectées.
-        m = re.search('(%s|@)$' % NBR_SIGNE_OR_VAR, chaine)
+        m = re.search('(%s|@)$' % NBR_OR_VAR, chaine)
         if m is None:
             # Rien qui ressemble à un numérateur
             return
@@ -608,10 +608,8 @@ def _rechercher_denominateur(chaine):
 
 
 def _convertir_en_latex(chaine):
-    #TODO: problème avec les puissances qui contiennent des fractions
-    #TODO: c'est assez lent, à optimiser ?
-    # (environ 0.5ms en conditions réelles, avec 10 à 20 appels par tableau).
-##    time0 = time.time()
+    import time
+    time0 = time.time()
 
     # Puissances
     chaine = chaine.replace("**", "^")
@@ -630,10 +628,7 @@ def _convertir_en_latex(chaine):
     # Les espaces inutiles ne sont pas gênants en LaTeX, mais leur suppresion
     # simplifie le traitement ultérieur de la chaîne de caractères.
     chaine = re.sub(r'[ ]+', ' ', chaine)
-    chaine = re.sub(r'[ ]?/[ ]?', '/', chaine)
-    chaine = re.sub(r'[ ]?\^[ ]?', '^', chaine)
-    chaine = re.sub(r'[ ]?\([ ]?', '(', chaine)
-    chaine = re.sub(r'[ ]?\)[ ]?', ')', chaine)
+    chaine = re.sub(r'[ ]?([/^()+*-])[ ]?', (lambda m: m.group(1)), chaine)
 
     # ------------------------
     # Conversion des fractions
@@ -713,13 +708,15 @@ def _convertir_en_latex(chaine):
                 return chaine
             chaine = chaine[:i] + '{' + chaine[i + 1:j - 1] + '}' + chaine[j:]
 
+    chaine = re.sub(r'\*' + NBR_SIGNE, lambda m: r'\times ' + m.group()[1:], chaine)
     chaine = chaine.replace("*", " ")
 
     # Puissances : 2^27 -> 2^{27}
-    chaine = re.sub(r'(?<=\^)' + NBR_SIGNE, lambda m: '{' + m.group() + '}', chaine)
+    chaine = re.sub(r'(?<=\^)' + NBR_SIGNE, (lambda m: '{' + m.group() + '}'), chaine)
 
-##    if param.debug:
-##        print 'Temps pour conversion LaTeX:', time.time()- time0
+    if chaine.startswith(r'\infty'):
+        chaine = '+' + chaine
+
     return _strip_parenthesis(chaine)
 
 

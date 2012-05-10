@@ -125,11 +125,11 @@ f'(x)                             &                    &-       &0           &+ 
     tab = \
 r"""\[\begin{tabvar}{|C|CCCCCCC|}
 \hline
-x                                    & &0&                                      &      &\e            &        &+\infty\\
+x                                    & &0&                                      &      &\e          &        &+\infty\\
 \hline
-f'(x)                                &&\dbarre&                                 &+     &0             &-       & \\
+f'(x)                                &&\dbarre&                                 &+     &0           &-       & \\
 \hline
-\niveau{1}{2}\raisebox{0.5em}{$f(x)$}&\niveau{1}{2}&\dbarre&\niveau{1}{2}-\infty&\croit&5 \exp{-1} + 3&\decroit&3\\
+\niveau{1}{2}\raisebox{0.5em}{$f(x)$}&\niveau{1}{2}&\dbarre&\niveau{1}{2}-\infty&\croit&5 \exp(-1)+3&\decroit&3\\
 \hline
 \end{tabvar}\]
 % x;f(x):(0;|-oo;|) << (e;5*exp(-1) + 3) >> (+oo;3)
@@ -161,7 +161,7 @@ def test_latex():
     tab = \
 r"""\[\begin{tabvar}{|C|CCCCC|}
 \hline
-x                                    &-\infty       &        &\ln{2}&      &+\infty\\
+x                                    &-\infty       &        &\ln(2)&      &+\infty\\
 \hline
 f'(x)                                &              &-       &0     &+     & \\
 \hline
@@ -179,7 +179,7 @@ def test_issue_194():
     tab = \
 r"""\[\begin{tabvar}{|C|CCCCC|}
 \hline
-x                                 &-\infty      &      &-\frac{1}{\ln{2}}&        &+\infty\\
+x                                 &-\infty      &      &-\frac{1}{\ln(2)}&        &+\infty\\
 \hline
 f'(x)                             &             &+     &0                &-       & \\
 \hline

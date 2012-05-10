@@ -201,12 +201,19 @@ def assert_conv(input, output):
 
 def test_convertir_en_LaTeX():
     assert_conv('2*x', '2 x')
+    assert_conv('2*3', r'2\times 3')
+    #TODO: retourner 0.005 au lieu de .005
+    assert_conv('2*.005', r'2\times .005')
     assert_conv('2*x+3', '2 x+3')
     assert_conv('x**-3.5+x**2*y-x**(2*y)+8', 'x^{-3.5}+x^{2} y-x^{2 y}+8')
     assert_conv('--x+-----3--y', 'x-3+y')
+    assert_conv('sqrt(x) + exp(-y)', r'\sqrt{x}+\exp(-y)')
+    assert_conv('+oo', r'+\infty')
 
 def test_convertir_en_LaTeX_fractions():
     assert_conv('2/3', r'\frac{2}{3}')
+    assert_conv('-2/3', r'-\frac{2}{3}')
+    assert_conv('x**(2/3)', r'x^{\frac{2}{3}}')
     assert_conv('(x+1)/(2*x)', r'\frac{x+1}{2 x}')
     assert_conv('(x(x+1))/(2*x*(x+2)*(x**25+7*x+5))*(x+3)',
                 r'\frac{x(x+1)}{2 x (x+2) (x^{25}+7 x+5)} (x+3)')
@@ -267,7 +274,7 @@ def assert_numerateur(input, expected):
 
 def test_rechercher_numerateur():
     assert_numerateur('2', '2')
-    assert_numerateur('-2', '-2')
+    assert_numerateur('-2', '2')
     assert_numerateur('1+2', '2')
     assert_numerateur('cos(x)', 'cos(x)')
     assert_numerateur('x-2^cos(x)', '2^cos(x)')
