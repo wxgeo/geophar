@@ -342,15 +342,16 @@ def traduire_formule(formule = "", fonctions = (), OOo = True, LaTeX = True, cha
                         r"Vmatrix",
                         r"smallmatrix",
                         ):
-            deb = formule.find(r"\begin{" + substr + "}")
-            while deb != -1:
+            while True:
+                deb = formule.find(r"\begin{" + substr + "}")
+                if deb == -1:
+                    break
                 fin = formule.find(r"\end{" + substr + "}", deb)
                 avant = formule[:deb]
                 coeur = formule[deb + len(substr) + 8:fin].replace('\n', '').rstrip('\\')
                 apres = formule[fin + len(substr) + 6:]
                 coeur = 'mat([[' + coeur.replace(r'\\', '],[').replace('&', ',') + ']])'
                 formule = avant + coeur + apres
-                deb = formule.find(substr, deb)
         # Suppression ou remplacement de commandes courantes
         for pattern, repl in dictionnaire_latex_commandes.items():
             formule = re.sub("\\\\" + pattern + "(?![A-Za-z])", repl, formule)

@@ -23,18 +23,19 @@ liste_fonctions.append("mat")
 
 def assert_formule(x, y, OOo, LaTeX):
     y_ = traduire_formule(x, fonctions = liste_fonctions, OOo = OOo, LaTeX = LaTeX, verbose = False)
-    if y_ != y:
-        print "/!\\ Formule: ", x
-        traduire_formule(x, fonctions = liste_fonctions, OOo = OOo, LaTeX = LaTeX, verbose = True)
-        print "ERREUR: ",  y_, " != ", y
-    assert (y_ == y)
+    assertEqual(y_, y)
+    ##if y_ != y:
+        ##print "/!\\ Formule: ", x
+        ##traduire_formule(x, fonctions = liste_fonctions, OOo = OOo, LaTeX = LaTeX, verbose = True)
+        ##print "ERREUR: ",  y_, " != ", y
+    ##assert (y_ == y)
 
 def assert_arg_latex(x, *y):
     x = _arguments_latex(x, 2)
     y = list(y)
-    if x != y:
-        print "ERREUR (_arguments_latex): ", x, " != ",  y
-    assert (x == y)
+    ##if x != y:
+        ##print "ERREUR (_arguments_latex): ", x, " != ",  y
+    assertEqual(x, y)
 
 def assert_all(x, y):
     assert_formule(x, y, OOo = True, LaTeX = False)
@@ -154,6 +155,8 @@ def test_mode_LaTeX():
                  "100*((1+((50)/(100)))**((1)/(10))-1)")
     assert_latex("M = \\begin{pmatrix}\n0,6 & 0,4\\\\\n0,75& 0,25\\\\\n\\end{pmatrix}",
                  'M=mat([[0,6,0,4],[0,75,0,25]])')
+    assert_latex(r"\begin{pmatrix}0.65& 0.35\end{pmatrix}\begin{pmatrix}0.55 & 0.45\\0.3 & 0.7\end{pmatrix}",
+                 "mat([[0.65,0.35]])*mat([[0.55,0.45],[0.3,0.7]])")
 
 def test_NBR():
     assert_NBR_SIGNE("-2.56")
@@ -192,9 +195,11 @@ def test_arguments_LaTeX():
     assert_arg_latex('{x+2}5+4x-17^{2+x}', '{x+2}', '5', '+4x-17^{2+x}')
 
 
-# --------------------------------
-# Tests conversion chaine -> LaTeX
-# --------------------------------
+
+# -----------------------------------------------------------
+# Tests conversion chaines : calcul au format Python -> LaTeX
+# -----------------------------------------------------------
+
 
 def assert_conv(input, output):
     assertEqual(convertir_en_latex(input), '$%s$' %output)
