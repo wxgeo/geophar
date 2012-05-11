@@ -48,7 +48,7 @@ py2exe = hasattr(sys, 'frozen') # le programme tourne-t-il en version "executabl
 
 # Paramètres détectés dynamiquement lors de l'exécution :
 ecriture_possible = None
-EMPLACEMENT = '' # le répertoire contenant wxgéométrie.pyw
+EMPLACEMENT = '' # le répertoire contenant wxgeometrie.pyw
 
 # Les valeurs suivantes ne doivent pas être enregistrées dans les préférences de l'utilisateur :
 # - soit parce qu'il n'y aurait aucun sens à les sauver (__builtins__ par exemple)

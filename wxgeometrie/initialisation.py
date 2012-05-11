@@ -33,8 +33,12 @@ from . import param
 # car alors, ``$ geophar -b`` ne prendrait pas en compte le ``-b``
 # lors de l'initialisation.
 from .param import dependances, NOMPROG, NOMPROG2, LOGO, plateforme, GUIlib
+from .pylib.fonctions import path2, uu
 
 nomprog = NOMPROG2.lower()
+
+# Emplacement du module python nommé wxgeometrie
+param.EMPLACEMENT = dirname(dirname(realpath(sys._getframe().f_code.co_filename)))
 
 if param.py2exe:
     # cf. py2exe/boot_common.py
@@ -171,20 +175,6 @@ def gerer_arguments():
 
 
 
-def universal_unicode(chaine):
-    if not isinstance(chaine, basestring):
-        chaine = str(chaine)
-    if not isinstance(chaine, unicode):
-        try:
-            chaine = chaine.decode(param.encodage)
-        except UnicodeError:
-            try:
-                chaine = chaine.decode('utf8')
-            except UnicodeError:
-                chaine = chaine.decode('iso-8859-1')
-    return chaine
-
-uu = universal_unicode
 
 
 #def my_excepthook(exc_type, exc_obj, exc_tb):
@@ -249,19 +239,6 @@ class SortiesMultiples(object):
             if hasattr(sortie, 'close'):
                 sortie.close()
 
-# Emplacement du module python nommé wxgeometrie
-param.EMPLACEMENT = dirname(realpath(sys._getframe().f_code.co_filename))
-
-
-def path2(chemin):
-    u"""Transforme le chemin en remplaçant les / et \\ selon le séparateur utilisé par le système.
-
-    % est remplacé par l'emplacement du programme (contenu dans param.EMPLACEMENT).
-    Exemple : path2("%/images/archives/old.png").
-    ~ fait référence au répertoire personnel de l'utilisateur (ex: /home/SteveB/ sous Linux.
-    """
-    return os.path.normpath(os.path.expanduser(uu(chemin).replace("%", uu(param.EMPLACEMENT))))
-
 
 # S'assurer que les dossiers log/, session/, etc. existent:
 for emplacement in param.emplacements.values():
@@ -272,6 +249,10 @@ for emplacement in param.emplacements.values():
             print(u'Création du répertoire : ' + emplacement)
     except IOError:
         print(u"Impossible de créer le répertoire %s !" %emplacement)
+        print_error()
+    except Exception:
+        print(u'Erreur inattendue lors de la création du répertoire %s.' %emplacement)
+        print_error()
 
 
 # PARTIE CRITIQUE (redirection des messages d'erreur)

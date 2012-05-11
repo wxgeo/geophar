@@ -585,7 +585,7 @@ def path2(chemin):
     u"""Transforme le chemin en remplaçant les / et \\ selon le séparateur utilisé par le système.
 
     % est remplacé par l'emplacement du programme (contenu dans param.EMPLACEMENT).
-    Exemple : path2("%/images/archives/old.png").
+    Exemple : path2("%/wxgeometrie/images/archives/old.png").
     ~ fait référence au répertoire personnel de l'utilisateur (ex: /home/SteveB/ sous Linux.
     """
     return os.path.normpath(os.path.expanduser(uu(chemin).replace("%", uu(param.EMPLACEMENT))))

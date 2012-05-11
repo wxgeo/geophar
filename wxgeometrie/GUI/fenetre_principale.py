@@ -77,7 +77,7 @@ class FenetrePrincipale(QMainWindow):
         self.fenetre_sortie = PyOnDemandOutputWindow(title = NOMPROG + u" - messages.")
         self.fichier_log = fichier_log
 
-        self.setWindowIcon(QIcon(path2(u"%/images/icone.ico")))
+        self.setWindowIcon(QIcon(path2(u"%/wxgeometrie/images/icone.ico")))
         self.barre = self.statusBar()
         self.barre_dte = QLabel(self)
 #        self.barre_dte.setText(

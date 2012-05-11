@@ -36,14 +36,6 @@ from .. import param
 class GestionnaireSession(object):
     def __init__(self, onglets):
         self.onglets = onglets
-        # Création (si nécessaire) des répertoires /log, /macro, etc., définis dans /param/__init__.py
-        for repertoire in param.emplacements:
-            repertoire = path2(repertoire)
-            if not os.path.isdir(repertoire):
-                try:
-                    os.makedirs(repertoire)
-                except IOError:
-                    print_error()
         thread = Thread(target=self._autosave_timer)
         thread.daemon = True
         thread.start()

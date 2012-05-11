@@ -168,14 +168,14 @@ class WhiteScrolledMessageDialog(QDialog):
 
 class Notes(WhiteScrolledMessageDialog):
     def __init__(self, parent):
-        with open(path2("%/doc/notes.txt"), "r") as f:
+        with open(path2("%/wxgeometrie/doc/notes.txt"), "r") as f:
             msg = f.read().decode("utf8")
         msg = msg.replace(u"WxGeometrie", u"WxGéométrie version " + param.version, 1)
         WhiteScrolledMessageDialog.__init__(self, parent, u"Notes de version", msg, 500)
 
 class Licence(WhiteScrolledMessageDialog):
     def __init__(self, parent):
-        with open(path2("%/doc/license.txt"), "r") as f:
+        with open(path2("%/wxgeometrie/doc/license.txt"), "r") as f:
             msg = f.read().decode("utf8")
         msg = msg.replace(u"WxGeometrie", u"WxGéométrie version " + param.version, 1)
         WhiteScrolledMessageDialog.__init__(self, parent, u"Licence", msg)

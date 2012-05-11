@@ -76,7 +76,7 @@ def png_pth(nom):
     u"""Adresse complète de l'image `nom`.png du repertoire 'images/'.
 
     Le nom doit être indiqué sans l'extension '.png'."""
-    return os.path.normpath(os.path.join(uu(param.EMPLACEMENT), 'images', nom + ".png"))
+    return os.path.normpath(os.path.join(uu(param.EMPLACEMENT), 'wxgeometrie/images', nom + ".png"))
 
 
 def png(nom):

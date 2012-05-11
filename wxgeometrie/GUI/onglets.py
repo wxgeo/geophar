@@ -101,7 +101,7 @@ border-top-right-radius: 4px;
         self.setCornerWidget(newTabButton, Qt.TopLeftCorner)
         newTabButton.setCursor(Qt.ArrowCursor)
         newTabButton.setAutoRaise(True)
-        newTabButton.setIcon(QIcon(path2("%/images/newtab3.png")))
+        newTabButton.setIcon(QIcon(path2("%/wxgeometrie/images/newtab3.png")))
         newTabButton.clicked.connect(self.popup_activer_module)
         newTabButton.setToolTip(u"Activer un autre onglet")
 
@@ -110,7 +110,7 @@ border-top-right-radius: 4px;
         self.setCornerWidget(closeTabButton, Qt.TopRightCorner)
         closeTabButton.setCursor(Qt.ArrowCursor)
         closeTabButton.setAutoRaise(True)
-        closeTabButton.setIcon(QIcon(path2("%/images/closetab.png")))
+        closeTabButton.setIcon(QIcon(path2("%/wxgeometrie/images/closetab.png")))
         closeTabButton.clicked.connect(partial(self.fermer_onglet, None))
         closeTabButton.setToolTip(u"Fermer l'onglet courant")
 
@@ -610,7 +610,7 @@ border-top-right-radius: 4px;
             geolib.contexte[parametre] = getattr(param, parametre)
 
     def Aide(self):
-        open_new_tab(path2("%/doc/help.htm"))
+        open_new_tab(path2("%/wxgeometrie/doc/help.htm"))
 
     def Notes(self):
         self.notes = Notes(self)

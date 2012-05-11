@@ -26,7 +26,6 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 from PyQt4.QtGui import QApplication, QPalette, QColor, QPixmap, QSplashScreen
 from PyQt4.QtCore import QLocale, QTranslator, QLibraryInfo, Qt
 
-from ..pylib import path2
 from .. import param
 
 
@@ -64,7 +63,7 @@ white_palette.setColor(QPalette.AlternateBase, white)
 
 def splash(path):
     u"Create and display the splash screen. Credits: Eli Bendersky (eliben@gmail.com)"
-    splash_pix = QPixmap(path2(path))
+    splash_pix = QPixmap(path)
     splash = QSplashScreen(splash_pix, Qt.WindowStaysOnTopHint)
     ##splash.setAttribute(Qt.WA_TranslucentBackground)
     # XXX: Doesn't work currently: https://bugreports.qt.nokia.com//browse/QTBUG-12820

@@ -60,7 +60,7 @@ ligne_commande = debug
 NOMPROG = u"Géophar"
 NOMPROG2 = 'Geophar' # sans accent
 GUIlib = 'Qt'
-LOGO = '%/images/logo6.png'
+LOGO = '%/wxgeometrie/images/logo6.png'
 
 version_wxpython = "2.8-unicode"
 
@@ -591,9 +591,9 @@ if install:
 else:
     # Utilisation sans installation. Tout est stocké directement dans le dossier wxgeometrie/.
     # % se réfère au dossier contenant WxGeometrie (indiqué par param.EMPLACEMENT)
-    emplacements.setdefault("log", "%/log") # dans log/ par défaut
-    emplacements.setdefault("preferences", "%/preferences") # dans preferences/ par défaut
-    emplacements.setdefault("macros", "%/macros") # dans macros/ par défaut
-    emplacements.setdefault("session", "%/session") # dans session/ par défaut
+    emplacements.setdefault("log", "%/config/log") # dans config/log/ par défaut
+    emplacements.setdefault("preferences", "%/config/preferences") # dans config/preferences/ par défaut
+    emplacements.setdefault("macros", "%/config/macros") # dans config/macros/ par défaut
+    emplacements.setdefault("session", "%/config/session") # dans config/session/ par défaut
 
 print(u'Import des paramètres terminé.')
