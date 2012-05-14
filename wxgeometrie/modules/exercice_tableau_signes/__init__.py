@@ -40,7 +40,7 @@ from ...GUI.wxlib import BusyCursor
 from ...geolib import Segment, Texte, Point, Champ, TEXTE
 from ...geolib.routines import nice_str
 from ...pylib import OrderedDict, print_error
-from ...mathlib.parsers import convertir_en_latex, NBR_SIGNE
+from ...mathlib.parsers import convertir_en_latex, NBR, NBR_SIGNE
 from ... import param
 
 
@@ -111,7 +111,7 @@ class ExercicesTableauxSignes(Panel_API_graphique):
         self.canvas.editeur.active = False
 
         self.niveaux = ["n*x+z", "-n*x+q", "1|q*x+z", "z*x+z,z*x+z", "z*x+q|z*x+z",
-                        "z*x+z,z*x+z|z*x+z", "z*x+z,z*x+z|z*x+z,z*x+z"]
+                        "z*x+z,z*x+z|z*x+z", "z*x+z,z*x+z|z*x+z,z*x+z", "-n,z*x+z|-x,(z*x+z)**2"]
 
         self.reinitialiser()
 
@@ -125,8 +125,12 @@ class ExercicesTableauxSignes(Panel_API_graphique):
         self.niveau_suivant()
 
 
-    def niveau_suivant(self):
-        self.niveau += 1
+    def niveau_suivant(self, niveau=None):
+        if niveau in (None, False):
+            # None ou False (False est renvoyé par Qt via QAbstractBouton.clicked)
+            self.niveau += 1
+        else:
+            self.niveau = niveau
         self.btn_niveau.setEnabled(False)
         self.felicitations.setStyleSheet(
             """QLabel {background-color: white; padding: 5px; border-radius: 5px;
@@ -136,6 +140,7 @@ class ExercicesTableauxSignes(Panel_API_graphique):
         self.pattern = self.niveaux[self.niveau]
         self.generer_expression()
 
+    n = niveau_suivant
 
     def update_panneau(self):
         self.panneau.setText((u"<p><b><i>Niveau :</i> %s</b></p>" % self.niveau) +
@@ -214,9 +219,10 @@ class ExercicesTableauxSignes(Panel_API_graphique):
         return str(S(signe*p)/S(q))
 
     def _formater(self, expression):
-        if '+' in expression or '-' in expression:
+        expression = expression.replace('**', '^').replace('*', '').replace(' ', '')
+        if not re.match('-?(%s)?x?(\(.+\)(\^%s)?)?$' % (NBR, NBR), expression):
             expression = '(' + expression + ')'
-        return expression.replace('*', '')
+        return expression
 
     def generer_expression(self, expr=None):
         u"""Génère une expression aléatoire en fonction respectant le format
@@ -289,11 +295,14 @@ class ExercicesTableauxSignes(Panel_API_graphique):
         self.facteurs_latex = fact_latex = OrderedDict((expr, convertir_en_latex(expr, mode=None))
                                 for expr in self.numerateur + self.denominateur)
         self.facteurs_sympy = fact_sympy = OrderedDict((expr, S(expr)) for expr in fact_latex)
-        self.facteurs_sols = OrderedDict((expr, solve(fact_sympy[expr])[0]) for expr in fact_latex)
-        self.facteurs_diff = OrderedDict((expr, fact_sympy[expr].diff()) for expr in fact_latex)
+        self.facteurs_sols = OrderedDict((expr, solve(fact_sympy[expr])) for expr in fact_latex)
+        self.facteurs_diff = OrderedDict((expr, fact_sympy[expr].diff(S('x'))) for expr in fact_latex)
 
         # valeurs remarquables de x
-        self.sols = sorted(set(self.facteurs_sols.values()))
+        self.sols = []
+        for sols in self.facteurs_sols.values():
+            self.sols.extend(sols)
+        self.sols.sort()
         if param.debug:
             print('(Exercice tableau de signes) Liste des solutions: ' + str(self.sols))
 
@@ -376,28 +385,41 @@ class ExercicesTableauxSignes(Panel_API_graphique):
 
         choix = [u'décroissante', u'croissante']
 
-        # On écrit en dessous du tableau les équations à résoudre
+        # On écrit au dessus du tableau les équations à résoudre :
         for expression, latex in facteurs_latex.items():
-            if facteurs_diff[expression] == 0:
-                continue # Fonction constante
+            # S'il y a des solutions:
+            if facteurs_sols[expression]:
+                assert len(facteurs_sols[expression]) == 1, \
+                    ("%s a plusieurs solution (non pris en charge pour l'instant)." % expression)
+                if facteurs_diff[expression] == 0:
+                    continue # Fonction constante
 
-            txt = dessiner_texte(10, h, r'$\bullet\,' + latex +
-                                    r'\,=\,0\,\,\Longleftrightarrow\,\,x\,=\,$')
-            box = can.txt_box(txt)
-            resultat = nice_str(facteurs_sols[expression])
-            ##print resultat
-            dessiner_champ(18 + box.width, h, ha='left', resultat=resultat)
-            ##dessiner_texte(220, height - h, u'\u2713', color='g') # 263A  00D8
-            ##dessiner_texte(240, height - h, u'\u2639', color='r') #u'\u26A0'
-            h += box.height + 2*marge
-
-            if not facteurs_diff[expression].has('x'):
-                # C'est une fonction affine.
-                txt = dessiner_texte(30, h, u'Sur $\u211D$, la fonction affine $x\\mapsto %s$ est strictement' %latex)
+                txt = dessiner_texte(10, h, r'$\bullet\,' + latex +
+                                        r'\,=\,0\,\,\Longleftrightarrow\,\,x\,=\,$')
                 box = can.txt_box(txt)
-                sens = (u'décroissante' if facteurs_diff[expression] < 0 else u'croissante')
-                dessiner_champ(35 + box.width, h, ha='left', choix=choix, resultat=sens)
-                h += box.height + 3*marge
+                resultat = nice_str(facteurs_sols[expression][0])
+                ##print resultat
+                dessiner_champ(18 + box.width, h, ha='left', resultat=resultat)
+                ##dessiner_texte(220, height - h, u'\u2713', color='g') # 263A  00D8
+                ##dessiner_texte(240, height - h, u'\u2639', color='r') #u'\u26A0'
+                h += box.height + 2*marge
+
+                if facteurs_sympy[expression].has('x'):
+                    if not facteurs_diff[expression].has('x'):
+                        # C'est une fonction affine.
+                        txt = dessiner_texte(30, h, u'Sur $\u211D$, la fonction affine'
+                                               u' $x\\mapsto %s$ est strictement' %latex)
+                        box = can.txt_box(txt)
+                        sens = (u'décroissante' if facteurs_diff[expression] < 0 else u'croissante')
+                        dessiner_champ(35 + box.width, h, ha='left', choix=choix, resultat=sens)
+                        h += box.height + 3*marge
+                    elif facteurs_sympy[expression].as_base_exp()[1] == 2:
+                        # C'est un carré.
+                        txt = dessiner_texte(30, h, u'Sur $\u211D$, un carré est toujours')
+                        box = can.txt_box(txt)
+                        dessiner_champ(35 + box.width, h, ha='left', resultat='positif')
+                        h += box.height + 3*marge
+
 
 
         # -------------------------------------------------------------
@@ -485,7 +507,7 @@ class ExercicesTableauxSignes(Panel_API_graphique):
             dessiner_champ(x, .5*(hauteurs[0] + hauteurs[1]), resultat=resultat)
             resultat_final = '0'
             for k, expr in enumerate(facteurs_sols):
-                if facteurs_sols[expr] == sol:
+                if sol in facteurs_sols[expr]:
                     resultat = '0'
                     if expr in self.denominateur:
                         resultat_final = u'\u2551'
@@ -555,7 +577,9 @@ class ExercicesTableauxSignes(Panel_API_graphique):
             except Exception:
                 print_error()
         return False
-
+##
+    ##def _valider_txt(reponse, attendu):
+        ##return reponse.replace(' ', '').rstrip('.') == attendu.replace(' ', '')
 
     @staticmethod
     def _calcul_effectue(expr):

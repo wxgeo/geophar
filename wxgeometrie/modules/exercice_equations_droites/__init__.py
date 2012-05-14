@@ -130,7 +130,7 @@ class ExercicesEquationsDroites(Panel_API_graphique):
         # Ne pas éditer les objets par un clic droit
         self.canvas.edition_par_clic_droit = False
         # Et on change de niveau...
-        if not niveau:
+        if niveau in (None, False):
             # None ou False (False est renvoyé par Qt via QAbstractBouton.clicked)
             self.niveau += 1
         else:
