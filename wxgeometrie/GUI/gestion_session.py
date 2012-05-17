@@ -75,14 +75,15 @@ class GestionnaireSession(object):
             print(u"Session sauvée : (%s)" %lieu)
 
 
-    def charger_session(self, lieu=None, reinitialiser=True):
+    def charger_session(self, lieu=None, reinitialiser=True, activer_modules=True):
         if reinitialiser:
             self.reinitialiser_session()
         if lieu is None:
             lieu = path2(param.emplacements['session'] + "/session.tar.gz")
         session = FichierSession().ouvrir(lieu)
         for fichier in session:
-            self.onglets.ouvrir(fichier, en_arriere_plan = True)
+            if activer_modules or param.modules_actifs[fichier.module]:
+                self.onglets.ouvrir(fichier, en_arriere_plan = True)
         try:
             self.onglets.changer_onglet(session.infos['onglet_actif'])
         except (IndexError, AttributeError):

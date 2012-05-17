@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>a_propos</class>
+ <widget class="QDialog" name="a_propos">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>400</width>
+    <height>300</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>À propos</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">background-color:rgb(255, 255, 255);</string>
+  </property>
+  <widget class="QTabWidget" name="tabWidget">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>10</y>
+     <width>381</width>
+     <height>281</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QTabBar::tab:selected {
+background: white;
+border: 1px solid #C4C4C3;
+border-bottom-color: white; /* same as the pane color */
+border-bottom-left-radius: 4px;
+border-bottom-right-radius: 4px;
+min-width: 8ex;
+padding: 7px;
+}
+QStackedWidget {background:white}
+QTabBar QToolButton {
+background:white;
+border: 1px solid #C4C4C3;
+border-bottom-color: white; /* same as the pane color */
+border-top-left-radius: 4px;
+border-top-right-radius: 4px;
+}
+</string>
+   </property>
+   <property name="tabPosition">
+    <enum>QTabWidget::South</enum>
+   </property>
+   <property name="currentIndex">
+    <number>0</number>
+   </property>
+   <widget class="QWidget" name="version">
+    <attribute name="title">
+     <string>Version</string>
+    </attribute>
+   </widget>
+   <widget class="QWidget" name="credits">
+    <attribute name="title">
+     <string>Crédits</string>
+    </attribute>
+   </widget>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

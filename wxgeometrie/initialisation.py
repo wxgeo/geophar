@@ -122,7 +122,6 @@ def gerer_arguments():
     if options.all:
         parametres_additionnels["modules_actifs"] = dict.fromkeys(param.modules, True)
 
-
     if options.debug:
         parametres_additionnels["debug"] = True
 
@@ -169,7 +168,7 @@ def gerer_arguments():
 
     for nom in parametres_additionnels:
         if not hasattr(param, nom):
-            print(u"Attention: Paramêtre inconnu : " + nom)
+            print(u"Attention: Paramètre inconnu : " + nom)
 
     return parametres_additionnels, arguments, options
 
@@ -403,7 +402,9 @@ try:
                     if crash:
                         print(NOMPROG + u" n'a pas été fermé correctement.\n"
                               "Tentative de restauration de la session en cours...")
-                    frame.gestion.charger_session()
+                    # En général, ne pas activer automatiquement tous les modules
+                    # de la session précédente, mais seulement ceux demandés.
+                    frame.gestion.charger_session(activer_modules=crash)
                 except:
                     print(u"Warning: La session n'a pas pu être restaurée.")
                     print_error()
