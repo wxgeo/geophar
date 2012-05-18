@@ -2,12 +2,12 @@
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 from __future__ import with_statement
 
-##--------------------------------------#######
-#                Probabilités                 #
-##--------------------------------------#######
-#    WxGeometrie
+#    .----------------------------------------.
+#    |    Exercices : Équations de droites    |
+#    '----------------------------------------'
+#    Géophar
 #    Dynamic geometry, graph plotter, and more for french mathematic teachers.
-#    Copyright (C) 2005-2010  Nicolas Pourcelot
+#    Copyright (C) 2005-2012  Nicolas Pourcelot
 #
 #    This program is free software; you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -75,10 +75,6 @@ class ExercicesEquationsDroites(Panel_API_graphique):
 
     def __init__(self, *args, **kw):
         Panel_API_graphique.__init__(self, BarreOutils = BarreOutilsExEqDte, *args, **kw)
-        ##"(nx+n)(nx+n)|nx+n"
-        # numerateur|denominateur
-        # facteur1, facteur2,...|facteur1, facteur2,...
-        # n: entier, q: fraction, d: decimal
         self.canvas.fixe = True
 
         self.entrees = QVBoxLayout()

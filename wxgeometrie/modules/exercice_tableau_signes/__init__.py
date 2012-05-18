@@ -2,12 +2,12 @@
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 from __future__ import with_statement
 
-##--------------------------------------#######
-#                Probabilités                 #
-##--------------------------------------#######
-#    WxGeometrie
+#    .-------------------------------------.
+#    |    Exercices : tableaux de signes   |
+#    '-------------------------------------'
+#    Géophar
 #    Dynamic geometry, graph plotter, and more for french mathematic teachers.
-#    Copyright (C) 2005-2010  Nicolas Pourcelot
+#    Copyright (C) 2005-2012  Nicolas Pourcelot
 #
 #    This program is free software; you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -111,12 +111,15 @@ class ExercicesTableauxSignes(Panel_API_graphique):
         self.canvas.editeur.active = False
 
         self.niveaux = ["n*x+z", "-n*x+q", "1|q*x+z", "z*x+z,z*x+z", "z*x+q|z*x+z",
-                        "z*x+z,z*x+z|z*x+z", "z*x+z,z*x+z|z*x+z,z*x+z", "-n,z*x+z|-x,(z*x+z)**2"]
+                        "z*x+z,z*x+z|z*x+z", "z*x+z,z*x+z|z*x+z,z*x+z",
+                        "-n,z*x+z|-x,(z*x+z)**2"]
 
         self.reinitialiser()
 
 
     def reinitialiser(self):
+        # Ne pas éditer les objets par un clic droit
+        self.canvas.edition_par_clic_droit = False
         self.score = 0
         self.niveau = -1
         self.erreurs = 0
