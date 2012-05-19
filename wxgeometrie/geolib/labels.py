@@ -180,7 +180,7 @@ class Label_glisseur(Label_generique):
     `classe` doit contenir le type de glisseur utilisé.
     """
     defaut = 0.5
-    classe = NotImplemented
+    glisseur = NotImplemented
 
     def _initialiser_coordonnees(self):
         self.style(_angle_ = pi/4) # les noms de style sont entre "_" pour éviter des conflits avec les styles de Texte.
@@ -192,7 +192,7 @@ class Label_glisseur(Label_generique):
     def _get_coordonnees(self):
         if self._M is None:
 #            import objets
-            self._M = self.classe(self.parent, k = self.style("_k_"))
+            self._M = self.glisseur(self.parent, k = self.style("_k_"))
         #~ print self._M.coordonnees
         x0, y0 =  self._M.coordonnees
         r = self.style("_rayon_"); a = self.style("_angle_")
@@ -202,7 +202,7 @@ class Label_glisseur(Label_generique):
     def _set_coordonnees(self, x = None, y = None):
         if self._M is None:
 #            import objets
-            self._M = self.classe(self.parent, k = self.style("_k_"))
+            self._M = self.glisseur(self.parent, k = self.style("_k_"))
         if x is not None:
             self._M.coordonnees = (x, y)
             x0, y0 = self._M.coordonnees # comme _M est un glisseur, ce n'est pas x0 et y0 en général
@@ -218,39 +218,39 @@ class Label_glisseur(Label_generique):
 class Label_segment(Label_glisseur):
     u"""L'étiquette d'un segment."""
 
-    classe = Glisseur_segment
+    glisseur = Glisseur_segment
 
 
 
 class Label_vecteur(Label_glisseur):
     u"""L'étiquette d'un vecteur."""
 
-    classe = Glisseur_vecteur
+    glisseur = Glisseur_vecteur
 
 
 class Label_droite(Label_glisseur):
     u"""L'étiquette d'une droite."""
 
-    classe = Glisseur_droite
+    glisseur = Glisseur_droite
 
 
 class Label_demidroite(Label_glisseur):
     """L'étiquette d'une demi-droite."""
 
-    classe = Glisseur_demidroite
+    glisseur = Glisseur_demidroite
 
 
 class Label_cercle(Label_glisseur):
     """L'étiquette d'un cercle."""
 
     defaut = 0
-    classe = Glisseur_cercle
+    glisseur = Glisseur_cercle
 
 
 class Label_arc_cercle(Label_glisseur):
     """L'étiquette d'un arc de cercle."""
 
-    classe = Glisseur_arc_cercle
+    glisseur = Glisseur_arc_cercle
 
 
 #   Autres classes
