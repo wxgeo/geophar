@@ -517,6 +517,8 @@ class ZoomArtistes(object):
                                 angle.set(taille=self.taille[ID],
                                         rayon=self.rayon[ID])
                                 artiste._maj_data()
+                            elif isinstance(artiste, LigneDecoree):
+                                artiste.set(taille=self.taille[ID])
             # Réglages à effectuer après les autres
             for artiste in self.artistes:
                 if artiste._visible:
