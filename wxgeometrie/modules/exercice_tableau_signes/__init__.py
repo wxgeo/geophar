@@ -34,7 +34,7 @@ from PyQt4.QtGui import (QVBoxLayout, QLabel, QPushButton, QHBoxLayout,
 from sympy import S, solve, gcd
 from sympy.core.sympify import SympifyError
 
-from ...GUI import MenuBar, Panel_API_graphique
+from ...GUI.exercice import ExerciceMenuBar, Exercice
 from ...GUI.proprietes_objets import Proprietes
 from ...GUI.wxlib import BusyCursor
 from ...geolib import Segment, Texte, Point, Champ, TEXTE
@@ -52,121 +52,47 @@ from ... import param
 
 
 
-class TabMenuBar(MenuBar):
-    def __init__(self, panel):
-        MenuBar.__init__(self, panel)
-
-        self.ajouter(u"Fichier", [u"Recommencer", u"Recommencer au niveau 0.", u"Ctrl+N", panel.reinitialiser],
-                    [u"ouvrir"],
-                    [u"enregistrer"], [u"enregistrer_sous"], [u"exporter"],
-                    [u"exporter&sauver"], None, [u"imprimer"], [u"presse-papier"],
-                    None, [u"proprietes"], None, ["fermer"], ["quitter"])
-        self.ajouter(u"Editer", ["annuler"], ["refaire"], ["modifier"], ["supprimer"])
-        self.ajouter(u"Affichage", ["onglet"], ["plein_ecran"], None, ["zoom_texte"], ["zoom_ligne"], ["zoom_general"])
-        self.ajouter(u"Outils", [u"options"])
-        self.ajouter(u"avance1")
-        self.ajouter(u"?")
+class TabMenuBar(ExerciceMenuBar):
+        pass
 
 
 
-class ExercicesTableauxSignes(Panel_API_graphique):
+class ExercicesTableauxSignes(Exercice):
 
     __titre__ = u"Tableaux de signes" # Donner un titre a chaque module
 
-    def __init__(self, *args, **kw):
-        Panel_API_graphique.__init__(self, *args, **kw)
-        ##"(nx+n)(nx+n)|nx+n"
-        # numerateur|denominateur
-        # facteur1, facteur2,...|facteur1, facteur2,...
-        # n: entier, q: fraction, d: decimal
-        self.canvas.fixe = True
-
-        self.entrees = QVBoxLayout()
-        self.entrees.addSpacing(30)
-
-        self.panneau = QLabel('')
-        self.panneau.setStyleSheet(
-            """QLabel { padding: 10px; border-width: 2px; border-style:solid;
-            border-radius: 5px; border-color:%s; background-color: %s }"""
-            %(QColor(30, 144, 255).name(), QColor(176, 226, 255).name())
-                        )
-        self.entrees.addWidget(self.panneau)
-
-        self.entrees.addStretch()
-        self.felicitations = QLabel('')
-        self.entrees.addWidget(self.felicitations)
-
-        self.entrees.addSpacing(30)
-        self.btn_niveau = QPushButton(u"Niveau suivant", self)
-        self.btn_niveau.clicked.connect(self.niveau_suivant)
-        self.entrees.addWidget(self.btn_niveau)
-        self.entrees.addSpacing(50)
-
-        self.sizer = QHBoxLayout()
-        self.sizer.addWidget(self.canvas, 1)
-        self.sizer.addLayout(self.entrees, 0.2)
-        self.finaliser(contenu=self.sizer)
-
-        # Ne pas éditer les champs/textes avec [Entrée]
-        self.canvas.editeur.active = False
-
-        self.niveaux = ["n*x+z", "-n*x+q", "1|q*x+z", "z*x+z,z*x+z", "z*x+q|z*x+z",
-                        "z*x+z,z*x+z|z*x+z", "z*x+z,z*x+z|z*x+z,z*x+z",
-                        "-n,z*x+z|-x,(z*x+z)**2"]
-
-        self.reinitialiser()
-
 
     def reinitialiser(self):
-        # Ne pas éditer les objets par un clic droit
-        self.canvas.edition_par_clic_droit = False
         self.score = 0
-        self.niveau = -1
+        self.niveau = 0
         self.erreurs = 0
         self.canvas.afficher_axes = False
         self.canvas.afficher_quadrillage = False
         self.niveau_suivant()
 
+    def niveau1(self):
+        self.generer_expression("n*x+z")
 
-    def niveau_suivant(self, niveau=None):
-        if niveau in (None, False):
-            # None ou False (False est renvoyé par Qt via QAbstractBouton.clicked)
-            self.niveau += 1
-        else:
-            self.niveau = niveau
-        self.btn_niveau.setEnabled(False)
-        self.felicitations.setStyleSheet(
-            """QLabel {background-color: white; padding: 5px; border-radius: 5px;
-            color:white;}""")
-        self.fermer_feuilles()
-        self.update_panneau()
-        self.pattern = self.niveaux[self.niveau]
-        self.generer_expression()
+    def niveau2(self):
+        self.generer_expression("-n*x+q")
 
-    n = niveau_suivant
+    def niveau3(self):
+        self.generer_expression("1|q*x+z")
 
-    def update_panneau(self):
-        self.panneau.setText((u"<p><b><i>Niveau :</i> %s</b></p>" % self.niveau) +
-                                 (u"<p><b><i>Points :</i> %s</b></p>" % self.score) +
-                                 (u"<p><i>Erreurs :</i> %s</p>" % self.erreurs))
-        champs = self.feuille_actuelle.objets.lister(type=Champ)
-        if champs and all(obj.correct for obj in champs):
-            if self.niveau + 1 < len(self.niveaux):
-                self.btn_niveau.setEnabled(True)
-                self.btn_niveau.setFocus(True)
-                self.felicitations.setText(u'<p><b>Félicitations !</b></p>' +
-                                           u'<p>Passer au niveau %s</p>' %(self.niveau + 1))
-                self.felicitations.setStyleSheet(
-                    """QLabel {background-color: %s; padding: 5px;
-                       border-radius: 5px;
-                       color:white;}""" %QColor(255, 153, 0).name())
+    def niveau4(self):
+        self.generer_expression("z*x+z,z*x+z")
 
-            else:
-                self.felicitations.setText(u'<p><b>Félicitations !</b></p>' +
-                                           u'<p>Dernier niveau terminé !</p>')
-                self.felicitations.setStyleSheet(
-                    """QLabel {background-color: %s; padding: 5px; border-radius: 5px;
-                    color:white;}""" %QColor(102, 205, 0).name())
+    def niveau5(self):
+        self.generer_expression("z*x+q|z*x+z")
+
+    def niveau6(self):
+        self.generer_expression("z*x+z,z*x+z|z*x+z")
+
+    def niveau7(self):
+        self.generer_expression("z*x+z,z*x+z|z*x+z,z*x+z")
+
+    def niveau8(self):
+        self.generer_expression("-n,z*x+z|-x,(z*x+z)**2")
 
 
     def _sauvegarder(self, fgeo, feuille = None):
@@ -197,41 +123,30 @@ class ExercicesTableauxSignes(Panel_API_graphique):
         with BusyCursor():
             self.dessiner_tableau()
 
-    def naturel(self, m=None):
-        u'''Retourne un entier entre 2 et 15.'''
-        return str(randint(2, 15))
-
-    def relatif(self, m=None):
-        u'''Retourne un entier entre -15 et -2, ou entre 2 et 15.'''
-        # signe: 1 ou -1
-        signe = 2*randint(0, 1) - 1
-        return str(signe*randint(2, 15))
-
-    def decimal(self, m=None):
-        u'''Retourne un nombre décimal à deux chiffres.'''
-        return self.relatif() + '.' + self.naturel()
-
-    def rationnel(self, m=None):
-        u'''Retourne un quotient d'entiers.'''
-        while True:
-            p = randint(2, 7)
-            q = randint(2, 7)
-            if p%q:
-                break
-        signe = 2*randint(0, 1) - 1
-        return str(S(signe*p)/S(q))
-
     def _formater(self, expression):
         expression = expression.replace('**', '^').replace('*', '').replace(' ', '')
         if not re.match('-?(%s)?x?(\(.+\)(\^%s)?)?$' % (NBR, NBR), expression):
             expression = '(' + expression + ')'
         return expression
 
-    def generer_expression(self, expr=None):
+    def str_naturel(self, m):
+        return str(self.naturel())
+
+    def str_relatif(self, m):
+        return str(self.relatif())
+
+    def str_decimal(self, m):
+        return str(self.decimal())
+
+    def str_rationnel(self, m):
+        return str(self.rationnel())
+
+    def generer_expression(self, pattern):
         u"""Génère une expression aléatoire en fonction respectant le format
         en cours.
 
-        Si `expr` a une valeur, l'expression reprend la valeur de `expr`.
+        Si `pattern` est déjà une expression, l'expression retournée
+        est identique à la valeur entrée.
         """
         # Génération de l'expression:
         x = S('x')
@@ -240,13 +155,10 @@ class ExercicesTableauxSignes(Panel_API_graphique):
             k += 1
             # 10000 essais au maximum
             assert k < 10000
-            if expr is None:
-                expression = re.sub('n', self.naturel, self.pattern)
-                expression = re.sub('z', self.relatif, expression)
-                expression = re.sub('d', self.decimal, expression)
-                expression = re.sub('q', self.rationnel, expression)
-            else:
-                expression = expr
+            expression = re.sub('n', self.str_naturel, pattern)
+            expression = re.sub('z', self.str_relatif, expression)
+            expression = re.sub('d', self.str_decimal, expression)
+            expression = re.sub('q', self.str_rationnel, expression)
             self.raw_expression = expression
             expression = expression.replace('+-', '-').replace('-+', '-')
             if '|' in expression:
@@ -558,13 +470,6 @@ class ExercicesTableauxSignes(Panel_API_graphique):
         ##self.feuille_actuelle.interprete.commande_executee()
         ##self.feuille_actuelle.objets._.encadrer('r')
 
-    def autocompleter(self):
-        for t in self.feuille_actuelle.objets.lister(type=Champ):
-            t.texte = t.style('attendu', color='g')
-        self.feuille_actuelle.interprete.commande_executee()
-
-    a = property(autocompleter)
-
     @staticmethod
     def _valider(reponse, attendu):
         attendu = attendu.replace(' ', '').replace(',', '.')
@@ -584,27 +489,7 @@ class ExercicesTableauxSignes(Panel_API_graphique):
     ##def _valider_txt(reponse, attendu):
         ##return reponse.replace(' ', '').rstrip('.') == attendu.replace(' ', '')
 
-    @staticmethod
-    def _calcul_effectue(expr):
+    def bonus(self, expr):
         expr = expr.replace(',', '.')
         return bool(re.match("(%s|%s/%s)$" % (NBR_SIGNE, NBR_SIGNE, NBR_SIGNE), expr))
 
-    def compter_points(self, **kw):
-        if 'correct' in kw and 'correct_old' in kw and 'champ' in kw:
-            champ = kw['champ']
-            if kw['correct']:
-                if not kw['correct_old']:
-                    if not champ.style('choix'):
-                        # C'est plus dur s'il n'y a pas de choix proposé.
-                        # On accorde une bonification si le résultat est
-                        # un minimum simplifié.
-                        if self._calcul_effectue(champ.label()):
-                            self.score += 3
-                        self.score += 1
-                    self.score += 1
-            else:
-                self.score -= 1
-                self.erreurs += 1
-        if all(obj.correct for obj in self.feuille_actuelle.objets.lister(type=Champ)):
-            self.score += 10*(self.niveau + 1)
-        self.update_panneau()
