@@ -13,6 +13,7 @@ from wxgeometrie.geolib import (Tangente, Perpendiculaire, Parallele, Mediatrice
                                 Barycentre, Vecteur_libre, RIEN, Demidroite, DemiPlan,
                                 )
 
+from wxgeometrie.geolib import Interpolation_polynomiale_par_morceaux, Glisseur_courbe_interpolation, Tangente_glisseur_interpolation
 
 def test_Segment():
     A = Point(4.5,  7.3)
@@ -191,3 +192,14 @@ def test_DemiPlan():
     assert Point(1, 0) in P1
     assert Point(0, 0) in P2
     assert Point(1, 0) not in P2
+
+def test_Tangente_glisseur_interpolation():
+    A = Point(-6, -1)
+    B = Point(-3, 2)
+    C = Point(-0.5, -1)
+    D = Point(2.6, 1.1)
+    inter = Interpolation_polynomiale_par_morceaux(A, B, C, D)
+    M = Glisseur_courbe_interpolation(inter, 2)
+    T = Tangente_glisseur_interpolation(inter, M)
+    # la tangente doit passer par M par construction
+    assert T.xy(M.x.contenu) == (M.x, M.y)
