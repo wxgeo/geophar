@@ -1010,7 +1010,7 @@ class Tangente_courbe(Droite_vectorielle):
         Droite_vectorielle.__init__(self, point = point, vecteur = Vecteur_libre(x= v.q, y= v.p))
 
 
-class Tangente_courbe_interpolation(Droite_vectorielle):
+class Tangente_courbe_interpolation(Droite_equation):
     u"""Une tangente à une courbe de type interpolation polynomiale par morceau.
 
     Le coefficient directeur est estimé par approximation numérique avec taux de variation
@@ -1027,20 +1027,24 @@ class Tangente_courbe_interpolation(Droite_vectorielle):
     >>> B = Point(2,1)
     >>> C = Point(8,-3)
     >>> d = Interpolation_polynomiale_par_morceaux(A,B,C, derivees=[-1,0.5,2])
-    >>> t = Tangente_courbe_interpolation(d, x= -2 )
+    >>> t2 = Tangente_courbe_interpolation(d, x= -2. )
 
     """
     
-    courbe = Argument('Interpolation_polynomiale_par_morceaux')
+    courbe = __courbe = Argument('Interpolation_polynomiale_par_morceaux')
+    x = __x = Argument('float')
 
     def __init__(self, courbe, x = None):
-        pas = courbe.__canvas__.pas()
-        dx = fullrange(x, x + pas, pas)
-        dy = courbe.interpol(dx)
-        P = Point(dx[0], dy[0])
-        v = (dy[1] - dy[0]) / (dx[1] - dx[0])
-        Droite_vectorielle.__init__(self, point = P, vecteur = Vecteur_libre(x= 1, y= v))
+        self.__courbe = Ref(courbe)
+        self.__x = Ref(x)
+        P = Point(x, courbe.foo(x))
+        v = courbe.foo.derivative(x, 1)
+        Droite_equation.__init__(self, a= -v, b= 1, c= -P.y + v*P.x.contenu )
 
+    def _get_equation(self):
+        y,v = self.courbe.foo.derivatives(self.x, 2) #f(x), f'(x)
+        self._set_equation(a = -v, b = 1, c = -y + v * self.x)
+        return Droite_equation._get_equation(self)
 
 
 class Tangente_glisseur_interpolation(Droite_equation):
@@ -1069,17 +1073,13 @@ class Tangente_glisseur_interpolation(Droite_equation):
     glisseur = __glisseur = Argument('Glisseur_courbe_interpolation')
 
     def __init__(self, courbe, P = None):
-        pas = courbe.__canvas__.pas()
-        dx = fullrange(P.x.contenu, P.x.contenu + pas, pas)
-        dy = courbe.interpol(dx)
         self.__courbe = Ref(courbe)
         self.__glisseur = Ref(P)
-        v = (dy[1] - dy[0]) / (dx[1] - dx[0])
+        v = courbe.foo.derivative(P.x.contenu, 1)
         Droite_equation.__init__(self, a= -v, b= 1, c= -P.y + v*P.x.contenu )
 
+
     def _get_equation(self):
-        pas = self.courbe.__canvas__.pas()
-        dx = fullrange(self.glisseur.x.contenu, self.glisseur.x.contenu + pas, pas)
-        dy = self.courbe.interpol(dx)
-        v = (dy[1] - dy[0]) / (dx[1] - dx[0])
-        return -v, 1, -self.glisseur.y + v*self.glisseur.x.contenu
+        v = self.courbe.foo.derivative(self.glisseur.x.contenu, 1)
+        self._set_equation(a = -v, b = 1, c = -self.glisseur.y + v*self.glisseur.x.contenu)
+        return Droite_equation._get_equation(self)

@@ -330,6 +330,7 @@ class Interpolation_polynomiale_par_morceaux(Interpolation_generique):
 
     """
     points = __points = Arguments("Point_interpolation")
+    foo = None # fonction d'interpolation
 
     def __init__(self, *points, **styles):
         # TODO: valeurs par défaut "intelligentes" pour les nombres dérivés.
@@ -346,13 +347,19 @@ class Interpolation_polynomiale_par_morceaux(Interpolation_generique):
         ##for i, P in enumerate(points):
             ##dico = {'point': P, 'cdir': self.__derivees[i]}
             ##self.__tangentes.append(Tangente_courbe(**dico))
+        
         Interpolation_generique.__init__(self, *points, **styles)
+         
 
-    def _poly_inter(self, xl, yl, derivl):
-        u"""Fonction wrapper vers la fonction de scipy
+    @property
+    def foo(self):
+        """Fonction wrapper vers la fonction de scipy PiecewisePolynomial
 
         """
-        yl_cum = [[yl[i], derivl[i]] for i in range(len(yl))]
+        pts = self.points_tries
+        xl = [P[0] for P in pts]
+        yl = [P[1] for P in pts]
+        yl_cum = [[yl[i], self._derivees()[i]] for i in range(len(yl))]
         return PiecewisePolynomial(xl, yl_cum)
 
 
@@ -409,14 +416,6 @@ class Interpolation_polynomiale_par_morceaux(Interpolation_generique):
         return sorted(self.__points, key=attrgetter('x'))
 
 
-    def interpol(self, val):
-        # interpol doit être recalculé à chaque mise à jour
-        # FIXME: utiliser un système de cache.
-        points = self.points_tries
-        xl = [P[0] for P in points]
-        yl = [P[1] for P in points]
-        return self._poly_inter(xl, yl, self._derivees())(val)
-
     def _creer_figure(self):
         points = self.points_tries
         n = len(points)
@@ -442,14 +441,12 @@ class Interpolation_polynomiale_par_morceaux(Interpolation_generique):
         x1, y1 = points[0].coordonnees
         x2, y2 = points[-1].coordonnees
         xarray = fullrange(x1, x2, pas)
-        yarray = self.interpol(xarray)
+        yarray = self.foo(xarray)
         plot.set_data(xarray, yarray)
         plot.set(color=couleur, linestyle=style, linewidth=epaisseur)
         plot.zorder = niveau
         self._xarray = xarray
         self._yarray = yarray
-
-        #self._affiche_extremites()
 
     @property
     def xmin(self):

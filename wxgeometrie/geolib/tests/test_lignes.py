@@ -13,7 +13,7 @@ from wxgeometrie.geolib import (Tangente, Perpendiculaire, Parallele, Mediatrice
                                 Barycentre, Vecteur_libre, RIEN, Demidroite, DemiPlan,
                                 )
 
-from wxgeometrie.geolib import Interpolation_polynomiale_par_morceaux, Glisseur_courbe_interpolation, Tangente_glisseur_interpolation
+from wxgeometrie.geolib import Interpolation_polynomiale_par_morceaux, Glisseur_courbe_interpolation, Tangente_courbe_interpolation, Tangente_glisseur_interpolation
 
 def test_Segment():
     A = Point(4.5,  7.3)
@@ -193,6 +193,20 @@ def test_DemiPlan():
     assert Point(0, 0) in P2
     assert Point(1, 0) not in P2
 
+
+def test_Tangente_courbe_interpolation():
+    A = Point(-6, -1)
+    B = Point(-3, 2)
+    C = Point(-0.5, -1)
+    D = Point(2.6, 1.1)
+    inter = Interpolation_polynomiale_par_morceaux(A, B, C, D)
+    T = Tangente_courbe_interpolation(inter, x= 2.)
+    # la tangente doit passer par M par construction
+    assert T.xy(2) == (2, inter.foo(2))
+    # son coef dir doit etre la dérivée sur le glisseur
+    assert (-T.a / T.b) == inter.foo.derivative(2, 1)
+
+
 def test_Tangente_glisseur_interpolation():
     A = Point(-6, -1)
     B = Point(-3, 2)
@@ -202,4 +216,10 @@ def test_Tangente_glisseur_interpolation():
     M = Glisseur_courbe_interpolation(inter, 2)
     T = Tangente_glisseur_interpolation(inter, M)
     # la tangente doit passer par M par construction
-    assert T.xy(M.x.contenu) == (M.x, M.y)
+    assertAlmostEqual( T.xy(M.x.contenu), (M.x.contenu, M.y))
+    # son coef dir doit etre la dérivée sur le glisseur
+    assert (float(-T.a) / float(T.b)) == inter.foo.derivative(M.x.contenu, 1)
+    # rebelotte après déplacement du glisseur
+    M.x = 1 
+    assertAlmostEqual( T.xy(M.x.contenu), (M.x.contenu, M.y))
+    assertAlmostEqual( (float(-T.a) / float(T.b)), inter.foo.derivative(M.x.contenu, 1))

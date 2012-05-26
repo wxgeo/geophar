@@ -41,5 +41,5 @@ def test_Interpolation_polynomiale_par_morceaux():
     M = Glisseur_courbe_interpolation(inter, 2)
     assert M.xy[0] == 2
     P = Point(inter)
-    assert P.y == inter.interpol(float(P.x))
+    assert P.y == inter.foo(float(P.x))
 

@@ -1162,7 +1162,7 @@ class Glisseur_courbe_interpolation(Glisseur_generique):
         Glisseur_generique.__init__(self, objet=courbe, k=x, **styles)
 
     def _get_coordonnees(self):
-        return self.__x, self.__courbe.interpol(float(self.__x))
+        return self.__x, self.__courbe.foo(float(self.__x))
 
     def _conversion_coordonnees_parametre(self, x, y):
         # On s'assure qu'on est bien toujours xmin < x < xmax
