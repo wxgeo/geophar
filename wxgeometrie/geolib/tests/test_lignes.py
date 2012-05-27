@@ -202,9 +202,9 @@ def test_Tangente_courbe_interpolation():
     inter = Interpolation_polynomiale_par_morceaux(A, B, C, D)
     T = Tangente_courbe_interpolation(inter, x= 2.)
     # la tangente doit passer par M par construction
-    assert T.xy(2) == (2, inter.foo(2))
-    # son coef dir doit etre la dérivée sur le glisseur
-    assert (-T.a / T.b) == inter.foo.derivative(2, 1)
+    assertAlmostEqual( T.xy(2), (2, inter.foo(2)))
+    # son coef dir doit être la dérivée sur le point de passage
+    assertAlmostEqual( -T.a / T.b, inter.foo.derivative(2, 1))
 
 
 def test_Tangente_glisseur_interpolation():
@@ -218,7 +218,7 @@ def test_Tangente_glisseur_interpolation():
     # la tangente doit passer par M par construction
     assertAlmostEqual( T.xy(M.x.contenu), (M.x.contenu, M.y))
     # son coef dir doit etre la dérivée sur le glisseur
-    assert (float(-T.a) / float(T.b)) == inter.foo.derivative(M.x.contenu, 1)
+    assertAlmostEqual( (float(-T.a) / float(T.b)), inter.foo.derivative(M.x.contenu, 1))
     # rebelotte après déplacement du glisseur
     M.x = 1 
     assertAlmostEqual( T.xy(M.x.contenu), (M.x.contenu, M.y))

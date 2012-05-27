@@ -1027,12 +1027,12 @@ class Tangente_courbe_interpolation(Droite_equation):
     >>> B = Point(2,1)
     >>> C = Point(8,-3)
     >>> d = Interpolation_polynomiale_par_morceaux(A,B,C, derivees=[-1,0.5,2])
-    >>> t2 = Tangente_courbe_interpolation(d, x= -2. )
+    >>> t2 = Tangente_courbe_interpolation(d, x= -2 )
 
     """
     
     courbe = __courbe = Argument('Interpolation_polynomiale_par_morceaux')
-    x = __x = Argument('float')
+    x = __x = Argument('float,int')
 
     def __init__(self, courbe, x = None):
         self.__courbe = Ref(courbe)
