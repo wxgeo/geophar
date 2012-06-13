@@ -516,8 +516,11 @@ dpi_ecran = 80
 # Tableau récapitulatif des résolutions les plus courantes :
 # http://forum.notebookreview.com/notebook-dummy-guide-articles/124093-guide-screen-sizes-dots-per-inch-dpi.html
 
+
+# Export / Sauvegarde
 dpi_export = 200 # resolution utilisee lors de l'exportation des images
 compresser_geo = False # compresser les fichiers .geo par défaut
+format_par_defaut = 'png'
 
 afficher_coordonnees = True # affiche en permanence les coordonnees
 afficher_pixels = False # pour débogage (mettre afficher_coordonnes à False précédemment)

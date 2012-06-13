@@ -153,7 +153,6 @@ class FenetrePrincipale(QMainWindow):
             self.ligne_commande.setVisible(param.ligne_commande)
             if param.ligne_commande:
                 self.ligne_commande.setFocus()
-            self.SendSizeEvent()
         return param.ligne_commande
 
 

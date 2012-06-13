@@ -289,8 +289,8 @@ border-top-right-radius: 4px;
     # -------------------
 
     filtres_save = (u"Fichiers " + NOMPROG + u" (*.geo);;"
-                   u"Fichiers " + NOMPROG + u" compressés (*.geoz);;"
-                   u"Tous les fichiers (*.*)")
+                    u"Fichiers " + NOMPROG + u" compressés (*.geoz);;"
+                    u"Tous les fichiers (*.*)")
 
     def NewFile(self):
         self.onglet_actuel.creer_feuille()
@@ -407,27 +407,40 @@ border-top-right-radius: 4px;
 
 
         def format(typ, description):
-            return typ.upper() + ' - ' + description + ' (.' + typ + ')'
-        filtres = ';;'.join(format(k, v) for k, v in description_formats)
+            return typ.upper() + ' - ' + description + ' (*.' + typ.upper() + ' *.' + typ + ')'
+        filtres = [format(k, v) for k, v in description_formats]
 
-        format_par_defaut = ''
-        if '.' in fichier:
-            format_par_defaut = fichier.split('.', 1)[1]
+        format = ''
+        if '.' in fichier and fichier[-1] != '.':
+            # On récupère l'extension du nom de fichier
+            format = fichier.rsplit('.', 1)[1]
 
-        if format_par_defaut not in formats_supportes:
-            format_par_defaut = 'png'
+        if format not in formats_supportes:
+            format = param.format_par_defaut
+            if format not in formats_supportes:
+                print("Warning: format par defaut incorrect: " + repr(format))
+                format = 'png'
 
-        for filtre in filtres.split(';;'):
-            if filtre.endswith(format_par_defaut + ')'):
+        for filtre in filtres:
+            if filtre.endswith(format + ')'):
                 break
 
-        filtre = u'PNG - Portable Network Graphics (.png)'
         path, filtre = QFileDialog.getSaveFileNameAndFilter(self, u"Exporter l'image",
-                                           os.path.join(dir, fichier), filtres,
+                                           os.path.join(dir, fichier), ';;'.join(filtres),
                                            filtre)
 
         if not path:
             return # Quitte sans sauvegarder.
+
+        # Vérifie si le nom de fichier possède une extension
+        for format in formats_supportes:
+            if path.lower().endswith(format):
+                break
+        else:
+            # Sinon, on en rajoute une.
+            i = filtre.rindex('.')
+            format = filtre[i + 1:-1]
+            path += '.' + format
 
         # Sauvegarde le répertoire pour la prochaine fois
         param.rep_export = os.path.dirname(path)
@@ -437,12 +450,9 @@ border-top-right-radius: 4px;
             param.rep_open = param.rep_export
         if sauvegarde:
             param.rep_save = param.rep_export
-
-        # Check for proper extension
-        if not any(path.lower().endswith(extension) for extension in formats_supportes):
-            i = filtre.index('(')
-            ext = filtre[i + 1:-1]
-            path += ext
+        # Sauvegarde le format pour la prochaine fois
+        param.format_par_defaut = format
+        ##print 'param.format_par_defaut', param.format_par_defaut
 
         try:
             if sauvegarde:
@@ -458,7 +468,7 @@ border-top-right-radius: 4px;
 
 
     def ExportAndSaveFile(self, lieu=None):
-        self.ExportFile(lieu = lieu, sauvegarde = True)
+        self.ExportFile(lieu=lieu, sauvegarde=True)
 
     def CloseFile(self):
         self.onglet_actuel.fermer_feuille()
