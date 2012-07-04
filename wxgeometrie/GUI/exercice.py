@@ -71,7 +71,6 @@ class Exercice(Panel_API_graphique):
 
     def __init__(self, *args, **kw):
         Panel_API_graphique.__init__(self, *args, **kw)
-        self.canvas.fixe = True
 
         self.entrees = QVBoxLayout()
         self.entrees.addSpacing(30)
@@ -98,11 +97,29 @@ class Exercice(Panel_API_graphique):
 
 
     def reinitialiser(self):
+        u"""Revient au 1er niveau, et remet tous les réglages par défaut.
+
+        Chaque niveau peut bien sûr modifier ces réglages.
+
+        Quelques remarques:
+        * le clic droit est désactivé, car il permet d'obtenir la réponse
+          en éditant les propriétés du champ de texte.
+        * l'édition des champs/textes avec [Entrée] est désactivée
+          (car cela s'est avéré perturber les élèves).
+        """
         # Ne pas éditer les champs/textes avec [Entrée]
         self.canvas.editeur.active = False
         # Ne pas éditer les objets par un clic droit
         self.canvas.edition_par_clic_droit = False
+
+        # Réglages par défaut
+        self.canvas.fixe = True
+        self.canvas.afficher_axes = False
+        self.canvas.afficher_quadrillage = False
         self.afficher_barre_outils(False)
+        self.canvas.ratio = None
+
+        # Réinitialisation du score et retour au niveau 1
         if param.debug:
             print(u'Module %s: réinitialisation...' % self.nom)
         self.score = 0
@@ -111,16 +128,11 @@ class Exercice(Panel_API_graphique):
         self.niveau_suivant()
 
 
+
     def niveau_suivant(self, niveau=None):
         # On ferme toutes les feuilles ouvertes (inutile en principe),
         # et on en ouvre une nouvelle.
         self.fermer_feuilles()
-        ### Paramètres par défaut:
-        ##self.canvas.fenetre = -8, 8, -10, 8
-        ##self.canvas.afficher_axes = True
-        ##self.canvas.quadrillage_defaut()
-        ##self.canvas.ratio = None
-        ##self.canvas.repere = ('O', 'i', 'j')
         # Et on change de niveau...
         if niveau in (None, False):
             # None ou False (False est renvoyé par Qt via QAbstractBouton.clicked)
@@ -231,6 +243,9 @@ class Exercice(Panel_API_graphique):
         return self.relatif(m), self.relatif(n)
 
     def autocompleter(self):
+        u"""Compléter automatiquement avec les bonnes réponses
+        pour pouvoir passer au niveau suivant.
+        Essentiellement pour déboguer."""
         ##if self.btn_niveau.isEnabled():
             ##self.niveau_suivant()
         self.btn_niveau.click()

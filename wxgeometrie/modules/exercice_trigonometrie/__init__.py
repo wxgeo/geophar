@@ -2,12 +2,12 @@
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 from __future__ import with_statement
 
-#    .----------------------------------------.
-#    |    Exercices : Équations de droites    |
-#    '----------------------------------------'
-#    Géophar
+##--------------------------------------########
+#                Exercice : Trigonométrie      #
+##--------------------------------------########
+#    WxGeometrie
 #    Dynamic geometry, graph plotter, and more for french mathematic teachers.
-#    Copyright (C) 2005-2012  Nicolas Pourcelot
+#    Copyright (C) 2005-2010  Nicolas Pourcelot
 #
 #    This program is free software; you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -35,7 +35,6 @@ from sympy import S, solve, gcd, simplify
 from sympy.core.sympify import SympifyError
 
 from ...GUI import MenuBar, Panel_API_graphique
-from ...GUI.exercice import ExerciceMenuBar, Exercice
 from ...GUI.proprietes_objets import Proprietes
 from ...geolib import Segment, Texte, Point, Droite, Champ, TEXTE, NOM
 from ...geolib.routines import nice_str, det, vect
@@ -47,43 +46,116 @@ from .barre_outils_ex_eq_dte import BarreOutilsExEqDte
 
 
 
-class EqMenuBar(ExerciceMenuBar):
-    pass
+
+class TabMenuBar(MenuBar):
+    def __init__(self, panel):
+        MenuBar.__init__(self, panel)
+
+        self.ajouter(u"Fichier", [u"Recommencer", u"Recommencer au niveau 0.", u"Ctrl+N", panel.reinitialiser],
+                    [u"ouvrir"],
+                    [u"enregistrer"], [u"enregistrer_sous"], [u"exporter"],
+                    [u"exporter&sauver"], None, [u"imprimer"], [u"presse-papier"],
+                    None, [u"proprietes"], None, ["fermer"], ["quitter"])
+        self.ajouter(u"Editer", ["annuler"], ["refaire"], ["modifier"], ["supprimer"])
+        self.ajouter(u"Affichage", ["onglet"], ["plein_ecran"], None, ["zoom_texte"], ["zoom_ligne"], ["zoom_general"])
+        self.ajouter(u"Outils", [u"options"])
+        self.ajouter(u"avance1")
+        self.ajouter(u"?")
 
 
 
-class ExercicesEquationsDroites(Exercice):
+class ExercicesTrigonometrie(Panel_API_graphique):
 
-    __titre__ = u"Équations de droites" # Donner un titre a chaque module
+    __titre__ = u"Trigonométrie" # Donner un titre a chaque module
 
     def __init__(self, *args, **kw):
-        Exercice.__init__(self, BarreOutils = BarreOutilsExEqDte, *args, **kw)
+        Panel_API_graphique.__init__(self, *args, **kw)
+        self.canvas.fixe = True
+
+        self.entrees = QVBoxLayout()
+        self.entrees.addSpacing(30)
+
+        self.panneau = QLabel('')
+        self.entrees.addWidget(self.panneau)
+
+        self.entrees.addStretch()
+        self.felicitations = QLabel('')
+        self.entrees.addWidget(self.felicitations)
+
+        self.entrees.addSpacing(30)
+        self.btn_niveau = QPushButton(u"Niveau suivant", self)
+        self.btn_niveau.clicked.connect(self.niveau_suivant)
+        self.entrees.addWidget(self.btn_niveau)
+        self.entrees.addSpacing(50)
+
+        self.sizer = QHBoxLayout()
+        self.sizer.addWidget(self.canvas, 1)
+        self.sizer.addLayout(self.entrees, 0.2)
+        self.finaliser(contenu=self.sizer)
+
+        self.reinitialiser()
 
 
     def reinitialiser(self):
-        u"""Paramètres par défaut."""
-        Exercice.reinitialiser(self)
+        if param.debug:
+            print(u'Module %s: réinitialisation...' % self.nom)
+        self.score = 0
+        self.niveau = 0
+        self.erreurs = 0
+        self.niveau_suivant()
+
+
+    def niveau_suivant(self, niveau=None):
+        # On ferme toutes les feuilles ouvertes (inutile en principe),
+        # et on en ouvre une nouvelle.
+        self.fermer_feuilles()
+        # Paramètres par défaut:
+        self.canvas.fenetre = -8, 8, -10, 8
         self.canvas.afficher_axes = True
         self.canvas.quadrillage_defaut()
+        self.canvas.ratio = None
         self.canvas.repere = ('O', 'i', 'j')
+        self.afficher_barre_outils(False)
+        # Ne pas éditer les champs/textes avec [Entrée]
+        self.canvas.editeur.actif = False
+        # Ne pas éditer les objets par un clic droit
+        self.canvas.edition_par_clic_droit = False
+        # Et on change de niveau...
+        if niveau in (None, False):
+            # None ou False (False est renvoyé par Qt via QAbstractBouton.clicked)
+            self.niveau += 1
+        else:
+            self.niveau = niveau
+        if param.debug:
+            print("== Niveau %s ==" % self.niveau)
+        getattr(self, 'niveau%s' % self.niveau)()
 
+        self.btn_niveau.setEnabled(False)
+        self.felicitations.setStyleSheet(
+            """QLabel {background-color: white; padding: 5px; border-radius: 5px;
+            color:white;}""")
+        self.update_panneau()
 
+    n = niveau_suivant
 
     # ------------------------------------------------------
     # Niveaux 1 à 7 : lecture graphique d'équation de droite
     # ------------------------------------------------------
 
-    def exercice_lire_equation_AB(self, pointA, pointB):
-        u"""Lire graphiquement l'équation de la droite (AB).
-
-        C'est l'exercice à la base des niveaux 1 à 7.
+    def cercle_trigo(self):
+        u"""Construction d'un cercle trigonométrique.
         """
-        self.canvas.fenetre = -8, 8, -10, 8
-        xA, yA = pointA
-        xB, yB = pointB
-        A = Point(*pointA, fixe=True)
-        B = Point(*pointB, fixe=True)
-        self.feuille_actuelle.objets['A'] = A
+        obj = self.feuille_actuelle.objets
+        obj['O'] = O = Point(0, 0, fixe=True)
+        obj['I'] = I = Point(1, 0, fixe=True)
+        obj['c'] = c = Cercle(O, I)
+        for i in range(1, 8):
+            a = i*pi/4
+            M = Point(cos(a), sin(a), fixe=True)
+        for i in range(1, 12):
+            if i != 6:
+                a = i*pi/6
+                M = Point(cos(a), sin(a), fixe=True)
         self.feuille_actuelle.objets['B'] = B
         # Ne pas afficher l'équation !
         d = Droite(A, B, afficher_info=False)
@@ -92,7 +164,6 @@ class ExercicesEquationsDroites(Exercice):
             reponse = 'x=' + str(xA)
         else:
             reponse = ('y=%s*x+%s' % self.eq_reduite(pointA, pointB))
-        print('fen::', self.canvas.fenetre)
         xmin, xmax, ymin, ymax = self.canvas.fenetre
         print 'Fenetre::', self.canvas.fenetre, '--', xmin, ymin
         champ = Champ('', xmin, ymin, fond='#ffffb5',
@@ -184,13 +255,12 @@ class ExercicesEquationsDroites(Exercice):
 
 
     def niveau7(self):
-        self.niveau6(n=4)
         self.canvas.ratio = 4
         self.canvas.quadrillages = (((.25, 1), ':', 0.5, 'k'),)
         self.canvas.fenetre = -4.5, 4.5, -10, 8
-        print('fen::', self.canvas.fenetre)
-        xmin, xmax, ymin, ymax = self.canvas.fenetre
-        self.feuille_actuelle.objets['champ1'].xy = xmin, ymin
+        print self.canvas.fenetre
+        self.niveau6(n=4)
+        self.feuille_actuelle.objets['champ1'].y = -9
 
 
     def valider_eq(self, reponse, attendu):
@@ -348,6 +418,34 @@ class ExercicesEquationsDroites(Exercice):
         return self.relatif()*S('x') + self.relatif()
 
 
+    def update_panneau(self):
+        self.panneau.setStyleSheet(
+            """QLabel { padding: 10px; border-width: 2px; border-style:solid;
+            border-radius: 5px; border-color:%s; background-color: %s }"""
+            %(QColor(30, 144, 255).name(), QColor(176, 226, 255).name())
+                        )
+        self.panneau.setText((u"<p><b><i>Niveau :</i> %s</b></p>" % self.niveau) +
+                                 (u"<p><b><i>Points :</i> %s</b></p>" % self.score) +
+                                 (u"<p><i>Erreurs :</i> %s</p>" % self.erreurs))
+        champs = self.feuille_actuelle.objets.lister(type=Champ)
+        if champs and all(obj.correct for obj in champs):
+            if hasattr(self, 'niveau' + str(self.niveau + 1)):
+                self.btn_niveau.setEnabled(True)
+                self.btn_niveau.setFocus(True)
+                self.felicitations.setText(u'<p><b>Félicitations !</b></p>' +
+                                           u'<p>Passer au niveau %s</p>' %(self.niveau + 1))
+                self.felicitations.setStyleSheet(
+                    """QLabel {background-color: %s; padding: 5px;
+                       border-radius: 5px;
+                       color:white;}""" %QColor(255, 153, 0).name())
+
+            else:
+                self.felicitations.setText(u'<p><b>Félicitations !</b></p>' +
+                                           u'<p>Dernier niveau terminé !</p>')
+                self.felicitations.setStyleSheet(
+                    """QLabel {background-color: %s; padding: 5px; border-radius: 5px;
+                    color:white;}""" %QColor(102, 205, 0).name())
+
     ##def _sauvegarder(self, fgeo, feuille = None):
         ##Panel_API_graphique._sauvegarder(self, fgeo, feuille)
         ##fgeo.contenu[u"niveau"] = [str(self.niveau)]
@@ -374,3 +472,60 @@ class ExercicesEquationsDroites(Exercice):
 
     ##def _affiche(self):
         ##self.dessiner_tableau()
+
+
+    # --------------------------------
+    # Génération de nombres aléatoires
+    # --------------------------------
+
+    @staticmethod
+    def signe():
+        return 2*randint(0, 1) - 1
+
+    def naturel(self, n=15):
+        u'''Retourne un entier entre 2 et `n`.'''
+        return randint(2, n)
+
+    def relatif(self, n=15):
+        u'''Retourne un entier entre -`n` et -2, ou entre 2 et `n`.'''
+        # signe: 1 ou -1
+        signe = 2*randint(0, 1) - 1
+        return self.signe()*self.naturel(n)
+
+    def rationnel(self, n=7):
+        u'''Retourne un quotient d'entiers.'''
+        while True:
+            p = self.naturel(n)
+            q = self.naturel(n)
+            if p%q:
+                break
+        return self.signe()*S(p)/S(q)
+
+    def couple(self, m=7, n=7):
+        u"""Retourne un couple d'entiers relatifs."""
+        return self.relatif(m), self.relatif(n)
+
+    def autocompleter(self):
+        ##if self.btn_niveau.isEnabled():
+            ##self.niveau_suivant()
+        self.btn_niveau.click()
+        for t in self.feuille_actuelle.objets.lister(type=Champ):
+            t.texte = t.style('attendu', color='g')
+        ##self.parent.parent.ligne_commande.setFocus()
+
+    a = property(autocompleter)
+
+    def compter_points(self, **kw):
+        if 'correct' in kw and 'correct_old' in kw and 'champ' in kw:
+            if kw['correct']:
+                if not kw['correct_old']:
+                    if not kw['champ'].style('choix'):
+                        # C'est plus dur s'il n'y a pas de choix proposé
+                        self.score += 1
+                    self.score += 1
+            else:
+                self.score -= 1
+                self.erreurs += 1
+        if all(obj.correct for obj in self.feuille_actuelle.objets.lister(type=Champ)):
+            self.score += 10*(self.niveau + 1)
+        self.update_panneau()
