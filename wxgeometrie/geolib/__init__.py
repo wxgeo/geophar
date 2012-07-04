@@ -39,7 +39,7 @@ from .polygones import Cote, Sommet, Polygone_generique, Polygone, Triangle, Qua
 #from .pseudo_canvas import PseudoContexte, PseudoCanvas
 from .textes import Texte_generique, Texte, Texte_transformation_generique, Texte_rotation, Texte_translation, Texte_homothetie, Texte_reflexion
 from .transformations import Transformation_generique, Rotation, Translation, Reflexion, Homothetie, Symetrie_centrale
-from .variables import Variable_generique, Variable, Rayon, Mul, Add
+from .variables import Variable_generique, Variable, Rayon, Mul, Add, XMinVar, XMaxVar, YMinVar, YMaxVar
 from .vecteurs import Vecteur_generique, Vecteur, Vecteur_libre, Vecteur_unitaire, Somme_vecteurs, Extremite, Representant
 from .widgets import Bouton, Champ
 

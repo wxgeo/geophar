@@ -1451,10 +1451,14 @@ class Objet(object):
                 return repr(float(objet))
             return repr(objet)
 
+        args = ",".join(key + "=" + formater(val) for key, val in self._iter_arguments)
+        s = self.classe() + "(" + args
+
         if styles:
-            return self.classe() + "(" + ",".join(key + "=" + formater(val) for key, val in self._iter_arguments) + ", **" + repr(self.style()) + ")"
-        else:
-            return self.classe() + "(" + ",".join(key + "=" + formater(val) for key, val in self._iter_arguments) + ")"
+            if args:
+                s += ', '
+            s += "**" + repr(self.style())
+        return s + ")"
 
 
     def __str__(self):
@@ -1830,7 +1834,9 @@ class Objet_avec_equation(Objet):
 class Objet_avec_valeur(Objet):
     u"""Un objet contenant une valeur numérique (ex: angles, variables, ...).
 
-    Usage interne : permet aux objets en héritant d'offrir un accès facile pour l'utilisateur final à cette valeur via __call__."""
+    Usage interne : permet aux objets en héritant d'offrir un accès facile
+    pour l'utilisateur final à cette valeur via __call__.
+    Gère le mode approché et la mise en cache."""
 
     _style_defaut = {} # en cas d'héritage multiple, cela évite que le style de Objet efface d'autres styles
 
@@ -1870,7 +1876,6 @@ class Objet_avec_valeur(Objet):
         finally:
             if self.__feuille__ is not None and self.__feuille__._verrou_affichage is self:
                 self.__feuille__._verrou_affichage = None
-
 
     val = valeur
 

@@ -331,3 +331,42 @@ class Add(Variable_generique):
 
     def _get_valeur(self):
         return self.__var1.val + self.__var2.val
+
+
+class Variable_affichage(Variable_generique):
+    u"""La classe mère des paramètres d'affichage (xmin, xmax, ...)"""
+    parametre = NotImplemented
+
+    def _get_valeur(self):
+        return getattr(self.__feuille__, self.parametre)
+
+    def __repr__(self, **kw):
+        return repr(self._get_valeur())
+
+    def __str__(self, **kw):
+        return str(self._get_valeur())
+
+    def _update(self, objet):
+        setattr(self.__feuille__, self.parametre, objet)
+
+    _set_valeur = _update
+
+
+class XMinVar(Variable_affichage):
+    u"""Le minimum de la fenêtre en abscisse."""
+    parametre = 'xmin'
+
+
+class XMaxVar(Variable_affichage):
+    u"""Le maximum de la fenêtre en abscisse."""
+    parametre = 'xmax'
+
+
+class YMinVar(Variable_affichage):
+    u"""Le minimum de la fenêtre en ordonnée."""
+    parametre = 'ymin'
+
+
+class YMaxVar(Variable_affichage):
+    u"""Le maximum de la fenêtre en ordonnée."""
+    parametre = 'ymax'

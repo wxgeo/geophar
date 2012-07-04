@@ -50,7 +50,7 @@ from .cercles import Arc_generique
 from .textes import Texte
 from .labels import Label_generique
 from .vecteurs import Vecteur_libre
-from .variables import Variable
+from .variables import Variable, XMinVar, XMaxVar, YMinVar, YMaxVar
 from .constantes import FORMULE, NOM, RIEN
 
 from .pseudo_canvas import _pseudocanvas
@@ -158,7 +158,7 @@ Attributs spéciaux:
     def __effacer(self):
         self.clear()
         # On ajoute au dictionnaire courant les objets géométriques, et uniquement eux
-        # (pas tout LIB.py !)
+        # (pas toutes les classes de geolib !)
         self.update((key, val) for key, val in G.__dict__.iteritems() \
                     if isinstance(val, type) and issubclass(val, Objet))
         # Les noms de classe peuvent aussi être tapés en minuscules (c'est plus rapide à taper)
@@ -173,7 +173,6 @@ Attributs spéciaux:
                     Intervalle = Intervalle, Union = Union, \
                     x = Symbol("x"), y = Symbol("y"), z = Symbol("z"), \
                     t = Symbol("t"))
-
 
         self.update(pause = self.__feuille__.pause, erreur = self.__feuille__.erreur,
                     effacer = self.__feuille__.effacer,
@@ -193,17 +192,16 @@ Attributs spéciaux:
             d[typ] = Liste_objets(self.__feuille__, getattr(G, types[typ]))
         self.update(d)
 
+        self['xmin'] = XMinVar()
+        self['xmax'] = XMaxVar()
+        self['ymin'] = YMinVar()
+        self['ymax'] = YMaxVar()
 
 
 
     def add(self, valeur):
         self["_"] = valeur
 
-##    def _remove(self, valeur):
-##        u"Commande de bas niveau. Ne pas utiliser directement !"
-##        for (key, val) in self.items():
-##            if val is valeur:
-##                self.pop(key)
 
     def _dereferencer(self, objet):
         u"Commande de bas niveau. Ne pas utiliser directement !"
@@ -213,12 +211,12 @@ Attributs spéciaux:
             # il faut qu'il n'ait pas de nom (on ne peut pas référencer 2 fois un objet).
             objet._nom = ""
 
+
     def __setitem__(self, nom, valeur):
         u"""Note: objets.__setattr__("a", 3) <-> objets.a = 3
         Les objets d'une feuille, contrairement aux objets Python, ne peuvent pas être redéfinis comme ca...
         En général, quand on essaie d'attribuer un nom qui existe déjà, ce n'est pas volontaire.
         Pour éviter les erreurs, on impose de détruire explicitement l'objet avant que le nom puisse être redonné."""
-
 
 ##        # Stocke le résultat de la dernière commande (objet géométrique ou non)
 ##        if nom == '__':
@@ -226,8 +224,7 @@ Attributs spéciaux:
 ##            return
 
         # Paramètres du repère -> géré directement par la feuille
-        if nom in self.__feuille__._parametres_repere \
-            or nom in ('xmin', 'xmax', 'ymin', 'ymax'):
+        if nom in self.__feuille__._parametres_repere:
             return setattr(self.__feuille__, nom, valeur)
             # Ne pas oublier le 'return' !
 
@@ -249,7 +246,6 @@ Attributs spéciaux:
 ##                self.erreur(u"ce nom est deja utilis\xe9 : " + nom, NameError)
 
 
-
         if self.has_key(nom):
             try:
                 # Pour que les variables puissent être interprétées, il faut que la feuille soit donnée
@@ -265,7 +261,6 @@ Attributs spéciaux:
                     nom = self.__tmp_dict[nom] = new
                 else:
                     self.erreur(u"Ce nom est d\xe9ja utilis\xe9 : " + nom, NameError)
-
 
 
         if not isinstance(valeur, Objet):
@@ -347,8 +342,7 @@ Attributs spéciaux:
         # renommage temporaire :
         nom = self.__tmp_dict.get(nom, nom)
         # (utilisé en cas de chargement d'un fichier ancien lors d'un conflit de nom).
-        if nom in self.__feuille__._parametres_repere \
-                or nom in ('xmin', 'xmax', 'ymin', 'ymax'):
+        if nom in self.__feuille__._parametres_repere:
             return getattr(self.__feuille__, nom)
         elif nom == "objets":
             return self()
@@ -358,11 +352,16 @@ Attributs spéciaux:
             return self.__derniere_valeur()
         return dict.__getitem__(self, self.__convertir_nom(nom))
 
+
     def __getitem__(self, nom):
         try:
             return self.__getitem(nom)
         except KeyError:
-            self.erreur(u"Objet introuvable sur la feuille : " + nom, KeyError)
+            if nom == 'bogu5_123_aTTri8ute' and contexte['afficher_messages']:
+                # PyShell détecté, désactivation des messages d'erreur...
+                contexte['afficher_messages'] = False
+            else:
+                self.erreur(u"Objet introuvable sur la feuille : " + nom, KeyError)
 
     def get(self, nom, defaut=None):
         try:
@@ -370,8 +369,10 @@ Attributs spéciaux:
         except:
             return defaut
 
+
     def __contains__(self, nom):
         return dict.__contains__(self, self.__convertir_nom(nom))
+
 
     def __delitem__(self, nom):
         if nom in self.__feuille__._parametres_repere:
@@ -398,8 +399,8 @@ Attributs spéciaux:
         u"""Retourne la liste des objets géométriques.
         Le paramètre objets_caches indique s'il faut retourner les objets cachés.
         kw:
-        'type' : types à inclure
-        'sauf' : types à exclure
+        `type` : types à inclure
+        `sauf` : types à exclure
         """
         if kw:
             sauf = kw.get("sauf", ())
