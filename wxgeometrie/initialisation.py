@@ -92,6 +92,7 @@ def gerer_arguments():
                                                     Il permet notamment de faire de la geometrie dynamique et du calcul formel.""")
     parser.add_option("-a", "--all", action = "store_true", help="detecter tous les modules presents et les integrer au demarrage")
     parser.add_option("-m", "--modules", help="specifier les modules a charger. ex: %s -m traceur,calculatrice" %nomprog)
+    parser.add_option("-l", "--lister-modules", action = "store_true", help="affiche la liste des modules disponibles.")
     parser.add_option("-d", "--defaut", action = "store_true", help="utiliser les parametres par defaut, sans tenir compte des preferences")
     parser.add_option("-n", "--nouveau", action = "store_true", help="ouvrir une nouvelle session vierge")
     parser.add_option("-b", "--debug", action = "store_true", help="afficher les eventuels messages d'erreurs lors de l'execution")
@@ -110,6 +111,11 @@ def gerer_arguments():
 
     if options.defaut:
         param.charger_preferences = False
+
+    if options.lister_modules:
+        print(u"\nListe des modules détectés :\n----------------------------")
+        print '  '.join(param.modules)
+        exit()
 
     if options.modules:
         # Les séparateurs acceptés entre les noms de modules sont , et ;
