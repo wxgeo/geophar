@@ -25,10 +25,12 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 import os
 
 from ..GUI.menu import MenuBar
-from ..GUI.panel import Panel_simple
+from ..GUI.panel import Panel_simple, Panel_API_graphique
+from ..GUI.exercice import Exercice, ExerciceMenuBar
 from ..API.parametres import actualiser_module
 from .. import param
 from ..pylib import print_error, str2, path2
+
 
 def importer_module(nom_module, forcer = False):
     u"Retourne le module si l'import a réussi, None sinon."
@@ -44,19 +46,23 @@ def importer_module(nom_module, forcer = False):
 
             module._nom_ = module.__name__.split('.')[-1]
 
-            menus = [objet for objet in module.__dict__.itervalues() if isinstance(objet, type) and issubclass(objet, MenuBar) and objet.__name__ != "MenuBar"]
+            menus = [cls for cls in module.__dict__.itervalues() if isinstance(cls, type)
+                     and issubclass(cls, MenuBar) and cls not in (MenuBar, ExerciceMenuBar)]
             if len(menus) > 1 and param.debug:
-                print menus
-                raise IndexError, str2(u"Plusieurs classes héritent de MenuBar dans le module %s." %nom_module)
+                ##print menus
+                raise IndexError, str2(u"Plusieurs classes héritent de MenuBar dans le module %s: " %nom_module
+                                       + ', '.join(m.__name__ for m in menus))
             if len(menus) == 0 and param.debug:
                 raise IndexError, str2(u"Aucune classe n'hérite de MenuBar dans le module %s." %nom_module)
             module._menu_ = menus[0]
 
 
-            panels = [objet for objet in module.__dict__.itervalues() if isinstance(objet, type) and issubclass(objet, Panel_simple) and objet.__name__ not in ("Panel_simple", "Panel_API_graphique")]
+            panels = [cls for cls in module.__dict__.itervalues() if isinstance(cls, type)
+                      and issubclass(cls, Panel_simple) and cls not in (Panel_simple, Panel_API_graphique, Exercice)]
             if len(panels) > 1 and param.debug:
-                print panels
-                raise IndexError, str2(u"Plusieurs classes héritent de Panel_simple dans le module %s." %nom_module)
+                ##print panels
+                raise IndexError, str2(u"Plusieurs classes héritent de Panel_simple dans le module %s: " %nom_module
+                                    + ', '.join(p.__name__ for p in panels))
             if len(panels) == 0 and param.debug:
                 raise IndexError, str2(u"Aucune classe n'hérite de Panel_simple dans le module %s." %nom_module)
             panel = module._panel_ = panels[0]
