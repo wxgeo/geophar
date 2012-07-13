@@ -210,7 +210,7 @@ class Segment(Ligne_generique):
 
     Un segment défini par deux points"""
 
-    _affichage_depend_de_la_fenetre = True # codage
+    _affichage_depend_de_la_fenetre = True # à cause du codage //, X, etc.
     _style_defaut = param.segments
     _prefixe_nom = "s"
     _marqueurs = "[]"

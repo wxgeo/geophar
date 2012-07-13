@@ -3,7 +3,7 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 from __future__ import with_statement
 
 ##--------------------------------------#######
-#                  Feuille                                  #
+#                  Feuille                    #
 ##--------------------------------------#######
 #    WxGeometrie
 #    Dynamic geometry, graph plotter, and more for french mathematic teachers.
@@ -27,7 +27,7 @@ from __future__ import with_statement
 # Ce module contient essentiellement la classe Feuille. C'est la classe qui va accueillir tous les objets geometriques.
 # Elle fait l'intermediaire entre les objets et le Panel ou s'affichent les objets.
 
-from keyword import iskeyword
+from keyword import kwlist
 from random import choice
 from string import letters
 from math import pi, e
@@ -47,6 +47,7 @@ from .lignes import Segment
 from .fonctions import Fonction
 from .points import Point
 from .cercles import Arc_generique
+from .courbes import Courbe
 from .textes import Texte
 from .labels import Label_generique
 from .vecteurs import Vecteur_libre
@@ -57,6 +58,8 @@ from .pseudo_canvas import _pseudocanvas
 from .. import param
 from .. import mathlib
 from ..pylib.securite import keywords_interdits_presents, keywords_interdits
+
+PatternType = type(re.compile(''))
 
 
 #assert geo.Objet is Objet
@@ -137,26 +140,57 @@ class ModeTolerant(object):
 
 class Dictionnaire_objets(dict):
     u"""Cette classe est un conteneur pour les objets de la feuille, qui sont tous ses attributs,
-sauf ceux précédés de __ (attributs reserves pour tous les objets de la classe).
-Elle contient aussi tous les objets geometriques.
-Certaines methodes standard (comme __setattr__) sont aussi interceptees ou redefinies.
+    sauf ceux précédés de __ (attributs reserves pour tous les objets de la classe).
+    Elle contient aussi tous les objets geometriques.
+    Certaines methodes standard (comme __setattr__) sont aussi interceptées ou redefinies.
 
-Attributs spéciaux:
-'_' fait référence au dernier objet enregistré dans la feuille.
-"""
+    Attributs spéciaux:
+    `_` fait référence au dernier objet enregistré dans la feuille.
 
-    __slots__ = ('__feuille__', '__timestamp', '__renommer_au_besoin', '__tmp_dict')
+    `_noms_restreints` est un dictionnaire contenant une liste de noms ou de patterns
+    qui ne peuvent être associés qu'à certains types d'objets.
+    `_noms_interdits` est une liste de noms correspondant à des objets en lecture
+    seule.
+    `_suppression_impossible` est une liste de noms d'objets qui ne peuvent pas
+    être supprimés.
+
+    Nota: lorsqu'une clef du dictionnaire est supprimée, la méthode `.supprimer()` de
+    l'objet est appelée ; les objets qui n'ont pas de méthode `.supprimer()` sont donc
+    de fait protégés (c'est le cas de `pi`, `e`, ...), sans qu'il soit nécessaire de
+    les inscrire dans `_noms_interdits`.
+    """
+
+    __slots__ = ('__feuille__', '__timestamp', '__renommer_au_besoin', '__tmp_dict',
+                 '_noms_restreints', '_noms_interdits', '_suppression_impossible')
+
+    _noms_restreints = {re.compile('f[0-9]+(_prime)*$'): Fonction, 'xmin': Variable,
+                      'xmax': Variable, 'ymin': Variable, 'ymax': Variable,
+                      re.compile('Cf[0-9]+$'): Courbe}
+
+    # `kwlist`: noms réservés en python (if, then, else, for, etc.)
+    _noms_interdits = kwlist + ['vue', 't', 'x', 'y', 'z']
+
+    _suppression_impossible = ['xmin', 'xmax', 'ymin', 'ymax']
 
     def __init__(self, feuille):
         object.__setattr__(self, '__feuille__', feuille)
         object.__setattr__(self, '_Dictionnaire_objets__timestamp', 0)
         object.__setattr__(self, '_Dictionnaire_objets__renommer_au_besoin', False)
         object.__setattr__(self, '_Dictionnaire_objets__tmp_dict', {})
-        self.__effacer()
-
-
-    def __effacer(self):
         self.clear()
+
+
+    def clear(self):
+        u"""Réinitialise le dictionnaire des objets.
+
+        Ne pas utiliser directement, mais utiliser plutôt `Feuille.effacer()`
+        qui rafraichit correctement l'affichage."""
+        _tmp = {}
+        for nom in self._suppression_impossible:
+            if dict.__contains__(self, nom):
+                _tmp[nom] = dict.__getitem__(self, nom)
+        dict.clear(self)
+        dict.update(self, **_tmp)
         # On ajoute au dictionnaire courant les objets géométriques, et uniquement eux
         # (pas toutes les classes de geolib !)
         self.update((key, val) for key, val in G.__dict__.iteritems() \
@@ -198,8 +232,10 @@ Attributs spéciaux:
         self['ymax'] = YMaxVar()
 
 
-
     def add(self, valeur):
+        u"""Ajoute l'objet `valeur` à la feuille.
+
+        Un nom lui est automatiquement attribué."""
         self["_"] = valeur
 
 
@@ -213,22 +249,27 @@ Attributs spéciaux:
 
 
     def __setitem__(self, nom, valeur):
-        u"""Note: objets.__setattr__("a", 3) <-> objets.a = 3
-        Les objets d'une feuille, contrairement aux objets Python, ne peuvent pas être redéfinis comme ca...
-        En général, quand on essaie d'attribuer un nom qui existe déjà, ce n'est pas volontaire.
-        Pour éviter les erreurs, on impose de détruire explicitement l'objet avant que le nom puisse être redonné."""
+        u"""Crée un objet de la feuille nommé `nom`, et ayant pour valeur `valeur`.
 
-##        # Stocke le résultat de la dernière commande (objet géométrique ou non)
-##        if nom == '__':
-##            self.__feuille__.__ = valeur
-##            return
+        Remarque: les syntaxes `objets['a'] = 3` et `objets.a = 3` sont équivalentes.
+
+        NB: Les objets d'une feuille (contrairement aux objets Python par exemple)
+        ne peuvent pas être redéfinis librement...
+        En général, quand on essaie d'attribuer un nom qui existe déjà,
+        ce n'est pas volontaire. Pour éviter les erreurs, on impose de
+        détruire explicitement l'objet avant que le nom puisse être redonné.
+
+        Certains noms sont également réservés, et ne peuvent pas être
+        attribués ainsi. Si l'on veut outrepasser la protection, il faut
+        utiliser la méthode `.update()` pour les attribuer (à bon escient !).
+        """
 
         # Paramètres du repère -> géré directement par la feuille
         if nom in self.__feuille__._parametres_repere:
             return setattr(self.__feuille__, nom, valeur)
             # Ne pas oublier le 'return' !
 
-        nom = self.__verifier_syntaxe_nom(valeur, nom)
+        nom = self.__convertir_nom(nom) or '_'
 
         # Pour certains types d'objets (points libres, textes, variables...),
         # le nom peut être déja attribué.
@@ -238,13 +279,6 @@ Attributs spéciaux:
         # (Autrement dit, A=(1,2) devient un alias de A(1,2) ou A.coordonnees = 1,2).
         # Bien sûr, il faut en particulier que la valeur soit un objet de meme type.
         # (A = Variable(3) n'est pas valide si A est un point !)
-##        if self.has_key(nom):
-##            if hasattr(self[nom], "_update"):
-##                self[nom]._update(valeur)
-##                return # on quitte, car le nom doit toujours référer à l'objet initial !
-##            else:
-##                self.erreur(u"ce nom est deja utilis\xe9 : " + nom, NameError)
-
 
         if self.has_key(nom):
             try:
@@ -252,6 +286,7 @@ Attributs spéciaux:
                 if isinstance(valeur, Objet) and valeur.__feuille__ is None:
                     valeur.__feuille__ = self.__feuille__
                 self[nom]._update(valeur)
+                #self.__refresh_needed(nom)
                 return # on quitte, car le nom doit toujours référer à l'objet initial !
             except Exception:
                 print_error()
@@ -264,7 +299,6 @@ Attributs spéciaux:
 
 
         if not isinstance(valeur, Objet):
-
             # Permet de construire des points à la volée : '=((i,sqrt(i)) for i in (3,4,5,6))'
             if isinstance(valeur, GeneratorType) and nom == "_":
                 for item in valeur:
@@ -275,7 +309,7 @@ Attributs spéciaux:
             elif isinstance(valeur, TypeType) and issubclass(valeur, Objet):
                 valeur = valeur()
 
-            # Par convéniance, certains types sont automatiquement convertis :
+            # Par convénience, certains types sont automatiquement convertis :
             # - Variable
             elif isinstance(valeur, (int, long, float, str, unicode)): # u=3 cree une variable
                 valeur = Variable(valeur)
@@ -289,6 +323,7 @@ Attributs spéciaux:
                 # - Texte
                 if len(valeur) in (1, 3) and isinstance(tuple(valeur)[0], basestring):
                     # t=["Bonjour!"] cree un texte
+                    # t=('Bonjour!', 2, 3) également
                     valeur = Texte(*valeur)
                 elif len(valeur) == 2:
                     # - Vecteur_libre
@@ -302,6 +337,8 @@ Attributs spéciaux:
 
         if not isinstance(valeur, Objet):
             self.erreur("type d'objet incorrect :(%s,%s)"%(nom, valeur), TypeError)
+
+        self.__verifier_syntaxe_nom(valeur, nom)
 
         if valeur._nom:
             # L'objet est déjà référencé sur la feuille ssi il a un nom.
@@ -338,7 +375,9 @@ Attributs spéciaux:
         self.__feuille__.affichage_perime()
 
 
+
     def __getitem(self, nom):
+        u"""Usage interne: code commun aux méthodes `.__getitem__()` et `.get()`."""
         # renommage temporaire :
         nom = self.__tmp_dict.get(nom, nom)
         # (utilisé en cas de chargement d'un fichier ancien lors d'un conflit de nom).
@@ -361,6 +400,7 @@ Attributs spéciaux:
                 # PyShell détecté, désactivation des messages d'erreur...
                 contexte['afficher_messages'] = False
             else:
+                assert 'erreur' in self
                 self.erreur(u"Objet introuvable sur la feuille : " + nom, KeyError)
 
     def get(self, nom, defaut=None):
@@ -440,6 +480,12 @@ Attributs spéciaux:
         return nom.replace('`', '_prime').replace('"', '_prime_prime').replace("'", "_prime")
 
 
+    def __match(self, pattern, nom):
+        if isinstance(pattern, PatternType):
+            return re.match(pattern, nom)
+        else:
+            return nom == pattern
+
     def __verifier_syntaxe_nom(self, objet, nom, **kw):
         u"Vérifie que le nom est correct (ie. bien formé) et le modifie le cas échéant."
 
@@ -456,28 +502,23 @@ Attributs spéciaux:
         if nom == '':
             return '_'
         nom = self.__convertir_nom(nom)
-        # Noms réservés en python (if, then, else, for, etc.):
-        if iskeyword(nom):
+
+        if nom in self.__class__.__dict__.keys() \
+                          or any(self.__match(pattern, nom) for pattern in self._noms_interdits):
             return err(u"Nom r\xe9serv\xe9 : " + nom) # Pas d'accent dans le code ici a cause de Pyshell !
         # Les noms contenant '__' sont des noms réservés pour un usage futur éventuel (convention).
         if "__" in nom:
             return err(u'Un nom ne peut pas contenir "__".')
-        # Vérifie que le nom n'est pas réservé.
-        if nom in self.__class__.__dict__.keys():
-            return err(u"Nom r\xe9serv\xe9.")
         if not re.match("""[A-Za-z_][A-Za-z0-9_'"`]*$""", nom):
             return err(u"'%s' n'est pas un nom d'objet valide." %nom)
 
         # Certains noms sont réservés à des usages spécifiques.
-        # Les noms f1, f2... sont réservés aux fonctions (cf. module Traceur).
-        if nom[0] == 'f' and not isinstance(objet, Fonction) and \
-                rstrip_(nom, '_prime')[1:].isdigit():
-            return err(u"Nom r\xe9serv\xe9 aux fonctions : " + nom)
-
-        # Les noms Cf1, Cf2... sont réservés à l'usage du module Traceur.
-        if nom.startswith('Cf') and nom[2:].isdigit() and \
-                not(isinstance(objet, Objet) and objet.style('protege')):
-            return err(u"Nom r\xe9serv\xe9 : " + nom)
+        # Par ex., les noms f1, f2... sont réservés aux fonctions (cf. module Traceur).
+        for pattern, types in self._noms_restreints.iteritems():
+            if self.__match(pattern, nom):
+                if isinstance(objet, types):
+                    break
+                return err(u"Le nom %s est r\xe9serv\xe9 à certains types d'objets." %nom)
 
         # Gestion des ' (qui servent pour les dérivées)
         if nom.endswith('_prime'):
@@ -904,10 +945,11 @@ class Feuille(object):
         xmax = xmax if xmax is not None else self.fenetre[1]
         ymin = ymin if ymin is not None else self.fenetre[2]
         ymax = ymax if ymax is not None else self.fenetre[3]
-        if abs(xmax - xmin) < 10*contexte['tolerance']:
+        epsilon = 100*contexte['tolerance']
+        if abs(xmax - xmin) < epsilon:
             self.erreur(u"Le réglage de la fenêtre est incorrect (xmin et xmax sont trop proches).\n"
                         u"(Les paramètres doivent être dans cet ordre: xmin, xmax, ymin, ymax.)", ValueError)
-        elif abs(ymax - ymin) < 10*contexte['tolerance']:
+        elif abs(ymax - ymin) < epsilon:
             self.erreur(u"Le réglage de la fenêtre est incorrect (ymin et ymax sont trop proches).\n"
                         u"(Les paramètres doivent être dans cet ordre: xmin, xmax, ymin, ymax.)", ValueError)
         # Les 'float()' servent à contourner un bug de numpy 1.1.x et numpy 1.2.x (repr de float64)
@@ -945,7 +987,8 @@ class Feuille(object):
     def liste_objets(self, objets_caches = None, tri = False):
         u"""Liste des objets, triés éventuellement selon le style 'niveau'.
 
-        NB: un système de mise en cache est utilisé si possible, contrairement à .objets.lister()."""
+        NB: un système de mise en cache est utilisé si possible, contrairement à .objets.lister().
+        """
         if self._actualiser_liste_objets:
             for key in self._cache_listes_objets:
                 self._cache_listes_objets[key] = None
@@ -1069,8 +1112,9 @@ class Feuille(object):
         objets = sorted((obj for obj in self.liste_objets(True) if not obj.style('visible')),
                             key = attrgetter("_hierarchie"), reverse = True)
         for obj in objets:
-            if not any(heritier.nom for heritier in obj._heritiers()):
-                obj.supprimer()
+            if obj.nom not in self.objets._suppression_impossible:
+                if not any(heritier.nom for heritier in obj._heritiers()):
+                    obj.supprimer()
 
     def effacer_codage(self):
         u"Efface tous les codages sur les segments, angles et arcs de cercles."
@@ -1199,19 +1243,9 @@ class Feuille(object):
 
 #######################################################################################
 
-# Gestion des message
-#    def message(self, messg): # A REECRIRE
-#        if self.canvas:
-#            messg = "Feuille %s - %s" %(self.nom, messg)
-#            self.canvas.message(messg)
-#        elif param.afficher_messages and param.verbose:
-#            print(messg)
-#            if self.log is not None:
-#                self.log.append(message)
-
     def message(self, messg): # A REECRIRE
         if contexte['afficher_messages'] and param.verbose:
-            messg = "Feuille %s - %s" %(self.nom, messg)
+            messg = 'Feuille "%s" - %s' %(self.nom, messg)
             self.canvas.message(messg)
             print(messg)
             if self.log is not None:
@@ -1344,7 +1378,7 @@ class Feuille(object):
 
 
     def effacer(self):
-        self.objets._Dictionnaire_objets__effacer()
+        self.objets.clear()
         self.affichage_perime()
 
 

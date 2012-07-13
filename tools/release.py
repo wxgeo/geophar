@@ -82,6 +82,8 @@ with open('param/version.py', 'r') as f:
             version_precedente = line[11:].split('#')[0].strip()[:-1]
             # Changement du numéro de version
             contenu.append('version = ' + repr(version.replace('_', ' ')) + '\n')
+        elif line.startswith('git = '):
+            contenu.append('git = ' + repr(s.command('git describe')))
         else:
             contenu.append(line)
 

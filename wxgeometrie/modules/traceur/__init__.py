@@ -211,7 +211,7 @@ class Traceur(Panel_API_graphique):
                 objets[nom_courbe].style(visible = visible)
             else:
                 f = objets[nom_fonction]
-                objets[nom_courbe] = Courbe(f, protege=True, visible=visible,
+                objets[nom_courbe] = Courbe(f, visible=visible,
                                             couleur=self.couleurs[i%len(self.couleurs)])
 
 

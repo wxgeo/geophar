@@ -5,6 +5,8 @@ from __future__ import with_statement
 import re
 from math import cos, pi, e, sqrt
 
+from pytest import XFAIL
+
 from tools.testlib import assertAlmostEqual, assertRaises, assertEqual
 from wxgeometrie.geolib.tests.geotestlib import rand_pt
 from wxgeometrie.geolib import (Triangle_rectangle, DescripteurFeuille, Point, Segment,
@@ -123,6 +125,9 @@ def test_nommage_intelligent():
     assert(o.CD.point1.nom == "C")
 
     o.clear()
+
+    # o.clear() ne doit pas supprimer les mots clefs
+    assert 'erreur' in o
 
     o.ABCDEFGHIJKLMNOPQRSTUVWXYZ = Polygone(26)
     assert(  list(pt.nom for pt in o.ABCDEFGHIJKLMNOPQRSTUVWXYZ.points)\
@@ -384,7 +389,7 @@ def test_nettoyer():
 
     ex('B.style(visible = False)')
     noms = o.noms
-    assert(noms == set(("A", "B", "s", "I", "M", "d", "C", "d2", "B")))
+    assert(noms == set(("A", "B", "s", "I", "M", "d", "C", "d2", "B", "xmin", "xmax", "ymin", "ymax")))
     f.nettoyer()
     assert(o.noms == noms)
 
@@ -448,3 +453,46 @@ def test_issue_176():
     f.objets.s = Segment(A, B)
     del f.objets.A, f.objets.B, f.objets.s
     assert set(('A', 'B', 's')).isdisjoint(f.objets.noms)
+
+def test_fenetre():
+    f = Feuille()
+    f.fenetre = -4, 8, -2, 10
+    assert f.objets.xmin == -4
+    assert f.objets.xmax == 8
+    assert f.objets.ymin == -2
+    assert f.objets.ymax == 10
+    # Bornes inversées
+    f.fenetre = 7, -8, 3, -1
+    assert f.objets.xmin == -8
+    assert f.objets.xmax == 7
+    assert f.objets.ymin == -1
+    assert f.objets.ymax == 3
+    # Accès isolé à une borne
+    f.objets.xmin += 2
+    assert f.objets.xmin == -6
+    assert f.fenetre == (-6, 7, -1, 3)
+    # Objet dépendant d'une borne
+    f.objets.A = Point("xmin - 1", "ymax + 1")
+    assert f.objets.A.xy == (-7, 4)
+    f.objets.xmin = 3
+    f.objets.ymax = f.objets.ymin + 10
+    assert f.objets.A.xy == (2, 10)
+
+
+@XFAIL
+def test_dependances():
+    f = Feuille()
+    A = f.objets.A = Point(1, 2)
+    B = f.objets.B = Point("A.x+1", "A.y-1")
+    assert B.xy == (2, 1)
+    f.objets.A = (8, 9)
+    assert B.xy == (9, 8)
+    f.objets.B = ("A.x+1", "A.y-1")
+    assert B.xy == (9, 8)
+    f.objets.A = Point(0, 2)
+    assert B.xy ==  (1, 1)
+    f.objets.B = Point("A.x+1", "A.y-1")
+    assert f.objets.B is B
+    assert B.xy == (1, 1)
+    f.objets.A = (5, 7)
+    assert B.xy == (6, 6)

@@ -165,5 +165,5 @@ def filtre_versions_anterieures(fgeo):
             visible = courbe['active'][0]
             couleur = 'brgmcyk'[i%7]
             code = "\nf%(n)s = Fonction(expression=u'%(Y)s',ensemble='%(intervalle)s',variable='x')\n" %locals()
-            code += "Cf%(n)s = Courbe(fonction=f%(n)s, **{'couleur': u'%(couleur)s', 'visible': %(visible)s, 'protege': True})\n" %locals()
+            code += "Cf%(n)s = Courbe(fonction=f%(n)s, **{'couleur': u'%(couleur)s', 'visible': %(visible)s})\n" %locals()
             figures[0] += code

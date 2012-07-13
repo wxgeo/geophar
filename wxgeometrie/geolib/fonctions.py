@@ -35,7 +35,7 @@ from ..mathlib.parsers import VAR_NOT_ATTR, traduire_formule
 from .variables import Variable
 
 class Fonction(Objet_numerique):
-    u"""Une fontion.
+    u"""Une fonction.
 
     Une fonction numérique à une variable; l'argument est une expression sous forme de chaine de caractères.
     Exemple: Fonction('2*x+1', variable = 'x', ensemble = 'R')."""

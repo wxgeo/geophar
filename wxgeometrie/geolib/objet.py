@@ -646,7 +646,7 @@ class Objet(object):
     __slots__ = ('__arguments__', '__feuille__', '__compteur_hierarchie__',
         '_prefixe_nom', '_utiliser_coordonnees_approchees', '_label_temporaire',
         '_affichage_depend_de_la_fenetre',
-        '__contexte', '_style_defaut', '_initialisation_minimale', 'protege',
+        '__contexte', '_style_defaut', '_initialisation_minimale',
         'etiquette', '_pointable', '_modifiable', '_deplacable', '__nom', 'nom_latex',
         '_cache', '_representation', '_trace', '_trace_x', '_trace_y', '_gras',
         '__figure_perimee', '_label_correct', 'rendu', 'vassaux', '_ancetres',
@@ -684,9 +684,6 @@ class Objet(object):
     # Cela sert essentiellement a creer des objets temporaires, ou a faire de la geometrie sans figures (sic!)
 
     _style_defaut = param.defaut_objets
-
-    # Un objet protégé ne peut pas être supprimé
-    protege = False
 
     # Les labels ont une initialisation minimale
     _initialisation_minimale = False
@@ -954,10 +951,6 @@ class Objet(object):
         nom_actuel = self.nom
         if nom_actuel != nom:
             nom = self.__feuille__.objets._objet_renommable(self, nom)
-##            objet = self.__feuille__.objets.pop(nom_actuel)
-##            # Important: pour que l'objet soit bien considéré non référencé
-##            # il faut qu'il n'ait pas de nom (on ne peut pas référencer 2 fois un objet).
-##            objet._nom = ""
             self.__feuille__.objets._dereferencer(self)
             self.__feuille__.objets[nom] = self
         self.style(**kw)
@@ -1397,18 +1390,17 @@ class Objet(object):
 
 
     def supprimer(self):
-#        if self.style('protege'):
-#            self.cacher()
-#            return
+        u"""Supprime l'objet de la feuille."""
         # Le nom doit être récupéré AVANT la suppression.
-        nom = self.nom_complet
-        if self.protege:
-            self.erreur(u"%s est protégé." %nom)
+        nom = self.nom
+        nom_complet = self.nom_complet
+        if self.__feuille__ and nom in self.__feuille__.objets._suppression_impossible:
+            self.erreur(u"%s est protégé." %nom_complet)
         else:
             self._supprime()
             if self.__feuille__:
                 self.__feuille__.affichage_perime()
-            self.message(u"%s supprimé." %nom)
+            self.message(u"%s supprimé." %nom_complet)
 
 
     def _supprime(self):
