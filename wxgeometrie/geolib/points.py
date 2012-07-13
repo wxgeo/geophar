@@ -52,7 +52,6 @@ class Point_generique(Objet_avec_coordonnees):
 
     _style_defaut = param.points
     _prefixe_nom = "M"
-    _enregistrer_sur_la_feuille_par_defaut = True
 
     def __init__(self, **styles):
         #~ self.__args = GestionnaireArguments()

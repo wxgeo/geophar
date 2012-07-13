@@ -55,7 +55,6 @@ class Ligne_generique(Objet_avec_equation):
     Usage interne : la classe mère pour les droites, segments, demi-droites."""
 
     _affichage_depend_de_la_fenetre = True
-    _enregistrer_sur_la_feuille_par_defaut = True
     _marqueurs = "()"
 
     point1 = __point1 = Argument("Point_generique")
@@ -886,7 +885,6 @@ class DemiPlan(Objet_avec_equation):
     Le demi-plan délimité par la droite d et contenant le point M."""
 
     _affichage_depend_de_la_fenetre = True
-    _enregistrer_sur_la_feuille_par_defaut = True
     _marqueurs = "()"
     _style_defaut = param.polygones
     _prefixe_nom = "P"

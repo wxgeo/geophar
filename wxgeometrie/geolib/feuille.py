@@ -1323,7 +1323,9 @@ class Feuille(object):
         a_rajouter_a_la_fin = ""
 
         for objet in objets:
-            if isinstance(objet, Texte) and objet.style("legende") == FORMULE:
+            if not objet._enregistrer_sur_la_feuille:
+                continue
+            elif isinstance(objet, Texte) and objet.style("legende") == FORMULE:
                 # on fait un cas particulier pour les objets Texte, car ils peuvent contenir une formule
                 # qui dépend d'autres objets. Leur style n'est alors appliqué qu'après.
                 texte += objet.nom + " = " + objet.__repr__(False) + "\n"

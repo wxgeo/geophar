@@ -57,7 +57,6 @@ class Cercle_Arc_generique(Objet_avec_equation):
     u"""La classe mère de tous les cercles et arcs de cercles."""
 
     _affichage_depend_de_la_fenetre = True
-    _enregistrer_sur_la_feuille_par_defaut = True
     # à cause du codage des longueurs (arcs), et du nombre de points variable des cercles
 
     centre = __centre = Argument("Point_generique")

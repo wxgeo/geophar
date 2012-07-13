@@ -337,7 +337,22 @@ class Variable_affichage(Variable_generique):
     u"""La classe mère des paramètres d'affichage (xmin, xmax, ...)"""
     parametre = NotImplemented
 
+    # Inutile de les enregistrer sur la feuille, puisqu'elles ne font que
+    # pointer vers la fenêtre d'affichage qui est déjà enregistrée dans la
+    # feuille.
+    _enregistrer_sur_la_feuille = False
+
     def _get_valeur(self):
+        u"""Retourne la valeur du paramètre d'affichage (xmin ou xmax ou ...)
+
+        Si un canvas est défini, la valeur retournée est prise sur le canvas,
+        sinon, elle est récupérée depuis la feuille.
+        Les deux valeurs ne coïncident pas forcément si une contrainte est
+        imposée à l'affichage (par exemple, un repère orthonormé).
+        Dans ce cas, il se peut que l'affichage à l'écran (canvas) dépasse
+        la taille de la fenêtre de la feuille."""
+        if self.__feuille__.canvas:
+            return getattr(self.__feuille__.canvas, self.parametre)
         return getattr(self.__feuille__, self.parametre)
 
     def __repr__(self, **kw):

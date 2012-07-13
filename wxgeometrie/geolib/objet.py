@@ -645,7 +645,7 @@ class Objet(object):
 
     __slots__ = ('__arguments__', '__feuille__', '__compteur_hierarchie__',
         '_prefixe_nom', '_utiliser_coordonnees_approchees', '_label_temporaire',
-        '_affichage_depend_de_la_fenetre', '_enregistrer_sur_la_feuille_par_defaut',
+        '_affichage_depend_de_la_fenetre',
         '__contexte', '_style_defaut', '_initialisation_minimale', 'protege',
         'etiquette', '_pointable', '_modifiable', '_deplacable', '__nom', 'nom_latex',
         '_cache', '_representation', '_trace', '_trace_x', '_trace_y', '_gras',
@@ -665,9 +665,11 @@ class Objet(object):
     # les textes, les codages des segments, des angles et des arcs, la flêche des vecteurs...
     _affichage_depend_de_la_fenetre = False
 
-    # Certains types d'objets (par exemple, les points), doivent apparaitre sur la feuille
-    # même s'ils ont été générés comme valeur par défaut (par exemple,
-    _enregistrer_sur_la_feuille_par_defaut = False
+    # Certains types d'objets (par exemple, les paramètres d'affichage,
+    # qui ne sont que des pseudo-variables redirigeant vers la valeur
+    # de la fenêtre d'affichage) ne doivent pas être enregistrés dans la
+    # feuille.
+    _enregistrer_sur_la_feuille = True
 
     # Le dictionnaire 'contexte' sert à partager des informations entre tous les objets
     __contexte = contexte

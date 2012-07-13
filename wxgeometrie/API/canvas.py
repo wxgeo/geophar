@@ -436,6 +436,22 @@ def %(_nom_)s(self, valeur = no_argument):
     fenetre = property(_get_fenetre, _set_fenetre)
 
     @property
+    def xmin(self):
+        return self.fenetre[0]
+
+    @property
+    def xmax(self):
+        return self.fenetre[1]
+
+    @property
+    def ymin(self):
+        return self.fenetre[2]
+
+    @property
+    def ymax(self):
+        return self.fenetre[3]
+
+    @property
     def dimensions_fenetre(self):
         xmin, xmax, ymin, ymax = self.fenetre
         return xmax - xmin, ymax - ymin
