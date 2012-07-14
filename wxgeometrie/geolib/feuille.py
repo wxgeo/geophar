@@ -51,7 +51,7 @@ from .courbes import Courbe
 from .textes import Texte
 from .labels import Label_generique
 from .vecteurs import Vecteur_libre
-from .variables import Variable, XMinVar, XMaxVar, YMinVar, YMaxVar
+from .variables import Variable, XMinVar, XMaxVar, YMinVar, YMaxVar, Dpx, Dpy
 from .constantes import FORMULE, NOM, RIEN
 
 from .pseudo_canvas import _pseudocanvas
@@ -164,19 +164,25 @@ class Dictionnaire_objets(dict):
                  '_noms_restreints', '_noms_interdits', '_suppression_impossible')
 
     _noms_restreints = {re.compile('f[0-9]+(_prime)*$'): Fonction, 'xmin': XMinVar,
-                      'xmax': XMaxVar, 'ymin': YMinVar, 'ymax': YMaxVar,
-                      re.compile('Cf[0-9]+$'): Courbe}
+                      'xmax': XMaxVar, 'ymin': YMinVar, 'ymax': YMaxVar, 'dpx': Dpx,
+                      'dpy': Dpy, re.compile('Cf[0-9]+$'): Courbe}
 
     # `kwlist`: noms réservés en python (if, then, else, for, etc.)
     _noms_interdits = kwlist + ['vue', 't', 'x', 'y', 'z']
 
-    _suppression_impossible = ['xmin', 'xmax', 'ymin', 'ymax']
+    _suppression_impossible = ['xmin', 'xmax', 'ymin', 'ymax', 'dpx', 'dpy']
 
     def __init__(self, feuille):
         object.__setattr__(self, '__feuille__', feuille)
         object.__setattr__(self, '_Dictionnaire_objets__timestamp', 0)
         object.__setattr__(self, '_Dictionnaire_objets__renommer_au_besoin', False)
         object.__setattr__(self, '_Dictionnaire_objets__tmp_dict', {})
+        self['xmin'] = XMinVar()
+        self['xmax'] = XMaxVar()
+        self['ymin'] = YMinVar()
+        self['ymax'] = YMaxVar()
+        self['dpx'] = Dpx()
+        self['dpy'] = Dpy()
         self.clear()
 
 
@@ -225,11 +231,6 @@ class Dictionnaire_objets(dict):
         for typ in types:
             d[typ] = Liste_objets(self.__feuille__, getattr(G, types[typ]))
         self.update(d)
-
-        self['xmin'] = XMinVar()
-        self['xmax'] = XMaxVar()
-        self['ymin'] = YMinVar()
-        self['ymax'] = YMaxVar()
 
 
     def add(self, valeur):
@@ -985,6 +986,8 @@ class Feuille(object):
         self.objets.xmax.perime()
         self.objets.ymin.perime()
         self.objets.ymax.perime()
+        self.objets.dpx.perime()
+        self.objets.dpy.perime()
         self._rafraichir_figures()
 
 

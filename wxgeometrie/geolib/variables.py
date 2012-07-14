@@ -386,3 +386,36 @@ class YMaxVar(Variable_affichage):
     u"""Le maximum de la fenêtre en ordonnée."""
     parametre = 'ymax'
 
+
+class Pixel_unite(Variable_generique):
+    u"""Correspond à un pixel."""
+
+    # Inutile d'enregistrer ces variables sur la feuille, puisqu'elles ne font que
+    # pointer vers le canvas.
+    _enregistrer_sur_la_feuille = False
+
+    def _set_valeur(self):
+        raise AttributeError
+
+    def __repr__(self, **kw):
+        return repr(self._get_valeur())
+
+    def __str__(self, **kw):
+        return str(self._get_valeur())
+
+
+class Dpx(Pixel_unite):
+    u"""Un pixel unité en abscisse."""
+
+    def _get_valeur(self):
+        if self.__feuille__.canvas:
+            return self.__feuille__.canvas.dpix2coo(1, 0)[0]
+
+
+class Dpy(Pixel_unite):
+    u"""Un pixel unité en ordonnée."""
+
+    def _get_valeur(self):
+        if self.__feuille__.canvas:
+            return self.__feuille__.canvas.dpix2coo(0, 1)[1]
+

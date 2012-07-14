@@ -389,7 +389,7 @@ def test_nettoyer():
 
     ex('B.style(visible = False)')
     noms = o.noms
-    assert(noms == set(("A", "B", "s", "I", "M", "d", "C", "d2", "B", "xmin", "xmax", "ymin", "ymax")))
+    assert(noms == set(("A", "B", "s", "I", "M", "d", "C", "d2", "B", "xmin", "xmax", "ymin", "ymax", "dpx", "dpy")))
     f.nettoyer()
     assert(o.noms == noms)
 

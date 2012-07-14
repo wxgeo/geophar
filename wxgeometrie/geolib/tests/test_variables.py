@@ -4,7 +4,7 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 from random import random
 
 from tools.testlib import assertAlmostEqual, assertEqual, randint, assertRaises
-from wxgeometrie.geolib import Variable, Formule
+from wxgeometrie.geolib import Variable, Formule, XMinVar, XMaxVar, YMinVar, YMaxVar, Feuille
 from wxgeometrie.pylib import mathtext_parser
 
 
@@ -61,3 +61,28 @@ def test_parser_matplotlib():
     c_math = '$%s$' %c
     assert(mathtext_parser(c))
     assert(mathtext_parser(c_math))
+
+
+def test_XMinVar():
+    f = Feuille()
+    f.fenetre = -1, 1, -2, 2
+    f.objets.xm = XMinVar()
+    assert f.objets.xm == -1
+
+def test_XMaxVar():
+    f = Feuille()
+    f.fenetre = -1, 1, -2, 2
+    f.objets.xm = XMaxVar()
+    assert f.objets.xm == 1
+
+def test_YMinVar():
+    f = Feuille()
+    f.fenetre = -1, 1, -2, 2
+    f.objets.ym = YMinVar()
+    assert f.objets.ym == -2
+
+def test_YMaxVar():
+    f = Feuille()
+    f.fenetre = -1, 1, -2, 2
+    f.objets.ym = YMaxVar()
+    assert f.objets.ym == 2
