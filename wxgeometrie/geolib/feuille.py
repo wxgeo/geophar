@@ -163,8 +163,8 @@ class Dictionnaire_objets(dict):
     __slots__ = ('__feuille__', '__timestamp', '__renommer_au_besoin', '__tmp_dict',
                  '_noms_restreints', '_noms_interdits', '_suppression_impossible')
 
-    _noms_restreints = {re.compile('f[0-9]+(_prime)*$'): Fonction, 'xmin': Variable,
-                      'xmax': Variable, 'ymin': Variable, 'ymax': Variable,
+    _noms_restreints = {re.compile('f[0-9]+(_prime)*$'): Fonction, 'xmin': XMinVar,
+                      'xmax': XMaxVar, 'ymin': YMinVar, 'ymax': YMaxVar,
                       re.compile('Cf[0-9]+$'): Courbe}
 
     # `kwlist`: noms réservés en python (if, then, else, for, etc.)
@@ -892,7 +892,7 @@ class Feuille(object):
             self.__dict_repere.update(kw)
             self._repere_modifie = True
             if 'fenetre' in kw or 'orthonorme' in kw:
-                self._rafraichir_figures()
+                self.fenetre_modifiee()
 ##                self._mettre_a_jour_figures = True
             if 'afficher_objets_caches' in kw:
                 for objet in self.liste_objets(True):
@@ -979,6 +979,13 @@ class Feuille(object):
             return self.fenetre[3]
         self.fenetre = None, None, None, value
 
+
+    def fenetre_modifiee(self):
+        self.objets.xmin.perime()
+        self.objets.xmax.perime()
+        self.objets.ymin.perime()
+        self.objets.ymax.perime()
+        self._rafraichir_figures()
 
 
 #########################################################################################

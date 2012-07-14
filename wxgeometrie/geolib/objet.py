@@ -1583,12 +1583,11 @@ class Objet(object):
 #    Mais comment détecter "la fin" ? La solution retenue est de créer un verrou que pose la première méthode à s'éxécuter.
 
 
-
-
-
-    def _heritiers_a_recalculer(self, heritiers):
+    def _heritiers_a_recalculer(self, heritiers=None):
         u"""Indique que l'objet a été modifié, et que les coordonnées de tous les objets
         qui en dépendent doivent être recalculées."""
+        if heritiers is None:
+            heritiers = self._heritiers()
         self._cache.clear()
         if self.etiquette is not None:
             self.etiquette._cache.clear()
@@ -1598,8 +1597,19 @@ class Objet(object):
                 objet.etiquette._cache.clear()
 
 
+    def perime(self):
+        u"""Marquer l'objet comme à actualiser.
 
-
+        * indique que les coordonnées/valeurs de l'objet et des ses héritiers
+          doivent être recalculées,
+        * indique que les figures de l'objet et de ses héritiers doivent
+          être redessinnées.
+        """
+        heritiers = self._heritiers()
+        self._heritiers_a_recalculer(heritiers)
+        self.figure_perimee()
+        for heritier in heritiers:
+            heritier.figure_perimee()
 
 
 

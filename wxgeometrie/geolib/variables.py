@@ -385,3 +385,4 @@ class YMinVar(Variable_affichage):
 class YMaxVar(Variable_affichage):
     u"""Le maximum de la fenêtre en ordonnée."""
     parametre = 'ymax'
+
