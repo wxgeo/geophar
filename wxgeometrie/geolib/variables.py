@@ -61,6 +61,10 @@ class Variable(Variable_generique):
 
     Note : ne pas définir directement l'attribut __contenu !"""
 
+    # Mise en cache de la valeur
+    __val_cache = __val_cache_approche = None
+    # Utilisé par la classe `Formule`:
+    _cache_formule = None
 
     # RE correspondant à un nom de variable (mais pas d'attribut)
     __re = re.compile('(' + VAR_NOT_ATTR + ')')

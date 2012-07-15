@@ -290,6 +290,8 @@ class Vecteur_unitaire(Vecteur_generique):
 
     vecteur = __vecteur = Argument("Vecteur_generique", defaut = Vecteur_libre)
 
+    __norme = None
+
     def __init__(self, vecteur = None, **styles):
         self.__vecteur = vecteur = Ref(vecteur)
         Vecteur_generique.__init__(self, **styles)

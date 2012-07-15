@@ -124,6 +124,7 @@ class Intersection_droites(Intersection_generique):
     droite1 = __droite1 = Argument("Ligne_generique")
     droite2 = __droite2 = Argument("Ligne_generique")
 
+
     def __init__(self, droite1, droite2, **styles):
         self.__droite1 = droite1 = Ref(droite1)
         self.__droite2 = droite2 = Ref(droite2)
@@ -143,8 +144,10 @@ class Intersection_droites(Intersection_generique):
         determinant = a*e - b*d
         if abs(determinant) <= contexte['tolerance']:
             return ()
-        x = self.__x = (f*b - c*e)/determinant
-        y = self.__y = (d*c - a*f)/determinant
+        ##x = self.__x = (f*b - c*e)/determinant
+        ##y = self.__y = (d*c - a*f)/determinant
+        x = (f*b - c*e)/determinant
+        y = (d*c - a*f)/determinant
         return (x, y), # liste (tuple) de couples
 
 

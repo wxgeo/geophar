@@ -643,14 +643,20 @@ class Objet(object):
     Note : elle n'est pas utilisable en l'état, mais doit être surclassée.
     """
 
-    __slots__ = ('__arguments__', '__feuille__', '__compteur_hierarchie__',
-        '_prefixe_nom', '_utiliser_coordonnees_approchees', '_label_temporaire',
-        '_affichage_depend_de_la_fenetre',
-        '__contexte', '_style_defaut', '_initialisation_minimale',
-        'etiquette', '_pointable', '_modifiable', '_deplacable', '__nom', 'nom_latex',
-        '_cache', '_representation', '_trace', '_trace_x', '_trace_y', '_gras',
-        '__figure_perimee', '_label_correct', 'rendu', 'vassaux', '_ancetres',
-        '_valeurs_par_defaut', '__weakref__')
+    class __metaclass__(type):
+        def __call__(cls, *args, **kw):
+            instance = type.__call__(cls, *args, **kw)
+            instance._frozen = True
+            return instance
+
+    ##__slots__ = ('__arguments__', '__feuille__', '__compteur_hierarchie__',
+        ##'_prefixe_nom', '_utiliser_coordonnees_approchees', '_label_temporaire',
+        ##'_affichage_depend_de_la_fenetre',
+        ##'__contexte', '_style_defaut', '_initialisation_minimale',
+        ##'etiquette', '_pointable', '_modifiable', '_deplacable', '__nom', 'nom_latex',
+        ##'_cache', '_representation', '_trace', '_trace_x', '_trace_y', '_gras',
+        ##'__figure_perimee', '_label_correct', 'rendu', 'vassaux', '_ancetres',
+        ##'_valeurs_par_defaut', '__weakref__', '_style', '_hierarchie')
 
     __arguments__ = () # cf. geolib/__init__.py
     __feuille__ = DescripteurFeuille()
@@ -658,6 +664,8 @@ class Objet(object):
     _prefixe_nom = "objet"
     _utiliser_coordonnees_approchees = False
     _label_temporaire = None
+    _timestamp = None
+    _frozen = False
 
     # Indique si l'objet doit être rafraichi lorsque la fenêtre d'affichage change
     # Typiquement, c'est le cas des objets 'infinis' (comme les droites ou les courbes...),
@@ -751,6 +759,14 @@ class Objet(object):
         if styles:
             self.style(**styles)
 
+    def __setattr__(self, name, value):
+        u"""Pour éviter qu'une erreur de frappe (dans la ligne de commande notamment)
+        passe inaperçue, on ne peut pas affecter un attribut s'il n'est pas déclaré
+        auparavant dans la classe."""
+        if self._frozen and not hasattr(self, name):
+            raise AttributeError, "Attribut " + repr(name) + " doesn't exist."
+        object.__setattr__(self, name, value)
+
 
     def __hash__(self):
         return id(self)
@@ -761,7 +777,6 @@ class Objet(object):
         Ex: M1 pour un point, s1 pour un segment, etc.
         """
         return self.__feuille__.nom_aleatoire(self)
-
 
 
 # Fonctions d'initialisation de l'objet :
@@ -1625,6 +1640,7 @@ class Objet_avec_coordonnees(Objet):
     pour l'utilisateur final aux coordonnées via __call__."""
 
     _style_defaut = {} # en cas d'héritage multiple, cela évite que le style de Objet efface d'autres styles
+    ##__slots__ = ()
 
     def _get_coordonnees(self):
         raise NotImplementedError
@@ -1722,6 +1738,8 @@ class Objet_avec_coordonnees_modifiables(Objet_avec_coordonnees):
     abscisse = x = __x = Argument("Variable_generique", defaut = 0)
     ordonnee = y = __y = Argument("Variable_generique", defaut = 0)
 
+    ##__slots__ = ()
+
     def __init__(self, x = None, y = None, **styles):
         self.__x = x = Ref(x)
         self.__y = y = Ref(y)
@@ -1783,6 +1801,8 @@ class Objet_avec_equation(Objet):
 
     _style_defaut = {} # en cas d'héritage multiple, cela évite que le style de Objet efface d'autres styles
 
+    ##__slots__ = ()
+
     def _get_equation(self):
         raise NotImplementedError
 
@@ -1827,14 +1847,6 @@ class Objet_avec_equation(Objet):
 
 
 
-
-
-
-
-
-
-
-
 class Objet_avec_valeur(Objet):
     u"""Un objet contenant une valeur numérique (ex: angles, variables, ...).
 
@@ -1843,6 +1855,8 @@ class Objet_avec_valeur(Objet):
     Gère le mode approché et la mise en cache."""
 
     _style_defaut = {} # en cas d'héritage multiple, cela évite que le style de Objet efface d'autres styles
+
+    ##__slots__ = ()
 
     def _get_valeur(self):
         raise NotImplementedError
@@ -1892,6 +1906,8 @@ class Objet_numerique(Reel, Objet_avec_valeur):
 
     _style_defaut = {} # en cas d'héritage multiple, cela évite que le style de Objet efface d'autres styles
 
+    ##__slots__ = ()
+##
     def __init__(self, *args, **kw):
         Objet.__init__(self, *args, **kw)
 

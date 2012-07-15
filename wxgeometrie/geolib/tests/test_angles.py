@@ -55,7 +55,7 @@ def test_Angle_libre():
     assertAlmostEqual(u_sin(a), math.sin(x))
     assertAlmostEqual(u_cos(a), math.cos(x))
     assertAlmostEqual(u_tan(a), math.tan(x))
-    a.unite = "g"
+    a.style(unite="g")
     assertNotAlmostEqual(a.val, a.grad)
     b = Angle_libre(u"45°")
     assertAlmostEqual(b.rad, math.pi/4)

@@ -12,11 +12,11 @@ from wxgeometrie.geolib import G, objet
 
 def lister_classes():
     classes = set(key.rsplit(".")[-1] for key, value in G.__dict__.iteritems()
-                  if type(value) is type and issubclass(value, G.Objet)
+                  if isinstance(value, type) and issubclass(value, G.Objet)
                                                   and not key.endswith("_generique")
                   )
     classes_de_base = set(key.rsplit(".")[-1] for key, value in objet.__dict__.iteritems()
-                          if type(value) is type and issubclass(value, G.Objet)
+                          if isinstance(value, type) and issubclass(value, G.Objet)
                           )
     classes.difference_update(classes_de_base)
     return classes
@@ -95,6 +95,30 @@ def test_heritages():
 #                 assert("exact" in classe._get_valeur.func_code.co_varnames)
             else:
                 assert_not_heritage(classe, G.Objet_avec_valeur)
+
+
+##def test_slots():
+    ##u"""On vérifie que tous les classes ont un attribut `__slots__`.
+##
+    ##Ceci évite de mal orthographier des attributs, sans que l'érreur
+    ##n'apparaisse."""
+    ##classes = set(value for value in G.__dict__.itervalues()
+                  ##if type(value) is type and issubclass(value, G.Objet))
+    ##slots_not_dict = set()
+    ##for classe in classes:
+        ##try:
+            ##if not hasattr(classe(), '__dict__'):
+                ##slots_not_dict.add(classe)
+        ##except Exception:
+            ##print "\nImpossible d'initialiser la classe " + classe.__name__
+    ##print slots_not_dict
+    ##no_slots = classes - slots_not_dict
+    ##if no_slots:
+        ##print "\nCertaines classes de geolib n'ont pas d'attribut `__slots__` :"
+    ##for classe in no_slots:
+        ##print "* " + classe.__name__
+    ##assert not no_slots
+
 
 @XFAIL
 def test_methode_image_par():
