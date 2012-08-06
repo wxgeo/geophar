@@ -1,4 +1,4 @@
-WxGeometrie
+Géophar
 ===========
 
 Plateformes supportées
@@ -14,19 +14,18 @@ Prérequis
 
 Les programmes suivants doivent être déjà installés :
 
-Python : version 2.5, 2.6 ou 2.7
-WxPython : version 2.6 ou 2.8
-Matplotlib : version 1.0
-Numpy : version 1.2, 1.3, 1.4 ou 1.5
+Python : version 2.6 ou 2.7 (mais *pas* 3.0 ni supérieure !)
+Matplotlib : version 1.1 ou supérieure
+Numpy : version 1.3 ou supérieure
 
 Sous GNU/Linux Debian:
-`$ sudo apt-get install python-wxgtk2.8 python-matplotlib python-numpy`
+`$ sudo apt-get install python-matplotlib python-numpy python-qscintilla2`
 
 
 Installation
 ------------
 
-WxGéometrie ne nécessite pas d'installation à proprement parler.
+Géophar ne nécessite pas d'installation à proprement parler.
 
 Il suffit de lancer le script *wxgeometrie.pyw*.
 
