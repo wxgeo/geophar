@@ -40,6 +40,7 @@ from sympy import Symbol, Wild, sympify, oo
 
 from ..pylib import uu, is_in, str3, property2, print_error, rstrip_, CompressedList
 from ..mathlib.intervalles import Union, Intervalle
+from ..mathlib.parsers import VAR
 
 from .objet import Objet, contexte, souffler, G
 from .angles import Secteur_angulaire
@@ -62,24 +63,70 @@ from ..pylib.securite import keywords_interdits_presents, keywords_interdits
 PatternType = type(re.compile(''))
 
 
+def is_equation(chaine):
+    u"""Teste si une chaîne correspond bien à une équation."""
+    if chaine.count('=') != 1:
+        return False
+    left, right = chaine.split('=')
+    left = left.strip()
+    if left.count('(') != left.count(')') or right.count('(') != right.count(')'):
+        return False
+    if not left or left[-1] in '-+':
+        # Affectation. Ex: "=Point()"
+        # Opérateurs `+=` et `-=`.
+        return False
+    if re.match('(%s|[.])+$' % VAR, left):
+        # Affectation. Ex: `A = Point()`, `A.x = 3`,...
+        # Deux exceptions cependant: `x =` et `y =` correspondent bien à des débuts d'équation.
+        return left in ('x', 'y')
+    return True
+
 #assert geo.Objet is Objet
 
 def parse_equation(chaine):
+    u"""Associe à une équation l'objet géométrique correspondant.
+
+    Vérifie que la chaîne est une équation, et retourne une chaîne
+    correspondant à l'objet géométrique correspondant le cas échéant.
+    Sinon, retourne l'objet initial.
+    """
     #XXX: ébauche d'un parser d'équations
+    # La première étape est de vérifier qu'il s'agit bien d'une équation,
+    # et pas par exemple d'une affectation (par exemple, `A=Point()`)
+    if not is_equation(chaine):
+        return chaine
+
     left, right = chaine.split('=')
     chaine = left + '-(' + right + ')'
     chaine = mathlib.parsers.traduire_formule(chaine)
-    expr = sympify(chaine)
+    try:
+        expr = sympify(chaine).expand()
+    except Exception:
+        print('Sympify: ' + chaine)
+        raise
+    x = Symbol('x')
+    y = Symbol('y')
     a = Wild('a',exclude=[x, y])
     b = Wild('b',exclude=[x, y])
     c = Wild('c',exclude=[x, y])
     d = Wild('d',exclude=[x, y])
-    e = Wild('e',exclude=[x, y])
-    f = Wild('f',exclude=[x, y])
-    x = Symbol('x')
-    y = Symbol('y')
+    ##e = Wild('e',exclude=[x, y])
+    ##f = Wild('f',exclude=[x, y])
     droite = a*x + b*y + c
-    cercle = a*x**2 + a*y**2 + b*x + c*y + d
+    # cercle: a((x - b)^2 + (y - c)^2 - d) = 0
+    cercle = a*x**2 + a*y**2 - 2*a*b*x - 2*a*c*y + a*b**2 + a*c**2 - a*d
+    m = expr.match(droite)
+    if m:
+        return "_ = Droite_equation(%s, %s, %s)" %(m[a], m[b], m[c])
+    m = expr.match(cercle)
+    if m and m[d].is_positive:
+        b = m[b]
+        c = m[c]
+        d = m[d]
+        return "_ = Cercle_equation(%s, %s, %s)" %(-2*b, -2*c, b**2 + c**2 - d)
+    return chaine
+
+
 
 
 
@@ -665,6 +712,11 @@ class Interprete_feuille(object):
         def f(m):
             return "Texte(\"%s\")" % m.groups()[0]
         commande = re.sub(r"(?<!\\)`(([^`]|\\`)*[^`\\]|)`", f, commande)
+
+        # Détection des équations
+        if '=' in commande:
+            commande = parse_equation(commande)
+
         return commande
 
 

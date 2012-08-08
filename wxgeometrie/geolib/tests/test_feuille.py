@@ -12,8 +12,10 @@ from wxgeometrie.geolib.tests.geotestlib import rand_pt
 from wxgeometrie.geolib import (Triangle_rectangle, DescripteurFeuille, Point, Segment,
                     Vecteur, Fonction, Variable, Feuille, Angle, contexte, Arc_cercle,
                     Texte, Droite, Carre, Triangle, Polygone, Cercle, Parallelogramme,
-                    NOM,
+                    NOM, Droite_equation, Cercle_equation
                     )
+from wxgeometrie.geolib.feuille import parse_equation, is_equation
+
 
 def test_abreviations():
     f = Feuille(titre = u"Feuille de travail n°1")
@@ -496,3 +498,29 @@ def test_dependances():
     assert B.xy == (1, 1)
     f.objets.A = (5, 7)
     assert B.xy == (6, 6)
+
+
+def test_is_equation():
+    assert is_equation("2*x+3*y=5")
+    assert is_equation("x=5")
+    assert is_equation("y=a*x**2+c*x-2*y")
+    assert is_equation("y*(x-2)=3")
+
+    # Affectations
+    assert not is_equation("a = 5")
+    assert not is_equation("a += 3")
+    assert not is_equation("B.x = 5")
+    assert not is_equation("B.y -= 3")
+    assert not is_equation("B.style(x=2)")
+
+
+def test_parse_equation():
+    s = parse_equation("x=2*y-3")
+    exec(s)
+    assert _.equation == (1, -2, 3)
+    s = parse_equation("(x-2)**2+(y-3)**2=49")
+    exec(s)
+    assert _.rayon == 7
+    assert _.centre.xy == (2, 3)
+
+    ##print droite.equation

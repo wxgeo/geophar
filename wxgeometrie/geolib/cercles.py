@@ -740,20 +740,6 @@ class Cercle_equation(Cercle_generique):
     def _conditions_existence(self):
         return self.__a**2 + self.__b**2 - 4*self.__c >= 0
 
-##    def a(self, valeur = None):
-##        return self.__a(valeur)
-##
-##    a = property(a,  a)
-##
-##    def b(self, valeur = None):
-##        return self.__b(valeur)
-##
-##    b = property(b,  b)
-##
-##    def c(self, valeur = None):
-##        return self.__c(valeur)
-##
-##    c = property(c,  c)
 
     def image_par(self, transformation):
         return Cercle_rayon(Centre(self).image_par(transformation), Glisseur_cercle(self).image_par(transformation))
