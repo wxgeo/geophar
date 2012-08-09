@@ -12,7 +12,7 @@ from wxgeometrie.geolib.tests.geotestlib import rand_pt
 from wxgeometrie.geolib import (Triangle_rectangle, DescripteurFeuille, Point, Segment,
                     Vecteur, Fonction, Variable, Feuille, Angle, contexte, Arc_cercle,
                     Texte, Droite, Carre, Triangle, Polygone, Cercle, Parallelogramme,
-                    NOM, Droite_equation, Cercle_equation
+                    NOM, Droite_equation, Cercle_equation, Courbe
                     )
 from wxgeometrie.geolib.feuille import parse_equation, is_equation
 
@@ -522,5 +522,6 @@ def test_parse_equation():
     exec(s)
     assert _.rayon == 7
     assert _.centre.xy == (2, 3)
-
-    ##print droite.equation
+    s = parse_equation("y=ln(x)-1")
+    exec(s)
+    assert isinstance(_, Courbe)

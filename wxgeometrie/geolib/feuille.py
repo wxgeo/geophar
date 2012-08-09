@@ -40,7 +40,7 @@ from sympy import Symbol, Wild, sympify, oo
 
 from ..pylib import uu, is_in, str3, property2, print_error, rstrip_, CompressedList
 from ..mathlib.intervalles import Union, Intervalle
-from ..mathlib.parsers import VAR
+from ..mathlib.parsers import VAR, traduire_formule
 
 from .objet import Objet, contexte, souffler, G
 from .angles import Secteur_angulaire
@@ -98,7 +98,7 @@ def parse_equation(chaine):
 
     left, right = chaine.split('=')
     chaine = left + '-(' + right + ')'
-    chaine = mathlib.parsers.traduire_formule(chaine)
+    chaine = traduire_formule(chaine, fonctions=mathlib.universal_functions.__dict__.keys())
     try:
         expr = sympify(chaine).expand()
     except Exception:
@@ -110,8 +110,8 @@ def parse_equation(chaine):
     b = Wild('b',exclude=[x, y])
     c = Wild('c',exclude=[x, y])
     d = Wild('d',exclude=[x, y])
-    ##e = Wild('e',exclude=[x, y])
-    ##f = Wild('f',exclude=[x, y])
+    e = Wild('e',exclude=[y])
+    f = Wild('f',exclude=[y])
     droite = a*x + b*y + c
     # cercle: a((x - b)^2 + (y - c)^2 - d) = 0
     cercle = a*x**2 + a*y**2 - 2*a*b*x - 2*a*c*y + a*b**2 + a*c**2 - a*d
@@ -124,6 +124,10 @@ def parse_equation(chaine):
         c = m[c]
         d = m[d]
         return "_ = Cercle_equation(%s, %s, %s)" %(-2*b, -2*c, b**2 + c**2 - d)
+    fonction = f*y - e
+    m = expr.match(fonction)
+    if m:
+        return "_ = Courbe(Fonction(%s))" % repr(str(m[e]/m[f]))
     return chaine
 
 
