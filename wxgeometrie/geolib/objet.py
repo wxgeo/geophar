@@ -763,7 +763,16 @@ class Objet(object):
         u"""Pour éviter qu'une erreur de frappe (dans la ligne de commande notamment)
         passe inaperçue, on ne peut pas affecter un attribut s'il n'est pas déclaré
         auparavant dans la classe."""
-        if self._frozen and not hasattr(self, name):
+        if self._frozen and not name.startswith('_') and not hasattr(self, name):
+            if param.debug:
+                print(u"Attention: \n \
+                       Les attributs publiques des classes héritant de `Objet` doivent \n \
+                       être initialisés, soit comme attributs de la classe, \n \
+                       soit dans la méthode `__init__` de la classe.\n \
+                       Concrêtement, rajoutez une ligne `%s = None`\n \
+                       au début de la classe `%s`, avec une ligne de\n \
+                       commentaire expliquant le rôle de cet attribut."
+                       % (name, self.__class__.__name__))
             raise AttributeError, "Attribut " + repr(name) + " doesn't exist."
         object.__setattr__(self, name, value)
 
