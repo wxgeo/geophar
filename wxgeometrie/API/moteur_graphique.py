@@ -438,7 +438,7 @@ class DecorationTexte(FancyBboxPatch):
         pw += 2*pad
         ph += 2*pad
         x, y = can.pix2coo(px, py)
-        w, h = can.dpix2coo(pw, ph)
+        w, h = can.dpix2coo(pw, -ph)
         FancyBboxPatch.set(self, x=x, y=y, width=w, height=h)
 
 
@@ -812,6 +812,11 @@ class Moteur_graphique(object):
     def ajouter_decoration_texte(self, **kw):
         return self._ajouter_objet(self.decoration_texte(**kw))
 
+    def lignes(self, segments=(), **kw):
+        return LineCollection(segments, **kw)
+
+    def ajouter_lignes(self, segments=(), **kw):
+        return self._ajouter_objet(self.lignes(segments, **kw))
 
 
 
@@ -1039,7 +1044,7 @@ class Moteur_graphique(object):
         ox, oy = self.canvas.origine_axes
         ux, uy = self.canvas.gradu
         # TODO: à étendre à un repère non orthogonal
-        kx, ky = self.canvas.dpix2coo(1, 1)
+        kx, ky = self.canvas.dpix2coo(1, -1)
 
         x, y = self.canvas.coo2pix(f(ox + ux, ox), f(oy, oy + uy))
         if self.canvas.gradu[num] and self.canvas.saturation(num) < param.saturation:
@@ -1132,10 +1137,10 @@ class Moteur_graphique(object):
 ##            _min = [origine[i] - hauteur*self.canvas.coeff(i) for i in (1, 0)] # ymin, xmin
 ##            _max = [origine[i] + hauteur*self.canvas.coeff(i) for i in (1, 0)] # ymax, xmax
             # ymin, xmin:
-            _min = [origine[1] - self.canvas.dpix2coo(0, hauteur)[1],
+            _min = [origine[1] - self.canvas.dpix2coo(0, -hauteur)[1],
                     origine[0] - self.canvas.dpix2coo(hauteur, 0)[0]]
             # ymax, xmax:
-            _max = [origine[1] + self.canvas.dpix2coo(0, hauteur)[1],
+            _max = [origine[1] + self.canvas.dpix2coo(0, -hauteur)[1],
                     origine[0] + self.canvas.dpix2coo(hauteur, 0)[0]]
             if not style:
                 style = "-"

@@ -574,8 +574,8 @@ class Statistiques(Panel_API_graphique):
             y_value = [sum([self.valeurs[valeur] for valeur in valeurs if mode*valeur <= mode*classe[i]]) for i in (0, 1)]
             self.canvas.dessiner_ligne(classe, y_value, color = couleur)
             y_cum.append((classe, y_value))
-        dx, dy = self.canvas.dpix2coo(-5, -18)
-        self.canvas.dessiner_texte(M + 0.2*(M - m) + dx, dy, self.legende_x, ha = "right")
+        dx, dy = self.canvas.dpix2coo(-5, 18)
+        self.canvas.dessiner_texte(M + 0.2*(M - m) + dx, -dy, self.legende_x, ha = "right")
         dx, dy = self.canvas.dpix2coo(15, -5)
         # Ajout des quantiles
         for q in ["mediane", "quartiles", "deciles"]:
@@ -623,7 +623,7 @@ class Statistiques(Panel_API_graphique):
         x_reg = (a_reel - y[0])/m + classe[0]
         # coordonnées de l'origine
         x0, y0 = self.canvas.origine_axes
-        dx, dy = self.canvas.dpix2coo(-5, -18)
+        dx, dy = self.canvas.dpix2coo(-5, 18)
         # tenir compte du mode N&B
         col = 'k' if self.param('hachures') else couleur
 

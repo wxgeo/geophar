@@ -25,8 +25,9 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ## Cette librairie contient des fonctions mathématiques à usage interne
 
-from math import cos, sin, hypot, ceil, floor, sqrt, pi, log10
+from math import cos, sin, hypot, ceil, floor, sqrt, pi, log10, copysign
 import re
+from functools import partial
 
 import numpy
 
@@ -383,6 +384,65 @@ def arrondir(x):
     return n
 
 
+def arrondir_1_2_5(x):
+    u"""Arrondit x à un nombre de la forme k*10^p, avec k dans {1, 2, 5},
+    et p entier relatif.
+
+    >>> from wxgeometrie.geolib.routines import arrondir_udc
+    >>> arrondir_1_2_5(250)
+    200.0
+    >>> arrondir_1_2_5(4527)
+    5000.0
+    >>> arrondir_1_2_5(0.0078)
+    0.01
+    """
+    p = floor(log10(abs(x)))
+    k = x/10**p
+    if k < 1.4142135623730951:
+        # 10**(log10(2)/2)
+        k = 1
+    elif k < 3.1622776601683795:
+        # 10**((log10(2)+log10(5))/2)
+        k = 2
+    elif k < 7.0710678118654746:
+        # 10**((log10(5) + 1)/2)
+        k = 5
+    else:
+        k = 1
+        p += 1
+    return k*10**p
+
+
+def arrondir_1_25_5(x):
+    u"""Arrondit x à un nombre de la forme k*10^p, avec k dans {1, 2.5, 5},
+    et p entier relatif.
+
+    >>> from wxgeometrie.geolib.routines import arrondir_udc
+    >>> arrondir_1_25_5(200)
+    250.0
+    >>> arrondir_1_25_5(4527)
+    5000.0
+    >>> arrondir_1_25_5(0.0078)
+    0.01
+    """
+    p = floor(log10(abs(x)))
+    k = x/10**p
+    if k < 1.5811388300841898:
+        # 10**(log10(2.5)/2)
+        k = 1
+    elif k < 3.5355339059327378:
+        # 10**((log10(2.5)+log10(5))/2)
+        k = 2.5
+    elif k < 7.0710678118654746:
+        # 10**((log10(5) + 1)/2)
+        k = 5
+    else:
+        k = 1
+        p += 1
+    return k*10**p
+
+
+
 def formatage(eqn):
     u"""Améliore l'affichage des équations.
 
@@ -431,3 +491,6 @@ def nice_str(x):
         ln(7)
     ."""
     return strip_trailing_zeros(custom_str(x)).replace('.', ',')
+
+
+sign = partial(copysign, 1)

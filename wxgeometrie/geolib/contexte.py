@@ -109,4 +109,5 @@ contexte = Contexte(exact = True,
                     unite_angle = param.unite_angle,
                     tolerance = param.tolerance,
                     afficher_messages = param.afficher_messages,
+                    graduation = param.graduation,
                     )

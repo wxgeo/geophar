@@ -274,6 +274,12 @@ axes = {
     "angle": 60,
     "position": FIN,
     "double_fleche": False,
+    "graduations": True, # XXX: temporaire
+    "hauteur": 10,
+    "repeter": True,
+    "pas": None,
+    "pas_num": 2,
+    "placement_num": -1, # -1 ou 1
     }
 cercles = {
     "couleur": "b",
@@ -475,6 +481,9 @@ gradu = (1, 1) # espacement entre deux graduations pour chaque axe. (0 => pas de
 saturation =  0.3 # valeur de saturation pour le coefficient pas()/gradu
 # au dela du coefficient de saturation, les graduations ne sont plus affichees
 # cela evite de bloquer le programme...
+
+# Taille approximative (en pixels) d'une graduation
+graduation = 50
 
 # Nombre de cm pour une unité en export
 echelle_cm = (1, 1)

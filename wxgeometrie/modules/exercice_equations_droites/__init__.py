@@ -285,7 +285,7 @@ class ExercicesEquationsDroites(Exercice):
         txt = Texte((u"On note $d_1$ la droite d'équation %s, "
                   u"et $d_2$ la droite d'équation %s.\n"
                   u"Construire les droites $d_1$ puis $d_2$ dans le repère ci-dessous.")
-                  % (eq1, eq2), xmin, ymax, fond='#ffffb5', fixe=True,
+                  % (eq1, eq2), "xmin", "ymax", fond='#ffffb5', fixe=True,
                   alignement_horizontal='left', alignement_vertical='top')
         self.feuille_actuelle.objets['txt1'] = txt
         champ = Champ('', xmin, ymin, prefixe=u"Le couple solution du système est (",
@@ -295,11 +295,11 @@ class ExercicesEquationsDroites(Exercice):
         champ.valider = self.valider_couple
         champ.evt_valider = self.compter_points
         ch1 = Champ('', visible=False, attendu='ok')
-        self.feuille_actuelle.objets['champ_cache_d1'] = ch1
+        self.feuille_actuelle.objets['champcache_d1'] = ch1
         ch1.evt_valider = self.compter_points
         ch2 = Champ('', visible=False, attendu='ok')
         ch2.evt_valider = self.compter_points
-        self.feuille_actuelle.objets['champ_cache_d2'] = ch2
+        self.feuille_actuelle.objets['champcache_d2'] = ch2
         self.feuille_actuelle.lier(partial(self.verifier_feuille, eq1=(a, b), eq2=(c, d)))
 
 
@@ -309,7 +309,7 @@ class ExercicesEquationsDroites(Exercice):
             if nom in self.feuille_actuelle.objets.noms:
                 d = self.feuille_actuelle.objets[nom]
                 d.style(legende=NOM)
-                champ = self.feuille_actuelle.objets['champ_cache_' + nom]
+                champ = self.feuille_actuelle.objets['champcache_' + nom]
                 M, N = d
                 M = (int(M.x), int(M.y))
                 N = (int(N.x), int(N.y))

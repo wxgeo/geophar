@@ -237,6 +237,9 @@ class Canvas(FigureCanvasAgg):
     def decoration_texte(self, **kw):
         return self.graph.decoration_texte(**kw)
 
+    def lignes(self, *args, **kw):
+        return self.graph.lignes(*args, **kw)
+
     def dessiner(self, objet):
         self.graph.ajouter(objet)
 
@@ -319,7 +322,7 @@ class Canvas(FigureCanvasAgg):
         u"""Convertit un déplacement exprimé en pixels en un déplacement exprimé en coordonnées."""
         l, h = self.dimensions
         dx = dpx*(self.fenetre[1] - self.fenetre[0])/l
-        dy = dpy*(self.fenetre[3] - self.fenetre[2])/h
+        dy = dpy*(self.fenetre[2] - self.fenetre[3])/h
         return dx, dy
 
 

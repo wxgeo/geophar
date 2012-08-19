@@ -66,7 +66,7 @@ class Bouton(Texte_generique, Objet_avec_coordonnees_modifiables):
         fill.set_visible(True)
         can = self.__canvas__
         box = can.txt_box(text)
-        w, h = can.dpix2coo(.5*box.width, .5*box.height)
+        w, h = can.dpix2coo(.5*box.width, -.5*box.height)
         niveau = self.style("niveau")
         ##if av == "left":
             ##x += w
@@ -76,7 +76,7 @@ class Bouton(Texte_generique, Objet_avec_coordonnees_modifiables):
             ##y -= h
         ##elif ah == "bottom":
             ##y += h
-        mx, my = can.dpix2coo(10, 10) # marge verticale et horizontale (en pixels)
+        mx, my = can.dpix2coo(10, -10) # marge verticale et horizontale (en pixels)
         w += mx
         h += my
         xy = [(x - w, y - h), (x - w, y + h), (x + w, y + h), (x + w, y - h)]
@@ -99,7 +99,7 @@ class Bouton(Texte_generique, Objet_avec_coordonnees_modifiables):
         rect.set_visible(True)
         can = self.__canvas__
         box = can.txt_box(text)
-        w, h = can.dpix2coo(box.width, box.height)
+        w, h = can.dpix2coo(box.width, -box.height)
         niveau = self.style("niveau")
         marge = self.style("marge")
         ##if av == "left":
@@ -110,7 +110,7 @@ class Bouton(Texte_generique, Objet_avec_coordonnees_modifiables):
             ##y -= h
         ##elif ah == "bottom":
             ##y += h
-        mx, my = can.dpix2coo(marge, marge) # marge verticale et horizontale (en pixels)
+        mx, my = can.dpix2coo(marge, -marge) # marge verticale et horizontale (en pixels)
         rect.set_width(w + 2*mx)
         rect.set_height(h + 2*my)
         rect.set_x(self.x - .5*w - mx)

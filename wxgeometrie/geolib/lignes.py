@@ -24,7 +24,7 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 import re
 from random import uniform
-from math import pi, atan2, cos, sin
+from math import pi, atan2, cos, sin, hypot, floor, ceil
 
 from numpy import inf
 
@@ -33,7 +33,8 @@ from .objet import Objet, Objet_avec_equation, Argument, ArgumentNonModifiable, 
 from .angles import Secteur_angulaire
 from .points import Point, Point_generique, Centre, Point_translation, Milieu
 from .routines import nice_display, distance, carre_distance, formatage, \
-                      vect, produit_scalaire, norme, distance_segment
+                      vect, produit_scalaire, norme, distance_segment, \
+                      arrondir_1_25_5, sign
 from .vecteurs import Vecteur_unitaire, Vecteur, Vecteur_libre, Vecteur_generique
 from .labels import Label_droite, Label_demidroite, Label_segment
 from .transformations import Translation
@@ -166,9 +167,12 @@ class Ligne_generique(Objet_avec_equation):
         x2, y2 = self.__point2.coordonnees
         return (x2 - x1)/(y2 - y1) if (y2 - y1) else inf
 
-    def _points(self):
-        u"Donne les points d'intersection de la droite avec les bords de la fenêtre."
-        # Attention, il faut impérativement récupérer la fenêtre sur le canevas,
+    def _points_extremes(self):
+        u"""Donne les points d'intersection de la droite avec les bords de la fenêtre.
+
+        Retourne une liste de deux points au maximum.
+        """
+        # Attention, il faut impérativement récupérer la fenêtre **sur le canevas**,
         # dans le cas d'un repère orthonormé.
         xmin, xmax, ymin, ymax = self.__canvas__.fenetre
         eps = contexte['tolerance']
@@ -200,7 +204,7 @@ class Ligne_generique(Objet_avec_equation):
                 return points[:2] # Mxmin et Mxmax ne peuvent être confondus.
             return points[1:] # Mymin et Mymax non plus.
         else:
-            assert len(points) == 2
+            assert len(points) <= 2
             return points
 
 
@@ -285,7 +289,8 @@ class Segment(Ligne_generique):
     def longueur(self):
         u"""Longueur du segment.
 
-        Alias de _longueur, disponible pour indiquer que l'objet a vraiment une longueur au sens mathématique du terme (pas comme une droite !)"""
+        Alias de _longueur, disponible pour indiquer que l'objet a vraiment une longueur
+        au sens mathématique du terme (pas comme une droite !)"""
         return self._longueur()
 
     @property
@@ -341,14 +346,19 @@ class Demidroite(Ligne_generique):
 
         x, y = self.__origine.coordonnees
         x0, y0 = self.__point.coordonnees
-        (x1, y1), (x2, y2) = self._points()
+        points = self._points_extremes()
+        if len(points) < 2:
+            # La droite sous-jacente ne coupe pas la fenêtre (ou seulement en un point)
+            return
+        (x1, y1), (x2, y2) = points
         plot = self._representation[0]
 
         if produit_scalaire((x1 - x, y1 - y), (x0 - x, y0 - y)) > produit_scalaire((x2 - x, y2 - y), (x0 - x, y0 - y)):
             plot.set_data((x1, x), (y1, y))
         else:
             plot.set_data((x, x2), (y, y2))
-        plot.set(color = self.style("couleur"), linestyle = self.style("style"), linewidth = self.style("epaisseur"), zorder = self.style("niveau"))
+        plot.set(color = self.style("couleur"), linestyle = self.style("style"),
+                 linewidth = self.style("epaisseur"), zorder = self.style("niveau"))
 
 
     def _distance_inf(self, x, y, d):
@@ -357,7 +367,8 @@ class Demidroite(Ligne_generique):
         xB, yB = self._pixel(self.__point)
         x1 = min(xA, xB); x2 = max(xA, xB)
         y1 = min(yA, yB); y2 = max(yA, yB)
-        if (xA == x1 and x > x1 - d or xA == x2 and x < x2 + d) and (yA == y1 and y > y1 - d or yA == y2 and y < y2 + d):
+        if (xA == x1 and x > x1 - d or xA == x2 and x < x2 + d) \
+                and (yA == y1 and y > y1 - d or yA == y2 and y < y2 + d):
             return ((yA - yB)*(x - xA)+(xB - xA)*(y - yA))**2/((xB - xA)**2+(yB - yA)**2) < d**2
         else:
             return False
@@ -444,10 +455,15 @@ class Droite_generique(Ligne_generique):
     def _creer_figure(self):
         if not self._representation:
             self._representation = [self.rendu.ligne()]
-        (x1, y1), (x2, y2) = self._points()
+        points = self._points_extremes()
+        if len(points) < 2:
+            # La droite ne coupe pas la fenêtre (ou seulement en un point)
+            return
+        (x1, y1), (x2, y2) = points
         plot = self._representation[0]
         plot.set_data((x1, x2), (y1, y2))
-        plot.set(color = self.style("couleur"), linestyle = self.style("style"), linewidth = self.style("epaisseur"), zorder = self.style("niveau"))
+        plot.set(color = self.style("couleur"), linestyle = self.style("style"),
+                 linewidth = self.style("epaisseur"), zorder = self.style("niveau"))
 
 
     def _distance_inf(self, x, y, d):
@@ -473,7 +489,8 @@ class Droite_generique(Ligne_generique):
         eq = self.equation
         if eq is None:
             return u"L'objet n'est pas défini."
-        a, b, c = (nice_display(coeff) for coeff in eq) # on ne garde que quelques chiffres après la virgule pour l'affichage
+        # On ne garde que quelques chiffres après la virgule pour l'affichage.
+        a, b, c = (nice_display(coeff) for coeff in eq)
         return formatage("%s x + %s y + %s = 0" %(a, b, c))
 
     @property
@@ -728,7 +745,8 @@ class Droite_equation(Droite_generique):
         self.__b = b = Ref(b)
         self.__c = c = Ref(c)
         Objet.__init__(self) # pour pouvoir utiliser 'Point_droite(self, True)', l'objet doit déjà être initialisé
-        Droite_generique.__init__(self, point1 = Point_droite(self, True), point2 = Point_droite(self, False), **styles)
+        Droite_generique.__init__(self, point1 = Point_droite(self, True),
+                                  point2 = Point_droite(self, False), **styles)
 #        self.equation = self.__a,  self.__b, self.__c
 
 
@@ -940,18 +958,32 @@ class DemiPlan(Objet_avec_equation):
         if not self._representation:
             self._representation = [self.rendu.ligne(), self.rendu.polygone()]
         plot, fill = self._representation
-        (x1, y1), (x2, y2) = self.__droite._points()
-        plot.set_data((x1, x2), (y1, y2))
+        points = self._points_extremes()
         couleur, niveau = self.style(('couleur', 'niveau'))
-        plot.set(color = couleur, linestyle = self.style("style"), linewidth = self.style("epaisseur"), zorder = niveau + 0.01)
         xmin, xmax, ymin, ymax = self.__canvas__.fenetre
-        fill.set(edgecolor = couleur, facecolor = couleur, alpha = self.style('alpha'), zorder = niveau)
         coins = [(xmin, ymin), (xmin, ymax), (xmax, ymin), (xmax, ymax)]
         sommets = [coin for coin in coins if (coin in self)]
-        sommets.extend([(x1, y1), (x2, y2)])
-        x0, y0 = (x1 + x2)/2, (y1 + y2)/2
-        sommets.sort(key = lambda xy: atan2(xy[0] - x0, xy[1] - y0))
-        fill.xy = sommets
+
+        if len(points) == 2:
+            (x1, y1), (x2, y2) = points
+            plot.set_data((x1, x2), (y1, y2))
+            plot.set(color = couleur, linestyle = self.style("style"),
+                     linewidth = self.style("epaisseur"), zorder = niveau + 0.01)
+            sommets.extend([(x1, y1), (x2, y2)])
+            x0, y0 = (x1 + x2)/2, (y1 + y2)/2
+
+        elif len(sommets) > 1:
+            # La droite délimitant le demi-plan ne coupe pas la fenêtre (ou seulement en un coin).
+            # Dans ce cas, si 2 sommets sont dans le 1/2 plan, tous y sont.
+            assert len(sommets) == 4
+            sommets.sort(key = lambda xy: atan2(xy[0] - x0, xy[1] - y0))
+            fill.xy = sommets
+        else:
+            fill.set(visible=False)
+            return
+
+        fill.set(edgecolor=couleur, facecolor=couleur, alpha=self.style('alpha'),
+                 zorder=niveau, visible=True)
 
 
 
@@ -960,39 +992,247 @@ class Axe(Droite):
 
     Un axe orienté servant au repérage.
     Cette classe sert essentiellement à construire les axes (Ox) et (Oy).
+
+    Styles spécifiques:
+    - `graduations` (bool): afficher ou non les graduations
+    - `pas` (int|None):
+        * entier `n` (non nul): `n` fois l'écart entre les deux points repères
+          de l'axe.
+        * `None` ou `0`: adapte automatiquement la taille
+          de la graduation à la fenêtre (défaut)
+    - `pas_num` (int): entier `n`:
+        * si `n` est nul, n'affiche aucun nombre sur l'axe ;
+        * sinon, affiche un nombre toutes les `n` graduations
+          (en partant de l'origine de l'axe).
+          En particulier, si `pas_num=1`, toutes les graduations
+          auront un nombre.
+    - `repeter` (bool): répéter ou non les graduations.
+    - `hauteur` (int): hauteur d'une graduation (en pixels).
+    - `placement_num` (-1|1): position de la numérotation par rapport à l'axe.
     """
 
     _style_defaut = param.axes
-    point1 = __point1 = Argument("Point_generique")
-    point2 = __point2 = Argument("Point_generique")
+    _prefixe_nom = "a"
+    point1 = __point1 = Argument("Point_generique", defaut=Point)
+    point2 = __point2 = Argument("Point_generique", defaut=Point)
 
-    def __init__(self, point1, point2, **styles):
+    def __init__(self, point1=None, point2=None, **styles):
         self.__point1 = point1 = Ref(point1)
         self.__point2 = point2 = Ref(point2)
         Droite.__init__(self, point1, point2, **styles)
 
+
     def _creer_figure(self):
         if not self._representation:
-            self._representation = [self.rendu.fleche()]
+            self._representation = [self.rendu.fleche(), self.rendu.lignes()]
+
+        #  L'axe lui-même
+        #  ==============
         fleche = self._representation[0]
-        xy0, xy1 = self._points()
-        x1, y1 = self.__point1
-        x2, y2 = self.__point2
+        linewidth = self.style('epaisseur')
+        color = self.style('couleur')
+        zorder = self.style("niveau")
+
+        # Points d'intersection avec le bord de la fenêtre
+        points = self._points_extremes()
+        if len(points) < 2:
+            # L'axe ne coupe pas la fenêtre (ou seulement en un point)
+            return
+        (x1, y1), (x2, y2) = points
+
+        O = self.__point1
+        I = self.__point2
+        xO, yO = O.xy
+        xI, yI = I.xy
+
         # On s'assure que l'axe soit bien orienté
-        if abs(x2 - x1) > contexte['tolerance']:
-            if (xy1[0] - xy0[0])*(x2 - x1) < 0:
-                xy0, xy1 = xy1, xy0
+        if abs(xI - xO) > contexte['tolerance']:
+            if (x2 - x1)*(xI - xO) < 0:
+                x2, x1, y2, y1 = x1, x2, y1, y2
         else:
-            if (xy1[1] - xy0[1])*(y2 - y1) < 0:
-                xy0, xy1 = xy1, xy0
-        fleche.set(xy0=xy0, xy1=xy1, linewidth=self.style("epaisseur"),
+            if (y2 - y1)*(yI - yO) < 0:
+                x2, x1, y2, y1 = x1, x2, y1, y2
+        fleche.set(xy0=(x1, y1), xy1=(x2, y2), linewidth=linewidth,
                    angle=self.style("angle"), taille=self.style("taille"),
-                    color=self.style("couleur"), linestyle=self.style("style"),
-                   zorder=self.style("niveau"),
+                    color=color, linestyle=self.style("style"),
+                   zorder=zorder,
                    )
+
+        #  Les graduations
+        #  ===============
+        lignes = self._representation[1]
+
+        if not self.style("graduations"):
+            lignes.set(visible=False)
+            return
+
+        pas = self.style("pas")
+        if not pas:
+            # On détermine automatiquement le pas
+            pxO, pyO = self.__point1._pixel()
+            pxI, pyI = self.__point2._pixel()
+            norme = hypot(pxI - pxO, pyI - pyO)
+            # Le pas est déterminé automatiquement
+            # L'écart entre deux graduations doit être d'environ 20 pixels.
+            # Notons OI la longueur entre les deux points du repère, et
+            # k le coefficient appliqué à OI pour obtenir l'écart entre deux
+            # graduations.
+            # Pour que la lecture reste simple, k doit être de la forme p*10^n,
+            # avec p dans {1, 2, 5}
+            if norme < contexte['tolerance']:
+                # OI est quasiment nul, pas de graduation.
+                return
+            pas = arrondir_1_25_5(contexte['graduation']/norme)
+            ##print("pas::" + str(pas))
+
+        # Vecteur directeur de la droite
+        xu, yu = vect(O, I)
+        xu *= pas
+        yu *= pas
+
+        # Il faut commencer par trouver une graduation qui soit située
+        # dans la fenêtre d'affichage (s'il y en a).
+        # On récupère les points visibles extremes de l'axe.
+        xmin, xmax = sorted((x1, x2))
+        ymin, ymax = sorted((y1, y2))
+
+        # On distingue le cas des droites plutôt verticale, et celui des droites
+        # plutôt horizontales (pour éviter des divisions par zéro ou presque zéro).
+        if abs(yu) < abs(xu):
+            # Droite plutôt horizontale
+            assert xu
+            # On va graduer **de droite à gauche**.
+            n = (xmax - xO)/xu
+            # On récupère la graduation située juste en dessous de xmax.
+            n = (floor(n) if (xO + floor(n)*xu) < xmax else ceil(n))
+            # Et on gradue tant qu'on reste dans la fenetre.
+            x = xO + n*xu
+            y = yO + n*yu
+            assert x < xmax
+            # Il faut graduer dans le bon sens (on part de xmax, donc x doit
+            # diminuer à chaque étape).
+            sens = sign(xu)
+
+        else:
+            # Droite plutôt verticale
+            assert yu
+            # On va graduer **de haut en bas**.
+            n = (ymax - yO)/yu
+            # Même chose que précédemment, en inversant les rôles de x et de y.
+            n = (floor(n) if (yO + floor(n)*yu) < ymax else ceil(n))
+            x = xO + n*xu
+            y = yO + n*yu
+            assert y < ymax
+            sens = sign(yu)
+
+        # On calcule le vecteur servant à générer les graduations.
+        # Ce vecteur doit être normal au vecteur directeur... pour l'affichage !
+        # Autrement dit, le repère n'étant pas forcément orthonormé, il faut
+        # travailler **en pixels**.
+        # La norme (en pixels également) est fixée par le style `hauteur`.
+        pxu, pyu = self.__canvas__.dcoo2pix(xu, yu)
+        pnorm = hypot(pxu, pyu)
+        k = .5*self.style('hauteur')/pnorm
+        # Vecteur normal à (pxu, pyu) :
+        pxv, pyv = k*pyu, -k*pxu
+        # On retourne au système de coordonnées.
+        xv, yv = self.__canvas__.dpix2coo(pxv, pyv)
+
+        segments = []
+        ##print ':::', xO, n, xu, xO+n*xu
+        ##print '(1) debug::axes::(n, xu, yu, x, y, xO, yO)', n, xu, yu, x, y, xO, yO
+
+        # Et on génère les graduations !
+        while xmin < x < xmax:
+            segments.append([(x - xv, y - yv), (x + xv, y + yv)])
+            x -= sens*xu
+            y -= sens*yu
+
+        lignes.set_segments(segments)
+        lignes.set(visible=True, color=color, lw=linewidth, zorder=zorder)
+
+        # La légende en dessous des graduations
+        # =====================================
+
+        self._representation = self._representation[:2]
+        pas_num = self.style('pas_num')
+
+        if not pas_num:
+            return
+
+        # Si `pas_num != 1`, on ne met pas de nombre à chaque graduation.
+        # Il faut donc recalculer la graduation de départ.
+        # `n` (numéro de la graduation de départ) doit être un multiple
+        # de l'entier `pas_num` (qui indique combien il y a de graduations entre
+        # 2 nombres successifs).
+        ##print 'debug::axes::(n, pas_num, xu, yu)', n, pas_num, xu, yu
+        print ':::sens,xO,n,xu,xO+n*xu', sens, xO, n, xu, xO+n*xu
+        n -= sens*(n%pas_num)
+        x = xO + n*xu
+        y = yO + n*yu
+        ##print '(2) debug::axes::(n, xu, yu, x, y, xO, yO)', n, xu, yu, x, y, xO, yO
+
+        pvnorm = hypot(pxv, pyv)
+        taille = self.etiquette.style('taille')
+        # On s'écarte de 2 pixels par rapport à l'extrémité de la graduation,
+        # ainsi que de la moitié de la hauteur du texte.
+        # On choisit également le placement avec `self.style('placement_num')`
+        # (qui vaut -1 ou 1).
+        coeff = self.style('placement_num')*(pvnorm + 2 + .5*taille)/pvnorm
+        xw, yw = self.__canvas__.dpix2coo(coeff*pxv, coeff*pyv)
+
+        while xmin < x < xmax:
+            txt = self.rendu.texte(x + xw, y + yw, nice_display(n*pas),
+                    va='center', ha='center', size=taille,
+                    color = self.etiquette.style('couleur'))
+            self._representation.append(txt)
+            n -= sens*pas_num
+            x -= sens*pas_num*xu
+            y -= sens*pas_num*yu
+
+
 
 ##########################################################################################
 ## EN TRAVAUX :
+
+
+class Repere(Objet):
+    u"""Un repère du plan.
+
+    Un repère du plan défini par deux axes de même origine."""
+
+    _style_defaut = param.axes
+    _prefixe_nom = "rep"
+    axe1 = __axe1 = Argument(Axe)
+    axe2 = __axe2 = Argument(Axe)
+
+    def __init__(self, axe1=None, axe2=None, **styles):
+        self.__axe1 = axe1 = Ref(axe1)
+        self.__axe2 = axe2 = Ref(axe2)
+        Objet.__init__(self, **styles)
+
+    def style(self, nom_style=None, **kw):
+        if kw:
+            self.__axe1.style(**kw)
+            self.__axe2.style(**kw)
+        return self.style(nom_style)
+
+
+
+class Graduations(Objet):
+    u"""Un ensemble de graduations sur un axe.
+
+    Gère l'ensemble des graduations d'un axe.
+    En principe, il n'y a pas besoin de le créer manuellement."""
+
+    _style_defaut = param.graduations
+    _prefixe_nom = "grad"
+    axe1 = __axe1 = Argument(Axe)
+
+    def __init__(self, axe):
+        self.__axe = axe = Ref(axe)
+
+
 
 
 class Tangente_courbe(Droite_generique):

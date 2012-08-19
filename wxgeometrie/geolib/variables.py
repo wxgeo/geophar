@@ -421,5 +421,5 @@ class Dpy(Pixel_unite):
 
     def _get_valeur(self):
         if self.__feuille__.canvas:
-            return self.__feuille__.canvas.dpix2coo(0, 1)[1]
+            return self.__feuille__.canvas.dpix2coo(0, -1)[1]
 

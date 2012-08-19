@@ -211,6 +211,11 @@ class Rendu(object):
         artiste._cree_par = self.parent
         return artiste
 
+    def lignes(self, *args, **kw):
+        artiste = self.canvas.lignes(*args, **kw)
+        artiste._cree_par = self.parent
+        return artiste
+
     def _pixel(self, point = None):
         if point is None:
             point = self.parent
