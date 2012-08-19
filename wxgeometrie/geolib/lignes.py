@@ -1219,18 +1219,18 @@ class Repere(Objet):
 
 
 
-class Graduations(Objet):
-    u"""Un ensemble de graduations sur un axe.
-
-    Gère l'ensemble des graduations d'un axe.
-    En principe, il n'y a pas besoin de le créer manuellement."""
-
-    _style_defaut = param.graduations
-    _prefixe_nom = "grad"
-    axe1 = __axe1 = Argument(Axe)
-
-    def __init__(self, axe):
-        self.__axe = axe = Ref(axe)
+##class Graduations(Objet):
+    ##u"""Un ensemble de graduations sur un axe.
+##
+    ##Gère l'ensemble des graduations d'un axe.
+    ##En principe, il n'y a pas besoin de le créer manuellement."""
+##
+    ##_style_defaut = param.graduations
+    ##_prefixe_nom = "grad"
+    ##axe1 = __axe1 = Argument(Axe)
+##
+    ##def __init__(self, axe):
+        ##self.__axe = axe = Ref(axe)
 
 
 
