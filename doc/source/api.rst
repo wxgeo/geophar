@@ -1,6 +1,6 @@
-***
-API
-***
+*********************
+Manuel du développeur
+*********************
 
 WxGéométrie est conçu pour avoir une architecture la plus modulaire possible.
 Je suis loin d'être un expert en Python, et encore moins en travail collaboratif.
