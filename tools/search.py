@@ -31,28 +31,33 @@ import re
 import subprocess
 
 # ----- User config -----
-IGNORE = ('*tmp_*', '*(OLD|BAZAR)*', '*sympy/*', '*modules/traceur/tableau.py', '*/(pyshell|idle).pyw')
+IGNORE = ('*tmp_*', '*(OLD|BAZAR)*', '*sympy/*', '*modules/traceur/tableau.py',
+          '*/(pyshell|idle).pyw')
 DEFAULT_EDITOR = 'geany'
 # XXX: move this outside the script
 # ------------------------
 
 #TODO: provide default IGNORE by autodetecting .gitignore content, if any.
 
-
-patterns = filter(None, ('(' + pattern.replace('*', '.*').strip() + ')' for pattern in IGNORE))
-IGNORE_RE = re.compile('|'.join(patterns))
+IGNORE_RE = re.compile('|'.join('(%s)' % pattern.replace('*', '.*').strip()
+                                 for pattern in IGNORE if pattern))
 SUPPORTED_EDITORS = ('geany', 'gedit', 'nano', 'vim', 'emacs', 'kate')
 
 def gs(chaine='', case=True, exclude_comments=True, extensions=(".py", ".pyw"),
-        maximum=100, codec="latin1", statistiques=False, replace=None, color=None, edit_with=None):
-    u"""Parcourt le répertoire courant et les sous-répertoire, à la recherche des fichiers dont l'extension
-    est comprise dans 'extensions', mais passe les répertoires et les fichiers dont le nom commence par un préfixe
-    de 'exclude_prefixe', ou finit par un suffixe de 'exclude_suffixe'.
+        maximum=100, codec="latin1", statistiques=False, replace=None,
+        color=None, edit_with=None, edit_result=None):
+    u"""Parcourt le répertoire courant et les sous-répertoire, à la recherche
+    des fichiers dont l'extension est comprise dans 'extensions',
+    mais passe les répertoires et les fichiers dont le nom commence par
+    un préfixe de 'exclude_prefixe', ou finit par un suffixe de
+    'exclude_suffixe'.
     Pour chaque fichier trouvé, renvoie toutes les lignes où 'chaine' se trouve.
-    (Par défaut, la casse est prise en compte, sinon, il suffit de modifier la valeur de 'case'.)
-    Le nombre maximal de lignes renvoyées est fixé par 'maximum', afin d'éviter de saturer le système.
-    Si ce nombre est dépassé (ie. toutes les occurences de 'chaine' ne sont pas affichées),
-    la fonction renvoie False, sinon, True.
+    (Par défaut, la casse est prise en compte, sinon, il suffit de modifier
+    la valeur de 'case'.)
+    Le nombre maximal de lignes renvoyées est fixé par 'maximum', afin d'éviter
+    de saturer le système.
+    Si ce nombre est dépassé (ie. toutes les occurences de 'chaine' ne sont pas
+    affichées), la fonction renvoie False, sinon, True.
     """
     if color is None:
         color = sys.platform.startswith('linux')
@@ -154,17 +159,22 @@ def gs(chaine='', case=True, exclude_comments=True, extensions=(".py", ".pyw"),
                     occurences += 1
                     if replace is not None:
                         lignes[-1] = s.replace(chaine, replace)
-                    s = s[:pos] + blue2(s[pos:pos+len(chaine)]) + s[pos+len(chaine):]
-                    results.append(u"  \u25E6 line " + white(unicode(n + 1)) + ":   " + s.decode(codec))
+                    s = s[:pos] + blue2(s[pos:pos+len(chaine)]) \
+                                + s[pos+len(chaine):]
+                    results.append(u"   " + blue('(' + str(n_lignes + 1) + ')')
+                                          + "  line " + white(unicode(n + 1))
+                                          + ":   " + s.decode(codec))
 
-                    if edit_with is not None:
+                    if edit_with is not None and (edit_result is None
+                                                or edit_result == n_lignes + 1):
                         if edit_with not in SUPPORTED_EDITORS:
                             print(edit_with + ' is currently not supported.')
-                            print('Supported editors : ' + ','.join(SUPPORTED_EDITORS))
+                            print('Supported editors : '
+                                  + ','.join(SUPPORTED_EDITORS))
                         elif edit_with in ('geany', 'kate'):
-                            command = '%s -l %s %s' %(edit_with, n + 1, f)
+                            command = '%s -l %s %s' % (edit_with, n + 1, f)
                         else:
-                            command = '%s +%s %s' %(edit_with, n + 1, f)
+                            command = '%s +%s %s' % (edit_with, n + 1, f)
                         subprocess.call(command, shell=True)
 
                     n_lignes += 1
@@ -172,7 +182,8 @@ def gs(chaine='', case=True, exclude_comments=True, extensions=(".py", ".pyw"),
                         return red("Maximum output exceeded...!")
 
         if results:
-            print u"\u2022 in " + green(f[:end_root_pos]) + green2(f[end_root_pos:])
+            print(u" \u2022 in " + green(f[:end_root_pos])
+                                 + green2(f[end_root_pos:]))
             for result in results:
                 print(result.rstrip())
 
@@ -184,21 +195,30 @@ def gs(chaine='', case=True, exclude_comments=True, extensions=(".py", ".pyw"),
     if statistiques:
         # C - 20*F : on décompte les préambules de tous les fichiers
         return (blue(str(N) + " lignes de code\n")
-                + str(C) + " lignes de commentaires (" + str(C - 20*F) + " hors licence)\n"
+                + str(C) + " lignes de commentaires (" + str(C - 20*F)
+                + " hors licence)\n"
                 + str(B) + " lignes vides\n"
                 + str(F) + " fichiers")
     if replace is None:
-        return blue(u"\n-> %s occurence(s) trouvée(s)." %occurences)
+        return blue(u"\n-> %s occurence(s) trouvée(s)." % occurences)
     else:
-        return blue(u"%s occurence(s) de %s remplacée(s) par %s." %(occurences, repr(chaine), repr(replace)))
+        return blue(u"%s occurence(s) de %s remplacée(s) par %s."
+                    % (occurences, repr(chaine), repr(replace)))
 
 
 def usage():
+    u"Affiche l'aide."
     print u"""\n    === Usage ===\n
     - Rechercher la chaîne 'hello' dans le code :
         $ ./tools/search.py "hello"
     - Remplacer partout la chaîne 'hello' par la chaîne 'world':
-        $ ./tools/search.py -r "hello" "world"
+        $ ./tools/search.py "hello" -r "world"
+    - Editer le projet à l'endroit où la chaîne "hello world!" se trouve
+        $ ./tools/search.py -e "hello world!"
+    - Editer seulement la 5e occurence de "hello world!" dans le projet
+        $ ./tools/search.py -e5 "hello world!"
+    - Afficher des statistiques concernant le projet:
+        $ ./tools/search.py -s
         """
     exit()
 
@@ -218,6 +238,17 @@ if __name__ == "__main__":
     if '-e' in args:
         args.remove('-e')
         kw['edit_with'] = DEFAULT_EDITOR
+    else:
+        for i, arg in enumerate(args):
+            if arg.startswith('-e'):
+                args.pop(i)
+                break
+        else:
+            arg = None
+        if arg is not None:
+            arg = arg.lstrip('=:')
+            kw['edit_result'] = int(arg[2:])
+            kw['edit_with'] = DEFAULT_EDITOR
     if '-c' in args:
         args.remove('-c')
         kw['color'] = True
@@ -228,7 +259,7 @@ if __name__ == "__main__":
     options = (arg.split('=', 1) for arg in args[1:])
     kw.update((key, eval(val)) for key, val in options)
     ##print kw
-    title = "\n=== Recherche de %s ===\n" %repr(args[0])
+    title = "\n=== Recherche de %s ===\n" % repr(args[0])
     if sys.platform.startswith('linux'):
         title = '\033[1;37m' + title + '\033[0m'
     print title
