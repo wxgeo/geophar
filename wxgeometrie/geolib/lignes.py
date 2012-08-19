@@ -201,7 +201,7 @@ class Ligne_generique(Objet_avec_equation):
                 return points[:2] # Mxmin et Mxmax ne peuvent être confondus.
             return points[1:] # Mymin et Mymax non plus.
         else:
-            assert len(points) == 2
+            assert len(points) <= 2
             return points
 
 
@@ -342,7 +342,11 @@ class Demidroite(Ligne_generique):
 
         x, y = self.__origine.coordonnees
         x0, y0 = self.__point.coordonnees
-        (x1, y1), (x2, y2) = self._points()
+        points = self._points()
+        if len(points) < 2:
+            # La droite sous-jacente ne coupe pas la fen<EA>tre (ou seulement e
+            return
+        (x1, y1), (x2, y2) = points
         plot = self._representation[0]
 
         if produit_scalaire((x1 - x, y1 - y), (x0 - x, y0 - y)) > produit_scalaire((x2 - x, y2 - y), (x0 - x, y0 - y)):
@@ -445,7 +449,11 @@ class Droite_generique(Ligne_generique):
     def _creer_figure(self):
         if not self._representation:
             self._representation = [self.rendu.ligne()]
-        (x1, y1), (x2, y2) = self._points()
+        points = self._points()
+        if len(points) < 2:
+            # La droite sous-jacente ne coupe pas la fen<EA>tre (ou seulement e
+            return
+        (x1, y1), (x2, y2) = points
         plot = self._representation[0]
         plot.set_data((x1, x2), (y1, y2))
         plot.set(color = self.style("couleur"), linestyle = self.style("style"), linewidth = self.style("epaisseur"), zorder = self.style("niveau"))
@@ -977,7 +985,11 @@ class Axe(Droite):
         if not self._representation:
             self._representation = [self.rendu.fleche()]
         fleche = self._representation[0]
-        xy0, xy1 = self._points()
+        points = self._points()
+        if len(points) < 2:
+            # La droite sous-jacente ne coupe pas la fen<EA>tre (ou seulement e
+            return
+        xy0, xy1 = points
         x1, y1 = self.__point1
         x2, y2 = self.__point2
         # On s'assure que l'axe soit bien orienté
