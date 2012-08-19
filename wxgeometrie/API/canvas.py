@@ -334,6 +334,7 @@ class Canvas(FigureCanvasAgg):
         u"""À utiliser au sein d'un contexte 'with':
 
             .. sourcecode:: python
+
             with self.geler_affichage():
                 # some action
 

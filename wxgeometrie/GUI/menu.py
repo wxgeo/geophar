@@ -114,7 +114,11 @@ class MenuBar(QMenuBar):
     u"""Remplace la classe QMenuBar pour créer une barre de menu propre à chaque module.
 
     La méthode de base est ``ajouter(self, *menu)``, où menu est une liste.
-    Exemple1:
+
+    *Exemple 1 :*
+
+    ::
+
     menu =  ["Outils",
                 ["Options", "Parametres du programme", "Ctrl+O", fonction1],
                 ["Memoriser le resultat", "Copie le resultat du calcul dans le presse-papier", None, fonction2],
@@ -122,11 +126,17 @@ class MenuBar(QMenuBar):
                 ["Autres",
                     ["Rubrique 1", None, "Alt+Ctrl+R", fonction3],
                     ["Rubrique 2", "Rubrique non active pour l'instant", None, None]]]
-    Exemple2: ["Infos", ["Afficher les infos", "Affichage des infos en temps reel", "Ctrl+I", fonction1, fonction2]]
+
+    *Exemple 2 :*
+
+    ::
+
+    ["Infos", ["Afficher les infos", "Affichage des infos en temps reel", "Ctrl+I", fonction1, fonction2]]
+
     La presence de deux fonctions (eventuellement identiques) indique qu'il s'agit d'un menu "cochable".
     L'etat (coché ou non coché) est déterminé par la valeur renvoyée par la fonction 'fonction2'.
 
-    Note: Pour un menu moins standard, on peut toujours utiliser directement QMenuBar.
+    *Note:* Pour un menu moins standard, on peut toujours utiliser directement ``QMenuBar``.
     """
 
     def ajouter(self, *contenu):

@@ -489,7 +489,8 @@ def nice_str(x):
         +oo
         >>> nice_str(log(7))
         ln(7)
-    ."""
+
+    """
     return strip_trailing_zeros(custom_str(x)).replace('.', ',')
 
 

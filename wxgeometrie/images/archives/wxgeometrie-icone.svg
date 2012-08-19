@@ -14,11 +14,11 @@
    height="500"
    id="svg2"
    sodipodi:version="0.32"
-   inkscape:version="0.47 r22583"
+   inkscape:version="0.48.1 r9760"
    sodipodi:docname="wxgeometrie-icone.svg"
-   inkscape:export-filename="/home/nicolas/Bureau/icone-v0.png"
-   inkscape:export-xdpi="72"
-   inkscape:export-ydpi="72"
+   inkscape:export-filename="/home/nicolas/Programmation/wxgeometrie/doc/source/img/geophar-icone.png"
+   inkscape:export-xdpi="27"
+   inkscape:export-ydpi="27"
    inkscape:output_extension="org.inkscape.output.svg.inkscape"
    version="1.0"
    sodipodi:modified="TRUE">
@@ -284,8 +284,8 @@
      inkscape:cy="251.7567"
      inkscape:document-units="px"
      inkscape:current-layer="g4638"
-     inkscape:window-width="1366"
-     inkscape:window-height="693"
+     inkscape:window-width="1280"
+     inkscape:window-height="949"
      inkscape:window-x="0"
      inkscape:window-y="24"
      showgrid="false"
@@ -298,7 +298,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
