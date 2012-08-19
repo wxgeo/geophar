@@ -1,0 +1,28 @@
+# http://www.debian-administration.org/articles/316
+# À renommer en /etc/bash_completion.d/wxgeometrie
+_wxgeometrie()
+{
+    local cur prev opts
+    COMPREPLY=()
+    cur="${COMP_WORDS[COMP_CWORD]}"
+    prev="${COMP_WORDS[COMP_CWORD-1]}"
+    opts="--all --debug --defaut --help --nouveau --recompile --version"
+
+    #  Complete the modules names.
+    #
+    case "${prev}" in
+        -m)
+        local running="geometre  traceur  statistiques  calculatrice  probabilites  surfaces  cryptographie  exercice_equations_droites  exercice_inequations_produits  exercice_tableau_signes  exercice_trigonometrie  graphes  tablatex"
+        COMPREPLY=( $(compgen -W "${running}" -- ${cur}) )
+            return 0
+            ;;
+        *)
+        ;;
+    esac
+
+    if [[ ${cur} == -* ]] ; then
+        COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
+        return 0
+    fi
+}
+complete -F _wxgeometrie wxgeometrie
