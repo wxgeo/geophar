@@ -79,6 +79,16 @@ class Cote(Segment):
         else:
             raise RuntimeError
 
+    def supprimer(self):
+        u"""Supprime le polygone auquel appartient le côté.
+
+        ..note::
+            Il n'y a aucun intérêt à supprimer uniquement le côté
+            (d'autant qu'un sommet supprimé ne peut pas facilement être
+            rétabli), et si un côté est supprimé sans le polygone, on a parfois
+            l'impression d'un bug (impossible de placer un point sur le côté par
+            exemple)."""
+        self.__polygone.supprimer()
 
 
 
@@ -86,7 +96,9 @@ class Sommet(Point_generique):
     u"""Un sommet.
 
     Le nième sommet d'un polygone.
-    Note: n commence à 0.
+
+    .. note:: n commence à 0.
+
     L'objet est créé automatiquement lors de la création du polygone.
     De plus, si l'objet est supprimé, le polygone est automatiquement supprimé."""
 
@@ -138,8 +150,14 @@ class Sommet(Point_generique):
 
     _deplacable = _modifiable = property(_deplacable, _deplacable)
 
+    def supprimer(self):
+        u"""Supprime le polygone auquel appartient le sommet.
 
-
+        .. note::
+            Il n'y a aucun intérêt à supprimer uniquement le sommet
+            (d'autant qu'un sommet supprimé ne peut pas facilement être
+            rétabli)."""
+        self.__polygone.supprimer()
 
 
 class Polygone_generique(Objet):
