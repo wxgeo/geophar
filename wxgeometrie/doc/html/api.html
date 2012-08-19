@@ -1,0 +1,368 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>API &mdash; Geophar v11.09 documentation</title>
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '#',
+        VERSION:     '11.09',
+        COLLAPSE_MODINDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/translations.js"></script>
+    <script type="text/javascript" src="_static/jsMath/easy/load.js"></script>
+    <link rel="top" title="Geophar v11.09 documentation" href="index.html" />
+    <link rel="next" title="Formats de fichiers" href="format.geo.html" />
+    <link rel="prev" title="Généralités" href="help.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="Index général"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="modindex.html" title="Index général des modules"
+             accesskey="M">modules</a> |</li>
+        <li class="right" >
+          <a href="format.geo.html" title="Formats de fichiers"
+             accesskey="N">suivant</a> |</li>
+        <li class="right" >
+          <a href="help.html" title="Généralités"
+             accesskey="P">précédent</a> |</li>
+        <li><a href="index.html">Geophar v11.09 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="api">
+<h1>API<a class="headerlink" href="#api" title="Lien permanent vers ce titre">¶</a></h1>
+<p>WxGéométrie est conçu pour avoir une architecture la plus modulaire possible.
+Je suis loin d&#8217;être un expert en Python, et encore moins en travail collaboratif.
+Je me suis néanmoins efforcé au maximum de rendre mes sources et mon architecture lisible, avec un certain succès semble-t-il pour les échos que j&#8217;en ai eu.
+Néanmoins, fournir les sources ne dispense pas d&#8217;un minimum de documentation.
+Selon l&#8217;adage, je commencerai mon long discours par un petit dessin.</p>
+<div class="section" id="architecture-du-programme">
+<h2>Architecture du programme<a class="headerlink" href="#architecture-du-programme" title="Lien permanent vers ce titre">¶</a></h2>
+<p>Ce schéma n&#8217;est pas du tout exhaustif, mais il permet d&#8217;avoir une vision d&#8217;ensemble du programme.</p>
+</div>
+<div class="section" id="comment-ecrire-une-extension">
+<h2>Comment écrire une extension<a class="headerlink" href="#comment-ecrire-une-extension" title="Lien permanent vers ce titre">¶</a></h2>
+<p>La manière le plus simple de collaborer au projet est d&#8217;ajouter une extension (ou module).
+Pour l&#8217;instant, les modules disponibles sont les suivants:</p>
+<ol class="arabic simple">
+<li>Geometre : un module permettant de faire de la géométrie dynamique.</li>
+<li>Traceur : un traceur de courbes.</li>
+<li>Statistiques : un traceur de diagrammes statistiques.</li>
+<li>Calculatrice : une calculatrice scientifique supportant les fractions et les racines carrées.</li>
+</ol>
+<p>Les 3 premiers modules sont des modules dits graphiques, car ils utilisent l&#8217;API de WxGéométrie.
+Le dernier module n&#8217;utilise pas l&#8217;API graphique, il est dit simple.</p>
+<p>Pour adapter un programme existant et l&#8217;intégrer dans WxGéométrie, il est plus judicieux de créer un module simple.
+Pour créer une nouvelle extension de toute pièce, le support de l&#8217;API
+graphique permettra de créer quelque chose de mieux intégré, et de plus
+puissant à moindres frais.</p>
+<p>En plus de la documentation, il est conseillé de bien lire le code des modules déjà existants, et de s&#8217;en inspirer – vous y trouverez certaines idées ; et par ailleurs, la documentation est assez incomplète pour l&#8217;instant.</p>
+<div class="section" id="les-extensions-simples">
+<h3>Les extensions simples<a class="headerlink" href="#les-extensions-simples" title="Lien permanent vers ce titre">¶</a></h3>
+<p>Pour créer une extension simple, il suffit de créer un nouveau dossier mon_extension dans le dossier modules de WxGéométrie.
+Attention, le nom de dossier doit commencer par une lettre minuscule, et n&#8217;utiliser que les caractères suivants : «&nbsp;a&nbsp;», ... «&nbsp;z&nbsp;», «&nbsp;0&nbsp;», ... «&nbsp;1&nbsp;», «&nbsp;_&nbsp;» (uniquement des minuscules donc).
+Dans ce nouveau dossier, il faut créer un fichier __init__.py, qui contient obligatoirement les éléments suivants:</p>
+<div class="section" id="l-import-des-librairies-standards-de-wxgeometrie">
+<h4>L&#8217;import des librairies standards de WxGéométrie<a class="headerlink" href="#l-import-des-librairies-standards-de-wxgeometrie" title="Lien permanent vers ce titre">¶</a></h4>
+<p>(Au moins de API.py)
+from API import *
+from GUI import *</p>
+<p>Bien entendu, ces lignes doivent se trouver au début du fichier.</p>
+</div>
+<div class="section" id="une-classe-heritee-de-menubar">
+<h4>Une classe héritée de MenuBar<a class="headerlink" href="#une-classe-heritee-de-menubar" title="Lien permanent vers ce titre">¶</a></h4>
+<p>Cette classe, définie dans API/menu.py, servira à construire le menu.
+Voici l&#8217;exemple de la calculatrice.</p>
+<div class="highlight-python"><pre>class CalculatriceMenuBar(MenuBar):
+def __init__(self, panel):
+MenuBar.__init__(self, panel)
+self.ajouter("Fichier", ["quitter"])
+self.ajouter("Affichage", ["onglet"])
+self.ajouter("Outils",
+["Memoriser le resultat", "Copie le resultat du calcul dans le presse-papier, afin de pouvoir l'utiliser ailleurs.", "Ctrl+M", self.panel.vers_presse_papier],
+["options"])
+self.ajouter("?")</pre>
+</div>
+<p>On va le décortiquer un peu.</p>
+<p>Les 3 première lignes sont à recopier telles qu&#8217;elles :</p>
+<div class="highlight-python"><pre>class CalculatriceMenuBar(MenuBar):
+def __init__(self, panel):
+MenuBar.__init__(self, panel)</pre>
+</div>
+<p>Les lignes suivantes ajoutent des éléments au menu.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="bp">self</span><span class="o">.</span><span class="n">ajouter</span><span class="p">(</span><span class="s">&quot;Fichier&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s">&quot;quitter&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>On crée une liste «&nbsp;Fichier&nbsp;» dans le menu, qui contiendra l&#8217;élément prédéfini «&nbsp;quitter&nbsp;».
+Il faut savoir qu&#8217;un certain nombre d&#8217;éléments prédéfinis existent (NOTEBP: La liste exhaustive de ces alias peut-être trouvée à la fin du fichier API/menu.py.
+Par exemple, «&nbsp;&#8220;ouvrir&#8221;&nbsp;» remplace «&nbsp;[&#8220;Ouvrir&#8221;, &#8220;Ouvrir un fichier.&#8221;, &#8220;Ctrl+O&#8221;, self.parent.OpenFile]&nbsp;».) pour le menu.
+Cela dit, dans la plupart des cas, il faudra créer sa propre entrée dans le menu :</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="bp">self</span><span class="o">.</span><span class="n">ajouter</span><span class="p">(</span><span class="s">&quot;Outils&quot;</span><span class="p">,</span>
+<span class="p">[</span><span class="s">&quot;Memoriser le resultat&quot;</span><span class="p">,</span> <span class="s">&quot;Copie le resultat du calcul dans le presse-papier, afin de pouvoir l&#39;utiliser ailleurs.&quot;</span><span class="p">,</span> <span class="s">&quot;Ctrl+M&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">panel</span><span class="o">.</span><span class="n">vers_presse_papier</span><span class="p">],</span>
+<span class="p">[</span><span class="s">&quot;options&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>Ici, &#8220;options&#8221; correspond à une entrée prédéfinie, tandis que la première entrée est créée de toute pièce.
+La syntaxe est la suivante :</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="bp">self</span><span class="o">.</span><span class="n">ajouter</span><span class="p">(</span><span class="s">&quot;Liste d&#39;entrées&quot;</span><span class="p">,</span>
+<span class="p">[</span><span class="s">&quot;Entrée n°1&quot;</span><span class="p">,</span> <span class="s">&quot;Commentaire de l&#39;entrée n°1&quot;</span><span class="p">,</span> <span class="s">&quot;Ctrl+E&quot;</span><span class="p">,</span> <span class="n">fonction1</span><span class="p">],</span>
+<span class="bp">None</span><span class="p">,</span>
+<span class="p">[</span><span class="s">&quot;Entrée n°2&quot;</span><span class="p">,</span> <span class="s">&quot;Commentaire de l&#39;entrée n°1&quot;</span><span class="p">,</span> <span class="s">&quot;Alt+Ctrl+K&quot;</span><span class="p">,</span> <span class="n">fonction1</span><span class="p">],</span>
+<span class="p">[</span><span class="s">&quot;Dernière entrée&quot;</span><span class="p">,</span> <span class="s">&quot;Commentaire de l&#39;entrée n°1&quot;</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="n">fonction1</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>Chaque entrée est donc représentée par une liste.
+Elle composée par :
+le titre de l&#8217;entrée (celui qui apparaît dans le menu) -&gt; type str.
+un commentaire (qui apparaît en bas de la fenêtre) -&gt; type str ou None.
+Un raccourci clavier -&gt; type str ou None
+Une fonction à lancer quand l&#8217;entrée est sélectionnée -&gt; type func ou None
+Une variable (facultatif) qui indique que l&#8217;entrée doit être cochée (ou non) -&gt; type bool
+Attention : la fonction reçoit un argument event.
+Typiquement, la fonction est une méthode du Panel (voir plus loin).
+Elle sera donc définie comme ceci :</p>
+<div class="highlight-python"><pre>def ma_fonction(self, event):
+titre = event.nom_menu
+print "Hello world!"
+# etc...</pre>
+</div>
+<p>On notera qu&#8217;on peut récupérer le titre de l&#8217;entrée sélectionnée grâce à la propriété nom_menu.</p>
+<p>[ à compléter – flux «&nbsp;RSS&nbsp;», etc... ]</p>
+</div>
+<div class="section" id="une-classe-heritee-de-panel-simple">
+<h4>Une classe héritée de Panel_simple<a class="headerlink" href="#une-classe-heritee-de-panel-simple" title="Lien permanent vers ce titre">¶</a></h4>
+<p>Les 3 premières lignes doivent être :</p>
+<div class="highlight-python"><pre>class Calculatrice(Panel_simple):
+__titre__ = "Calculatrice"
+
+def __init__(self, parent):
+Panel_simple.__init__(self,parent)</pre>
+</div>
+<p>Bien entendu, le titre est à adapter.
+Il correspond à ce qui s&#8217;affiche en haut de l&#8217;onglet correspondant.
+Attention : le nom de la classe doit être le même que celui du module (la casse peut éventuellement différer).
+Pour le reste, vous pouvez mettre absolument tout ce que vous voulez ; Panel_simple se comporte comme la classe wx.Panel ordinaire (NOTEBP: Typiquement, deux fonctions sont conçues pour être récrites :  _sauvegarder(self, fgeo) et _ouvrir(self, fgeo).
+Dès que j&#8217;aurai un peu de temps, je documenterai la chose...
+En attendant, vous pouvez jeter un coup d&#8217;oeil dans les trois modules déjà existants.).</p>
+<p>Remarque : si vous voulez intégrer dans WxGéométrie un programme déjà existant en WxPython, ce dont je vous saurai grand gré, il suffit bien souvent de faire hériter la classe principale du programme de Panel_simple, au lieu de wx.Panel.</p>
+<p>[ à compléter – comment récrire les méthodes _ouvrir et _sauvegarder ]</p>
+</div>
+</div>
+<div class="section" id="les-extensions-utilisant-l-api-graphique">
+<h3>Les extensions utilisant l&#8217;API graphique<a class="headerlink" href="#les-extensions-utilisant-l-api-graphique" title="Lien permanent vers ce titre">¶</a></h3>
+<p>Quand je parle d&#8217;API graphique, il s&#8217;agit essentiellement de la gestion des objets géométriques (points, droites, intersections...), du réglage de la fenêtre d&#8217;affichage (zoom, etc...), et de l&#8217;export en png, eps et svg.</p>
+<p>Pour créer une extension graphique, il suffit là encore de créer un nouveau dossier mon_extension (NOTEBP: N&#8217;utilisez que des caractères alpha-numériques et le tiret bas  «&nbsp;_&nbsp;».) dans le dossier modules de WxGéométrie.
+Dans ce nouveau dossier, il faut créer un fichier __init__.py, qui contient obligatoirement les éléments suivants:</p>
+<div class="section" id="id1">
+<h4>L&#8217;import des librairies standards de WxGéométrie<a class="headerlink" href="#id1" title="Lien permanent vers ce titre">¶</a></h4>
+<p>(Au moins de API.py)</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">API</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">GUI</span> <span class="kn">import</span> <span class="o">*</span>
+</pre></div>
+</div>
+<p>Bien entendu, ces lignes doivent se trouver au début du fichier.</p>
+</div>
+<div class="section" id="id2">
+<h4>Une classe héritée de MenuBar<a class="headerlink" href="#id2" title="Lien permanent vers ce titre">¶</a></h4>
+<p>Par rapport au panel simple, un plus grand nombre de menus sont prédéfinis.
+En particulier, un menu &#8220;créer&#8221; comprend toute la gestion des objets.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="bp">self</span><span class="o">.</span><span class="n">ajouter</span><span class="p">(</span><span class="s">&quot;creer&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Se reporter au TODO 1.b) pour plus de détails.</p>
+</div>
+<div class="section" id="une-classe-heritee-de-panel-api-graphique">
+<h4>Une classe héritée de Panel_API_graphique<a class="headerlink" href="#une-classe-heritee-de-panel-api-graphique" title="Lien permanent vers ce titre">¶</a></h4>
+<p>Les premières lignes sont les suivantes :</p>
+<div class="highlight-python"><pre>class Traceur(Panel_API_graphique):
+__titre__ = "Traceur de courbes" # Donner un titre a chaque module
+
+def __init__(self, parent):
+Panel_API_graphique.__init__(self, parent)</pre>
+</div>
+<p>Bien entendu, le titre est à adapter en fonction de votre module (il apparaîtra en haut de l&#8217;onglet).
+La dernière ligne crée 3 attributs importants :</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="bp">self</span><span class="o">.</span><span class="n">canvas</span>
+</pre></div>
+</div>
+<p>Un espace de dessin supportant les options avancées de WxGéométrie : zoom, dessin sans crènelage, export en png, eps et svg, et support des objets géométriques en particulier.
+Une bonne partie de ces fonctionnalités proviennent de la librairie matplotlib, dont il peut être utile de consulter la documentation.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="bp">self</span><span class="o">.</span><span class="n">historique</span>
+</pre></div>
+</div>
+<p>enregistrement des commandes passées, gestion des annulations.</p>
+<p>Pour plus de détails, consulter le 3.b à ce sujet.
+self.commande : la console. Elle joue plusieurs rôles : filtrer et reformuler les commandes, stocker les commandes passées dans l&#8217;historique (principalement).</p>
+</div>
+<div class="section" id="comment-rajouter-des-fonctions-au-panel">
+<h4>Comment rajouter des fonctions au panel ?<a class="headerlink" href="#comment-rajouter-des-fonctions-au-panel" title="Lien permanent vers ce titre">¶</a></h4>
+<p>En développant le nouveau module, vous aurez besoin de rajouter de nouvelles fonctions.
+La manière la plus naturelle de procéder est d&#8217;ajouter une nouvelle méthodes à Panel_API_graphique, et une nouvelle entrée au menu.
+Pour le Panel, il faut penser à rajouter une 2ème méthode, qui sera appelée par le menu, et qui servira à faire passer la commande par la console.
+Enfin, il faut que la console reconnaisse cette nouvelle méthode comme valable, pour qu&#8217;on puisse la lancer avec avec un niveau de sécurité élevé (qui doit, à moyen terme, devenir le mode par défaut) .
+Prenons un exemple concret. Vous avez créé une fonction pour dessiner de jolies coccinelles (NOTEBP: Et pourquoi pas ? C&#8217;est sympathique, une coccinelle. Hum... revenons à notre sujet.).</p>
+<p>Vous rajouter dans la méthode __init__ de votre panel la ligne suivante :</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="bp">self</span><span class="o">.</span><span class="n">commandes</span><span class="o">.</span><span class="n">commandes_panel</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="s">&quot;creer_coccinelle(&quot;</span> <span class="p">)</span>
+</pre></div>
+</div>
+<p>Ceci permet à la commande de passer à la casserole console sans encombre, en étant répertoriée comme une méthode du Panel accessible à l&#8217;utilisateur final.</p>
+<p>Vous rajouter à la fonction __init__ de votre barre de menu la ligne suivante :</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="bp">self</span><span class="o">.</span><span class="n">ajouter</span><span class="p">(</span><span class="s">&quot;fonctions inutiles&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s">&quot;créer une coccinelle&quot;</span><span class="p">,</span> <span class="s">&quot;Créer une jolie coccinelle sur la feuille.&quot;</span><span class="p">,</span> <span class="s">&quot;Alt+Ctrl+C&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">panel</span><span class="o">.</span><span class="n">creer_coccinelle</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>Vous définissez deux nouvelles méthodes pour votre panel :</p>
+<div class="highlight-python"><pre>def creer_coccinelle(self, event = None):
+self.commande.executer("creer_cocci()")
+
+def creer_cocci(self):
+Placez votre code ici
+...</pre>
+</div>
+<p>Tout ceci n&#8217;est pas 100% obligatoire, mais aidera à ce que votre fonction s&#8217;intègre bien dans le programme.</p>
+<p>[ à compléter – décrire l&#8217;API de l&#8217;objet canevas ]</p>
+</div>
+</div>
+<div class="section" id="quelques-remarques-importantes-pour-finir">
+<h3>Quelques remarques importantes pour finir<a class="headerlink" href="#quelques-remarques-importantes-pour-finir" title="Lien permanent vers ce titre">¶</a></h3>
+<div class="section" id="detection-des-modules">
+<h4>détection des modules<a class="headerlink" href="#detection-des-modules" title="Lien permanent vers ce titre">¶</a></h4>
+<p>Pour qu&#8217;un module soit lancé au chargement du programme, il faut éditer le fichier de configuration param.py, et modifier la ligne :</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># Modules a importer</span>
+<span class="c"># ----------------</span>
+
+<span class="n">modules</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;geometre&quot;</span><span class="p">,</span> <span class="s">&quot;traceur&quot;</span><span class="p">,</span> <span class="s">&quot;calculatrice&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Supposons que votre module s&#8217;appelle mon_module (le nom du sous-répertoire que vous avez créé dans le répertoire modules).
+Vous remplacez donc cette ligne par :</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">modules</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;geometre&quot;</span><span class="p">,</span> <span class="s">&quot;traceur&quot;</span><span class="p">,</span> <span class="s">&quot;calculatrice&quot;</span><span class="p">,</span> <span class="s">&quot;mon_module&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Le fichier modules.py va ensuite analyser le module, pour y chercher une classe héritée de Panel_simple (Panel_API_graphique hérite lui-même de Panel_simple), et une classe héritée de MenuBar.
+Ces classes doivent obligatoirement être présentes (NOTEBP: Si vous n&#8217;utilisez pas leurs fonctionnalités spécifiques, vous pouvez toujours vous en servir comme de simples wx.Panel et wx.MenuBar, dont elles héritent.) , et être uniques.
+(Rien ne vous empêche par contre d&#8217;avoir un certain nombre de classe héritant de wx.Panel, et de wx.MenuBar)</p>
+</div>
+<div class="section" id="gestion-de-l-historique-pour-les-modules-graphiques">
+<h4>Gestion de l&#8217;historique (pour les modules graphiques)<a class="headerlink" href="#gestion-de-l-historique-pour-les-modules-graphiques" title="Lien permanent vers ce titre">¶</a></h4>
+<p>L&#8217;annulation et la restauration fonctionne selon un principe assez rudimentaire :
+à chaque fois qu&#8217;une commande est passée à la console du module, la feuille de travail enregistre son état actuel (NOTEBP: Par ailleurs,  la commande est stockée par l&#8217;historique du module, qui garde trace de toutes les commandes passées.).
+A chaque fois qu&#8217;on annule, la feuille de travail restaure l&#8217;avant-dernier état enregistré.
+Autrement dit, seules les commandes se rapportant à la feuille peuvent actuellement être annulées :
+création, déplacement, etc... d&#8217;objet géométriques,
+changement de la fenêtre d&#8217;affichage (zoom, ...).</p>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/geophar-icone.png" alt="Logo"/>
+            </a></p>
+            <h3><a href="index.html">Table des matières</a></h3>
+            <ul>
+<li><a class="reference external" href="#">API</a><ul>
+<li><a class="reference external" href="#architecture-du-programme">Architecture du programme</a></li>
+<li><a class="reference external" href="#comment-ecrire-une-extension">Comment écrire une extension</a><ul>
+<li><a class="reference external" href="#les-extensions-simples">Les extensions simples</a><ul>
+<li><a class="reference external" href="#l-import-des-librairies-standards-de-wxgeometrie">L&#8217;import des librairies standards de WxGéométrie</a></li>
+<li><a class="reference external" href="#une-classe-heritee-de-menubar">Une classe héritée de MenuBar</a></li>
+<li><a class="reference external" href="#une-classe-heritee-de-panel-simple">Une classe héritée de Panel_simple</a></li>
+</ul>
+</li>
+<li><a class="reference external" href="#les-extensions-utilisant-l-api-graphique">Les extensions utilisant l&#8217;API graphique</a><ul>
+<li><a class="reference external" href="#id1">L&#8217;import des librairies standards de WxGéométrie</a></li>
+<li><a class="reference external" href="#id2">Une classe héritée de MenuBar</a></li>
+<li><a class="reference external" href="#une-classe-heritee-de-panel-api-graphique">Une classe héritée de Panel_API_graphique</a></li>
+<li><a class="reference external" href="#comment-rajouter-des-fonctions-au-panel">Comment rajouter des fonctions au panel ?</a></li>
+</ul>
+</li>
+<li><a class="reference external" href="#quelques-remarques-importantes-pour-finir">Quelques remarques importantes pour finir</a><ul>
+<li><a class="reference external" href="#detection-des-modules">détection des modules</a></li>
+<li><a class="reference external" href="#gestion-de-l-historique-pour-les-modules-graphiques">Gestion de l&#8217;historique (pour les modules graphiques)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            <h4>Sujet précédent</h4>
+            <p class="topless"><a href="help.html"
+                                  title="Chapitre précédent">Généralités</a></p>
+            <h4>Sujet suivant</h4>
+            <p class="topless"><a href="format.geo.html"
+                                  title="Chapitre suivant">Formats de fichiers</a></p>
+            <h3>Cette page</h3>
+            <ul class="this-page-menu">
+              <li><a href="_sources/api.txt"
+                     rel="nofollow">Montrer la source</a></li>
+            </ul>
+          <div id="searchbox" style="display: none">
+            <h3>Recherche rapide</h3>
+              <form class="search" action="search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="Index général"
+             >index</a></li>
+        <li class="right" >
+          <a href="modindex.html" title="Index général des modules"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="format.geo.html" title="Formats de fichiers"
+             >suivant</a> |</li>
+        <li class="right" >
+          <a href="help.html" title="Généralités"
+             >précédent</a> |</li>
+        <li><a href="index.html">Geophar v11.09 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2011, N.Pourcelot.
+      Créé avec <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.4.
+    </div>
+  </body>
+</html>

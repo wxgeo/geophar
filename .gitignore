@@ -54,8 +54,7 @@ tools/isympy_
 tools/strip_whitespace.py
 wxgeometrie/tests/
 ressources_annexes/
-wxgeometrie/developpeurs/
-wxgeometrie/doc/
+wxgeometrie/doc/developpeurs/
 wxgeometrie/exemples/
 wxgeometrie/geolib/FICHIER param A CREER
 wxgeometrie/geolib/librairies.dia

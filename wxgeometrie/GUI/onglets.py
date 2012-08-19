@@ -620,7 +620,7 @@ border-top-right-radius: 4px;
             geolib.contexte[parametre] = getattr(param, parametre)
 
     def Aide(self):
-        open_new_tab(path2("%/wxgeometrie/doc/help.htm"))
+        open_new_tab(path2("%/wxgeometrie/doc/html/index.html"))
 
     def Notes(self):
         self.notes = Notes(self)
