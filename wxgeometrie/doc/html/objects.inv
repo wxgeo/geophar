@@ -1443,7 +1443,6 @@ wxgeometrie.API.canvas.Canvas.dpix2coo method autodoc.html
 wxgeometrie.geolib.objet.souffler function autodoc.html
 wxgeometrie.geolib.routines.direction_droite function autodoc.html
 wxgeometrie.initialisation.SortiesMultiples.write method autodoc.html
-center class help.html
 wxgeometrie.GUI.wxlib.ColorSelecter.colorSelected attribute autodoc.html
 wxgeometrie.geolib.feuille.Feuille.effacer method autodoc.html
 wxgeometrie.GUI.barre_outils.BarreOutils.demiplan method autodoc.html

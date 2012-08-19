@@ -14,6 +14,9 @@ Architecture du programme
 
 Ce schéma n'est pas du tout exhaustif, mais il permet d'avoir une vision d'ensemble du programme.
 
+.. image:: img/api.png
+   :alt: schéma API
+   :align: center
 
 ============================
 Comment écrire une extension
@@ -53,7 +56,7 @@ from GUI import *
 
 Bien entendu, ces lignes doivent se trouver au début du fichier.
 
-Une classe héritée de MenuBar 
+Une classe héritée de MenuBar
 -----------------------------
 
 Cette classe, définie dans API/menu.py, servira à construire le menu.
@@ -176,7 +179,7 @@ L'import des librairies standards de WxGéométrie
 
 Bien entendu, ces lignes doivent se trouver au début du fichier.
 
-Une classe héritée de MenuBar 
+Une classe héritée de MenuBar
 --------------------------------
 
 Par rapport au panel simple, un plus grand nombre de menus sont prédéfinis.
@@ -195,7 +198,7 @@ Les premières lignes sont les suivantes :
 
 .. sourcecode:: python
 
-    class Traceur(Panel_API_graphique):    
+    class Traceur(Panel_API_graphique):
     __titre__ = "Traceur de courbes" # Donner un titre a chaque module
 
     def __init__(self, parent):

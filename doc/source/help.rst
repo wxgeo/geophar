@@ -1,19 +1,13 @@
-***********
-Généralités
-***********
+***********************
+Manuel de l'utilisateur
+***********************
 .. image:: img/logo.png
     :alt: Géophar
     :align: center
 
-.. class:: center
-
 « Le couteau-suisse du prof de maths. »
 
-.. class:: center
-
 *Copyright © 2005-2012 Nicolas Pourcelot*
-
-.. class:: center
 
 Informations complémentaires : http://wxgeo.free.fr__
 
@@ -62,7 +56,7 @@ Installation
 
 Pour fonctionner, ce programme nécessite la configuration logicielle suivante:
 
--   Windows XP ou supérieur, ou une distribution Linux récente. 
+-   Windows XP ou supérieur, ou une distribution Linux récente.
 
     *L'installation sous MacOs X est possible mais un peu  technique semble-t-il*.
 
@@ -75,7 +69,7 @@ Pour fonctionner, ce programme nécessite la configuration logicielle suivante:
     *Sous Linux, une version récente est en principe déjà présente*.
 
     +   La librairie graphique PyQt__, version 4.6 ou supérieure.
-    
+
     .. __: http://www.riverbankcomputing.co.uk/software/pyqt/download
 
     + La librairie mathématique numpy__
@@ -83,7 +77,7 @@ Pour fonctionner, ce programme nécessite la configuration logicielle suivante:
     .. __: http://sourceforge.net/projects/numpy/
 
     +   La librairie mathématique Matplotlib__, version 1.0 ou supérieure
-    
+
     .. __: http://www.sourceforge.net/projects/matplotlib
 
 
@@ -107,9 +101,9 @@ Cette version peut fonctionner facilement sur une simple clé USB, ou sur un ord
 
 
 
-============
-Premiers pas
-============
+==================================
+Description des différents modules
+==================================
 
 
 
@@ -120,7 +114,7 @@ Géophar est composée de plusieurs modules ; il contient entre autres les modul
 -   Une calculatrice formelle.
 -   Un module graphique de statistiques.
 -   Un générateur d'arbres de probabilités.
--   Un générateur 
+-   Un générateur
 
 Les autres modules présents sont fournis à titre expérimental, et ne sont donc pas documentés ici.
 
@@ -150,8 +144,8 @@ Vous pouvez pour l'instant faire les actions suivantes :
 
 Utilisation de la souris pour piloter le logiciel :
 
--   Laissez enfoncé le bouton droit de la souris pour déplacer la figure.
--   La molette de la souris permet de zoomer sur la figure.
+-   Laissez enfoncé le *bouton droit* de la souris pour *déplacer la figure*.
+-   La *molette* de la souris permet de *zoomer* sur la figure.
 -   En laissant enfoncée la touche [Ctrl], la molette de la souris permet
     d'ajuster la taille des textes de la figure.
 -   Laissez enfoncée la touche [Ctrl], et le bouton gauche de la souris,
@@ -165,14 +159,14 @@ Utilisation de la souris pour piloter le logiciel :
     [Maj] + [Suppr] pour le masquer .
 -   Si vous créez un point libre en laissant la touche [Maj] enfoncée, le
     point se placera sur le quadrillage.
--   Vous pouvez déplacer le nom d'un point autour de celui-ci en cliquant
+-   Vous pouvez *déplacer le nom d'un point* autour de celui-ci en cliquant
     dessus, la touche [Alt] étant enfoncée.
 
-Note:
+.. warning::
 
-Sous Ubuntu, la touche [Alt] est déjà utilisée pour déplacer la fenêtre. Il
-est conseillé de modifier ce comportement : dans Système>Préférence>Fenêtres,
-choisir "Super" comme "touche de mouvement".
+    Sous *Ubuntu*, la touche [Alt] est déjà utilisée pour déplacer la fenêtre. Il
+    est conseillé de modifier ce comportement : dans Système>Préférence>Fenêtres,
+    choisir "Super" comme "touche de mouvement".
 
 Création d'objets via le menu «Créer»
 -------------------------------------
@@ -186,9 +180,10 @@ champ, pour obtenir une aide détaillée.
 En cliquant avec le bouton du milieu de la souris dans un champ, vous ferez
 également apparaitre diverses propositions.
 
-Vous pouvez utiliser les notations suivantes : ``[A B]`` pour le segment [AB], ``(A B)`` pour la droite (AB), ``(A>B)`` pour le vecteur A→B, ``||A>B||`` pour sa norme.
+Vous pouvez utiliser les notations suivantes : ``[A B]`` pour le segment [AB], ``(A B)`` pour la droite (AB), ``(A>B)`` pour le vecteur
+:math:`\overrightarrow{AB}`, ``||A>B||`` pour sa norme.
 
-*Remarquez l'espace entre les lettres « A » et « B » dans les deux premiers cas.*
+.. note:: Remarquez l'espace entre les lettres « A » et « B » dans les deux premiers cas.
 
 
 Choisir le mode d'affichage de l'étiquette d'un objet
@@ -200,7 +195,7 @@ texte, formule, ou aucun.
 
 .. image:: img/ptes_objets.png
     :alt: "Fenêtre de propriété"
-    :align: center 
+    :align: center
 
 
 Que signifient ces 4 modes ?
@@ -220,7 +215,7 @@ Que signifient ces 4 modes ?
 
     *Exemple :*
 
-    « ``$\alpha_{n}$`` »
+    « ``$\alpha_{n}$`` » pour :math:`\alpha_n`
 
 -   Mode « Formule » : le texte affiché est interprété comme une formule.
     On peut aussi mélanger du texte interprété et non interprété, en mettant les
@@ -250,7 +245,7 @@ Voici quelques exemples qui parleront mieux qu'un long discours...
 
 
 1.  « ``A=Point(1,2)`` » ou « ``A=(1,2)`` »
- 
+
     Création d'un point A de coordonnées (1 ; 2).
 
 2.  « ``u=Vecteur(1,2)`` » ou « ``u=(1,2)`` »
@@ -263,7 +258,7 @@ Voici quelques exemples qui parleront mieux qu'un long discours...
 
     *Attention à l'espace entre les lettres dans le deuxième cas.*
 
-4.  « ``d=Droite(A,B)` » ou « ``d=(A B)`` »
+4.  « ``d=Droite(A,B)`` » ou « ``d=(A B)`` »
 
     Création de la droite (AB).
 
@@ -271,11 +266,11 @@ Voici quelques exemples qui parleront mieux qu'un long discours...
 
 5.  « ``u=Vecteur(A,B)`` » ou « ``u=A>B`` »
 
-    Création du vecteur A→B.
+    Création du vecteur :math:`\overrightarrow{AB}`.
 
 6.  « ``M=C+2*(A>B)`` »
 
-    Création du point M vérifiant C→M = 2 A→B.
+    Création du point M vérifiant :math:`\overrightarrow{CM}=2\overrightarrow{AB}`.
 
     *Les parenthèses sont obligatoires.*
 
@@ -316,7 +311,7 @@ Le traceur de courbes supporte les fonctions définies par morceau, continues ou
        :alt: [V] Y1= [ 1/x ] sur [ R-{0} ]
        :align: center
 
-   *Notes* : 
+   *Commentaires* :
 
    vous remplissez le premier champ avec `1/x` (la fonction), le
    deuxième avec l'intervalle de définition, c'est-à-dire `R-{0}`.
@@ -335,7 +330,7 @@ Le traceur de courbes supporte les fonctions définies par morceau, continues ou
         :align: center
 
 
-   *Notes* : 
+   *Commentaires* :
 
    On commence par remplir le 1er champ avec la fonction.
 
@@ -349,9 +344,9 @@ Le traceur de courbes supporte les fonctions définies par morceau, continues ou
         :alt: Graphe d'une fonction affine par morceaux.
         :align: center
 
-*Nota :*
+.. note::
 
-Pour changer les propriétés d'une courbe (couleur, style de tracé...), faites un clic droit dessus.
+    Pour changer les propriétés d'une courbe (couleur, style de tracé...), faites un clic droit dessus.
 
 
 La calculatrice
@@ -373,28 +368,29 @@ En particulier, on peut développer, factoriser, dériver, intégrer, et résoud
 
 
 
-*Nota 1* : Pour obtenir le résultat d'un calcul sous forme décimale (calcul
-approché), appuyez sur MAJ+ENTRÉE au lieu de ENTRÉE.
+.. note:: Pour obtenir le résultat d'un calcul sous forme décimale (calcul
+          approché), appuyez sur MAJ+ENTRÉE au lieu de ENTRÉE.
 
-*Nota 2* : On peut faire apparaitre la liste des fonctions par un clic-droit
-dans la zone de saisie, en laissant enfoncée la touche CTRL.
+..note:: On peut faire apparaitre la liste des fonctions par un clic-droit
+         dans la zone de saisie, en laissant enfoncée la touche CTRL.
 
 Depuis la version 0.120, elle utilise la librairie de calcul formel sympy *(© 2006-2012 SymPy Development Team)*.
 
 Des variables peuvent être utilisées pour mémoriser des valeurs, ou définir des fonctions.
 
 *Exemples*:
+
 -   ``a = 25+7/4``
 -   ``f(x)=2x+17``
 -   ``g=f'``
 
-Ici, la fonction g est définie comme la dérivée de la fonction f.
+Ici, la fonction `g` est définie comme la dérivée de la fonction `f`.
 
 
 
 
 
-Notez que certaines variables sont protégées (i, e ou E, pi, ...).
+..note:: Certaines variables sont protégées (i, e ou E, pi, ...).
 
 
 Le module statistiques
@@ -444,7 +440,8 @@ Le résultat est le suivant :
 Diagrammes en bâtons :
 ----------------------
 
-*Utilisés pour des séries à caractère quantitatif discret.
+*Utilisés pour des séries à caractère quantitatif discret.*
+
 *Exemple :* la répartition des pointures de chaussures chez les femmes
 françaises adultes (2005).
 
@@ -471,6 +468,7 @@ Histogrammes :
 --------------
 
 Utilisés pour des séries à caractère quantitatif continu.
+
 On va reprendre l'exemple précédent, en regroupant les pointures par classe.
 
 On sélectionne le mode :
@@ -505,15 +503,15 @@ Pour aller plus loin :
 
     .. image:: img/stats_avance.png
               :align: center
-    
 
--   La génération de listes est également possible. 
+
+-   La génération de listes est également possible.
 
     La syntaxe est celle de Python (cf. `list comprehensions`__ dans la documentation de Python).
 
-.. __: http://docs.python.org/tutorial/datastructures.html#list-comprehensions
+    .. __: http://docs.python.org/tutorial/datastructures.html#list-comprehensions
 
-Essayez par exemple de rentrer cette formule : ``[(rand(),i) for i in range(4)]``.
+    Essayez par exemple de rentrer cette formule : ``[(rand(),i) for i in range(4)]``.
 
 -   Dans `Outils`, trois sous-menus permettent de créer des expériences aléatoires.
 
@@ -530,24 +528,27 @@ Essayez par exemple de rentrer cette formule : ``[(rand(),i) for i in range(4)]`
 
     Entrez la formule correspondant à la variable aléatoire dans le champ « *Experience* », et le nombre d'expériences.
 
-Par exemple, on peut simuler de la sorte 6 lancers de dés :
+    Par exemple, on peut simuler de la sorte 6 lancers de dés :
 
-.. image:: img/stats_experience.png
-    :align: center
+    .. image:: img/stats_experience.png
+        :align: center
 
-Éventuellement, entrez aussi les valeurs possibles . Pour un lancer de dé par exemple, cela permet d'afficher en légende 1, 2, 3, 4, 5 et 6, quand bien même aucun « 4 » ne sortirait lors de l'expérience.
+    Éventuellement, entrez aussi les valeurs possibles . Pour un lancer de dé par exemple, cela permet d'afficher en légende 1, 2, 3, 4, 5 et 6, quand bien même aucun « 4 » ne sortirait lors de l'expérience.
+
+..note::
+
+    Pour simuler des lancers de dés, mieux vaut utiliser le menu spécialement dédié (quelques optimisations y ont été faites).
+
+    La case « lancer une animation » n'a pas d'effet pour l'instant.
 
 
-*Nota:*
+..note::
 
-N'hésitez pas à éditer le fichier *experience.py* dans
-*modules/statistiques*/, et à y ajouter de nouvelles fonctions.
+    Vous pouvez éditer le fichier *experience.py* dans
+    *modules/statistiques*/, pour y ajouter de nouvelles fonctions.
 
 
-*Notes :*
 
-- Pour simuler des lancers de dés, mieux vaut utiliser le menu spécialement dédié (quelques optimisations y ont été faites).
-- La case « lancer une animation » n'a pas d'effet pour l'instant.
 
 
 
@@ -589,9 +590,10 @@ Les arbres de probabilité sont codés de la manière suivante :
     >> J:...
     >> V:...
 
-Le **symbole &** indique qu'il s'agit de l'évènement contraire : &A est ainsi
+Le **symbole &** indique qu'il s'agit de l'évènement contraire : ``&A`` est ainsi
 l'évènement «A barre».
-*(Note : la syntaxe LaTeX est également acceptée).*
+
+.. note:: la syntaxe LaTeX est également acceptée.
 
 
 
@@ -624,7 +626,7 @@ Si le logiciel n'arrive pas à déterminer les variations de la fonction, ou si 
 
 *Exemple :*
 
-1. ``f: (-oo;-oo) << (5;8) >> (+oo;0)`` 
+1. ``f: (-oo;-oo) << (5;8) >> (+oo;0)``
 
     La fonction `f` a pour limite `-oo` en `-oo`, elle est ensuite croissante jusqu'en 5 (qui a pour image 8), puis décroissante jusqu'en `+oo` (limite `0`).
 
@@ -633,7 +635,7 @@ Si le logiciel n'arrive pas à déterminer les variations de la fonction, ou si 
     Résultat avec l'option « dérivée » décochée :
 
     .. image:: img/tabvar_f.png
-        :align: center 
+        :align: center
 
 2. ``g:(-oo;+oo) >> (2;3;0) >> (4;-oo|+oo) >> (10;0|)``
 
@@ -741,7 +743,7 @@ Débogage
 ========
 
 Dans le menu *Avancé>Déboguer*, sélectionner « *Déboguer* » pour faire apparaître
-une fenêtre contenant entre autres tous les rapports d'erreurs. 
+une fenêtre contenant entre autres tous les rapports d'erreurs.
 
 Par ailleurs,
 le répertoire */log* contient les fichiers .log générés lors de la dernière
@@ -758,7 +760,7 @@ La ligne de commande sert essentiellement à débuguer le programme.
 La ligne de commande permet d'exécuter des instructions Python.
 
 Précédé du symbole **&**, le résultat de la commande sera affiché dans la
-console. 
+console.
 
 (*NB* : assurez-vous au prélable que l'option « Déboguer » soit
 cochée, dans le menu Avancé>Déboguer).
@@ -794,13 +796,13 @@ et donc de faire un tour dans le code source.
 
    Exporte la figure courante en un fichier *test.png*.
 
-   *NB :* Forme abrégée : « !p.exporter('test.png') ».
+   *NB :* Forme abrégée : « ``!p.exporter('test.png')`` ».
 
 4) « ``feuille.fenetre = (-5,2,-7,3)`` »
 
    Change la fenêtre d'affichage en (-5, 2, -7, 3).
 
-   *NB :* Forme abrégée : « !f.fenetre = (-5,2,-7,3) ».
+   *NB :* Forme abrégée : « ``!f.fenetre = (-5,2,-7,3)`` ».
 
 
 ====================
@@ -827,7 +829,7 @@ Comment contribuer ?
 
 -   **compléter cette documentation ou créer un tutoriel** (je manque de
     temps pour tout faire !).
-    
+
     N'hésitez pas à compléter le wiki__.
 
     .. __: http://www.maths.ac-aix-marseille.fr/webphp/wiki/index.php/Accueil#Aide_WxG.C3.A9om.C3.A9trie.2FG.C3.A9ophar
@@ -852,20 +854,20 @@ Une liste plus complète de suggestions est disponible sur le wiki__.
         + guides utilisateurs, etc.
 
     -   le fonctionnement sous MacOs X (je n'ai pas de Mac)
-        
+
         + retours d'expérience
         + tutoriels
         + aides à l'installation
 
-    Jean-Pierre Garcia a commencé un travail en ce sens.
+        Jean-Pierre Garcia a commencé un travail en ce sens.
 
 
 2.  des personnes intéressées par la construction de nouveaux modules
     pour WxGéométrie/Géophar.
 
-    Je pense en particulier à des professeurs de mathématiques qui auraient des 
-    compétences en programmation objet (mais pas nécessairement en Python : 
-    Python en lui-même s'apprend très rapidement si l'on a déjà l'habitude 
+    Je pense en particulier à des professeurs de mathématiques qui auraient des
+    compétences en programmation objet (mais pas nécessairement en Python :
+    Python en lui-même s'apprend très rapidement si l'on a déjà l'habitude
     de programmer).
 
 
@@ -873,7 +875,7 @@ Une liste plus complète de suggestions est disponible sur le wiki__.
     suggestions. Toutes les critiques suffisamment précises sont bonnes à
     prendre. ;-)
 
-4.  une ou des personnes pour améliorer le site internet de WxGéométrie/Géophar
+4.  une ou des personnes pour améliorer le **site internet** de WxGéométrie/Géophar
 
 
 
