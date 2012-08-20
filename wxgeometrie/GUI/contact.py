@@ -72,7 +72,7 @@ vous êtes invités à signaler tout problème rencontré.</i>""", panel)
 
         sizer= QHBoxLayout()
         self.modules = modules = QComboBox(panel)
-        modules.addItems([parent.onglet(md).__titre__ for md in param.modules if hasattr(self.parent.onglet(md), "__titre__")])
+        modules.addItems([parent.onglet(md).titre for md in param.modules if hasattr(self.parent.onglet(md), "titre")])
         modules.setCurrentIndex(self.parent.currentIndex())
         sizer.addWidget(QLabel(u"Module concerné :", panel))
         sizer.addWidget(modules)

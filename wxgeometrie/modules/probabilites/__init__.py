@@ -70,7 +70,7 @@ class ProbaMenuBar(MenuBar):
 
 class Probabilites(Panel_API_graphique):
 
-    __titre__ = u"Arbre de probabilités" # Donner un titre a chaque module
+    titre = u"Arbre de probabilités" # Donner un titre a chaque module
 
     def __init__(self, *args, **kw):
         Panel_API_graphique.__init__(self, *args, **kw)

@@ -54,7 +54,7 @@ class EqMenuBar(ExerciceMenuBar):
 
 class ExercicesEquationsDroites(Exercice):
 
-    __titre__ = u"Équations de droites" # Donner un titre a chaque module
+    titre = u"Équations de droites" # Donner un titre a chaque module
 
     def __init__(self, *args, **kw):
         Exercice.__init__(self, BarreOutils = BarreOutilsExEqDte, *args, **kw)

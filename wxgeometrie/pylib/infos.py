@@ -38,15 +38,15 @@ except Exception:
 
 class dossier(object):
     def __init__(self, titre):
-        self.__titre__ = titre
+        self.titre = titre
 
     def contenu(self):
         l = []
-        l.append("+ " + self.__titre__ + ":")
+        l.append("+ " + self.titre + ":")
         if hasattr(self, "version"):
             l.append("     Version: " + self.version)
         for key in self.__dict__:
-            if key not in ("__titre__", "version"):
+            if key not in ("titre", "version"):
                 l.append("     %s:  %s" %(key.capitalize(), getattr(self, key)))
         return "\n".join(l) + "\n\n"
 

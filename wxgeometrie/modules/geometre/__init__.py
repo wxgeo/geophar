@@ -44,7 +44,7 @@ class GeometreMenuBar(MenuBar):
 
 class Geometre(Panel_API_graphique):
 
-    __titre__ = u"Géométrie dynamique" # Donner un titre à chaque module
+    titre = u"Géométrie dynamique" # Donner un titre à chaque module
 
     def __init__(self, *args, **kw):
         Panel_API_graphique.__init__(self, *args, **kw)

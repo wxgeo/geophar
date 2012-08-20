@@ -753,13 +753,13 @@ def %(_nom_)s(self, valeur = no_argument):
             s = "Actualisation"
             if self.feuille_actuelle._repere_modifie:
                 s += " complete"
-            print s + str(_n) + ": " + self.parent.__titre__
+            print s + str(_n) + ": " + self.parent.titre
             _n[0] += 1
         # </DEBUG>
         if 0 in self.dimensions:
             # Fenêtre pas encore affichée (initialisation du programme).
             if param.debug:
-                print u"Actualisation différée (fenêtre non chargée : " + self.parent.__titre__ + ")"
+                print u"Actualisation différée (fenêtre non chargée : " + self.parent.titre + ")"
             return
         try:
             self.graph.dessiner(dessin_temporaire = self._dessin_temporaire,

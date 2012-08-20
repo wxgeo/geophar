@@ -154,7 +154,7 @@ class Panel_simple(QWidget):
                 return param._parametres_par_defaut[parametre]
             return getattr(param, parametre)
         else:
-            debug(u"Module %s: Paramètre %s introuvable." %(self.__titre__, parametre))
+            debug(u"Module %s: Paramètre %s introuvable." %(self.titre, parametre))
 
 
     def sauver_preferences(self, lieu = None):

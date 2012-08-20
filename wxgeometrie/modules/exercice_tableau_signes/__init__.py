@@ -53,7 +53,7 @@ class TabMenuBar(ExerciceMenuBar):
 
 class ExercicesTableauxSignes(Exercice):
 
-    __titre__ = u"Tableaux de signes" # Donner un titre a chaque module
+    titre = u"Tableaux de signes" # Donner un titre a chaque module
 
 
     def niveau1(self):

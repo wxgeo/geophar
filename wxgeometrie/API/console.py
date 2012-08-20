@@ -70,7 +70,7 @@ class Console:
 #        if param.debug:
 #            self.parent.onglets.onglet_actuel.action_effectuee(u"REQUETE CONSOLE:" + commande)
 #            print u"REQUETE CONSOLE:" + commande
-        print(u"REQUETE CONSOLE [" + self.parent.onglets.onglet_actuel.__titre__ + "]:\n>>> " + commande)
+        print(u"REQUETE CONSOLE [" + self.parent.onglets.onglet_actuel.titre + "]:\n>>> " + commande)
 
         self.locals.update({'panel': self.parent.onglets.onglet_actuel,
                   'canvas': self.parent.onglets.onglet_actuel.canvas,

@@ -83,7 +83,7 @@ class TLineEdit(QLineEdit):
 
 class Traceur(Panel_API_graphique):
 
-    __titre__ = u"Traceur de courbes" # Donner un titre a chaque module
+    titre = u"Traceur de courbes" # Donner un titre a chaque module
 
     def __init__(self, *args, **kw):
         Panel_API_graphique.__init__(self, *args, **kw)

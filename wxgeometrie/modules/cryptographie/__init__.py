@@ -105,7 +105,7 @@ class CryptographieMenuBar(MenuBar):
 
 
 class Cryptographie(Panel_simple):
-    __titre__ = u"Cryptographie" # Donner un titre à chaque module
+    titre = u"Cryptographie" # Donner un titre à chaque module
 
     def __init__(self, *args, **kw):
         Panel_simple.__init__(self, *args, **kw)

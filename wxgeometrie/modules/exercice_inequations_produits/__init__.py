@@ -71,7 +71,7 @@ class TabMenuBar(MenuBar):
 
 class ExercicesTableauxSignes(Panel_API_graphique):
 
-    __titre__ = u"Tableaux de signes" # Donner un titre a chaque module
+    titre = u"Tableaux de signes" # Donner un titre a chaque module
 
     def __init__(self, *args, **kw):
         Panel_API_graphique.__init__(self, *args, **kw)

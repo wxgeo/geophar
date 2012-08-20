@@ -110,7 +110,7 @@ class StatMenuBar(MenuBar):
 
 class Statistiques(Panel_API_graphique):
 
-    __titre__ = u"Statistiques" # Donner un titre a chaque module
+    titre = u"Statistiques" # Donner un titre a chaque module
 
     types_diagrammes = ('barres', 'batons', 'histogramme', 'cumul_croissant', 'cumul_decroissant', 'bandes', 'circulaire', 'semi-circulaire', 'boite')
     noms_diagrammes = [u"diagramme en barres", u"diagramme en batons", u"histogramme", u"effectifs cumulés croissants", u"effectifs cumulés décroissants", u"diagramme en bandes", u"diagramme circulaire", u"diagramme semi-circulaire", u"diagramme en boite"]

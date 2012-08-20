@@ -80,7 +80,7 @@ class CalculatriceMenuBar(MenuBar):
 
 
 class Calculatrice(Panel_simple):
-    __titre__ = u"Calculatrice" # Donner un titre a chaque module
+    titre = u"Calculatrice" # Donner un titre a chaque module
 
     def __init__(self, *args, **kw):
         Panel_simple.__init__(self, *args, **kw)

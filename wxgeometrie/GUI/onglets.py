@@ -173,10 +173,10 @@ border-top-right-radius: 4px;
         u"Ajouter un nouvel onglet à la position 'i'."
         if i is None:
             self._liste.append(panel)
-            self.addTab(panel, panel.__titre__)
+            self.addTab(panel, panel.titre)
         else:
             self._liste.insert(i, panel)
-            self.insertTab(i, panel, panel.__titre__)
+            self.insertTab(i, panel, panel.titre)
         setattr(self, panel.module._nom_, panel)
         if self.count() > 1:
             self.closeTabButton.setEnabled(True)

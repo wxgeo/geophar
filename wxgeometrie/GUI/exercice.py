@@ -67,7 +67,7 @@ class ExerciceMenuBar(MenuBar):
 
 class Exercice(Panel_API_graphique):
 
-    __titre__ = u"Exercice" # À adapter pour chaque module
+    titre = u"Exercice" # À adapter pour chaque module
 
     def __init__(self, *args, **kw):
         Panel_API_graphique.__init__(self, *args, **kw)

@@ -68,7 +68,7 @@ class GraphesMenuBar(MenuBar):
 
 class Graphes(Panel_API_graphique):
 
-    __titre__ = u"Graphes" # Donner un titre à chaque module
+    titre = u"Graphes" # Donner un titre à chaque module
     #_param_ = _param_
 
     def __init__(self, *args, **kw):
