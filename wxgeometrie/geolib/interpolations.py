@@ -61,7 +61,7 @@ class Interpolation_generique(Courbe_generique):
         if debut is True:
             plot.set_data((x,), (y,))
             plot.set(visible=True, color=couleur, marker="o", markeredgecolor=couleur,
-                     markersize=2*self.__canvas__.taille["o"], linewidth=epaisseur)
+                     markersize=2*self.canvas.taille["o"], linewidth=epaisseur)
             plot.zorder = niveau
         elif debut is False:
             arc = self.rendu.arc(x, y, vec_deb)
@@ -80,7 +80,7 @@ class Interpolation_generique(Courbe_generique):
         if fin is True:
             plot.set_data((x,), (y,))
             plot.set(visible=True, color=couleur, marker="o", markeredgecolor=couleur,
-                     markersize=2*self.__canvas__.taille["o"], linewidth=epaisseur)
+                     markersize=2*self.canvas.taille["o"], linewidth=epaisseur)
             plot.zorder = niveau
         elif fin is False:
             arc = self.rendu.arc(x, y, vec_fin)
@@ -126,7 +126,7 @@ class Interpolation_lineaire(Interpolation_generique):
         if n < 2:
             return
 
-        pas = self.__canvas__.pas()
+        pas = self.canvas.pas()
 
         for i in xrange(n - 1):
             plot = self._representation[i]
@@ -194,7 +194,7 @@ class Interpolation_quadratique(Interpolation_generique):
         if n < 2:
             return
 
-        pas = self.__canvas__.pas()
+        pas = self.canvas.pas()
         t = fullrange(0, 1, pas)
         for i in xrange(n - 1):
             plot = self._representation[i]
@@ -257,7 +257,7 @@ class Interpolation_cubique(Interpolation_generique):
         if n < 2:
             return
 
-        pas = self.__canvas__.pas()
+        pas = self.canvas.pas()
         t = fullrange(0, 1, pas)
         for i in xrange(n - 1):
             plot = self._representation[i]

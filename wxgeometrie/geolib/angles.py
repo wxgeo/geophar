@@ -133,8 +133,8 @@ class Secteur_angulaire(Angle_generique):
             ang = self.rendu.angle()
             self._representation = [ang, self.rendu.codage_angle(angle_associe=ang)]
 
-        u = self.__canvas__.dcoo2pix(*self.__vecteur1)
-        v = self.__canvas__.dcoo2pix(*self.__vecteur2)
+        u = self.canvas.dcoo2pix(*self.__vecteur1)
+        v = self.canvas.dcoo2pix(*self.__vecteur2)
         i = (1, 0)
         a = angle_vectoriel(i, v)
         b = angle_vectoriel(i, u)
@@ -177,7 +177,7 @@ class Secteur_angulaire(Angle_generique):
         #print (x - x0)**2 + (y - y0)**2
         if (x - x0)**2 + (y - y0)**2 > (param.codage["rayon"] + d)**2:
             return False
-        x, y = self.__canvas__.pix2coo(x, y)
+        x, y = self.canvas.pix2coo(x, y)
         x0, y0 = self.__point.coordonnees
         u = (x - x0, y - y0)
         if abs(u[0]) + abs(u[1]) < contexte['tolerance']:

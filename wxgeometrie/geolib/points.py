@@ -159,7 +159,7 @@ class Point_generique(Objet_avec_coordonnees):
     def relier_axe_x(self):
         if self.feuille is not None:
             from .lignes import Segment
-            with self.__canvas__.geler_affichage(actualiser = True):
+            with self.canvas.geler_affichage(actualiser = True):
                 M = Point("%s.x" %self.nom, 0, fixe = True)
                 M.label("${%s.x}$" %self.nom, formule = True)
                 s = Segment(self, M, style = ":")
@@ -169,7 +169,7 @@ class Point_generique(Objet_avec_coordonnees):
     def relier_axe_y(self):
         if self.feuille is not None:
             from .lignes import Segment
-            with self.__canvas__.geler_affichage(actualiser = True):
+            with self.canvas.geler_affichage(actualiser = True):
                 M = Point(0, "%s.y" %self.nom, fixe = True)
                 M.label("${%s.y}$" %self.nom, formule = True)
                 s = Segment(self, M, style = ":")
@@ -179,7 +179,7 @@ class Point_generique(Objet_avec_coordonnees):
 
     def relier_axes(self):
         if self.feuille is not None:
-            with self.__canvas__.geler_affichage(actualiser = True):
+            with self.canvas.geler_affichage(actualiser = True):
                 self.relier_axe_x()
                 self.relier_axe_y()
 

@@ -124,7 +124,7 @@ class Texte_generique(Objet_avec_coordonnees):
 
     def _boite(self):
         # Note : ymin et ymax "permutent" souvent car les transformations appliquées inversent l'orientation.
-        can = self.__canvas__
+        can = self.canvas
         l, h = can.dimensions
         box = can.txt_box(self.figure[0])
         xmin = box.xmin
@@ -137,7 +137,7 @@ class Texte_generique(Objet_avec_coordonnees):
         # Note : ymin et ymax "permutent" souvent car les transformations appliquées inversent l'orientation.
         if not self.label():
             return
-        can = self.__canvas__
+        can = self.canvas
         _xmin, _xmax, _ymin, _ymax = self._boite()
         xmin, ymin = can.pix2coo(_xmin, _ymax)
         xmax, ymax = can.pix2coo(_xmax, _ymin)

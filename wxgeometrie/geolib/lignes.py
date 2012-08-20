@@ -174,7 +174,7 @@ class Ligne_generique(Objet_avec_equation):
         """
         # Attention, il faut impérativement récupérer la fenêtre **sur le canevas**,
         # dans le cas d'un repère orthonormé.
-        xmin, xmax, ymin, ymax = self.__canvas__.fenetre
+        xmin, xmax, ymin, ymax = self.canvas.fenetre
         eps = contexte['tolerance']
         dx = eps*(xmax - xmin)
         dy = eps*(ymax - ymin)
@@ -960,7 +960,7 @@ class DemiPlan(Objet_avec_equation):
         plot, fill = self._representation
         points = self._points_extremes()
         couleur, niveau = self.style(('couleur', 'niveau'))
-        xmin, xmax, ymin, ymax = self.__canvas__.fenetre
+        xmin, xmax, ymin, ymax = self.canvas.fenetre
         coins = [(xmin, ymin), (xmin, ymax), (xmax, ymin), (xmax, ymax)]
         sommets = [coin for coin in coins if (coin in self)]
 
@@ -1130,13 +1130,13 @@ class Axe(Droite):
         # Autrement dit, le repère n'étant pas forcément orthonormé, il faut
         # travailler **en pixels**.
         # La norme (en pixels également) est fixée par le style `hauteur`.
-        pxu, pyu = self.__canvas__.dcoo2pix(xu, yu)
+        pxu, pyu = self.canvas.dcoo2pix(xu, yu)
         pnorm = hypot(pxu, pyu)
         k = .5*self.style('hauteur')/pnorm
         # Vecteur normal à (pxu, pyu) :
         pxv, pyv = k*pyu, -k*pxu
         # On retourne au système de coordonnées.
-        xv, yv = self.__canvas__.dpix2coo(pxv, pyv)
+        xv, yv = self.canvas.dpix2coo(pxv, pyv)
 
         segments = []
         ##print ':::', xO, n, xu, xO+n*xu
@@ -1179,7 +1179,7 @@ class Axe(Droite):
         # On choisit également le placement avec `self.style('placement_num')`
         # (qui vaut -1 ou 1).
         coeff = self.style('placement_num')*(pvnorm + 2 + .5*taille)/pvnorm
-        xw, yw = self.__canvas__.dpix2coo(coeff*pxv, coeff*pyv)
+        xw, yw = self.canvas.dpix2coo(coeff*pxv, coeff*pyv)
 
         while xmin < x < xmax:
             txt = self.rendu.texte(x + xw, y + yw, nice_display(n*pas),

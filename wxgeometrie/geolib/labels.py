@@ -73,11 +73,11 @@ class Label_generique(Texte_generique):
 
     def _epix2coo(self, x, y):
         u"Conversion des écarts de pixels en écarts de coordonnées."
-        return self.__canvas__.coeff(0)*x, self.__canvas__.coeff(1)*y
+        return self.canvas.coeff(0)*x, self.canvas.coeff(1)*y
 
     def _ecoo2pix(self, x, y):
         u"Conversion des écarts de coordonnées en écarts de pixels."
-        return x/self.__canvas__.coeff(0), y/self.__canvas__.coeff(1)
+        return x/self.canvas.coeff(0), y/self.canvas.coeff(1)
 
     def _get_coordonnees(self):
         raise NotImplementedError    # sera implemente differemment pour chaque type de label

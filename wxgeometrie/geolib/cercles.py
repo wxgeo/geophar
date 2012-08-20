@@ -83,7 +83,7 @@ class Cercle_Arc_generique(Objet_avec_equation):
 
     def _distance_inf(self, x, y, d): # à surclasser pour les arcs
         x0, y0 = self._pixel(self.__centre)
-        rx, ry = self.__canvas__.dcoo2pix(self.rayon, self.rayon)
+        rx, ry = self.canvas.dcoo2pix(self.rayon, self.rayon)
         rx = abs(rx) ; ry = abs(ry)
         if x0 - rx - d < x < x0 + rx + d and y0 - ry - d < y < y0 + ry + d:
             return carre_distance_point_ellipse((x0, y0), rx, ry, (x, y), epsilon = .000001) < d**2
@@ -150,7 +150,7 @@ class Arc_generique(Cercle_Arc_generique):
         # On travaille avec les coordonnées de la feuille
         a, b = self._intervalle()
         z0 = self.__centre.z
-        xM, yM = self.__canvas__.pix2coo(x, y)
+        xM, yM = self.canvas.pix2coo(x, y)
         zM = xM + 1j*yM
         if abs(zM - z0) > 10*contexte['tolerance']:
             phi = phase(zM - z0)
@@ -162,8 +162,8 @@ class Arc_generique(Cercle_Arc_generique):
                 zA = z0 + rect(self.rayon, a)
                 zB = z0 + rect(self.rayon, b)
                 # On travaille maintenant avec les coordonnées en pixel
-                _xA, _yA = self.__canvas__.coo2pix(zA.real, zA.imag)
-                _xB, _yB = self.__canvas__.coo2pix(zB.real, zB.imag)
+                _xA, _yA = self.canvas.coo2pix(zA.real, zA.imag)
+                _xB, _yB = self.canvas.coo2pix(zB.real, zB.imag)
                 return min((_xA - x)**2 + (_yA - y)**2, (_xB - x)**2 + (_yB - y)**2) < d**2
         return Cercle_Arc_generique._distance_inf(self, x, y, d)
 
@@ -203,7 +203,7 @@ class Arc_generique(Cercle_Arc_generique):
         w = 3*(xmax - xmin)
         h = 3*(ymax - ymin)
         if xmin - w < x < xmax + w and ymin - h < y < ymax + h:
-            return [fullrange(u, v, self.__canvas__.pas())]
+            return [fullrange(u, v, self.canvas.pas())]
         else:
             # Optimisation dans le cas où le centre est très loin de la fenêtre.
             A = xmin + 1j*ymin
@@ -231,12 +231,12 @@ class Arc_generique(Cercle_Arc_generique):
             if a < v:
                 c = min(b, v)
                 print a, c
-                intersection.append(fullrange(a, c, self.__canvas__.pas()))
+                intersection.append(fullrange(a, c, self.canvas.pas()))
             u += 2*pi
             v += 2*pi
             if b > u:
                 c = min(b, v)
-                intersection.append(fullrange(u, c, self.__canvas__.pas()))
+                intersection.append(fullrange(u, c, self.canvas.pas()))
             return intersection
 
 
@@ -485,7 +485,7 @@ class Cercle_generique(Cercle_Arc_generique):
         w = 3*(xmax - xmin)
         h = 3*(ymax - ymin)
         if xmin - w < x < xmax + w and ymin - h < y < ymax + h:
-            return fullrange(0, 2*pi, self.__canvas__.pas())
+            return fullrange(0, 2*pi, self.canvas.pas())
         else:
             # Optimisation dans le cas où le centre est très loin de la fenêtre.
             A = xmin + 1j*ymin
@@ -501,7 +501,7 @@ class Cercle_generique(Cercle_Arc_generique):
                 assert (a <= 0 and b <= 0 and c >= 0 and d >= 0)
                 a += 2*pi
                 b += 2*pi
-            return arange(min(a, b, c, d), max(a, b, c, d), self.__canvas__.pas())
+            return arange(min(a, b, c, d), max(a, b, c, d), self.canvas.pas())
 
 
     def _creer_figure(self):
@@ -768,7 +768,7 @@ class Disque(Cercle_generique):
         fill = self._representation[0]
         x, y = self._Cercle_generique__centre.coordonnees
         r = self.rayon
-        t = fullrange(0, 2*pi , self.__canvas__.pas())
+        t = fullrange(0, 2*pi , self.canvas.pas())
         fill.xy = zip(x + r*ncos(t), y + r*nsin(t))
         fill._alpha = self.style("alpha")
         fill._color = self.style("couleur")
@@ -782,7 +782,7 @@ class Disque(Cercle_generique):
         return self.__cercle.rayon
 
     def _distance_inf(self, x, y, d):
-        x, y = self.__canvas__.pix2coo(x, y)
+        x, y = self.canvas.pix2coo(x, y)
         return distance(self._Cercle_generique__centre, (x, y)) <= self.rayon
 
     def _contains(self, M):

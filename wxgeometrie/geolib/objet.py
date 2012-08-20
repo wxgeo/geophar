@@ -1190,13 +1190,13 @@ class Objet(object):
 ###################################
 
     @property
-    def __canvas__(self):
+    def canvas(self):
         return self.feuille and self.feuille.canvas
 
     def _pixel(self, point = None):
         if point is None:
             point = self
-        return self.__canvas__.coo2pix(*point.coordonnees_approchees)
+        return self.canvas.coo2pix(*point.coordonnees_approchees)
 
 
     def message(self, message):

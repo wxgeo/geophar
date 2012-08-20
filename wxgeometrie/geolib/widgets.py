@@ -64,7 +64,7 @@ class Bouton(Texte_generique, Objet_avec_coordonnees_modifiables):
         Texte_generique._creer_figure(self)
         text, fill, plot = self._representation
         fill.set_visible(True)
-        can = self.__canvas__
+        can = self.canvas
         box = can.txt_box(text)
         w, h = can.dpix2coo(.5*box.width, -.5*box.height)
         niveau = self.style("niveau")
@@ -97,7 +97,7 @@ class Bouton(Texte_generique, Objet_avec_coordonnees_modifiables):
         Texte_generique._creer_figure(self)
         text, rect = self._representation
         rect.set_visible(True)
-        can = self.__canvas__
+        can = self.canvas
         box = can.txt_box(text)
         w, h = can.dpix2coo(box.width, -box.height)
         niveau = self.style("niveau")
@@ -129,7 +129,7 @@ class Bouton(Texte_generique, Objet_avec_coordonnees_modifiables):
 
     def _boite(self):
         # Note : ymin et ymax "permutent" souvent car les transformations appliquées inversent l'orientation.
-        can = self.__canvas__
+        can = self.canvas
         l, h = can.dimensions
         box = can.txt_box(self.figure[1])
         xmin = box.xmin
@@ -281,7 +281,7 @@ class Champ(Texte):
         if not self._representation:
             self._representation = [self.rendu.texte(), self.rendu.decoration_texte(), self.rendu.texte()]
         Texte._creer_figure(self)
-        can = self.__canvas__
+        can = self.canvas
         box = can.txt_box(self._representation[0])
         px, py = box.max
         x, y = can.pix2coo(px + 5, can.hauteur - py)
