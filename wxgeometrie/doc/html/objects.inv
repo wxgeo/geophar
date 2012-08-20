@@ -7,9 +7,9 @@ wxgeometrie.mathlib.internal_functions mod autodoc.html
 tools.search mod autodoc.html
 wxgeometrie.mathlib.custom_functions mod autodoc.html
 wxgeometrie.mathlib.graphes mod autodoc.html
-wxgeometrie.geolib.wxwidgets mod autodoc.html
 wxgeometrie.geolib.contexte mod autodoc.html
 wxgeometrie.GUI.menu mod autodoc.html
+wxgeometrie.mathlib.intervalles mod autodoc.html
 wxgeometrie.geolib.tests.test_meta mod autodoc.html
 wxgeometrie.geolib.labels mod autodoc.html
 wxgeometrie.geolib.tests.test_intersections mod autodoc.html
@@ -26,11 +26,11 @@ wxgeometrie.geolib.variables mod autodoc.html
 wxgeometrie.geolib.transformations mod autodoc.html
 wxgeometrie.API.canvas mod autodoc.html
 wxgeometrie.geolib.angles mod autodoc.html
-wxgeometrie.mathlib.intervalles mod autodoc.html
+wxgeometrie.GUI.inspecteur mod autodoc.html
 wxgeometrie.GUI.contact mod autodoc.html
 wxgeometrie.API.sauvegarde mod autodoc.html
 wxgeometrie.mathlib.internal_objects mod autodoc.html
-wxgeometrie.GUI.inspecteur mod autodoc.html
+wxgeometrie.geolib.widgets mod autodoc.html
 wxgeometrie.API.macros_construction mod autodoc.html
 wxgeometrie.geolib.courbes mod autodoc.html
 wxgeometrie.geolib.intersections mod autodoc.html
@@ -87,6 +87,8 @@ wxgeometrie.geolib.points.Glisseur_generique class autodoc.html
 wxgeometrie.geolib.lignes.Ligne_generique.point1 attribute autodoc.html
 wxgeometrie.geolib.lignes.Ligne_generique.point2 attribute autodoc.html
 wxgeometrie.GUI.barre_outils.BarreOutils.losange method autodoc.html
+wxgeometrie.geolib.widgets.Bouton.y attribute autodoc.html
+wxgeometrie.geolib.widgets.Bouton.x attribute autodoc.html
 wxgeometrie.mathlib.internal_objects.Reel class autodoc.html
 wxgeometrie.geolib.lignes.Demidroite.origine attribute autodoc.html
 wxgeometrie.API.moteur_graphique.Moteur_graphique.fleche method autodoc.html
@@ -99,6 +101,7 @@ wxgeometrie.API.canvas.Canvas.gerer_parametre_orthonorme method autodoc.html
 wxgeometrie.geolib.points.Milieu class autodoc.html
 wxgeometrie.GUI.dialogues_geometrie.DialogueVecteur class autodoc.html
 wxgeometrie.geolib.points.NuageFonction class autodoc.html
+wxgeometrie.geolib.widgets.Champ.abscisse attribute autodoc.html
 wxgeometrie.geolib.variables.Variable.varier method autodoc.html
 wxgeometrie.API.canvas.Canvas.decoder method autodoc.html
 wxgeometrie.geolib.points.Glisseur_vecteur class autodoc.html
@@ -194,6 +197,7 @@ wxgeometrie.geolib.textes.Texte.ordonnee attribute autodoc.html
 wxgeometrie.GUI.barre_outils.BarreOutils.intersection method autodoc.html
 wxgeometrie.GUI.barre_outils.BarreOutils.masque method autodoc.html
 wxgeometrie.mathlib.internal_objects.Reel.fabs method autodoc.html
+wxgeometrie.GUI.contact.Contact.termine method autodoc.html
 wxgeometrie.GUI.dialogues_geometrie.DialogueAngleLibre.objet attribute autodoc.html
 wxgeometrie.API.moteur_graphique.FlecheGenerique class autodoc.html
 wxgeometrie.geolib.feuille.Dictionnaire_objets.add method autodoc.html
@@ -269,6 +273,7 @@ wxgeometrie.geolib.points.Glisseur_droite.parametre attribute autodoc.html
 wxgeometrie.API.canvas.Canvas.arc method autodoc.html
 wxgeometrie.geolib.points.Point_homothetie.point attribute autodoc.html
 wxgeometrie.geolib.points.Glisseur_segment.segment attribute autodoc.html
+wxgeometrie.geolib.polygones.Sommet.supprimer method autodoc.html
 wxgeometrie.mathlib.custom_functions.jhms function autodoc.html
 wxgeometrie.geolib.feuille.Feuille.effacer_codage method autodoc.html
 wxgeometrie.GUI.wxcanvas.QtCanvas.signal method autodoc.html
@@ -409,7 +414,6 @@ wxgeometrie.mathlib.internal_objects.Reel.abs method autodoc.html
 wxgeometrie.geolib.vecteurs.Vecteur_generique.x attribute autodoc.html
 wxgeometrie.geolib.vecteurs.Vecteur_generique.y attribute autodoc.html
 wxgeometrie.geolib.vecteurs.Vecteur_generique.z attribute autodoc.html
-wxgeometrie.geolib.wxwidgets.Widget class autodoc.html
 wxgeometrie.geolib.objet.Rendu.codage_angle method autodoc.html
 wxgeometrie.geolib.points.Centre_cercle_circonscrit.triangle attribute autodoc.html
 wxgeometrie.GUI.panel.Panel_API_graphique.activer method autodoc.html
@@ -496,7 +500,6 @@ wxgeometrie.GUI.panel.Panel_API_graphique.exporter method autodoc.html
 wxgeometrie.API.canvas.Canvas.largeur attribute autodoc.html
 wxgeometrie.GUI.wxcanvas.QtCanvas.exporter method autodoc.html
 wxgeometrie.GUI.panel.Panel_API_graphique.affiche method autodoc.html
-wxgeometrie.geolib.lignes.Point_droite.droite attribute autodoc.html
 wxgeometrie.API.moteur_graphique.Moteur_graphique.zoom_ligne attribute autodoc.html
 wxgeometrie.mathlib.custom_functions.frac function autodoc.html
 wxgeometrie.geolib.courbes.Courbe.supprimer_valeurs_extremes method autodoc.html
@@ -554,6 +557,7 @@ wxgeometrie.geolib.polygones.Sommet_triangle_isocele.sommet_principal attribute 
 wxgeometrie.GUI.panel.Panel_simple.sauver_preferences method autodoc.html
 wxgeometrie.geolib.polyedres.Sommet_cube class autodoc.html
 wxgeometrie.GUI.dialogues_geometrie.DialogueVecteurLibre class autodoc.html
+wxgeometrie.geolib.labels.Label_generique.feuille attribute autodoc.html
 wxgeometrie.mathlib.internal_objects.Reel.rint method autodoc.html
 wxgeometrie.GUI.wxcanvas.QtCanvas.mouseReleaseEvent method autodoc.html
 wxgeometrie.GUI.menu_objet.MenuActionsObjet class autodoc.html
@@ -579,6 +583,7 @@ wxgeometrie.geolib.polygones.Hexagone.point4 attribute autodoc.html
 wxgeometrie.geolib.polygones.Hexagone.point6 attribute autodoc.html
 wxgeometrie.GUI.menu.RSSMenu class autodoc.html
 wxgeometrie.geolib.objet.Objet.genre classmethod autodoc.html
+wxgeometrie.geolib.objet.Objet.feuille attribute autodoc.html
 wxgeometrie.geolib.polygones.Polygone_regulier class autodoc.html
 wxgeometrie.API.canvas.Canvas.initialiser method autodoc.html
 wxgeometrie.API.moteur_graphique.Moteur_graphique.ajouter method autodoc.html
@@ -691,6 +696,7 @@ wxgeometrie.geolib.transformations.Rotation class autodoc.html
 wxgeometrie.GUI.dialogues_geometrie.DialoguePolygoneRegulierCentre class autodoc.html
 wxgeometrie.geolib.vecteurs.Vecteur_generique.affixe attribute autodoc.html
 wxgeometrie.geolib.points.Orthocentre class autodoc.html
+wxgeometrie.geolib.widgets.Champ.style method autodoc.html
 wxgeometrie.geolib.points.Point_rotation.point attribute autodoc.html
 wxgeometrie.geolib.polygones.Polygone_generique.sommets attribute autodoc.html
 wxgeometrie.mathlib.internal_objects.Reel.logical_and method autodoc.html
@@ -707,7 +713,7 @@ wxgeometrie.geolib.textes.Texte.style method autodoc.html
 wxgeometrie.geolib.points.Glisseur_ligne_generique.k attribute autodoc.html
 wxgeometrie.mathlib.intervalles.Intervalle.intervalles attribute autodoc.html
 wxgeometrie.geolib.points.Glisseur_demidroite.demidroite attribute autodoc.html
-wxgeometrie.mathlib.graphes.GraphError exception autodoc.html
+wxgeometrie.geolib.intersections.Intersection_droite_cercle class autodoc.html
 wxgeometrie.geolib.lignes.Repere class autodoc.html
 wxgeometrie.API.macros_construction.Macro_construction class autodoc.html
 wxgeometrie.geolib.vecteurs.Vecteur_libre.ordonnee attribute autodoc.html
@@ -779,6 +785,7 @@ wxgeometrie.geolib.polygones.Triangle.point2 attribute autodoc.html
 wxgeometrie.geolib.polygones.Triangle.point3 attribute autodoc.html
 wxgeometrie.geolib.textes.Texte_rotation.texte attribute autodoc.html
 wxgeometrie.geolib.polygones.Triangle.point1 attribute autodoc.html
+wxgeometrie.geolib.widgets.Champ.label method autodoc.html
 wxgeometrie.geolib.points.Point_pondere class autodoc.html
 wxgeometrie.geolib.objet.Rendu.angle method autodoc.html
 wxgeometrie.geolib.cercles.Arc_generique.longueur attribute autodoc.html
@@ -802,6 +809,7 @@ wxgeometrie.GUI.barre_outils.BarreOutils.parallele method autodoc.html
 wxgeometrie.GUI.wxcanvas.QtCanvas.detecter method autodoc.html
 wxgeometrie.GUI.dialogues_geometrie.Dialogue.commande method autodoc.html
 wxgeometrie.geolib.transformations.Rotation.grad attribute autodoc.html
+wxgeometrie.geolib.widgets.Bouton.abscisse attribute autodoc.html
 wxgeometrie.GUI.barre_outils.BarreOutils.reflexion method autodoc.html
 wxgeometrie.API.canvas.Canvas.feuille_actuelle attribute autodoc.html
 wxgeometrie.geolib.objet.Objet_avec_valeur.valeur attribute autodoc.html
@@ -919,6 +927,7 @@ wxgeometrie.geolib.objet.Objet_avec_coordonnees_modifiables.affixe attribute aut
 wxgeometrie.geolib.points.Point_reflexion.reflexion attribute autodoc.html
 wxgeometrie.API.canvas.Canvas.repere_Oij method autodoc.html
 wxgeometrie.API.macros_construction.Macro_construction.ouvrir method autodoc.html
+wxgeometrie.geolib.widgets.Bouton.ordonnee attribute autodoc.html
 wxgeometrie.geolib.polygones.Polygone_regulier.centre attribute autodoc.html
 wxgeometrie.GUI.wxlib.PopUpMenu class autodoc.html
 wxgeometrie.mathlib.intervalles.Ensemble class autodoc.html
@@ -934,6 +943,7 @@ wxgeometrie.API.sauvegarde.FichierSession.ajouter method autodoc.html
 wxgeometrie.GUI.dialogues_geometrie.DialogueBissectrice.objet attribute autodoc.html
 wxgeometrie.API.moteur_graphique.Angle.arc_angle method autodoc.html
 wxgeometrie.geolib.feuille.Feuille.ymax attribute autodoc.html
+wxgeometrie.geolib.widgets.Champ class autodoc.html
 wxgeometrie.geolib.objet.Objet_avec_coordonnees class autodoc.html
 wxgeometrie.geolib.transformations.Rotation.degre attribute autodoc.html
 wxgeometrie.geolib.pseudo_canvas.PseudoCanvas.geler_affichage method autodoc.html
@@ -953,7 +963,7 @@ wxgeometrie.geolib.polygones.Octogone.point6 attribute autodoc.html
 wxgeometrie.geolib.polygones.Octogone.point7 attribute autodoc.html
 wxgeometrie.geolib.polygones.Octogone.point4 attribute autodoc.html
 wxgeometrie.geolib.polygones.Octogone.point5 attribute autodoc.html
-wxgeometrie.GUI.contact.Contact.termine method autodoc.html
+wxgeometrie.geolib.polygones.Octogone.point2 attribute autodoc.html
 wxgeometrie.geolib.polygones.Octogone.point3 attribute autodoc.html
 wxgeometrie.geolib.polygones.Octogone.point1 attribute autodoc.html
 wxgeometrie.GUI.dialogues_geometrie.DialogueDemidroite.objet attribute autodoc.html
@@ -994,7 +1004,7 @@ wxgeometrie.geolib.transformations.Reflexion.droite attribute autodoc.html
 wxgeometrie.geolib.lignes.Droite_generique.info attribute autodoc.html
 wxgeometrie.geolib.polygones.Sommet_triangle_rectangle.point2 attribute autodoc.html
 wxgeometrie.geolib.polygones.Sommet_triangle_rectangle.point1 attribute autodoc.html
-wxgeometrie.geolib.intersections.Intersection_droite_cercle class autodoc.html
+wxgeometrie.mathlib.graphes.Graph.degree method autodoc.html
 wxgeometrie.geolib.feuille.Liste_objets class autodoc.html
 wxgeometrie.API.sauvegarde.FichierGEO.ecrire method autodoc.html
 wxgeometrie.geolib.feuille.Feuille.charger method autodoc.html
@@ -1041,7 +1051,7 @@ wxgeometrie.geolib.cercles.Arc_cercle.point2 attribute autodoc.html
 wxgeometrie.geolib.routines.carre_distance function autodoc.html
 wxgeometrie.geolib.cercles.Arc_cercle.point1 attribute autodoc.html
 wxgeometrie.geolib.feuille.Feuille.canvas attribute autodoc.html
-wxgeometrie.geolib.polygones.Octogone.point2 attribute autodoc.html
+wxgeometrie.geolib.lignes.Point_droite.droite attribute autodoc.html
 wxgeometrie.API.moteur_graphique.Moteur_graphique.rectangle method autodoc.html
 wxgeometrie.API.moteur_graphique.Moteur_graphique.ajouter_point method autodoc.html
 wxgeometrie.mathlib.intervalles.Union.evalf method autodoc.html
@@ -1066,6 +1076,7 @@ wxgeometrie.mathlib.internal_objects.Reel.arcsin method autodoc.html
 wxgeometrie.geolib.feuille.MethodesObjets class autodoc.html
 wxgeometrie.geolib.angles.Angle.sens attribute autodoc.html
 wxgeometrie.geolib.objet.Objet class autodoc.html
+wxgeometrie.geolib.polygones.Cote.supprimer method autodoc.html
 wxgeometrie.GUI.barre_outils.BarreOutils.arc method autodoc.html
 wxgeometrie.geolib.polyedres.Tetraedre.point2 attribute autodoc.html
 wxgeometrie.geolib.polyedres.Tetraedre.point3 attribute autodoc.html
@@ -1147,6 +1158,7 @@ wxgeometrie.GUI.wxcanvas.MiniEditeur.cancel method autodoc.html
 wxgeometrie.geolib.feuille.Feuille.coder method autodoc.html
 wxgeometrie.geolib.points.Projete_cercle.cercle attribute autodoc.html
 wxgeometrie.geolib.routines.racines function autodoc.html
+wxgeometrie.geolib.widgets.Bouton class autodoc.html
 wxgeometrie.geolib.lignes.Perpendiculaire.point attribute autodoc.html
 wxgeometrie.mathlib.internal_objects.Reel.less_equal method autodoc.html
 wxgeometrie.mathlib.internal_objects.Reel.expm1 method autodoc.html
@@ -1257,6 +1269,8 @@ wxgeometrie.geolib.variables.Add.var1 attribute autodoc.html
 wxgeometrie.geolib.variables.Add.var2 attribute autodoc.html
 wxgeometrie.geolib.lignes.Parallele class autodoc.html
 wxgeometrie.geolib.polygones.Octogone class autodoc.html
+wxgeometrie.geolib.widgets.Champ.x attribute autodoc.html
+wxgeometrie.geolib.widgets.Champ.y attribute autodoc.html
 wxgeometrie.mathlib.internal_objects.Reel.square method autodoc.html
 wxgeometrie.geolib.polygones.Triangle_isocele_rectangle.point1 attribute autodoc.html
 wxgeometrie.GUI.panel.Panel_API_graphique.reinitialiser method autodoc.html
@@ -1275,6 +1289,7 @@ wxgeometrie.API.canvas.Canvas.zoom_auto method autodoc.html
 wxgeometrie.geolib.labels.Label_cercle.glisseur attribute autodoc.html
 wxgeometrie.GUI.dialogues_geometrie.DialogueArcPoints class autodoc.html
 wxgeometrie.GUI.dialogues_geometrie.DialogueCentreGravite.objet attribute autodoc.html
+wxgeometrie.geolib.widgets.Champ.ordonnee attribute autodoc.html
 wxgeometrie.mathlib.intervalles.preformatage_geolib_ensemble function autodoc.html
 wxgeometrie.geolib.angles.Secteur_angulaire.vecteur1 attribute autodoc.html
 wxgeometrie.geolib.angles.Secteur_angulaire.vecteur2 attribute autodoc.html
@@ -1282,7 +1297,6 @@ wxgeometrie.GUI.dialogues_geometrie.DialoguePointFinal.objet attribute autodoc.h
 wxgeometrie.geolib.objet.Objet.copier_style method autodoc.html
 wxgeometrie.geolib.feuille.Feuille.objet_temporaire method autodoc.html
 wxgeometrie.geolib.feuille.ModeTolerant class autodoc.html
-wxgeometrie.mathlib.graphes.Graph.degree method autodoc.html
 wxgeometrie.geolib.angles.Secteur_angulaire class autodoc.html
 wxgeometrie.API.canvas.Canvas.lignes method autodoc.html
 wxgeometrie.API.canvas.Canvas.codage method autodoc.html
@@ -1325,10 +1339,12 @@ wxgeometrie.API.canvas.Canvas.liste_axes attribute autodoc.html
 wxgeometrie.geolib.labels.Label_generique.visible attribute autodoc.html
 wxgeometrie.geolib.polyedres.Sommet_cube.point2 attribute autodoc.html
 wxgeometrie.geolib.polyedres.Sommet_cube.point1 attribute autodoc.html
+wxgeometrie.mathlib.graphes.GraphError exception autodoc.html
 wxgeometrie.GUI.barre_outils.BarreOutils.rectangle method autodoc.html
 wxgeometrie.geolib.objet.Objet.figure attribute autodoc.html
 wxgeometrie.API.canvas.Canvas.zoom_texte attribute autodoc.html
 wxgeometrie.geolib.polyedres.Polyedre_generique.sommets attribute autodoc.html
+wxgeometrie.geolib.widgets.Champ.texte attribute autodoc.html
 wxgeometrie.geolib.feuille.Feuille.point_temporaire method autodoc.html
 wxgeometrie.GUI.wxcanvas.QtCanvas.OnSelect method autodoc.html
 wxgeometrie.geolib.polygones.Polygone_generique.equilateral attribute autodoc.html
@@ -1394,6 +1410,7 @@ wxgeometrie.mathlib.internal_objects.Reel.conj method autodoc.html
 wxgeometrie.geolib.labels.Label_generique.x attribute autodoc.html
 wxgeometrie.geolib.labels.Label_generique.y attribute autodoc.html
 wxgeometrie.geolib.objet.ArgumentNonModifiable attribute autodoc.html
+wxgeometrie.geolib.objet.Objet.canvas attribute autodoc.html
 wxgeometrie.geolib.lignes.Droite_vectorielle.vecteur attribute autodoc.html
 wxgeometrie.geolib.polygones.Parallelogramme class autodoc.html
 wxgeometrie.geolib.cercles.Arc_generique class autodoc.html
@@ -1441,6 +1458,7 @@ wxgeometrie.GUI.dialogues_geometrie.DialoguePolygoneRegulier class autodoc.html
 wxgeometrie.geolib.points.Projete_arc_cercle.arc attribute autodoc.html
 wxgeometrie.API.canvas.Canvas.dpix2coo method autodoc.html
 wxgeometrie.geolib.objet.souffler function autodoc.html
+wxgeometrie.geolib.feuille.Dictionnaire_objets.feuille attribute autodoc.html
 wxgeometrie.geolib.routines.direction_droite function autodoc.html
 wxgeometrie.initialisation.SortiesMultiples.write method autodoc.html
 wxgeometrie.GUI.wxlib.ColorSelecter.colorSelected attribute autodoc.html
@@ -1458,6 +1476,7 @@ wxgeometrie.API.canvas.Canvas.zoom_in method autodoc.html
 wxgeometrie.geolib.objet.TupleObjets class autodoc.html
 wxgeometrie.GUI.wxcanvas.MiniEditeur.display method autodoc.html
 wxgeometrie.GUI.dialogues_geometrie.DialogueSymetrieCentrale.objet attribute autodoc.html
+wxgeometrie.geolib.angles.Angle_libre class autodoc.html
 wxgeometrie.geolib.objet.Objet_avec_coordonnees_modifiables.ordonnee attribute autodoc.html
 wxgeometrie.geolib.polyedres.Polyedre_generique class autodoc.html
 wxgeometrie.GUI.barre_outils.BarreOutils.pinceau method autodoc.html
@@ -1510,7 +1529,7 @@ wxgeometrie.geolib.points.Glisseur_generique.objet attribute autodoc.html
 wxgeometrie.geolib.objet.Objet.visible attribute autodoc.html
 wxgeometrie.GUI.wxlib.MultipleChoiceDialog.selectedItems method autodoc.html
 wxgeometrie.geolib.objet.Rendu.decoration_texte method autodoc.html
-wxgeometrie.geolib.angles.Angle_libre class autodoc.html
+wxgeometrie.geolib.widgets.Bouton.texte attribute autodoc.html
 wxgeometrie.geolib.objet.Objet.erreur method autodoc.html
 wxgeometrie.GUI.dialogues_geometrie.DialogueReperage class autodoc.html
 wxgeometrie.API.moteur_graphique.Moteur_graphique.ajouter_decoration_texte method autodoc.html

@@ -1056,8 +1056,8 @@ Eventuellement, le contenu peut-être compressé au format zip.</p>
 <dd>Alias de &#8216;FichierGEO().ouvrir(path)&#8217;.</dd></dl>
 
 </div>
-<div class="section" id="module-wxgeometrie.geolib.wxwidgets">
-<h2>wxgeo.geolib<a class="headerlink" href="#module-wxgeometrie.geolib.wxwidgets" title="Lien permanent vers ce titre">¶</a></h2>
+<div class="section" id="module-wxgeometrie.geolib.widgets">
+<h2>wxgeo.geolib<a class="headerlink" href="#module-wxgeometrie.geolib.widgets" title="Lien permanent vers ce titre">¶</a></h2>
 <dl class="class">
 <dt id="wxgeometrie.geolib.angles.Angle">
 <em class="property">class </em><tt class="descclassname">wxgeometrie.geolib.angles.</tt><tt class="descname">Angle</tt><big>(</big><em>point1=None</em>, <em>point2=None</em>, <em>point3=None</em>, <em>**styles</em><big>)</big><a class="headerlink" href="#wxgeometrie.geolib.angles.Angle" title="Lien permanent vers cette définition">¶</a></dt>
@@ -1691,6 +1691,11 @@ les inscrire dans <cite>_noms_interdits</cite>.</p>
 qui rafraichit correctement l&#8217;affichage.</p>
 </dd></dl>
 
+<dl class="attribute">
+<dt id="wxgeometrie.geolib.feuille.Dictionnaire_objets.feuille">
+<tt class="descname">feuille</tt><a class="headerlink" href="#wxgeometrie.geolib.feuille.Dictionnaire_objets.feuille" title="Lien permanent vers cette définition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="method">
 <dt id="wxgeometrie.geolib.feuille.Dictionnaire_objets.get">
 <tt class="descname">get</tt><big>(</big><em>nom</em>, <em>defaut=None</em><big>)</big><a class="headerlink" href="#wxgeometrie.geolib.feuille.Dictionnaire_objets.get" title="Lien permanent vers cette définition">¶</a></dt>
@@ -2283,6 +2288,11 @@ Le label n&#8217;est pas un &#8216;vrai&#8217; objet, il n&#8217;est pas enregis
 <dl class="attribute">
 <dt id="wxgeometrie.geolib.labels.Label_generique.existe">
 <tt class="descname">existe</tt><a class="headerlink" href="#wxgeometrie.geolib.labels.Label_generique.existe" title="Lien permanent vers cette définition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="wxgeometrie.geolib.labels.Label_generique.feuille">
+<tt class="descname">feuille</tt><a class="headerlink" href="#wxgeometrie.geolib.labels.Label_generique.feuille" title="Lien permanent vers cette définition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -2910,6 +2920,11 @@ Note : elle n&#8217;est pas utilisable en l&#8217;état, mais doit être surclas
 <tt class="descname">cacher</tt><big>(</big><big>)</big><a class="headerlink" href="#wxgeometrie.geolib.objet.Objet.cacher" title="Lien permanent vers cette définition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="attribute">
+<dt id="wxgeometrie.geolib.objet.Objet.canvas">
+<tt class="descname">canvas</tt><a class="headerlink" href="#wxgeometrie.geolib.objet.Objet.canvas" title="Lien permanent vers cette définition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="classmethod">
 <dt id="wxgeometrie.geolib.objet.Objet.classe">
 <em class="property">classmethod </em><tt class="descname">classe</tt><big>(</big><big>)</big><a class="headerlink" href="#wxgeometrie.geolib.objet.Objet.classe" title="Lien permanent vers cette définition">¶</a></dt>
@@ -2973,6 +2988,13 @@ Si l&#8217;état de l&#8217;objet n&#8217;a pas changé, retourne None.</p>
 <dt id="wxgeometrie.geolib.objet.Objet.existe">
 <tt class="descname">existe</tt><a class="headerlink" href="#wxgeometrie.geolib.objet.Objet.existe" title="Lien permanent vers cette définition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="attribute">
+<dt id="wxgeometrie.geolib.objet.Objet.feuille">
+<tt class="descname">feuille</tt><a class="headerlink" href="#wxgeometrie.geolib.objet.Objet.feuille" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Descripteur gérant l&#8217;attribut &#8216;.__feuille __&#8217; de la classe &#8216;Objet&#8217;.</p>
+<p>Usage interne.</p>
+</dd></dl>
 
 <dl class="attribute">
 <dt id="wxgeometrie.geolib.objet.Objet.figure">
@@ -4229,6 +4251,20 @@ De plus, si l&#8217;objet est supprimé, le polygone est automatiquement supprim
 <p>Note : un argument non modifiable n&#8217;est pas encapsulé dans un objet &#8216;Ref&#8217;.</p>
 </dd></dl>
 
+<dl class="method">
+<dt id="wxgeometrie.geolib.polygones.Cote.supprimer">
+<tt class="descname">supprimer</tt><big>(</big><big>)</big><a class="headerlink" href="#wxgeometrie.geolib.polygones.Cote.supprimer" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Supprime le polygone auquel appartient le côté.</p>
+<dl class="docutils">
+<dt>..note::</dt>
+<dd>Il n&#8217;y a aucun intérêt à supprimer uniquement le côté
+(d&#8217;autant qu&#8217;un sommet supprimé ne peut pas facilement être
+rétabli), et si un côté est supprimé sans le polygone, on a parfois
+l&#8217;impression d&#8217;un bug (impossible de placer un point sur le côté par
+exemple).</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="class">
@@ -4663,9 +4699,12 @@ De plus, si l&#8217;objet est supprimé, le polygone est automatiquement supprim
 <dt id="wxgeometrie.geolib.polygones.Sommet">
 <em class="property">class </em><tt class="descclassname">wxgeometrie.geolib.polygones.</tt><tt class="descname">Sommet</tt><big>(</big><em>polygone</em>, <em>n</em>, <em>**styles</em><big>)</big><a class="headerlink" href="#wxgeometrie.geolib.polygones.Sommet" title="Lien permanent vers cette définition">¶</a></dt>
 <dd><p>Un sommet.</p>
-<p>Le nième sommet d&#8217;un polygone.
-Note: n commence à 0.
-L&#8217;objet est créé automatiquement lors de la création du polygone.
+<p>Le nième sommet d&#8217;un polygone.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">n commence à 0.</p>
+</div>
+<p>L&#8217;objet est créé automatiquement lors de la création du polygone.
 De plus, si l&#8217;objet est supprimé, le polygone est automatiquement supprimé.</p>
 <dl class="attribute">
 <dt id="wxgeometrie.geolib.polygones.Sommet.n">
@@ -4679,6 +4718,18 @@ De plus, si l&#8217;objet est supprimé, le polygone est automatiquement supprim
 <tt class="descname">polygone</tt><a class="headerlink" href="#wxgeometrie.geolib.polygones.Sommet.polygone" title="Lien permanent vers cette définition">¶</a></dt>
 <dd><p>Un descripteur pour un argument non modifiable d&#8217;un objet.</p>
 <p>Note : un argument non modifiable n&#8217;est pas encapsulé dans un objet &#8216;Ref&#8217;.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="wxgeometrie.geolib.polygones.Sommet.supprimer">
+<tt class="descname">supprimer</tt><big>(</big><big>)</big><a class="headerlink" href="#wxgeometrie.geolib.polygones.Sommet.supprimer" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Supprime le polygone auquel appartient le sommet.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Il n&#8217;y a aucun intérêt à supprimer uniquement le sommet
+(d&#8217;autant qu&#8217;un sommet supprimé ne peut pas facilement être
+rétabli).</p>
+</div>
 </dd></dl>
 
 </dd></dl>
@@ -4934,7 +4985,7 @@ Transforme automatiquement le nombre en entier selon le cas.</dd></dl>
 <tt class="descclassname">wxgeometrie.geolib.routines.</tt><tt class="descname">arrondir_1_25_5</tt><big>(</big><em>x</em><big>)</big><a class="headerlink" href="#wxgeometrie.geolib.routines.arrondir_1_25_5" title="Lien permanent vers cette définition">¶</a></dt>
 <dd><p>Arrondit x à un nombre de la forme k*10^p, avec k dans {1, 2.5, 5},
 et p entier relatif.</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">wxgeometrie.geolib.routines</span> <span class="kn">import</span> <span class="n">arrondir_udc</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">wxgeometrie.geolib.routines</span> <span class="kn">import</span> <span class="n">arrondir_1_25_5</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">arrondir_1_25_5</span><span class="p">(</span><span class="mi">200</span><span class="p">)</span>
 <span class="go">250.0</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">arrondir_1_25_5</span><span class="p">(</span><span class="mi">4527</span><span class="p">)</span>
@@ -4950,7 +5001,7 @@ et p entier relatif.</p>
 <tt class="descclassname">wxgeometrie.geolib.routines.</tt><tt class="descname">arrondir_1_2_5</tt><big>(</big><em>x</em><big>)</big><a class="headerlink" href="#wxgeometrie.geolib.routines.arrondir_1_2_5" title="Lien permanent vers cette définition">¶</a></dt>
 <dd><p>Arrondit x à un nombre de la forme k*10^p, avec k dans {1, 2, 5},
 et p entier relatif.</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">wxgeometrie.geolib.routines</span> <span class="kn">import</span> <span class="n">arrondir_udc</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">wxgeometrie.geolib.routines</span> <span class="kn">import</span> <span class="n">arrondir_1_2_5</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">arrondir_1_2_5</span><span class="p">(</span><span class="mi">250</span><span class="p">)</span>
 <span class="go">200.0</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">arrondir_1_2_5</span><span class="p">(</span><span class="mi">4527</span><span class="p">)</span>
@@ -5050,13 +5101,13 @@ D&#8217;après Dinu C. Gherman (Andrew&#8217;s Monotone Chain Algorithm).</dd></
 <li><p class="first">Supprime les 0 inutiles.</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">wxgeometrie.geolib.routines</span> <span class="kn">import</span> <span class="n">nice_str</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">nice_str</span><span class="p">(</span><span class="mf">8.0</span><span class="p">)</span>
-<span class="go">8</span>
+<span class="go">&#39;8&#39;</span>
 </pre></div>
 </div>
 </li>
 <li><p class="first">Remplace le point par une virgule pour les décimaux.</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">nice_str</span><span class="p">(</span><span class="mf">8.2</span><span class="p">)</span>
-<span class="go">8,2</span>
+<span class="go">&#39;8,2&#39;</span>
 </pre></div>
 </div>
 </li>
@@ -5064,9 +5115,9 @@ D&#8217;après Dinu C. Gherman (Andrew&#8217;s Monotone Chain Algorithm).</dd></
 pour correspndre aux notations française.</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">sympy</span> <span class="kn">import</span> <span class="n">oo</span><span class="p">,</span> <span class="n">log</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">nice_str</span><span class="p">(</span><span class="n">oo</span><span class="p">)</span>
-<span class="go">+oo</span>
+<span class="go">&#39;+oo&#39;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">nice_str</span><span class="p">(</span><span class="n">log</span><span class="p">(</span><span class="mi">7</span><span class="p">))</span>
-<span class="go">ln(7)</span>
+<span class="go">&#39;ln(7)&#39;</span>
 </pre></div>
 </div>
 </li>
@@ -5736,10 +5787,142 @@ Il aura donc même sens et même direction, mais sera de norme 1.</p>
 </dd></dl>
 
 <dl class="class">
-<dt id="wxgeometrie.geolib.wxwidgets.Widget">
-<em class="property">class </em><tt class="descclassname">wxgeometrie.geolib.wxwidgets.</tt><tt class="descname">Widget</tt><big>(</big><em>**styles</em><big>)</big><a class="headerlink" href="#wxgeometrie.geolib.wxwidgets.Widget" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Un accessoire.</p>
-<p>La classe mère de tous les widgets (usage interne).</p>
+<dt id="wxgeometrie.geolib.widgets.Bouton">
+<em class="property">class </em><tt class="descclassname">wxgeometrie.geolib.widgets.</tt><tt class="descname">Bouton</tt><big>(</big><em>texte=' '</em>, <em>x=None</em>, <em>y=None</em>, <em>**styles</em><big>)</big><a class="headerlink" href="#wxgeometrie.geolib.widgets.Bouton" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Un bouton cliquable.</p>
+<p>Un bouton avec texte. Typiquement, on lui associe une action
+lorsque l&#8217;on clique dessus, via la méthode <cite>onLeftClick</cite>.</p>
+<dl class="attribute">
+<dt id="wxgeometrie.geolib.widgets.Bouton.abscisse">
+<tt class="descname">abscisse</tt><a class="headerlink" href="#wxgeometrie.geolib.widgets.Bouton.abscisse" title="Lien permanent vers cette définition">¶</a></dt>
+<dd>Un descripteur pour un argument d&#8217;un objet.</dd></dl>
+
+<dl class="attribute">
+<dt id="wxgeometrie.geolib.widgets.Bouton.ordonnee">
+<tt class="descname">ordonnee</tt><a class="headerlink" href="#wxgeometrie.geolib.widgets.Bouton.ordonnee" title="Lien permanent vers cette définition">¶</a></dt>
+<dd>Un descripteur pour un argument d&#8217;un objet.</dd></dl>
+
+<dl class="attribute">
+<dt id="wxgeometrie.geolib.widgets.Bouton.texte">
+<tt class="descname">texte</tt><a class="headerlink" href="#wxgeometrie.geolib.widgets.Bouton.texte" title="Lien permanent vers cette définition">¶</a></dt>
+<dd>Un descripteur pour un argument d&#8217;un objet.</dd></dl>
+
+<dl class="attribute">
+<dt id="wxgeometrie.geolib.widgets.Bouton.x">
+<tt class="descname">x</tt><a class="headerlink" href="#wxgeometrie.geolib.widgets.Bouton.x" title="Lien permanent vers cette définition">¶</a></dt>
+<dd>Un descripteur pour un argument d&#8217;un objet.</dd></dl>
+
+<dl class="attribute">
+<dt id="wxgeometrie.geolib.widgets.Bouton.y">
+<tt class="descname">y</tt><a class="headerlink" href="#wxgeometrie.geolib.widgets.Bouton.y" title="Lien permanent vers cette définition">¶</a></dt>
+<dd>Un descripteur pour un argument d&#8217;un objet.</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="wxgeometrie.geolib.widgets.Champ">
+<em class="property">class </em><tt class="descclassname">wxgeometrie.geolib.widgets.</tt><tt class="descname">Champ</tt><big>(</big><em>texte=''</em>, <em>x=None</em>, <em>y=None</em>, <em>**styles</em><big>)</big><a class="headerlink" href="#wxgeometrie.geolib.widgets.Champ" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Un champ de texte.</p>
+<p>Un champ de texte éditable en double-cliquant dessus.</p>
+<p>Le champ peut être encadré par du texte, via les mots-clefs <cite>prefixe</cite>
+(texte à gauche) et <cite>suffixe</cite> (texte à droite).
+On peut également lui associer un résultat attendu,
+via le mot-clef <cite>attendu</cite>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">wxgeometrie</span> <span class="kn">import</span> <span class="n">Champ</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">Champ</span><span class="p">(</span><span class="s">&#39;modifiez moi&#39;</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">prefixe</span><span class="o">=</span><span class="s">&quot;1+1=&quot;</span><span class="p">,</span> <span class="n">attendu</span><span class="o">=</span><span class="s">&quot;2&quot;</span><span class="p">,</span>
+<span class="gp">... </span>                                 <span class="n">suffixe</span><span class="o">=</span><span class="s">&quot; (entrer le resultat)&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">style</span><span class="p">(</span><span class="s">&quot;attendu&quot;</span><span class="p">)</span>
+<span class="go">&#39;2&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">texte</span> <span class="o">=</span> <span class="s">&#39;?&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">label</span><span class="p">())</span>
+<span class="go">1+1=\$?\$ (entrer le resultat)</span>
+</pre></div>
+</div>
+<p>Si un résultat est attendu, alors le texte rentré par l&#8217;utilisateur passera
+un test de validation. Si le résultat passe le test, un check vert est
+affiché à côté, sinon, un smiley :-( rouge est affiché.</p>
+<p>Par défaut, pour être validé, il faut que le résultat soit exactement
+conforme au texte attendu:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">texte</span> <span class="o">=</span> <span class="s">&quot;2.0&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">correct</span>
+<span class="go">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">texte</span> <span class="o">=</span> <span class="s">&quot;2&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">correct</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<p>Cependant, il est possible de définir un test de validation personnalisé:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="n">reponse</span><span class="p">,</span> <span class="n">attendu</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">reponse</span><span class="p">)</span> <span class="o">==</span> <span class="nb">float</span><span class="p">(</span><span class="n">attendu</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">valider</span> <span class="o">=</span> <span class="n">test</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">texte</span> <span class="o">=</span> <span class="s">&quot;2.0&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">correct</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<p>On peut aussi associer une action à la validation:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">action</span><span class="p">(</span><span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">if</span> <span class="n">kw</span><span class="p">[</span><span class="s">&#39;correct&#39;</span><span class="p">]:</span>
+<span class="gp">... </span>        <span class="k">if</span> <span class="ow">not</span> <span class="n">kw</span><span class="p">[</span><span class="s">&#39;correct_old&#39;</span><span class="p">]:</span>
+<span class="gp">... </span>            <span class="c"># Ce n&#39;était pas correct avant</span>
+<span class="gp">... </span>            <span class="k">print</span><span class="p">(</span><span class="s">&#39;Bravo !&#39;</span><span class="p">)</span>
+<span class="gp">... </span>        <span class="k">else</span><span class="p">:</span>
+<span class="gp">... </span>            <span class="c"># C&#39;était déjà correct</span>
+<span class="gp">... </span>            <span class="k">print</span><span class="p">(</span><span class="s">&quot;Oui, c&#39;est bon aussi !&quot;</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="k">else</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="k">print</span><span class="p">(</span><span class="s">&#39;Essaie encore...&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">evt_valider</span> <span class="o">=</span> <span class="n">action</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">texte</span> <span class="o">=</span> <span class="s">&quot;3&quot;</span>
+<span class="go">Essaie encore...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">texte</span> <span class="o">=</span> <span class="s">&quot;2&quot;</span>
+<span class="go">Bravo !</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">texte</span> <span class="o">=</span> <span class="s">&quot;2.0&quot;</span>
+<span class="go">Oui, c&#39;est bon aussi !</span>
+</pre></div>
+</div>
+<p>Cet action sera effectuée lorsque le texte du champ est modifié, si
+celui-ci passe le test de validation.</p>
+<p>Enfin, une liste des propositions peut être passée via le mot-clef <cite>choix</cite>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">Champ</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">choix</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;oui&#39;</span><span class="p">,</span> <span class="s">&#39;non&#39;</span><span class="p">,</span> <span class="s">&#39;sans opinion&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">style</span><span class="p">(</span><span class="s">&#39;choix&#39;</span><span class="p">)</span>
+<span class="go">[&#39;oui&#39;, &#39;non&#39;, &#39;sans opinion&#39;]</span>
+</pre></div>
+</div>
+<dl class="attribute">
+<dt id="wxgeometrie.geolib.widgets.Champ.abscisse">
+<tt class="descname">abscisse</tt><a class="headerlink" href="#wxgeometrie.geolib.widgets.Champ.abscisse" title="Lien permanent vers cette définition">¶</a></dt>
+<dd>Un descripteur pour un argument d&#8217;un objet.</dd></dl>
+
+<dl class="method">
+<dt id="wxgeometrie.geolib.widgets.Champ.label">
+<tt class="descname">label</tt><big>(</big><em>*args</em>, <em>**kw</em><big>)</big><a class="headerlink" href="#wxgeometrie.geolib.widgets.Champ.label" title="Lien permanent vers cette définition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="wxgeometrie.geolib.widgets.Champ.ordonnee">
+<tt class="descname">ordonnee</tt><a class="headerlink" href="#wxgeometrie.geolib.widgets.Champ.ordonnee" title="Lien permanent vers cette définition">¶</a></dt>
+<dd>Un descripteur pour un argument d&#8217;un objet.</dd></dl>
+
+<dl class="method">
+<dt id="wxgeometrie.geolib.widgets.Champ.style">
+<tt class="descname">style</tt><big>(</big><em>*args</em>, <em>**kw</em><big>)</big><a class="headerlink" href="#wxgeometrie.geolib.widgets.Champ.style" title="Lien permanent vers cette définition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="wxgeometrie.geolib.widgets.Champ.texte">
+<tt class="descname">texte</tt><a class="headerlink" href="#wxgeometrie.geolib.widgets.Champ.texte" title="Lien permanent vers cette définition">¶</a></dt>
+<dd>Un descripteur pour un argument d&#8217;un objet.</dd></dl>
+
+<dl class="attribute">
+<dt id="wxgeometrie.geolib.widgets.Champ.x">
+<tt class="descname">x</tt><a class="headerlink" href="#wxgeometrie.geolib.widgets.Champ.x" title="Lien permanent vers cette définition">¶</a></dt>
+<dd>Un descripteur pour un argument d&#8217;un objet.</dd></dl>
+
+<dl class="attribute">
+<dt id="wxgeometrie.geolib.widgets.Champ.y">
+<tt class="descname">y</tt><a class="headerlink" href="#wxgeometrie.geolib.widgets.Champ.y" title="Lien permanent vers cette définition">¶</a></dt>
+<dd>Un descripteur pour un argument d&#8217;un objet.</dd></dl>
+
 </dd></dl>
 
 </div>
@@ -7110,7 +7293,7 @@ la classe Panel_API_graphique, plus evoluée que celle-ci.</p>
 
 <dl class="method">
 <dt id="wxgeometrie.GUI.panel.Panel_simple.param">
-<tt class="descname">param</tt><big>(</big><em>parametre</em>, <em>valeur=&lt;wxgeometrie.pylib.fonctions.NoArgument object at 0xa84390c&gt;</em>, <em>defaut=False</em><big>)</big><a class="headerlink" href="#wxgeometrie.GUI.panel.Panel_simple.param" title="Lien permanent vers cette définition">¶</a></dt>
+<tt class="descname">param</tt><big>(</big><em>parametre</em>, <em>valeur=&lt;wxgeometrie.pylib.fonctions.NoArgument object at 0xafc180c&gt;</em>, <em>defaut=False</em><big>)</big><a class="headerlink" href="#wxgeometrie.GUI.panel.Panel_simple.param" title="Lien permanent vers cette définition">¶</a></dt>
 <dd><p>Recherche la valeur d&#8217;un paramètre d&#8217;abord dans les paramètres du module (paramètres locaux), puis dans ceux de wxgéométrie.</p>
 <p>Si defaut vaut True, la valeur par défaut du paramètre est renvoyée.</p>
 </dd></dl>
@@ -8457,7 +8640,7 @@ affichées), la fonction renvoie False, sinon, True.</dd></dl>
 <li><a class="reference external" href="#">Autodoc</a><ul>
 <li><a class="reference external" href="#module-wxgeometrie">wxgeo</a></li>
 <li><a class="reference external" href="#module-wxgeometrie.API.sauvegarde">wxgeo.API</a></li>
-<li><a class="reference external" href="#module-wxgeometrie.geolib.wxwidgets">wxgeo.geolib</a></li>
+<li><a class="reference external" href="#module-wxgeometrie.geolib.widgets">wxgeo.geolib</a></li>
 <li><a class="reference external" href="#module-wxgeometrie.GUI.wxlib">wxgeo.GUI</a></li>
 <li><a class="reference external" href="#module-wxgeometrie.initialisation">wxgeo.initialisation</a></li>
 <li><a class="reference external" href="#module-wxgeometrie.mathlib.parsers">wxgeo.mathlib</a></li>
