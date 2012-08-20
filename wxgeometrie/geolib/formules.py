@@ -51,7 +51,10 @@ class Formule(object):
         if isinstance(chaine, Formule):
             chaine = eval(repr(chaine))
 ##        print "Initialisation formule:", chaine, type(chaine)
-        self._parent = ref(parent) # self._parent est une fonction qui renvoit parent si il existe encore. Cela permet de ne pas le maintenir en vie artificiellement (pas de référence circulaire).
+        self._parent = ref(parent)
+        # self._parent est une fonction qui renvoie parent s'il existe encore.
+        # Cela permet de ne pas le maintenir en vie artificiellement
+        # (pas de référence circulaire).
         #~ self._cache_repr = chaine
         #~ self._cache_str = "<?>".join()
         if "{" not in chaine:
@@ -62,7 +65,8 @@ class Formule(object):
             cache = liste[i][1:-1] # "{A.x}" -> "A.x"
             var = liste[i] = Variable(cache)
             var._cache_formule = cache
-##            # on va maintenant redéfinir la méthode affiche de toutes les variables de la formule : au lieu d'être inactive, la méthode affiche va actualiser l'affichage de l'objet contenant la formule.
+##            # on va maintenant redéfinir la méthode affiche de toutes les variables de la formule :
+              # au lieu d'être inactive, la méthode affiche va actualiser l'affichage de l'objet contenant la formule.
 ##            def affiche(self, actualiser = False, formule = self):
 ##                formule.parent.creer_figure()
 ##            var.affiche = new.instancemethod(affiche, var, var.__class__)

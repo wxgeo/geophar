@@ -219,6 +219,10 @@ def usage():
         $ ./tools/search.py -e5 "hello world!"
     - Afficher des statistiques concernant le projet:
         $ ./tools/search.py -s
+    - Retourner 1000 résultats au maximum au lieu de 100 (valeur par défaut):
+        $ ./tools/search.py -m "hello world!"
+    - Personnaliser le nombre maximum de résultats retournés:
+        $ ./tools/search.py -m2500 "hello world!"
         """
     exit()
 
@@ -252,6 +256,19 @@ if __name__ == "__main__":
     if '-c' in args:
         args.remove('-c')
         kw['color'] = True
+    if '-m' in args:
+        args.remove('-m')
+        kw['maximum'] = 1000
+    else:
+        for i, arg in enumerate(args):
+            if arg.startswith('-m'):
+                args.pop(i)
+                break
+        else:
+            arg = None
+        if arg is not None:
+            arg = arg.lstrip('=:')
+            kw['maximum'] = int(arg[2:])
     if '-s' in args:
         args.remove('-s')
         args.insert(0, '')
