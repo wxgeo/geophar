@@ -133,7 +133,7 @@ wxgeo.geolib
    :members:
    :undoc-members:
 
-.. automodule:: wxgeometrie.geolib.wxwidgets
+.. automodule:: wxgeometrie.geolib.widgets
    :members:
    :undoc-members:
 
