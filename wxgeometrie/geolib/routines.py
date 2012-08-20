@@ -388,7 +388,7 @@ def arrondir_1_2_5(x):
     u"""Arrondit x à un nombre de la forme k*10^p, avec k dans {1, 2, 5},
     et p entier relatif.
 
-    >>> from wxgeometrie.geolib.routines import arrondir_udc
+    >>> from wxgeometrie.geolib.routines import arrondir_1_2_5
     >>> arrondir_1_2_5(250)
     200.0
     >>> arrondir_1_2_5(4527)
@@ -417,7 +417,7 @@ def arrondir_1_25_5(x):
     u"""Arrondit x à un nombre de la forme k*10^p, avec k dans {1, 2.5, 5},
     et p entier relatif.
 
-    >>> from wxgeometrie.geolib.routines import arrondir_udc
+    >>> from wxgeometrie.geolib.routines import arrondir_1_25_5
     >>> arrondir_1_25_5(200)
     250.0
     >>> arrondir_1_25_5(4527)
@@ -474,21 +474,21 @@ def nice_str(x):
 
         >>> from wxgeometrie.geolib.routines import nice_str
         >>> nice_str(8.0)
-        8
+        '8'
 
       * Remplace le point par une virgule pour les décimaux.
 
         >>> nice_str(8.2)
-        8,2
+        '8,2'
 
       * Personnalise un peu l'affichage de certains objets sympy,
         pour correspndre aux notations française.
 
         >>> from sympy import oo, log
         >>> nice_str(oo)
-        +oo
+        '+oo'
         >>> nice_str(log(7))
-        ln(7)
+        'ln(7)'
 
     """
     return strip_trailing_zeros(custom_str(x)).replace('.', ',')

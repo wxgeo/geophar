@@ -179,54 +179,69 @@ class Champ(Texte):
 
     Le champ peut être encadré par du texte, via les mots-clefs `prefixe`
     (texte à gauche) et `suffixe` (texte à droite).
-    On peut également lui associer un résultat attendu, via le mot-clef `attendu`.
+    On peut également lui associer un résultat attendu,
+    via le mot-clef `attendu`::
 
-    >>> from wxgeometrie import Champ
-    >>> c = Champ('modifiez moi', 10, 5, prefixe="1+1=", attendu="2", suffixe=" (entrer le resultat)")
-    >>> c.style("attendu")
-    '2'
+        >>> from wxgeometrie import Champ
+        >>> c = Champ('modifiez moi', 10, 5, prefixe="1+1=", attendu="2",
+        ...                                  suffixe=" (entrer le resultat)")
+        >>> c.style("attendu")
+        '2'
+        >>> c.texte = '?'
+        >>> print(c.label())
+        1+1=\$?\$ (entrer le resultat)
 
     Si un résultat est attendu, alors le texte rentré par l'utilisateur passera
     un test de validation. Si le résultat passe le test, un check vert est
     affiché à côté, sinon, un smiley :-( rouge est affiché.
 
     Par défaut, pour être validé, il faut que le résultat soit exactement
-    conforme au texte attendu.
+    conforme au texte attendu::
 
-    >>> c.texte = "2.0"
-    >>> c.correct
-    False
+        >>> c.texte = "2.0"
+        >>> c.correct
+        False
+        >>> c.texte = "2"
+        >>> c.correct
+        True
 
-    Cependant, il est possible de définir un test de validation personnalisé.
+    Cependant, il est possible de définir un test de validation personnalisé::
 
-    >>> def test(reponse, attendu):
-            return float(reponse) == float(attendu)
-    >>> c.valider = test
-    >>> c.texte = "2.0"
-    >>> c.correct
-    True
+        >>> def test(reponse, attendu):
+        ...     return float(reponse) == float(attendu)
+        >>> c.valider = test
+        >>> c.texte = "2.0"
+        >>> c.correct
+        True
 
-    On peut aussi associer une action à la validation.
+    On peut aussi associer une action à la validation::
 
-    >>> def action(**kw):
-            if kw['correct']:
-                print('Bravo !')
-            else:
-                print('Essaie encore...')
-    >>> c.evt_valider = action
-    >>> c.texte = "2"
-    Bravo !
-    >>> c.texte = "3"
-    Essaie encore...
+        >>> def action(**kw):
+        ...     if kw['correct']:
+        ...         if not kw['correct_old']:
+        ...             # Ce n'était pas correct avant
+        ...             print('Bravo !')
+        ...         else:
+        ...             # C'était déjà correct
+        ...             print("Oui, c'est bon aussi !")
+        ...     else:
+        ...         print('Essaie encore...')
+        >>> c.evt_valider = action
+        >>> c.texte = "3"
+        Essaie encore...
+        >>> c.texte = "2"
+        Bravo !
+        >>> c.texte = "2.0"
+        Oui, c'est bon aussi !
 
     Cet action sera effectuée lorsque le texte du champ est modifié, si
     celui-ci passe le test de validation.
 
-    Enfin, une liste des propositions peut être passée via le mot-clef `choix`.
+    Enfin, une liste des propositions peut être passée via le mot-clef `choix`::
 
-    >>> c = Champ('', 10, 5, choix=['oui', 'non', 'sans opinion'])
-    >>> c.style('choix')
-    ['oui', 'non', 'sans opinion']
+        >>> c = Champ('', 10, 5, choix=['oui', 'non', 'sans opinion'])
+        >>> c.style('choix')
+        ['oui', 'non', 'sans opinion']
     """
     _style_defaut = param.champs
 
@@ -239,6 +254,8 @@ class Champ(Texte):
     # Par ailleurs, on peut attacher à l'objet une action qui sera appelée après
     # chaque test de validation.
     evt_valider = None
+    # Indique si le contenu du champ est conforme aux attentes
+    correct = None
 
     def __init__(self, texte="", x=None, y=None, **styles):
         self.__texte = texte = Ref(texte)
@@ -267,10 +284,11 @@ class Champ(Texte):
     def style(self, *args, **kw):
         label_change = ('label' in kw and kw['label'] != self._style['label'])
         val = Texte.style(self, *args, **kw)
-        if label_change and getattr(self, 'evt_valider', None) is not None:
+        if label_change:
             self._correct_old = self.correct
             self.correct = self._test_correct()
-            self.evt_valider(champ=self, correct=self.correct,
+            if getattr(self, 'evt_valider', None) is not None:
+                self.evt_valider(champ=self, correct=self.correct,
                              correct_old=self._correct_old)
         return val
 
@@ -309,7 +327,7 @@ class Champ(Texte):
             return
         if self.valider is None:
             # Validation basique par défaut
-            return (attendu == self.style('label'))
+            return (self.texte == attendu)
         else:
             # Méthode de validation personnalisée
-            return self.valider(self.style('label'), attendu)
+            return self.valider(self.texte, attendu)
