@@ -274,7 +274,7 @@ class Courbe(Courbe_generique):
         u"Remplace -inf et +inf par des valeurs numériques dépassant la fenêtre."
         if isnan(y0):
             return y0
-        xmin, xmax, ymin, ymax = self.__feuille__.fenetre
+        xmin, xmax, ymin, ymax = self.feuille.fenetre
         decalage = 100*(ymax - ymin)
         if isinf(y0):
             return (ymin - decalage) if (y0 < 0) else (ymax + decalage)

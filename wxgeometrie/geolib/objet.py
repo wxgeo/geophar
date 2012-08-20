@@ -139,7 +139,7 @@ class Rendu(object):
 
     @property
     def feuille(self):
-        return self.parent.__feuille__
+        return self.parent.feuille
 
     @property
     def canvas(self):
@@ -314,7 +314,7 @@ class Ref(object):
 
         if self._utilisateurs and not premiere_definition:
             # Attention, l'objet n'est pas forcément de type Objet (il peut-être de type int, str...)
-            feuille = self._utilisateurs[0].__feuille__
+            feuille = self._utilisateurs[0].feuille
             if feuille is not None and feuille._verrou_affichage is None:
                 feuille._a_rafraichir = []
             for user in self._utilisateurs:
@@ -447,8 +447,8 @@ class BaseArgument(object):
         # La valeur a été fixée par l'utilisateur, elle n'est donc plus définie par défaut :
         if self.nom in obj._valeurs_par_defaut:
             obj._valeurs_par_defaut.remove(self.nom)
-        if isinstance(value, Objet) and value.__feuille__ is None:
-            value.__feuille__ = obj.__feuille__
+        if isinstance(value, Objet) and value.feuille is None:
+            value.feuille = obj.feuille
         return value
 
     def _set(self, obj, value, premiere_definition = False):
@@ -532,8 +532,8 @@ class ArgumentNonModifiable(BaseArgument):
                             print_error("Conversion impossible :")
         if not isinstance(value, self.types):
             raise TypeError, "%s should be of type %s, and not %s." %(value, self.types, type(value))
-        if isinstance(value, Objet) and value.__feuille__ is None:
-            value.__feuille__ = obj.__feuille__
+        if isinstance(value, Objet) and value.feuille is None:
+            value.feuille = obj.feuille
         return value
 
     def __get__(self, obj, type=None):
@@ -624,12 +624,12 @@ class DescripteurFeuille(object):
         self.__contenu__[obj] = value
 
         for ancetre in obj._ancetres:
-            if ancetre.__feuille__ is None:
-                ancetre.__feuille__ = value
+            if ancetre.feuille is None:
+                ancetre.feuille = value
         label = obj._style.get("label")
 
         if isinstance(label, Formule):
-            label.__feuille__ = value
+            label.feuille = value
 
         if hasattr(obj, "_set_feuille") and value is not None:
             obj._set_feuille()
@@ -664,7 +664,7 @@ class Objet(object):
         ##'_valeurs_par_defaut', '__weakref__', '_style', '_hierarchie')
 
     __arguments__ = () # cf. geolib/__init__.py
-    __feuille__ = DescripteurFeuille()
+    feuille = DescripteurFeuille()
     __compteur_hierarchie__ = 0
     _prefixe_nom = "objet"
     _utiliser_coordonnees_approchees = False
@@ -790,7 +790,7 @@ class Objet(object):
 
         Ex: M1 pour un point, s1 pour un segment, etc.
         """
-        return self.__feuille__.nom_aleatoire(self)
+        return self.feuille.nom_aleatoire(self)
 
 
 # Fonctions d'initialisation de l'objet :
@@ -838,11 +838,11 @@ class Objet(object):
                     if correspondance:
                         for i in xrange(len(args)):
                             if "_" + self.__class__.__name__ + "__" + noms_args[i] in self._valeurs_par_defaut:
-                                self.__feuille__.objets[noms[i]] = args[i]
+                                self.feuille.objets[noms[i]] = args[i]
             # Échec du nommage intelligent : on se rabat sur des noms aléatoires
             if not correspondance:
                 for nom_arg in self._valeurs_par_defaut:
-                    self.__feuille__.objets[''] = getattr(self, nom_arg)
+                    self.feuille.objets[''] = getattr(self, nom_arg)
             self._valeurs_par_defaut = []
 
 
@@ -979,9 +979,9 @@ class Objet(object):
         u"Permet de renommer l'objet, et éventuellement de changer en même temps son style."
         nom_actuel = self.nom
         if nom_actuel != nom:
-            nom = self.__feuille__.objets._objet_renommable(self, nom)
-            self.__feuille__.objets._dereferencer(self)
-            self.__feuille__.objets[nom] = self
+            nom = self.feuille.objets._objet_renommable(self, nom)
+            self.feuille.objets._dereferencer(self)
+            self.feuille.objets[nom] = self
         self.style(**kw)
         self.figure_perimee()
 
@@ -998,7 +998,7 @@ class Objet(object):
     _nom = property(_nom, _nom)
 
     def nom(self):
-        if self.__feuille__:
+        if self.feuille:
             return self._nom
         return ""
 
@@ -1191,7 +1191,7 @@ class Objet(object):
 
     @property
     def __canvas__(self):
-        return self.__feuille__ and self.__feuille__.canvas
+        return self.feuille and self.feuille.canvas
 
     def _pixel(self, point = None):
         if point is None:
@@ -1200,14 +1200,14 @@ class Objet(object):
 
 
     def message(self, message):
-        if self.__feuille__:
-            self.__feuille__.message(message)
+        if self.feuille:
+            self.feuille.message(message)
         else:
             print message
 
     def erreur(self, message):
-        if self.__feuille__ is not None:
-            self.__feuille__.erreur(message)
+        if self.feuille is not None:
+            self.feuille.erreur(message)
         else:
             raise RuntimeError, str2(message)
 
@@ -1244,8 +1244,8 @@ class Objet(object):
 
     def figure_perimee(self):
         self.__figure_perimee = True
-        if self.__feuille__ is not None:
-            self.__feuille__.affichage_perime()
+        if self.feuille is not None:
+            self.feuille.affichage_perime()
         # NB: si, par ex., un objet est déplacé, son étiquette aussi.
         # On pourrait raffiner, mais dans le doute on rafraichit
         # toujours les coordonnées de l'étiquette avec l'objet.
@@ -1264,12 +1264,12 @@ class Objet(object):
         à chaque fois, mais seulement lorsqu'elle a été marquée comme périmée.
         La méthode interne ._creer_figure()
         """
-        if self.__figure_perimee and self.__feuille__ is not None:
+        if self.__figure_perimee and self.feuille is not None:
             with contexte(exact = False):
                 # Utiliser self.visible, et non self.style('visible'),
                 # car self.visible est customisé pour les étiquettes.
                 visible = self.visible
-                if self.existe and (visible or self.__feuille__.afficher_objets_caches):
+                if self.existe and (visible or self.feuille.afficher_objets_caches):
                     # Remet alpha à 1 par défaut :
                     # la transparence a peut-être été modifiée si l'objet était auparavant invisible
                     for artist in self._representation:
@@ -1423,12 +1423,12 @@ class Objet(object):
         # Le nom doit être récupéré AVANT la suppression.
         nom = self.nom
         nom_complet = self.nom_complet
-        if self.__feuille__ and nom in self.__feuille__.objets._suppression_impossible:
+        if self.feuille and nom in self.feuille.objets._suppression_impossible:
             self.erreur(u"%s est protégé." %nom_complet)
         else:
             self._supprime()
-            if self.__feuille__:
-                self.__feuille__.affichage_perime()
+            if self.feuille:
+                self.feuille.affichage_perime()
             self.message(u"%s supprimé." %nom_complet)
 
 
@@ -1443,8 +1443,8 @@ class Objet(object):
                 heritier._supprime()
             except KeyError:
                 pass # il se peut que l'objet n'existe déjà plus.
-        if self.__feuille__:
-            self.__feuille__.objets._dereferencer(self)
+        if self.feuille:
+            self.feuille.objets._dereferencer(self)
 ##            if self.__canvas__:
 ##                self.__canvas__.graph.supprimer(self._representation)
 ##                if self.etiquette is not None:
@@ -1455,14 +1455,14 @@ class Objet(object):
 
 
     def redefinir(self, valeur):
-        self.__feuille__.redefinir(self, valeur)
+        self.feuille.redefinir(self, valeur)
 
 
     def __repr__(self, styles = True):
         u"Méthode utilisée pour sauvegarder les objets."
         def formater(objet):
             if isinstance(objet, Objet):
-                if self.__feuille__ and self.__feuille__.contient_objet(objet):
+                if self.feuille and self.feuille.contient_objet(objet):
                     return objet.nom
                 else:
                     return objet.__repr__(styles)
@@ -1488,7 +1488,7 @@ class Objet(object):
         u"Méthode utilisée pour l'affichage (ne retourne pas les styles)."
         def formater(objet):
             if isinstance(objet, Objet):
-                if self.__feuille__ and self.__feuille__.contient_objet(objet):
+                if self.feuille and self.feuille.contient_objet(objet):
                     return objet.nom
 ##                #if isinstance(objet, Variable): return repr(objet.val())
             if isinstance(objet, (list, tuple)):
@@ -1505,7 +1505,7 @@ class Objet(object):
         """
         def formater(objet):
             if isinstance(objet, Objet):
-                if self.__feuille__ and self.__feuille__.contient_objet(objet):
+                if self.feuille and self.feuille.contient_objet(objet):
                     return objet.nom
                 else:
                     return objet._definition()
@@ -1705,17 +1705,17 @@ class Objet_avec_coordonnees(Objet):
                 return self._cache.get('xy', self._get_coordonnees) if self.existe else None
 
         try:
-            if self.__feuille__ is not None and self.__feuille__._verrou_affichage is None:
-                self.__feuille__._verrou_affichage = self
-                self.__feuille__._a_rafraichir = []
+            if self.feuille is not None and self.feuille._verrou_affichage is None:
+                self.feuille._verrou_affichage = self
+                self.feuille._a_rafraichir = []
             self._set_coordonnees(*couple)
-            if self.__feuille__ is not None and self.__feuille__._verrou_affichage is self:
-                for obj in no_twin(self.__feuille__._a_rafraichir):
+            if self.feuille is not None and self.feuille._verrou_affichage is self:
+                for obj in no_twin(self.feuille._a_rafraichir):
                     obj.figure_perimee()
-                self.__feuille__._objet_deplace = self
+                self.feuille._objet_deplace = self
         finally:
-            if self.__feuille__ is not None and self.__feuille__._verrou_affichage is self:
-                self.__feuille__._verrou_affichage = None
+            if self.feuille is not None and self.feuille._verrou_affichage is self:
+                self.feuille._verrou_affichage = None
 
     xy = coordonnees
 
@@ -1845,18 +1845,18 @@ class Objet_avec_equation(Objet):
             return self._cache.get('eq', self._get_equation) if self.existe else None
 
         try:
-            if self.__feuille__ is not None and self.__feuille__._verrou_affichage is None:
-                self.__feuille__._verrou_affichage = self
-                self.__feuille__._a_rafraichir = []
+            if self.feuille is not None and self.feuille._verrou_affichage is None:
+                self.feuille._verrou_affichage = self
+                self.feuille._a_rafraichir = []
             self._set_equation(*coefficients)
-            if self.__feuille__ is not None and self.__feuille__._verrou_affichage is self:
+            if self.feuille is not None and self.feuille._verrou_affichage is self:
                 # Une seule fois à la fin
-                for obj in no_twin(self.__feuille__._a_rafraichir):
+                for obj in no_twin(self.feuille._a_rafraichir):
                     obj.figure_perimee()
-                self.__feuille__._objet_deplace = self
+                self.feuille._objet_deplace = self
         finally:
-            if self.__feuille__ is not None and self.__feuille__._verrou_affichage is self:
-                self.__feuille__._verrou_affichage = None
+            if self.feuille is not None and self.feuille._verrou_affichage is self:
+                self.feuille._verrou_affichage = None
 
 
 
@@ -1897,17 +1897,17 @@ class Objet_avec_valeur(Objet):
             return self._cache.get('val', self._get_valeur) if self.existe else None
 
         try:
-            if self.__feuille__ is not None and self.__feuille__._verrou_affichage is None:
-                self.__feuille__._verrou_affichage = self
-                self.__feuille__._a_rafraichir = []
+            if self.feuille is not None and self.feuille._verrou_affichage is None:
+                self.feuille._verrou_affichage = self
+                self.feuille._a_rafraichir = []
             self._set_valeur(valeur)
-            if self.__feuille__ is not None and self.__feuille__._verrou_affichage is self:
-                for obj in no_twin(self.__feuille__._a_rafraichir):
+            if self.feuille is not None and self.feuille._verrou_affichage is self:
+                for obj in no_twin(self.feuille._a_rafraichir):
                     obj.figure_perimee()
-                self.__feuille__._objet_deplace = self
+                self.feuille._objet_deplace = self
         finally:
-            if self.__feuille__ is not None and self.__feuille__._verrou_affichage is self:
-                self.__feuille__._verrou_affichage = None
+            if self.feuille is not None and self.feuille._verrou_affichage is self:
+                self.feuille._verrou_affichage = None
 
     val = valeur
 

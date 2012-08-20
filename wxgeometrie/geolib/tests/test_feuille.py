@@ -180,11 +180,11 @@ def test_rattachement_objets():
     A=Point()
 #    assert(A.x == 0 and A.y == 0)
     x0, y0 = A.xy
-    assert(isinstance(Point.__feuille__, DescripteurFeuille))
-    assert(A.__feuille__ is None)
+    assert(isinstance(Point.feuille, DescripteurFeuille))
+    assert(A.feuille is None)
     f = Feuille()
     f.objets.A = A
-    assert(A.__feuille__ is f)
+    assert(A.feuille is f)
     assert(A.x != x0 and A.y != y0)
     xmin, xmax, ymin, ymax = f.fenetre
     assert(xmin <= A.x <= xmax and ymin <= A.y <= ymax)

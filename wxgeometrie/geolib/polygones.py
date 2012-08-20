@@ -186,7 +186,7 @@ class Polygone_generique(Objet):
 
        Les coordonnées aléatoires sont générées manière à ce que le polygone
        ait peu de chance d'être croisé, et occupe une bonne partie de la fenêtre d'affichage."""
-        xmin, xmax, ymin, ymax = self.__feuille__.fenetre
+        xmin, xmax, ymin, ymax = self.feuille.fenetre
         x0 = (xmin + xmax)/2
         y0 = (ymin + ymax)/2
         rx = (xmax - xmin)/2
@@ -243,7 +243,7 @@ class Polygone_generique(Objet):
                         if mode == "points":
                             if i < len(args) and is_in(args[i], self.__points):
                                 if "_" + self.__class__.__name__ + "__" + noms_args[i] in self._valeurs_par_defaut:
-                                    self.__feuille__.objets[noms[i]] = args[i]
+                                    self.feuille.objets[noms[i]] = args[i]
                             else:
                                 mode = "sommets"
                         if mode == "sommets":
@@ -252,20 +252,20 @@ class Polygone_generique(Objet):
                 # Échec du nommage intelligent : on se rabat sur des noms aléatoires
                 else:
                     for nom_arg in self._valeurs_par_defaut:
-                        self.__feuille__.objets[''] = getattr(self, nom_arg)
+                        self.feuille.objets[''] = getattr(self, nom_arg)
                 self._valeurs_par_defaut = []
 
         # On référence automatiquement tous les côtés et sommets du polygone dans la feuille.
         # (En particulier, en mode graphique, cela permet de faire apparaitre tous les sommets du polygone lorsque celui-ci est créé)
-        points_feuille = self.__feuille__.objets.lister(Point_generique)
+        points_feuille = self.feuille.objets.lister(Point_generique)
         noms = self._style.get("_noms_", {"sommets": n*("", ), "cotes": n*("", )})
         for i in xrange(n):
             # On exclue les sommets qui seraient déjà dans la feuille :
             if not is_in(self.__points[i], points_feuille):
                 nom = noms["sommets"][i]
-                self.__feuille__.objets[nom] = self.__sommets[i]
+                self.feuille.objets[nom] = self.__sommets[i]
             nom = noms["cotes"][i]
-            self.__feuille__.objets[nom] = self.__cotes[i]
+            self.feuille.objets[nom] = self.__cotes[i]
         # Exceptionnellement, il ne faut pas faire appel à la méthode Objet._set_feuille.
 
 
@@ -466,12 +466,12 @@ class Polygone(Polygone_generique):
             noms = re.findall(RE_NOM_OBJET, self._nom)
             if "".join(noms) == self._nom and len(self.__points) == len(noms):
                 for arg, nom in zip(self.__points, noms):
-                    if self.__feuille__.objets.has_key(nom):
+                    if self.feuille.objets.has_key(nom):
                         nom = ''
-                    self.__feuille__.objets[nom] = arg
+                    self.feuille.objets[nom] = arg
             else:
                 for point in self.__points:
-                    self.__feuille__.objets[''] = point
+                    self.feuille.objets[''] = point
         Objet._set_feuille(self)
 
 
@@ -1107,7 +1107,7 @@ class PrevisualisationPolygone(Polygone_generique):
     points = property(_get_points, _set_points)
 
     # De même, inutile de passer par un descripteur de type 'DescripteurFeuille' pour l'attribut '__feuille__'
-    __feuille__ = None
+    feuille = None
 
     def __init__(self, *points):
         Objet.__init__(self)

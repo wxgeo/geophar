@@ -236,7 +236,7 @@ class Polyedre_generique(Objet):
                     if mode == "points":
                         if i < len(args) and is_in(args[i], self.__points):
                             if "_" + self.__class__.__name__ + "__" + noms_args[i] in self._valeurs_par_defaut:
-                                self.__feuille__.objets[noms[i]] = args[i]
+                                self.feuille.objets[noms[i]] = args[i]
                         else:
                             mode = "sommets"
                     if mode == "sommets":
@@ -246,21 +246,21 @@ class Polyedre_generique(Objet):
             # Échec du nommage intelligent : on se rabat sur des noms aléatoires
             else:
                 for nom_arg in self._valeurs_par_defaut:
-                    self.__feuille__.objets[''] = getattr(self, nom_arg)
+                    self.feuille.objets[''] = getattr(self, nom_arg)
             self._valeurs_par_defaut = []
 
         # On référence automatiquement tous les côtés et sommets du polyèdre dans la feuille.
         # (En particulier, en mode graphique, cela permet de faire apparaitre tous les sommets du polyèdre lorsque celui-ci est créé)
-        points_feuille = self.__feuille__.objets.lister(Point_generique)
+        points_feuille = self.feuille.objets.lister(Point_generique)
         noms = self._style.get("_noms_", {"sommets": n*("", ), "aretes": p*("", )})
         for i in xrange(n):
             # On exclue les sommets qui seraient déjà dans la feuille :
             if not is_in(self.__points[i], points_feuille):
                 nom = noms["sommets"][i]
-                self.__feuille__.objets[nom] = self.__sommets[i]
+                self.feuille.objets[nom] = self.__sommets[i]
         for i in xrange(p):
             nom = noms["aretes"][i]
-            self.__feuille__.objets[nom] = self.__aretes[i]
+            self.feuille.objets[nom] = self.__aretes[i]
         # Exceptionnellement, il ne faut pas faire appel à la méthode Objet._set_feuille.
 
 

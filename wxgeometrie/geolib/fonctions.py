@@ -139,14 +139,14 @@ class Fonction(Objet_numerique):
         Retourne deux listes (list) composées alternativement d'instructions et d'objets de la feuille,
         et un ensemble (set) constitué des objets de la feuille mis en jeu dans le code.
         (... à documenter ...)"""
-        if self.__feuille__ is not None:
+        if self.feuille is not None:
             try:
                 with contexte(afficher_messages = False):
                     liste_expression = re.split(self.__re, expression)
                     liste_ensemble = re.split(self.__re, ensemble)
                     objets = set()
                     for i in xrange(1, len(liste_expression), 2):
-                        obj = self.__feuille__.objets[liste_expression[i]]
+                        obj = self.feuille.objets[liste_expression[i]]
                         if isinstance(obj, Objet):
                             liste_expression[i] = obj
                             objets.add(obj)
@@ -154,7 +154,7 @@ class Fonction(Objet_numerique):
                                 print self,
                                 raise RuntimeError, "Definition circulaire dans %s : l'objet %s se retrouve dependre de lui-meme." %(self, obj)
                     for i in xrange(1, len(liste_ensemble), 2):
-                        obj = self.__feuille__.objets[liste_ensemble[i]]
+                        obj = self.feuille.objets[liste_ensemble[i]]
                         if isinstance(obj, Objet):
                             liste_ensemble[i] = obj
                             objets.add(obj)
@@ -167,7 +167,7 @@ class Fonction(Objet_numerique):
                     raise
                 # L'erreur peut-être due à la présence de code LaTeX dans la fonction ;
                 # on tente un 2e essai après traduction du code LaTeX éventuel.
-                expression = traduire_formule(expression, fonctions = self.__feuille__.objets)
+                expression = traduire_formule(expression, fonctions = self.feuille.objets)
                 return self._test_dependance_circulaire(expression, ensemble, deuxieme_essai = True)
         return None, None, None
 
@@ -179,7 +179,7 @@ class Fonction(Objet_numerique):
         car elle ne doit être exécutée que si la redéfinition de la variable va effectivement avoir lieu,
         c'est-à-dire si tout le processus précédent s'est exécuté sans erreur."""
         #print "compilation !"
-        if self.__feuille__ is not None:
+        if self.feuille is not None:
             self.__liste_expression = liste_expression
             self.__liste_ensemble = liste_ensemble
             self.__fonctions = []
@@ -189,15 +189,15 @@ class Fonction(Objet_numerique):
             # TODO: Prévoir le cas où les deux listes ne sont pas de même longueur
             n = min(len(expressions), len(ensembles))
             for i in xrange(n):
-                express = traduire_formule(expressions[i], fonctions = self.__feuille__.objets)
+                express = traduire_formule(expressions[i], fonctions = self.feuille.objets)
                 # On force ensuite la variable à apparaitre dans l'expression de la formule.
                 # C'est important quand la fonction est constante :
                 # l'image d'un tableau par la fonction doit être un tableau, et non la constante.
                 if self.__variable not in express:
                     express += "+0.*" + self.__variable
-                self.__fonctions.append(eval("lambda " + self.__variable + ":" + express, self.__feuille__.objets))
+                self.__fonctions.append(eval("lambda " + self.__variable + ":" + express, self.feuille.objets))
                 ensemb = formatage_ensemble(ensembles[i], preformatage = False)
-                self.__unions.append(eval(ensemb, self.__feuille__.objets))
+                self.__unions.append(eval(ensemb, self.feuille.objets))
 
             # on supprime la variable de la liste des vassaux pour les objets dont elle ne dépendra plus desormais:
             for objet in self._ancetres:
@@ -258,8 +258,8 @@ class Fonction(Objet_numerique):
         if not isinstance(objet, Fonction):
             objet = self._convertir(objet)
         if isinstance(objet, Fonction):
-            if objet.__feuille__ is not None: # ??
-                objet.__feuille__ = self.__feuille__
+            if objet.feuille is not None: # ??
+                objet.feuille = self.feuille
             self.modifier_expression_et_ensemble(objet.expression, objet.ensemble)
         else:
             raise TypeError, "l'objet n'est pas une fonction."

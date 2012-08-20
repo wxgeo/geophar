@@ -211,7 +211,7 @@ class Dictionnaire_objets(dict):
     les inscrire dans `_noms_interdits`.
     """
 
-    __slots__ = ('__feuille__', '__timestamp', '__renommer_au_besoin', '__tmp_dict',
+    __slots__ = ('feuille', '__timestamp', '__renommer_au_besoin', '__tmp_dict',
                  '_noms_restreints', '_noms_interdits', '_suppression_impossible')
 
     _noms_restreints = {re.compile('f[0-9]+(_prime)*$'): Fonction, 'xmin': XMinVar,
@@ -224,7 +224,7 @@ class Dictionnaire_objets(dict):
     _suppression_impossible = ['xmin', 'xmax', 'ymin', 'ymax', 'dpx', 'dpy']
 
     def __init__(self, feuille):
-        object.__setattr__(self, '__feuille__', feuille)
+        object.__setattr__(self, 'feuille', feuille)
         object.__setattr__(self, '_Dictionnaire_objets__timestamp', 0)
         object.__setattr__(self, '_Dictionnaire_objets__renommer_au_besoin', False)
         object.__setattr__(self, '_Dictionnaire_objets__tmp_dict', {})
@@ -265,10 +265,10 @@ class Dictionnaire_objets(dict):
                     x = Symbol("x"), y = Symbol("y"), z = Symbol("z"), \
                     t = Symbol("t"))
 
-        self.update(pause = self.__feuille__.pause, erreur = self.__feuille__.erreur,
-                    effacer = self.__feuille__.effacer,
-                    coder = self.__feuille__.coder, effacer_codage = self.__feuille__.effacer_codage,
-                    nettoyer = self.__feuille__.nettoyer,
+        self.update(pause = self.feuille.pause, erreur = self.feuille.erreur,
+                    effacer = self.feuille.effacer,
+                    coder = self.feuille.coder, effacer_codage = self.feuille.effacer_codage,
+                    nettoyer = self.feuille.nettoyer,
                     )
         dict.__setitem__(self, 'None', None)
         dict.__setitem__(self, 'True', True)
@@ -280,7 +280,7 @@ class Dictionnaire_objets(dict):
                  'textes': 'Texte_generique', 'vecteurs': 'Vecteur_generique', 'variables': 'Variable'}
         d = {}
         for typ in types:
-            d[typ] = Liste_objets(self.__feuille__, getattr(G, types[typ]))
+            d[typ] = Liste_objets(self.feuille, getattr(G, types[typ]))
         self.update(d)
 
 
@@ -317,8 +317,8 @@ class Dictionnaire_objets(dict):
         """
 
         # Paramètres du repère -> géré directement par la feuille
-        if nom in self.__feuille__._parametres_repere:
-            return setattr(self.__feuille__, nom, valeur)
+        if nom in self.feuille._parametres_repere:
+            return setattr(self.feuille, nom, valeur)
             # Ne pas oublier le 'return' !
 
         nom = self.__convertir_nom(nom) or '_'
@@ -335,15 +335,15 @@ class Dictionnaire_objets(dict):
         if self.has_key(nom):
             try:
                 # Pour que les variables puissent être interprétées, il faut que la feuille soit donnée
-                if isinstance(valeur, Objet) and valeur.__feuille__ is None:
-                    valeur.__feuille__ = self.__feuille__
+                if isinstance(valeur, Objet) and valeur.feuille is None:
+                    valeur.feuille = self.feuille
                 self[nom]._update(valeur)
                 #self.__refresh_needed(nom)
                 return # on quitte, car le nom doit toujours référer à l'objet initial !
             except Exception:
                 print_error()
                 if self.__renommer_au_besoin:
-                    new = self.__feuille__.nom_aleatoire(valeur, prefixe=nom)
+                    new = self.feuille.nom_aleatoire(valeur, prefixe=nom)
                     print("Warning: '%s' renommé en '%s'." %(nom, new))
                     nom = self.__tmp_dict[nom] = new
                 else:
@@ -400,7 +400,7 @@ class Dictionnaire_objets(dict):
 
         # On enregistre le nom (éventuellement provisoire) car la méthode '_set_feuille' de l'objet en a besoin.
         valeur._nom = nom
-        valeur.__feuille__ = self.__feuille__
+        valeur.feuille = self.feuille
 
         if nom == "_":
             # Attention, la feuille doit être déjà definie !
@@ -423,8 +423,8 @@ class Dictionnaire_objets(dict):
         valeur._timestamp = self.__timestamp
         object.__setattr__(self, "_Dictionnaire_objets__timestamp", self.__timestamp + 1)
 ##        valeur.creer_figure(True)
-        self.__feuille__._actualiser_liste_objets = True
-        self.__feuille__.affichage_perime()
+        self.feuille._actualiser_liste_objets = True
+        self.feuille.affichage_perime()
 
 
 
@@ -433,8 +433,8 @@ class Dictionnaire_objets(dict):
         # renommage temporaire :
         nom = self.__tmp_dict.get(nom, nom)
         # (utilisé en cas de chargement d'un fichier ancien lors d'un conflit de nom).
-        if nom in self.__feuille__._parametres_repere:
-            return getattr(self.__feuille__, nom)
+        if nom in self.feuille._parametres_repere:
+            return getattr(self.feuille, nom)
         elif nom == "objets":
             return self()
         elif nom == "noms":
@@ -467,8 +467,8 @@ class Dictionnaire_objets(dict):
 
 
     def __delitem__(self, nom):
-        if nom in self.__feuille__._parametres_repere:
-            return delattr(self.__feuille__, nom)
+        if nom in self.feuille._parametres_repere:
+            return delattr(self.feuille, nom)
             # ne pas oublier le 'return'
         elif nom == "_":
             self.__derniere_valeur().supprimer()
@@ -478,8 +478,8 @@ class Dictionnaire_objets(dict):
             except KeyError:
                 if param.debug:
                     print_error()
-        self.__feuille__._actualiser_liste_objets = True
-        self.__feuille__.affichage_perime()
+        self.feuille._actualiser_liste_objets = True
+        self.feuille.affichage_perime()
 
 
     __setattr__ = __setitem__
@@ -545,7 +545,7 @@ class Dictionnaire_objets(dict):
             if kw.get('skip_err'):
                 return
             if self.__renommer_au_besoin:
-                new = self.__feuille__.nom_aleatoire(objet)
+                new = self.feuille.nom_aleatoire(objet)
                 print(u"Warning: '%s' renommé en '%s'." %(nom, new))
                 return new
             else:
@@ -598,16 +598,16 @@ class Dictionnaire_objets(dict):
 
 
     def __str__(self):
-        return "Gestionnaire d'objets de la feuille '" + self.__feuille__.nom \
+        return "Gestionnaire d'objets de la feuille '" + self.feuille.nom \
                     + "': " + str(self.noms)
 
     def __repr__(self):
-        return "Gestionnaire d'objets de la feuille '" + self.__feuille__.nom \
+        return "Gestionnaire d'objets de la feuille '" + self.feuille.nom \
                     + "': " + repr(self.noms)
 
     def __derniere_valeur(self):
         u"Dernier objet créé."
-        return max(self.__feuille__.liste_objets(True), key = lambda obj:obj._timestamp)
+        return max(self.feuille.liste_objets(True), key = lambda obj:obj._timestamp)
 
 
 
@@ -1264,7 +1264,7 @@ class Feuille(object):
             if objet is None:
                 self._objets_temporaires = []
             else:
-                objet.__feuille__ = self
+                objet.feuille = self
                 self._objets_temporaires = [objet]
         return self._objets_temporaires
 
@@ -1292,7 +1292,7 @@ class Feuille(object):
     def point_temporaire(self):
         if self.__point_temporaire__ is None:
             self.__point_temporaire__ = Point()
-            self.__point_temporaire__.__feuille__ = self
+            self.__point_temporaire__.feuille = self
         return self.__point_temporaire__
 
     def start(self):

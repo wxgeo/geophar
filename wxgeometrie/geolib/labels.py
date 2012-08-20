@@ -47,8 +47,8 @@ class Label_generique(Texte_generique):
     _initialisation_minimale = True
 
     @property
-    def __feuille__(self):
-        return self.parent.__feuille__
+    def feuille(self):
+        return self.parent.feuille
 
     def __init__(self, parent):
         Texte_generique.__init__(self)

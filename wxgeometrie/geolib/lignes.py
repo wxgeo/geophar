@@ -878,7 +878,7 @@ class Tangente(Perpendiculaire):    # À REDÉFINIR ?
         # si l'on crée 2 fois de suite un tangente de mêmes cercle et point,
         # alors on doit obtenir les deux tangentes différentes possibles.
         if "_Tangente__angle_positif" in self._valeurs_par_defaut:
-            for objet in self.__feuille__.objets.lister(type = Tangente):
+            for objet in self.feuille.objets.lister(type = Tangente):
                 if objet._Tangente__cercle is self.__cercle and objet._Tangente__point is self.__point:
                     # on crée l'autre tangente
                     self.__angle_positif = not objet._Tangente__angle_positif

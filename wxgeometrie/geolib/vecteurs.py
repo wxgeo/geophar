@@ -256,7 +256,7 @@ class Vecteur_libre(Objet_avec_coordonnees_modifiables, Vecteur_generique):
 
 
     def _set_feuille(self):
-        xmin, xmax, ymin, ymax = self.__feuille__.fenetre
+        xmin, xmax, ymin, ymax = self.feuille.fenetre
         if "_Vecteur_libre__x" in self._valeurs_par_defaut:
             self.__x.val =  uniform(xmin, xmax)
 #            self._valeurs_par_defaut.discard("_Vecteur_libre__x")
@@ -392,7 +392,7 @@ class Representant(Vecteur):
 
     def _set_feuille(self):
         nom = self._style.get("_noms_",  {"extremite": ""})["extremite"]
-        self.__feuille__.objets[nom] = self.__extremite
+        self.feuille.objets[nom] = self.__extremite
 
 
     def __repr__(self, *args, **kwargs):

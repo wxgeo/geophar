@@ -236,7 +236,7 @@ class Texte(Texte_generique, Objet_avec_coordonnees_modifiables):
 
 
     def _set_feuille(self):
-        xmin, xmax, ymin, ymax = self.__feuille__.fenetre
+        xmin, xmax, ymin, ymax = self.feuille.fenetre
         if "_Texte__x" in self._valeurs_par_defaut:
             self.__x = uniform(xmin, xmax)
 #            self._valeurs_par_defaut.discard("_Point__x")

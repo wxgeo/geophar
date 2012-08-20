@@ -42,9 +42,9 @@ class Formule(object):
         self.__feuille = value
         liste = self._contenu[:]
         for i in xrange(1, len(liste), 2):
-            self._contenu[i].__feuille__ = value
+            self._contenu[i].feuille = value
 
-    __feuille__ = property(_get_feuille, _set_feuille)
+    feuille = property(_get_feuille, _set_feuille)
 
     def __init__(self, parent, chaine = ""):
         from .variables import Variable
@@ -76,7 +76,7 @@ class Formule(object):
         # - si la variable est calculable, on renvoie la valeur de la variable (et on met à jour son cache)
         # - sinon, on renvoie le cache s'il s'agit de repr, et <?> s'il s'agit de str.
 
-        self.__feuille__ = self.parent.__feuille__
+        self.feuille = self.parent.feuille
 
 
     @property

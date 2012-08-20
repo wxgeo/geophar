@@ -1330,7 +1330,7 @@ class BarreOutils(QWidget):
     def npoints(self, classe, n=2, nom_style='', **kw):
         u"Création d'un objet de classe 'classe' ayant 'n' points comme arguments. Le nom de l'objet sera composé de 'prefixe' + 1 numéro."
         if self.test(True, **kw):
-            self.cache = [obj for obj in self.cache if obj.nom and obj.__feuille__ is self.feuille_actuelle]
+            self.cache = [obj for obj in self.cache if obj.nom and obj.feuille is self.feuille_actuelle]
             selection = kw["selection"]
 
             if isinstance(selection, Point_generique):

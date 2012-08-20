@@ -72,7 +72,7 @@ class BarreOutilsGraphes(BarreOutils):
     def arc(self, classe, nom_style = '', **kw):
         u"Création d'un arc défini par 3 points. Un style spécial est appliqué au point intermédaire."
         if self.test(True, **kw):
-            self.cache = [obj for obj in self.cache if obj.nom and obj.__feuille__ is self.feuille_actuelle]
+            self.cache = [obj for obj in self.cache if obj.nom and obj.feuille is self.feuille_actuelle]
             selection = kw["selection"]
 
             n = len(self.cache)

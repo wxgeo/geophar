@@ -71,8 +71,8 @@ class Variable(Variable_generique):
 
     def _set_contenu(self, value):
         if isinstance(value, Variable):
-            if value.__feuille__ is not None:
-                value.__feuille__ = self.__feuille__
+            if value.feuille is not None:
+                value.feuille = self.feuille
             if value._Variable__fonction is None:
                 return value.contenu
             return value.val
@@ -108,11 +108,11 @@ class Variable(Variable_generique):
         Retourne une liste composée alternativement d'instructions et d'objets de la feuille,
         et un ensemble constitué des objets de la feuille mis en jeu dans le code.
         (... à documenter ...)"""
-        if isinstance(valeur, basestring) and self.__feuille__ is not None:
+        if isinstance(valeur, basestring) and self.feuille is not None:
             liste = re.split(self.__re, valeur)
             ensemble = set()
             for i in xrange(1, len(liste), 2):
-                obj = self.__feuille__.objets[liste[i]]
+                obj = self.feuille.objets[liste[i]]
                 if isinstance(obj, Objet):
                     liste[i] = obj
                     ensemble.add(obj)
@@ -129,10 +129,10 @@ class Variable(Variable_generique):
         La compilation doit toujours avoir lieu à la fin de la procédure de redéfinition de la variable,
         car elle ne doit être exécutée que si la redéfinition de la variable va effectivement avoir lieu,
         c'est-à-dire si tout le processus précédent s'est exécuté sans erreur."""
-        if self._type == "compose" and self.__feuille__ is not None:
+        if self._type == "compose" and self.feuille is not None:
 ##            re.findall(self.__re,  self.valeur)
             self.__liste = liste
-            self.__fonction = eval("lambda:" + self.__contenu, self.__feuille__.objets)
+            self.__fonction = eval("lambda:" + self.__contenu, self.feuille.objets)
             # on supprime la variable de la liste des vassaux pour les objets dont elle ne dépendra plus desormais:
             for objet in self._ancetres:
                 objet.vassaux.remove(self)
@@ -231,8 +231,8 @@ class Variable(Variable_generique):
         if not isinstance(objet, Variable):
             objet = self._convertir(objet)
         if isinstance(objet, Variable):
-            if objet.__feuille__ is not None:
-                objet.__feuille__ = self.__feuille__
+            if objet.feuille is not None:
+                objet.feuille = self.feuille
             if objet._Variable__fonction is None:
                 self.contenu = objet.contenu
             else:
@@ -243,17 +243,17 @@ class Variable(Variable_generique):
 
 
     def varier(self, debut = 0, fin = 1, pas = 0.02, periode = 0.03):
-        if self.__feuille__ is not None:
-            self.__feuille__.start()
+        if self.feuille is not None:
+            self.feuille.start()
             for i in fullrange(debut, fin, pas):
                 t = time.clock()
                 self.val = i
                 while time.clock() < t + periode:
                     souffler()
-                    if self.__feuille__._stop:
+                    if self.feuille._stop:
                         break
                 souffler()
-                if self.__feuille__._stop:
+                if self.feuille._stop:
                     break
 
 
@@ -355,9 +355,9 @@ class Variable_affichage(Variable_generique):
         imposée à l'affichage (par exemple, un repère orthonormé).
         Dans ce cas, il se peut que l'affichage à l'écran (canvas) dépasse
         la taille de la fenêtre de la feuille."""
-        if self.__feuille__.canvas:
-            return getattr(self.__feuille__.canvas, self.parametre)
-        return getattr(self.__feuille__, self.parametre)
+        if self.feuille.canvas:
+            return getattr(self.feuille.canvas, self.parametre)
+        return getattr(self.feuille, self.parametre)
 
     def __repr__(self, **kw):
         return repr(self._get_valeur())
@@ -366,7 +366,7 @@ class Variable_affichage(Variable_generique):
         return str(self._get_valeur())
 
     def _update(self, objet):
-        setattr(self.__feuille__, self.parametre, objet)
+        setattr(self.feuille, self.parametre, objet)
 
     _set_valeur = _update
 
@@ -412,14 +412,14 @@ class Dpx(Pixel_unite):
     u"""Un pixel unité en abscisse."""
 
     def _get_valeur(self):
-        if self.__feuille__.canvas:
-            return self.__feuille__.canvas.dpix2coo(1, 0)[0]
+        if self.feuille.canvas:
+            return self.feuille.canvas.dpix2coo(1, 0)[0]
 
 
 class Dpy(Pixel_unite):
     u"""Un pixel unité en ordonnée."""
 
     def _get_valeur(self):
-        if self.__feuille__.canvas:
-            return self.__feuille__.canvas.dpix2coo(0, -1)[1]
+        if self.feuille.canvas:
+            return self.feuille.canvas.dpix2coo(0, -1)[1]
 

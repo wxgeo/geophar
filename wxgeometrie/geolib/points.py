@@ -157,28 +157,28 @@ class Point_generique(Objet_avec_coordonnees):
 
 
     def relier_axe_x(self):
-        if self.__feuille__ is not None:
+        if self.feuille is not None:
             from .lignes import Segment
             with self.__canvas__.geler_affichage(actualiser = True):
                 M = Point("%s.x" %self.nom, 0, fixe = True)
                 M.label("${%s.x}$" %self.nom, formule = True)
                 s = Segment(self, M, style = ":")
-                self.__feuille__.objets.add(M)
-                self.__feuille__.objets.add(s)
+                self.feuille.objets.add(M)
+                self.feuille.objets.add(s)
 
     def relier_axe_y(self):
-        if self.__feuille__ is not None:
+        if self.feuille is not None:
             from .lignes import Segment
             with self.__canvas__.geler_affichage(actualiser = True):
                 M = Point(0, "%s.y" %self.nom, fixe = True)
                 M.label("${%s.y}$" %self.nom, formule = True)
                 s = Segment(self, M, style = ":")
-                self.__feuille__.objets.add(M)
-                self.__feuille__.objets.add(s)
+                self.feuille.objets.add(M)
+                self.feuille.objets.add(s)
 
 
     def relier_axes(self):
-        if self.__feuille__ is not None:
+        if self.feuille is not None:
             with self.__canvas__.geler_affichage(actualiser = True):
                 self.relier_axe_x()
                 self.relier_axe_y()
@@ -239,7 +239,7 @@ class Point(Objet_avec_coordonnees_modifiables, Point_generique):
 
 
     def _set_feuille(self):
-        xmin, xmax, ymin, ymax = self.__feuille__.fenetre
+        xmin, xmax, ymin, ymax = self.feuille.fenetre
         if "_Point__x" in self._valeurs_par_defaut:
             self.__x = uniform(xmin, xmax)
 #                self._valeurs_par_defaut.discard("_Point__x")

@@ -180,7 +180,7 @@ class Intersection_droite_cercle(Intersection_generique): # ATTENTION, il y a de
 
     def _set_feuille(self):
         if "_Intersection_droite_cercle__premier_point" in self._valeurs_par_defaut:
-            for objet in self.__feuille__.objets.lister(type = Intersection_droite_cercle):
+            for objet in self.feuille.objets.lister(type = Intersection_droite_cercle):
                 if objet._Intersection_droite_cercle__droite is self.__droite and objet._Intersection_droite_cercle__cercle is self.__cercle:
                     # une intersection existe déjà, on va construire l'autre
                     self.__premier_point = not objet._Intersection_droite_cercle__premier_point
@@ -267,7 +267,7 @@ class Intersection_cercles(Intersection_generique): # ATTENTION, il y a des modi
         # Lorsque l'utilisateur crée deux fois de suite un point d'intersection,
         # ce ne doit pas être le même qui est créé deux fois de suite.
         if "_Intersection_cercles__angle_positif" in self._valeurs_par_defaut:
-            for objet in self.__feuille__.objets.lister(type = Intersection_cercles):
+            for objet in self.feuille.objets.lister(type = Intersection_cercles):
                 if objet._Intersection_cercles__cercle1 is self.__cercle1 and objet._Intersection_cercles__cercle2 is self.__cercle2:
                     # pour ne pas créer le même point.
                     self.__angle_positif = not objet._Intersection_cercles__angle_positif

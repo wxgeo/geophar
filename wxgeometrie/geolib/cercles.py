@@ -199,7 +199,7 @@ class Arc_generique(Cercle_Arc_generique):
     def _t(self):
         u, v = self._intervalle()
         x, y = self.__centre.coordonnees
-        xmin, xmax, ymin, ymax = self.__feuille__.fenetre
+        xmin, xmax, ymin, ymax = self.feuille.fenetre
         w = 3*(xmax - xmin)
         h = 3*(ymax - ymin)
         if xmin - w < x < xmax + w and ymin - h < y < ymax + h:
@@ -481,7 +481,7 @@ class Cercle_generique(Cercle_Arc_generique):
 
     def _t(self):
         x, y = self.__centre.coordonnees
-        xmin, xmax, ymin, ymax = self.__feuille__.fenetre
+        xmin, xmax, ymin, ymax = self.feuille.fenetre
         w = 3*(xmax - xmin)
         h = 3*(ymax - ymin)
         if xmin - w < x < xmax + w and ymin - h < y < ymax + h:
@@ -590,11 +590,11 @@ class Cercle_rayon(Cercle_generique):
 
     def _set_feuille(self):
         if "_Cercle__rayon" in self._valeurs_par_defaut:
-            xmin, xmax, ymin, ymax = self.__feuille__.fenetre
+            xmin, xmax, ymin, ymax = self.feuille.fenetre
             self.__rayon = .5*uniform(0, min(abs(xmin - xmax), abs(ymin - ymax)))
 #            self._valeurs_par_defaut.discard("_Cercle__rayon")
         if "_Cercle__centre" in self._valeurs_par_defaut:
-            xmin, xmax, ymin, ymax = self.__feuille__.fenetre
+            xmin, xmax, ymin, ymax = self.feuille.fenetre
             r = self.__rayon
             self.__centre.coordonnees = uniform(xmin + r, xmax - r), uniform(ymin + r, ymax - r)
 #            self._valeurs_par_defaut.discard("_Cercle__centre")
