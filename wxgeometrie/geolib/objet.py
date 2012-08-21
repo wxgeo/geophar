@@ -58,12 +58,6 @@ G = _()
 ###########################################################################
 
 
-# NOTE : les vassaux ne sont pas parfaitement bien geres :
-#    Un objet ne doit pas etre a la fois vassal et suzerain d'un autre.
-#    Une telle situation provoquerait un plantage lors de la suppression d'un des deux objets (boucle recursive infinie).
-#    Ceci ne pose a priori pas de problemes, sauf un peu de gaspillage de memoire :
-#    en effet, les objets geometriques intermediaires introduits pour construire un objet ne sont pas systematiquement detruits quand l'objet est supprime.
-
 
 TYPES_ENTIERS = (long, int, Integer,)
 TYPES_REELS = TYPES_ENTIERS + (float, Basic, )
@@ -90,9 +84,7 @@ RE_NOM_OBJET = re.compile("[A-Z][^A-Z]*")
 
 RE_NOM_DE_POINT="[A-Z]((_[{][0-9]+[}])|(_[0-9]+)|([']+))?"
 
-##PI = math.pi
-##if sympy is not None:
-##    PI = sympy.pi
+
 
 def issympy(*expressions):
     return all(isinstance(e, Basic) for e in expressions)
@@ -328,12 +320,12 @@ class Ref(object):
             for user in self._utilisateurs:
                 # 1. Il ne dépendent plus de l'ancien objet, mais du nouveau
                 if isinstance(ancien_objet, Objet):
-                    ancien_objet.vassaux.remove(user)
+                    ancien_objet.enfants.remove(user)
                 if isinstance(nouvel_objet, Objet):
-                    nouvel_objet.vassaux.append(user)
+                    nouvel_objet.enfants.append(user)
                 # 2. Il faut mettre à jour la liste de leurs ancêtres
                 # (auquel cas, il ne s'agit pas vraiment d'une redéfinition des arguments)
-                user._recenser_les_ancetres()
+                user._recenser_les_parents()
                 # 3. Tous les héritiers doivent également subir une mise à jour
                 heritiers = user._heritiers()
                 user._heritiers_a_recalculer(heritiers)
@@ -344,7 +336,6 @@ class Ref(object):
                 a_rafraichir = no_twin(feuille._a_rafraichir)
                 for obj in a_rafraichir:
                     obj.figure_perimee()
-##                feuille.affichage_perime()
 
 
     @property
@@ -631,9 +622,9 @@ class DescripteurFeuille(object):
     def __set__(self, obj, value):
         self.__contenu__[obj] = value
 
-        for ancetre in obj._ancetres:
-            if ancetre.feuille is None:
-                ancetre.feuille = value
+        for parent in obj._parents:
+            if parent.feuille is None:
+                parent.feuille = value
         label = obj._style.get("label")
 
         if isinstance(label, Formule):
@@ -662,18 +653,9 @@ class Objet(object):
             instance._frozen = True
             return instance
 
-    ##__slots__ = ('__arguments__', '__feuille__', '__compteur_hierarchie__',
-        ##'_prefixe_nom', '_utiliser_coordonnees_approchees', '_label_temporaire',
-        ##'_affichage_depend_de_la_fenetre',
-        ##'__contexte', '_style_defaut', '_initialisation_minimale',
-        ##'etiquette', '_pointable', '_modifiable', '_deplacable', '__nom', 'nom_latex',
-        ##'_cache', '_representation', '_trace', '_trace_x', '_trace_y', '_gras',
-        ##'__figure_perimee', '_label_correct', 'rendu', 'vassaux', '_ancetres',
-        ##'_valeurs_par_defaut', '__weakref__', '_style', '_hierarchie')
-
-    __arguments__ = () # cf. geolib/__init__.py
+    _noms_arguments = () # cf. geolib/__init__.py
     feuille = DescripteurFeuille()
-    __compteur_hierarchie__ = 0
+    _compteur_hierarchie = 0
     _prefixe_nom = "objet"
     _utiliser_coordonnees_approchees = False
     _label_temporaire = None
@@ -750,7 +732,7 @@ class Objet(object):
             self.rendu = Rendu(self)
 
             # GESTION DES DEPENDANCES
-            self.vassaux = WeakList()   # lors de sa création, l'objet n'a, lui, aucun vassal (aucun objet ne dépend de lui)
+            self.enfants = WeakList()   # lors de sa création, l'objet n'a, lui, aucun vassal (aucun objet ne dépend de lui)
             # La création d'une WeakList plutôt que d'une liste permet d'éviter les pertes de mémoire.
             # ATTENTION : ne pas utiliser un objet WeakSet.
             # En effet, il se peut qu'un objet apparaisse plusieurs fois comme vassal, si il apparait plusieurs fois comme argument.
@@ -760,11 +742,12 @@ class Objet(object):
             if self._initialisation_minimale:
                 return # les labels ont une initialisation minimaliste
 
-
-            self._ancetres = set()
-            self._recenser_les_ancetres()
-            for ancetre in self._ancetres:   # l'objet est vassal de chacun des objets dont il depend
-                ancetre.vassaux.append(self)
+            # Les parents d'un objet sont les objets dont il dépend.
+            self._parents = set()
+            self._recenser_les_parents()
+            # L'objet est un enfant pour chacun de ses parents.
+            for parent in self._parents:
+                parent.enfants.append(self)
         # ---------------------------------------------------------------------
         # PARTIE 2 de l'initialisation :
         # ce qui suit peut être exécuté plusieurs fois en cas d'initialisations multiples
@@ -1086,49 +1069,60 @@ class Objet(object):
 # Gestion des dépendances
 ###########################"
 
-    def _recenser_les_ancetres(self):
-        u"""Met à jour l'ensemble des ancêtres (de la génération précédente),
-        c-à-d. l'ensemble des objets dont dépend (directement) l'objet.
+    def _recenser_les_parents(self):
+        u"""Met à jour l'ensemble des parents (ancêtres directs),
+        c-à-d. l'ensemble des objets dont dépend *directement* l'objet.
 
-        L'ensemble est mis en cache dans self._ancetres.
-        Pour obtenir tous les ancêtres (recherche récursive), utiliser la méthode '_tous_les_ancetres'.
+        L'ensemble est mis en cache dans self._parents.
+        Pour obtenir tous les ancêtres (recherche récursive),
+        utiliser la méthode `_ancetres()`.
         """
-        self._ancetres.clear()
+        self._parents.clear()
         for val in self._arguments.values():
             if isinstance(val, (list, tuple)):
                 for item in val:
                     if isinstance(item, Objet):
-                        self._ancetres.add(item)
+                        self._parents.add(item)
             elif isinstance(val, Objet):
-                self._ancetres.add(val)
+                self._parents.add(val)
         self._modifier_hierarchie()
 
-    def _tous_les_ancetres(self):
-        u"""Retourne tous les objets dont dépend, de près ou de loin, l'objet."""
-        ancetres = self._ancetres.copy()
-        for ancetre in self._ancetres:
-            ancetres.update(ancetre._tous_les_ancetres())
+    def _ancetres(self):
+        u"""Retourne l'ensemble des ancêtres de l'objet.
+
+        Les ancêtres sont tous les objets dont dépend (même indirectement) l'objet.
+
+        :rtype: set
+        """
+        ancetres = self._parents.copy()
+        for parent in self._parents:
+            ancetres.update(parent._ancetres())
         return ancetres
 
 
 
     def _heritiers(self):
-        u"Retourne l'ensemble des objets qui dépendent de cet objet."
-        heritiers = set(self.vassaux)
-        for vassal in heritiers.copy():
-            heritiers.update(vassal._heritiers())
+        u"""Retourne l'ensemble des héritiers de l'objet.
+
+        Les héritiers sont tous les objets qui dépendent de cet objet.
+
+        :rtype: set
+        """
+        heritiers = set(self.enfants)
+        for enfant in heritiers.copy():
+            heritiers.update(enfant._heritiers())
         return heritiers
 
 
     def _modifier_hierarchie(self, valeur = None):
         # plus self._hierarchie est faible, plus l'objet est haut placé dans la hierarchie
-        Objet.__compteur_hierarchie__ += 1
+        Objet._compteur_hierarchie += 1
         if valeur is None:
-            valeur = self.__class__.__compteur_hierarchie__
+            valeur = self.__class__._compteur_hierarchie
         self._hierarchie = valeur
-        # Il peut arriver (très rarement) que self.vassaux soit modifié
-        # en même temps. Mieux vaut donc transformer self.vassaux en tuple.
-        for obj in tuple(self.vassaux):
+        # Il peut arriver (très rarement) que self.enfants soit modifié
+        # en même temps. Mieux vaut donc transformer self.enfants en tuple.
+        for obj in tuple(self.enfants):
             obj._modifier_hierarchie()
 
 
@@ -1143,11 +1137,11 @@ class Objet(object):
 
         L'ordre des arguments est respecté.
         """
-        return iter((arg,  getattr(self, arg)) for arg in self.__arguments__)
+        return iter((arg,  getattr(self, arg)) for arg in self._noms_arguments)
 
     @property
     def _arguments(self):
-        return dict((arg,  getattr(self, arg)) for arg in self.__arguments__)
+        return dict((arg,  getattr(self, arg)) for arg in self._noms_arguments)
 
 
     def _set_feuille(self):
@@ -1348,7 +1342,7 @@ class Objet(object):
     def _existe(self):
         # Les conditions d'existence sont toujours évaluées de manière approchée pour l'instant
         with contexte(exact = False):
-            if all(obj.existe for obj in self._ancetres):
+            if all(obj.existe for obj in self._parents):
                 return self._cache.get('conditions', self._conditions_existence)
             else:
                 # /!\ self.conditions_existence() ne doit PAS etre evalue si un ancetre n'existe pas (resultat imprevisible)
@@ -1413,20 +1407,22 @@ class Objet(object):
 
 
     def _supprime(self):
-        for ancetre in self._ancetres:
-            # L'objet est supprimé de la liste des vassaux, pour chaque objet dont il dépend.
-            ancetre.vassaux.remove_all(self)
-            # NB: ne génère jamais d'erreur, même si self n'est pas dans la WeakList
-            # (contrairement au ".remove()" d'une liste)
-        for heritier in list(self.vassaux):
+        for parent in self._parents:
+            # Pour chaque parent, l'objet est supprimé de la liste des enfants.
+            # (Les "parents" sont les objets dont il dépend.)
+            parent.enfants.remove_all(self)
+            # NB: `remove_all()` ne génère jamais d'erreur, même si self n'est
+            # pas dans la WeakList (contrairement au `.remove()` d'une liste).
+        for heritier in list(self.enfants):
             try:
                 heritier._supprime()
             except KeyError:
-                pass # il se peut que l'objet n'existe déjà plus.
+                # Il se peut que l'objet n'existe déjà plus.
+                pass
         if self.feuille:
             self.feuille.objets._dereferencer(self)
         if isinstance(self._style["label"], Formule):
-            # il faut supprimer proprement la formule.
+            # Il faut supprimer proprement la formule.
             self._style["label"].supprimer()
 
 
@@ -1436,6 +1432,8 @@ class Objet(object):
 
     def __repr__(self, styles = True):
         u"Méthode utilisée pour sauvegarder les objets."
+        # XXX: cette méthode ne doit plus être utilisée pour sauvegarder les objets.
+        # cf. `Objet.sauvegarder()`
         def formater(objet):
             if isinstance(objet, Objet):
                 if self.feuille and self.feuille.contient_objet(objet):

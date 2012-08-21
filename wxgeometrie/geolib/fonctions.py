@@ -150,7 +150,7 @@ class Fonction(Objet_numerique):
                         if isinstance(obj, Objet):
                             liste_expression[i] = obj
                             objets.add(obj)
-                            if self is obj or is_in(self, obj._tous_les_ancetres()):
+                            if self is obj or is_in(self, obj._ancetres()):
                                 print self,
                                 raise RuntimeError, "Definition circulaire dans %s : l'objet %s se retrouve dependre de lui-meme." %(self, obj)
                     for i in xrange(1, len(liste_ensemble), 2):
@@ -158,7 +158,7 @@ class Fonction(Objet_numerique):
                         if isinstance(obj, Objet):
                             liste_ensemble[i] = obj
                             objets.add(obj)
-                            if self is obj or is_in(self, obj._tous_les_ancetres()):
+                            if self is obj or is_in(self, obj._ancetres()):
                                 print self,
                                 raise RuntimeError, "Definition circulaire dans %s : l'objet %s se retrouve dependre de lui-meme." %(self, obj)
                     return liste_expression, liste_ensemble, objets
@@ -200,16 +200,16 @@ class Fonction(Objet_numerique):
                 self.__unions.append(eval(ensemb, self.feuille.objets))
 
             # on supprime la variable de la liste des vassaux pour les objets dont elle ne dépendra plus desormais:
-            for objet in self._ancetres:
-                objet.vassaux.remove(self)
-            self._ancetres = objets
+            for objet in self._parents:
+                objet.enfants.remove(self)
+            self._parents = objets
             self._modifier_hierarchie()
-            for objet in self._ancetres:   # l'objet est vassal de chacun des objets dont il depend
-                objet.vassaux.append(self)
+            for objet in self._parents:   # l'objet est vassal de chacun des objets dont il depend
+                objet.enfants.append(self)
         else:
-            for objet in self._ancetres:
-                objet.vassaux.remove(self)
-            self._ancetres = set()
+            for objet in self._parents:
+                objet.enfants.remove(self)
+            self._parents = set()
             self._modifier_hierarchie()
             self.__liste_expression = []
             self.__liste_ensemble = []
@@ -224,7 +224,7 @@ class Fonction(Objet_numerique):
 
 
 
-    def _recenser_les_ancetres(self):
+    def _recenser_les_parents(self):
 #        warning("'_recenser_les_ancetres' n'a aucun effet pour une variable.")
         self._modifier_hierarchie()
 

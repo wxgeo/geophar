@@ -116,7 +116,7 @@ class Variable(Variable_generique):
                 if isinstance(obj, Objet):
                     liste[i] = obj
                     ensemble.add(obj)
-                    if self is obj or is_in(self, obj._tous_les_ancetres()):
+                    if self is obj or is_in(self, obj._ancetres()):
                         print self,
                         raise RuntimeError, "Definition circulaire dans %s : l'objet %s se retrouve dependre de lui-meme." %(self, obj)
             return liste, ensemble
@@ -134,16 +134,16 @@ class Variable(Variable_generique):
             self.__liste = liste
             self.__fonction = eval("lambda:" + self.__contenu, self.feuille.objets)
             # on supprime la variable de la liste des vassaux pour les objets dont elle ne dépendra plus desormais:
-            for objet in self._ancetres:
-                objet.vassaux.remove(self)
-            self._ancetres = ensemble
+            for objet in self._parents:
+                objet.enfants.remove(self)
+            self._parents = ensemble
             self._modifier_hierarchie()
-            for objet in self._ancetres:   # l'objet est vassal de chacun des objets dont il depend
-                objet.vassaux.append(self)
+            for objet in self._parents:   # l'objet est vassal de chacun des objets dont il depend
+                objet.enfants.append(self)
         else:
-            for objet in self._ancetres:
-                objet.vassaux.remove(self)
-            self._ancetres = set()
+            for objet in self._parents:
+                objet.enfants.remove(self)
+            self._parents = set()
             self._modifier_hierarchie()
             self.__liste = []
             self.__fonction = None
@@ -190,7 +190,7 @@ class Variable(Variable_generique):
 
 
 
-    def _recenser_les_ancetres(self):
+    def _recenser_les_parents(self):
 #        warning("'_recenser_les_ancetres' n'a aucun effet pour une variable.")
         self._modifier_hierarchie()
 

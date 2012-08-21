@@ -218,7 +218,7 @@ class Polygone_generique(Objet):
         if hasattr(self,  "_valeurs_par_defaut")\
                 and self._valeurs_par_defaut:
             # On essaie d'éviter un polygone croisé
-            if len(self.__arguments__) == n:
+            if len(self._noms_arguments) == n:
                 args = [arg for nom, arg in self._iter_arguments]
                 if all(isinstance(arg, Point) for arg in args):
                     self._affecter_coordonnees_par_defaut(args)
@@ -1094,9 +1094,9 @@ class PrevisualisationPolygone(Polygone_generique):
 
     def _set_points(self, points):
         for pt in self.__points:
-            pt.vassaux.remove(self)
+            pt.enfants.remove(self)
         for pt in points:
-            pt.vassaux.append(self)
+            pt.enfants.append(self)
         # NOTE: self.__points doit être de type tuple et surtout pas liste
         # (une éventuelle modification de la liste ne gererait pas correctement les vassaux)
         self.__points = points

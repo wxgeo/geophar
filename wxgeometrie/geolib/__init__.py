@@ -47,7 +47,7 @@ from .widgets import Bouton, Champ
 for _obj in vars().values():
     if isinstance(_obj, type) and issubclass(_obj, Objet):
         prefixe = "_" + _obj.__name__ + "__"
-        __arguments__ = []
+        _noms_arguments = []
         for key, value in vars(_obj).iteritems():
             if isinstance(value, BaseArgument) and key.startswith(prefixe):
                 # Chaque argument récupère son nom...
@@ -58,10 +58,11 @@ for _obj in vars().values():
                 # On cherche les entrées de la classe 'MaClasse' qui soient de type 'Argument' ou 'Arguments',
                 # et qui commencent par '_MaClasse__'.
                 # Exemple : '_MaClasse__monargument' qui est stocké comme 'monargument' (on enlève le préfixe).
-                __arguments__.append((value.__compteur__, key[len(prefixe):]))
+                _noms_arguments.append((value.__compteur__, key[len(prefixe):]))
         # on trie les arguments par ordre de déclaration dans la classe
-        __arguments__.sort()
-        _obj.__arguments__ = tuple(key for compteur, key in __arguments__) # tuple pour éviter des bugs (partage d'1 même liste entre plusieurs classes par ex.)
+        _noms_arguments.sort()
+        # tuple pour éviter des bugs (partage d'1 même liste entre plusieurs classes par ex.)
+        _obj._noms_arguments = tuple(key for compteur, key in _noms_arguments)
 
 del _obj
 
