@@ -40,12 +40,10 @@ from sympy import sympify
 
 def is_in(element, _list):
     u"""Teste si l'élement est dans la liste, en effectuant un test d'identité (is) et non d'égalité (==)."""
-    test = False
     for elt in _list:
         if elt is element:
-            test = True
-            break
-    return test
+            return True
+    return False
 
 # This is 'a lot' slower (2.4 times about) :
 ##def isin2(element, _list):
@@ -321,6 +319,9 @@ class WeakList(weakref.WeakValueDictionary):
 
     def __getitem__(self, n):
         return self.values()[n]
+
+    def __contains__(self, item):
+        return item in self.itervalues()
 
 
 def print_error(chaine = ''):
