@@ -1408,46 +1408,59 @@ class Feuille(object):
 
 
 
+    ##def sauvegarder(self):
+        ##u"Renvoie l'ensemble des commandes python qui permettra de recréer la figure avec tous ses objets."
+##
+        ##objets = self.liste_objets(True)
+        ### on doit enregistrer les objets dans le bon ordre (suivant la _hierarchie) :
+        ##objets.sort(key = attrgetter("_hierarchie_et_nom"))
+##
+        ##texte = '\n'.join(nom + ' = ' + repr(getattr(self, nom))
+                         ##for nom in self._parametres_repere
+                         ##) + '\n'
+##
+        ##a_rajouter_a_la_fin = ""
+##
+        ##for objet in objets:
+            ##if not objet._enregistrer_sur_la_feuille:
+                ##continue
+            ##elif isinstance(objet, Texte) and objet.style("legende") == FORMULE:
+                ### on fait un cas particulier pour les objets Texte, car ils peuvent contenir une formule
+                ### qui dépend d'autres objets. Leur style n'est alors appliqué qu'après.
+                ##texte += objet.nom + " = " + objet.__repr__(False) + "\n"
+                ##a_rajouter_a_la_fin += objet.nom + ".style(**" + repr(objet.style()) + ")\n"
+            ##else:
+                ##texte += objet.nom + " = " + repr(objet) + "\n"
+##
+        ### Les étiquettes peuvent contenir des formules qui dépendent d'autres objets.
+        ##for objet in objets:
+            ##if objet.etiquette is not None:
+                ##texte += objet.nom + ".etiquette.style(**" + repr(objet.etiquette.style()) + ")\n"
+##
+        ##return texte + a_rajouter_a_la_fin
+
+
     def sauvegarder(self):
-        u"Renvoie l'ensemble des commandes python qui permettra de recréer la figure avec tous ses objets."
+        u"""Renvoie l'ensemble des commandes python qui permettra de recréer
+        la figure avec tous ses objets.
 
-        objets = self.liste_objets(True)
-        # on doit enregistrer les objets dans le bon ordre (suivant la _hierarchie) :
-        objets.sort(key = attrgetter("_hierarchie_et_nom"))
+        :rtype: string
+        """
 
-##        texte = "fenetre = " + repr(self.fenetre) + "\n"
+        # On sauvegarde les paramètres de la feuille.
         texte = '\n'.join(nom + ' = ' + repr(getattr(self, nom))
                          for nom in self._parametres_repere
-                         ) + '\n'
+                         ) + '\n\n'
 
-        a_rajouter_a_la_fin = ""
-
-        for objet in objets:
-            if not objet._enregistrer_sur_la_feuille:
-                continue
-            elif isinstance(objet, Texte) and objet.style("legende") == FORMULE:
-                # on fait un cas particulier pour les objets Texte, car ils peuvent contenir une formule
-                # qui dépend d'autres objets. Leur style n'est alors appliqué qu'après.
-                texte += objet.nom + " = " + objet.__repr__(False) + "\n"
-                a_rajouter_a_la_fin += objet.nom + ".style(**" + repr(objet.style()) + ")\n"
-            else:
-                texte += objet.nom + " = " + repr(objet) + "\n"
-
-        # Les étiquettes peuvent contenir des formules qui dépendent d'autres objets.
-        for objet in objets:
-            if objet.etiquette is not None:
-                texte += objet.nom + ".etiquette.style(**" + repr(objet.etiquette.style()) + ")\n"
-
-        return texte + a_rajouter_a_la_fin
-
-
-
+        # Enfin, on sauvegarde les objets de la feuille.
+        # On doit enregistrer les objets dans le bon ordre (suivant la _hierarchie).
+        objets = sorted(self.liste_objets(True), key=attrgetter("_hierarchie_et_nom"))
+        return texte + ''.join(obj.sauvegarder() for obj in objets
+                                            if obj._enregistrer_sur_la_feuille)
 
     def effacer(self):
         self.objets.clear()
         self.affichage_perime()
-
-
 
 
     def charger(self, commandes, rafraichir = True, archiver = True, mode_tolerant = False):

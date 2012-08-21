@@ -284,7 +284,15 @@ class Ref(object):
     u"""Conteneur pour un argument d'un objet.
 
     Si l'objet est déjà une instance de Reference, alors l'objet est renvoyé directement
-    (afin de ne pas créer de conteneur de conteneur !)"""
+    (afin de ne pas créer de conteneur de conteneur !)
+
+    La référence est manipulée ensuite via un descripteur (de type `BaseArgument`),
+    et jamais directement, ce qui explique qu'elle n'ait pas de méthode publique.
+
+    Attributs:
+    * __objet: l'objet contenu
+    * _utilisateurs: les objets qui partagent cette même référence en argument.
+    """
 
     __slots__ = '_utilisateurs', '__objet'
 
@@ -607,7 +615,7 @@ class TupleObjets(tuple):
 
 
 class DescripteurFeuille(object):
-    u"""Descripteur gérant l'attribut '.__feuille __' de la classe 'Objet'.
+    u"""Descripteur gérant l'attribut '.feuille' de la classe 'Objet'.
 
     Usage interne."""
 
@@ -807,45 +815,6 @@ class Objet(object):
 
 
 
-    @property
-    def _iter_arguments(self):
-        """Retourne un iterateur vers les couples (argument, valeur)
-
-        L'ordre des arguments est respecté.
-        """
-        return iter((arg,  getattr(self, arg)) for arg in self.__arguments__)
-
-    @property
-    def _arguments(self):
-        return dict((arg,  getattr(self, arg)) for arg in self.__arguments__)
-
-
-    def _set_feuille(self):
-        if hasattr(self,  "_valeurs_par_defaut") and self._valeurs_par_defaut:
-            noms_args, args = zip(*self._iter_arguments)
-            correspondance = False
-            # On tente de détecter via le nom  de l'objet le nom que doit prendre chacun de ses arguments.
-            # Par exemple, si un rectangle s'appelle ABCD, alors les points qui le constituent
-            # doivent prendre pour noms A, B, C et D.
-            if all(isinstance(arg, G.Point_generique) for arg in args):
-                noms = re.findall(RE_NOM_OBJET, self._nom)
-                if len(args) == len(noms):
-                    correspondance = True
-                    for i in xrange(len(args)):
-                        if args[i]._nom != "" and args[i]._nom != noms[i]:
-                            correspondance = False
-                            break
-                    if correspondance:
-                        for i in xrange(len(args)):
-                            if "_" + self.__class__.__name__ + "__" + noms_args[i] in self._valeurs_par_defaut:
-                                self.feuille.objets[noms[i]] = args[i]
-            # Échec du nommage intelligent : on se rabat sur des noms aléatoires
-            if not correspondance:
-                for nom_arg in self._valeurs_par_defaut:
-                    self.feuille.objets[''] = getattr(self, nom_arg)
-            self._valeurs_par_defaut = []
-
-
 # Styles et informations sur l'objet
 ####################################
 
@@ -1004,10 +973,6 @@ class Objet(object):
 
     nom = property(nom, renommer)
 
-    @property
-    def _hierarchie_et_nom(self): # pour classer les objets
-        return (self._hierarchie, self.nom)
-
     def _creer_nom_latex(self):
         u"""Renvoie le nom formaté en LaTeX. Ex: M1 -> $M_1$."""
         nom = self.nom_corrige.rstrip('_')
@@ -1122,7 +1087,8 @@ class Objet(object):
 ###########################"
 
     def _recenser_les_ancetres(self):
-        u"""Met à jour l'ensemble des ancêtres (de la génération précédente), c-à-d. l'ensemble des objets dont dépend (directement) l'objet.
+        u"""Met à jour l'ensemble des ancêtres (de la génération précédente),
+        c-à-d. l'ensemble des objets dont dépend (directement) l'objet.
 
         L'ensemble est mis en cache dans self._ancetres.
         Pour obtenir tous les ancêtres (recherche récursive), utiliser la méthode '_tous_les_ancetres'.
@@ -1145,16 +1111,6 @@ class Objet(object):
         return ancetres
 
 
-##    def _heritiers(self, classer = False):
-##        u"Retourne l'ensemble des objets qui dépendent de cet objet, éventuellement classés selon l'attribut '_hierarchie'."
-##        heritiers = self.vassaux.values()
-##        vassaux = tuple(heritiers)
-##        for vassal in vassaux:
-##            heritiers += vassal._heritiers()
-##        heritiers = no_twin(heritiers)
-##        if classer:
-##            heritiers.sort(key = lambda x: getattr(x, "_hierarchie"))
-##        return heritiers
 
     def _heritiers(self):
         u"Retourne l'ensemble des objets qui dépendent de cet objet."
@@ -1163,15 +1119,6 @@ class Objet(object):
             heritiers.update(vassal._heritiers())
         return heritiers
 
-##    def _modifier_hierarchie(self, valeur = None):
-##        # plus self._hierarchie est faible, plus l'objet est haut placé dans la hierarchie
-##        # au sommet, pour les objets libres ("suzerains"), self._hierarchie = 0
-##        if valeur is None:
-##            valeur = max(-1, -1, *(objet._hierarchie for objet in self._ancetres)) + 1
-##        self._hierarchie = valeur
-##        for obj in self.vassaux.values():
-##            if obj._hierarchie <= self._hierarchie:
-##                obj._modifier_hierarchie(self._hierarchie + 1)
 
     def _modifier_hierarchie(self, valeur = None):
         # plus self._hierarchie est faible, plus l'objet est haut placé dans la hierarchie
@@ -1183,6 +1130,50 @@ class Objet(object):
         # en même temps. Mieux vaut donc transformer self.vassaux en tuple.
         for obj in tuple(self.vassaux):
             obj._modifier_hierarchie()
+
+
+    @property
+    def _hierarchie_et_nom(self): # pour classer les objets
+        return (self._hierarchie, self.nom)
+
+
+    @property
+    def _iter_arguments(self):
+        """Retourne un iterateur vers les couples (argument, valeur)
+
+        L'ordre des arguments est respecté.
+        """
+        return iter((arg,  getattr(self, arg)) for arg in self.__arguments__)
+
+    @property
+    def _arguments(self):
+        return dict((arg,  getattr(self, arg)) for arg in self.__arguments__)
+
+
+    def _set_feuille(self):
+        if hasattr(self,  "_valeurs_par_defaut") and self._valeurs_par_defaut:
+            noms_args, args = zip(*self._iter_arguments)
+            correspondance = False
+            # On tente de détecter via le nom  de l'objet le nom que doit prendre chacun de ses arguments.
+            # Par exemple, si un rectangle s'appelle ABCD, alors les points qui le constituent
+            # doivent prendre pour noms A, B, C et D.
+            if all(isinstance(arg, G.Point_generique) for arg in args):
+                noms = re.findall(RE_NOM_OBJET, self._nom)
+                if len(args) == len(noms):
+                    correspondance = True
+                    for i in xrange(len(args)):
+                        if args[i]._nom != "" and args[i]._nom != noms[i]:
+                            correspondance = False
+                            break
+                    if correspondance:
+                        for i in xrange(len(args)):
+                            if "_" + self.__class__.__name__ + "__" + noms_args[i] in self._valeurs_par_defaut:
+                                self.feuille.objets[noms[i]] = args[i]
+            # Échec du nommage intelligent : on se rabat sur des noms aléatoires
+            if not correspondance:
+                for nom_arg in self._valeurs_par_defaut:
+                    self.feuille.objets[''] = getattr(self, nom_arg)
+            self._valeurs_par_defaut = []
 
 
 
@@ -1224,17 +1215,6 @@ class Objet(object):
 # API graphique (affichage et gestion des coordonnees)
 ######################################################
 
-##    def _trace(self):
-##        if self.style("trace"):
-##            x, y = self.coordonnees_approchees
-##            if self.__trace__:
-##                self.__trace__[0]._x.append(x)
-##                self.__trace__[0]._y.append(y)
-##            else:
-##                self.__trace__ = [self.rendu.ligne([x], [y], color = self.style("couleur"), marker = ".", linestyle = "None", markersize = 10)]
-##        else:
-##            self.__trace__ = []
-##        return self.__trace__
 
     def _creer_figure(self):
         u"""Cette fonction est à surclasser pour les objets ayant une
@@ -1445,10 +1425,6 @@ class Objet(object):
                 pass # il se peut que l'objet n'existe déjà plus.
         if self.feuille:
             self.feuille.objets._dereferencer(self)
-##            if self.__canvas__:
-##                self.__canvas__.graph.supprimer(self._representation)
-##                if self.etiquette is not None:
-##                    self.__canvas__.graph.supprimer(self.etiquette._representation)
         if isinstance(self._style["label"], Formule):
             # il faut supprimer proprement la formule.
             self._style["label"].supprimer()
@@ -1466,7 +1442,6 @@ class Objet(object):
                     return objet.nom
                 else:
                     return objet.__repr__(styles)
-                #if isinstance(objet, Variable): return repr(objet.val())
             if isinstance(objet, (list, tuple)):
                 return "[" + ",".join([formater(item) for item in objet]) + "]"
             # Le 'float()' servent à contourner un bug de numpy 1.1.x et numpy 1.2.x (repr de float64) :
@@ -1490,13 +1465,26 @@ class Objet(object):
             if isinstance(objet, Objet):
                 if self.feuille and self.feuille.contient_objet(objet):
                     return objet.nom
-##                #if isinstance(objet, Variable): return repr(objet.val())
             if isinstance(objet, (list, tuple)):
                 return "[" + ", ".join(formater(item) for item in objet) + "]"
             return unicode(objet)
 
-        return uu(self.classe() + "(" + ", ".join(key + " = " + formater(val) for key, val in self._iter_arguments) + ")")
+        return uu(self.classe() + "(" + ", ".join(key + " = " + formater(val)
+                                 for key, val in self._iter_arguments) + ")")
 
+
+    def sauvegarder(self):
+        u"""Retourne le code python nécessaire pour générer l'objet et son étiquette.
+
+        Cette méthode est utilisée par la feuille pour sauvegarder son contenu.
+
+        :rtype: string
+        """
+        nom, etiquette = self.nom, self.etiquette
+        txt = "%s = %s\n" % (nom, repr(self))
+        if etiquette is not None:
+            txt += "%s.etiquette.style(**%s)\n" % (nom, repr(etiquette.style()))
+        return txt
 
     def _definition(self):
         u"""Utilisé pour afficher la définition actuelle de l'objet avant de le redéfinir.
@@ -1523,8 +1511,6 @@ class Objet(object):
     def copy(self):
         kwargs = self.style().copy()
         kwargs.pop("noms", None)
-##        #~ print "copie de %s :" % self
-##        #~ print self.style()
         kwargs.update(self._arguments)
         return self.__class__(**kwargs)
 
@@ -1555,50 +1541,6 @@ class Objet(object):
 #    def _image(self, transformation):
 #        raise NotImplementedError
 
-
-
-
-### Routines rapides
-###
-### Les routines suivantes sont optimisées pour la vitesse, afin d'éviter de passer par des classes (Vecteur, Segment, ...) lors des calculs internes.
-### Elles essaient de concilier ceci avec une grande souplesse d'utilisation, en acceptant des arguments de types très divers.
-### Par exemple, un point peut être donné sous la forme d'une instance de la classe Point, d'un tuple, d'une liste, d'un array.
-##############################
-##
-##
-##    @staticmethod
-##    def _distance(A, B):
-##        u"Distance entre les points A et B."
-##        pylib.deprecation("A eviter desormais.")
-##        xA, yA = A
-##        xB,  yB = B
-##        return math.hypot(xA - xB, yA - yB)
-##
-##    @staticmethod
-##    def _carre_distance(A, B):
-##        u"Carré de la distance entre les points A et B."
-##        pylib.deprecation("A eviter desormais.")
-##        xA, yA = A
-##        xB, yB = B
-##        return (xB-xA)**2+(yB-yA)**2
-##
-##    @staticmethod
-##    def _vec(A, B):
-##        u"Coordonnées du vecteur A>B."
-##        pylib.deprecation("A eviter desormais.")
-##        xA, yA = A
-##        xB, yB = B
-##        return xB - xA, yB - yA
-
-##    @staticmethod
-##    def _angle_oriente(vec1, vec2): # DESUET ! Utiliser la fonction angle_vectoriel() de pylib maintenant
-##        u"Valeur en radian de l'angle définit par les vecteurs vec1, et vec2."
-##        pylib.deprecation("Utiliser la fonction angle_vectoriel() de pylib maintenant")
-##        x1, y1 = vec1; x2, y2 = vec2
-##        signe = cmp(x1*y2-x2*y1, 0) # signe du déterminant
-##        if signe is 0:
-##            signe = 1 # Peut importe le signe quand les vecteurs sont colineaires (0 = -0 et pi = -pi [2pi])
-##        return signe*math.acos(produit_scalaire(vec1, vec2)/(math.hypot(*vec1)*math.hypot(*vec2)))
 
 
 #    La gestion de l'affichage est compliquée...
@@ -1654,13 +1596,13 @@ class Objet_avec_coordonnees(Objet):
     pour l'utilisateur final aux coordonnées via __call__."""
 
     _style_defaut = {} # en cas d'héritage multiple, cela évite que le style de Objet efface d'autres styles
-    ##__slots__ = ()
 
     def _get_coordonnees(self):
         raise NotImplementedError
 
-##    def _get_coordonnees_approchees(self):
-##        return self._get_coordonnees()
+    def _set_coordonnees(self):
+        raise NotImplementedError
+
 
     def __call__(self, *args):
         if args and not self.style("fixe"):
@@ -1677,15 +1619,6 @@ class Objet_avec_coordonnees(Objet):
             return iter(self.coordonnees)
         raise TypeError, str2(u"Conversion impossible, l'objet n'est pas defini.")
 
-##    @property
-##    def coo(self):
-##        u"""Alias de numpy.array(self.coordonnees)."""
-##        pylib.deprecation("A eviter desormais.")
-##        coordonnees = self.coordonnees
-##        if coordonnees is None:
-##            self.message(u"L'objet %s n'est pas défini" % self.nom)
-##            return None
-##        return numpy.array(coordonnees)
 
     @property
     def info(self):
@@ -1752,8 +1685,6 @@ class Objet_avec_coordonnees_modifiables(Objet_avec_coordonnees):
     abscisse = x = __x = Argument("Variable_generique", defaut = 0)
     ordonnee = y = __y = Argument("Variable_generique", defaut = 0)
 
-    ##__slots__ = ()
-
     def __init__(self, x = None, y = None, **styles):
         self.__x = x = Ref(x)
         self.__y = y = Ref(y)
@@ -1788,7 +1719,6 @@ class Objet_avec_coordonnees_modifiables(Objet_avec_coordonnees):
             self.__y = y
 
 
-
     def z(self, valeur = None):
         if valeur is None:
             return self.__x + 1j*self.__y
@@ -1815,13 +1745,9 @@ class Objet_avec_equation(Objet):
 
     _style_defaut = {} # en cas d'héritage multiple, cela évite que le style de Objet efface d'autres styles
 
-    ##__slots__ = ()
-
     def _get_equation(self):
         raise NotImplementedError
 
-##    def _get_equation_approchee(self):
-##        return self._get_equation()
 
     def __call__(self, equation = None):
         if equation is not None and not self.style("fixe"):
@@ -1870,16 +1796,12 @@ class Objet_avec_valeur(Objet):
 
     _style_defaut = {} # en cas d'héritage multiple, cela évite que le style de Objet efface d'autres styles
 
-    ##__slots__ = ()
-
     def _get_valeur(self):
         raise NotImplementedError
 
     def _set_valeur(self):
         raise NotImplementedError
 
-##    def _get_valeur_approchee(self):
-##        return self._get_valeur()
 
     def __call__(self, valeur = None):
         if valeur is not None and not self.style("fixe"):
@@ -1920,8 +1842,6 @@ class Objet_numerique(Reel, Objet_avec_valeur):
 
     _style_defaut = {} # en cas d'héritage multiple, cela évite que le style de Objet efface d'autres styles
 
-    ##__slots__ = ()
-##
     def __init__(self, *args, **kw):
         Objet.__init__(self, *args, **kw)
 
