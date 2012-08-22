@@ -89,8 +89,9 @@ class Formule(object):
         return self._parent()
 
     def supprimer(self):
-        for i in xrange(1, len(self._contenu), 2):
-            self._contenu[i].supprimer()
+        pass
+        ##for i in xrange(1, len(self._contenu), 2):
+            ##self._contenu[i].supprimer()
 
 
     def __repr__(self):
@@ -100,7 +101,6 @@ class Formule(object):
                 liste[i]._cache_formule = str(liste[i])
             liste[i] = "{" + liste[i]._cache_formule + "}"
         return repr(uu("".join(liste)))
-        #~ return uu("".join(liste))
 
 
     def __unicode__(self):

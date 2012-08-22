@@ -853,8 +853,6 @@ class Feuille(object):
         self.__point_temporaire__ = None
         # Permet une optimsation de l'affichage en cas d'objet déplacé
         self._objet_deplace = None
-        # Verrou qui indique que des objets sont encore en cours de modification.
-        self._verrou_affichage = None
         # On met ._stop à True pour stopper toutes les animations en cours.
         self._stop = False
 ##        self._afficher_objets_caches = False
@@ -1048,6 +1046,7 @@ class Feuille(object):
         self.objets.ymax.perime()
         self.objets.dpx.perime()
         self.objets.dpy.perime()
+        # XXX: il ne devrait pas y avoir besoin d'appeler la méthode suivante :
         self._rafraichir_figures()
 
 

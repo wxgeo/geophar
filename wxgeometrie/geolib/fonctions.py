@@ -219,25 +219,13 @@ class Fonction(Objet_numerique):
 
     def _set_feuille(self):
         self._compile(*self._test_dependance_circulaire(self.__expression, self.__ensemble))
-        self._heritiers_a_recalculer(self._heritiers())
-
-
+        self.perime()
 
 
     def _recenser_les_parents(self):
 #        warning("'_recenser_les_ancetres' n'a aucun effet pour une variable.")
         self._modifier_hierarchie()
 
-
-
-
-
-
-##    def affiche(self, actualiser = False):
-##        if actualiser and self.__feuille__ is not None:
-##            canvas = self.__canvas__
-##            if canvas:
-##                canvas.actualiser()
 
 
     @staticmethod

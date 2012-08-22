@@ -175,25 +175,20 @@ class Variable(Variable_generique):
         return self.__val_cache if contexte['exact'] else self.__val_cache_approche
 
 
-
     def _set_valeur(self, valeur):
         self.contenu = valeur
 
-
     def _set_feuille(self):
         self._compile(*self._test_dependance_circulaire(self.__contenu))
-        self._heritiers_a_recalculer(self._heritiers())
+        self.perime()
 
     @property
     def _type(self):
         return isinstance(self.__contenu, basestring) and "compose" or "simple"
 
-
-
     def _recenser_les_parents(self):
 #        warning("'_recenser_les_ancetres' n'a aucun effet pour une variable.")
         self._modifier_hierarchie()
-
 
 
     def _conditions_existence(self): # conditions specifiques pour que l'objet existe, a definir pour chaque objet

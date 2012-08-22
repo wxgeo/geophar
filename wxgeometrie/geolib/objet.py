@@ -119,8 +119,18 @@ class Nom(object):
         return repr(self.__objet.nom)
 
 
+#    La gestion de l'affichage est compliquée...
+#    L'idée est que, quand on modifie un objet (style excepté), on passe par 3 méthodes :
+#    _set_val, _set_equation, et _set_coordonnees.
+#    Une fois ces méthodes appelées, on doit rafraichir l'affichage de toutes les dépendances, après les avoir recalculées.
+#    La difficulté, c'est que quand on modifie, par exemple, les coordonnées d'un point,
+#    on modifie aussi les variables x et y (arguments de ce point), et donc,
+#    on rafraichit inutilement plusieurs fois l'affichage.
+#    Pour éviter cela, on marque simplement les objets à réafficher, et on rafraîchit l'affichage une seule fois "à la fin".
+#    Mais comment détecter "la fin" ? La solution retenue est de créer un verrou que pose la première méthode à s'éxécuter.
 
-class VerrouObjet(object):
+
+class Verrou(object):
     u"""Verrouille la mise à jour des objets.
 
     Pour des raisons d'optimisation, il vaut mieux globaliser la mise à jour des
@@ -133,43 +143,46 @@ class VerrouObjet(object):
     sortira du contexte. Si plusieurs mises à jours sur un même objet sont
     demandées, une seule sera effectuée.
 
-    Si le verrouillage est demandé par un objet, alors qu'un verrouillage
-    est déjà en cours, cela n'a aucun effet (le verrouillage a lieu au niveau
-    de la feuille).
+    NB: Si le verrouillage est demandé, alors qu'un verrouillage
+    est déjà en cours, cela n'a aucun effet.
     """
 
-
-    def __init__(self, objet):
-        self.objet = objet
+    def __init__(self):
+        # Le compteur permet d'imbriquer des verrouillages sans soucis.
+        # Seul le verrouillage principal est pris en compte.
+        self._compteur = 0
+        # Dictionnaire d'objets à rafraîchir, indiquant s'il faut aussi
+        # actualiser la liste des parents de l'objet.
+        # En effet, si un objet est modifié (par ex., les coordonnées d'un
+        # point qui changent), les héritiers doivent aussi être modifiés ;
+        # par contre, les parents des héritiers n'ont auncune raison d'avoir
+        # changé, inutile de les rafraîchir pour rien.
+        self._a_rafraichir = {}
 
     def __enter__(self):
-        feuille = self.objet.feuille
-        if feuille is not None and feuille._verrou_affichage is None:
-            self.actif = True
-            feuille._verrou_affichage = self.objet
-            feuille._a_rafraichir = set()
-        else:
-            self.actif = False
+        if not self._compteur:
+            self._a_rafraichir.clear()
+        self._compteur += 1
 
     def __exit__(self, type, value, traceback):
-        if self.actif:
-            feuille._verrou_affichage = None
-            for objet in feuille._a_rafraichir:
-                objet.perime(propager=False)
+        self._compteur -= 1
+        if not self._compteur:
+            for objet in self._a_rafraichir:
+                objet.perime(_first_call=False)
+
+    def update_later(self, objet, actualiser_parents):
+        u"""Indique que l'objet devra être rafraichi lorsque le verrouillage
+        prendra fin."""
+        if objet not in self._a_rafraichir:
+            self._a_rafraichir[objet] = False
+        self._a_rafraichir[objet] |= actualiser_parents
+
+    @property
+    def locked(self):
+        u"""Indique si le verrouillage est en cours."""
+        return self._compteur != 0
 
 
-def perime(self, propager=True):
-    if feuille is not None and feuille._verrou_affichage is not None:
-        self.feuille._a_rafraichir.update(self)
-    else:
-        self._recenser_les_parents()
-        self._cache.clear()
-        if objet.etiquette is not None:
-            objet.etiquette._cache.clear()
-        self.figure_perimee()
-    if propager:
-        for heritier in self._heritiers():
-            heritier.perime(propager=False)
 
 
 class Rendu(object):
@@ -350,6 +363,10 @@ class Ref(object):
         instance._utilisateurs = WeakList()
         return instance
 
+    @property
+    def objet(self):
+        return self.__objet
+
     def _changer_objet(self, nouvel_objet, premiere_definition = False):
         ancien_objet = self.__objet
         self.__objet = nouvel_objet
@@ -365,38 +382,16 @@ class Ref(object):
         # sous peine d'une nette dégradation des performances.
 
         if self._utilisateurs and not premiere_definition:
-            # Attention, l'objet n'est pas forcément de type Objet (il peut-être de type int, str...)
-            feuille = self._utilisateurs[0].feuille
-            if feuille is not None and feuille._verrou_affichage is None:
-                feuille._a_rafraichir = []
             for user in self._utilisateurs:
                 # 1. Il ne dépendent plus de l'ancien objet, mais du nouveau
+                # Attention, l'objet n'est pas forcément de type Objet
+                # (il peut-être de type int, str...)
                 if isinstance(ancien_objet, Objet):
                     ancien_objet.enfants.remove(user)
                 if isinstance(nouvel_objet, Objet):
                     nouvel_objet.enfants.append(user)
-                # 2. Il faut mettre à jour la liste de leurs ancêtres
-                # (auquel cas, il ne s'agit pas vraiment d'une redéfinition des arguments)
-                user._recenser_les_parents()
-                # 3. Tous les héritiers doivent également subir une mise à jour
-                heritiers = user._heritiers()
-                user._heritiers_a_recalculer(heritiers)
-                if feuille is not None:
-                    feuille._a_rafraichir.extend(heritiers)
-                    feuille._a_rafraichir.append(user)
-            if feuille is not None and feuille._verrou_affichage is None:
-                a_rafraichir = no_twin(feuille._a_rafraichir)
-                for obj in a_rafraichir:
-                    obj.figure_perimee()
-
-
-    @property
-    def objet(self):
-        return self.__objet
-
-
-
-
+                # 2. Il faut les mettre à jour (ainsi que leurs héritiers)
+                user.perime()
 
 
 
@@ -713,6 +708,10 @@ class Objet(object):
     _label_temporaire = None
     _timestamp = None
     _frozen = False
+
+    # Verrou qui indique que des objets sont encore en cours de modification.
+    # Ce verrou (optionnel) peut être utilisé à des fins d'optimisation (cf. `Objet.perime()`).
+    verrou = Verrou()
 
     # Indique si l'objet doit être rafraichi lorsque la fenêtre d'affichage change
     # Typiquement, c'est le cas des objets 'infinis' (comme les droites ou les courbes...),
@@ -1269,6 +1268,14 @@ class Objet(object):
         return NotImplemented
 
     def figure_perimee(self):
+        u"""Indique que la figure doit être rafraichie.
+
+        Est appelé directement lorsque le style de l'objet est modifié, mais
+        pas ses arguments. (Par ex., le point change de couleur, mais pas de
+        coordonnées).
+        Sinon, il faut appeler la méthode `Objet.perime()`, qui effectue un
+        rafraichissement global de l'objet (figure inclue).
+        """
         self.__figure_perimee = True
         if self.feuille is not None:
             self.feuille.affichage_perime()
@@ -1592,46 +1599,32 @@ class Objet(object):
 #        raise NotImplementedError
 
 
-
-#    La gestion de l'affichage est compliquée...
-#    L'idée est que, quand on modifie un objet (style excepté), on passe par 3 méthodes :
-#    _set_val, _set_equation, et _set_coordonnees.
-#    Une fois ces méthodes appelées, on doit rafraichir l'affichage de toutes les dépendances, après les avoir recalculées.
-#    La difficulté, c'est que quand on modifie, par exemple, les coordonnées d'un point,
-#    on modifie aussi les variables x et y (arguments de ce point), et donc,
-#    on rafraichit inutilement plusieurs fois l'affichage.
-#    Pour éviter cela, on marque simplement les objets à réafficher, et on rafraîchit l'affichage une seule fois "à la fin".
-#    Mais comment détecter "la fin" ? La solution retenue est de créer un verrou que pose la première méthode à s'éxécuter.
-
-
-    def _heritiers_a_recalculer(self, heritiers=None):
-        u"""Indique que l'objet a été modifié, et que les coordonnées de tous les objets
-        qui en dépendent doivent être recalculées."""
-        if heritiers is None:
-            heritiers = self._heritiers()
-        self._cache.clear()
-        if self.etiquette is not None:
-            self.etiquette._cache.clear()
-        for objet in heritiers:
-            objet._cache.clear()
-            if objet.etiquette is not None:
-                objet.etiquette._cache.clear()
-
-
-    def perime(self):
+    def perime(self, _first_call=True):
         u"""Marquer l'objet comme à actualiser.
 
         * indique que les coordonnées/valeurs de l'objet et des ses héritiers
           doivent être recalculées,
         * indique que les figures de l'objet et de ses héritiers doivent
           être redessinnées.
-        """
-        heritiers = self._heritiers()
-        self._heritiers_a_recalculer(heritiers)
-        self.figure_perimee()
-        for heritier in heritiers:
-            heritier.figure_perimee()
+        * actualise la liste des ancêtres de l'objet (au cas où un argument ait été
+          modifié).
 
+        .. note:: ne pas modifier la valeur du paramètre `_first_call`,
+                  qui est purement à usage interne (appels récursifs).
+        """
+        if self.verrou.locked:
+            self.verrou.update_later(self, _first_call)
+        else:
+            if _first_call:
+                self._recenser_les_parents()
+            self._cache.clear()
+            if self.etiquette is not None:
+                self.etiquette._cache.clear()
+            self.figure_perimee()
+        if _first_call:
+            # Tous les héritiers doivent également être rafraîchis.
+            for heritier in self._heritiers():
+                heritier.perime(_first_call=False)
 
 
 
@@ -1687,18 +1680,10 @@ class Objet_avec_coordonnees(Objet):
             with contexte(**d):
                 return self._cache.get('xy', self._get_coordonnees) if self.existe else None
 
-        try:
-            if self.feuille is not None and self.feuille._verrou_affichage is None:
-                self.feuille._verrou_affichage = self
-                self.feuille._a_rafraichir = []
+        with self.verrou:
             self._set_coordonnees(*couple)
-            if self.feuille is not None and self.feuille._verrou_affichage is self:
-                for obj in no_twin(self.feuille._a_rafraichir):
-                    obj.figure_perimee()
+            if self.feuille is not None:
                 self.feuille._objet_deplace = self
-        finally:
-            if self.feuille is not None and self.feuille._verrou_affichage is self:
-                self.feuille._verrou_affichage = None
 
     xy = coordonnees
 
@@ -1820,19 +1805,10 @@ class Objet_avec_equation(Objet):
         if coefficients is None:
             return self._cache.get('eq', self._get_equation) if self.existe else None
 
-        try:
-            if self.feuille is not None and self.feuille._verrou_affichage is None:
-                self.feuille._verrou_affichage = self
-                self.feuille._a_rafraichir = []
+        with self.verrou:
             self._set_equation(*coefficients)
-            if self.feuille is not None and self.feuille._verrou_affichage is self:
-                # Une seule fois à la fin
-                for obj in no_twin(self.feuille._a_rafraichir):
-                    obj.figure_perimee()
+            if self.feuille is not None:
                 self.feuille._objet_deplace = self
-        finally:
-            if self.feuille is not None and self.feuille._verrou_affichage is self:
-                self.feuille._verrou_affichage = None
 
 
 
@@ -1868,18 +1844,10 @@ class Objet_avec_valeur(Objet):
         if valeur is None:
             return self._cache.get('val', self._get_valeur) if self.existe else None
 
-        try:
-            if self.feuille is not None and self.feuille._verrou_affichage is None:
-                self.feuille._verrou_affichage = self
-                self.feuille._a_rafraichir = []
+        with self.verrou:
             self._set_valeur(valeur)
-            if self.feuille is not None and self.feuille._verrou_affichage is self:
-                for obj in no_twin(self.feuille._a_rafraichir):
-                    obj.figure_perimee()
+            if self.feuille is not None:
                 self.feuille._objet_deplace = self
-        finally:
-            if self.feuille is not None and self.feuille._verrou_affichage is self:
-                self.feuille._verrou_affichage = None
 
     val = valeur
 
