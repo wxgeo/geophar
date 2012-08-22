@@ -181,7 +181,8 @@ def no_twin(liste):
     u"""Elimine les doublons dans une liste.
     Si tous les élements de la liste sont 'hashables', mieux vaut utiliser la fonction set."""
     dico = {}
-    for elt in liste:dico[id(elt)] = elt
+    for elt in liste:
+        dico[id(elt)] = elt
     return dico.values()
 
 #def ntwin(l): return dict((id(elt), elt) for elt in l).values() # plus élégant, mais 50% plus lent ?!?

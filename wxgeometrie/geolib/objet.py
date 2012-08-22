@@ -97,7 +97,7 @@ def issympy(*expressions):
 class Nom(object):
     u"""Nom d'un objet.
 
-    Affiche le nom de l'objet quand on le met sous forme dAe chaîne.
+    Affiche le nom de l'objet quand on le met sous forme de chaîne.
 
     Exemple :
     >>> from wxgeometrie.geolib import Nom, Feuille, Point
@@ -118,6 +118,58 @@ class Nom(object):
     def __repr__(self):
         return repr(self.__objet.nom)
 
+
+
+class VerrouObjet(object):
+    u"""Verrouille la mise à jour des objets.
+
+    Pour des raisons d'optimisation, il vaut mieux globaliser la mise à jour des
+    objets, autant que possible, plutôt que de faire plusieurs mises à jours
+    séparées, sachant que certains objets peuvent avoir des héritiers communs
+    qui seraient alors mis à jour plusieurs fois.
+
+    Dans ce cas, on peut exécuter un ensemble de commandes dans un contexte
+    VerrouObjet, ce qui bloque toutes les mises, qui auront lieu lorsqu'on
+    sortira du contexte. Si plusieurs mises à jours sur un même objet sont
+    demandées, une seule sera effectuée.
+
+    Si le verrouillage est demandé par un objet, alors qu'un verrouillage
+    est déjà en cours, cela n'a aucun effet (le verrouillage a lieu au niveau
+    de la feuille).
+    """
+
+
+    def __init__(self, objet):
+        self.objet = objet
+
+    def __enter__(self):
+        feuille = self.objet.feuille
+        if feuille is not None and feuille._verrou_affichage is None:
+            self.actif = True
+            feuille._verrou_affichage = self.objet
+            feuille._a_rafraichir = set()
+        else:
+            self.actif = False
+
+    def __exit__(self, type, value, traceback):
+        if self.actif:
+            feuille._verrou_affichage = None
+            for objet in feuille._a_rafraichir:
+                objet.perime(propager=False)
+
+
+def perime(self, propager=True):
+    if feuille is not None and feuille._verrou_affichage is not None:
+        self.feuille._a_rafraichir.update(self)
+    else:
+        self._recenser_les_parents()
+        self._cache.clear()
+        if objet.etiquette is not None:
+            objet.etiquette._cache.clear()
+        self.figure_perimee()
+    if propager:
+        for heritier in self._heritiers():
+            heritier.perime(propager=False)
 
 
 class Rendu(object):

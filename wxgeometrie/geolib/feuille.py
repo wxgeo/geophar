@@ -901,6 +901,10 @@ class Feuille(object):
             self._actions.append(action)
 
     def affichage_perime(self):
+        u"""Indique que l'affichage doit être actualisé.
+
+        Très rapide (inutile d'optimiser les appels), car aucune actualisation
+        n'a lieu, mais la feuille est juste marquée comme étant à actualiser."""
         # NB: Utiliser une méthode au lieu d'un attribut permet de générer
         # une erreur en cas de faute de frappe.
         self._affichage_a_actualiser = True

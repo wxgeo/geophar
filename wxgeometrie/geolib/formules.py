@@ -47,6 +47,7 @@ class Formule(object):
     feuille = property(_get_feuille, _set_feuille)
 
     def __init__(self, parent, chaine = ""):
+        self._parents = set()
         from .variables import Variable
         if isinstance(chaine, Formule):
             chaine = eval(repr(chaine))
@@ -64,6 +65,7 @@ class Formule(object):
         for i in xrange(1, len(liste), 2):
             cache = liste[i][1:-1] # "{A.x}" -> "A.x"
             var = liste[i] = Variable(cache)
+            self._parents.add(var)
             var._cache_formule = cache
 ##            # on va maintenant redéfinir la méthode affiche de toutes les variables de la formule :
               # au lieu d'être inactive, la méthode affiche va actualiser l'affichage de l'objet contenant la formule.
@@ -77,6 +79,9 @@ class Formule(object):
         # - sinon, on renvoie le cache s'il s'agit de repr, et <?> s'il s'agit de str.
 
         self.feuille = self.parent.feuille
+
+        for parent in self._parents:
+            parent.enfants.append(self._parent())
 
 
     @property
