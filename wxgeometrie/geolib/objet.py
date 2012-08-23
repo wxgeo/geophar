@@ -1548,17 +1548,13 @@ class Objet(object):
 
 
     def sauvegarder(self):
-        u"""Retourne le code python nécessaire pour générer l'objet et son étiquette.
+        u"""Retourne le code python nécessaire pour générer l'objet.
 
         Cette méthode est utilisée par la feuille pour sauvegarder son contenu.
 
         :rtype: string
         """
-        nom, etiquette = self.nom, self.etiquette
-        txt = "%s = %s\n" % (nom, repr(self))
-        if etiquette is not None:
-            txt += "%s.etiquette.style(**%s)\n" % (nom, repr(etiquette.style()))
-        return txt
+        return "%s = %s\n" % (self.nom, repr(self))
 
     def _definition(self):
         u"""Utilisé pour afficher la définition actuelle de l'objet avant de le redéfinir.

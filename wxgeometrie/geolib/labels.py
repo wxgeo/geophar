@@ -66,6 +66,9 @@ class Label_generique(Texte_generique):
             return self.parent._nom + '.etiquette'
         return ""
 
+    def sauvegarder(self):
+        return "%s.etiquette.style(**%s)\n" % (self.parent.nom, repr(self.style()))
+
     @property
     def parent(self):
         return self._parent()
