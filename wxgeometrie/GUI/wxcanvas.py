@@ -63,11 +63,18 @@ class MiniEditeur:
         self.mode = mode #
         self.display()
 
+    def _display(self, txt):
+        if isinstance(self.objet, Texte):
+            self.objet.label_temporaire = txt
+        else:
+            self.objet.etiquette.label_temporaire = txt
+
     def display(self):
-        self.objet.label_temporaire = self.texte
+        u"Affiche le texte en train d'être écrit."
+        self._display(self.texte)
 
     def cancel(self):
-        self.objet.label_temporaire = None
+        self._display(None)
         self.objet = None
 
 
@@ -86,6 +93,7 @@ class MiniEditeur:
                 else:
                     self.objet.renommer(self.texte, legende = NOM)
                     panel.action_effectuee(u"%s.renommer(%s, legende = %s)" %(nom, repr(self.texte), NOM))
+                    canvas.detecter()
             except RuntimeError: # on reste en mode edition
                 if not param.nom_multiple:
                     self.display()

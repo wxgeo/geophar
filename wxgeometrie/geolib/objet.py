@@ -705,7 +705,6 @@ class Objet(object):
     _compteur_hierarchie = 0
     _prefixe_nom = "objet"
     _utiliser_coordonnees_approchees = False
-    _label_temporaire = None
     _timestamp = None
     _frozen = False
 
@@ -738,10 +737,6 @@ class Objet(object):
     # Cela sert essentiellement a creer des objets temporaires, ou a faire de la geometrie sans figures (sic!)
 
     _style_defaut = param.defaut_objets
-
-    # Les labels ont une initialisation minimale
-    _initialisation_minimale = False
-
 
     def __init__(self, **styles):
         # ---------------------------------------------------------------------
@@ -789,9 +784,6 @@ class Objet(object):
             # En effet, il se peut qu'un objet apparaisse plusieurs fois comme vassal, si il apparait plusieurs fois comme argument.
             # C'est un comportement normal ; en cas de déréférencement de l'objet comme vassal, il ne doit être déréférencé
             # qu'une fois si un seul argument est changé !
-
-            if self._initialisation_minimale:
-                return # les labels ont une initialisation minimaliste
 
             # Les parents d'un objet sont les objets dont il dépend.
             self._parents = set()
@@ -896,14 +888,6 @@ class Objet(object):
             label = label.replace('$', r'$\$$')
 
         return label
-
-
-    @property2
-    def label_temporaire(self, *val):
-        if val:
-            self._label_temporaire = val[0]
-            self.figure_perimee()
-        return self._label_temporaire
 
 
     def style(self, nom_style = None, **kwargs):
@@ -1279,12 +1263,6 @@ class Objet(object):
         self.__figure_perimee = True
         if self.feuille is not None:
             self.feuille.affichage_perime()
-        # NB: si, par ex., un objet est déplacé, son étiquette aussi.
-        # On pourrait raffiner, mais dans le doute on rafraichit
-        # toujours les coordonnées de l'étiquette avec l'objet.
-        if self.etiquette is not None:
-            self.etiquette.figure_perimee()
-
 
     @property
     def figure(self):
@@ -1656,8 +1634,6 @@ class Objet(object):
             if _first_call:
                 self._recenser_les_parents()
             self._cache.clear()
-            if self.etiquette is not None:
-                self.etiquette._cache.clear()
             self.figure_perimee()
         if _first_call:
             # Tous les héritiers doivent également être rafraîchis.

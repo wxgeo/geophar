@@ -26,7 +26,7 @@ from __future__ import with_statement
 from weakref import ref
 from math import cos, sin, hypot, pi, acos
 
-from .objet import Objet
+from .objet import Objet, Argument, Ref
 from .textes import Texte_generique
 from .routines import angle_vectoriel
 from .points import (Glisseur_arc_cercle, Glisseur_segment, Glisseur_droite,
@@ -44,34 +44,23 @@ class Label_generique(Texte_generique):
     _style_defaut = param.labels
     # Les coordonnées exactes n'ont aucun intérêt pour une étiquette.
     _utiliser_coordonnees_approchees = True
-    _initialisation_minimale = True
 
-    @property
-    def feuille(self):
-        return self.parent.feuille
+    __parent = parent = Argument(Objet)
 
-    def __init__(self, parent):
-        Texte_generique.__init__(self)
-        self._parent = ref(parent)
-        # self._parent est une fonction qui renvoit parent si il existe encore.
-        # Cela évite de le maintenir en vie artificiellement par une référence circulaire !
-        self._initialiser_coordonnees()
-
-    def _initialiser_coordonnees(self):
-        pass
+    def __init__(self, parent, **styles):
+        Texte_generique.__init__(self, **styles)
+        self.__parent = parent = Ref(parent)
 
     @property
     def nom(self):
-        if self.feuille:
-            return self.parent._nom + '.etiquette'
-        return ""
+        if self.feuille is not None:
+            nom = self.__parent.nom
+            if nom:
+                return nom + '.etiquette'
+        return ''
 
     def sauvegarder(self):
         return "%s.etiquette.style(**%s)\n" % (self.parent.nom, repr(self.style()))
-
-    @property
-    def parent(self):
-        return self._parent()
 
     @property2
     def visible(self, val = None):
@@ -80,6 +69,7 @@ class Label_generique(Texte_generique):
             self.style(visible = val)
         return self.style('visible') and self.parent.style('visible')
 
+    # XXX: Utiliser dpix2xoo et dcoo2pix à la place.
     def _epix2coo(self, x, y):
         u"Conversion des écarts de pixels en écarts de coordonnées."
         return self.canvas.coeff(0)*x, self.canvas.coeff(1)*y
@@ -92,11 +82,17 @@ class Label_generique(Texte_generique):
         raise NotImplementedError    # sera implemente differemment pour chaque type de label
 
     def label(self):
-        return self.parent.label()
+        return self.__parent.label()
+##
+    ##@property
+    ##def label_temporaire(self):
+        ##return self.__parent.label_temporaire
 
+
+    #XXX: Pourquoi feuille n'est-il pas récupéré directement ?
     @property
-    def label_temporaire(self):
-        return self.parent.label_temporaire
+    def feuille(self):
+        return self.__parent.feuille
 
     def _creer_trace(self):
         u"Pas de trace pour les étiquettes."
@@ -116,7 +112,7 @@ class Label_generique(Texte_generique):
     @property
     def existe(self):
         # C'est l'existence de l'objet qui détermine celle de son étiquette.
-        return self.parent.existe
+        return self.__parent.existe
 
     def _set_rayon(self, rayon, x, y):
         xmin, xmax, ymin, ymax = self._boite()
@@ -150,20 +146,19 @@ class Label_generique(Texte_generique):
 
 
 
-
-
-
-
 class Label_point(Label_generique):
     u"L'étiquette d'un point."
 
-    def _initialiser_coordonnees(self):
-        self.style(_angle_ = pi/4) # les noms de style sont entre "_" pour éviter des conflits avec les styles de Texte.
-        self.style(_rayon_ = 7) # distance au point en pixels
+    __parent = parent = Argument('Point_generique')
+
+    def __init__(self, parent, **styles):
+        self.__parent = parent = Ref(parent)
+        Label_generique.__init__(self, parent, **styles)
 
     def _get_coordonnees(self):
         parent = self.parent
-        r = self.style("_rayon_"); a = self.style("_angle_")
+        r = self.style("_rayon_")
+        a = self.style("_angle_")
         rx, ry = self._epix2coo(r*cos(a), r*sin(a))
         return  parent.abscisse + rx, parent.ordonnee + ry
 
@@ -174,7 +169,8 @@ class Label_point(Label_generique):
             rayon = hypot(rx, ry)
             if rayon:
                 self.style(_angle_ = acos(rx/rayon)*(cmp(ry, 0) or 1))
-            self.style(_rayon_ = min(rayon, 50)) # distance maximale entre le point et son etiquette : 25 pixels
+            # Distance maximale entre le point et son étiquette : 25 pixels.
+            self.style(_rayon_ = min(rayon, 50))
 
 
 
@@ -188,30 +184,28 @@ class Label_glisseur(Label_generique):
 
     `classe` doit contenir le type de glisseur utilisé.
     """
-    defaut = 0.5
+
     glisseur = NotImplemented
 
-    def _initialiser_coordonnees(self):
-        self.style(_angle_ = pi/4) # les noms de style sont entre "_" pour éviter des conflits avec les styles de Texte.
-        self.style(_rayon_ = 7) # distance au point en pixels
-        self.style(_k_ = self.defaut) # Sur le segment [AB], l'étiquette sera relative au point fictif M = k*A + (1-k)*B
-        self._M = None # il serait assez délicat d'initialiser _M d'office (risque de récursion infinie)...
+    __parent = parent = Argument(Objet)
 
+    def __init__(self, parent, **styles):
+        self.__parent = parent = Ref(parent)
+        Label_generique.__init__(self, parent, **styles)
+        self._M = None
 
     def _get_coordonnees(self):
         if self._M is None:
-#            import objets
             self._M = self.glisseur(self.parent, k = self.style("_k_"))
-        #~ print self._M.coordonnees
         x0, y0 =  self._M.coordonnees
-        r = self.style("_rayon_"); a = self.style("_angle_")
+        r = self.style("_rayon_")
+        a = self.style("_angle_")
         rx, ry = self._epix2coo(r*cos(a), r*sin(a));
         return  x0 + rx, y0 + ry
 
     def _set_coordonnees(self, x = None, y = None):
         if self._M is None:
-#            import objets
-            self._M = self.glisseur(self.parent, k = self.style("_k_"))
+            self._M = self.glisseur(self.__parent, k=self.style("_k_"))
         if x is not None:
             self._M.coordonnees = (x, y)
             x0, y0 = self._M.coordonnees # comme _M est un glisseur, ce n'est pas x0 et y0 en général
@@ -229,6 +223,11 @@ class Label_segment(Label_glisseur):
 
     glisseur = Glisseur_segment
 
+    __parent = parent = Argument('Segment')
+
+    def __init__(self, parent, **styles):
+        self.__parent = parent = Ref(parent)
+        Label_glisseur.__init__(self, parent, **styles)
 
 
 class Label_vecteur(Label_glisseur):
@@ -236,11 +235,23 @@ class Label_vecteur(Label_glisseur):
 
     glisseur = Glisseur_vecteur
 
+    __parent = parent = Argument('Vecteur_generique')
+
+    def __init__(self, parent, **styles):
+        self.__parent = parent = Ref(parent)
+        Label_glisseur.__init__(self, parent, **styles)
+
 
 class Label_droite(Label_glisseur):
     u"""L'étiquette d'une droite."""
 
     glisseur = Glisseur_droite
+
+    __parent = parent = Argument('Droite_generique')
+
+    def __init__(self, parent, **styles):
+        self.__parent = parent = Ref(parent)
+        Label_glisseur.__init__(self, parent, **styles)
 
 
 class Label_demidroite(Label_glisseur):
@@ -248,18 +259,36 @@ class Label_demidroite(Label_glisseur):
 
     glisseur = Glisseur_demidroite
 
+    __parent = parent = Argument('Demidroite')
+
+    def __init__(self, parent, **styles):
+        self.__parent = parent = Ref(parent)
+        Label_glisseur.__init__(self, parent, **styles)
+
 
 class Label_cercle(Label_glisseur):
     """L'étiquette d'un cercle."""
 
-    defaut = 0
+    _style_defaut = {'_k_': 0}
     glisseur = Glisseur_cercle
+
+    __parent = parent = Argument('Cercle_generique')
+
+    def __init__(self, parent, **styles):
+        self.__parent = parent = Ref(parent)
+        Label_glisseur.__init__(self, parent, **styles)
 
 
 class Label_arc_cercle(Label_glisseur):
     """L'étiquette d'un arc de cercle."""
 
     glisseur = Glisseur_arc_cercle
+
+    __parent = parent = Argument('Arc_generique')
+
+    def __init__(self, parent, **styles):
+        self.__parent = parent = Ref(parent)
+        Label_glisseur.__init__(self, parent, **styles)
 
 
 #   Autres classes
@@ -271,13 +300,15 @@ class Label_arc_cercle(Label_glisseur):
 class Label_polygone(Label_generique):
     u"L'étiquette d'un polygone."
 
-    def _initialiser_coordonnees(self):
-        self.style(_angle_ = pi/4) # les noms de style sont entre "_" pour éviter des conflits avec les styles de Texte.
-        self.style(_rayon_ = 7) # distance au point en pixels
+    __parent = parent = Argument('Polygone_generique')
+
+    def __init__(self, parent, **styles):
+        self.__parent = parent = Ref(parent)
+        Label_generique.__init__(self, parent, **styles)
 
     def _set_coordonnees(self, x = None, y = None):
         if x is not None:
-            parent = self.parent
+            parent = self.__parent
             x1, x2, y1, y2 = parent._espace_vital()
             x = max(min(x, x2), x1)
             y = max(min(y, y2), y1)
@@ -287,29 +318,24 @@ class Label_polygone(Label_generique):
                 self.style(_angle_ = acos(rx/rayon)*(cmp(ry, 0) or 1))
             self.style(_rayon_ = rayon) # distance maximale entre le point et son étiquette : 25 pixels
 
-
     def _get_coordonnees(self):
-        parent = self.parent
-        r = self.style("_rayon_"); a = self.style("_angle_")
+        parent = self.__parent
+        r = self.style("_rayon_")
+        a = self.style("_angle_")
         rx, ry = self._epix2coo(r*cos(a), r*sin(a))
         return  parent.centre.abscisse + rx, parent.centre.ordonnee + ry
-
-
-
 
 
 
 class Label_angle(Label_generique):
     u"L'étiquette d'un angle."
 
-    def _initialiser_coordonnees(self):
-        self.style(_k_ = 0.5) # les noms de style sont entre "_" pour éviter des conflits avec les styles de Texte.
-        self.style(_rayon_ = param.codage["rayon"] + 10) # distance au point en pixels
+    _style_defaut = {'_rayon_': param.codage["rayon"] + 10}
 
     def _get_coordonnees(self):
         parent = self.parent
-        r = self.style("_rayon_"); k = self.style("_k_")
-        #xx, yy = self.parent.point.position()
+        r = self.style("_rayon_")
+        k = self.style("_k_")
         u = self._epix2coo(*parent._Secteur_angulaire__vecteur1)
         v = self._epix2coo(*parent._Secteur_angulaire__vecteur2)
         i = (1, 0)
@@ -338,7 +364,7 @@ class Label_angle(Label_generique):
                 if parent.sens == u"non défini" and parent._sens() < 0:
                     a, b = b, a
                 c = angle_vectoriel(i, (rx, ry))
-                if a <> b:
+                if a != b:
                     if b < a:
                         b += 2*pi
                     if c < a:

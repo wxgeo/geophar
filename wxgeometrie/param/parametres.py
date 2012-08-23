@@ -403,6 +403,13 @@ labels = {
     "niveau": 7,
     "alignement_vertical": "bottom",
     "alignement_horizontal": "left",
+    # Les noms de style suivants sont à usage interne (position de l'étiquette
+    # par rapport à l'objet), et sont entre « _ », pour éviter des conflits avec
+    # les noms de styles de Texte.
+    '_angle_': pi/4,
+    # `_rayon_` est la distance (en pixels) entre l'étiquette et l'objet.
+    '_rayon_': 7,
+    '_k_': 0.5
     }
 angles = {
     "couleur": "b",

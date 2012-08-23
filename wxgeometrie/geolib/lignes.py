@@ -897,7 +897,7 @@ class Tangente(Perpendiculaire):    # À REDÉFINIR ?
 
 
 
-class DemiPlan(Objet_avec_equation):
+class Demiplan(Objet_avec_equation):
     u"""Un demi-plan.
 
     Le demi-plan délimité par la droite d et contenant le point M."""

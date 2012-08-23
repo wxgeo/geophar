@@ -404,17 +404,17 @@ def test_nettoyer():
     ex('M.style(visible = False)')
     f.nettoyer()
     noms -= set(("M", "s"))
-    assert(o.noms == noms)
+    assertEqual(o.noms, noms)
 
     ex('d.style(visible = False)')
     f.nettoyer()
     noms.remove("d")
-    assert(o.noms == noms)
+    assertEqual(o.noms, noms)
 
     ex('I.style(visible = False)')
     f.nettoyer()
     noms -= set(("B", "I"))
-    assert(o.noms == noms)
+    assertEqual(o.noms, noms)
 
 
 def test_feuille_modifiee():

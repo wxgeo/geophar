@@ -74,7 +74,7 @@ class Classe(tuple):
     def __ge__(self, y):    return self.milieu() > y or self.milieu() == y
     def __lt__(self, y):    return self.milieu() < y
     def __le__(self, y):    return self.milieu() < y or self.milieu() == y
-    def __nonzero__(self):  return self.milieu() <> 0
+    def __nonzero__(self):  return self.milieu() != 0
 
     def effectif(self):
         return float(sum([self.lien.valeurs[valeur] for valeur in self.lien.liste_valeurs() if self[0] <= valeur < self[1]]))

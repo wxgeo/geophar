@@ -487,22 +487,39 @@ class Dictionnaire_objets(dict):
     __getattr__ = __getitem__
 
 
-    def lister(self, objets_caches = True, **kw):
+    def lister(self, objets_caches=True, etiquettes=False, **kw):
         u"""Retourne la liste des objets géométriques.
-        Le paramètre objets_caches indique s'il faut retourner les objets cachés.
+
+        Le paramètre `objets_caches` indique s'il faut inclure les objets cachés.
+
+        Le paramètre `etiquettes` indique s'il faut inclure les étiquettes
+        des objets retournés.
+
         kw:
-        `type` : types à inclure
-        `sauf` : types à exclure
+        * `type` : types à inclure
+        * `sauf` : types à exclure
         """
-        if kw:
-            sauf = kw.get("sauf", ())
-            type = kw.get("type", Objet)
-            return [obj for obj in self.values() if isinstance(obj, type) \
-                    and not isinstance(obj, sauf) and (objets_caches or obj.style("visible"))]
-        elif objets_caches:
-            return [obj for obj in self.values() if isinstance(obj, Objet)]
-        else:
-            return [obj for obj in self.values() if isinstance(obj, Objet) and obj.style("visible")]
+        sauf = kw.get("sauf", ())
+        type = kw.get("type", Objet)
+        objets = []
+        for objet in self.values():
+            if isinstance(objet, type) and not isinstance(objet, sauf) \
+                and (objets_caches or objet._style['visible']):
+                    objets.append(objet)
+                    if etiquettes and objet.etiquette is not None:
+                        objets.append(objet.etiquette)
+        return objets
+
+        ##if kw:
+            ##sauf = kw.get("sauf", ())
+            ##type = kw.get("type", Objet)
+            ##objets = [obj for obj in self.values() if isinstance(obj, type) \
+                    ##and not isinstance(obj, sauf) and (objets_caches or obj.style("visible"))]
+        ##elif objets_caches:
+            ##objets = [obj for obj in self.values() if isinstance(obj, Objet)]
+        ##else:
+            ##objets = [obj for obj in self.values() if isinstance(obj, Objet) and obj.style("visible")]
+
 
     def supprimer(self, *objets):
         u"""Supprime plusieurs objets dans le bon ordre.
@@ -663,7 +680,7 @@ class Interprete_feuille(object):
                     else:
                         retour += repr(elt)
                     retour += ', '
-                retour = retour[:-2]
+                retour = retour.rstrip(', ')
                 if isinstance(val, list):
                     retour += ']'
                 elif isinstance(val, set):
@@ -1077,7 +1094,7 @@ class Feuille(object):
 #########################################################################################
 
 
-    def liste_objets(self, objets_caches = None, tri = False):
+    def liste_objets(self, objets_caches=None, tri=False, etiquettes=False):
         u"""Liste des objets, triés éventuellement selon le style 'niveau'.
 
         NB: un système de mise en cache est utilisé si possible, contrairement à .objets.lister().
@@ -1093,14 +1110,17 @@ class Feuille(object):
         clef = 'c' if objets_caches else ''
         if tri:
             clef += 't'
-        if self._cache_listes_objets.get(clef) is None:
-            liste = self.objets.lister(objets_caches = objets_caches)
+        if etiquettes:
+            clef += 'e'
+        objets = self._cache_listes_objets.get(clef)
+        if objets is None:
+            liste = self.objets.lister(objets_caches=objets_caches, etiquettes=etiquettes)
             if tri:
                 # Exceptionnellement, on utilise '._style' au lieu de '.style'
                 # car le gain de temps est significatif.
-                liste.sort(key = lambda x:x._style["niveau"], reverse = True)
-            self._cache_listes_objets[clef] = liste
-        return self._cache_listes_objets[clef]
+                liste.sort(key=(lambda x:x._style["niveau"]), reverse=True)
+            objets = self._cache_listes_objets[clef] = liste
+        return objets
 
 
 
@@ -1294,11 +1314,11 @@ class Feuille(object):
         u"""Supprime les objets cachés inutiles.
 
         Un objet caché est inutile si aucun objet visible ne dépend de lui."""
-        objets = sorted((obj for obj in self.liste_objets(True) if not obj.style('visible')),
+        objets = sorted((obj for obj in self.liste_objets(True) if not obj.visible),
                             key = attrgetter("_hierarchie"), reverse = True)
         for obj in objets:
             if obj.nom not in self.objets._suppression_impossible:
-                if not any(heritier.nom for heritier in obj._heritiers()):
+                if not any(self.contient_objet(heritier) for heritier in obj._heritiers()):
                     obj.supprimer()
 
     def effacer_codage(self):
@@ -1466,8 +1486,8 @@ class Feuille(object):
         S'il n'y a pas d'objet en cours de déplacement, la deuxième liste est vide.
         """
         objet_deplace = self._objet_deplace
-        if isinstance(objet_deplace, Label_generique):
-            objet_deplace = objet_deplace.parent
+        ##if isinstance(objet_deplace, Label_generique):
+            ##objet_deplace = objet_deplace.parent
             # TODO: pouvoir rafraichir uniquement l'étiquette ?
 ##        # Rafraichit les figures s'il y a besoin:
 ##        if self._mettre_a_jour_figures:
@@ -1483,13 +1503,10 @@ class Feuille(object):
         liste1 = []
         # objets susceptibles d'être modifiés
         liste2 = []
-        for objet in self.liste_objets():
+        for objet in self.liste_objets(etiquettes=True):
             liste = liste2 if is_in(objet, heritiers) else liste1
             liste.extend(objet.figure)
             liste.extend(objet._trace)
-            if objet.etiquette:
-                liste.extend(objet.etiquette.figure)
-                liste.extend(objet.etiquette._trace)
         for objet in self._objets_temporaires:
             liste2.extend(objet.figure)
             liste2.extend(objet._trace)

@@ -82,7 +82,7 @@ def recursive_replace(main_string, old_string, new_string = "", max_loops = 1000
 
     chaine = ""
     loops = 0
-    while chaine <> main_string:
+    while chaine != main_string:
         loops += 1
         chaine = main_string
         main_string = main_string.replace(old_string, new_string)
@@ -116,7 +116,7 @@ def recursive_mreplace(main_string, list_of_strings, new_string = "", max_loops 
 
     chaine = ""
     loops = 0
-    while chaine <> main_string:
+    while chaine != main_string:
         loops += 1
         chaine = main_string
         main_string = mreplace(main_string, list_of_strings, new_string)

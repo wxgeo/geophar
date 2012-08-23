@@ -39,7 +39,7 @@ from ..geolib.cercles import Arc_generique, Cercle_generique, Cercle, Arc_points
                              Arc_cercle
 from ..geolib.lignes import Droite_generique, Segment, Demidroite, Ligne_generique,\
                             Droite, Tangente, Parallele, Perpendiculaire, Bissectrice,\
-                            Mediatrice, DemiPlan
+                            Mediatrice, Demiplan
 from ..geolib.polygones import Polygone_generique, PrevisualisationPolygone
 from ..geolib.angles import Angle_generique, Angle, Angle_oriente, Secteur_angulaire
 from ..geolib.transformations import Rotation, Homothetie, Translation
@@ -674,7 +674,7 @@ class BarreOutils(QWidget):
                     self.cache.append(selection)
                 elif isinstance(selection, Ligne_generique):
                     self.cache.append(selection)
-                    self.feuille_actuelle.objet_temporaire(DemiPlan(selection, self.feuille_actuelle.point_temporaire()))
+                    self.feuille_actuelle.objet_temporaire(Demiplan(selection, self.feuille_actuelle.point_temporaire()))
                 else:
                     self.cache.append(self.point(**kw))
             elif len(self.cache) == 1:
@@ -691,7 +691,7 @@ class BarreOutils(QWidget):
                 self.feuille_actuelle.objet_temporaire(None)
                 if isinstance(self.cache[0], Point_generique):
                     self.cache.reverse()
-                self.executer(u"DemiPlan(%s, %s)" %(self.cache[0].nom, self.cache[1].nom))
+                self.executer(u"Demiplan(%s, %s)" %(self.cache[0].nom, self.cache[1].nom))
 
             if len(self.cache) > 2: # ne se produit que si l'execution a plante...
                 self.initialiser()

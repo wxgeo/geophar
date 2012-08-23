@@ -10,7 +10,7 @@ from wxgeometrie.geolib import (Tangente, Perpendiculaire, Parallele, Mediatrice
                                 Droite_vectorielle, Point, Cercle, Droite,
                                 Bissectrice, Label_droite, Label_demidroite,
                                 Label_segment, Droite_equation, Milieu, Segment,
-                                Barycentre, Vecteur_libre, RIEN, Demidroite, DemiPlan,
+                                Barycentre, Vecteur_libre, RIEN, Demidroite, Demiplan,
                                 )
 
 
@@ -183,10 +183,10 @@ def test_Tangente():
 def test_equation_formatee():
     assert Droite('y=x').equation_formatee == '-x + y = 0'
 
-def test_DemiPlan():
+def test_Demiplan():
     d = Droite('y=-x+1')
-    P1 = DemiPlan(d, Point(0, 0), True)
-    P2 = DemiPlan(d, Point(0, 0), False)
+    P1 = Demiplan(d, Point(0, 0), True)
+    P2 = Demiplan(d, Point(0, 0), False)
     assert Point(0, 0) in P1
     assert Point(1, 0) in P1
     assert Point(0, 0) in P2

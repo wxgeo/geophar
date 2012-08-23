@@ -102,7 +102,9 @@ def filtre_versions_anterieures(fgeo):
                     if "points=" in s:
                         s = s.replace("points=", "'points':").replace("coeffs=", "'coeffs':")
                         m = re.search("(?P<deb>Barycentre[()])(?P<milieu>.*)(?P<fin>[,][*][*].*)", s)
-                        return m.group("deb") + "*zip({" + m.group("milieu") + "}['points'],{" + m.group("milieu") + "}['coeffs'])" + m.group("fin")
+                        return m.group("deb") + "*zip({" + m.group("milieu") \
+                                              + "}['points'],{" + m.group("milieu") \
+                                              + "}['coeffs'])" + m.group("fin")
                     else:
                         m = re.search("(?P<deb>Barycentre[()])(?P<milieu>.*)(?P<fin>[,][*][*].*)", s)
                         return m.group("deb") + "*zip(" + m.group("milieu") + ")" + m.group("fin")
@@ -128,10 +130,66 @@ def filtre_versions_anterieures(fgeo):
             if version < [0, 124]:
                 def transformer(match_obj):
                     chaine = match_obj.group(0)
-                    if chaine in ['Label_segment', 'Glisseur_arc_cercle', 'Objet_avec_coordonnees_modifiables', 'Secteur_angulaire', 'Label_angle', 'Widget', 'Perpendiculaire', 'Label_vecteur', 'Centre_cercle_inscrit', 'Texte_translation', 'Pentagone', 'Orthocentre', 'Demidroite', 'Cercle_equation', 'Cercle_points', 'Point_pondere', 'Variable', 'Point_homothetie', 'Extremite', 'Vecteur', 'Point_equidistant', 'Rotation', 'Centre_cercle_circonscrit', 'Point_final', 'Segment', 'Courbe_generique', 'Label_arc_cercle', 'Glisseur_ligne_generique', 'Courbe', 'Projete_arc_cercle', 'Tangente', 'Triangle_equilateral', 'Disque', 'Label_point', 'Somme_vecteurs', 'Label_generique', 'Cube', 'Label_demidroite', 'Vecteur_libre', 'Angle_libre', 'Ligne_generique', 'Cote', 'Glisseur_segment', 'Projete_droite', 'Glisseur_droite', 'Centre_polygone_generique', 'Sommet_polyedre', 'Demicercle', 'Heptagone', 'Quadrilatere', 'Label_polygone', 'Sommet_triangle_isocele', 'Sommet_rectangle', 'Homothetie', 'Parallelogramme', 'Transformation_generique', 'Cercle_rayon', 'Point_reflexion', 'Polygone_regulier_centre', 'Point_rotation', 'Point_droite', 'Interpolation_cubique', 'Interpolation_lineaire', 'Hexagone', 'Sommet', 'Objet_numerique', 'Centre_gravite', 'Glisseur_vecteur', 'Intersection_generique', 'PointTangence', 'Mediatrice', 'Rectangle', 'Objet', 'Bissectrice', 'Barycentre', 'Angle_oriente', 'Point_translation', 'Tetraedre', 'Projete_generique', 'Vecteur_generique', 'Representant', 'Glisseur_demidroite', 'Arete', 'Texte_transformation_generique', 'Objet_avec_valeur', 'Texte_homothetie', 'Label_cercle', 'Translation', 'Triangle_isocele_rectangle', 'Cercle_generique', 'Triangle_equilateral_centre', 'Cercle', 'Centre', 'Angle_generique', 'Octogone', 'Point_generique', 'Objet_avec_equation', 'Polygone', 'Interpolation_generique', 'Angle', 'Label_droite', 'Texte_generique', 'Milieu', 'Losange', 'Projete_segment', 'Polygone_generique', 'Glisseur_generique', 'Arc_points', 'Cercle_diametre', 'Triangle', 'Droite_vectorielle', 'Intersection_droite_cercle', 'Glisseur_cercle', 'Polyedre_generique', 'Triangle_isocele', 'Arc_oriente', 'Projete_demidroite', 'Projete_cercle', 'Parallele', 'Texte_rotation', 'Polygone_regulier', 'Droite_equation', 'Droite_generique', 'Arc_generique', 'Sommet_triangle_rectangle', 'Objet_avec_coordonnees', 'Fonction', 'Arc_cercle', 'PrevisualisationPolygone', 'Carre_centre', 'Angle_vectoriel', 'Carre', 'Interpolation_quadratique', 'Intersection_droites', 'Triangle_rectangle', 'Intersection_cercles', 'Texte', 'Texte_reflexion', 'Reflexion', 'Point', 'Droite', 'Sommet_cube', 'Symetrie_centrale', 'Vecteur_unitaire', 'creer_feuille', 'rafraichir_feuille']:
+                    if chaine in ['Label_segment', 'Glisseur_arc_cercle',
+                                  'Objet_avec_coordonnees_modifiables',
+                                  'Secteur_angulaire', 'Label_angle', 'Widget',
+                                  'Perpendiculaire', 'Label_vecteur',
+                                  'Centre_cercle_inscrit', 'Texte_translation',
+                                  'Pentagone', 'Orthocentre', 'Demidroite',
+                                  'Cercle_equation', 'Cercle_points',
+                                  'Point_pondere', 'Variable', 'Point_homothetie',
+                                  'Extremite', 'Vecteur', 'Point_equidistant',
+                                  'Rotation', 'Centre_cercle_circonscrit',
+                                  'Point_final', 'Segment', 'Courbe_generique',
+                                  'Label_arc_cercle', 'Glisseur_ligne_generique',
+                                  'Courbe', 'Projete_arc_cercle', 'Tangente',
+                                  'Triangle_equilateral', 'Disque', 'Label_point',
+                                  'Somme_vecteurs', 'Label_generique', 'Cube',
+                                  'Label_demidroite', 'Vecteur_libre', 'Angle_libre',
+                                  'Ligne_generique', 'Cote', 'Glisseur_segment',
+                                  'Projete_droite', 'Glisseur_droite',
+                                  'Centre_polygone_generique', 'Sommet_polyedre',
+                                  'Demicercle', 'Heptagone', 'Quadrilatere',
+                                  'Label_polygone', 'Sommet_triangle_isocele',
+                                  'Sommet_rectangle', 'Homothetie', 'Parallelogramme',
+                                  'Transformation_generique', 'Cercle_rayon',
+                                  'Point_reflexion', 'Polygone_regulier_centre',
+                                  'Point_rotation', 'Point_droite',
+                                  'Interpolation_cubique', 'Interpolation_lineaire',
+                                  'Hexagone', 'Sommet', 'Objet_numerique',
+                                  'Centre_gravite', 'Glisseur_vecteur',
+                                  'Intersection_generique', 'PointTangence',
+                                  'Mediatrice', 'Rectangle', 'Objet', 'Bissectrice',
+                                  'Barycentre', 'Angle_oriente', 'Point_translation',
+                                  'Tetraedre', 'Projete_generique', 'Vecteur_generique',
+                                  'Representant', 'Glisseur_demidroite', 'Arete',
+                                  'Texte_transformation_generique', 'Objet_avec_valeur',
+                                  'Texte_homothetie', 'Label_cercle', 'Translation',
+                                  'Triangle_isocele_rectangle', 'Cercle_generique',
+                                  'Triangle_equilateral_centre', 'Cercle', 'Centre',
+                                  'Angle_generique', 'Octogone', 'Point_generique',
+                                  'Objet_avec_equation', 'Polygone', 'Interpolation_generique',
+                                  'Angle', 'Label_droite', 'Texte_generique', 'Milieu',
+                                  'Losange', 'Projete_segment', 'Polygone_generique',
+                                  'Glisseur_generique', 'Arc_points', 'Cercle_diametre',
+                                  'Triangle', 'Droite_vectorielle',
+                                  'Intersection_droite_cercle', 'Glisseur_cercle',
+                                  'Polyedre_generique', 'Triangle_isocele', 'Arc_oriente',
+                                  'Projete_demidroite', 'Projete_cercle', 'Parallele',
+                                  'Texte_rotation', 'Polygone_regulier', 'Droite_equation',
+                                  'Droite_generique', 'Arc_generique',
+                                  'Sommet_triangle_rectangle', 'Objet_avec_coordonnees',
+                                  'Fonction', 'Arc_cercle', 'PrevisualisationPolygone',
+                                  'Carre_centre', 'Angle_vectoriel', 'Carre',
+                                  'Interpolation_quadratique', 'Intersection_droites',
+                                  'Triangle_rectangle', 'Intersection_cercles',
+                                  'Texte', 'Texte_reflexion', 'Reflexion', 'Point',
+                                  'Droite', 'Sommet_cube', 'Symetrie_centrale',
+                                  'Vecteur_unitaire', 'creer_feuille', 'rafraichir_feuille']:
                         return chaine
                     return chaine.replace("_", "_prime")
-                figures[i] = re.sub("""(?<![A-Za-z_'"])[A-Za-z][A-Za-z_]+(?![A-Za-z0-9_{'"])""", transformer, figures[i])
+                figures[i] = re.sub("""(?<![A-Za-z_'"])[A-Za-z][A-Za-z_]+(?![A-Za-z0-9_{'"])""",
+                                    transformer, figures[i])
                 if fgeo.module == 'probabilites':
                     figures[i] = figures[i].replace('$P_prime', '$P_').replace('$p_prime', '$p_')
 
@@ -142,18 +200,24 @@ def filtre_versions_anterieures(fgeo):
 
             # version 0.126
             if version < [0, 126]:
-                figures[i] = figures[i].replace("Variable(valeur=", "Variable(contenu=").replace("Angle_libre(valeur=", "Angle_libre(variable=")
+                figures[i] = figures[i].replace("Variable(valeur=", "Variable(contenu=")\
+                                       .replace("Angle_libre(valeur=", "Angle_libre(variable=")
 
             # version 0.129
             # (Le filtre n'est pas parfait)
             if version < [0, 129]:
-                figures[i] = re.sub("(?<![A-Za-z0-9_])C?f[0-9]+(?![A-Za-z0-9_])",lambda r:r.group(0) + "_", figures[i])
+                figures[i] = re.sub("(?<![A-Za-z0-9_])C?f[0-9]+(?![A-Za-z0-9_])",
+                                    lambda r:r.group(0) + "_", figures[i])
 
             # version 0.130 bêta 1
             # (Le filtre n'est pas parfait)
             if version < [0, 130, -1, 1]:
                 if fgeo.module == 'probabilites':
                     figures[i] = figures[i].replace("'$$", "'$").replace("$$'", "$'")
+
+            # Version 12.08
+            if version < [12, 8]:
+                figures[i] = figures[i].replace("DemiPlan(", "Demiplan(")
 
     if fgeo.contenu.has_key("Courbe") and fgeo.module == 'traceur':
         courbes = fgeo.contenu["Courbe"]

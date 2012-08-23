@@ -66,7 +66,9 @@ class Formule(object):
             cache = liste[i][1:-1] # "{A.x}" -> "A.x"
             var = liste[i] = Variable(cache)
             var._cache_formule = cache
-            var.enfants.append(parent.etiquette)
+
+            var.enfants.append(parent if parent.etiquette is None
+                                      else parent.etiquette)
 ##            # on va maintenant redéfinir la méthode affiche de toutes les variables de la formule :
               # au lieu d'être inactive, la méthode affiche va actualiser l'affichage de l'objet contenant la formule.
 ##            def affiche(self, actualiser = False, formule = self):
@@ -89,9 +91,10 @@ class Formule(object):
         return self._parent()
 
     def supprimer(self):
+        parent = self.parent
         for var in self.vars():
-            var.enfants.remove(self.parent.etiquette)
-
+            var.enfants.remove(parent if parent.etiquette is None
+                                      else parent.etiquette)
 
     def __repr__(self):
         liste = self._contenu[:]

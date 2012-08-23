@@ -33,7 +33,7 @@ from .objet import Objet_avec_coordonnees, Argument, Ref, Objet, \
                    Objet_avec_coordonnees_modifiables
 from .constantes import RIEN, TEXTE, MATH
 
-from ..pylib import uu, warning
+from ..pylib import uu, warning, property2
 from ..mathlib.parsers import convertir_en_latex
 from ..pylib import mathtext_parser
 from .. import param
@@ -47,6 +47,9 @@ class Texte_generique(Objet_avec_coordonnees):
     _style_defaut = param.textes
     _prefixe_nom = "txt"
 
+    # Utilisé pour éditer le texte interactivement dans le canvas.
+    _label_temporaire = None
+
     def __init__(self, **styles):
         Objet_avec_coordonnees.__init__(self, **styles)
 
@@ -56,7 +59,7 @@ class Texte_generique(Objet_avec_coordonnees):
             self._representation = [self.rendu.texte(), self.rendu.decoration_texte()]
         text = self._representation[0]
         rect = self._representation[1]
-        texte = (self.label() if self.label_temporaire is None else self.label_temporaire + '...')
+        texte = (self.label() if self._label_temporaire is None else self._label_temporaire + '...')
         if not texte:
             text.set_visible(False)
             rect.set_visible(False)
@@ -121,6 +124,12 @@ class Texte_generique(Objet_avec_coordonnees):
             rect.set(visible=True, texte=text, facecolor=fond, edgecolor=cadre,
                      zorder=niveau, pad=self.style('pad'), alpha=self.style('alpha_fond'))
 
+    @property2
+    def label_temporaire(self, *val):
+        if val:
+            self._label_temporaire = val[0]
+            self.figure_perimee()
+        return self._label_temporaire
 
     def _boite(self):
         # Note : ymin et ymax "permutent" souvent car les transformations appliquées inversent l'orientation.
@@ -203,6 +212,8 @@ class Texte(Texte_generique, Objet_avec_coordonnees_modifiables):
         self.__y = y = Ref(y)
 
         Objet_avec_coordonnees_modifiables.__init__(self, x, y, **styles)
+
+        ##self.etiquette = self
 
 
     def style(self, *args, **kw):
