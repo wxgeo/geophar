@@ -301,9 +301,9 @@ def test_formules():
     o.A = Point(e, 3)
     o.M = Point()
     o.M.label(u'{1/ln(A.x) + A.y}', True)
-    assert(float(o.M.label()) == 4.)
-    o.A.x == e**2
-    assert(float(o.M.label()) == 3.5)
+    assertAlmostEqual(float(o.M.label()), 4.)
+    o.A.x = e**2
+    assertAlmostEqual(float(o.M.label()), 3.5)
 
 def test_constantes():
     f = Feuille()
