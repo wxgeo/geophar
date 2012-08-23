@@ -1613,11 +1613,13 @@ class Objet(object):
             'g'
             >>> C.style('taille')
             10
+
+        Seuls les styles ayant du sens pour ce type d'objet seront appliqués.
         """
         style = self.style()
         a_copier = (objet.style().copy() if objet is not None else {})
         a_copier.update(**kw)
-        for key, value in a_copier:
+        for key, value in a_copier.iteritems():
             if style.has_key(key):
                 if key in param.styles_a_signification_variable:
                     #print "clef:", key, style["categorie"], objet.style("categorie")
@@ -1626,7 +1628,7 @@ class Objet(object):
                 elif key not in param.styles_a_ne_pas_copier:
                     style[key] = value
 
-        if objet.etiquette is not None and self.etiquette is not None:
+        if objet is not None and objet.etiquette is not None and self.etiquette is not None:
             style_etiquette = objet.etiquette.style().copy()
             for key in param.styles_a_ne_pas_copier:
                 style_etiquette.pop(key, None)
