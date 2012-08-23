@@ -1490,9 +1490,26 @@ class Objet(object):
 
 
     def __repr__(self, styles = True):
-        u"Méthode utilisée pour sauvegarder les objets."
-        # XXX: cette méthode ne doit plus être utilisée pour sauvegarder les objets.
-        # cf. `Objet.sauvegarder()`
+        u"""Méthode utilisée pour obtenir une forme évaluable de l'objet.
+
+        Attention, le résultat n'est pas forcément très lisible !
+
+        Exemple::
+
+            >>> from wxgeometrie import Point
+            >>> A = Point(2, 7, couleur='g', taille=14)
+            >>> B = eval(repr(A))
+            >>> A is B
+            False
+            >>> A == B
+            True
+            >>> A.xy == B.xy
+            True
+            >>> A.style() == B.style()
+            True
+
+        Voir aussi `Objet.sauvegarder()`.
+        """
         def formater(objet):
             if isinstance(objet, Objet):
                 if self.feuille and self.feuille.contient_objet(objet):
@@ -1572,16 +1589,39 @@ class Objet(object):
         return self.__class__(**kwargs)
 
 
-    def copier_style(self, objet):
+    def copier_style(self, objet=None, **kw):
         u"""Applique le style de 'objet' à l'objet (self).
 
-        Si les objets sont de type différent, seuls certains styles communs entrent en compte."""
+        Si les objets sont de type différent, seuls certains styles communs entrent en compte.
+
+        Exemple::
+
+            >>> from wxgeometrie import Point, Segment
+            >>> A = Point(couleur='b', taille=10)
+            >>> B = Point()
+            >>> s = Segment(A, B, couleur='k')
+            >>> s.copier_style(A)
+            >>> s.style('couleur')
+            'b'
+
+        Des styles à copier peuvent aussi être ajoutés manuellement
+        (par exemple, `couleur='r'`)::
+
+            >>> C = Point(couleur='r', taille=12)
+            >>> C.copier_style(A, couleur='g')
+            >>> C.style('couleur')
+            'g'
+            >>> C.style('taille')
+            10
+        """
         style = self.style()
-        for key, value in objet.style().items():
+        a_copier = (objet.style().copy() if objet is not None else {})
+        a_copier.update(**kw)
+        for key, value in a_copier:
             if style.has_key(key):
                 if key in param.styles_a_signification_variable:
                     #print "clef:", key, style["categorie"], objet.style("categorie")
-                    if style["categorie"] == objet.style("categorie"):
+                    if style["categorie"] == a_copier["categorie"]:
                         style[key] = value
                 elif key not in param.styles_a_ne_pas_copier:
                     style[key] = value

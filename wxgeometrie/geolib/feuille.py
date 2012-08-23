@@ -646,6 +646,30 @@ class Interprete_feuille(object):
                     retour = unicode(val.val)
                 else:
                     retour = '"' + val.contenu + '" : ' + unicode(val.val)
+            elif isinstance(val, (list, tuple, set)):
+                # Améliore la lisibilité de l'affichage pour une liste d'objets
+                # en affichant le nom des objets au lieu des objets eux-mêmes
+                # (pour ceux qui ont un nom).
+                if isinstance(val, list):
+                    retour = '['
+                elif isinstance(val, set):
+                    retour = 'set(['
+                else:
+                    retour = '('
+                for elt in val:
+                    if isinstance(elt, Objet):
+                        nom = elt.nom
+                        retour += (nom if nom else str(elt))
+                    else:
+                        retour += repr(elt)
+                    retour += ', '
+                retour = retour[:-2]
+                if isinstance(val, list):
+                    retour += ']'
+                elif isinstance(val, set):
+                    retour += '])'
+                else:
+                    retour += ')'
             else:
                 retour = unicode(val)
         except SyntaxError:
@@ -1134,6 +1158,95 @@ class Feuille(object):
 
 # Methodes se rapportant a la feuille elle-meme
 
+    ##def sauvegarder(self):
+        ##u"Renvoie l'ensemble des commandes python qui permettra de recréer la figure avec tous ses objets."
+##
+        ##objets = self.liste_objets(True)
+        ### on doit enregistrer les objets dans le bon ordre (suivant la _hierarchie) :
+        ##objets.sort(key = attrgetter("_hierarchie_et_nom"))
+##
+        ##texte = '\n'.join(nom + ' = ' + repr(getattr(self, nom))
+                         ##for nom in self._parametres_repere
+                         ##) + '\n'
+##
+        ##a_rajouter_a_la_fin = ""
+##
+        ##for objet in objets:
+            ##if not objet._enregistrer_sur_la_feuille:
+                ##continue
+            ##elif isinstance(objet, Texte) and objet.style("legende") == FORMULE:
+                ### on fait un cas particulier pour les objets Texte, car ils peuvent contenir une formule
+                ### qui dépend d'autres objets. Leur style n'est alors appliqué qu'après.
+                ##texte += objet.nom + " = " + objet.__repr__(False) + "\n"
+                ##a_rajouter_a_la_fin += objet.nom + ".style(**" + repr(objet.style()) + ")\n"
+            ##else:
+                ##texte += objet.nom + " = " + repr(objet) + "\n"
+##
+        ### Les étiquettes peuvent contenir des formules qui dépendent d'autres objets.
+        ##for objet in objets:
+            ##if objet.etiquette is not None:
+                ##texte += objet.nom + ".etiquette.style(**" + repr(objet.etiquette.style()) + ")\n"
+##
+        ##return texte + a_rajouter_a_la_fin
+
+
+    def sauvegarder(self):
+        u"""Renvoie l'ensemble des commandes python qui permettra de recréer
+        la figure avec tous ses objets.
+
+        :rtype: string
+        """
+
+        # On sauvegarde les paramètres de la feuille.
+        texte = '\n'.join(nom + ' = ' + repr(getattr(self, nom))
+                         for nom in self._parametres_repere
+                         ) + '\n\n'
+
+        # Enfin, on sauvegarde les objets de la feuille.
+        # On doit enregistrer les objets dans le bon ordre (suivant la _hierarchie).
+        objets = sorted(self.liste_objets(True), key=attrgetter("_hierarchie_et_nom"))
+        return texte + ''.join(obj.sauvegarder() for obj in objets
+                                            if obj._enregistrer_sur_la_feuille)
+
+    def effacer(self):
+        self.objets.clear()
+        self.affichage_perime()
+
+
+    def charger(self, commandes, rafraichir = True, archiver = True, mode_tolerant = False):
+        u"""Exécute un ensemble de commandes dans la feuille.
+
+        Usage:
+        f = Feuille()
+        ...
+        commandes = f.sauvegarder()
+        f.effacer()
+        f.charger(commandes)
+        """
+        with self.canvas.geler_affichage(actualiser=rafraichir, sablier=rafraichir):
+            with ModeTolerant(self, mode_tolerant):
+                try:
+                    exec(commandes, self.objets)
+                except:
+                    print "Liste des commandes:"
+                    print "--------------------"
+                    print commandes
+                    print "--------------------"
+                    try:
+                        print_error()
+                    except:
+                        print u"Affichage de l'erreur impossible !"
+                    self.erreur(u"Chargement incomplet de la feuille.")
+                finally:
+                    for action in self._actions:
+                        action()
+                    if archiver:
+                        self.historique.archiver()
+
+
+    def executer(self, commande, parser = True):
+        return self.interprete.executer(commande, parser = parser)
+
 
     def redefinir(self, objet, valeur):
         nom = objet.nom
@@ -1150,8 +1263,11 @@ class Feuille(object):
                         self.erreur(u"Définition circulaire dans %s : l'objet %s se retrouve dépendre de lui-même." %(valeur, nom))
                         #raise RuntimeError, "Definition circulaire dans %s : l'objet %s se retrouve dependre de lui-meme." %(valeur, nom)
         actuel = self.sauvegarder()
-        valeur += "\n" + nom + ".copier_style(" + repr(objet) + ")"
-        old = "\n" + nom + " = " + repr(objet)
+        # Utiliser '.copier_style()' et non '.style()' car le type de l'objet
+        # a pu changer, auquel cas il ne faut copier que les styles qui ont
+        # du sens pour le nouveau type d'objet.
+        valeur += "\n" + nom + ".copier_style(**" + repr(objet.style()) + ")"
+        old = "\n" + objet.sauvegarder()
         assert old in actuel
         nouveau = actuel.replace(old, "\n" + nom + "=" + valeur)
         if param.debug:
@@ -1411,94 +1527,6 @@ class Feuille(object):
 
 
 
-    ##def sauvegarder(self):
-        ##u"Renvoie l'ensemble des commandes python qui permettra de recréer la figure avec tous ses objets."
-##
-        ##objets = self.liste_objets(True)
-        ### on doit enregistrer les objets dans le bon ordre (suivant la _hierarchie) :
-        ##objets.sort(key = attrgetter("_hierarchie_et_nom"))
-##
-        ##texte = '\n'.join(nom + ' = ' + repr(getattr(self, nom))
-                         ##for nom in self._parametres_repere
-                         ##) + '\n'
-##
-        ##a_rajouter_a_la_fin = ""
-##
-        ##for objet in objets:
-            ##if not objet._enregistrer_sur_la_feuille:
-                ##continue
-            ##elif isinstance(objet, Texte) and objet.style("legende") == FORMULE:
-                ### on fait un cas particulier pour les objets Texte, car ils peuvent contenir une formule
-                ### qui dépend d'autres objets. Leur style n'est alors appliqué qu'après.
-                ##texte += objet.nom + " = " + objet.__repr__(False) + "\n"
-                ##a_rajouter_a_la_fin += objet.nom + ".style(**" + repr(objet.style()) + ")\n"
-            ##else:
-                ##texte += objet.nom + " = " + repr(objet) + "\n"
-##
-        ### Les étiquettes peuvent contenir des formules qui dépendent d'autres objets.
-        ##for objet in objets:
-            ##if objet.etiquette is not None:
-                ##texte += objet.nom + ".etiquette.style(**" + repr(objet.etiquette.style()) + ")\n"
-##
-        ##return texte + a_rajouter_a_la_fin
-
-
-    def sauvegarder(self):
-        u"""Renvoie l'ensemble des commandes python qui permettra de recréer
-        la figure avec tous ses objets.
-
-        :rtype: string
-        """
-
-        # On sauvegarde les paramètres de la feuille.
-        texte = '\n'.join(nom + ' = ' + repr(getattr(self, nom))
-                         for nom in self._parametres_repere
-                         ) + '\n\n'
-
-        # Enfin, on sauvegarde les objets de la feuille.
-        # On doit enregistrer les objets dans le bon ordre (suivant la _hierarchie).
-        objets = sorted(self.liste_objets(True), key=attrgetter("_hierarchie_et_nom"))
-        return texte + ''.join(obj.sauvegarder() for obj in objets
-                                            if obj._enregistrer_sur_la_feuille)
-
-    def effacer(self):
-        self.objets.clear()
-        self.affichage_perime()
-
-
-    def charger(self, commandes, rafraichir = True, archiver = True, mode_tolerant = False):
-        u"""Exécute un ensemble de commandes dans la feuille.
-
-        Usage:
-        f = Feuille()
-        ...
-        commandes = f.sauvegarder()
-        f.effacer()
-        f.charger(commandes)
-        """
-        with self.canvas.geler_affichage(actualiser=rafraichir, sablier=rafraichir):
-            with ModeTolerant(self, mode_tolerant):
-                try:
-                    exec(commandes, self.objets)
-                except:
-                    print "Liste des commandes:"
-                    print "--------------------"
-                    print commandes
-                    print "--------------------"
-                    try:
-                        print_error()
-                    except:
-                        print u"Affichage de l'erreur impossible !"
-                    self.erreur(u"Chargement incomplet de la feuille.")
-                finally:
-                    for action in self._actions:
-                        action()
-                    if archiver:
-                        self.historique.archiver()
-
-
-    def executer(self, commande, parser = True):
-        return self.interprete.executer(commande, parser = parser)
 
 
 #########################################################################################

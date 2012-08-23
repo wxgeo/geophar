@@ -61,6 +61,12 @@ class Label_generique(Texte_generique):
         pass
 
     @property
+    def nom(self):
+        if self.feuille:
+            return self.parent._nom + '.etiquette'
+        return ""
+
+    @property
     def parent(self):
         return self._parent()
 
