@@ -59,7 +59,6 @@ class Point_generique(Objet_avec_coordonnees):
         from .labels import Label_point
         self.etiquette = Label_point(self)
 
-
     def _creer_figure(self):
         if not self._representation:
             self._representation = [self.rendu.ligne()]
@@ -73,7 +72,6 @@ class Point_generique(Objet_avec_coordonnees):
         plot.set_markersize(self.style("taille"))
         plot.set_markeredgewidth(self.style("epaisseur"))
         plot.zorder = self.style("niveau")
-
 
     def _espace_vital(self):
         x, y = self.coordonnees
@@ -124,7 +122,6 @@ class Point_generique(Objet_avec_coordonnees):
 
     def __sub__(self, y):
         return self + (-y)
-
 
     def __add__(self, y):
         from .vecteurs import Vecteur_generique

@@ -131,12 +131,6 @@ def test_nommage_intelligent():
     # o.clear() ne doit pas supprimer les mots clefs
     assert 'erreur' in o
 
-    o.ABCDEFGHIJKLMNOPQRSTUVWXYZ = Polygone(26)
-    assert(  list(pt.nom for pt in o.ABCDEFGHIJKLMNOPQRSTUVWXYZ.points)\
-                        == list("ABCDEFGHIJKLMNOPQRSTUVWXYZ"))
-
-    o.clear()
-
     o.EFG = Triangle()
     assert(o.EFG.point1.nom == "E")
     assert(o.EFG.point2.nom == "F")
@@ -155,6 +149,15 @@ def test_nommage_intelligent():
     assert(o.ABCD.sommets[2].nom == "C")
     assert(o.ABCD.sommets[3].nom == "D")
 
+
+def test_nommage_intelligent_lent():
+    #FIXME: accélérer la création du polygone.
+    f = Feuille()
+    s = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    p = f.objets[s] = Polygone(26)
+    assert(list(pt.nom for pt in p.points) == list(s))
+
+
 def test_acces_objets():
     f = Feuille()
     o = f.objets
@@ -167,6 +170,7 @@ def test_acces_objets():
     exec("del b", o)
     assert("b" not in o.keys())
 
+
 def test_sauvegarde():
     f = Feuille(titre = "Ma feuille")
     o = f.objets
@@ -175,6 +179,7 @@ def test_sauvegarde():
     o.k = 7
     o.s = Segment(o.A, o.B)
     f.sauvegarder()
+
 
 def test_rattachement_objets():
     A=Point()
@@ -497,9 +502,10 @@ def test_dependances():
     assert B.xy ==  (1, 1)
     f.objets.B = Point("A.x+1", "A.y-1")
     assert f.objets.B is B
+    assert f.objets.A is A
     assert B.xy == (1, 1)
     f.objets.A = (5, 7)
-    assert B.xy == (6, 6)
+    assert B.xy == (6, 6) # FAIL
 
 
 def test_is_equation():

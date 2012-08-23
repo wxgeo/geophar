@@ -179,8 +179,6 @@ def test_Polygone_regulier_centre():
         coeffs = tuple(random() for i in xrange(15))
         G = Barycentre(*zip(p.sommets, coeffs))
         assert(G in p)
-        G.points_ponderes[randint(11)].coefficient = -5
-        assert(G not in p)
     # cas particuliers :
     p = Polygone_regulier_centre(O, M, 3)
     assert(isinstance(p,  Triangle))

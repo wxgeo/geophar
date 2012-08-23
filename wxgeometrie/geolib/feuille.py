@@ -1286,10 +1286,10 @@ class Feuille(object):
         # Utiliser '.copier_style()' et non '.style()' car le type de l'objet
         # a pu changer, auquel cas il ne faut copier que les styles qui ont
         # du sens pour le nouveau type d'objet.
-        valeur += "\n" + nom + ".copier_style(" + repr(objet) + ")"
+        valeur += "\n%s.copier_style(%s)" % (nom, repr(objet))
         old = "\n" + objet.sauvegarder()
         assert old in actuel
-        nouveau = actuel.replace(old, "\n" + nom + "=" + valeur)
+        nouveau = actuel.replace(old, "\n%s=%s" % (nom, valeur))
         if param.debug:
             print(nouveau)
         try:
