@@ -308,7 +308,7 @@ class ExercicesEquationsDroites(Exercice):
         for nom, eq in (('d1', eq1), ('d2', eq2)):
             if nom in self.feuille_actuelle.objets.noms:
                 d = self.feuille_actuelle.objets[nom]
-                d.style(legende=NOM)
+                d.label(mode=NOM)
                 champ = self.feuille_actuelle.objets['champcache_' + nom]
                 M, N = d
                 M = (int(M.x), int(M.y))

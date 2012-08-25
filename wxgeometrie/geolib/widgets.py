@@ -26,12 +26,12 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 from random import normalvariate
 
 from .objet import Objet_avec_coordonnees_modifiables, Argument, Ref
-from .textes import Texte_generique, Texte
+from .textes import Texte_editable_generique, Texte
 from ..pylib import uu, print_error
 from .. import param
 
 
-class Bouton(Texte_generique, Objet_avec_coordonnees_modifiables):
+class Bouton(Texte_editable_generique, Objet_avec_coordonnees_modifiables):
     u"""Un bouton cliquable.
 
     Un bouton avec texte. Typiquement, on lui associe une action
@@ -48,14 +48,15 @@ class Bouton(Texte_generique, Objet_avec_coordonnees_modifiables):
         x, y, styles = self._recuperer_x_y(x, y, styles)
         texte = uu(texte)
 
-        if texte != "":
-            styles["label"] = texte
+        ##if texte != "":
+            ##styles["label"] = texte
 
         self.__texte = texte = Ref(texte)
         self.__x = x = Ref(x)
         self.__y = y = Ref(y)
 
         Objet_avec_coordonnees_modifiables.__init__(self, x, y, **styles)
+        Texte_editable_generique(self, texte, **styles)
 
     def _creer_figure(self):
         x, y = self.coordonnees

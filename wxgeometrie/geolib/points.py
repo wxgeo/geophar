@@ -34,6 +34,7 @@ from .objet import Objet_avec_coordonnees, Ref, Argument, Objet, Arguments, \
                    contexte, Objet_avec_coordonnees_modifiables, issympy
 from .routines import angle_vectoriel, vect, carre_distance, produit_scalaire, \
                       distance
+from .constantes import FORMULE
 
 from .. import param
 
@@ -54,7 +55,6 @@ class Point_generique(Objet_avec_coordonnees):
     _prefixe_nom = "M"
 
     def __init__(self, **styles):
-        #~ self.__args = GestionnaireArguments()
         Objet_avec_coordonnees.__init__(self, **styles)
         from .labels import Label_point
         self.etiquette = Label_point(self)
@@ -158,20 +158,22 @@ class Point_generique(Objet_avec_coordonnees):
             from .lignes import Segment
             with self.canvas.geler_affichage(actualiser = True):
                 M = Point("%s.x" %self.nom, 0, fixe = True)
-                M.label("${%s.x}$" %self.nom, formule = True)
+                M.label("${%s.x}$" %self.nom, mode=FORMULE)
                 s = Segment(self, M, style = ":")
                 self.feuille.objets.add(M)
                 self.feuille.objets.add(s)
+                return M
 
     def relier_axe_y(self):
         if self.feuille is not None:
             from .lignes import Segment
             with self.canvas.geler_affichage(actualiser = True):
                 M = Point(0, "%s.y" %self.nom, fixe = True)
-                M.label("${%s.y}$" %self.nom, formule = True)
+                M.label("${%s.y}$" %self.nom, mode=FORMULE)
                 s = Segment(self, M, style = ":")
                 self.feuille.objets.add(M)
                 self.feuille.objets.add(s)
+                return M
 
 
     def relier_axes(self):

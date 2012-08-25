@@ -27,7 +27,7 @@ def test_Segment():
     assert(I in s)
     assert(M not in s)
     assert(N not in s)
-    assert(s.style("legende") == RIEN)
+    assert(s.mode_affichage == RIEN)
 
 def test_Demidroite():
     A = Point(4.5,  7.3)
@@ -42,7 +42,7 @@ def test_Demidroite():
     assert(I in s)
     assert(M in s)
     assert(N not in s)
-    assert(s.style("legende") == RIEN)
+    assert(s.mode_affichage == RIEN)
 
 def test_Droite():
     A = Point(4.5,  7.3)
@@ -58,7 +58,7 @@ def test_Droite():
     assert(M in d)
     assert(N in d)
     assert(isinstance(d.equation,  tuple))
-    assert(d.style("legende") == RIEN)
+    assert(d.mode_affichage == RIEN)
     # Test du typage dynamique
     d = Droite("y=x+1")
     assert(Point(0, 1) in d)

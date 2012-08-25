@@ -138,20 +138,26 @@ class CreerSuite(MyMiniFrame):
             u0 = eval_safe(self.un0.text())
             n0 = self.n0.value()
 
-            objets.suiteDroited = Droite(Point(0, 0), Point(1, 1), legende = TEXTE, label = "$y\ =\ x$")
-            M = objets.suitePointM0 = Point(u0, 0, legende = TEXTE, label = "$u_%s$" %(n0))
+            d = objets.suiteDroited = Droite(Point(0, 0), Point(1, 1))
+            d.label("$y\ =\ x$")
+            M = objets.suitePointM0 = Point(u0, 0)
+            M.label("$u_%s$" %(n0))
 #            self.parent.suites["u"] = [d, M]
 
             for i in xrange(self.termes.value() - 1):
                 # (Attention, ça ne va pas marcher pour les fonctions définies par morceau)
                 u1 = fonction(u0)
-                N = Point(u0, u1, legende = RIEN, visible = self._param_.afficher_points_de_construction)
+                N = Point(u0, u1, visible=self._param_.afficher_points_de_construction)
+                N.etiquette.visible = False
                 s = Segment(M, N, **kw_lignes)
-                P = Point(0, u1, legende = TEXTE, label = "$u_%s$" %(i + n0 + 1))
+                P = Point(0, u1)
+                P.label("$u_%s$" %(i + n0 + 1))
                 t = Segment(N, P, **kw_lignes)
-                Q = Point(u1, u1, legende = RIEN, visible = self._param_.afficher_points_de_construction)
+                Q = Point(u1, u1, visible = self._param_.afficher_points_de_construction)
+                Q.etiquette.visible = False
                 r = Segment(P, Q, **kw_lignes)
-                M = Point(u1, 0, legende = TEXTE, label = "$u_%s$" %(i + n0 + 1))
+                M = Point(u1, 0)
+                M.label("$u_%s$" %(i + n0 + 1))
                 #self.parent.suites[u"u"].append([M, N, P, s, t])
                 setattr(objets, "SuitePointN" + str(i), N)
                 setattr(objets, "suitePointP" + str(i), P)
@@ -170,9 +176,12 @@ class CreerSuite(MyMiniFrame):
 #            self.parent.suites[u"u"] = []
             for i in xrange(n0, n0 + self.termes.text()):
                 yi = fonction(i)
-                M = Point(i, 0, legende = TEXTE, label = str(i))
-                N = Point(i, yi, legende = RIEN)
-                P = Point(0, yi, legende = TEXTE, label = "$u_%s$" %i)
+                M = Point(i, 0)
+                M.label(str(i))
+                N = Point(i, yi)
+                N.etiquette.visible = False
+                P = Point(0, yi)
+                P.label("$u_%s$" %i)
                 s = Segment(M, N, **kw_lignes)
                 t = Segment(N, P, **kw_lignes)
                 setattr(objets, "suitePointM" + str(i), M)

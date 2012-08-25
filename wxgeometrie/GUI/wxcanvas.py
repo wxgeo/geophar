@@ -91,8 +91,8 @@ class MiniEditeur:
                     self.objet.label(self.texte)
                     panel.action_effectuee(u"%s.label(%s)" %(nom, repr(self.texte)))
                 else:
-                    self.objet.renommer(self.texte, legende = NOM)
-                    panel.action_effectuee(u"%s.renommer(%s, legende = %s)" %(nom, repr(self.texte), NOM))
+                    self.objet.renommer(self.texte, afficher_nom=True)
+                    panel.action_effectuee(u"%s.renommer(%s, afficher_nom=True)" % (nom, repr(self.texte)))
                     canvas.detecter()
             except RuntimeError: # on reste en mode edition
                 if not param.nom_multiple:

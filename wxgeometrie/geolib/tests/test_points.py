@@ -33,7 +33,7 @@ def test_Point():
     A.x = 5
     A.y = 7
     assertEqual(A.coordonnees, (5, 7))
-    assert(A.style("legende") == NOM)
+    assert(A.mode_affichage == NOM)
     # Test du typage dynamique
     d = Droite(rand_pt(), rand_pt())
     B = Point(d)

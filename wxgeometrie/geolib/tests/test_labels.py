@@ -5,7 +5,8 @@ from pytest import XFAIL
 
 #from tools.testlib import assertAlmostEqual
 from wxgeometrie.geolib.tests.geotestlib import rand_pt
-from wxgeometrie.geolib import NOM
+from tools.testlib import assertEqual
+from wxgeometrie.geolib import Feuille, Segment, NOM
 
 def test_Label_point():
     A = rand_pt()
@@ -14,12 +15,26 @@ def test_Label_point():
     B.label(u"Position de l'hirondelle européenne.")
     assert(A.label() == "Position de l'hirondelle d'Afrique.")
     assert(B.label() == u"Position de l'hirondelle européenne.")
-    A.style(legende = NOM)
-    assert(A.label() == "")
+    A.label(mode=NOM)
+    assert A.mode_affichage == NOM
+    assert(A.label() == '')
+    f = Feuille()
+    f.objets.A = A
+    assert A.feuille is f
+    assert A.etiquette.feuille is f
+    assertEqual(A.nom_latex, '$A$')
+    assertEqual(A.label(), '$A$')
 
-@XFAIL
+
 def test_Label_segment():
-    raise NotImplementedError
+    f = Feuille()
+    s = f.objets.s = Segment()
+    assert s.label() == ''
+    s.label('bonjour !')
+    assert s.label() == 'bonjour !'
+    s.label(mode=NOM)
+    assertEqual(s.label(), r'$\mathscr{s}$')
+
 
 @XFAIL
 def test_Label_droite():
@@ -44,3 +59,14 @@ def test_Label_polygone():
 @XFAIL
 def test_Label_angle():
     raise NotImplementedError
+
+def test_latex_incorrect():
+    u"On teste le comportement en cas de code LaTeX incorrect."
+    A = rand_pt()
+    A.label('2$')
+    assertEqual(A.label(), r'2\$')
+    A.label('US$2.50')
+    assertEqual(A.label(), r'US\$2.50')
+    A.label('$M__i$')
+    assertEqual(A.label(), r'\$M__i\$')
+    A.label('2$')

@@ -12,8 +12,9 @@ from wxgeometrie.geolib.tests.geotestlib import rand_pt
 from wxgeometrie.geolib import (Triangle_rectangle, DescripteurFeuille, Point, Segment,
                     Vecteur, Fonction, Variable, Feuille, Angle, contexte, Arc_cercle,
                     Texte, Droite, Carre, Triangle, Polygone, Cercle, Parallelogramme,
-                    NOM, Droite_equation, Cercle_equation, Courbe
+                    NOM, Droite_equation, Cercle_equation, Courbe, FORMULE, Formule
                     )
+from wxgeometrie.geolib.routines import nice_display
 from wxgeometrie.geolib.feuille import parse_equation, is_equation
 
 
@@ -140,7 +141,7 @@ def test_nommage_intelligent():
     assert(o.MNP.point1.nom == "M")
     assert(o.MNP.point2.nom == "N")
     assert(o.MNP.sommets[2].nom == "P")
-    assert(o.P.style("legende") == NOM)
+    assert(o.P.mode_affichage == NOM)
 
 
     o.ABCD = Carre()
@@ -209,25 +210,25 @@ def test_variables_composees_1():
 
 def test_variables_composees_2():
     f = Feuille()
-    f.objets.M1 = Point(-1.27482678984, 1.69976905312, legende=2)
-    f.objets.M2 = Point(2.42032332564, 1.25635103926, legende=2)
+    f.objets.M1 = Point(-1.27482678984, 1.69976905312)
+    f.objets.M2 = Point(2.42032332564, 1.25635103926)
     f.objets.s1 = Segment(f.objets.M1,f.objets.M2)
     f.objets.M1(-2.77136258661, 2.91916859122)
     f.objets.M1(4.74826789838, -1.07159353349)
-    f.objets.M5 = Point(-5.11778290993, 2.30946882217, legende=2)
-    f.objets.M6 = Point(-1.86605080831, 3.25173210162, legende=2)
+    f.objets.M5 = Point(-5.11778290993, 2.30946882217)
+    f.objets.M6 = Point(-1.86605080831, 3.25173210162)
     f.objets.s4 = Segment(f.objets.M5,f.objets.M6)
     f.objets.M5(-5.59815242494, 2.34642032333)
     f.objets.M1(-2.42032332564, -1.60739030023)
     f.objets.M6(-1.86605080831, 3.25173210162)
-    f.objets.M6.renommer('B', legende = 1)
-    f.objets.M6 = Point(2.91916859122, 3.5103926097, legende=2)
-    f.objets.M6.style(**{'legende': 3, 'label': u'B.x'})
+    f.objets.M6.renommer('B', afficher_nom=True)
+    f.objets.M6 = Point(2.91916859122, 3.5103926097)
+    f.objets.M6.label(u'B.x', mode=FORMULE)
     f.objets.B(-1.18244803695, 1.25635103926)
     f.objets.M6.supprimer()
     f.objets.B(-2.21709006928, 2.64203233256)
-    f.objets.M6 = Point(-6.6143187067, 0.443418013857, legende=2)
-    f.objets.M6.renommer('C', legende = 1)
+    f.objets.M6 = Point(-6.6143187067, 0.443418013857)
+    f.objets.M6.renommer('C', afficher_nom=True)
     f.objets.C.x=f.objets.B.x
     f.objets.B(-3.17782909931, 3.36258660508)
     f.objets.C.x="B.x"
@@ -251,11 +252,18 @@ def test_polygones_et_representants_de_vecteurs():
 
 def test_relier_point_axes():
     f = Feuille()
-    f.objets.M1 = Point(-1.27482678984, 1.69976905312, legende=2)
-    f.objets.M2 = Point(2.42032332564, 1.25635103926, legende=2)
-    f.objets.s1 = Segment(f.objets.M1, f.objets.M2)
-    f.objets.M1.relier_axe_x()
-    f.objets.M1.relier_axe_y()
+    M1 = f.objets.M1 = Point(-1.27482678984, 1.69976905312)
+    M2 = f.objets.M2 = Point(2.42032332564, 1.25635103926)
+    Mx = M1.relier_axe_x()
+    assert Mx.x == M1.x
+    assert Mx.y == 0
+    assertEqual(Mx.label(), '$%s$' % nice_display(M1.x))
+    assertEqual(Mx.label(), '$%s$' % nice_display(-1.27482678984))
+    My = M2.relier_axe_y()
+    assert My.x == 0
+    assert My.y == M2.y
+    assertEqual(My.label(), '$%s$' % nice_display(M2.y))
+
 
 def test_noms_latex():
     f = Feuille()
@@ -305,7 +313,14 @@ def test_formules():
     o = f.objets
     o.A = Point(e, 3)
     o.M = Point()
-    o.M.label(u'{1/ln(A.x) + A.y}', True)
+    o.M.label(u'{1/ln(A.x) + A.y}', mode=FORMULE)
+
+    # Détails d'implémentation (peut être modifié par la suite)
+    assert o.M.mode_affichage == FORMULE
+    assertEqual(o.M.etiquette.texte, u'{1/ln(A.x)+A.y}')
+    assert isinstance(o.M.etiquette.formule, Formule)
+
+    # Par contre, ceci doit rester valable quelle que soit l'implémentation !
     assertAlmostEqual(float(o.M.label()), 4.)
     o.A.x = e**2
     assertAlmostEqual(float(o.M.label()), 3.5)

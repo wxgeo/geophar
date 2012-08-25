@@ -28,7 +28,7 @@ from PyQt4.QtGui import (QDialog, QVBoxLayout, QHBoxLayout, QFrame, QLineEdit,
 from PyQt4.QtCore import Qt
 
 from ..geolib.constantes import NOM, FORMULE, TEXTE, RIEN, MATH
-from ..geolib import Texte_generique, Point_generique, Champ
+from ..geolib import Texte_generique, Point_generique, Champ, Texte
 from .proprietes_objets import Proprietes
 from ..pylib import print_error
 from .wxlib import PopUpMenu
@@ -119,7 +119,7 @@ class MenuActionsObjet(PopUpMenu):
             if ok:
                 try:
                     # On renomme, et on met l'affichage de la légende en mode "Nom".
-                    self.executer(u"%s.renommer(%s, legende = %s)" %(select.nom, repr(txt), NOM))
+                    self.executer(u"%s.renommer(%s, afficher_nom=True)" %(select.nom, repr(txt)))
                 except:
                     print_error()
                     continue
@@ -129,7 +129,8 @@ class MenuActionsObjet(PopUpMenu):
     def etiquette(self):
         select = self.canvas.select
         old_style = select.style().copy()
-        old_label = select.style(u"label")
+        #XXX: Texte ?
+        old_label = select.etiquette.texte
         if old_label is None:   # le style label n'existe pas pour l'objet
             return
 
@@ -170,7 +171,7 @@ class MenuActionsObjet(PopUpMenu):
         sizer.addWidget(dlg.text)
 
         dlg.cb = QCheckBox(u"Interpréter la formule", dlg)
-        dlg.cb.setChecked(select.style(u"legende") == FORMULE)
+        dlg.cb.setChecked(select.mode_affichage == FORMULE)
         sizer.addWidget(dlg.cb)
 
         line = QFrame(self)
@@ -212,7 +213,7 @@ class MenuActionsObjet(PopUpMenu):
                 mode = TEXTE
             else:
                 mode = NOM
-        self.executer(u"%s.style(legende = %s)" %(select.nom, mode))
+        self.executer(u"%s.label(mode = %s)" %(select.nom, mode))
 
     def mode_formatage(self):
         select = self.canvas.select

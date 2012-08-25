@@ -33,10 +33,10 @@ from sympy import I, pi as PI, Basic, Integer
 
 from ..mathlib.internal_objects import Reel
 # à intégrer dans geolib ??
-from ..pylib import property2, no_twin, uu, str2, print_error, mathtext_parser, \
+from ..pylib import property2, uu, str2, print_error, mathtext_parser, \
                     is_in, WeakList, CustomWeakKeyDictionary, warning
 from .routines import nice_display
-from .constantes import FORMULE, TEXTE, NOM
+from .constantes import NOM, RIEN#, FORMULE, TEXTE,
 from .formules import Formule
 from .contexte import contexte
 from .. import param
@@ -667,19 +667,24 @@ class DescripteurFeuille(object):
 
 
     def __set__(self, obj, value):
+        self._set(obj, value)
+
+        for ancetre in obj._ancetres():
+            if ancetre.feuille is None:
+                self._set(ancetre, value)
+
+        for heritier in obj._heritiers():
+            if heritier.feuille is None:
+                self._set(heritier, value)
+
+    def _set(self, obj, value):
         self.__contenu__[obj] = value
 
-        for parent in obj._parents:
-            if parent.feuille is None:
-                parent.feuille = value
-        label = obj._style.get("label")
-
-        if isinstance(label, Formule):
-            label.feuille = value
+        if getattr(obj, 'formule', None) is not None:
+            obj.formule.feuille = value
 
         if hasattr(obj, "_set_feuille") and value is not None:
             obj._set_feuille()
-
 
 
 
@@ -697,7 +702,7 @@ class Objet(object):
     class __metaclass__(type):
         def __call__(cls, *args, **kw):
             instance = type.__call__(cls, *args, **kw)
-            instance._frozen = True
+            instance._initialise = True
             return instance
 
     _noms_arguments = () # cf. geolib/__init__.py
@@ -706,7 +711,7 @@ class Objet(object):
     _prefixe_nom = "objet"
     _utiliser_coordonnees_approchees = False
     _timestamp = None
-    _frozen = False
+    _initialise = False
 
     # Verrou qui indique que des objets sont encore en cours de modification.
     # Ce verrou (optionnel) peut être utilisé à des fins d'optimisation (cf. `Objet.perime()`).
@@ -802,7 +807,7 @@ class Objet(object):
         u"""Pour éviter qu'une erreur de frappe (dans la ligne de commande notamment)
         passe inaperçue, on ne peut pas affecter un attribut s'il n'est pas déclaré
         auparavant dans la classe."""
-        if self._frozen and not name.startswith('_') and not hasattr(self, name):
+        if self._initialise and not name.startswith('_') and not hasattr(self, name):
             if param.debug:
                 print(u"Attention: \n \
                        Les attributs publiques des classes héritant de `Objet` doivent \n \
@@ -844,53 +849,15 @@ class Objet(object):
 # Styles et informations sur l'objet
 ####################################
 
-    def label(self, label = None, formule = False):
-        u"""Affiche le label (ou etiquette) de l'objet.
+    def label(self, *args, **kw):
+        u"""Affiche le label (ou etiquette) de l'objet."""
 
-        La chaine renvoyée dépendra de la valeur du style legende:
-        - si legende = 0, renvoie ''
-        - si legende = 1, renvoie le nom de l'objet
-        - si legende = 2, renvoie le label proprement dit de l'objet
-        - si legende = 4, renvoie le label interprété comme une formule
-
-        Si le paramètre label est spécifié, le label est modifié, et le style de légende est fixé à 2."""
-        if label is not None:
-            if formule:
-                # on bascule l'affichage en mode formule en même temps
-                self.style(label = label, legende = FORMULE)
-            else:
-                # si on change le label, celui-ci s'affiche par défaut en même temps.
-                self.style(label = label, legende = TEXTE)
-        legende = self.style("legende")
-        if legende == NOM:
-            label = self.nom_latex
-        elif legende == TEXTE:
-            txt = self.style("label")
-            label = uu(txt)
-        elif legende == FORMULE:
-            # Retourne le texte avec les expressions évaluées
-            label = unicode(self._style["label"])
-        else:
-            return ""
-
-        if self._label_correct is None:
-            if '$' in label:
-                # on teste si l'expression LaTeX convient au parser de matplotlib
-                try:
-                    mathtext_parser(label)
-                    self._label_correct = True
-                except Exception:
-                    print_error()
-                    self._label_correct = False
-            else: # le parser ne sera pas utilisé (ce n'est pas une expression LaTeX)
-                self._label_correct = True
-        if not self._label_correct:
-            label = label.replace('$', r'$\$$')
-
-        return label
+        if self.etiquette is None:
+            return ''
+        return self.etiquette.label(*args, **kw)
 
 
-    def style(self, nom_style = None, **kwargs):
+    def style(self, nom_style = None, **kw):
         u"""Renvoie le ou les styles demandés, ou modifie les styles de l'objet.
 
         * ``nom_style`` est un nom de style, ou une liste de noms de styles:
@@ -900,37 +867,20 @@ class Objet(object):
         * ``**kw`` sert à modifier des styles.
         Ex: A.style(couleur = 'blue')
         """
-        if kwargs:# or defaut:
-            #~ if defaut:
-                #~ defaut = defaut.copy()
-                #~ defaut.update(kwargs)
-                #~ kwargs = defaut
-            if kwargs.has_key("label") or kwargs.has_key("legende"):
-                # il faudra tester le label
-                self._label_correct = None
-                if isinstance(self._style["label"], Formule):
-                    label = self._style["label"]
-                    self._style["label"] = ""
-                    label.supprimer()
-                # si la légende passe en mode formule, ou si elle reste en mode formule :
-                if kwargs.get("legende", None) == FORMULE or (not kwargs.has_key("legende") and self._style["legende"] == FORMULE):
-                    if kwargs.has_key("label"):
-                        kwargs["label"] = Formule(self, kwargs["label"])
-                    else:
-                        self._style["label"] = Formule(self, self._style["label"])
-                # sinon, si elle n'est plus en mode formule :
-                elif isinstance(self._style["label"], Formule):
-                    self._style["label"] = eval(repr(label))
-
-            self._style.update(kwargs)
-
+        if kw:
+            if 'label' in kw or 'legende' in kw:
+                raise DeprecationWarning, 'Styles desuets: `legende` et `label`.'
+            ##mode = kw.pop('mode', None)
+            ##if mode is not None:
+                ##self.etiquette.style(mode=mode)
+            self._style.update(kw)
             self.figure_perimee()
         if nom_style:
-            def get_style(nom):
-                if nom == 'label' and self._style['legende'] == FORMULE:
-                    return eval(repr(self._style['label']))
-                return self._style.get(nom)
-            return get_style(nom_style) if isinstance(nom_style, basestring) else [get_style(nom) for nom in nom_style]
+            if 'nom_style' in ('label', 'legende'):
+                raise DeprecationWarning, 'Styles desuets: `legende` et `label`.'
+            if isinstance(nom_style, basestring):
+                return self._style.get(nom_style)
+            return [self._style.get(nom) for nom in nom_style]
         return self._style
 
 ##    @deprecated('Utiliser directement style desormais.')
@@ -938,7 +888,12 @@ class Objet(object):
 ##        u"Change le style et rafraichit l'affichage."
 ##        self.style(**kwargs)
 
-
+    @property
+    def mode_affichage(self):
+        u"Assure une interface commune entre les objets avec étiquette et les textes."
+        if self.etiquette is not None:
+            return self.etiquette.style('mode')
+        return None
 
 
     def cacher(self):
@@ -962,13 +917,17 @@ class Objet(object):
     #~ def liberer(self):
         #~ self.style(fixe = False)
 
-    def renommer(self, nom, **kw):
+    def renommer(self, nom, afficher_nom=None, **kw):
         u"Permet de renommer l'objet, et éventuellement de changer en même temps son style."
         nom_actuel = self.nom
         if nom_actuel != nom:
             nom = self.feuille.objets._objet_renommable(self, nom)
             self.feuille.objets._dereferencer(self)
             self.feuille.objets[nom] = self
+        if afficher_nom:
+            self.label(mode=NOM)
+        elif afficher_nom is False:
+            self.label(mode=RIEN)
         self.style(**kw)
         self.figure_perimee()
 
@@ -1110,7 +1069,7 @@ class Objet(object):
 
         L'ensemble est mis en cache dans self._parents.
         Pour obtenir tous les ancêtres (recherche récursive),
-        utiliser la méthode `_ancetres()`.
+        utiliser la méthode `._ancetres()`.
         """
         self._parents.clear()
         for val in self._arguments.values():
@@ -1458,9 +1417,6 @@ class Objet(object):
                 pass
         if self.feuille:
             self.feuille.objets._dereferencer(self)
-        if isinstance(self._style["label"], Formule):
-            # Il faut supprimer proprement la formule.
-            self._style["label"].supprimer()
 
 
     def redefinir(self, valeur):

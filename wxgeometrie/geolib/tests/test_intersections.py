@@ -30,11 +30,11 @@ def test_Intersection_droites():
     assert(M2.existe)
 
 def test_Intersection_droite_cercle():
-    A = Point(-3.075, 2.0, legende=2)
-    B = Point(0.0, 1.625, legende=2)
+    A = Point(-3.075, 2.0)
+    B = Point(0.0, 1.625)
     c1 = Cercle(A, B)
-    C = Point(-0.375, 4.425, legende=2)
-    D = Point(3.25, 0.125, legende=2)
+    C = Point(-0.375, 4.425)
+    D = Point(3.25, 0.125)
     d1 = Droite(C, D)
     assert(not Intersection_droite_cercle(d1, c1).existe)
     C(-5.675, 4.95)
@@ -46,14 +46,14 @@ def test_Intersection_droite_cercle():
 
 
 def test_Intersection_cercles():
-    A = Point(-4.4375, 1.95833333333, legende=2)
-    B = Point(-2.10416666667, 0.875, legende=2)
+    A = Point(-4.4375, 1.95833333333)
+    B = Point(-2.10416666667, 0.875)
     c1 = Cercle(A, B)
-    C = Point(2.1875, 1.35416666667, legende=2)
+    C = Point(2.1875, 1.35416666667)
     c2 = Cercle(C,B)
-    D = Intersection_cercles(c2, c1, False, legende=2)
+    D = Intersection_cercles(c2, c1, False)
     assert(D == (-1.9466976004889973, 2.6017297602107377))
-    assert(Intersection_cercles(c2, c1, True, legende=2) == B)
+    assert(Intersection_cercles(c2, c1, True) == B)
     assert(Droite(A, C) == Mediatrice(B, D))
 
 def test_intersection_et_feuille():

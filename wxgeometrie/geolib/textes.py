@@ -31,12 +31,15 @@ from matplotlib.pyparsing import ParseFatalException
 
 from .objet import Objet_avec_coordonnees, Argument, Ref, Objet, \
                    Objet_avec_coordonnees_modifiables
-from .constantes import RIEN, TEXTE, MATH
+from .constantes import NOM, TEXTE, MATH, FORMULE, RIEN
+from .formules import Formule
 
-from ..pylib import uu, warning, property2
+from ..pylib import uu, warning, property2, no_argument, print_error
 from ..mathlib.parsers import convertir_en_latex
 from ..pylib import mathtext_parser
 from .. import param
+
+################################################################################
 
 
 class Texte_generique(Objet_avec_coordonnees):
@@ -163,64 +166,183 @@ class Texte_generique(Objet_avec_coordonnees):
             couleur = None
         self.style(cadre=couleur, fond=couleur_fond, alpha_fond=alpha)
 
-    def label(self, *args, **kw):
-        lbl = super(Texte_generique, self).label(*args, **kw)
-        if self.style("formatage") == MATH:
-            lbl = convertir_en_latex(lbl)
-        # TODO: add support for a CUSTOM mode, to use a custom
-        # formating function.
-        if '$' in lbl:
-            try:
-                mathtext_parser(lbl)
-            except ParseFatalException:
-                lbl = lbl.replace('$', r'\$')
-        return lbl
+################################################################################
 
 
+class Texte_editable_generique(Texte_generique):
+    u"""Un texte éditable générique.
+
+    La classe mère de tous les textes éditables.
+    (Usage interne).
+    """
+
+    def _get_texte(self, value):
+        if self._initialise:
+            formule = self.formule
+            if formule is not None:
+                # Dans le cas d'une formule, il faut regénérer le texte.
+                # En effet, la formule peut faire référence à des objets qui ont été
+                # renommés depuis. Cela permet de garder un texte correctement
+                # interprétable.
+                return eval(repr(formule))
+        return value
+
+    def _set_texte(self, value):
+        if not isinstance(value, unicode):
+            value = uu(value)
+        if self._initialise and self._style['mode'] == FORMULE:
+            self.formule = value
+        # Il faudra vérifier que le texte ne provoque pas d'erreur
+        # dans le parser LaTeX de matplotlib :
+        self._label_correct = None
+        return value
+
+    texte = __texte = Argument("unicode", _get_texte, _set_texte)
+
+    def __init__(self, texte='', **styles):
+        if not isinstance(texte, (Ref, unicode)):
+            texte = uu(texte)
+
+        self.__texte = texte = Ref(texte)
+
+        # Contiendra éventuellement une formule (si le mode formule est activé).
+        self._formule = None
+
+        Texte_generique.__init__(self, **styles)
 
 
+    @property2
+    def formule(self, txt=no_argument):
+        if txt is no_argument:
+            return self._formule
+        # On supprime proprement la formule précédente.
+        if self._formule is not None:
+            self._formule.supprimer()
+        self._formule = (Formule(self, txt) if txt else None)
 
-class Texte(Texte_generique, Objet_avec_coordonnees_modifiables):
+
+    def label(self, texte=None, mode=None):
+        u"""Affiche le label (ou étiquette) de l'objet.
+
+        La chaine renvoyée dépendra de la valeur du style mode:
+        - si mode = 0 (`param.RIEN`), renvoie ''
+        - si mode = 1 (`param.NOM`), renvoie le nom de l'objet
+        - si mode = 2 (`param.TEXTE`), renvoie le label proprement dit de l'objet
+        - si mode = 3  (`param.FORMULE`), renvoie le label interprété comme une formule
+
+        Si le paramètre label est spécifié, le label est modifié, et par défaut
+        le mode est fixé à `TEXTE`."""
+        if texte is not None:
+            if mode is None:
+                mode = TEXTE
+            # Il faut changer le mode **avant** de changer le texte.
+            # On utilise une commande de bas niveau, pour éviter de modifier
+            # réellement la formule tant que le texte n'est pas le bon.
+            self._style['mode'] = mode
+            self.texte = texte
+
+        elif mode is not None:
+            self.style(mode=mode)
+
+        else:
+            mode = self.style("mode")
+            if mode == NOM:
+                return self.nom_latex
+            elif mode == TEXTE:
+                label = self.texte
+            elif mode == FORMULE:
+                # Retourne le texte avec les expressions évaluées
+                label = unicode(self.formule)
+            elif mode == RIEN:
+                return ""
+            else:
+                print('Warning: mode inconnu (%s)' % mode)
+
+            old_label = label
+
+            # TODO: add support for a CUSTOM mode, to use a custom
+            # formating function.
+            if self.style("formatage") == MATH:
+                label = convertir_en_latex(label)
+
+            if self._label_correct is None:
+                if '$' in label:
+                    # on teste si l'expression LaTeX convient au parser de matplotlib
+                    try:
+                        mathtext_parser(label)
+                        self._label_correct = True
+                    except Exception:
+                        if param.debug:
+                            print_error()
+                        self._label_correct = False
+                else: # le parser ne sera pas utilisé (ce n'est pas une expression LaTeX)
+                    self._label_correct = True
+
+            # Échec du parser LaTeX, on affiche une version "brute".
+            if not self._label_correct:
+                label = old_label.replace('$', r'\$')
+
+            return label
+
+
+    def style(self, nom_style=None, **kw):
+        u"""Renvoie le ou les styles demandés, ou modifie les styles de l'objet.
+
+        * ``nom_style`` est un nom de style, ou une liste de noms de styles:
+        La propriété correspondante est recherchée dans self._style.
+        Ex: couleur, taille = A.style(('couleur', 'taille'))
+
+        * ``**kw`` sert à modifier des styles.
+        Ex: A.style(couleur = 'blue')
+        """
+        mode = kw.get('mode', None)
+        if mode is not None and self._style['mode'] != mode:
+            # On met à jour la formule si besoin est.
+            if mode == FORMULE:
+                self.formule = self.texte
+            else:
+                self.formule = None
+
+        return Objet.style(self, nom_style, **kw)
+
+    @property
+    def mode_affichage(self):
+        u"Assure une interface commune entre les objets avec étiquette et les textes."
+        return self.style('mode')
+
+_get_texte = Texte_editable_generique._get_texte
+_set_texte = Texte_editable_generique._set_texte
+
+################################################################################
+
+
+class Texte(Texte_editable_generique, Objet_avec_coordonnees_modifiables):
     u"""Un texte.
 
     Un texte à afficher"""
 
-    def _set_texte(self, value):
-        if isinstance(value, basestring) and value != '' and hasattr(self, "_style"):
-            self.style(label=uu(value))
-        return value
-
-    def _get_texte(self, value):
-        return self.style("label")
-
-    texte = __texte = Argument("basestring", _get_texte, _set_texte)
+    texte = __texte = Argument("unicode", _get_texte, _set_texte)
     abscisse = x = __x = Argument("Variable_generique", defaut = lambda: normalvariate(0,10))
     ordonnee = y = __y = Argument("Variable_generique", defaut = lambda: normalvariate(0,10))
 
     def __init__(self, texte = "", x = None, y = None, **styles):
         x, y, styles = self._recuperer_x_y(x, y, styles)
-        if isinstance(texte, Ref):
-            if texte != "":
-                styles["label"] = texte.objet
-        else:
-            texte = uu(texte)
-            if texte != "":
-                styles["label"] = texte
 
         self.__texte = texte = Ref(texte)
         self.__x = x = Ref(x)
         self.__y = y = Ref(y)
 
         Objet_avec_coordonnees_modifiables.__init__(self, x, y, **styles)
+        Texte_editable_generique.__init__(self, texte, **styles)
 
         ##self.etiquette = self
 
 
-    def style(self, *args, **kw):
-        if kw.get("legende") == RIEN:
-            kw["legende"] = TEXTE
-            kw["visible"] = False
-        return Objet_avec_coordonnees_modifiables.style(self, *args, **kw)
+    ##def style(self, *args, **kw):
+        ##if kw.get("legende") == RIEN:
+            ##kw["legende"] = TEXTE
+            ##kw["visible"] = False
+        ##return Objet_avec_coordonnees_modifiables.style(self, *args, **kw)
 
 
     @staticmethod
@@ -250,10 +372,8 @@ class Texte(Texte_generique, Objet_avec_coordonnees_modifiables):
         xmin, xmax, ymin, ymax = self.feuille.fenetre
         if "_Texte__x" in self._valeurs_par_defaut:
             self.__x = uniform(xmin, xmax)
-#            self._valeurs_par_defaut.discard("_Point__x")
         if "_Texte__y" in self._valeurs_par_defaut:
             self.__y = uniform(ymin, ymax)
-#            self._valeurs_par_defaut.discard("_Point__x")
         Objet._set_feuille(self)
 
 
@@ -279,7 +399,8 @@ class Texte(Texte_generique, Objet_avec_coordonnees_modifiables):
             return Texte_reflexion(self, transformation)
         raise NotImplementedError
 
-
+################################################################################
+# TODO: Tester et améliorer les classes suivantes.
 
 
 class Texte_transformation_generique(Texte_generique):
@@ -300,7 +421,7 @@ class Texte_transformation_generique(Texte_generique):
             return self._style["visible"]
         return self.__texte.style(*args, **kw)
 
-
+################################################################################
 
 
 class Texte_rotation(Texte_transformation_generique):
@@ -328,6 +449,8 @@ class Texte_rotation(Texte_transformation_generique):
 ##            return Texte_transformation_generique.style(self, "angle") + 180*self.__rotation._Rotation__angle/math.pi
 ##        return Texte_transformation_generique.style(self, *args, **kw)
 
+################################################################################
+
 
 class Texte_translation(Texte_transformation_generique):
     u"""Une image d'un texte par translation.
@@ -343,8 +466,10 @@ class Texte_translation(Texte_transformation_generique):
         Texte_transformation_generique.__init__(self, texte, translation, **styles)
 
     def _get_coordonnees(self):
-        return self.__texte.x + self.__translation._Translation__vecteur.x, self.__texte.y + self.__translation._Translation__vecteur.y
+        return (self.__texte.x + self.__translation._Translation__vecteur.x,
+                self.__texte.y + self.__translation._Translation__vecteur.y)
 
+################################################################################
 
 
 class Texte_homothetie(Texte_transformation_generique):
@@ -365,6 +490,8 @@ class Texte_homothetie(Texte_transformation_generique):
         xA, yA = self.__texte.coordonnees
         k = self.__homothetie._Homothetie__rapport
         return x0 + k*(xA-x0), y0 + k*(yA-y0)
+
+################################################################################
 
 
 class Texte_reflexion(Texte_transformation_generique):

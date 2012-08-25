@@ -1255,9 +1255,11 @@ class BarreOutils(QWidget):
             if len(self.cache) == 2:
                 obj1, obj2 = self.cache
                 #self.initialiser() #inutile
-                if isinstance(obj1, (Droite_generique, Segment, Demidroite)) and isinstance(obj2, (Droite_generique, Segment, Demidroite)):
-                    self.executer(u"Intersection_droites(%s, %s, legende=2)" %(obj1.nom, obj2.nom))
-                elif isinstance(obj1, (Cercle_generique, Arc_generique)) and isinstance(obj2, (Cercle_generique, Arc_generique)):
+                if isinstance(obj1, (Droite_generique, Segment, Demidroite)) \
+                        and isinstance(obj2, (Droite_generique, Segment, Demidroite)):
+                    self.executer(u"Intersection_droites(%s, %s)" %(obj1.nom, obj2.nom))
+                elif isinstance(obj1, (Cercle_generique, Arc_generique)) \
+                        and isinstance(obj2, (Cercle_generique, Arc_generique)):
                     M = Intersection_cercles(obj1, obj2)
                     if len(M.intersections) == 2:
                         xy0, xy1 = M.intersections

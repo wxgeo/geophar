@@ -76,9 +76,9 @@ class ProprietesAffichage(QWidget):
                 ligne.addWidget(editer)
             encadre1.addLayout(ligne)
 
-            objets = [objet for objet in self.objets if objet.style("legende") is not None]
+            objets = [objet for objet in self.objets if objet.mode_affichage is not None]
             if objets:
-                leg = objets[0].style("legende")
+                mode = objets[0].mode_affichage
                 legende = QHBoxLayout()
                 self.radio_nom = QRadioButton("Nom")
                 ##self.radio_nom.SetValue(0)
@@ -88,20 +88,20 @@ class ProprietesAffichage(QWidget):
                 ##self.radio_formule.SetValue(0)
                 self.radio_aucun = QRadioButton(u"Aucun")
                 ##self.radio_aucun.SetValue(0)
-                if all(objet.style("legende") == leg for objet in objets):
-                    if leg == NOM:
+                if all(objet.mode_affichage == mode for objet in objets):
+                    if mode == NOM:
                         self.radio_nom.setChecked(True)
-                    elif leg == TEXTE:
+                    elif mode == TEXTE:
                         self.radio_etiquette.setChecked(True)
-                    elif leg == FORMULE:
+                    elif mode == FORMULE:
                         self.radio_formule.setChecked(True)
-                    elif leg == RIEN:
+                    elif mode == RIEN:
                         self.radio_aucun.setChecked(True)
 
-                self.radio_nom.toggled.connect(partial(self.EvtLegende, NOM))
-                self.radio_etiquette.toggled.connect(partial(self.EvtLegende, TEXTE))
-                self.radio_formule.toggled.connect(partial(self.EvtLegende, FORMULE))
-                self.radio_aucun.toggled.connect(partial(self.EvtLegende, RIEN))
+                self.radio_nom.toggled.connect(partial(self.EvtMode, NOM))
+                self.radio_etiquette.toggled.connect(partial(self.EvtMode, TEXTE))
+                self.radio_formule.toggled.connect(partial(self.EvtMode, FORMULE))
+                self.radio_aucun.toggled.connect(partial(self.EvtMode, RIEN))
                 legende.addWidget(self.radio_nom)
                 legende.addWidget(self.radio_etiquette)
                 legende.addWidget(self.radio_formule)
@@ -347,8 +347,8 @@ class ProprietesAffichage(QWidget):
             cb.stateChanged.connect(partial(cb.setTristate, False))
 
 
-    def EvtLegende(self, valeur):
-        self.changements["legende"] = valeur
+    def EvtMode(self, valeur):
+        self.changements["mode"] = valeur
 
     def checked(self, propriete, state):
         self.changements[propriete] = (state == Qt.Checked)

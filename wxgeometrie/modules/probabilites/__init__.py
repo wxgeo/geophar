@@ -222,14 +222,16 @@ omega
 
             def creer_point(x, y, texte):
                 texte = formater_texte(texte)
-                M = Point(x, y, legende = TEXTE, label = texte, style = "o", couleur = "w", taille = 0)
+                M = Point(x, y, style = "o", couleur = "w", taille = 0)
+                M.label(texte)
                 M.etiquette.style(_rayon_ = 0, niveau = 15, alignement_vertical = "center", alignement_horizontal = "center", fond = "w")
                 return M
 
 
             def creer_segment(point1, point2, texte):
                 texte = formater_texte(texte)
-                s = Segment(point1, point2, legende = TEXTE, label = texte)
+                s = Segment(point1, point2)
+                s.label(texte)
                 s.etiquette.style(_rayon_ = 0, niveau = 15, alignement_vertical = "center", alignement_horizontal = "center", fond = "w")
                 return s
 

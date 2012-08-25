@@ -180,7 +180,7 @@ codage_des_angles = ['', '^', ')', '))', ')))', '|', '||', 'x', 'o']
 styles_a_signification_variable = ("style", "codage", "famille", "taille", "angle")
 
 # Ces styles ne seront pas copiés, quelque soit la catégorie de la cible
-styles_a_ne_pas_copier = ("categorie", "niveau", "trace", "fixe", "label", "_rayon_", "_k_", "_angle_", "_noms_", "legende")
+styles_a_ne_pas_copier = ("categorie", "niveau", "trace", "fixe", "label", "_rayon_", "_k_", "_angle_", "_noms_", "mode")
 
 
 types_de_hachures = [' ', '/', '//', '\\', '\\\\', '|', '-', '+', 'x', 'o', 'O', '.', '..', '*']
@@ -188,9 +188,7 @@ types_de_hachures = [' ', '/', '//', '\\', '\\\\', '|', '-', '+', 'x', 'o', 'O',
 
 
 defaut_objets = {
-    "legende": RIEN,
     "visible": True,
-    "label": "",
     "niveau": 0,
     "afficher_info": True,
     }
@@ -206,7 +204,6 @@ points = {
     "categorie": "points",
     "taille": 8,
     "visible": True,
-    "legende": NOM,
     "niveau": 6,
     "trace": False,
     }
@@ -357,7 +354,7 @@ textes = {
     "famille": familles_de_textes[1],
     "visible": True,
     "angle": 0,
-    "legende": TEXTE,
+    "mode": TEXTE,
     "fixe": False,
     "categorie": "textes",
     "niveau": 7,
@@ -380,7 +377,7 @@ boutons = {
     "style": "italic",
     "visible": True,
     "angle": 0,
-    "legende": TEXTE,
+    "mode": TEXTE,
     "fixe": True,
     "categorie": "widgets",
     "niveau": 10,
@@ -397,7 +394,8 @@ labels = {
     "famille": familles_de_textes[1],
     "visible": True,
     "angle": 0,
-    "legende": TEXTE,
+    "mode": RIEN,
+    "label": "",
     "fixe": False,
     "categorie": "textes",
     "niveau": 7,

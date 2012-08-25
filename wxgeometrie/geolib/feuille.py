@@ -406,8 +406,8 @@ class Dictionnaire_objets(dict):
             # Attention, la feuille doit être déjà definie !
             nom = valeur._nom_alea()
             # Pour les objets nommés automatiquement, le nom n'est pas affiché par défaut.
-            if valeur.style("legende") == NOM:
-                valeur.style(legende = RIEN)
+            if valeur.mode_affichage == NOM:
+                valeur.label(mode = RIEN)
 
         # les objets commencant par "_" ne sont pas affichés par défaut (pure convention) :
         if nom[0] == "_":

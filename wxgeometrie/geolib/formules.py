@@ -83,7 +83,7 @@ class Formule(object):
         self.feuille = self.parent.feuille
 
 
-    def vars(self):
+    def variables(self):
         return [elt for (i, elt) in enumerate(self._contenu) if i%2]
 
     @property
@@ -92,7 +92,7 @@ class Formule(object):
 
     def supprimer(self):
         parent = self.parent
-        for var in self.vars():
+        for var in self.variables():
             var.enfants.remove(parent if parent.etiquette is None
                                       else parent.etiquette)
 
