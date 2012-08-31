@@ -382,9 +382,13 @@ class ProprietesAffichage(QWidget):
             try:
                 for objet in self.objets:
                     changements = self.changements.copy()
+                    mode = changements.pop('mode', None)
+                    label = changements.pop('label', None)
                     for key in changements.copy():
                         if objet.style(key) is None: # le style n'a pas de sens pour l'objet
                             changements.pop(key)
+                    if mode is not None or label is not None:
+                        self.canvas.executer(u"%s.etiquette.label(%s, %s)" %(objet.nom, repr(label), mode))
                     if self.islabel:
                         self.canvas.executer(u"%s.etiquette.style(**%s)" %(objet.parent.nom, changements))
                     else:

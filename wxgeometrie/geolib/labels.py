@@ -99,10 +99,10 @@ class Label_generique(Texte_editable_generique):
         # C'est l'existence de l'objet qui détermine celle de son étiquette.
         return self.__parent.existe
 
-    def _set_rayon(self, rayon, x, y):
-        xmin, xmax, ymin, ymax = self._boite()
-        rayon_max = param.distance_max_etiquette + hypot(xmin - xmax, ymin - ymax)/2
-        self.style(_rayon_ = min(rayon, rayon_max))
+    ##def _set_rayon(self, rayon, x, y):
+        ##xmin, xmax, ymin, ymax = self._boite()
+        ##rayon_max = param.distance_max_etiquette + hypot(xmin - xmax, ymin - ymax)/2
+        ##self.style(_rayon_ = min(rayon, rayon_max))
         # TODO: nouvel algorithme:
         # 1. Chercher le point le plus proche parmi les 4 coins du texte.
         # 2. Adapter les coordonnées de ce point pour que la distance ne dépasse pas le maximum autorisé.
