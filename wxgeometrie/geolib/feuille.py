@@ -30,7 +30,7 @@ from __future__ import with_statement
 from keyword import kwlist
 from random import choice
 from string import letters
-from math import pi, e
+from math import pi as PI, e as E
 from types import MethodType, GeneratorType, TypeType
 from operator import attrgetter
 import re
@@ -40,7 +40,7 @@ from sympy import Symbol, Wild, sympify, oo
 
 from ..pylib import uu, is_in, str3, property2, print_error, rstrip_, CompressedList
 from ..mathlib.intervalles import Union, Intervalle
-from ..mathlib.parsers import VAR, traduire_formule
+from ..mathlib.parsers import VAR, NBR_SIGNE, traduire_formule
 
 from .objet import Objet, contexte, souffler, G
 from .angles import Secteur_angulaire
@@ -50,10 +50,10 @@ from .points import Point
 from .cercles import Arc_generique
 from .courbes import Courbe
 from .textes import Texte
-from .labels import Label_generique
+##from .labels import Label_generique
 from .vecteurs import Vecteur_libre
 from .variables import Variable, XMinVar, XMaxVar, YMinVar, YMaxVar, Dpx, Dpy
-from .constantes import FORMULE, NOM, RIEN
+from .constantes import NOM, RIEN#, FORMULE,
 
 from .pseudo_canvas import _pseudocanvas
 from .. import param
@@ -260,7 +260,7 @@ class Dictionnaire_objets(dict):
         self.update((key, val) for key, val in mathlib.universal_functions.__dict__.iteritems() \
                     if key[0] != "_" and key != "division")
 
-        self.update(pi = pi, e = e, oo = oo, \
+        self.update(pi = PI, e = E, oo = oo, \
                     Intervalle = Intervalle, Union = Union, \
                     x = Symbol("x"), y = Symbol("y"), z = Symbol("z"), \
                     t = Symbol("t"))
@@ -729,28 +729,27 @@ class Interprete_feuille(object):
         # (A B) -> Droite(A,B)
         def f(m):
             return "Droite(%s, %s)" % m.groups()
-        commande = re.sub(r"\([ ]?(" + mathlib.parsers.VAR + ")[ ](" + mathlib.parsers.VAR + r")[ ]?\)", f, commande)
+        commande = re.sub(r"\([ ]?(%s)[ ](%s)[ ]?\)" % (VAR, VAR), f, commande)
 
         # [A B] -> Segment(A,B)
         def f(m):
             return "Segment(%s, %s)" % m.groups()
-        commande = re.sub(r"\[[ ]?(" + mathlib.parsers.VAR + ")[ ](" + mathlib.parsers.VAR + r")[ ]?\]", f, commande)
+        commande = re.sub(r"\[[ ]?(%s)[ ](%s)[ ]?\]" % (VAR, VAR), f, commande)
 
         # ||u|| -> u.norme
         def f(m):
             return "%s.norme" % m.groups()
-        commande = re.sub(r"\|\|[ ]?(" + mathlib.parsers.VAR + r")[ ]?\|\|", f, commande)
+        commande = re.sub(r"\|\|[ ]?(%s)[ ]?\|\|" % VAR, f, commande)
 
         # ||A>B|| -> (A>B).norme
         def f(m):
             return "(%s>%s).norme" % m.groups()
-        commande = re.sub(r"\|\|[ ]?(" + mathlib.parsers.VAR + ")>(" + mathlib.parsers.VAR + r")[ ]?\|\|", f, commande)
+        commande = re.sub(r"\|\|[ ]?(%s)>(%s)[ ]?\|\|" % (VAR, VAR), f, commande)
 
         # 1,2 ou 1;2 ou 1 2 ou (1,2) ou (1;2) ou (1 2) *uniquement* -> Point(1,2)
-        m = re.match("(\()?(?P<x>" + mathlib.parsers.NBR_SIGNE + ")[ ]?[;, ][ ]?(?P<y>" + mathlib.parsers.NBR_SIGNE + ")(?(1)\))$", commande)
+        m = re.match("(\()?(?P<x>%s)[ ]?[;, ][ ]?(?P<y>%s)(?(1)\))$" % (NBR_SIGNE, NBR_SIGNE), commande)
         if m:
-            dict = m.groupdict()
-            commande = "Point(%s,%s)" % (dict["x"], dict["y"])
+            commande = "Point(%(x)s,%(y)s)" % m.groupdict()
 
         # `Bonjour !` -> Texte("Bonjour !")
         # NB: attention, \` a déjà un sens en LaTeX
@@ -770,7 +769,9 @@ class Interprete_feuille(object):
 
 class Historique_feuille(object):
     u"""Historique de la feuille.
-    Permet d'enregistrer l'état de la feuille à un instant donné, et de le restaurer ensuite."""
+
+    Permet d'enregistrer l'état de la feuille à un instant donné,
+    et de le restaurer ensuite."""
 
     def __init__(self, feuille):
         self.feuille = feuille
@@ -1374,7 +1375,7 @@ class Feuille(object):
                     groupe.append(angle)
                 else:
 #                    print abs(abs(groupe[-1]["angle"]) - pi/2)
-                    if abs(abs(groupe[-1]["angle"]) - pi/2) < contexte['tolerance']:
+                    if abs(abs(groupe[-1]["angle"]) - PI/2) < contexte['tolerance']:
                         for elt in groupe:
                             elt["objet"].style(codage = "^")
 ##                            elt["objet"].creer_figure()
@@ -1385,7 +1386,7 @@ class Feuille(object):
                         if resultat:
                             i += 1
                     groupe = [angle]
-            if abs(abs(groupe[-1]["angle"]) - pi/2) < contexte['tolerance']:
+            if abs(abs(groupe[-1]["angle"]) - PI/2) < contexte['tolerance']:
                 for elt in groupe:
                     elt["objet"].style(codage = "^")
 ##                    elt["objet"].creer_figure()

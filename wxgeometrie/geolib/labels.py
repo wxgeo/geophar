@@ -29,7 +29,7 @@ from math import cos, sin, hypot, pi, acos
 from .objet import Objet, Argument, Ref
 from .textes import Texte_editable_generique, _get_texte, _set_texte
 from .constantes import NOM
-from .routines import angle_vectoriel
+from .routines import angle_vectoriel, sign
 from .points import (Glisseur_arc_cercle, Glisseur_segment, Glisseur_droite,
                      Glisseur_vecteur, Glisseur_cercle, Glisseur_demidroite,)
 from .. import param
@@ -149,7 +149,8 @@ class Label_point(Label_generique):
         r = self.style("_rayon_")
         a = self.style("_angle_")
         rx, ry = self.canvas.dpix2coo(r*cos(a), r*sin(a))
-        return  parent.abscisse + rx, parent.ordonnee + ry
+        x0, y0 = parent.xy
+        return  x0 + rx, y0 - ry
 
     def _set_coordonnees(self, x = None, y = None):
         if x is not None:
@@ -157,7 +158,7 @@ class Label_point(Label_generique):
             rx, ry = self.canvas.dcoo2pix(x - parent.abscisse, y - parent.ordonnee)
             rayon = hypot(rx, ry)
             if rayon:
-                self.style(_angle_ = acos(rx/rayon)*(cmp(ry, 0) or 1))
+                self.style(_angle_ = acos(rx/rayon)*sign(-ry))
             # Distance maximale entre le point et son étiquette : 25 pixels.
             self.style(_rayon_ = min(rayon, 50))
 
@@ -192,7 +193,7 @@ class Label_glisseur(Label_generique):
         r = self.style("_rayon_")
         a = self.style("_angle_")
         rx, ry = self.canvas.dpix2coo(r*cos(a), r*sin(a));
-        return  x0 + rx, y0 + ry
+        return  x0 + rx, y0 - ry
 
     def _set_coordonnees(self, x = None, y = None):
         if self._M is None:
@@ -204,7 +205,7 @@ class Label_glisseur(Label_generique):
             rx, ry = self.canvas.dcoo2pix(x - x0, y - y0)
             rayon = hypot(rx, ry)
             if rayon:
-                self.style(_angle_ = acos(rx/rayon)*(cmp(ry, 0) or 1))
+                self.style(_angle_ = acos(rx/rayon)*sign(-ry))
             self.style(_rayon_ = min(rayon, 50)) # distance maximale entre le point et son etiquette : 25 pixels
 
 
@@ -321,7 +322,7 @@ class Label_polygone(Label_generique):
             rx, ry = self.canvas.dcoo2pix(x - parent.centre.abscisse, y - parent.centre.ordonnee)
             rayon = hypot(rx, ry)
             if rayon:
-                self.style(_angle_ = acos(rx/rayon)*(cmp(ry, 0) or 1))
+                self.style(_angle_ = acos(rx/rayon)*sign(-ry))
             self.style(_rayon_ = rayon) # distance maximale entre le point et son étiquette : 25 pixels
 
     def _get_coordonnees(self):
@@ -329,7 +330,8 @@ class Label_polygone(Label_generique):
         r = self.style("_rayon_")
         a = self.style("_angle_")
         rx, ry = self.canvas.dpix2coo(r*cos(a), r*sin(a))
-        return  parent.centre.abscisse + rx, parent.centre.ordonnee + ry
+        x0, y0 = parent.centre.xy
+        return  x0 + rx, y0 - ry
 
 
 
@@ -361,13 +363,15 @@ class Label_angle(Label_generique):
             b += 2*pi
         c = k*b + (1 - k)*a
         rx, ry = self.canvas.dpix2coo(r*cos(c), r*sin(c))
-        return  parent._Secteur_angulaire__point.abscisse + rx, parent._Secteur_angulaire__point.ordonnee + ry
+        x0, y0 = parent._Secteur_angulaire__point.xy
+        return x0 + rx, y0 - ry
 
 
     def _set_coordonnees(self, x = None, y = None):
         if x is not None:
             parent = self.parent
-            rx, ry = self.canvas.dcoo2pix(x - parent.point.abscisse, y - parent.point.ordonnee)
+            x0, y0 = parent.point.xy
+            rx, ry = self.canvas.dcoo2pix(x - x0, y - y0)
             rayon = hypot(rx, ry)
             if rayon:
                 u = self.canvas.dpix2coo(*parent._Secteur_angulaire__vecteur1)
@@ -377,11 +381,11 @@ class Label_angle(Label_generique):
                 b = angle_vectoriel(i, v)
                 if parent.sens == u"non défini" and parent._sens() < 0:
                     a, b = b, a
-                c = angle_vectoriel(i, (rx, ry))
+                c = angle_vectoriel(i, (rx, -ry))
                 if a != b:
                     if b < a:
                         b += 2*pi
                     if c < a:
                         c += 2*pi
-                    self.style(_k_ = (c-a)/(b-a))
+                    self.style(_k_ = (c - a)/(b - a))
             self.style(_rayon_ = min(rayon, param.codage["rayon"] + 25))

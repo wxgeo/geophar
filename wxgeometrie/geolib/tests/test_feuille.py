@@ -396,6 +396,9 @@ def test_executer():
     assert(o.M3.xy == (4, sqrt(4)))
     assert(o.M4.xy == (5, sqrt(5)))
     assert(o.M5.xy == (6, sqrt(6)))
+    f.executer("B= -1,7")
+    f.executer("u=A>B")
+    assert o.u.xy == (o.B.x - o.A.x, o.B.y - o.A.y)
 
 
 def test_nettoyer():

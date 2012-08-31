@@ -37,7 +37,7 @@ from ..pylib import property2, uu, str2, print_error, mathtext_parser, \
                     is_in, WeakList, CustomWeakKeyDictionary, warning
 from .routines import nice_display
 from .constantes import NOM, RIEN#, FORMULE, TEXTE,
-from .formules import Formule
+##from .formules import Formule
 from .contexte import contexte
 from .. import param
 
