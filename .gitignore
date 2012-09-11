@@ -35,6 +35,7 @@ log/
 preferences/
 macros/
 personnaliser.py
+.ftpconfig
 
 # Interpréteurs et fichiers de test.
 pyshell.pyw
