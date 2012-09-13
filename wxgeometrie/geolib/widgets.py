@@ -58,44 +58,36 @@ class Bouton(Texte_editable_generique, Objet_avec_coordonnees_modifiables):
         Objet_avec_coordonnees_modifiables.__init__(self, x, y, **styles)
         Texte_editable_generique(self, texte, **styles)
 
-    def _creer_figure(self):
-        x, y = self.coordonnees
-        if not self._representation:
-            self._representation = [self.rendu.texte(), self.rendu.polygone(), self.rendu.ligne()]
-        Texte_generique._creer_figure(self)
-        text, fill, plot = self._representation
-        fill.set_visible(True)
-        can = self.canvas
-        box = can.txt_box(text)
-        w, h = can.dpix2coo(.5*box.width, -.5*box.height)
-        niveau = self.style("niveau")
-        ##if av == "left":
-            ##x += w
-        ##elif av == "right":
-            ##x -= w
-        ##if ah == "top":
-            ##y -= h
-        ##elif ah == "bottom":
-            ##y += h
-        mx, my = can.dpix2coo(10, -10) # marge verticale et horizontale (en pixels)
-        w += mx
-        h += my
-        xy = [(x - w, y - h), (x - w, y + h), (x + w, y + h), (x + w, y - h)]
-        fill.xy = xy
-        fond = self.style('couleur_fond')
-        fill.set(facecolor=fond, edgecolor=self._foncer(fond))
-        fill.zorder = niveau
-        xy.append(xy[0])
-        plot.set_data(*zip(*xy))
-        plot.set(color='k')
-        # TODO : utiliser FancyBboxPatch
-        # http://matplotlib.sourceforge.net/examples/pylab_examples/fancybox_demo.html
+    ##def _creer_figure(self):
+        ##x, y = self.coordonnees
+        ##if not self._representation:
+            ##self._representation = [self.rendu.texte(), self.rendu.polygone(), self.rendu.ligne()]
+        ##Texte_editable_generique._creer_figure(self)
+        ##text, fill, plot = self._representation
+        ##fill.set_visible(True)
+        ##can = self.canvas
+        ##box = can.txt_box(text)
+        ##w, h = can.dpix2coo(.5*box.width, -.5*box.height)
+        ##niveau = self.style("niveau")
+        ##mx, my = can.dpix2coo(10, -10) # marge verticale et horizontale (en pixels)
+        ##w += mx
+        ##h += my
+        ##xy = [(x - w, y - h), (x - w, y + h), (x + w, y + h), (x + w, y - h)]
+        ##fill.xy = xy
+        ##fond = self.style('couleur_fond')
+        ##fill.set(facecolor=fond, edgecolor=self._foncer(fond))
+        ##fill.zorder = niveau
+        ##xy.append(xy[0])
+        ##plot.set_data(*zip(*xy))
+        ##plot.set(color='k')
+        ### TODO : utiliser FancyBboxPatch
+        ### http://matplotlib.sourceforge.net/examples/pylab_examples/fancybox_demo.html
 
     def _creer_figure(self):
         x, y = self.coordonnees
         if not self._representation:
             self._representation = [self.rendu.texte(), self.rendu.rectangle()]
-        Texte_generique._creer_figure(self)
+        Texte_editable_generique._creer_figure(self)
         text, rect = self._representation
         rect.set_visible(True)
         can = self.canvas
@@ -141,7 +133,7 @@ class Bouton(Texte_editable_generique, Objet_avec_coordonnees_modifiables):
 
     def _distance_inf(self, x, y, d):
         # Pour cliquer sur un bouton, il faut que la distance soit nulle.
-        return Texte_generique._distance_inf(self, x, y, 0)
+        return Texte_editable_generique._distance_inf(self, x, y, 0)
 
         ##d += self.style("marge")
         ##xmin, xmax, ymin, ymax = self._boite()
@@ -305,9 +297,8 @@ class Champ(Texte):
         px, py = box.max
         x, y = can.pix2coo(px + 5, can.hauteur - py)
         txt = self._representation[2]
-        lbl = self.style('label').replace(' ', '').replace(',', '.')
         attendu = self.style('attendu')
-        if attendu is None or not lbl:
+        if attendu is None or not self.texte.strip():
             txt.set(visible=False)
         else:
             txt.set(visible=True, x=x, y=y, va='top', ha='left')
