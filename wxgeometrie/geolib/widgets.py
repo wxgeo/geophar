@@ -182,7 +182,7 @@ class Champ(Texte):
         '2'
         >>> c.texte = '?'
         >>> print(c.label())
-        1+1=\$?\$ (entrer le resultat)
+        1+1=? (entrer le resultat)
 
     Si un résultat est attendu, alors le texte rentré par l'utilisateur passera
     un test de validation. Si le résultat passe le test, un check vert est
@@ -236,9 +236,40 @@ class Champ(Texte):
         >>> c.style('choix')
         ['oui', 'non', 'sans opinion']
     """
+
     _style_defaut = param.champs
 
-    texte = __texte = Argument("basestring", Texte._get_texte, Texte._set_texte)
+    def _test_correct(self, txt):
+        attendu = self.style('attendu')
+        if attendu is None:
+            return
+        if self.valider is None:
+            # Validation basique par défaut
+            return (txt == attendu)
+        else:
+            # Méthode de validation personnalisée
+            return self.valider(txt, attendu)
+
+    def _set_texte(self, value):
+        value = Texte._set_texte(self, value)
+        if self._initialise:
+            # Impossible de vérifier si le résultat est correct tant
+            # que l'objet n'a pas fini d'être initialisé (le style
+            # 'attendu' n'est pas encore enregistré.)
+            txt = self.texte
+            if value != txt:
+                # Le contenu du champ de texte a changé.
+                # On vérifie si le résultat est correct, et on met
+                # en cache le résultat de cette vérification.
+                self._correct_old = self.correct
+                self.correct = self._test_correct(value)
+                if getattr(self, 'evt_valider', None) is not None:
+                    self.evt_valider(champ=self, correct=self.correct,
+                                 correct_old=self._correct_old)
+        return value
+
+
+    texte = __texte = Argument("basestring", Texte._get_texte, _set_texte)
     abscisse = x = __x = Argument("Variable_generique", defaut = lambda: normalvariate(0,10))
     ordonnee = y = __y = Argument("Variable_generique", defaut = lambda: normalvariate(0,10))
 
@@ -261,12 +292,14 @@ class Champ(Texte):
         # Lorsque l'utilisateur entre un nouveau résultat, on peut ainsi
         # savoir si celui-ci était déjà correct, ou si le résultat est
         # devenu correct (il peut y avoir plusieurs résultats corrects).
-        self._correct_old = self.correct = self._test_correct()
+        self._correct_old = self.correct = self._test_correct(self.texte)
         ##self.__label_old = self.style('label')
 
 
     def label(self, *args, **kw):
         txt = Texte.label(self, *args, **kw)
+        if txt is None:
+            return
         if not txt.strip('$\n'):
             txt = '...' # u'\u20DB'
         prefixe = self.style('prefixe')
@@ -311,15 +344,3 @@ class Champ(Texte):
                                  ##correct_old=self.__correct_old)
                 ##self.__correct_old = correct
                 ##self.__label_old = lbl
-
-
-    def _test_correct(self):
-        attendu = self.style('attendu')
-        if attendu is None:
-            return
-        if self.valider is None:
-            # Validation basique par défaut
-            return (self.texte == attendu)
-        else:
-            # Méthode de validation personnalisée
-            return self.valider(self.texte, attendu)

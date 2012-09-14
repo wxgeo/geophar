@@ -78,21 +78,12 @@ class EditorsAndRenderersGrid(gridlib.Grid):
                 self.AppendRows()
                 self.MoveCursorDown(False)
         #self.SetScrollbars(0, 0, 0, 0)
-<<<<<<< HEAD
 
 
 #---------------------------------------------------------------------------
 class TableauValeurs(wx.MiniFrame):
     def __init__(self, parent):
         wx.MiniFrame.__init__(self, parent, "Tableau de valeurs", style=wx.DEFAULT_FRAME_STYLE | wx.TINY_CAPTION_HORIZ, size=(250,300))
-=======
-
-
-#---------------------------------------------------------------------------
-class TableauValeurs(wx.MiniFrame):
-    def __init__(self, parent):
-        wx.MiniFrame.__init__(self, parent, -1, "Tableau de valeurs", style=wx.DEFAULT_FRAME_STYLE | wx.TINY_CAPTION_HORIZ, size=(250,300))
->>>>>>> 550e99f... Fix broken docstrings tests.
         self.parent = parent
         p = self.panel = QWidget(self)
 
@@ -116,17 +107,6 @@ class TableauValeurs(wx.MiniFrame):
 
     def efface(self, event = None):
         self.grid.ClearGrid()
-<<<<<<< HEAD
-
-#---------------------------------------------------------------------------
-if __name__ == '__main__':
-    import sys
-    app = wx.PySimpleApp()
-    frame = TableauValeurs(None)
-    frame.show()
-    app.MainLoop()
-#---------------------------------------------------------------------------
-=======
 
 #---------------------------------------------------------------------------
 if __name__ == '__main__':
@@ -136,4 +116,3 @@ if __name__ == '__main__':
     frame.Show(True)
     app.MainLoop()
 #---------------------------------------------------------------------------
->>>>>>> 550e99f... Fix broken docstrings tests.

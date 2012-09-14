@@ -129,9 +129,12 @@ class MenuActionsObjet(PopUpMenu):
     def etiquette(self):
         select = self.canvas.select
         old_style = select.style().copy()
-        #XXX: Texte ?
-        old_label = select.etiquette.texte
-        if old_label is None:   # le style label n'existe pas pour l'objet
+        if isinstance(select, Texte_generique):
+            old_label = select.texte
+        elif select.etiquette is not None:
+            old_label = select.etiquette.texte
+        else:
+            # L'objet n'a pas d'étiquette (Variable, etc.)
             return
 
         # ----------------

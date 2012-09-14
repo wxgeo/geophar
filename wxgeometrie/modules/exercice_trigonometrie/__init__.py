@@ -41,7 +41,7 @@ from ...geolib.routines import nice_str, det, vect
 from ...pylib import OrderedDict, print_error
 from ...mathlib.parsers import convertir_en_latex, traduire_formule
 from ... import param
-from .barre_outils_ex_eq_dte import BarreOutilsExEqDte
+from ...GUI.exercice import ExerciceMenuBar, Exercice
 
 
 

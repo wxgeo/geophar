@@ -1430,7 +1430,7 @@ class Objet(object):
 
         Exemple::
 
-            >>> from wxgeometrie import Point
+            >>> from wxgeometrie import Point, Variable
             >>> A = Point(2, 7, couleur='g', taille=14)
             >>> B = eval(repr(A))
             >>> A is B
