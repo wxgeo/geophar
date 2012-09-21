@@ -407,7 +407,7 @@ border-top-right-radius: 4px;
 
 
         def format(typ, description):
-            return typ.upper() + ' - ' + description + ' (*.' + typ.upper() + ' *.' + typ + ')'
+            return typ.upper() + ' - ' + description + ' (*.' + typ + ')'
         filtres = [format(k, v) for k, v in description_formats]
 
         format = ''
