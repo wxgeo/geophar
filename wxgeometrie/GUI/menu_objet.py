@@ -198,7 +198,10 @@ class MenuActionsObjet(PopUpMenu):
             ok = dlg.exec_()
             if ok:
                 try:
-                    self.executer(u"%s.label(%s, %s)" %(select.nom, repr(dlg.text.toPlainText()), dlg.cb.isChecked()))
+                    nom = select.nom
+                    txt = repr(dlg.text.toPlainText())
+                    mode = (FORMULE if dlg.cb.isChecked() else TEXTE)
+                    self.executer(u"%s.label(%s, %s)" %(nom, txt, mode))
                 except:
                     select.style(**old_style)
                     print_error()
@@ -212,7 +215,7 @@ class MenuActionsObjet(PopUpMenu):
         if select.label():
             mode = RIEN
         else:
-            if select.style(u"label"):
+            if select.legende:
                 mode = TEXTE
             else:
                 mode = NOM

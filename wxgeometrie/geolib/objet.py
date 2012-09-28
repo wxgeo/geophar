@@ -850,12 +850,53 @@ class Objet(object):
 ####################################
 
     def label(self, *args, **kw):
-        u"""Affiche le label (ou etiquette) de l'objet."""
+        u"""Affiche le label (ou etiquette) de l'objet.
 
+        Suivant le mode en vigueur, il peut s'agir du nom de l'objet,
+        éventuellement formaté en LaTeX, ou d'un texte associé à
+        l'objet::
+
+            >>> from wxgeometrie import *
+            >>> f = Feuille()
+            >>> A = f.objets.A = Point(-2.7, 3.1)
+            >>> A.label()
+            '$A$'
+            >>> B = f.objets.B = Point(4.8, 6.5)
+            >>> D1 = f.objets.D1 = Droite(A, B)
+            >>> D1.label()
+            ''
+            >>> D1.label(mode=NOM)
+            >>> D1.label()
+            '$\\mathscr{D}_{1}$'
+            >>> D1.label("Je suis une droite.")
+            >>> D1.label()
+            u'Je suis une droite.'
+
+        Si le texte contient des formules entre accolades, elles
+        peuvent également être interprétées, si le mode FORMULE
+        est activé::
+
+            >>> D1.label("A a pour abscisse {A.x}.", mode=FORMULE)
+            >>> D1.label()
+            u'A a pour abscisse -2.7.'
+
+        """
         if self.etiquette is None:
             return ''
         return self.etiquette.label(*args, **kw)
 
+
+    @property
+    def legende(self):
+        u"""Renvoie le texte brut associé à l'objet.
+
+        Permet d'avoir une interface unique pour les objets avec
+        étiquette, et les textes (qui sont eux-mêmes leur propre
+        étiquette en quelque sorte), qui surclassent cette méthode.
+        """
+        if self.etiquette is None:
+            return None
+        return self.etiquette.texte
 
     def style(self, nom_style = None, **kw):
         u"""Renvoie le ou les styles demandés, ou modifie les styles de l'objet.

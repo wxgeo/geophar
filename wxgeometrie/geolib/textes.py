@@ -281,9 +281,17 @@ class Texte_editable_generique(Texte_generique):
             # Échec du parser LaTeX, on affiche une version "brute".
             if not self._label_correct:
                 label = old_label.replace('$', r'\$')
-
             return label
 
+    @property
+    def legende(self):
+        u"""Renvoie le texte brut associé à l'objet.
+
+        Permet d'avoir une interface unique pour les objets avec
+        étiquette, et les textes (qui sont eux-mêmes leur propre
+        étiquette en quelque sorte), qui surclassent cette méthode.
+        """
+        return self.texte
 
     def style(self, nom_style=None, **kw):
         u"""Renvoie le ou les styles demandés, ou modifie les styles de l'objet.

@@ -37,7 +37,7 @@ from matplotlib.colors import colorConverter as colorConverter
 from .wxlib import ColorSelecter
 from .app import white_palette, app
 from .. import param
-from ..pylib import print_error, debug, advanced_split
+from ..pylib import print_error, debug, advanced_split, OrderedDict
 from ..geolib.constantes import NOM, FORMULE, TEXTE, RIEN
 from ..geolib.routines import nice_display
 
@@ -66,7 +66,7 @@ class ProprietesAffichage(QWidget):
             ligne = QHBoxLayout()
             if len(self.objets) == 1:
                 self.etiquette = etiquette = QLineEdit()
-                etiquette.setText(self.objets[0].style("label"))
+                etiquette.setText(self.objets[0].legende)
                 etiquette.setMinimumWidth(200)
                 etiquette.editingFinished.connect(self.EvtEtiquette)
                 ligne.addWidget(etiquette)
@@ -80,32 +80,19 @@ class ProprietesAffichage(QWidget):
             if objets:
                 mode = objets[0].mode_affichage
                 legende = QHBoxLayout()
-                self.radio_nom = QRadioButton("Nom")
-                ##self.radio_nom.SetValue(0)
-                self.radio_etiquette = QRadioButton(u"Texte")
-                ##self.radio_etiquette.SetValue(0)
-                self.radio_formule = QRadioButton(u"Formule")
-                ##self.radio_formule.SetValue(0)
-                self.radio_aucun = QRadioButton(u"Aucun")
-                ##self.radio_aucun.SetValue(0)
+                self.radios = OrderedDict((
+                        (NOM, QRadioButton("Nom")),
+                        (TEXTE, QRadioButton(u"Texte")),
+                        (FORMULE, QRadioButton(u"Formule")),
+                        (RIEN, QRadioButton(u"Aucun")),
+                              ))
                 if all(objet.mode_affichage == mode for objet in objets):
-                    if mode == NOM:
-                        self.radio_nom.setChecked(True)
-                    elif mode == TEXTE:
-                        self.radio_etiquette.setChecked(True)
-                    elif mode == FORMULE:
-                        self.radio_formule.setChecked(True)
-                    elif mode == RIEN:
-                        self.radio_aucun.setChecked(True)
+                    self.radios[mode].setChecked(True)
 
-                self.radio_nom.toggled.connect(partial(self.EvtMode, NOM))
-                self.radio_etiquette.toggled.connect(partial(self.EvtMode, TEXTE))
-                self.radio_formule.toggled.connect(partial(self.EvtMode, FORMULE))
-                self.radio_aucun.toggled.connect(partial(self.EvtMode, RIEN))
-                legende.addWidget(self.radio_nom)
-                legende.addWidget(self.radio_etiquette)
-                legende.addWidget(self.radio_formule)
-                legende.addWidget(self.radio_aucun)
+                for mode, radio in self.radios.iteritems():
+                    radio.toggled.connect(partial(self.EvtMode, mode))
+                    legende.addWidget(radio)
+
                 legende.addStretch()
                 encadre1.addWidget(QLabel(u"Afficher : "))
                 encadre1.addLayout(legende)
@@ -388,7 +375,12 @@ class ProprietesAffichage(QWidget):
                         if objet.style(key) is None: # le style n'a pas de sens pour l'objet
                             changements.pop(key)
                     if mode is not None or label is not None:
-                        self.canvas.executer(u"%s.etiquette.label(%s, %s)" %(objet.nom, repr(label), mode))
+                        self.canvas.executer(u"%s.label(%s, %s)" %(objet.nom, repr(label), mode))
+                        if mode is None:
+                            mode = objet.etiquette.style("mode")
+                            self.changements["mode"] = mode
+                            self.radios[mode].setChecked(True)
+
                     if self.islabel:
                         self.canvas.executer(u"%s.etiquette.style(**%s)" %(objet.parent.nom, changements))
                     else:
