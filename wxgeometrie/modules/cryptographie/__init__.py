@@ -97,6 +97,9 @@ class CryptographieMenuBar(MenuBar):
                         [u"Générer une nouvelle clé", u"Générer une nouvelle permutation de l'alphabet.", None, panel.generer_cle],
                         [u"Modifier la clé", u"Générer une nouvelle permutation de l'alphabet.", None, panel.DlgModifierCle],
                         None,
+                        [u"Coder avec Vigenère", "Codage par la méthode de Vigenère (substitution poly-alphabétique).",
+                                None, partial(panel.coder_vigenere, ask=True)],
+                        None,
                         [u"options"])
         self.ajouter(u"avance2")
         self.ajouter("?")
@@ -114,7 +117,12 @@ class Cryptographie(Panel_simple):
         self.widget_modifie = None
 
         # La clé est la permutation de l'alphabet actuellement utilisée
+        # pour le codage par substitution mono-alphabétique.
         self.generer_cle()
+
+        # La clé de chiffrement pour le codage par substitution poly-alphabétique
+        # (appelé aussi chiffre de Vigenère).
+        self.cle_vigenere = 'EXEMPLE'
 
         # Signe indiquant un caractère non déchiffré
         self.symbole = '-' # '.'
@@ -242,18 +250,52 @@ class Cryptographie(Panel_simple):
         if not espaces:
             code = code.replace(' ', '')
         self.code.setPlainText(code)
+        return code
 
 
     @staticmethod
     def _vigenere(l1, l2):
         return chr((ord(l1) + ord(l2) - 130)%26 + 65)
 
-    def coder_vigenere(self, evt=None, msg=None, cle=None):
+    def coder_vigenere(self, evt=None, msg=None, cle=None, ask=False):
+        def gen():
+            length = len(cle)
+            n = 0
+            for car in clair:
+                if car.isalpha():
+                    yield self._vigenere(cle[n%length], car)
+                    n += 1
+                else:
+                    yield car
+        if ask:
+            self.DlgModifierCleVigenere()
+        if cle is None:
+            cle = self.cle_vigenere
         if msg is None:
-            msg = self.clair.GetValue()
+            msg = self.clair.toPlainText()
+        msg = msg.upper()
         if cle is None:
             pass
-        return ''.join(self._vigenere(l1, l2) for l1, l2 in izip(cycle(cle), msg))
+        # Pour l'instant, les espaces ne sont pas supportés
+        clair = msg.replace(' ', '')
+        clair = self.clair.toPlainText().upper()
+        for key, val in dict_accents.items():
+            clair = clair.replace(key, val)
+        code = ''.join(gen())
+        self.code.setPlainText(code)
+        return code
+
+    def DlgModifierCleVigenere(self, evt=None):
+        while True:
+            text, ok = QInputDialog.getText(self, u"Modifier la clé pour Vigenère",
+                    u"La clé doit contenir uniquement des lettres.",
+                    text=self.cle_vigenere)
+            if ok:
+                text = text.strip()
+                if not text.isalpha():
+                    continue
+                self.cle_vigenere = text.upper()
+            break
 
 
     def decoder(self, txt=None):
