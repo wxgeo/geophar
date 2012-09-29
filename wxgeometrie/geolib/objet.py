@@ -398,12 +398,13 @@ class Ref(object):
 class BaseArgument(object):
     u"""Classe mère des descripteurs 'Argument', 'ArgumentNonModifiable' et 'Arguments'."""
 
-    __compteur__ = 0
+    _compteur = 0
 
     def __init__(self, types, get_method=None, set_method=None, defaut=None):
         self.__contenu__ = CustomWeakKeyDictionary()
-        BaseArgument.__compteur__ += 1
-        self.__compteur__ = BaseArgument.__compteur__
+        cls = self.__class__
+        cls._compteur += 1
+        self._compteur = cls._compteur
         self.types = types
         self.get_method = get_method
         self.set_method = set_method
@@ -858,19 +859,23 @@ class Objet(object):
 
             >>> from wxgeometrie import *
             >>> f = Feuille()
+
             >>> A = f.objets.A = Point(-2.7, 3.1)
             >>> A.label()
             '$A$'
+
             >>> B = f.objets.B = Point(4.8, 6.5)
             >>> D1 = f.objets.D1 = Droite(A, B)
             >>> D1.label()
             ''
+
             >>> D1.label(mode=NOM)
-            >>> D1.label()
-            '$\\mathscr{D}_{1}$'
+            >>> print(D1.label())
+            $\\mathscr{D}_{1}$
+
             >>> D1.label("Je suis une droite.")
-            >>> D1.label()
-            u'Je suis une droite.'
+            >>> print(D1.label())
+            Je suis une droite.
 
         Si le texte contient des formules entre accolades, elles
         peuvent également être interprétées, si le mode FORMULE
@@ -878,7 +883,7 @@ class Objet(object):
 
             >>> D1.label("A a pour abscisse {A.x}.", mode=FORMULE)
             >>> D1.label()
-            u'A a pour abscisse -2.7.'
+            A a pour abscisse -2.7.
 
         """
         if self.etiquette is None:

@@ -58,7 +58,7 @@ for _obj in vars().values():
                 # On cherche les entrées de la classe 'MaClasse' qui soient de type 'Argument' ou 'Arguments',
                 # et qui commencent par '_MaClasse__'.
                 # Exemple : '_MaClasse__monargument' qui est stocké comme 'monargument' (on enlève le préfixe).
-                _noms_arguments.append((value.__compteur__, key[len(prefixe):]))
+                _noms_arguments.append((value._compteur, key[len(prefixe):]))
         # on trie les arguments par ordre de déclaration dans la classe
         _noms_arguments.sort()
         # tuple pour éviter des bugs (partage d'1 même liste entre plusieurs classes par ex.)
