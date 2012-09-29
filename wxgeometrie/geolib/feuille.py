@@ -1299,7 +1299,7 @@ class Feuille(object):
         valeur += "\n%s.copier_style(%s)" % (nom, repr(objet))
         old = "\n" + objet.sauvegarder()
         assert old in actuel
-        nouveau = actuel.replace(old, "\n%s=%s" % (nom, valeur))
+        nouveau = actuel.replace(old, "\n%s=%s\n" % (nom, valeur))
         if param.debug:
             print(nouveau)
         try:
