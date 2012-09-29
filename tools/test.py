@@ -55,7 +55,7 @@ if sys.version_info[:2] < param.python_min:
 
 #TODO: use argparse once python 2.6 is deprecated for WxGéométrie.
 
-actions = {'u': 'audit', 'c': 'clean', 't': 'test', 'd': 'doctest', 'a': 'all', 'h': 'help'}
+actions = {'u': 'audit', 'c': 'clean', 't': 'test', 'd': 'doc', 'a': 'all', 'h': 'help'}
 
 args = sys.argv[1:]
 
@@ -112,6 +112,7 @@ def doctest(*args):
     from runtests import doctest
     doctest(*args, blacklist = SKIP_DIRS)
 
+doc = doctest
 
 def all(*args):
     "Run all tests and doctests."

@@ -710,7 +710,16 @@ class Interprete_feuille(object):
             action()
 
 
-    def parser(self, commande):
+    @staticmethod
+    def parser(commande):
+        u"""Convertit la commande en code Python.
+
+        >>> from wxgeometrie.geolib.feuille import Interprete_feuille
+        >>> Interprete_feuille.parser("[A B]")
+        'Segment(A, B)'
+        >>> Interprete_feuille.parser("(A B)")
+        'Droite(A, B)'
+        """
         commande = commande.strip()
 
         while '  ' in commande:
@@ -726,12 +735,12 @@ class Interprete_feuille(object):
         # NB: attention, \' a déjà un sens en LaTeX
         commande = commande.replace("'", "_prime").replace("\\_prime", "\\'")
 
-        # (A B) -> Droite(A,B)
+        # (A B) -> Droite(A, B)
         def f(m):
             return "Droite(%s, %s)" % m.groups()
         commande = re.sub(r"\([ ]?(%s)[ ](%s)[ ]?\)" % (VAR, VAR), f, commande)
 
-        # [A B] -> Segment(A,B)
+        # [A B] -> Segment(A, B)
         def f(m):
             return "Segment(%s, %s)" % m.groups()
         commande = re.sub(r"\[[ ]?(%s)[ ](%s)[ ]?\]" % (VAR, VAR), f, commande)

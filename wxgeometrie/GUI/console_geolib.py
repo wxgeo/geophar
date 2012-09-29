@@ -47,6 +47,7 @@ class ConsoleGeolib(QWidget):
         try:
             resultat = self.parent.feuille_actuelle.executer(commande)
             self.resultats.setText(resultat)
+            print(resultat)
             self.ligne_commande.clear()
         except:
             print_error()

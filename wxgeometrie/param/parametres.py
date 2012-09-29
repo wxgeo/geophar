@@ -180,7 +180,7 @@ codage_des_angles = ['', '^', ')', '))', ')))', '|', '||', 'x', 'o']
 styles_a_signification_variable = ("style", "codage", "famille", "taille", "angle")
 
 # Ces styles ne seront pas copiés, quelque soit la catégorie de la cible
-styles_a_ne_pas_copier = ("categorie", "niveau", "trace", "fixe", "label", "_rayon_", "_k_", "_angle_", "_noms_", "mode")
+styles_a_ne_pas_copier = ("categorie", "niveau", "trace", "fixe", "_rayon_", "_k_", "_angle_", "_noms_", "mode")
 
 
 types_de_hachures = [' ', '/', '//', '\\', '\\\\', '|', '-', '+', 'x', 'o', 'O', '.', '..', '*']
@@ -395,7 +395,6 @@ labels = {
     "visible": True,
     "angle": 0,
     "mode": RIEN,
-    "label": "",
     "fixe": False,
     "categorie": "textes",
     "niveau": 7,
