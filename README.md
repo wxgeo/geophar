@@ -66,8 +66,8 @@ En 2005, souhaitant apprendre la programmation orientée objet, je suis tombé
 sur un article d'un développeur vantant Python.
 
 Les logiciels de géométrie dynamique répandus étaient alors essentiellement
-propriétaires (hasard du sort, six mois plus tard, les choses avaient déjà bien
-changés).
+propriétaires (hasard du sort, six mois plus tard, la situation avait déjà bien
+changé).
 
 Après quelques essais de programmation en Python fin décembre 2004, je décidai
 d'écrire un prototype de logiciel de géométrie dynamique, m'inspirant de Cabri

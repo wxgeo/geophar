@@ -47,7 +47,8 @@ parser.add_option("-q", "--quiet",
 if len(args) != 1:
     s.cd('..')
     sys.path.append(os.getcwd())
-    from wxgeometrie.param import version
+    from wxgeometrie.param import version, NOMPROG2
+    nom_prog = NOMPROG2.lower()
     parser.error("fournir un (et un seul) argument (numero de version).\nVersion actuelle: " + version)
 version = args[0]
 
@@ -122,7 +123,13 @@ if not options.fake:
     with open('param/version.py', 'w') as f:
         f.write(''.join(contenu).strip())
 
+# Création du changelog correspondant
+date = time.strftime("%d/%m/%Y")
+s.command(u'echo "%s version %s\nPubliée le %s\n\n">doc/changelog.txt' %(nom_prog, date, version))
+s.command('git log v%s..HEAD --no-merges --pretty="* %%s">>doc/changelog.txt' % version_precedente)
+
 # Commit correspondant
+s.command('git add doc/changelog.txt')
 s.command('git add param/version.py')
 s.command('git commit -m %s' %repr('Version ' + version))
 
