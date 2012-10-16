@@ -46,18 +46,18 @@ SUPPORTED_EDITORS = ('geany', 'gedit', 'nano', 'vim', 'emacs', 'kate')
 def gs(chaine='', case=True, exclude_comments=True, extensions=(".py", ".pyw"),
         maximum=100, codec="latin1", statistiques=False, replace=None,
         color=None, edit_with=None, edit_result=None):
-    u"""Parcourt le rÃ©pertoire courant et les sous-rÃ©pertoire, Ã  la recherche
+    u"""Parcourt le répertoire courant et les sous-répertoire, à la recherche
     des fichiers dont l'extension est comprise dans 'extensions',
-    mais passe les rÃ©pertoires et les fichiers dont le nom commence par
-    un prÃ©fixe de 'exclude_prefixe', ou finit par un suffixe de
+    mais passe les répertoires et les fichiers dont le nom commence par
+    un préfixe de 'exclude_prefixe', ou finit par un suffixe de
     'exclude_suffixe'.
-    Pour chaque fichier trouvÃ©, renvoie toutes les lignes oÃ¹ 'chaine' se trouve.
-    (Par dÃ©faut, la casse est prise en compte, sinon, il suffit de modifier
+    Pour chaque fichier trouvé, renvoie toutes les lignes où 'chaine' se trouve.
+    (Par défaut, la casse est prise en compte, sinon, il suffit de modifier
     la valeur de 'case'.)
-    Le nombre maximal de lignes renvoyÃ©es est fixÃ© par 'maximum', afin d'Ã©viter
-    de saturer le systÃ¨me.
-    Si ce nombre est dÃ©passÃ© (ie. toutes les occurences de 'chaine' ne sont pas
-    affichÃ©es), la fonction renvoie False, sinon, True.
+    Le nombre maximal de lignes renvoyées est fixé par 'maximum', afin d'éviter
+    de saturer le système.
+    Si ce nombre est dépassé (ie. toutes les occurences de 'chaine' ne sont pas
+    affichées), la fonction renvoie False, sinon, True.
     """
     if color is None:
         color = sys.platform.startswith('linux')
@@ -102,9 +102,9 @@ def gs(chaine='', case=True, exclude_comments=True, extensions=(".py", ".pyw"),
     F = 0
     # nombre de lignes vides
     B = 0
-    # nombre de lignes contenant l'expression recherchÃ©e
+    # nombre de lignes contenant l'expression recherchée
     n_lignes = 0
-    # Nombre d'occurences trouvÃ©es.
+    # Nombre d'occurences trouvées.
     occurences = 0
     for f in fichiers:
         if re.search(IGNORE_RE, f):
@@ -193,35 +193,35 @@ def gs(chaine='', case=True, exclude_comments=True, extensions=(".py", ".pyw"),
                         fichier.write(l)
 
     if statistiques:
-        # C - 20*F : on dÃ©compte les prÃ©ambules de tous les fichiers
+        # C - 20*F : on décompte les préambules de tous les fichiers
         return (blue(str(N) + " lignes de code\n")
                 + str(C) + " lignes de commentaires (" + str(C - 20*F)
                 + " hors licence)\n"
                 + str(B) + " lignes vides\n"
                 + str(F) + " fichiers")
     if replace is None:
-        return blue(u"\n-> %s occurence(s) trouvÃ©e(s)." % occurences)
+        return blue(u"\n-> %s occurence(s) trouvée(s)." % occurences)
     else:
-        return blue(u"%s occurence(s) de %s remplacÃ©e(s) par %s."
+        return blue(u"%s occurence(s) de %s remplacée(s) par %s."
                     % (occurences, repr(chaine), repr(replace)))
 
 
 def usage():
     u"Affiche l'aide."
     print u"""\n    === Usage ===\n
-    - Rechercher la chaÃ®ne 'hello' dans le code :
+    - Rechercher la chaîne 'hello' dans le code :
         $ ./tools/search.py "hello"
-    - Remplacer partout la chaÃ®ne 'hello' par la chaÃ®ne 'world':
+    - Remplacer partout la chaîne 'hello' par la chaîne 'world':
         $ ./tools/search.py "hello" -r "world"
-    - Editer le projet Ã  l'endroit oÃ¹ la chaÃ®ne "hello world!" se trouve
+    - Editer le projet à l'endroit où la chaîne "hello world!" se trouve
         $ ./tools/search.py -e "hello world!"
     - Editer seulement la 5e occurence de "hello world!" dans le projet
         $ ./tools/search.py -e5 "hello world!"
     - Afficher des statistiques concernant le projet:
         $ ./tools/search.py -s
-    - Retourner 1000 rÃ©sultats au maximum au lieu de 100 (valeur par dÃ©faut):
+    - Retourner 1000 résultats au maximum au lieu de 100 (valeur par défaut):
         $ ./tools/search.py -m "hello world!"
-    - Personnaliser le nombre maximum de rÃ©sultats retournÃ©s:
+    - Personnaliser le nombre maximum de résultats retournés:
         $ ./tools/search.py -m2500 "hello world!"
         """
     exit()
@@ -234,7 +234,7 @@ if __name__ == "__main__":
         usage()
     if '-r' in args:
         i = args.index('-r')
-        # L'argument suivant est la chaÃ®ne de substitution.
+        # L'argument suivant est la chaîne de substitution.
         if len(args) < i + 2:
             usage()
         kw['replace'] = args.pop(i + 1)

@@ -22,16 +22,25 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-# version unicode
+
+from operator import attrgetter
 
 from numpy import array, arange, append
+# en test ###############
+from numpy import poly1d
+from scipy.interpolate import PiecewisePolynomial
+import fractions as frac
+#########################
+from .objet import Ref, Argument, Arguments
 
-from .objet import Ref, Arguments#, Argument
 from .courbes import Courbe_generique
+from .lignes import Tangente_courbe
 from .contexte import contexte
 
 from ..pylib import fullrange
 from .. import param
+
+
 
 class Interpolation_generique(Courbe_generique):
     u"""Classe mère de toutes les interpolations."""
@@ -89,10 +98,6 @@ class Interpolation_generique(Courbe_generique):
             plot.zorder = niveau
         else:
             plot.set_visible(False)
-
-
-
-
 
 
 
@@ -221,8 +226,6 @@ class Interpolation_quadratique(Interpolation_generique):
 
 
 
-
-
 class Interpolation_cubique(Interpolation_generique):
     u"""Une interpolation cubique.
 
@@ -302,3 +305,154 @@ class Interpolation_cubique(Interpolation_generique):
             self._yarray = append(self._yarray, v)
 
         self._affiche_extremites(vec_deb = (dx0, dy0), vec_fin = (dx1, dy1))
+
+
+class Interpolation_polynomiale_par_morceaux(Interpolation_generique):
+    u"""Une courbe d'interpolation polynomiale par morceaux.
+    Elle utilise l'interpolation par morceau de scipy pour construire la fonction
+    c'est la classe scipy.interpolate.PiecewisePolynomial
+
+    elle passe par les points (xl, yl) et avec le nombre derive dans derivl à
+    l'abscisse xl.
+
+    exemple::
+
+    >>> from wxgeometrie import *
+    >>> A = Point(-1,-2)
+    >>> B = Point(2,1)
+    >>> C = Point(8,-3)
+    >>> d = Interpolation_polynomiale_par_morceaux(A,B,C, derivees=[-1,0.5,2])
+
+    :type derivee: list
+    :param derivee: value of the diff number at each point
+
+    :rtype : numpy.lib.polynomial
+
+    """
+    points = __points = Arguments("Point_interpolation")
+    foo = None # fonction d'interpolation
+
+    def __init__(self, *points, **styles):
+        # TODO: valeurs par défaut "intelligentes" pour les nombres dérivés.
+        debut = styles.pop("debut", True)
+        fin = styles.pop("fin", True)
+        if styles.get("points", None):
+            points = styles.pop("points")
+        self.__points = points = tuple(Ref(pt) for pt in points)
+        # en test: creation des tangentes: dictionnaire
+        # key: nom du point, value: objet Tangente_courbe
+        ##self.__tangentes = []
+        # boucle avec ruse enumerate
+        # cf http://docs.python.org/tutorial/datastructures.html#dictionaries
+        ##for i, P in enumerate(points):
+            ##dico = {'point': P, 'cdir': self.__derivees[i]}
+            ##self.__tangentes.append(Tangente_courbe(**dico))
+        
+        Interpolation_generique.__init__(self, *points, **styles)
+         
+
+    @property
+    def foo(self):
+        """Fonction wrapper vers la fonction de scipy PiecewisePolynomial
+
+        """
+        pts = self.points_tries
+        xl = [P[0] for P in pts]
+        yl = [P[1] for P in pts]
+        yl_cum = [[yl[i], self._derivees()[i]] for i in range(len(yl))]
+        return PiecewisePolynomial(xl, yl_cum)
+
+
+    def _derivees(self):
+        derivees = []
+        points = self.points_tries
+        n = len(points)
+        for i, P in enumerate(points):
+            if P.derivee is None:
+                if n == 1:
+                    derivees.append(0)
+                elif i == 0:
+                    # Premier point de la courbe
+                    A, B = points[:2]
+                    dy = B.y - A.y
+                    dx = B.x - A.x
+                    derivees.append(dy/dx if dx else 0)
+                elif i == n - 1:
+                    # Dernier point de la courbe
+                    A, B = points[-2:]
+                    dy = B.y - A.y
+                    dx = B.x - A.x
+                    derivees.append(dy/dx if dx else 0)
+                else:
+                    # Il y a (au moins) un point avant et un point après
+                    A, B, C = points[i - 1:i + 2]
+                    if B.y >= max(A.y, C.y) or B.y <= min(A.y, C.y):
+                        derivees.append(0)
+                    else:
+                        dy1 = B.y - A.y
+                        dx1 = B.x - A.x
+                        der1 = (dy1/dx1 if dx1 else 0)
+                        dy2 = C.y - B.y
+                        dx2 = C.x - B.x
+                        der2 = (dy2/dx2 if dx2 else 0)
+                        # On prend la pente la plus faible, de façon à être sûr
+                        # qu'à gauche et à droite du point considéré, la courbe d'interpolation
+                        # reste comprise en ordonnées entre le point considéré et
+                        # le point suivant.
+                        # Cela facilite la construction d'extrema :
+                        # si A, B, C sont trois points d'interpolation,
+                        # avec B.y < A.y et B.y < C.y, alors on est assuré que
+                        # la courbe ne descendra pas en dessous de B.y sur
+                        # l'intervalle [A.x, C.x].
+                        derivees.append(der1 if abs(der1) < abs(der2) else der2)
+            else:
+                derivees.append(P.derivee)
+        return derivees
+
+
+    @property
+    def points_tries(self):
+        # TODO: mise en cache
+        return sorted(self.__points, key=attrgetter('x'))
+
+
+    def _creer_figure(self):
+        points = self.points_tries
+        n = len(points)
+        couleur = self.style("couleur")
+        niveau = self.style("niveau")
+        style = self.style("style")
+        epaisseur = self.style("epaisseur")
+        if not self._representation:
+            self._representation = [self.rendu.ligne()]
+
+        if n < 2:
+            return
+        # de même les tangentes sont recalculées
+        # il doit y avoir moyen de faire moins de calculs
+        # self.__tangentes = []
+        # for i in range(len(self.__points)):
+        #     self.__tangentes.append(Tangente_courbe(point = self.__points[i],\
+        #                                                 cdir = self.__derivees[i]))
+        #     #self.__tangentes[i]._creer_figure()
+
+        pas = self.__canvas__.pas()
+        plot = self._representation[0]
+        x1, y1 = points[0].coordonnees
+        x2, y2 = points[-1].coordonnees
+        xarray = fullrange(x1, x2, pas)
+        yarray = self.foo(xarray)
+        plot.set_data(xarray, yarray)
+        plot.set(color=couleur, linestyle=style, linewidth=epaisseur)
+        plot.zorder = niveau
+        self._xarray = xarray
+        self._yarray = yarray
+
+    @property
+    def xmin(self):
+        return self.points_tries[0].x if self.__points else None
+
+    @property
+    def xmax(self):
+        return self.points_tries[-1].x if self.__points else None
+

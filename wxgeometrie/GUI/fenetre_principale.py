@@ -98,7 +98,7 @@ class FenetrePrincipale(QMainWindow):
                     afficher_bouton = False, legende = 'Ligne de commande :')
         self.ligne_commande.setVisible(param.ligne_commande)
 
-#        # Creation des onglets et de leur contenu
+        # Creation des onglets et de leur contenu
         self.onglets = Onglets(self)
 
         self.mainWidget=QWidget(self) # dummy widget to contain the

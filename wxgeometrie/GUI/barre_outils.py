@@ -466,16 +466,16 @@ class BarreOutils(QWidget):
                     self.executer(u"Point(*%s, **%s)" % (position, self.style(nom_style)), editer=editer, init = False)
                 else:
                     snom = selection.nom
-                    if isinstance(selection, Cercle_generique):
-                        self.executer(u"Glisseur_cercle(%s, %s)" %(snom, position), editer=editer, init = False)
-                    elif isinstance(selection, Segment):
-                        self.executer(u"Glisseur_segment(%s, %s)" %(snom, position), editer=editer, init = False)
-                    elif isinstance(selection, Droite_generique):
-                        self.executer(u"Glisseur_droite(%s, %s)" %(snom, position), editer=editer, init = False)
-                    elif isinstance(selection, Demidroite):
-                        self.executer(u"Glisseur_demidroite(%s, %s)" %(snom, position), editer=editer, init = False)
-                    elif isinstance(selection, Arc_generique):
-                        self.executer(u"Glisseur_arc_cercle(%s, %s)" %(snom, position), editer=editer, init = False)
+                    # On regarde si le point peut être construit sur l'objet sélectionné.
+                    # Par exemple, si l'objet sélectionné est une droite, on construit
+                    # un glisseur sur la droite, au lieu d'un point 'normal'.
+                    # Par contre, si l'objet sélectionné est un texte, il n'y a pas de
+                    # glisseur correspondant, donc on ne tient pas compte de l'objet
+                    # sélectionné, et on construit simplement un point 'normal'.
+                    for type_objet, type_glisseur in Point._glisseurs.iteritems():
+                        if isinstance(selection, getattr(geolib, type_objet)):
+                            self.executer(u"%s(%s, %s)" %(type_glisseur, snom, position), editer=editer, init = False)
+                            break
                     else:
                         self.executer(u"Point(%s, %s)" % position, editer=editer, init = False)
                 # On retourne le nom de l'objet créé
