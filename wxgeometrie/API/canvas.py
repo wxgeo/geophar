@@ -20,6 +20,7 @@ from __future__ import with_statement
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
+from math import isinf, isnan
 
 import numpy
 from matplotlib.backends.backend_agg import FigureCanvasAgg
@@ -506,54 +507,63 @@ def %(_nom_)s(self, valeur = no_argument):
                 break
 
     def _zoom_auto(self):
-        actuelle = self.feuille_actuelle
-        xxyy = zip(*([obj.espace_vital for obj in actuelle.liste_objets(False)
-                      if obj.espace_vital is not None]
-                      + [obj.etiquette.espace_vital for obj in actuelle.liste_objets(False)
-                         if obj.etiquette is not None and obj.etiquette.espace_vital is not None]))
+        objets = self.feuille_actuelle.liste_objets(objets_caches=False, 
+                                                    etiquettes=True)
+        xxyy = zip(*(obj.espace_vital for obj in objets if obj.espace_vital))
         print 'xxyy', xxyy
+        
         if xxyy:
-            # 'None' indique que l'objet ne fournit pas d'indication de dimension
-            # pour les abscisses ou pour les ordonnées.
-            _ajuster_xmin = _ajuster_xmax = True
-            xmins = [x for x in xxyy[0] if x is not None]
-            if xmins:
-                xmin = min(xmins)
-            else:
-                xmin = self.fenetre[0]
-                _ajuster_xmin = False
-            xmaxs = [x for x in xxyy[1] if x is not None]
-            if xmaxs:
-                xmax = max(xmaxs)
-            else:
-                xmax = self.fenetre[1]
-                _ajuster_xmax = False
-            ymin = min(y for y in xxyy[2] if y is not None)
-            ymax = max(y for y in xxyy[3] if y is not None)
-            dx = xmax - xmin
-            dy = ymax - ymin
-            # des valeurs trop proches pour xmin et xmax risquent de faire planter l'affichage.
-            if dx < 100*param.tolerance:
-                r = (self.fenetre[1] - self.fenetre[0])/2
-                xmin -= r
-                xmax += r
-            else:
-                if _ajuster_xmin:
-                    xmin -= .05*dx
-                if _ajuster_xmax:
-                    xmax += .05*dx
-
-            if dy < 100*param.tolerance: # idem pour ymin et ymax
-                r = abs(self.fenetre[3] - self.fenetre[2])/2
-                ymin -= r
-                ymax += r
-            else:
-                ymin -= .05*dy
-                ymax += .05*dy
-
-            self.fenetre = xmin, xmax, ymin, ymax
+            def num_only(item):
+                # 'None' indique que l'objet ne fournit pas d'indication de dimension
+                # pour les abscisses ou pour les ordonnées.
+                return not(item is None or isinf(item) or isnan(item))
+                
+            noms = ('xmin', 'xmax', 'ymin', 'ymax')
+            # Listes brutes des extremas obtenus pour chaque objet.
+            listes_extremas = zip(noms, xxyy, self.fenetre)
+            # Synthèse : valeurs retenues pour l'ensemble de la feuille.
+            extremas = {}
+            # 'False' si le paramètre ne doit *pas* être modifié.
+            ajuster = {'xmin': True, 'xmax': True, 'ymin': True, 'ymax': True}
+            
+            for nom, liste, defaut in listes_extremas:
+                liste_filtree = filter(num_only, liste)
+                if param.debug:
+                    print 'zoom_auto - valeurs obtenues:', nom, liste_filtree
+                if liste_filtree:
+                    if nom.endswith('min'):
+                        extremas[nom] = min(liste_filtree) 
+                    else:
+                        extremas[nom] = max(liste_filtree) 
+                else:
+                    extremas[nom] = defaut
+                    ajuster[nom] = False
+                    
             if param.debug:
-                print "ZOOM AUTO :", xmin, xmax, ymin, ymax,  xxyy
+                print 'zoom_auto - propositions:', extremas
+
+            for axe in 'xy':
+                nom_min = axe + 'min'
+                nom_max = axe + 'max'
+                ecart = extremas[nom_max] - extremas[nom_min]
+                assert ecart > 0
+                # Des valeurs trop proches pour xmin et xmax (ou pour ymin et ymax)
+                # risqueraient de faire planter l'affichage.
+                if ecart < 100*param.tolerance:
+                    rayon = .5*(getattr(self, nom_max) - getattr(self, nom_min))
+                    extremas[nom_min] -= rayon
+                    extremas[nom_max] += rayon
+                else:
+                    # On prévoit 5% de marge (de manière à ce qu'un point
+                    # ne se retrouve pas collé au bord de la fenêtre par exemple).
+                    if ajuster[nom_min]:
+                        extremas[nom_min] -= 0.05*ecart
+                    if ajuster[nom_max]:
+                        extremas[nom_max] += 0.05*ecart
+
+            self.fenetre = tuple(extremas[nom] for nom in noms)
+            if param.debug:
+                print "ZOOM AUTO :", self.fenetre
 
 
     @track
