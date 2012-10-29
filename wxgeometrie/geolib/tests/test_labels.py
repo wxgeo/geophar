@@ -24,6 +24,12 @@ def test_Label_point():
     assert A.etiquette.feuille is f
     assertEqual(A.nom_latex, '$A$')
     assertEqual(A.label(), '$A$')
+    A.renommer("A'")
+    assertEqual(A.label(), "$A'$")
+    A.renommer("A''")
+    assertEqual(A.label(), "$A''$")
+    f.objets["B'"] = (1, 2)
+    assertEqual(f.objets["B'"].label(), "$B'$")
 
 
 def test_Label_segment():
