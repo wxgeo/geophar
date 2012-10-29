@@ -52,7 +52,18 @@ import pylab_ as pylab
 # le fichier pylab_.py est modifie lors d'une "compilation" avec py2exe
 import numpy
 
-mathtext_parser = matplotlib.mathtext.MathTextParser("PS").parse
+def mathtext_parser(txt):
+    parse = matplotlib.mathtext.MathTextParser("PS").parse
+    try:
+        return parse(txt)
+    except AttributeError:
+        if isinstance(txt, unicode):
+            # bug in matplotlib 1.1.1
+            # mathtext(u"$A'$") returne une erreur au premier appel.
+            return parse(txt.encode(param.encodage))
+
+
+
 
 def tex(txt):
     u"Rajoute des $ si l'expression LaTeX ainsi obtenue est correcte."
