@@ -33,7 +33,7 @@ from .wxlib import png
 from ..pylib import is_in
 from ..geolib.routines import distance
 from ..geolib.textes import Texte_generique
-from ..geolib.points import Point_generique, Barycentre, Milieu
+from ..geolib.points import Point_generique, Barycentre, Milieu, Point
 from ..geolib.cercles import Arc_generique, Cercle_generique, Cercle, Arc_points,\
                              Arc_oriente, Cercle_diametre, Cercle_points, Demicercle,\
                              Arc_cercle
@@ -46,7 +46,8 @@ from ..geolib.transformations import Rotation, Homothetie, Translation
 from ..geolib.vecteurs import Vecteur_generique, Vecteur
 from ..geolib.intersections import Intersection_cercles, Intersection_droite_cercle
 from ..geolib.objet import Objet, contexte
-##from .. import param
+
+from .. import geolib
 
 
 
