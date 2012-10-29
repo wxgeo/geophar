@@ -1010,14 +1010,18 @@ class Objet(object):
                 nom = "\\" + nom
                 break
 
-        self.nom_latex = "$" + nom + "$"
+        # bug dans matplotlib 1.1.1
+        # mathtext(u"$A'$") returne une erreur au premier appel.
+        # => conversion unicode -> string
+        self.nom_latex = ("$" + nom + "$").encode(param.encodage)
         # Test de nom_latex :
         try:
             mathtext_parser(self.nom_latex)
-        except ParseFatalException:
-            warning('"%s" can not be parsed by mathtext.' %self.nom_latex)
-            self.nom_latex = self.nom
+        ##except ParseFatalException:
+            ##warning('"%s" can not be parsed by mathtext.' %self.nom_latex)
+            ##self.nom_latex = self.nom
         except Exception:
+            warning('%s can not be parsed by mathtext.' % repr(self.nom_latex))
             print_error()
             self.nom_latex = self.nom
 
