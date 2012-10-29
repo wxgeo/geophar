@@ -63,7 +63,10 @@ class Label_generique(Texte_editable_generique):
         return ''
 
     def sauvegarder(self):
-        return "%s.etiquette.style(**%s)\n" % (self.parent.nom, repr(self.style()))
+        nom = self.parent.nom
+        return "%s.etiquette.texte = %s\n" \
+               "%s.etiquette.style(**%s)\n" \
+               % (nom, repr(self.texte), nom, repr(self.style()))
 
     @property2
     def nom_latex(self, val=None):

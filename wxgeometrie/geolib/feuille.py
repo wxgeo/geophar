@@ -1224,6 +1224,8 @@ class Feuille(object):
         u"""Renvoie l'ensemble des commandes python qui permettra de recréer
         la figure avec tous ses objets.
 
+        La figure pourra ensuite être restaurée à l'aide la commande `charger()`.
+
         :rtype: string
         """
 
@@ -1234,7 +1236,8 @@ class Feuille(object):
 
         # Enfin, on sauvegarde les objets de la feuille.
         # On doit enregistrer les objets dans le bon ordre (suivant la _hierarchie).
-        objets = sorted(self.liste_objets(True), key=attrgetter("_hierarchie_et_nom"))
+        objets = sorted(self.liste_objets(objets_caches=True, etiquettes=True),
+                                key=attrgetter("_hierarchie_et_nom"))
         return texte + ''.join(obj.sauvegarder() for obj in objets
                                             if obj._enregistrer_sur_la_feuille)
 
@@ -1243,7 +1246,8 @@ class Feuille(object):
         self.affichage_perime()
 
 
-    def charger(self, commandes, rafraichir = True, archiver = True, mode_tolerant = False):
+    def charger(self, commandes, rafraichir = True, archiver = True,
+                                 mode_tolerant = False):
         u"""Exécute un ensemble de commandes dans la feuille.
 
         Usage:
@@ -1290,7 +1294,9 @@ class Feuille(object):
             if isinstance(arg, Objet):
                 for heritier in heritiers:
                     if arg is heritier:
-                        self.erreur(u"Définition circulaire dans %s : l'objet %s se retrouve dépendre de lui-même." %(valeur, nom))
+                        self.erreur(u"Définition circulaire dans %s : \
+                                   l'objet %s se retrouve dépendre de lui-même."
+                                   %(valeur, nom))
                         #raise RuntimeError, "Definition circulaire dans %s : l'objet %s se retrouve dependre de lui-meme." %(valeur, nom)
         actuel = self.sauvegarder()
         # Utiliser '.copier_style()' et non '.style()' car le type de l'objet
@@ -1356,7 +1362,8 @@ class Feuille(object):
                     self.message(u"Le nombre de codages disponibles est insuffisant.")
                     print_error(u"Le nombre de codages disponibles est insuffisant.")
 
-        lignes = [{"longueur": obj._longueur(), "objet": obj} for obj in self.objets.lister(False, type = (Segment, Arc_generique))]
+        objets = self.objets.lister(False, type = (Segment, Arc_generique))
+        lignes = [{"longueur": obj._longueur(), "objet": obj} for obj in objets]
         if lignes:
             lignes.sort() # attention, le classement d'un dictionnaire se fait selon l'ordre alphabétique des clefs
             groupe = [lignes[0]]
@@ -1374,7 +1381,8 @@ class Feuille(object):
             test(groupe, param.codage_des_lignes, i)
 
 
-        angles = [{"angle": obj.val, "objet": obj} for obj in self.objets.lister(False, type = Secteur_angulaire)]
+        objets = self.objets.lister(False, type = Secteur_angulaire)
+        angles = [{"angle": obj.val, "objet": obj} for obj in objets]
         if angles:
             angles.sort() # attention, le classement d'un dictionnaire se fait selon l'ordre alphabétique des clefs
             groupe = [angles[0]]
