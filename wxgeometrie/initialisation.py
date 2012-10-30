@@ -19,7 +19,7 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-import sys, time, os, optparse, itertools, traceback, imp
+import sys, time, os, optparse, itertools, traceback, imp, subprocess
 from os.path import dirname, realpath
 
 t0 = time.time()
@@ -33,7 +33,7 @@ from . import param
 # car alors, ``$ geophar -b`` ne prendrait pas en compte le ``-b``
 # lors de l'initialisation.
 from .param import dependances, NOMPROG, NOMPROG2, LOGO, plateforme, GUIlib
-from .pylib.fonctions import path2, uu
+from .pylib.fonctions import path2, uu, str3
 
 nomprog = NOMPROG2.lower()
 
@@ -66,12 +66,45 @@ else:
         try:
             imp.find_module(module)
         except ImportError:
-            print(u'** Erreur fatale ** : le module %s doit être installé !' %module)
+            msg = u'** Erreur fatale **\nLe module %s est introuvable !\n' % module
+
             if plateforme == 'Linux':
-                print("Sous Ubuntu/Debian, tapez 'sudo apt-get install %s' pour \
-                       installer le module manquant." %dependances[module])
+                def which(cmd):
+                    out = subprocess.Popen(("which", cmd), stdout=subprocess.PIPE, stderr=subprocess.STDOUT).stdout
+                    sortie = out.read()
+                    out.close()
+                    return sortie
+
+                if which('apt-get'):
+                    paquet = dependances[module]
+                    if which('gksudo'):
+                        msg += "\nVoulez-vous installer le paquet '%s' correspondant ?" % paquet
+                    else:
+                        msg += "Sous Ubuntu/Debian, tapez 'sudo apt-get install %s'" \
+                            " pour installer le module manquant.\n" % paquet
+                print(msg)
+
+                if which('xmessage'):
+                    btn = subprocess.call(["xmessage", "-buttons", "OK,Annuler",
+                              "-center", "-default", "OK", "-print", str3(msg)])
+                    if btn == 101 and which('gksudo'):
+                        # Installation du paquet manquant
+                        if not subprocess.call(['gksudo', 'apt-get', 'install', paquet]):
+                            continue
+            else:
+                print(msg)
             sys.exit(-1)
 
+# TODO:
+# 1. Utiliser xmessage sous Linux, pour afficher le message quand l'utilisateur
+#    n'utilise pas la console.
+#    Syntaxe :
+#    xmessage -buttons OK,Annuler -center -default OK -print 'bonjour ! Comment ca va ?'
+# 2. Proposer automatiquement l'installation des dépendances sous Debian ou Ubuntu,
+#    si possible (sudo et apt-get installés).
+#    Tests :
+#    which apt-get
+#    which sudo
 
 def gerer_arguments():
     u"""On récupère les options éventuelles passées au programme.
