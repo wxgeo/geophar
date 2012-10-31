@@ -347,9 +347,9 @@ class Interpolation_polynomiale_par_morceaux(Interpolation_generique):
         ##for i, P in enumerate(points):
             ##dico = {'point': P, 'cdir': self.__derivees[i]}
             ##self.__tangentes.append(Tangente_courbe(**dico))
-        
+
         Interpolation_generique.__init__(self, *points, **styles)
-         
+
 
     @property
     def foo(self):
@@ -389,22 +389,38 @@ class Interpolation_polynomiale_par_morceaux(Interpolation_generique):
                     if B.y >= max(A.y, C.y) or B.y <= min(A.y, C.y):
                         derivees.append(0)
                     else:
-                        dy1 = B.y - A.y
-                        dx1 = B.x - A.x
-                        der1 = (dy1/dx1 if dx1 else 0)
-                        dy2 = C.y - B.y
-                        dx2 = C.x - B.x
-                        der2 = (dy2/dx2 if dx2 else 0)
-                        # On prend la pente la plus faible, de façon à être sûr
-                        # qu'à gauche et à droite du point considéré, la courbe d'interpolation
-                        # reste comprise en ordonnées entre le point considéré et
-                        # le point suivant.
-                        # Cela facilite la construction d'extrema :
-                        # si A, B, C sont trois points d'interpolation,
-                        # avec B.y < A.y et B.y < C.y, alors on est assuré que
-                        # la courbe ne descendra pas en dessous de B.y sur
-                        # l'intervalle [A.x, C.x].
-                        derivees.append(der1 if abs(der1) < abs(der2) else der2)
+                        dy = C.y - A.y
+                        dx = C.x - A.x
+                        derivees.append(dy/dx if dx else 0)
+                    # Ancienne stratégie. En pratique, la nouvelle stratégie
+                    # (bien plus simple) semble donner des résultats plus
+                    # satisfaisants visuellement.
+                    ##else:
+                        ##dy1 = B.y - A.y
+                        ##dx1 = B.x - A.x
+                        ##der1 = (dy1/dx1 if dx1 else 0)
+                        ##dy2 = C.y - B.y
+                        ##dx2 = C.x - B.x
+                        ##der2 = (dy2/dx2 if dx2 else 0)
+                        ### On prend la pente la plus faible, de façon à être sûr
+                        ### qu'à gauche et à droite du point considéré, la courbe d'interpolation
+                        ### reste comprise en ordonnées entre le point considéré et
+                        ### le point suivant.
+                        ### Cela facilite la construction d'extrema :
+                        ### si A, B, C sont trois points d'interpolation,
+                        ### avec B.y < A.y et B.y < C.y, alors on est assuré que
+                        ### la courbe ne descendra pas en dessous de B.y sur
+                        ### l'intervalle [A.x, C.x].
+                        ##derivees.append(der1 if abs(der1) < abs(der2) else der2)
+                    # Autre stratégie possible, peu concluante en pratique.
+                    ##else:
+                        ##dy1 = B.y - A.y
+                        ##dx1 = B.x - A.x
+                        ##der1 = (dy1/dx1 if dx1 else 0)
+                        ##dy2 = C.y - B.y
+                        ##dx2 = C.x - B.x
+                        ##der2 = (dy2/dx2 if dx2 else 0)
+                        ##derivees.append(.5*(der1+der2))
             else:
                 derivees.append(P.derivee)
         return derivees
@@ -424,7 +440,7 @@ class Interpolation_polynomiale_par_morceaux(Interpolation_generique):
         style = self.style("style")
         epaisseur = self.style("epaisseur")
         if not self._representation:
-            self._representation = [self.rendu.ligne()]
+            self._representation = [self.rendu.ligne() for i in xrange(3)]
 
         if n < 2:
             return
@@ -436,7 +452,7 @@ class Interpolation_polynomiale_par_morceaux(Interpolation_generique):
         #                                                 cdir = self.__derivees[i]))
         #     #self.__tangentes[i]._creer_figure()
 
-        pas = self.__canvas__.pas()
+        pas = self.canvas.pas()
         plot = self._representation[0]
         x1, y1 = points[0].coordonnees
         x2, y2 = points[-1].coordonnees
@@ -447,6 +463,8 @@ class Interpolation_polynomiale_par_morceaux(Interpolation_generique):
         plot.zorder = niveau
         self._xarray = xarray
         self._yarray = yarray
+
+        self._affiche_extremites()
 
     @property
     def xmin(self):
