@@ -1008,7 +1008,7 @@ class Axe(Droite):
           (en partant de l'origine de l'axe).
           En particulier, si `pas_num=1`, toutes les graduations
           auront un nombre.
-    - `repeter` (bool): répéter ou non les graduations.
+    - `repeter` (bool): répéter ou non la numérotation sur les axes.
     - `hauteur` (int): hauteur d'une graduation (en pixels).
     - `placement_num` (-1|1): position de la numérotation par rapport à l'axe.
     """
@@ -1054,8 +1054,9 @@ class Axe(Droite):
         else:
             if (y2 - y1)*(yI - yO) < 0:
                 x2, x1, y2, y1 = x1, x2, y1, y2
+        taille = self.style("taille")
         fleche.set(xy0=(x1, y1), xy1=(x2, y2), linewidth=linewidth,
-                   angle=self.style("angle"), taille=self.style("taille"),
+                   angle=self.style("angle"), taille=taille,
                     color=color, linestyle=self.style("style"),
                    zorder=zorder,
                    )
@@ -1146,7 +1147,9 @@ class Axe(Droite):
 
         # Et on génère les graduations !
         while xmin < x < xmax:
-            segments.append([(x - xv, y - yv), (x + xv, y + yv)])
+            if hypot(*self.canvas.dcoo2pix(x2 - x, y2 - y)) > 1.5*taille:
+                # Ne pas superposer une graduation à la pointe de la flêche
+                segments.append([(x - xv, y - yv), (x + xv, y + yv)])
             x -= sens*xu
             y -= sens*yu
 
@@ -1184,10 +1187,15 @@ class Axe(Droite):
         xw, yw = self.canvas.dpix2coo(coeff*pxv, coeff*pyv)
 
         while xmin < x < xmax:
-            txt = self.rendu.texte(x + xw, y + yw, nice_display(n*pas),
-                    va='center', ha='center', size=taille,
-                    color = self.etiquette.style('couleur'))
-            self._representation.append(txt)
+            if hypot(*self.canvas.dcoo2pix(x2 - x, y2 - y)) > 1.5*taille:
+                # Ne pas superposer une graduation à la pointe de la flêche
+                s = nice_display(n*pas)
+                if s[0] == '-':
+                    s = '$%s$' % s
+                txt = self.rendu.texte(x + xw, y + yw, s,
+                        va='center', ha='center', size=taille,
+                        color = self.etiquette.style('couleur'))
+                self._representation.append(txt)
             n -= sens*pas_num
             x -= sens*pas_num*xu
             y -= sens*pas_num*yu
@@ -1241,7 +1249,7 @@ class Tangente_courbe(Droite_vectorielle):
     u"""Une tangente à une courbe.
 
     Une tangente à une courbe. L'application immédiate se trouve dans les courbes d'interpolation.
-    Mais comme la plus simple à utiliser est l'interpolation par morceau, il vaut mieux initialiser 
+    Mais comme la plus simple à utiliser est l'interpolation par morceau, il vaut mieux initialiser
     la tangente avec le point et le nombre dérivé."""
     def __init__(self, point = None, cdir = None):
         v = Rational(str(cdir))
@@ -1268,7 +1276,7 @@ class Tangente_courbe_interpolation(Droite_equation):
     >>> t2 = Tangente_courbe_interpolation(d, x= -2 )
 
     """
-    
+
     courbe = __courbe = Argument('Interpolation_polynomiale_par_morceaux')
     x = __x = Argument('float,int')
 
@@ -1306,7 +1314,7 @@ class Tangente_glisseur_interpolation(Droite_equation):
     >>> d1 = Tangente_glisseur_interpolation(d, P)
 
     """
-    
+
     courbe = __courbe = Argument('Interpolation_polynomiale_par_morceaux')
     glisseur = __glisseur = Argument('Glisseur_courbe_interpolation')
 
