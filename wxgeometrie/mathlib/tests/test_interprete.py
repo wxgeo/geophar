@@ -48,12 +48,12 @@ def test_exemples_de_base():
     assert_resultat('i**2-i', '-1 - i', '-1 - \\mathrm{i}')
     assert_resultat('5e-3', '-3 + 5 e', '-3 + 5 \\mathrm{e}')
     # Analyse
-    assert_resultat('limite(x^2-x+3,+oo)', '+oo', '+\\infty')
+    assert_resultat('limite(x^2-x+3, +oo)', '+oo', '+\\infty')
     assert_resultat('derive(x^2+2x-3)', '2 x + 2', '2 x + 2')
     assert_resultat('integre(2x+7)', 'x^2 + 7 x', 'x^{2} + 7 x')
-    assert_resultat('integre(x+1,(x,-1,1))', '2', '2')
-    assert_resultat('integre(x+1,x,-1,1)', '2', '2')
-    assert_resultat('taylor(sin x,x,0,4)', 'x - x^3/6 + O(x^4)', \
+    assert_resultat('integre(x+1, (x, -1, 1))', '2', '2')
+    assert_resultat('integre(x+1, x, -1, 1)', '2', '2')
+    assert_resultat('taylor(sin x, x, 0, 4)', 'x - x^3/6 + O(x^4)', \
                                     'x - \\frac{1}{6} x^{3} + \\mathcal{O}\\left(x^{4}\\right)')
     assert_resultat('cos x>>taylor', \
                                     '1 - x^2/2 + x^4/24 + O(x^5)', \
@@ -67,7 +67,7 @@ def test_exemples_de_base():
                                     r'\left(x - \frac{7}{2} - \frac{1}{2} \sqrt{37}\right) \left(x - \frac{7}{2} + \frac{1}{2} \sqrt{37}\right)')
     assert_resultat('factorise(x^2+x)', 'x(x + 1)',  'x \\left(x + 1\\right)')
     assert_resultat('factor(exp(x)x^2+5/2x*exp(x)+exp(x))', '(x + 1/2)(x + 2)exp(x)')
-    assert_resultat('factor(exp(x)x^2+2.5x*exp(x)+exp(x))', '(x + 0.5)(x + 2)exp(x)')
+    assert_resultat('factor(exp(x)x^2+2.5x*exp(x)+exp(x))', '(x + 0,5)(x + 2)exp(x)')
     assert_resultat('factorise(exp(2x)*x^2+x*exp(x))', \
                                     'x(x exp(x) + 1)exp(x)',  \
                                     'x \\left(x \\mathrm{e}^{x} + 1\\right) \\mathrm{e}^{x}')
@@ -76,14 +76,15 @@ def test_exemples_de_base():
                                     '(x + 1)^2 exp(x)', \
                                     '\left(x + 1\\right)^{2} \\mathrm{e}^{x}')
     assert_resultat('cfactorise(x^2+7x+53)', \
-                                    '(x + 7/2 - sqrt(163)i/2)(x + 7/2 + sqrt(163)i/2)', \
-                                    r'\left(x + \frac{7}{2} - \frac{1}{2} \sqrt{163} \mathrm{i}\right) \left(x + \frac{7}{2} + \frac{1}{2} \sqrt{163} \mathrm{i}\right)')
-    assert_resultat('evalue(pi-1)', '2.14159265358979324', '2.14159265358979324')
-    assert_resultat('somme(x^2,(x,1,7))', '140', '140')
-    assert_resultat('somme(x^2,x,1,7)', '140', '140')
-    assert_resultat('product(x^2,(x,1,7))', '25401600', '25401600')
-    assert_resultat('product(x^2,x,1,7)', '25401600', '25401600')
-    assert_resultat('limit(x^2-x,oo)', '+oo', '+\infty')
+            '(x + 7/2 - sqrt(163)i/2)(x + 7/2 + sqrt(163)i/2)', \
+            r'\left(x + \frac{7}{2} - \frac{1}{2} \sqrt{163} \mathrm{i}\right) '
+            r'\left(x + \frac{7}{2} + \frac{1}{2} \sqrt{163} \mathrm{i}\right)')
+    assert_resultat('evalue(pi-1)', '2,14159265358979324', '2,14159265358979324')
+    assert_resultat('somme(x^2, (x, 1, 7))', '140', '140')
+    assert_resultat('somme(x^2, x, 1, 7)', '140', '140')
+    assert_resultat('product(x^2, (x, 1, 7))', '25401600', '25401600')
+    assert_resultat('product(x^2;x;1;7)', '25401600', '25401600')
+    assert_resultat('limit(x^2-x, oo)', '+oo', '+\infty')
     assert_resultat('abs(pi-5)', '-pi + 5', r'- \pi + 5')
     assert_resultat('abs(x-5)', 'abs(x - 5)', r'\left|{x -5}\right|')
     assert_resultat('i(1+i)', r'-1 + i',  r'-1 + \mathrm{i}')
@@ -92,10 +93,13 @@ def test_exemples_de_base():
     assert_resultat('sqrt(1+e)', r'sqrt(1 + e)',  r'\sqrt{1 + \mathrm{e}}')
     assert_resultat('(5-2i)(5+2i)', r'29',  r'29')
     assert_resultat('resous(2x=1)', r'{1/2}',  r'\{\frac{1}{2}\}')
-    assert_resultat('jhms(250000)', r'2 j 21 h 26 min 40 s',  r'2 \mathrm{j}\, 21 \mathrm{h}\, 26 \mathrm{min}\, 40 \mathrm{s}')
-    assert_resultat(r'pi\approx', r'3.14159265358979324',  r'3.14159265358979324', formatage_LaTeX = True)
+    assert_resultat('jhms(250000)', r'2 j 21 h 26 min 40 s',
+                    r'2 \mathrm{j}\, 21 \mathrm{h}\, 26 \mathrm{min}\, 40 \mathrm{s}')
+    assert_resultat(r'pi\approx', r'3,14159265358979324',  r'3,14159265358979324',
+                    formatage_LaTeX=True)
     assert_resultat('rassemble(1/x+1/(x*(x+1)))', '(x + 2)/(x^2 + x)', r'\frac{x + 2}{x^{2} + x}')
-    assert_resultat('factorise(-2 exp(-x) - (3 - 2 x)exp(-x))', '(2 x - 5)exp(-x)', r'\frac{2 x -5}{\mathrm{e}^{x}}')
+    assert_resultat('factorise(-2 exp(-x) - (3 - 2 x)exp(-x))', '(2 x - 5)exp(-x)',
+                    r'\frac{2 x -5}{\mathrm{e}^{x}}')
     assert_resultat('-x^2+2x-3>>factor', '-x^2 + 2 x - 3')
     assert_resultat('abs(-24/5 - 2 i/5)', '2 sqrt(145)/5')
 
@@ -107,15 +111,16 @@ def test_fonctions_avances():
     pass
 
 def test_resoudre():
-    assert_resoudre('2x+3>5x-4 et 3x+1>=4x-4', r']-oo;7/3[')
-    assert_resoudre('2=-a+b et -1=3a+b', r'{a: -3/4, b: 5/4}')
-    assert_resoudre(r'3-x\ge 1+2x\\\text{et}\\4x<2+10x', ']-1/3;2/3]',
+    assert_resoudre('2x+3>5x-4 et 3x+1>=4x-4', r']-oo ; 7/3[')
+    assert_resoudre('2=-a+b et -1=3a+b', r'{a: -3/4 ; b: 5/4}')
+    assert_resoudre(r'3-x\ge 1+2x\\\text{et}\\4x<2+10x', ']-1/3 ; 2/3]',
                         r']- \frac{1}{3};\frac{2}{3}]',  formatage_LaTeX = True)
-    assert_resoudre('2exp(x)>3', ']-ln(2) + ln(3);+oo[')
+    assert_resoudre('2exp(x)>3', ']-ln(2) + ln(3) ; +oo[')
     #TODO: Rassembler les ln: ]ln(3/2);+oo[
-    assert_resoudre('x^3-30x^2+112=0', '{-6 sqrt(7) + 14 ; 2 ; 14 + 6 sqrt(7)}', r'\{- 6 \sqrt{7} + 14\,;\, 2\,;\, 14 + 6 \sqrt{7}\}')
+    assert_resoudre('x^3-30x^2+112=0', '{-6 sqrt(7) + 14 ; 2 ; 14 + 6 sqrt(7)}',
+                           r'\{- 6 \sqrt{7} + 14\,;\, 2\,;\, 14 + 6 \sqrt{7}\}')
     # assert_resoudre(r'ln(x^2)-ln(x+1)>1', ']-1;e/2 - sqrt(4 e + exp(2))/2[U]e/2 + sqrt(4 e + exp(2))/2;+oo[')
-    assert_resoudre(r'ln(x^2)-ln(x+1)>1', ']-1;-sqrt(e + 4)exp(1/2)/2 + e/2[U]e/2 + sqrt(e + 4)exp(1/2)/2;+oo[')
+    assert_resoudre(r'ln(x^2)-ln(x+1)>1', ']-1 ; -sqrt(e + 4)exp(1/2)/2 + e/2[U]e/2 + sqrt(e + 4)exp(1/2)/2 ; +oo[')
 
 #TODO: @SLOW wrapper should be defined, and the test only run in some circonstances
 # (for ex, a 'slow' keyword in tools/tests.py arguments)
@@ -124,11 +129,14 @@ def test_longs():
     pass
 
 def test_approches():
-    assert_approche('pi-1', '2.14159265358979324', '2.14159265358979324')
-    assert_approche('factor(x^2+2.5x+1)', '(x + 0.5)(x + 2)')
-    assert_approche('factor(exp(x)x^2+2.5x*exp(x)+exp(x))', '(x + 0.5)(x + 2)exp(x)')
-    assert_approche('ln(2.5)', '0.916290731874155065')
-    assert_approche('resoudre(x^3-30x^2+112=0)', '{-1.87450786638754354 ; 2 ; 29.8745078663875435}', r'\{-1.87450786638754354\,;\, 2\,;\, 29.8745078663875435\}')
+    assert_approche('pi-1', '2,14159265358979324', '2,14159265358979324')
+    assert_approche('factor(x^2+2.5x+1)', '(x + 0,5)(x + 2)')
+    assert_approche('factor(exp(x)x^2+2.5x*exp(x)+exp(x))', '(x + 0,5)(x + 2)exp(x)')
+    assert_approche('ln(2.5)', '0,916290731874155065')
+    assert_approche('ln(2,5)', '0,916290731874155065')
+    assert_approche('resoudre(x^3-30x^2+112=0)',
+                    '{-1,87450786638754354 ; 2 ; 29,8745078663875435}',
+                    r'\{-1,87450786638754354\,;\, 2\,;\, 29,8745078663875435\}')
 
 
 def test_session():
@@ -152,7 +160,7 @@ def test_session():
     # Etc.
     # Test des générateurs
     i.evaluer('f(x)=x+3')
-    i.evaluer('[f(j) for j in range(1,11)]')
+    i.evaluer('[f(j) for j in range(1, 11)]')
     assertDernier(i, '[4, 5, 6, 7, 8, 9, 10, 11, 12, 13]')
     i.evaluer('tuple(i for i in range(7))')
     assertDernier(i, '(0, 1, 2, 3, 4, 5, 6)')
@@ -173,12 +181,15 @@ def test_session():
     # Affichage des chaînes en mode text (et non math)
     i.evaluer('"Bonjour !"')
     assert i.latex_dernier_resultat == u'\u201CBonjour !\u201D'
-    i.changer_separateurs = True
+    # Virgule comme séparateur décimal
     resultat, latex = i.evaluer('1,2')
     assert resultat == '1,2'
     assertAlmostEqual(i.derniers_resultats[-1], 1.2)
-    resultat, latex = i.evaluer('"1,2"')
-    assert resultat == '"1,2"'
+    # Avec un espace, c'est une liste (tuple) par contre
+    resultat, latex = i.evaluer('1, 2')
+    assertEqual(resultat, '(1 ; 2)')
+    resultat, latex = i.evaluer('"1.2"')
+    assert resultat == '"1.2"'
     i.evaluer('?aide')
     i.evaluer('aide?')
     i.evaluer('aide(aide)')

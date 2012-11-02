@@ -87,8 +87,7 @@ class Interprete(object):
                         ecriture_scientifique=False,
                         forme_algebrique=True,
                         simplifier_ecriture_resultat=True,
-                        changer_separateurs=False,
-                        separateurs_personnels=(",", ";"),
+                        separateur_decimal=',',
                         copie_automatique=False,
                         formatage_OOo=True,
                         formatage_LaTeX=True,
@@ -144,9 +143,7 @@ class Interprete(object):
         # (suppression des '*' dans '2*x', etc.)
         self.simplifier_ecriture_resultat = simplifier_ecriture_resultat
         # appliquer les séparateurs personnalisés
-        self.changer_separateurs = changer_separateurs
-        # séparateurs personnalisés (séparateur décimal, séparateur de listes)
-        self.separateurs_personnels = separateurs_personnels
+        self.separateur_decimal = separateur_decimal
         # d'autres choix sont possibles, mais pas forcément heureux...
         # copie automatique de chaque résultat dans le presse-papier
         self.copie_automatique = copie_automatique
@@ -224,26 +221,6 @@ class Interprete(object):
             param.calcul_approche = not self.calcul_exact
             # utilisé en particulier dans la factorisation des polynômes
             self._executer(calcul)
-        except Exception as err:
-            if not self.adapter_separateur:
-                raise
-            # Si le calcul échoue, c'est peut-être que l'utilisateur a utilisé une virgule pour les décimaux
-            sep = self.separateurs_personnels[0]
-            _raise = True
-            if not self.changer_separateurs and re.search(r'\d[' + sep + r']\d', calcul):
-                self.changer_separateurs = True
-                try:
-                    # On retente le calcul après avoir défini la virgule comme séparateur décimal
-                    self._executer(calcul)
-                    self.warning += u" Attention: séparateur décimal incorrect."
-                    _raise = False
-                except Exception:
-                    # C'est l'erreur **initiale** qui nous intéresse, pas celle-ci !
-                    pass
-                finally:
-                    self.changer_separateurs = False
-            if _raise:
-                raise err # Erreur initiale (c-à-d. avant de changer les séparateurs).
         finally:
             param.calcul_approche = False
 
@@ -309,9 +286,14 @@ class Interprete(object):
 ##            if resultat.endswith("."):
 ##                resultat += "0"
 ##            latex = "$" + resultat + "$"
-        if self.changer_separateurs and not isinstance(valeur, basestring):
-            resultat = resultat.replace(",", self.separateurs_personnels[1]).replace(".", self.separateurs_personnels[0])
-            latex = latex.replace(",", self.separateurs_personnels[1]).replace(".", self.separateurs_personnels[0])
+        if self.separateur_decimal != '.' and not isinstance(valeur, basestring):
+            resultat = re.sub(r"[ ]*[,;][ ]*", ' ; ', resultat)
+            # Éviter de remplacer \, par \; en LaTex.
+            latex = re.sub(r"(?<![\\ ])[ ]*,[ ]*", ';', latex)
+            def sep(m):
+                return m.group().replace('.', self.separateur_decimal)
+            resultat = re.sub(NBR, sep, resultat)
+            latex = re.sub(NBR, sep, latex)
             # TODO: utiliser un parser, pour détecter les chaînes, et ne pas remplacer à l'intérieur.
 
         if isinstance(valeur, basestring):
@@ -340,8 +322,6 @@ class Interprete(object):
         formule = traduire_formule(formule, fonctions = variables,
                         OOo = self.formatage_OOo,
                         LaTeX = self.formatage_LaTeX,
-                        changer_separateurs = self.changer_separateurs,
-                        separateurs_personnels = self.separateurs_personnels,
                         simpify = self.simpify,
                         verbose = self.verbose,
                         )

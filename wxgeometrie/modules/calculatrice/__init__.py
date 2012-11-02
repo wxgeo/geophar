@@ -86,8 +86,7 @@ class Calculatrice(Panel_simple):
         Panel_simple.__init__(self, *args, **kw)
         self.interprete = Interprete(calcul_exact = self.param("calcul_exact"),
                                 ecriture_scientifique = self.param("ecriture_scientifique"),
-                                changer_separateurs = self.param("changer_separateurs"),
-                                separateurs_personnels = self.param("separateurs_personnels"),
+                                separateur_decimal = (',' if self.param("changer_separateur") else '.'),
                                 copie_automatique = self.param("copie_automatique"),
                                 formatage_OOo = self.param("formatage_OOo"),
                                 formatage_LaTeX = self.param("formatage_LaTeX"),
@@ -244,7 +243,7 @@ class Calculatrice(Panel_simple):
         self.cb_copie_automatique_LaTeX.stateChanged.connect(self.EvtCopieAutomatiqueLatex)
 
         # Autres options
-        self.options = [(u"Virgule comme séparateur décimal.", u"changer_separateurs"),
+        self.options = [(u"Virgule comme séparateur décimal.", u"changer_separateur"),
 ##                    (u"Copie du résultat dans le presse-papier.", u"copie_automatique"),
                     (u"Accepter la syntaxe OpenOffice.org", u"formatage_OOo"),
                     (u"Accepter la syntaxe LaTeX", u"formatage_LaTeX"),

@@ -1687,7 +1687,8 @@ class Objet_avec_coordonnees(Objet):
 
     @property
     def info(self):
-        return self.nom_complet + u" de coordonnées ("+ nice_display(self.x) + ", " + nice_display(self.y) + ")"
+        return ''.join((self.nom_complet, u" de coordonnées (",
+                        nice_display(self.x), " ; ", nice_display(self.y), ")"))
 
     @property
     def coordonnees_approchees(self):

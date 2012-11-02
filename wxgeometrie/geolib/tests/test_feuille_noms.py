@@ -220,21 +220,21 @@ def test_info():
     o = f.objets
     with contexte(decimales = 2):
         A = o.A = Point(5, 7)
-        assert(A.info == u"Point A de coordonnées (5, 7)")
+        assert(A.info == u"Point A de coordonnées (5 ; 7)")
         B = o.B = Point(6.5, 9.3)
-        assert(B.info == u"Point B de coordonnées (6.5, 9.3)")
+        assert(B.info == u"Point B de coordonnées (6,5 ; 9,3)")
         s = o.s = Segment(A, B)
-        assert(s.info == u"Segment s de longueur 2.75")
+        assert(s.info == u"Segment s de longueur 2,75")
         c = o.c = Cercle(s)
-        assert(c.info == u"Cercle c de rayon 1.37")
+        assert(c.info == u"Cercle c de rayon 1,37")
         d = o.d = Droite(A, B)
-        assert(d.info == u"Droite d d'équation -2.3 x + 1.5 y + 1 = 0")
+        assert(d.info == u"Droite d d'équation -2,3 x + 1,5 y + 1 = 0")
         C = o.C = Point(-1.5, 2.7)
         a = o.a = Arc_cercle(A, B, C)
-        assert(a.info == u'Arc a de longueur 7.5')
+        assert(a.info == u'Arc a de longueur 7,5')
         alpha = o.alpha = Angle(A, B, C)
-        assertEqual(alpha.info, u'Angle alpha de valeur 0.3 rad')
+        assertEqual(alpha.info, u'Angle alpha de valeur 0,3 rad')
     with contexte(decimales = 3):
-        assert(a.info == u'Arc a de longueur 7.505')
+        assert(a.info == u'Arc a de longueur 7,505')
 
 

@@ -49,15 +49,8 @@ resoudre = functools.partial(nul, intervalle = False)
 #TODO: déplacer autant que possibles ces fonctions vers le parser de mathlib.
 
 def traduire_latex(expression):
-    return traduire_formule(  expression,
-                                            fonctions = maths.__dict__,
-##                                            variables = '[_A-Za-z][_A-Za-z0-9]*',
-                                            OOo = False,
-                                            LaTeX = True,
-                                            changer_separateurs = True,
-                                            separateurs_personnels = (',', ';'))
-
-
+    return traduire_formule(expression, fonctions=maths.__dict__, OOo=False,
+                                                                  LaTeX=True)
 
 
 

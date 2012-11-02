@@ -154,7 +154,7 @@ def test_mode_LaTeX():
     assert_latex(r"100\left(\left(1+\dfrac{50}{100}\right)^\frac{1}{10}-1\right)",
                  "100*((1+((50)/(100)))**((1)/(10))-1)")
     assert_latex("M = \\begin{pmatrix}\n0,6 & 0,4\\\\\n0,75& 0,25\\\\\n\\end{pmatrix}",
-                 'M=mat([[0,6,0,4],[0,75,0,25]])')
+                 'M=mat([[0.6,0.4],[0.75,0.25]])')
     assert_latex(r"\begin{pmatrix}0.65& 0.35\end{pmatrix}\begin{pmatrix}0.55 & 0.45\\0.3 & 0.7\end{pmatrix}",
                  "mat([[0.65,0.35]])*mat([[0.55,0.45],[0.3,0.7]])")
 

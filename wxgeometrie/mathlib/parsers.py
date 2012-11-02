@@ -84,6 +84,8 @@ VAR_NOT_ATTR = "(?:(?<![.A-Za-z0-9_])[A-Za-z_][A-Za-z0-9_]*)"
 NBR_SIGNE = "(?:(?<![.A-Za-z0-9_])(?:(((?<=[*/^])|^)[+-])?[ ]?(?:[0-9]*[.][0-9]+|[0-9]+[.]?)))"
 # Nombre sans signe
 NBR = "(?:(?<![.A-Za-z0-9_])(?:[0-9]*[.][0-9]+|[0-9]+[.]?))"
+# Nombre à virgule écrit au format français (le séparateur décimal est la virgule, et non le point)
+NBR_VIRGULE = "(?:(?<![.A-Za-z0-9_])(?:[0-9]+[,][0-9]+))"
 # Nombre sans signe ou variable
 NBR_OR_VAR = "(?:" + NBR + "|" + VAR + ")"
 NBR_SIGNE_OR_VAR = "(?:" + NBR_SIGNE + "|" + VAR + ")"
@@ -258,7 +260,8 @@ def _inject_inner_str(s, str_list):
     return ''.join(i).replace('@@', '@')
 
 
-def traduire_formule(formule = "", fonctions = (), OOo = True, LaTeX = True, changer_separateurs = False, separateurs_personnels = (",", ";"), simpify = False, verbose = None, mots_cles = tuple(keyword.kwlist)):
+def traduire_formule(formule = "", fonctions = (), OOo = True, LaTeX = True,
+            simpify = False, verbose = None, mots_cles = tuple(keyword.kwlist)):
 
     # Les chaînes internes ne doivent pas être modifiées
     # http://wxgeo.free.fr/tracker/index.php?do=details&task_id=129&project=1
@@ -273,9 +276,9 @@ def traduire_formule(formule = "", fonctions = (), OOo = True, LaTeX = True, cha
 
     formule, substrings_list = _extract_inner_str(formule)
 
-    # On peut choisir comme separateur decimal la virgule (convention francaise en particulier)
-    if changer_separateurs:
-        formule = formule.replace(separateurs_personnels[0], ".").replace(separateurs_personnels[1], ",")
+    # En français, le séparateur décimal est la virgule.
+    formule = regsub(NBR_VIRGULE, formule, (lambda s: s.replace(',', '.')))
+    formule = formule.replace(';', ',')
 
     formule = _simplifier(formule)
 

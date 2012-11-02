@@ -3,6 +3,7 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 from random import random
 
+from pytest import XFAIL
 from sympy import sympify as symp
 
 from tools.testlib import assertAlmostEqual, assertEqual, randint
@@ -344,3 +345,11 @@ def test_Glisseur_arc_cercle():
     O = a.centre
     M.coordonnees = O.coordonnees
     # il faudrait compléter un peu
+
+@XFAIL
+def test_Point_interpolation():
+    raise NotImplementedError
+
+@XFAIL
+def test_Glisseur_courbe_interpolation():
+    raise NotImplementedError
