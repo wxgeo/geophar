@@ -73,14 +73,19 @@ def test_executer():
     f.executer("M = (5, 7)")
     f.executer("C = _")
     assert(o.C.x == 5)
-    f.executer("=((i,sqrt(i)) for i in (3,4,5,6))")
+    f.executer("=((i,sqrt(i)) for i in (3, 4, 5, 6))")
     assert(o.M2.xy == (3, sqrt(3)))
     assert(o.M3.xy == (4, sqrt(4)))
     assert(o.M4.xy == (5, sqrt(5)))
     assert(o.M5.xy == (6, sqrt(6)))
-    f.executer("B= -1,7")
+    f.executer("B= -1;7")
     f.executer("u=A>B")
     assert o.u.xy == (o.B.x - o.A.x, o.B.y - o.A.y)
+    f.executer("K=(-1.3,2.5)")
+    assert o.K.xy == (-1.3, 2.5)
+    f.executer("K=(1,2)")
+    assert o.K.xy == (1, 2)
+
 
 
 def test_nettoyer():

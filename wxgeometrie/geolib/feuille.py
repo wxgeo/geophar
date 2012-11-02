@@ -40,7 +40,8 @@ from sympy import Symbol, Wild, sympify, oo
 
 from ..pylib import uu, is_in, str3, property2, print_error, rstrip_, CompressedList
 from ..mathlib.intervalles import Union, Intervalle
-from ..mathlib.parsers import VAR, NBR_SIGNE, traduire_formule
+from ..mathlib.parsers import VAR, NBR_SIGNE, traduire_formule, \
+                        _convertir_separateur_decimal
 
 from .objet import Objet, contexte, souffler, G
 from .angles import Secteur_angulaire
@@ -720,6 +721,7 @@ class Interprete_feuille(object):
         >>> Interprete_feuille.parser("(A B)")
         'Droite(A, B)'
         """
+
         commande = commande.strip()
 
         while '  ' in commande:
@@ -734,6 +736,15 @@ class Interprete_feuille(object):
         # Gestion des '
         # NB: attention, \' a déjà un sens en LaTeX
         commande = commande.replace("'", "_prime").replace("\\_prime", "\\'")
+
+
+        # Exception à la conversion décimale :
+        # (1,2) est compris comme (1 ; 2) et non (1.2), qui est très peu probable.
+        def f(m):
+            return m.group().replace(',', ', ')
+        commande = re.sub(r'[(]%s,%s[)]' % (NBR_SIGNE, NBR_SIGNE), f, commande)
+        # Conversion décimale : 1,2 -> 1.2
+        commande = _convertir_separateur_decimal(commande)
 
         # (A B) -> Droite(A, B)
         def f(m):

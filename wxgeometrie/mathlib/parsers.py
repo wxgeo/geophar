@@ -260,8 +260,13 @@ def _inject_inner_str(s, str_list):
     return ''.join(i).replace('@@', '@')
 
 
-def traduire_formule(formule = "", fonctions = (), OOo = True, LaTeX = True,
-            simpify = False, verbose = None, mots_cles = tuple(keyword.kwlist)):
+def _convertir_separateur_decimal(s):
+    s = regsub(NBR_VIRGULE, s, (lambda s: s.replace(',', '.')))
+    return s.replace(';', ',')
+
+
+def traduire_formule(formule='', fonctions=(), OOo=True, LaTeX=True,
+            simpify=False, verbose=None, mots_cles=tuple(keyword.kwlist)):
 
     # Les chaînes internes ne doivent pas être modifiées
     # http://wxgeo.free.fr/tracker/index.php?do=details&task_id=129&project=1
@@ -277,8 +282,7 @@ def traduire_formule(formule = "", fonctions = (), OOo = True, LaTeX = True,
     formule, substrings_list = _extract_inner_str(formule)
 
     # En français, le séparateur décimal est la virgule.
-    formule = regsub(NBR_VIRGULE, formule, (lambda s: s.replace(',', '.')))
-    formule = formule.replace(';', ',')
+    formule = _convertir_separateur_decimal(formule)
 
     formule = _simplifier(formule)
 
