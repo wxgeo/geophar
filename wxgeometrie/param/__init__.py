@@ -30,7 +30,7 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 from time import mktime
 import sys, platform, os
 
-from .version import version, date_version
+from ..version import version, date_version, NOMPROG, NOMPROG2
 from .modules import modules, modules_actifs, descriptions_modules
 from .parametres import *
 

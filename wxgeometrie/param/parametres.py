@@ -57,8 +57,6 @@ fermeture_instantanee = False # Utile en mode développement
 # affichage de la ligne de commande (utile pour le développement)
 ligne_commande = debug
 
-NOMPROG = u"Géophar"
-NOMPROG2 = 'Geophar' # sans accent
 GUIlib = 'Qt'
 LOGO = '%/wxgeometrie/images/logo6.png'
 

@@ -75,7 +75,7 @@ if options.fake:
 t=time.localtime()
 date = str((t.tm_year, t.tm_mon, t.tm_mday))
 contenu = []
-with open('param/version.py', 'r') as f:
+with open('version.py', 'r') as f:
     for line in f:
         if line.startswith('date_version = '):
             contenu.append('date_version = ' + date)
@@ -120,7 +120,7 @@ print(u'\nCréation de la version ' + version + '...')
 
 if not options.fake:
     # Mise à jour de param/version.py
-    with open('param/version.py', 'w') as f:
+    with open('version.py', 'w') as f:
         f.write(''.join(contenu).strip())
 
 # Création du changelog correspondant
@@ -130,7 +130,7 @@ s.command('git log v%s..HEAD --no-merges --pretty="* %%s">>doc/changelog.txt' % 
 
 # Commit correspondant
 s.command('git add doc/changelog.txt')
-s.command('git add param/version.py')
+s.command('git add version.py')
 s.command('git commit -m %s' %repr('Version ' + version))
 
 archive_tar = "wxgeometrie_%s.tar" %version

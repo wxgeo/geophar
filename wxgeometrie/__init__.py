@@ -7,6 +7,10 @@ import sys
 path = abspath(dirname(realpath(sys._getframe().f_code.co_filename)))
 sys.path.insert(0, path)
 
+if getattr(sys, '_launch_geophar', False):
+    from .initialisation import initialiser
+    initialiser()
+
 from .param import version as __version__
-from . import GUI # initialisation de la version de wx
+from . import GUI # initialisation de la version de sip
 from .geolib import *
