@@ -85,18 +85,21 @@ Pour fonctionner, ce programme nécessite la configuration logicielle suivante:
 
 Sous Windows, un redémarrage du système est conseillé après ces installations.
 
-Après avoir téléchargé la dernière version de Géophar__, dézippez l'archive dans un répertoire sur lequel vous avez les permissions nécessaires.
+Après avoir téléchargé la dernière version de Géophar__, dézippez l'archive dans
+un répertoire sur lequel vous avez les permissions nécessaires.
 Vous pouvez lancer le programme en double-cliquant sur le fichier *wxgeometrie.pyw* .
 
 .. __: http://www.sourceforge.net/projects/geophar
 
 *Sous Windows :*
 
-La version conseillée est désormais la version **sans installation**, qui ne nécessite **pas** d'avoir installé Python ni les logiciels précédemment mentionnés.
+La version conseillée est désormais la version **sans installation**,
+qui ne nécessite **pas** d'avoir installé Python ni les logiciels précédemment mentionnés.
 
 Il suffit de récupérer un fichier archive, qui va s'extraire automatiquement en double-cliquant dessus.
 
-Cette version peut fonctionner facilement sur une simple clé USB, ou sur un ordinateur sur lequel on n'a pas la permission d'installer des programmes.
+Cette version peut fonctionner facilement sur une simple clé USB, ou sur un ordinateur
+sur lequel on n'a pas la permission d'installer des programmes.
 
 
 
@@ -371,8 +374,8 @@ En particulier, on peut développer, factoriser, dériver, intégrer, et résoud
 .. note:: Pour obtenir le résultat d'un calcul sous forme décimale (calcul
           approché), appuyez sur MAJ+ENTRÉE au lieu de ENTRÉE.
 
-..note:: On peut faire apparaitre la liste des fonctions par un clic-droit
-         dans la zone de saisie, en laissant enfoncée la touche CTRL.
+.. note:: On peut faire apparaitre la liste des fonctions par un clic-droit
+          dans la zone de saisie, en laissant enfoncée la touche CTRL.
 
 Depuis la version 0.120, elle utilise la librairie de calcul formel sympy *(© 2006-2012 SymPy Development Team)*.
 
@@ -387,10 +390,8 @@ Des variables peuvent être utilisées pour mémoriser des valeurs, ou définir 
 Ici, la fonction `g` est définie comme la dérivée de la fonction `f`.
 
 
+.. note:: Certaines variables sont protégées (i, e ou E, pi, ...).
 
-
-
-..note:: Certaines variables sont protégées (i, e ou E, pi, ...).
 
 
 Le module statistiques
@@ -410,7 +411,8 @@ Voici une présentation des principaux types de graphiques :
 Diagrammes en barres :
 ----------------------
 
-*Utilisés en particulier pour des séries à caractère qualitatif.
+*Utilisés en particulier pour des séries à caractère qualitatif.*
+
 *Exemple :* la répartition des voyelles dans l'alphabet.
 
 On sélectionne le mode :
@@ -535,14 +537,14 @@ Pour aller plus loin :
 
     Éventuellement, entrez aussi les valeurs possibles . Pour un lancer de dé par exemple, cela permet d'afficher en légende 1, 2, 3, 4, 5 et 6, quand bien même aucun « 4 » ne sortirait lors de l'expérience.
 
-..note::
+.. note::
 
     Pour simuler des lancers de dés, mieux vaut utiliser le menu spécialement dédié (quelques optimisations y ont été faites).
 
     La case « lancer une animation » n'a pas d'effet pour l'instant.
 
 
-..note::
+.. note::
 
     Vous pouvez éditer le fichier *experience.py* dans
     *modules/statistiques*/, pour y ajouter de nouvelles fonctions.
@@ -565,6 +567,8 @@ Les arbres de probabilité sont codés de la manière suivante :
 -   La première ligne (optionnelle) correspond à la légende.
 
     *Exemple :*
+
+::
 
         ||Premier tirage|Deuxième tirage
 
@@ -773,10 +777,15 @@ Les raccourcis suivants sont disponibles :
 -   ``!f.`` pour ``feuille.``
 -   ``!o.`` pour ``objets.``
 -   ``!g.`` pour ``moteur_graphique.``
+-   ``exit`` pour quitter le logiciel
+-   ``restart`` ou ``!!!`` pour redémarrer le logiciel
 
 
-Leur maniement nécessite évidemment de bien connaître l'API de WxGéométrie,
+Leur maniement nécessite évidemment de bien connaître l'API de Géophar,
 et donc de faire un tour dans le code source.
+
+La commande de redémarrage est utile pour tester rapidement une modification du
+code source.
 
 **Exemples :**
 
@@ -899,9 +908,9 @@ Sans prétention d'exhaustivité, je voudrais remercier :
 Remerciements plus particuliers à **Chris Smith**, **Vinzent Steinberg** et **Aaron Meurer**.
 
 -   **Christophe Vrignaud**, qui a développé et maintenu quelques temps le
-    module Scicalc pour Wxgéométrie.
--   **Stéphane Clément** a mis a disposition de Wxgéométrie le wiki de
-    l'académie d'Aix-Marseille.
+    module Scicalc pour WxGéométrie.
+-   **Stéphane Clément** a mis a disposition de WxGéométrie puis de Géophar
+    le wiki de l'académie d'Aix-Marseille.
 -   Tous ceux qui ont pris le temps de faire quelques commentaires sur ce
     programme, et m'ont encouragé à continuer (en particulier dans les
     premiers temps : mon frère Thomas, Enzo, Rhydwen Volsik, Robert
