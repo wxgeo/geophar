@@ -204,7 +204,7 @@ class FenetrePrincipale(QMainWindow):
         self.closing = True
         if not param.fermeture_instantanee: # pour des tests rapides
             try:
-                if param.confirmer_quitter:
+                if param.confirmer_quitter and not param._restart:
                     panel = self.onglets.onglet_actuel
                     test = hasattr(panel, 'canvas') and hasattr(panel.canvas, 'setUpdatesEnabled')
                     if test:
@@ -250,3 +250,7 @@ class FenetrePrincipale(QMainWindow):
 #            self.onglets.ChangeSelection(0)
         print "On ferme !"
 #        event.Skip()
+
+    def restart(self):
+        param._restart = True
+        self.close()

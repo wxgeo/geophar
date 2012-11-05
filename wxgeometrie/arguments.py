@@ -71,6 +71,8 @@ def gerer_arguments():
 
     (options, args) = parser.parse_args()
 
+    from . import param
+
     if options.defaut:
         param.charger_preferences = False
 

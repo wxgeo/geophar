@@ -299,6 +299,9 @@ try:
         else:
             from .GUI.app import app, splash
             app.nom(NOMPROG)
+            # param._restart est mis à True si l'application doit être redémarrée.
+            param._restart = False
+
             splash_screen = splash(path2(LOGO))
 
             from .GUI.fenetre_principale import FenetrePrincipale
@@ -330,11 +333,16 @@ try:
                     print(u"Warning: La session n'a pas pu être restaurée.")
                     print_error()
             frame.show()
-            if param.debug:
-                print('Temps de démarrage: %f s' % (time.time() - t0))
-            app.boucle()
+            if param._restart:
+                frame.restart()
+            else:
+                if param.debug:
+                    print('Temps de démarrage: %f s' % (time.time() - t0))
+                app.boucle()
             sorties.close()
         os.remove(path_lock)
+        if param._restart:
+            os.execl(sys.executable, sys.executable, *sys.argv[:1])
 
 except Exception: # do *NOT* catch SystemExit ! ("wxgeometrie -h" use it)
     if param.py2exe:

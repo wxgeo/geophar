@@ -265,20 +265,36 @@ border-top-right-radius: 4px;
         # tous les onglets situés avant `pos` sont déjà classés.
         pos = 0
         for nom in param.modules:
-            module = modules.importer_module(nom)
-            if module is not None:
-                for i, panel in enumerate(self._liste[pos:]):
-                    if panel.module is module:
-                        # Déplacer le panel en position pos
-                        self.deplacer_onglet(pos + i, pos)
+            try:
+                module = modules.importer_module(nom)
+                if module is not None:
+                    for i, panel in enumerate(self._liste[pos:]):
+                        if panel.module is module:
+                            # Déplacer le panel en position pos
+                            self.deplacer_onglet(pos + i, pos)
+                            # Mettre à jour la position
+                            pos += 1
+                            break
+                    else:
+                        # Créer un onglet en position pos
+                        self.nouvel_onglet(module._panel_(self, module), pos)
                         # Mettre à jour la position
                         pos += 1
-                        break
-                else:
-                    # Créer un onglet en position pos
-                    self.nouvel_onglet(module._panel_(self, module), pos)
-                    # Mettre à jour la position
-                    pos += 1
+            except Exception:
+                param.modules_actifs[nom] = False
+                print("\n** MODULE '%s' : ERREUR FATALE **\n" % nom)
+                print_error()
+                msg = ("Le programme va redémarrer sans le module '%s'." % nom)
+                print('\n' + len(msg)*'-')
+                print(msg)
+                print("Veuillez patienter...")
+                print(len(msg)*'-' + '\n')
+                # Ne pas redémarrer pendant l'initialisation... (appeler la
+                # méthode .close() à l'intérieur de la méthode .__init__()
+                # ne fonctionne pas).
+                param._restart = True
+
+
         # Supprimer tous les onglets qui sont situés après pos
         while pos < self.count():
             self.fermer_onglet(pos)
