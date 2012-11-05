@@ -50,7 +50,7 @@ def assertEqual(x, y):
 -> Expected:
 %s
 --------------
-''' %(x, y))
+''' %(repr(x), repr(y)))
     assert (x == y)
 
 assertEq = assertEqual
