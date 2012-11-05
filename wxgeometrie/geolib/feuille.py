@@ -740,31 +740,31 @@ class Interprete_feuille(object):
 
         # Exception à la conversion décimale :
         # (1,2) est compris comme (1 ; 2) et non (1.2), qui est très peu probable.
-        def f(m):
+        def _virg(m):
             return m.group().replace(',', ', ')
-        commande = re.sub(r'[(]%s,%s[)]' % (NBR_SIGNE, NBR_SIGNE), f, commande)
+        commande = re.sub(r'[(]%s,%s[)]' % (NBR_SIGNE, NBR_SIGNE), _virg, commande)
         # Conversion décimale : 1,2 -> 1.2
         commande = _convertir_separateur_decimal(commande)
 
         # (A B) -> Droite(A, B)
-        def f(m):
+        def _dte(m):
             return "Droite(%s, %s)" % m.groups()
-        commande = re.sub(r"\([ ]?(%s)[ ](%s)[ ]?\)" % (VAR, VAR), f, commande)
+        commande = re.sub(r"\([ ]?(%s)[ ](%s)[ ]?\)" % (VAR, VAR), _dte, commande)
 
         # [A B] -> Segment(A, B)
-        def f(m):
+        def _seg(m):
             return "Segment(%s, %s)" % m.groups()
-        commande = re.sub(r"\[[ ]?(%s)[ ](%s)[ ]?\]" % (VAR, VAR), f, commande)
+        commande = re.sub(r"\[[ ]?(%s)[ ](%s)[ ]?\]" % (VAR, VAR), _seg, commande)
 
         # ||u|| -> u.norme
-        def f(m):
+        def _normu(m):
             return "%s.norme" % m.groups()
-        commande = re.sub(r"\|\|[ ]?(%s)[ ]?\|\|" % VAR, f, commande)
+        commande = re.sub(r"\|\|[ ]?(%s)[ ]?\|\|" % VAR, _normu, commande)
 
         # ||A>B|| -> (A>B).norme
-        def f(m):
+        def _normAB(m):
             return "(%s>%s).norme" % m.groups()
-        commande = re.sub(r"\|\|[ ]?(%s)>(%s)[ ]?\|\|" % (VAR, VAR), f, commande)
+        commande = re.sub(r"\|\|[ ]?(%s)>(%s)[ ]?\|\|" % (VAR, VAR), _normAB, commande)
 
         # 1,2 ou 1;2 ou 1 2 ou (1,2) ou (1;2) ou (1 2) *uniquement* -> Point(1,2)
         m = re.match("(\()?(?P<x>%s)[ ]?[;, ][ ]?(?P<y>%s)(?(1)\))$" % (NBR_SIGNE, NBR_SIGNE), commande)
@@ -773,9 +773,9 @@ class Interprete_feuille(object):
 
         # `Bonjour !` -> Texte("Bonjour !")
         # NB: attention, \` a déjà un sens en LaTeX
-        def f(m):
+        def _txt(m):
             return "Texte(\"%s\")" % m.groups()[0]
-        commande = re.sub(r"(?<!\\)`(([^`]|\\`)*[^`\\]|)`", f, commande)
+        commande = re.sub(r"(?<!\\)`(([^`]|\\`)*[^`\\]|)`", _txt, commande)
 
         # Détection des équations
         if '=' in commande:
