@@ -66,6 +66,10 @@ class Console:
         # Fenêtre principale :
         commande = commande.replace(u"!m.", u"main.")
 
+        if commande in ('quit', 'exit', 'close'):
+            self.parent.close()
+        elif commande in ('restart', '!!!'):
+            self.parent.restart()
 
 #        if param.debug:
 #            self.parent.onglets.onglet_actuel.action_effectuee(u"REQUETE CONSOLE:" + commande)
