@@ -110,4 +110,5 @@ contexte = Contexte(exact = True,
                     tolerance = param.tolerance,
                     afficher_messages = param.afficher_messages,
                     graduation = param.graduation,
+                    separateur_decimal = param.separateur_decimal,
                     )

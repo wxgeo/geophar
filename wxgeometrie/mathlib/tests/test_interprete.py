@@ -92,7 +92,7 @@ def test_exemples_de_base():
     assert_resultat('pi sqrt(3)', r'sqrt(3)pi',  r'\sqrt{3} \pi')
     assert_resultat('sqrt(1+e)', r'sqrt(1 + e)',  r'\sqrt{1 + \mathrm{e}}')
     assert_resultat('(5-2i)(5+2i)', r'29',  r'29')
-    assert_resultat('resous(2x=1)', r'{1/2}',  r'\{\frac{1}{2}\}')
+    assert_resultat('resous(2x=1)', r'{1/2}',  r'\left\{\frac{1}{2}\right\}')
     assert_resultat('jhms(250000)', r'2 j 21 h 26 min 40 s',
                     r'2 \mathrm{j}\, 21 \mathrm{h}\, 26 \mathrm{min}\, 40 \mathrm{s}')
     assert_resultat(r'pi\approx', r'3,14159265358979324',  r'3,14159265358979324',
@@ -114,11 +114,11 @@ def test_resoudre():
     assert_resoudre('2x+3>5x-4 et 3x+1>=4x-4', r']-oo ; 7/3[')
     assert_resoudre('2=-a+b et -1=3a+b', r'{a: -3/4 ; b: 5/4}')
     assert_resoudre(r'3-x\ge 1+2x\\\text{et}\\4x<2+10x', ']-1/3 ; 2/3]',
-                        r']- \frac{1}{3};\frac{2}{3}]',  formatage_LaTeX = True)
+                    r'\left]- \frac{1}{3};\frac{2}{3}\right]', formatage_LaTeX=True)
     assert_resoudre('2exp(x)>3', ']-ln(2) + ln(3) ; +oo[')
     #TODO: Rassembler les ln: ]ln(3/2);+oo[
     assert_resoudre('x^3-30x^2+112=0', '{-6 sqrt(7) + 14 ; 2 ; 14 + 6 sqrt(7)}',
-                           r'\{- 6 \sqrt{7} + 14\,;\, 2\,;\, 14 + 6 \sqrt{7}\}')
+                r'\left\{- 6 \sqrt{7} + 14\,;\, 2\,;\, 14 + 6 \sqrt{7}\right\}')
     # assert_resoudre(r'ln(x^2)-ln(x+1)>1', ']-1;e/2 - sqrt(4 e + exp(2))/2[U]e/2 + sqrt(4 e + exp(2))/2;+oo[')
     assert_resoudre(r'ln(x^2)-ln(x+1)>1', ']-1 ; -sqrt(e + 4)exp(1/2)/2 + e/2[U]e/2 + sqrt(e + 4)exp(1/2)/2 ; +oo[')
 
@@ -136,7 +136,7 @@ def test_approches():
     assert_approche('ln(2,5)', '0,916290731874155065')
     assert_approche('resoudre(x^3-30x^2+112=0)',
                     '{-1,87450786638754354 ; 2 ; 29,8745078663875435}',
-                    r'\{-1,87450786638754354\,;\, 2\,;\, 29,8745078663875435\}')
+                    r'\left\{-1,87450786638754354\,;\, 2\,;\, 29,8745078663875435\right\}')
 
 
 def test_session():

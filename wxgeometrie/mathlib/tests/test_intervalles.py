@@ -5,7 +5,7 @@ from sympy import sqrt, pi
 
 from tools.testlib import assertEqual
 import wxgeometrie.mathlib.intervalles as intervalles
-from wxgeometrie.mathlib.intervalles import Intervalle
+from wxgeometrie.mathlib.intervalles import Intervalle, conversion_chaine_ensemble
 
 
 def assert_intervalle_preformater(x, y):
@@ -57,3 +57,12 @@ def test_evalf():
 def test_asarray():
     i = intervalles.Ensemble('{2}')
     assert tuple(i.asarray(-10,10,.1)[0]) == (2,)
+
+def test_conversion_chaine_ensemble():
+    chaine = u'{-(-216*2^(2/3)+4*(-3616+64*sqrt(8113))^(1/3)+2^(1/3)' \
+             u'*(-3616+64*sqrt(8113))^(2/3))/(16*(-3616+64*sqrt(8113))^(1/3))}'
+    attendu = "Ensemble('{(-2^(1/3)*(-3616 + 64*sqrt(8113))^(2/3) " \
+               "- 4*(-3616 + 64*sqrt(8113))^(1/3) + 216*2^(2/3))" \
+               "/(16*(-3616 + 64*sqrt(8113))^(1/3))}')"
+    resultat = repr(conversion_chaine_ensemble(chaine, utiliser_sympy=True))
+    assertEqual(resultat, attendu)

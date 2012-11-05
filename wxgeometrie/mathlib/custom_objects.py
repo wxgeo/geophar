@@ -296,29 +296,26 @@ class CustomLatexPrinter(LatexPrinter):
 
     def _print_Union(self, expr):
         tex = r"\cup".join(self._print(intervalle) for intervalle in expr.intervalles)
-        tex = tex.replace(r"\}\cup\{", "\,;\, ")
+        tex = tex.replace(r"\right\}\cup\left\{", "\,;\, ")
         return tex
 
     def _print_Intervalle(self, expr):
         if expr.vide:
             return r"\varnothing"
         elif expr.inf_inclus and expr.sup_inclus and expr.inf == expr.sup:
-            return r"\{%s\}" % self._print(expr.inf)
+            return r"\left\{%s\right\}" % self._print(expr.inf)
         if expr.inf_inclus:
-            left = "["
+            left = r"\left["
         else:
-            left = "]"
+            left = r"\left]"
         if expr.sup_inclus:
-            right = "]"
+            right = r"\right]"
         else:
-            right = "["
+            right = r"\right["
         return r"%s%s;%s%s" % (left, self._print(expr.inf), self._print(expr.sup), right)
 
-    def _print_Singleton(self, expr):
-        return r"\{%s\}" % self._print(expr.inf)
-
     def _print_tuple(self, expr):
-        return "(" + ",\,".join(self._print(item) for item in expr) + ")"
+        return r"\left(" + ",\,".join(self._print(item) for item in expr) + r"\right)"
 
     def _print_log(self, expr, exp=None):
         if len(expr.args) == 1 and isinstance(expr.args[0], (Symbol, Integer)):

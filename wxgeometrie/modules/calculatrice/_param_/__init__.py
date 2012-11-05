@@ -4,9 +4,7 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 calcul_exact = True    # gerer les fractions et les racines de maniere exacte si possible.
 ecriture_scientifique = False # afficher les resultats en ecriture scientifique.
-separateur_decimal = ',' # utilisé pour l'affichage des résultats (',' ou '.')
-# d'autres choix sont possibles, mais pas forcement heureux...
-copie_automatique = False # copie automatique de chaque resultat dans le presse-papier
+copie_automatique = True # copie automatique de chaque resultat dans le presse-papier
 copie_automatique_LaTeX = False
 formatage_OOo = True
 formatage_LaTeX = True

@@ -39,6 +39,7 @@ from ...GUI.wxlib import png
 from ...GUI.inspecteur import FenCode
 from ...GUI import MenuBar, Panel_simple
 from ...mathlib.interprete import Interprete
+from ...mathlib.parsers import latex2mathtext
 from ...mathlib.end_user_functions import __classement__
 
 from ...pylib import print_error, uu, debug, no_argument, eval_safe
@@ -86,7 +87,6 @@ class Calculatrice(Panel_simple):
         Panel_simple.__init__(self, *args, **kw)
         self.interprete = Interprete(calcul_exact = self.param("calcul_exact"),
                                 ecriture_scientifique = self.param("ecriture_scientifique"),
-                                separateur_decimal = (',' if self.param("changer_separateur") else '.'),
                                 copie_automatique = self.param("copie_automatique"),
                                 formatage_OOo = self.param("formatage_OOo"),
                                 formatage_LaTeX = self.param("formatage_LaTeX"),
@@ -134,14 +134,14 @@ class Calculatrice(Panel_simple):
 
         self.seconde = False # indique si la touche 2nde est activee.
 
-        def action(event = None):
+        def touche_2nde(event = None):
             self.seconde = not self.seconde
             if self.seconde:
                 self.message(u"Touche [2nde] activée.")
             else:
                 self.message("")
 
-        self.actions = [action]
+        self.actions = [touche_2nde]
 
         for i in range(len(boutons)):
             # On aligne les boutons de la calculatrice par rangées de 5.
@@ -185,6 +185,9 @@ class Calculatrice(Panel_simple):
 
         ### Liste des options ###
         # En dessous du pavé apparait la liste des différents modes de fonctionnement de la calculatrice.
+
+        pave.addSpacing(5)
+        pave.addStretch()
 
         # Calcul exact
         ligne = QHBoxLayout()
@@ -243,24 +246,23 @@ class Calculatrice(Panel_simple):
         self.cb_copie_automatique_LaTeX.stateChanged.connect(self.EvtCopieAutomatiqueLatex)
 
         # Autres options
-        self.options = [(u"Virgule comme séparateur décimal.", u"changer_separateur"),
-##                    (u"Copie du résultat dans le presse-papier.", u"copie_automatique"),
-                    (u"Accepter la syntaxe OpenOffice.org", u"formatage_OOo"),
-                    (u"Accepter la syntaxe LaTeX", u"formatage_LaTeX"),
-                        ]
-        self.options_box = []
-        for i in range(len(self.options)):
-            ligne = QHBoxLayout()
-            pave.addLayout(ligne)
-            self.options_box.append(QCheckBox(self))
-            ligne.addWidget(self.options_box[i])
-            self.options_box[i].setChecked(self.param(self.options[i][1]))
-            def action(event, chaine = self.options[i][1], entree = self.entree, self = self):
-                self.param(chaine, not self.param(chaine))
-                entree.setFocus()
-            self.options_box[i].stateChanged.connect(action)
-            ligne.addWidget(QLabel(self.options[i][0]))
-            ligne.addStretch()
+        ##self.options = [
+                    ##(u"Accepter la syntaxe OpenOffice.org", u"formatage_OOo"),
+                    ##(u"Accepter la syntaxe LaTeX", u"formatage_LaTeX"),
+                        ##]
+        ##self.options_box = []
+        ##for i in range(len(self.options)):
+            ##ligne = QHBoxLayout()
+            ##pave.addLayout(ligne)
+            ##self.options_box.append(QCheckBox(self))
+            ##ligne.addWidget(self.options_box[i])
+            ##self.options_box[i].setChecked(self.param(self.options[i][1]))
+            ##def action(event, chaine = self.options[i][1], entree = self.entree, self = self):
+                ##self.param(chaine, not self.param(chaine))
+                ##entree.setFocus()
+            ##self.options_box[i].stateChanged.connect(action)
+            ##ligne.addWidget(QLabel(self.options[i][0]))
+            ##ligne.addStretch()
 
         self.setLayout(self.sizer)
         self.initialiser()
@@ -278,9 +280,9 @@ class Calculatrice(Panel_simple):
 #        fgeo.contenu["Calculatrice"][0]["Resultats"] = [repr(self.interprete.derniers_resultats)]
         fgeo.contenu["Calculatrice"][0]["Affichage"] = [self.resultats.toPlainText()]
         fgeo.contenu["Calculatrice"][0]["Etat_interne"] = [self.interprete.save_state()]
-        fgeo.contenu["Calculatrice"][0]["Options"] = [{}]
-        for i in range(len(self.options)):
-            fgeo.contenu["Calculatrice"][0]["Options"][0][self.options[i][1]] = [str(self.options_box[i].isChecked())]
+        ##fgeo.contenu["Calculatrice"][0]["Options"] = [{}]
+        ##for i in range(len(self.options)):
+            ##fgeo.contenu["Calculatrice"][0]["Options"][0][self.options[i][1]] = [str(self.options_box[i].isChecked())]
 
 
 
@@ -298,13 +300,13 @@ class Calculatrice(Panel_simple):
             self.resultats.moveCursor(QTextCursor.End)
             self.interprete.load_state(calc["Etat_interne"][0])
 
-            liste = calc["Options"][0].items()
-            options = [option for aide, option in self.options]
-            for key, value in liste:
-                value = eval_safe(value[0])
-                self.param(key, value)
-                if key in options:
-                    self.options_box[options.index(key)].setChecked(value)
+            ##liste = calc["Options"][0].items()
+            ##options = [option for aide, option in self.options]
+            ##for key, value in liste:
+                ##value = eval_safe(value[0])
+                ##self.param(key, value)
+                ##if key in options:
+                    ##self.options_box[options.index(key)].setChecked(value)
             # il faudrait encore sauvegarder les variables, mais la encore, 2 problemes :
             # - pb de securite pour evaluer les variables
             # - pb pour obtenir le code source d'une fonction.
@@ -316,13 +318,12 @@ class Calculatrice(Panel_simple):
     def modifier_pp_texte(self, chaine):
         u"""Modifier le résultat affiché en LaTeX (pretty print)."""
         if self.param("latex"):
+            # On utilise directement LaTeX pour le rendu
             chaine = "$" + chaine + "$"
         else:
-            chaine = chaine.replace("\\mapsto", "\\rightarrow")
-            if chaine.startswith(r"$\begin{bmatrix}"):
-                chaine = chaine.replace(r"\begin{bmatrix}", r'\left({')
-                chaine = chaine.replace(r"\end{bmatrix}", r'}\right)')
-                chaine = chaine.replace(r"&", r'\,')
+            # On utilise le parser matplotlib.mathtext, moins complet mais bien
+            # plus rapide. Certaines adaptations doivent être faites.
+            chaine = latex2mathtext(chaine)
         self.pp_texte.set_text(chaine)
         self.visualisation.draw()
 

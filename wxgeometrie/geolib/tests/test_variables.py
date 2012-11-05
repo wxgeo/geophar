@@ -5,7 +5,7 @@ from random import random
 
 from tools.testlib import assertAlmostEqual, assertEqual, randint, assertRaises
 from wxgeometrie.geolib import Variable, Formule, XMinVar, XMaxVar, YMinVar, YMaxVar, Feuille
-from wxgeometrie.pylib import mathtext_parser
+from wxgeometrie.mathlib.parsers import mathtext_parser
 
 
 def test_operations():

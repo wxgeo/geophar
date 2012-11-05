@@ -143,7 +143,7 @@ class Interprete(object):
         # (suppression des '*' dans '2*x', etc.)
         self.simplifier_ecriture_resultat = simplifier_ecriture_resultat
         # appliquer les séparateurs personnalisés
-        self.separateur_decimal = separateur_decimal
+        self.separateur_decimal = separateur_decimal or param.separateur_decimal
         # d'autres choix sont possibles, mais pas forcément heureux...
         # copie automatique de chaque résultat dans le presse-papier
         self.copie_automatique = copie_automatique

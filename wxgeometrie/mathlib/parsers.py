@@ -25,12 +25,16 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 import keyword, re
 from itertools import chain, izip_longest
 
+from matplotlib.mathtext import MathTextParser, AutoHeightChar, Hlist
+import matplotlib
 from sympy import Expr
 
-from ..pylib.fonctions import (regsub, split_around_parenthesis, debug,
-                     find_closing_bracket, warning, rreplace)
+from ..pylib.fonctions import regsub, split_around_parenthesis, debug, \
+                                warning, rreplace#, find_closing_bracket
 from .. import param
 
+
+_mathtext_raw_parser = MathTextParser("PS").parse
 
 # Commandes LaTeX à caractères uniquement alphabétiques (sans le \ préliminaire)
 dictionnaire_latex_commandes = {
@@ -616,8 +620,8 @@ def _rechercher_denominateur(chaine):
 
 
 def _convertir_en_latex(chaine):
-    import time
-    time0 = time.time()
+    ##import time
+    ##time0 = time.time()
 
     # Puissances
     chaine = chaine.replace("**", "^")
@@ -741,3 +745,67 @@ def convertir_en_latex(chaine, mode='$'):
     if mode == '$':
         chaine = "$" + chaine + "$"
     return chaine
+
+
+def latex2mathtext(chaine):
+    u"""Convertit la chaîne pour qu'elle puisse être affichée par mathtext.
+
+    Matplotlib offre 2 possibilités pour l'affichage de chaînes LaTeX :
+
+        * soit utiliser une installation LaTeX existante,
+        * soit utiliser son propre moteur de rendu, mathtext.
+
+    Le rendu de matplotlib.mathtext est loin d'avoir la qualité du vrai LaTeX,
+    mais il ne nécessite pas d'avoir LaTeX installé, il est bien plus rapide,
+    et il permet l'export au format vectoriel (matplotlib utilise dvi2png sinon).
+
+    C'est donc le format utilisé par défaut.
+    """
+    if '$' in chaine:
+        if chaine.startswith(r"$\begin{bmatrix}"):
+            chaine = chaine.replace(r"\begin{bmatrix}", r'\left({')
+            chaine = chaine.replace(r"\end{bmatrix}", r'}\right)')
+            chaine = chaine.replace(r"&", r'\,')
+        if r'\left' in chaine:
+            chaine = chaine.replace(r'\left\{', r'\left{')
+            chaine = chaine.replace(r'\right\}', r'\right}')
+        # bug dans matplotlib 1.1.1
+        # mathtext(u"$A'$") returne une erreur au premier appel.
+        # => conversion unicode -> string
+        if isinstance(chaine, unicode):
+            chaine = chaine.encode(param.encodage)
+    return chaine
+
+
+def mathtext_parser(txt):
+    return _mathtext_raw_parser(latex2mathtext(txt))
+
+
+def tex_dollars(txt):
+    u"Rajoute des $ si l'expression LaTeX ainsi obtenue est correcte."
+    try:
+        mathtext_parser('$' + txt + '$')
+        return '$' + txt + '$'
+    except Exception:
+        return txt
+
+
+# HACK pour contourner un bug de matplotlib mathtext
+def _hacked_auto_sized_delimiter(self, s, loc, toks):
+    #~ print "auto_sized_delimiter", toks
+    front, middle, back = toks
+    state = self.get_state()
+    height = max([getattr(x, 'height', 0) for x in middle])
+    depth = max([getattr(x, 'depth', 0) for x in middle])
+    parts = []
+    # \left. and \right. aren't supposed to produce any symbols
+    if front != '.':
+        parts.append(AutoHeightChar(front, height, depth, state))
+    parts.extend(middle.asList())
+    if back != '.':
+        parts.append(AutoHeightChar(back, height, depth, state))
+    hlist = Hlist(parts)
+    return hlist
+
+
+matplotlib.mathtext.Parser.auto_sized_delimiter = _hacked_auto_sized_delimiter

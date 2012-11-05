@@ -121,10 +121,17 @@ modules.add(u'Nota: les modules non activés par défaut peuvent être non document
 format = options.add(Theme(u'Format'))
 format.add(P(u'Décimales affichées', decimales = (0, 10)))
 
-format.add(P(u'Unité d\'angle', _get = (lambda k:{'d':u'degré', 'r':'radian', 'g':'grade'}[k]),
-                               _set = (lambda s:s[0]),
-                               unite_angle = [u'degré', 'radian', 'grade']
-                               ))
+format.add(P(u'Unité d\'angle',
+             _get = (lambda k: {'d': u'degré', 'r': 'radian', 'g':' grade'}[k]),
+             _set = (lambda s: s[0]),
+             unite_angle = [u'degré', 'radian', 'grade']
+             ))
+format.add(P(u'Séparateur décimal',
+             _get = (lambda k: {',': u'virgule', '.': 'point'}[k]),
+             _set = (lambda k: {'virgule': ',', 'point': '.'}[k]),
+             separateur_decimal = ['virgule', 'point']
+             ))
+
 
 
 ## AVANCÉ

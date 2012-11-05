@@ -372,7 +372,10 @@ def nice_display(x):
             x = int(x)
     elif hasattr(x, 'valeur'):
         return nice_display(x.valeur)
-    return strip_trailing_zeros(str(x).replace('**', '^')).replace('.', ',')
+    s = strip_trailing_zeros(str(x).replace('**', '^'))
+    if contexte["separateur_decimal"] == ',':
+        s = s.replace('.', ',')
+    return s
 
 
 def arrondir(x):

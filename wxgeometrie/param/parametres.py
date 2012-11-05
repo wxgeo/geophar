@@ -459,8 +459,15 @@ distance_max_etiquette = 50
 
 decimales = 2
 
+# Unité utilisée pour l'affichage des mesures d'angles.
 # Note: en interne, ce sont toujours les radians qui sont utilisés.
 unite_angle = ("r", "d", "g")[0] # radian, degré ou grad
+
+# Séparateur décimal utilisé pour l'affichage des résultats.
+# Note 1: en interne, le séparateur décimal est le '.' (Python floats)
+# Note 2: en *entrée*, point et virgule sont acceptés.
+# Le paramètre `separateur_decimal` détermine le format de *sortie*.
+separateur_decimal = (',', '.')[0] # virgule (2,3) ou point (2.3)
 
 
 liste_axes = (0, 1)

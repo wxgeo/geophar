@@ -28,6 +28,7 @@ from numpy import arange
 
 from .tablatexlib import traduire_latex, maths
 from ...pylib import print_error
+from ... import param
 
 
 def tabval(chaine = "", icomma = True):
@@ -111,7 +112,8 @@ un retour à la ligne (si le tableau est trop long).
             s = str(expr).rstrip('0')
             if s[-1] == '.':
                 s = s[:-1]
-            s = s.replace(".", ",")
+            if param.separateur_decimal != '.':
+                s = s.replace(".", param.separateur_decimal)
             if not icomma:
                 s = "\\nombre{" + s + "} "
             return ' $' + s + '$ '

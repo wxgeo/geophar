@@ -35,7 +35,8 @@ from matplotlib.axes import Axes
 from numpy import array, arange, concatenate, cos as ncos, sin as nsin
 from math import cos, sin, atan2, pi, hypot, sqrt, atan
 
-from ..pylib import fullrange, is_in, uu, warning, print_error, tex
+from ..pylib import fullrange, is_in, uu, warning, print_error
+from ..mathlib.parsers import tex_dollars
 from .. import param
 
 
@@ -1105,12 +1106,12 @@ class Moteur_graphique(object):
                         _graduation_ = [str_(ox + ux), ox + ux, oy - 8*ky, "l", "t"]
 
         if _origine_ and self.canvas.gradu[num]:
-            self.ajouter_texte(_origine_[1], _origine_[2], tex(_origine_[0]), \
+            self.ajouter_texte(_origine_[1], _origine_[2], tex_dollars(_origine_[0]), \
                 horizontalalignment = correspondance[_origine_[3]], \
                 verticalalignment = correspondance[_origine_[4]], size = 14)
 
         if _graduation_ and self.canvas.gradu[num] and self.canvas.saturation(num) < param.saturation:
-            self.ajouter_texte(_graduation_[1], _graduation_[2], tex(_graduation_[0]), \
+            self.ajouter_texte(_graduation_[1], _graduation_[2], tex_dollars(_graduation_[0]), \
                 horizontalalignment = correspondance[_graduation_[3]], \
                 verticalalignment = correspondance[_graduation_[4]], size = 14)
 

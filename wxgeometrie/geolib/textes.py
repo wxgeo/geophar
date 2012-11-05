@@ -27,16 +27,13 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 from random import uniform, normalvariate
 from math import cos, sin
 
-from matplotlib.pyparsing import ParseFatalException
-
 from .objet import Objet_avec_coordonnees, Argument, Ref, Objet, \
                    Objet_avec_coordonnees_modifiables
 from .constantes import NOM, TEXTE, MATH, FORMULE, RIEN
 from .formules import Formule
 
 from ..pylib import uu, warning, property2, no_argument, print_error
-from ..mathlib.parsers import convertir_en_latex
-from ..pylib import mathtext_parser
+from ..mathlib.parsers import convertir_en_latex, latex2mathtext, mathtext_parser
 from .. import param
 
 ################################################################################
@@ -104,12 +101,13 @@ class Texte_generique(Objet_avec_coordonnees):
 #                texte = "\\mathscr{" + texte + "}"
             elif famille != "sans-serif":
                 warning("Famille de police non disponible en mode LaTeX.")
+            text._text = texte
         else: # formatage géré par matplotlib
 #            font.set_weight(self.style("epaisseur") == "gras" and "bold" or "normal")
             font.set_weight(self.style("epaisseur") > 55 and "bold" or "normal")
             font.set_style(self.style("style"))
             font.set_family(self.style("famille"))
-        text._text = texte
+            text._text = latex2mathtext(texte)
 
         text.set_rotation(self.style("angle"))
         text.set_verticalalignment(av)

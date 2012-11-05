@@ -103,7 +103,11 @@ def test_formules():
     # Par contre, ceci doit rester valable quelle que soit l'implémentation !
     assertAlmostEqual(float(o.M.label()), 4.)
     o.A.x = e**2
-    assertAlmostEqual(float(o.M.label().replace(',', '.')), 3.5)
+    with contexte(separateur_decimal='.'):
+        assertEqual(o.M.label(), '3.5')
+    with contexte(separateur_decimal=','):
+        assertEqual(o.M.label(), '3,5')
+
 
 def test_constantes():
     f = Feuille()

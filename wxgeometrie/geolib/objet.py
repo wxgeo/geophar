@@ -27,14 +27,14 @@ import re, math, types
 from types import FunctionType, BuiltinFunctionType, TypeType
 
 import numpy
-from matplotlib.pyparsing import ParseFatalException
 
 from sympy import I, pi as PI, Basic, Integer
 
 from ..mathlib.internal_objects import Reel
 # à intégrer dans geolib ??
-from ..pylib import property2, uu, str2, print_error, mathtext_parser, \
+from ..pylib import property2, uu, str2, print_error, \
                     is_in, WeakList, CustomWeakKeyDictionary, warning
+from ..mathlib.parsers import mathtext_parser
 from .routines import nice_display
 from .constantes import NOM, RIEN#, FORMULE, TEXTE,
 ##from .formules import Formule
@@ -1010,16 +1010,10 @@ class Objet(object):
                 nom = "\\" + nom
                 break
 
-        # bug dans matplotlib 1.1.1
-        # mathtext(u"$A'$") returne une erreur au premier appel.
-        # => conversion unicode -> string
-        self.nom_latex = ("$" + nom + "$").encode(param.encodage)
+        self.nom_latex = ("$" + nom + "$")
         # Test de nom_latex :
         try:
             mathtext_parser(self.nom_latex)
-        ##except ParseFatalException:
-            ##warning('"%s" can not be parsed by mathtext.' %self.nom_latex)
-            ##self.nom_latex = self.nom
         except Exception:
             warning('%s can not be parsed by mathtext.' % repr(self.nom_latex))
             print_error()

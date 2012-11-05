@@ -512,7 +512,7 @@ def formatage_ensemble(chaine, preformatage = True, utiliser_sympy = False):
         chaine = matchobject.group()
         liste = chaine[1:-1].split(";")
         return "Union(%s)" %",".join(liste)
-    chaine = re.sub("[{][-+*/0-9.A-Za-z)(;]+[}]", f2, chaine)
+    chaine = re.sub("[{][-+*^/0-9.A-Za-z)(;]+[}]", f2, chaine)
 
     return chaine
 
@@ -530,6 +530,7 @@ def conversion_chaine_ensemble(chaine, utiliser_sympy = False):
             "False": False,
             "True": True,
             })
+
     if utiliser_sympy:
         try:
             #print str2(chaine), dico
