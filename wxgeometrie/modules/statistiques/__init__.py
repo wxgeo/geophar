@@ -31,7 +31,7 @@ from PyQt4.QtGui import QVBoxLayout, QLabel, QGroupBox, QHBoxLayout, QComboBox
 from numpy import array
 
 from ...GUI import MenuBar, Panel_API_graphique
-from .experience import LancerDes, Sondage, ExperienceFrame, alea, sondage, de
+from .experience import LancerDes, Sondage, ExperienceFrame, alea, sondage, de, DIC
 from .onglets_internes import OngletsStatistiques
 from ...geolib.routines import arrondir
 from ...pylib import property2, uu, regsub, advanced_split, print_error, eval_restricted
@@ -392,7 +392,7 @@ class Statistiques(Panel_API_graphique):
         Exemple: self.experience('int(6*rand())+1', 100) simule 100 lancers de dés."""
 
         self.actualiser(False)
-        self.ajouter_valeurs(*[eval(formule) for i in xrange(n)])
+        self.ajouter_valeurs(*[eval(formule, DIC) for i in xrange(n)])
         for val in val_possibles:
             self.ajouter_valeur(val, 0)
         self.calculer()

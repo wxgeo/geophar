@@ -25,6 +25,7 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 from PyQt4.QtGui import (QWidget, QSpinBox, QCheckBox, QPushButton,
                          QVBoxLayout, QLabel, QHBoxLayout, QLineEdit)
 from numpy.random import rand
+import math
 from numpy import sum
 # NB: numpy.sum est 100 fois plus rapide que __builtin__.sum !
 
@@ -48,6 +49,8 @@ def sondage(pourcentage = 50, k = 1000):
     pourcentage /= 100.
     return 100.*sum(rand(k)<pourcentage)/k
 
+DIC = {'rand': rand, 'random': rand, 'ent': ent, 'alea': alea}
+DIC.update(math.__dict__)
 
 
 
@@ -106,7 +109,7 @@ class ExperienceFrame(MyMiniFrame):
         vals = msplit(self.valeurs.text(), (" ", ",", ";"))
         print alea
         if exp:
-            self.parent.experience(exp, n, [eval(val) for val in vals if val])
+            self.parent.experience(exp, n, [eval(val, DIC) for val in vals if val])
 
 
 
