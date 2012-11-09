@@ -27,8 +27,12 @@ from PyQt4.QtGui import QWidget, QHBoxLayout, QLineEdit, QLabel, QPushButton
 
 
 class LigneCommande(QWidget):
-    u"Un TextCtrl muni d'un historique et associé à un bouton pour valider."
-    def __init__(self, parent, longueur = 500, texte = None,
+    u"""Un TextCtrl muni d'un historique et associé à un bouton pour valider.
+
+    On peut personnaliser le texte du bouton (via `texte="Mon texte"`),
+    ou même directement le bouton, en utilisant `bouton=...`.
+    """
+    def __init__(self, parent, longueur = 500, texte = None, bouton = None,
                 action = (lambda *args, **kw: True), afficher_bouton = True,
                 legende = None):
         self.parent = parent
@@ -38,7 +42,10 @@ class LigneCommande(QWidget):
         sizer = QHBoxLayout()
         self.texte = QLineEdit()
         self.texte.setMinimumWidth(longueur)
-        self.bouton = QPushButton('OK' if texte is None else texte)
+        if bouton is None:
+            self.bouton = QPushButton('OK' if texte is None else texte)
+        else:
+            self.bouton = bouton
         self.bouton.setVisible(afficher_bouton)
         self.bouton.clicked.connect(self.valider)
 

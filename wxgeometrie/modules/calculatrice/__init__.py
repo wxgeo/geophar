@@ -27,7 +27,8 @@ from functools import partial
 
 #import wx
 from PyQt4.QtGui import (QHBoxLayout, QVBoxLayout, QCheckBox, QIcon, QPushButton,
-                         QTextEdit, QMenu, QLabel, QSpinBox, QCursor, QTextCursor)
+                         QTextEdit, QMenu, QLabel, QSpinBox, QCursor, QTextCursor,
+                         QToolButton, QWidget, QTabWidget, QGroupBox)
 from PyQt4.QtCore import Qt
 
 #from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigureCanvas
@@ -78,6 +79,263 @@ class CalculatriceMenuBar(MenuBar):
 
 
 
+class BoutonValider(QToolButton):
+
+    modes = [('exact', u'résultats exacts'), ('approche', u'résultats approchés'),
+             ('scientifique', u'résultats en écriture scientifique')]
+
+    def __init__(self, parent):
+        QToolButton.__init__(self)
+        self.parent = parent
+        self.setAutoRaise(True)
+        self.mode_normal()
+
+        self.menu = menu = QMenu(self)
+        self.setMenu(menu)
+        for mode, titre in self.modes:
+            nom = 'mode_' + mode
+            action = menu.addAction(QIcon(png(nom)), titre)
+            action.setIconVisibleInMenu(True)
+            action.triggered.connect(getattr(self, nom))
+        self.clicked.connect(self.mode_occupe)
+
+
+    def _set_icon(self, nom):
+        pix = png(nom)
+        self.setIcon(QIcon(pix))
+        self.setIconSize(pix.size())
+
+    def mode_exact(self, *args):
+        self._set_icon('mode_exact_')
+        self.parent.param("calcul_exact", True)
+        self.parent.param("ecriture_scientifique", False)
+
+    def mode_approche(self, *args):
+        self._set_icon('mode_approche_')
+        self.parent.param("calcul_exact", False)
+        self.parent.param("ecriture_scientifique", False)
+
+    def mode_scientifique(self, *args):
+        self._set_icon('mode_scientifique_')
+        self.parent.param("calcul_exact", False)
+        self.parent.param("ecriture_scientifique", True)
+
+    def mode_occupe(self):
+        self._set_icon('thinking2_')
+
+    def mode_normal(self):
+        if self.parent.param("calcul_exact"):
+            self.mode_exact()
+        elif self.parent.param("ecriture_scientifique"):
+            self.mode_scientifique()
+        else:
+            self.mode_approche()
+
+
+
+class PaveNumerique(QWidget):
+    def __init__(self, parent):
+        QWidget.__init__(self, parent)
+        self.parent = parent
+        ### Pave numerique de la calculatrice ###
+        # On construit le pavé de la calculatrice.
+        # Chaque bouton du pavé doit provoquer l'insertion de la commande correspondante.
+
+        self.pave = pave = QVBoxLayout()
+#        pave.setSpacing(1)
+        boutons = ["2nde", "ans", "ouv", "ferm", "egal", "7", "8", "9", "div", "x", "4", "5", "6", "mul", "y", "1", "2", "3", "minus", "z", "0", "pt", "pow", "plus", "t", "rac", "sin", "cos", "tan", "exp", "i", "pi", "e", "abs", "mod"]
+        inserer = ["", "ans()", "(", ")", "=", "7", "8", "9",  "/", "x", "4", "5", "6", "*", "y", "1", "2", "3", "-", "z", "0", ".", "^", "+", "t", "sqrt(", ("sin(", "asin(", "sinus / arcsinus"), ("cos(", "acos(", "cosinus / arccosinus"), ("tan(", "atan(", "tangente / arctangente"), ("exp(", "ln(", "exponentielle / logarithme neperien"), ("i", "cbrt(", "i / racine cubique"), ("pi", "sinh(", "pi / sinus hyperbolique"), ("e", "cosh", "e / cosinus hyperbolique"), ("abs(", "tanh", "valeur absolue / tangente hyperbolique"), (" mod ", "log10(", "modulo / logarithme decimal")]
+
+        self.seconde = False # indique si la touche 2nde est activee.
+
+        self.actions = [self.touche_2nde]
+
+        for i, nom_bouton in enumerate(boutons):
+            # On aligne les boutons de la calculatrice par rangées de 5.
+            if i%5 == 0:
+                self.rangee = rangee = QHBoxLayout()
+                rangee.addStretch(1)
+                pave.addLayout(rangee)
+
+            # Ensuite, on construit une liste de fonctions, parallèlement à la liste des boutons.
+            if i > 0:
+                self.actions.append(partial(self.action, commande=inserer[i]))
+
+            bouton = QPushButton()
+            pix = png('btn_' + nom_bouton)
+            bouton.setIcon(QIcon(pix))
+            bouton.setIconSize(pix.size())
+            bouton.setFlat(True)
+#            bouton.SetBackgroundColour(self.GetBackgroundColour())
+            rangee.addWidget(bouton)
+            if i%5 == 4:
+                rangee.addStretch(2)
+            # A chaque bouton, on associe une fonction de la liste.
+            bouton.clicked.connect(self.actions[i])
+            if type(inserer[i]) == tuple:
+                bouton.setToolTip(inserer[i][2])
+
+            self.setLayout(self.pave)
+
+    def touche_2nde(self, event=None):
+        self.seconde = not self.seconde
+        if self.seconde:
+            self.message(u"Touche [2nde] activée.")
+        else:
+            self.message("")
+
+    def action(self, event=None, commande=''):
+        entree = self.parent.entree
+        if type(commande) == tuple:
+            entree.insert(commande[self.seconde])
+        else:
+            entree.insert(commande)
+        n = entree.cursorPosition()
+        entree.setFocus()
+        entree.setCursorPosition(n)
+        self.seconde = False
+        self.parent.message("")
+
+
+
+class Options(QWidget):
+    def __init__(self, parent):
+        QWidget.__init__(self, parent)
+        self.parent = parent
+        prm = parent.param
+
+        ### Liste des options de la calculatrice ###
+        self.pave = pave = QVBoxLayout()
+
+        # Chiffres significatifs
+        box = QGroupBox(u"Mode calcul approché")
+        box_layout = QVBoxLayout()
+        box.setLayout(box_layout)
+
+        ligne = QHBoxLayout()
+        box_layout.addLayout(ligne)
+        ligne.addWidget(QLabel(u"Afficher "))
+        self.sc_precision_affichage = sc = QSpinBox(self)
+        # param.precision_calcul = 60 par défaut
+        sc.setRange(1, 50)
+        sc.setValue(prm("precision_affichage"))
+        sc.valueChanged.connect(self.EvtPrecisionAffichage)
+        ligne.addWidget(sc)
+        ligne.addWidget(QLabel(u" chiffre(s) significatif(s)."))
+        ligne.addStretch()
+
+        self.pave.addWidget(box)
+
+        # Nombre de décimales
+        box = QGroupBox(u"Mode écriture scientifique")
+        box_layout = QVBoxLayout()
+        box.setLayout(box_layout)
+
+        ligne = QHBoxLayout()
+        box_layout.addLayout(ligne)
+        ligne.addWidget(QLabel(u"Arrondir les résultats à "))
+        self.sc_decimales = sc = QSpinBox(self)
+        sc.setRange(0, 11)
+        sc.setValue(prm("ecriture_scientifique_decimales"))
+        sc.valueChanged.connect(self.EvtDecimales)
+        ligne.addWidget(sc)
+        ligne.addWidget(QLabel(u" décimale(s)."))
+        ligne.addStretch()
+
+        self.pave.addWidget(box)
+
+        box = QGroupBox(u"Copie Automatique")
+        box_layout = QVBoxLayout()
+        box.setLayout(box_layout)
+        # Copie du résultat dans le presse-papier
+        ligne = QHBoxLayout()
+        box_layout.addLayout(ligne)
+        self.cb_copie_automatique = cb = QCheckBox(self)
+        cb.setChecked(prm("copie_automatique"))
+        cb.stateChanged.connect(self.EvtCopieAutomatique)
+        ligne.addWidget(cb)
+        ligne.addWidget(QLabel(u"Copie du résultat dans le presse-papier."))
+        ligne.addStretch()
+
+        # En mode LaTeX
+        ligne = QHBoxLayout()
+        box_layout.addLayout(ligne)
+        self.cb_copie_automatique_LaTeX = cb = QCheckBox(self)
+        cb.setChecked(prm("copie_automatique_LaTeX"))
+        ligne.addWidget(cb)
+        cb.stateChanged.connect(self.EvtCopieAutomatiqueLatex)
+        self.st_copie_automatique_LaTeX = st = QLabel(u"Copie au format LaTeX (si possible).")
+        ligne.addWidget(st)
+        ligne.addStretch()
+
+        self.pave.addWidget(box)
+        self.pave.addStretch()
+
+        self.setLayout(self.pave)
+        # Pour (dés)activer la ligne "Copie au format LaTeX" au besoin.
+        self.EvtCopieAutomatique()
+
+
+    def EvtPrecisionAffichage(self, event=None):
+        val = self.sc_precision_affichage.value()
+        self.parent.param("precision_affichage", val)
+
+
+    def EvtDecimales(self, event=None):
+        val = self.sc_decimales.value()
+        self.parent.param("ecriture_scientifique_decimales", val)
+
+
+    def EvtCopieAutomatique(self, event=None):
+        valeur = self.cb_copie_automatique.isChecked()
+        self.parent.param("copie_automatique", valeur)
+        if valeur:
+            self.cb_copie_automatique_LaTeX.setEnabled(True)
+            self.st_copie_automatique_LaTeX.setEnabled(True)
+        else:
+            self.cb_copie_automatique_LaTeX.setEnabled(False)
+            self.st_copie_automatique_LaTeX.setEnabled(False)
+
+
+    def EvtCopieAutomatiqueLatex(self, event=None):
+        val = self.cb_copie_automatique_LaTeX.isChecked()
+        self.parent.param("copie_automatique_LaTeX", val)
+
+
+
+class OngletsCalc(QTabWidget):
+    def __init__(self, parent):
+        ##self.parent = parent
+        QTabWidget.__init__(self, parent)
+        self.addTab(PaveNumerique(parent), u' Pavé numérique ')
+        self.addTab(Options(parent), u'Options')
+        self.setTabPosition(QTabWidget.South)
+        self.setStyleSheet("""
+QTabBar::tab:selected {
+background: white;
+border: 1px solid #C4C4C3;
+border-top-color: white; /* same as the pane color */
+border-bottom-left-radius: 4px;
+border-bottom-right-radius: 4px;
+border-top-left-radius: 0px;
+border-top-right-radius: 0px;
+min-width: 8ex;
+padding: 7px;
+}
+QStackedWidget {background:white}
+QTabBar QToolButton {
+background:white;
+border: 1px solid #C4C4C3;
+border-top-color: white; /* same as the pane color */
+border-bottom-left-radius: 4px;
+border-bottom-right-radius: 4px;
+border-top-left-radius: 0px;
+border-top-right-radius: 0px;
+}
+""")
+
+
+
 
 
 class Calculatrice(Panel_simple):
@@ -96,7 +354,10 @@ class Calculatrice(Panel_simple):
                                 simpify = True,
                                 )
 
-        self.entree = entree = LigneCommande(self, longueur = 550, action = self.affichage_resultat)
+        bouton = BoutonValider(self)
+        bouton.setToolTip(u"Laissez appuyé pour changer de mode.")
+        self.entree = entree = LigneCommande(self, longueur=550,
+                                action=self.affichage_resultat, bouton=bouton)
         entree.setToolTip(u"[Maj]+[Entrée] pour une valeur approchée.")
         self.entree.texte.setContextMenuPolicy(Qt.CustomContextMenu)
         self.entree.texte.customContextMenuRequested.connect(self.EvtMenu)
@@ -106,163 +367,21 @@ class Calculatrice(Panel_simple):
         sizer.addWidget(entree)
         self.corps = corps = QHBoxLayout()
         sizer.addLayout(corps)
-        self.gauche = gauche = QVBoxLayout()
-        corps.addLayout(gauche, 1)
         self.resultats = resultats = QTextEdit(self)
         resultats.setMinimumSize(450, 310)
         resultats.setReadOnly(True)
-        gauche.addWidget(resultats)
+        corps.addWidget(resultats, 1)
+        corps.addWidget(OngletsCalc(self))
 
         self.figure = Figure(figsize=(5,1.3), frameon=True, facecolor="w")
         self.visualisation = FigureCanvas(self.figure)
         self.axes = axes = self.figure.add_axes([0, 0, 1, 1], frameon=False)
         axes.axison = False
-        self.pp_texte = axes.text(0.5, 0.5, "", horizontalalignment='center', verticalalignment='center', transform = axes.transAxes, size=18)
-        gauche.addWidget(self.visualisation)
+        self.pp_texte = axes.text(0.5, 0.5, "", horizontalalignment='center',
+                verticalalignment='center', transform = axes.transAxes, size=18)
         self.visualisation.setContextMenuPolicy(Qt.CustomContextMenu)
         self.visualisation.customContextMenuRequested.connect(self.EvtMenuVisualisation)
-
-        ### Pave numerique de la calculatrice ###
-        # On construit le pavé de la calculatrice.
-        # Chaque bouton du pavé doit provoquer l'insertion de la commande correspondante.
-
-        self.pave = pave = QVBoxLayout()
-        corps.addLayout(pave)
-#        pave.setSpacing(1)
-        boutons = ["2nde", "ans", "ouv", "ferm", "egal", "7", "8", "9", "div", "x", "4", "5", "6", "mul", "y", "1", "2", "3", "minus", "z", "0", "pt", "pow", "plus", "t", "rac", "sin", "cos", "tan", "exp", "i", "pi", "e", "abs", "mod"]
-        inserer = ["", "ans()", "(", ")", "=", "7", "8", "9",  "/", "x", "4", "5", "6", "*", "y", "1", "2", "3", "-", "z", "0", ".", "^", "+", "t", "sqrt(", ("sin(", "asin(", "sinus / arcsinus"), ("cos(", "acos(", "cosinus / arccosinus"), ("tan(", "atan(", "tangente / arctangente"), ("exp(", "ln(", "exponentielle / logarithme neperien"), ("i", "cbrt(", "i / racine cubique"), ("pi", "sinh(", "pi / sinus hyperbolique"), ("e", "cosh", "e / cosinus hyperbolique"), ("abs(", "tanh", "valeur absolue / tangente hyperbolique"), (" mod ", "log10(", "modulo / logarithme decimal")]
-
-        self.seconde = False # indique si la touche 2nde est activee.
-
-        def touche_2nde(event = None):
-            self.seconde = not self.seconde
-            if self.seconde:
-                self.message(u"Touche [2nde] activée.")
-            else:
-                self.message("")
-
-        self.actions = [touche_2nde]
-
-        for i in range(len(boutons)):
-            # On aligne les boutons de la calculatrice par rangées de 5.
-            if i%5 == 0:
-                self.rangee = rangee = QHBoxLayout()
-                rangee.addStretch(1)
-                pave.addLayout(rangee)
-
-            # Ensuite, on construit une liste de fonctions, parallèlement à la liste des boutons.
-            if i > 0:
-                #XXX: ce serait plus propre en utilisant partial().
-                def action(event = None, entree = self.entree, j = i):
-                    if type(inserer[j]) == tuple:
-                        entree.insert(inserer[j][self.seconde])
-                    else:
-                        entree.insert(inserer[j])
-                    n = entree.cursorPosition()
-                    entree.setFocus()
-                    entree.setCursorPosition(n)
-                    self.seconde = False
-                    self.message("")
-                self.actions.append(action)
-
-            bouton = QPushButton()
-            pix = png('btn_' + boutons[i])
-            bouton.setIcon(QIcon(pix))
-            bouton.setIconSize(pix.size())
-            bouton.setFlat(True)
-#            bouton.setSize()
-#            bouton.SetBackgroundColour(self.GetBackgroundColour())
-            rangee.addWidget(bouton)
-            if i%5 == 4:
-                rangee.addStretch(2)
-            # A chaque bouton, on associe une fonction de la liste.
-            bouton.clicked.connect(self.actions[i])
-            if type(inserer[i]) == tuple:
-                bouton.setToolTip(inserer[i][2])
-
-#        self.pave.Add(QHBoxLayout())
-
-
-        ### Liste des options ###
-        # En dessous du pavé apparait la liste des différents modes de fonctionnement de la calculatrice.
-
-        pave.addSpacing(5)
-        pave.addStretch()
-
-        # Calcul exact
-        ligne = QHBoxLayout()
-        pave.addLayout(ligne)
-        self.cb_calcul_exact = QCheckBox(self)
-        self.cb_calcul_exact.setChecked(not self.param("calcul_exact"))
-        ligne.addWidget(self.cb_calcul_exact)
-        ligne.addWidget(QLabel(u"Valeur approchée."))
-        ligne.addStretch()
-
-        self.cb_calcul_exact.stateChanged.connect(self.EvtCalculExact)
-
-        # Notation scientifique
-        ligne = QHBoxLayout()
-        pave.addLayout(ligne)
-        self.cb_notation_sci = QCheckBox(self)
-        self.cb_notation_sci.setChecked(self.param("ecriture_scientifique"))
-        ligne.addWidget(self.cb_notation_sci)
-        self.st_notation_sci = QLabel(u"Écriture scientifique (arrondie à ")
-        ligne.addWidget(self.st_notation_sci)
-        self.sc_decimales = sd = QSpinBox(self)
-        # size = (45, -1)
-        sd.setRange(0, 11)
-        self.sc_decimales.setValue(self.param("ecriture_scientifique_decimales"))
-        ligne.addWidget(self.sc_decimales)
-        self.st_decimales = QLabel(u" décimales).")
-        ligne.addWidget(self.st_decimales)
-        ligne.addStretch()
-        self.EvtCalculExact()
-
-        self.cb_notation_sci.stateChanged.connect(self.EvtNotationScientifique)
-        self.sc_decimales.valueChanged.connect(self.EvtNotationScientifique)
-
-        # Copie du résultat dans le presse-papier
-        ligne = QHBoxLayout()
-        pave.addLayout(ligne)
-        self.cb_copie_automatique = QCheckBox(self)
-        self.cb_copie_automatique.setChecked(self.param("copie_automatique"))
-        ligne.addWidget(self.cb_copie_automatique)
-        ligne.addWidget(QLabel(u"Copie du résultat dans le presse-papier."))
-        ligne.addStretch()
-
-        self.cb_copie_automatique.stateChanged.connect(self.EvtCopieAutomatique)
-
-        # En mode LaTeX
-        ligne = QHBoxLayout()
-        pave.addLayout(ligne)
-        self.cb_copie_automatique_LaTeX = QCheckBox(self)
-        self.cb_copie_automatique_LaTeX.setChecked(self.param("copie_automatique_LaTeX"))
-        ligne.addWidget(self.cb_copie_automatique_LaTeX)
-        self.st_copie_automatique_LaTeX = QLabel(u"Copie au format LaTeX (si possible).")
-        ligne.addWidget(self.st_copie_automatique_LaTeX)
-        ligne.addStretch()
-
-        self.EvtCopieAutomatique()
-        self.cb_copie_automatique_LaTeX.stateChanged.connect(self.EvtCopieAutomatiqueLatex)
-
-        # Autres options
-        ##self.options = [
-                    ##(u"Accepter la syntaxe OpenOffice.org", u"formatage_OOo"),
-                    ##(u"Accepter la syntaxe LaTeX", u"formatage_LaTeX"),
-                        ##]
-        ##self.options_box = []
-        ##for i in range(len(self.options)):
-            ##ligne = QHBoxLayout()
-            ##pave.addLayout(ligne)
-            ##self.options_box.append(QCheckBox(self))
-            ##ligne.addWidget(self.options_box[i])
-            ##self.options_box[i].setChecked(self.param(self.options[i][1]))
-            ##def action(event, chaine = self.options[i][1], entree = self.entree, self = self):
-                ##self.param(chaine, not self.param(chaine))
-                ##entree.setFocus()
-            ##self.options_box[i].stateChanged.connect(action)
-            ##ligne.addWidget(QLabel(self.options[i][0]))
-            ##ligne.addStretch()
+        sizer.addWidget(self.visualisation)
 
         self.setLayout(self.sizer)
         self.initialiser()
@@ -351,13 +470,15 @@ class Calculatrice(Panel_simple):
         self.modifie = True
         try:
             try:
-                if kw["shift"]:
+                ##self.parent.parent.application.processEvents()
+                if kw.get("shift"):
                     self.interprete.calcul_exact = False
                 resultat, latex = self.interprete.evaluer(commande)
                 if latex == "$?$": # provoque une erreur (matplotlib 0.99.1.1)
                     latex = u"Désolé, je ne sais pas faire..."
             finally:
                 self.interprete.calcul_exact = self.param('calcul_exact')
+                self.entree.bouton.mode_normal()
             aide = resultat.startswith("\n== Aide sur ")
             #LaTeX
             debug("Expression LaTeX: " + latex)
@@ -444,44 +565,10 @@ class Calculatrice(Panel_simple):
 #        self.PopupMenu(menu)
 #        menu.Destroy()
 
-
-
     def param(self, parametre, valeur = no_argument, defaut = False):
         if valeur is not no_argument:
             setattr(self.interprete, parametre, valeur)
         return Panel_simple.param(self, parametre = parametre, valeur = valeur, defaut = defaut)
-
-    def EvtCalculExact(self, event = None):
-        valeur = self.cb_calcul_exact.isChecked()
-        self.param("calcul_exact", not valeur)
-        if valeur:
-            self.cb_notation_sci.setEnabled(True)
-            self.st_notation_sci.setEnabled(True)
-            self.sc_decimales.setEnabled(True)
-            self.st_decimales.setEnabled(True)
-        else:
-            self.cb_notation_sci.setEnabled(False)
-            self.st_notation_sci.setEnabled(False)
-            self.sc_decimales.setEnabled(False)
-            self.st_decimales.setEnabled(False)
-
-
-    def EvtNotationScientifique(self, event = None):
-        self.param("ecriture_scientifique", self.cb_notation_sci.isChecked())
-        self.param("ecriture_scientifique_decimales", self.sc_decimales.value())
-
-    def EvtCopieAutomatique(self, event = None):
-        valeur = self.cb_copie_automatique.isChecked()
-        self.param("copie_automatique", valeur)
-        if valeur:
-            self.cb_copie_automatique_LaTeX.setEnabled(True)
-            self.st_copie_automatique_LaTeX.setEnabled(True)
-        else:
-            self.cb_copie_automatique_LaTeX.setEnabled(False)
-            self.st_copie_automatique_LaTeX.setEnabled(False)
-
-    def EvtCopieAutomatiqueLatex(self, event = None):
-        self.param("copie_automatique_LaTeX", self.cb_copie_automatique_LaTeX.isChecked())
 
     def EtatInterne(self, event):
         contenu = self.interprete.save_state()

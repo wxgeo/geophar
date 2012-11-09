@@ -105,7 +105,6 @@ class MultiButton(QToolButton):
 
     @staticmethod
     def img2icon(image):
-        ##print png_pth(image)
         return QIcon(png(image))
 
     @property
