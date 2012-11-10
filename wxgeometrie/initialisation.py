@@ -340,7 +340,10 @@ try:
                     print('Temps de démarrage: %f s' % (time.time() - t0))
                 app.boucle()
             sorties.close()
-        os.remove(path_lock)
+        try:
+            os.remove(path_lock)
+        except OSError:
+            print("Warning: impossible de supprimer %s." % repr(path_lock))
         if param._restart:
             os.execl(sys.executable, sys.executable, *sys.argv[:1])
 
