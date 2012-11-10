@@ -6,3 +6,4 @@ mode = 0 # 0 -> Tableau de variation ; 1 -> Tableau de signe ; 2 -> Tableau de v
 utiliser_cellspace = False
 derivee = True
 limites = True
+formatage_resultats = r"\nombre{VAL}"

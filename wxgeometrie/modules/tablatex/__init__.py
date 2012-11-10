@@ -74,6 +74,7 @@ class TabLaTeX(Panel_simple):
         self.type_tableau.setCurrentIndex(self._param_.mode)
         self.sizer_type.addWidget(QLabel(u"Type de tableau à générer :", self))
         self.sizer_type.addWidget(self.type_tableau)
+        self.sizer_type.addSpacing(15)
 
         self.utiliser_cellspace = QCheckBox(u"Utiliser le paquetage cellspace.", self)
         self.utiliser_cellspace.setChecked(self._param_.utiliser_cellspace)
@@ -92,6 +93,20 @@ class TabLaTeX(Panel_simple):
         self.limites.setToolTip(u"Afficher les limites dans le tableau de variations.")
         self.sizer_type.addSpacing(10)
         self.sizer_type.addWidget(self.limites)
+
+        self.sizer_type.addSpacing(15)
+        self.lbl_formatage = lbl = QLabel(u"Formatage des résultats :")
+        self.sizer_type.addWidget(lbl)
+        self.formatage_resultats = QLineEdit()
+        self.formatage_resultats.setMinimumWidth(250)
+        self.formatage_resultats.setText(self._param_.formatage_resultats)
+        aide = u"Formatage à appliquer au résultat (VAL est la valeur du résultat)."
+        lbl.setToolTip(aide)
+        self.formatage_resultats.setToolTip(aide)
+        self.sizer_type.addSpacing(10)
+        self.sizer_type.addWidget(self.formatage_resultats)
+
+        self.sizer_type.addStretch()
 
         self.sizer.addLayout(self.sizer_type)
 
@@ -161,6 +176,11 @@ class TabLaTeX(Panel_simple):
             self._param_.limites = self.limites.isChecked()
         self.limites.stateChanged.connect(regler_limites)
 
+        def masquer_resultat(event = None):
+            self._param_.formatage_resultats = self.formatage_resultats.text()
+        self.formatage_resultats.editingFinished.connect(masquer_resultat)
+
+
     def activer(self):
         Panel_simple.activer(self)
         # Actions à effectuer lorsque l'onglet devient actif
@@ -171,11 +191,12 @@ class TabLaTeX(Panel_simple):
         self.modifie = True
         try:
             if self._param_.mode == 0:
-                code_latex = tabvar(commande, derivee=self._param_.derivee, limites=self._param_.limites)
+                code_latex = tabvar(commande, derivee=self._param_.derivee,
+                                    limites=self._param_.limites)
             elif self._param_.mode == 1:
                 code_latex = tabsign(commande, cellspace=self._param_.utiliser_cellspace)
             elif self._param_.mode == 2:
-                code_latex = tabval(commande)
+                code_latex = tabval(commande, formatage_resultats=self._param_.formatage_resultats)
             else:
                 warning("Type de tableau non reconnu.")
 
@@ -196,21 +217,27 @@ class TabLaTeX(Panel_simple):
         if self._param_.mode == 0:
             self.code_entete.setText(u"\\usepackage{tabvar}")
             self.entree.setToolTip(tabvar.__doc__)
-            self.utiliser_cellspace.setEnabled(False)
-            self.derivee.setEnabled(True)
-            self.limites.setEnabled(True)
+            self.utiliser_cellspace.hide()
+            self.derivee.show()
+            self.limites.show()
+            self.formatage_resultats.hide()
+            self.lbl_formatage.hide()
         elif self._param_.mode == 1:
-            self.utiliser_cellspace.setEnabled(True)
-            self.derivee.setEnabled(False)
-            self.limites.setEnabled(False)
+            self.utiliser_cellspace.show()
+            self.derivee.hide()
+            self.limites.hide()
+            self.formatage_resultats.hide()
+            self.lbl_formatage.hide()
             self.entree.setToolTip(tabsign.__doc__)
             if self._param_.utiliser_cellspace:
                 self.code_entete.setText(u"\\usepackage{cellspace}")
             else:
                 self.code_entete.setText(u"")
         elif self._param_.mode == 2:
-            self.utiliser_cellspace.setEnabled(False)
-            self.derivee.setEnabled(False)
-            self.limites.setEnabled(False)
+            self.utiliser_cellspace.hide()
+            self.derivee.hide()
+            self.limites.hide()
+            self.lbl_formatage.show()
+            self.formatage_resultats.show()
             self.entree.setToolTip(tabval.__doc__)
             self.code_entete.setText(u"")

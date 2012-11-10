@@ -31,7 +31,7 @@ from ...pylib import print_error
 from ... import param
 
 
-def tabval(chaine = "", icomma = True):
+def tabval(chaine='', formatage_resultats=False):
     u"""Syntaxe:
 fonction: [precision d'arrondi]: 1ere valeur,2e valeur..valeur finale
 
@@ -107,16 +107,14 @@ un retour à la ligne (si le tableau est trop long).
 
         expression = traduire_latex(expression)
 
-        def formater(expr):
+        def formater(expr, formatage=r'\nombre{VAL}'):
             assert isinstance(expr, float)
             s = str(expr).rstrip('0')
             if s[-1] == '.':
                 s = s[:-1]
             if param.separateur_decimal != '.':
                 s = s.replace(".", param.separateur_decimal)
-            if not icomma:
-                s = "\\nombre{" + s + "} "
-            return ' $' + s + '$ '
+            return ' $' + formatage.replace('VAL', s) + '$ '
 
 
         for val in valeurs: # on construit le tableau colonne par colonne
@@ -132,7 +130,7 @@ un retour à la ligne (si le tableau est trop long).
                 if evaluation in (maths.num_oo, maths.num_nan, -maths.num_oo, maths.oo, maths.nan, -maths.oo):
                     code_expression += "& $\\times$ "
                 else:
-                    code_expression += '&' + formater(precision*round(evaluation/precision))
+                    code_expression += '&' + formater(precision*round(evaluation/precision), formatage_resultats)
             except:
                 print_error()
                 code_expression += "& $\\times$ "
