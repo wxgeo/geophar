@@ -21,6 +21,7 @@ liste_fonctions.append("limite")
 liste_fonctions.append("log10")
 liste_fonctions.append("mat")
 
+
 def assert_formule(x, y, OOo, LaTeX):
     y_ = traduire_formule(x, fonctions = liste_fonctions, OOo = OOo, LaTeX = LaTeX, verbose = False)
     assertEqual(y_, y)
@@ -125,6 +126,7 @@ def test_tous_modes():
     # * entre un flottant et une parenthese
     assert_all(u".015(x-50)^2-20", ".015*(x-50)**2-20")
     assert_all(u"-1.015 (x-50)", "-1.015*(x-50)")
+    assert_all('5|x+3|+1-|2x|', '5*abs(x+3)+1-abs(2*x)')
 
 
 

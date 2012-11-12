@@ -386,17 +386,24 @@ def traduire_formule(formule='', fonctions=(), OOo=True, LaTeX=True,
         formule = regsub("\Wsup\W", formule, lambda s: (s[0] + '**' + s[-1]).strip())
         formule = formule.replace('infinity', 'oo')
 
+    # Conversion des | | **nom imbriqués** en abs().
+    # NB: il est impossible de convertir des | | imbriqués, car certaines
+    # expressions sont ambigues, par exemple |x|y|z| peut être compris comme
+    # abs(x)*y*abs(z) ou abs(x*abs(y)*z).
+    formule = regsub('[|][^|]+[|]', formule, (lambda s: 'abs(%s)' % s[1:-1]))
+
     formule = _ajouter_mult_manquants(formule, fonctions = fonctions, verbose = verbose, mots_cles = mots_cles)
 
     if verbose:
         print '5', formule
 
     # n! devient factoriel(n).
-    formule = regsub("\w+[!]", formule, lambda s: 'factoriel(' + s[:-1] + ')')
+    formule = regsub("\w+[!]", formule, (lambda s: 'factoriel(%s)' % s[:-1]))
 
 
     # (5 2) devient binomial(5, 2)
-    formule = regsub("[(]" + NBR + "[ ]+" + NBR + "[)]", formule, lambda s: 'binomial(' + ",".join(s[1:-1].split()) + ')')
+    formule = regsub("[(]%s[ ]+%s[)]" % (NBR, NBR), formule,
+                       lambda s: 'binomial(%s)' % ",".join(s[1:-1].split()))
 
     if verbose:
         print '6', formule
