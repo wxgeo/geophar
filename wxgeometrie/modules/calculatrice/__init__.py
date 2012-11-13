@@ -205,7 +205,7 @@ class Options(QWidget):
         prm = parent.param
 
         ### Liste des options de la calculatrice ###
-        self.pave = pave = QVBoxLayout()
+        self.pave = QVBoxLayout()
 
         # Chiffres significatifs
         box = QGroupBox(u"Mode calcul approché")
@@ -480,12 +480,25 @@ class Calculatrice(Panel_simple):
                 self.interprete.calcul_exact = self.param('calcul_exact')
                 self.entree.bouton.mode_normal()
             aide = resultat.startswith("\n== Aide sur ")
+            if aide:
+                latex = ''
+            elif not latex:
+                latex = resultat
             #LaTeX
             debug("Expression LaTeX: " + latex)
             try:
-                self.modifier_pp_texte((latex or resultat) if not aide else '')
+                try:
+                    # Affichage en LaTeX si possible.
+                    self.modifier_pp_texte(latex)
+                except Exception:
+                    print_error()
+                    # Sinon, affichage en texte simple.
+                    #  `matplotlib.mathtext` est encore loin d'être
+                    # pleinement compatible avec LaTeX !
+                    self.modifier_pp_texte(resultat)
             except Exception:
                 print_error()
+                # Si tout a raté... mais ça ne devrait jamais arrivé.
                 self.modifier_pp_texte("<Affichage impossible>")
             #Presse-papier
             self.dernier_resultat = resultat
