@@ -923,6 +923,8 @@ class Objet(object):
                 ##self.etiquette.style(mode=mode)
             self._style.update(kw)
             self.figure_perimee()
+            if 'visible' in kw and self.etiquette is not None:
+                self.etiquette.figure_perimee()
         if nom_style:
             if 'nom_style' in ('label', 'legende'):
                 raise DeprecationWarning, 'Styles desuets: `legende` et `label`.'
