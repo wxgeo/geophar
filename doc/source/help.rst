@@ -164,12 +164,14 @@ Utilisation de la souris pour piloter le logiciel :
     point se placera sur le quadrillage.
 -   Vous pouvez *déplacer le nom d'un point* autour de celui-ci en cliquant
     dessus, la touche [Alt] étant enfoncée.
+    Vous pouvez également utiliser la touche [Win] (dite aussi touche [Super]).
 
 .. warning::
 
-    Sous *Ubuntu*, la touche [Alt] est déjà utilisée pour déplacer la fenêtre. Il
-    est conseillé de modifier ce comportement : dans Système>Préférence>Fenêtres,
-    choisir "Super" comme "touche de mouvement".
+    Sous *Ubuntu*, la touche [Alt] est déjà utilisée pour déplacer la fenêtre.
+    Il est conseillé d'utiliser à la place la touche [Win].
+    On peut aussi modifier ce comportement (dans Système>Préférence>Fenêtres,
+    choisir par exemple "Super" comme "touche de mouvement").
 
 Création d'objets via le menu «Créer»
 -------------------------------------
@@ -183,7 +185,8 @@ champ, pour obtenir une aide détaillée.
 En cliquant avec le bouton du milieu de la souris dans un champ, vous ferez
 également apparaitre diverses propositions.
 
-Vous pouvez utiliser les notations suivantes : ``[A B]`` pour le segment [AB], ``(A B)`` pour la droite (AB), ``(A>B)`` pour le vecteur
+Vous pouvez utiliser les notations suivantes : ``[A B]`` pour le segment [AB],
+``(A B)`` pour la droite (AB), ``(A>B)`` pour le vecteur
 :math:`\overrightarrow{AB}`, ``||A>B||`` pour sa norme.
 
 .. note:: Remarquez l'espace entre les lettres « A » et « B » dans les deux premiers cas.
@@ -437,6 +440,7 @@ Et à appuyer sur [Entrée] dans un des champs.
 Le résultat est le suivant :
 
 .. image:: img/diag_barres.png
+   :align: center
 
 
 Diagrammes en bâtons :

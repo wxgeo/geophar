@@ -158,11 +158,12 @@ class Label_point(Label_generique):
     def _set_coordonnees(self, x = None, y = None):
         if x is not None:
             parent = self.parent
-            rx, ry = self.canvas.dcoo2pix(x - parent.abscisse, y - parent.ordonnee)
+            rx, ry = self.canvas.dcoo2pix(x - parent.abscisse, parent.ordonnee - y)
+            # rayon: distance(point, etiquette), en pixels.
             rayon = hypot(rx, ry)
             if rayon:
-                self.style(_angle_ = acos(rx/rayon)*sign(-ry))
-            # Distance maximale entre le point et son étiquette : 25 pixels.
+                self.style(_angle_ = acos(rx/rayon)*sign(ry))
+            # Distance maximale entre le point et son étiquette : 50 pixels.
             self.style(_rayon_ = min(rayon, 50))
 
 

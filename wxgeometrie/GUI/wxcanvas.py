@@ -33,7 +33,7 @@ from .app import app
 from .menu_objet import MenuActionsObjet
 from .proprietes_objets import Proprietes
 from .wxlib import (BusyCursor, shift_down, alt_down, ctrl_down, left_down,
-                   right_down, lieu, PopUpMenu)
+                   right_down, meta_down, lieu, PopUpMenu)
 from .. import param
 from ..pylib import print_error, debug
 from ..geolib.textes import Texte
@@ -451,7 +451,7 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
                 elif not self.fixe:
                     self.gestion_zoombox(lieu(event))
 
-            elif alt_down(event): # deplacement de l'etiquette d'un objet
+            elif alt_down(event) or meta_down(event): # deplacement de l'etiquette d'un objet
                 self.debut_zoom = None
                 x, y = lieu(event)
                 if self.etiquette_selectionnee is None:
@@ -466,7 +466,7 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
                                     break
                             except:
                                 print_error()
-                                self.message(u"Erreur: impossible de trouver l'étiquette de %s.." %objet.nom)
+                                self.message(u"Erreur: impossible de trouver l'étiquette de %s.." % objet.nom)
                 if self.etiquette_selectionnee:
                     self.setCursor(Qt.PointingHandCursor)
                     self.etiquette_selectionnee(*self.coordonnees(event, *self.decalage_coordonnees))

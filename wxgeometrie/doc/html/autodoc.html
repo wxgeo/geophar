@@ -2096,6 +2096,7 @@ Sinon, un préfixe aléatoire est généré.</p>
 <tt class="descname">sauvegarder</tt><big>(</big><big>)</big><a class="headerlink" href="#wxgeometrie.geolib.feuille.Feuille.sauvegarder" title="Lien permanent vers cette définition">¶</a></dt>
 <dd><p>Renvoie l&#8217;ensemble des commandes python qui permettra de recréer
 la figure avec tous ses objets.</p>
+<p>La figure pourra ensuite être restaurée à l&#8217;aide la commande <cite>charger()</cite>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -2194,10 +2195,18 @@ sont désactivées pour plus de rapidité.</p>
 <p>Si signature != None, elle est utilisée pour la gestion de l&#8217;historique.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="staticmethod">
 <dt id="wxgeometrie.geolib.feuille.Interprete_feuille.parser">
-<tt class="descname">parser</tt><big>(</big><em>commande</em><big>)</big><a class="headerlink" href="#wxgeometrie.geolib.feuille.Interprete_feuille.parser" title="Lien permanent vers cette définition">¶</a></dt>
-<dd></dd></dl>
+<em class="property">static </em><tt class="descname">parser</tt><big>(</big><em>commande</em><big>)</big><a class="headerlink" href="#wxgeometrie.geolib.feuille.Interprete_feuille.parser" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Convertit la commande en code Python.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">wxgeometrie.geolib.feuille</span> <span class="kn">import</span> <span class="n">Interprete_feuille</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Interprete_feuille</span><span class="o">.</span><span class="n">parser</span><span class="p">(</span><span class="s">&quot;[A B]&quot;</span><span class="p">)</span>
+<span class="go">&#39;Segment(A, B)&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Interprete_feuille</span><span class="o">.</span><span class="n">parser</span><span class="p">(</span><span class="s">&quot;(A B)&quot;</span><span class="p">)</span>
+<span class="go">&#39;Droite(A, B)&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
 
 </dd></dl>
 
@@ -2306,6 +2315,60 @@ Pour chaque morceau, x(t)=at^3+bt^2+ct+d et y(t)=et^3+ft^2+gt+h, où t appartien
 <tt class="descname">points</tt><a class="headerlink" href="#wxgeometrie.geolib.interpolations.Interpolation_lineaire.points" title="Lien permanent vers cette définition">¶</a></dt>
 <dd><p>Un descripteur pour une liste d&#8217;arguments d&#8217;un objet.</p>
 </dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="wxgeometrie.geolib.interpolations.Interpolation_polynomiale_par_morceaux">
+<em class="property">class </em><tt class="descclassname">wxgeometrie.geolib.interpolations.</tt><tt class="descname">Interpolation_polynomiale_par_morceaux</tt><big>(</big><em>*points</em>, <em>**styles</em><big>)</big><a class="headerlink" href="#wxgeometrie.geolib.interpolations.Interpolation_polynomiale_par_morceaux" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Une courbe d&#8217;interpolation polynomiale par morceaux.
+Elle utilise l&#8217;interpolation par morceau de scipy pour construire la fonction
+c&#8217;est la classe scipy.interpolate.PiecewisePolynomial</p>
+<p>elle passe par les points (xl, yl) et avec le nombre derive dans derivl à
+l&#8217;abscisse xl.</p>
+<p>exemple:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">wxgeometrie</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">A</span> <span class="o">=</span> <span class="n">Point</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">B</span> <span class="o">=</span> <span class="n">Point</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">C</span> <span class="o">=</span> <span class="n">Point</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span><span class="o">-</span><span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d</span> <span class="o">=</span> <span class="n">Interpolation_polynomiale_par_morceaux</span><span class="p">(</span><span class="n">A</span><span class="p">,</span><span class="n">B</span><span class="p">,</span><span class="n">C</span><span class="p">,</span> <span class="n">derivees</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mf">0.5</span><span class="p">,</span><span class="mi">2</span><span class="p">])</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Paramètres:</th><td class="field-body"><strong>derivee</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#list" title="(in Python v2.7)"><em>list</em></a>) &#8211; value of the diff number at each point</td>
+</tr>
+</tbody>
+</table>
+<p>:rtype : numpy.lib.polynomial</p>
+<dl class="attribute">
+<dt id="wxgeometrie.geolib.interpolations.Interpolation_polynomiale_par_morceaux.foo">
+<tt class="descname">foo</tt><a class="headerlink" href="#wxgeometrie.geolib.interpolations.Interpolation_polynomiale_par_morceaux.foo" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Fonction wrapper vers la fonction de scipy PiecewisePolynomial</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wxgeometrie.geolib.interpolations.Interpolation_polynomiale_par_morceaux.points">
+<tt class="descname">points</tt><a class="headerlink" href="#wxgeometrie.geolib.interpolations.Interpolation_polynomiale_par_morceaux.points" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Un descripteur pour une liste d&#8217;arguments d&#8217;un objet.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wxgeometrie.geolib.interpolations.Interpolation_polynomiale_par_morceaux.points_tries">
+<tt class="descname">points_tries</tt><a class="headerlink" href="#wxgeometrie.geolib.interpolations.Interpolation_polynomiale_par_morceaux.points_tries" title="Lien permanent vers cette définition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="wxgeometrie.geolib.interpolations.Interpolation_polynomiale_par_morceaux.xmax">
+<tt class="descname">xmax</tt><a class="headerlink" href="#wxgeometrie.geolib.interpolations.Interpolation_polynomiale_par_morceaux.xmax" title="Lien permanent vers cette définition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="wxgeometrie.geolib.interpolations.Interpolation_polynomiale_par_morceaux.xmin">
+<tt class="descname">xmin</tt><a class="headerlink" href="#wxgeometrie.geolib.interpolations.Interpolation_polynomiale_par_morceaux.xmin" title="Lien permanent vers cette définition">¶</a></dt>
+<dd></dd></dl>
 
 </dd></dl>
 
@@ -2745,7 +2808,7 @@ auront un nombre.</li>
 </dd>
 </dl>
 </li>
-<li><p class="first"><cite>repeter</cite> (bool): répéter ou non les graduations.</p>
+<li><p class="first"><cite>repeter</cite> (bool): répéter ou non la numérotation sur les axes.</p>
 </li>
 <li><p class="first"><cite>hauteur</cite> (int): hauteur d&#8217;une graduation (en pixels).</p>
 </li>
@@ -3212,9 +3275,92 @@ Le dernier paramètre (True/False) sert à distinguer les deux tangentes.
 
 <dl class="class">
 <dt id="wxgeometrie.geolib.lignes.Tangente_courbe">
-<em class="property">class </em><tt class="descclassname">wxgeometrie.geolib.lignes.</tt><tt class="descname">Tangente_courbe</tt><big>(</big><em>courbe</em>, <em>point</em><big>)</big><a class="headerlink" href="#wxgeometrie.geolib.lignes.Tangente_courbe" title="Lien permanent vers cette définition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">wxgeometrie.geolib.lignes.</tt><tt class="descname">Tangente_courbe</tt><big>(</big><em>point=None</em>, <em>cdir=None</em><big>)</big><a class="headerlink" href="#wxgeometrie.geolib.lignes.Tangente_courbe" title="Lien permanent vers cette définition">¶</a></dt>
 <dd><p>Une tangente à une courbe.</p>
-<p>Une tangente à une courbe de fonction.</p>
+<p>Une tangente à une courbe. L&#8217;application immédiate se trouve dans les courbes d&#8217;interpolation.
+Mais comme la plus simple à utiliser est l&#8217;interpolation par morceau, il vaut mieux initialiser
+la tangente avec le point et le nombre dérivé.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="wxgeometrie.geolib.lignes.Tangente_courbe_interpolation">
+<em class="property">class </em><tt class="descclassname">wxgeometrie.geolib.lignes.</tt><tt class="descname">Tangente_courbe_interpolation</tt><big>(</big><em>courbe</em>, <em>x=None</em><big>)</big><a class="headerlink" href="#wxgeometrie.geolib.lignes.Tangente_courbe_interpolation" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Une tangente à une courbe de type interpolation polynomiale par morceau.</p>
+<p>Le coefficient directeur est estimé par approximation numérique avec taux de variation
+sur un pas  self.__canvas__.pas().</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Paramètres:</th><td class="field-body"><ul class="first last simple">
+<li><strong>courbe</strong> (<em>Interpolation_polynomiale_par_morceaux</em>) &#8211; la courbe sur laquelle va se placer la tangente</li>
+<li><strong>x</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; position du point de tangence en abscisse; doit être entre xmin et xmax.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>exemple:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">A</span> <span class="o">=</span> <span class="n">Point</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">B</span> <span class="o">=</span> <span class="n">Point</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">C</span> <span class="o">=</span> <span class="n">Point</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span><span class="o">-</span><span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d</span> <span class="o">=</span> <span class="n">Interpolation_polynomiale_par_morceaux</span><span class="p">(</span><span class="n">A</span><span class="p">,</span><span class="n">B</span><span class="p">,</span><span class="n">C</span><span class="p">,</span> <span class="n">derivees</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mf">0.5</span><span class="p">,</span><span class="mi">2</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t2</span> <span class="o">=</span> <span class="n">Tangente_courbe_interpolation</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span> <span class="o">-</span><span class="mi">2</span> <span class="p">)</span>
+</pre></div>
+</div>
+<dl class="attribute">
+<dt id="wxgeometrie.geolib.lignes.Tangente_courbe_interpolation.courbe">
+<tt class="descname">courbe</tt><a class="headerlink" href="#wxgeometrie.geolib.lignes.Tangente_courbe_interpolation.courbe" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Un descripteur pour un argument d&#8217;un objet.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wxgeometrie.geolib.lignes.Tangente_courbe_interpolation.x">
+<tt class="descname">x</tt><a class="headerlink" href="#wxgeometrie.geolib.lignes.Tangente_courbe_interpolation.x" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Un descripteur pour un argument d&#8217;un objet.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="wxgeometrie.geolib.lignes.Tangente_glisseur_interpolation">
+<em class="property">class </em><tt class="descclassname">wxgeometrie.geolib.lignes.</tt><tt class="descname">Tangente_glisseur_interpolation</tt><big>(</big><em>courbe</em>, <em>P=None</em><big>)</big><a class="headerlink" href="#wxgeometrie.geolib.lignes.Tangente_glisseur_interpolation" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Une tangente à une courbe de type interpolation polynomiale par morceau, et qui glisse.</p>
+<p>Le coefficient directeur est estimé par approximation numérique avec taux de variation
+sur un pas  self.__canvas__.pas().</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Paramètres:</th><td class="field-body"><ul class="first last simple">
+<li><strong>courbe</strong> (<em>Interpolation_polynomiale_par_morceaux</em>) &#8211; la courbe sur laquelle va se placer la tangente</li>
+<li><strong>P</strong> (<em>Glisseur_courbe_interpolation</em>) &#8211; Point de type glisseur sur la courbe.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>exemple:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">A</span> <span class="o">=</span> <span class="n">Point</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">B</span> <span class="o">=</span> <span class="n">Point</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">C</span> <span class="o">=</span> <span class="n">Point</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span><span class="o">-</span><span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d</span> <span class="o">=</span> <span class="n">Interpolation_polynomiale_par_morceaux</span><span class="p">(</span><span class="n">A</span><span class="p">,</span><span class="n">B</span><span class="p">,</span><span class="n">C</span><span class="p">,</span> <span class="n">derivees</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mf">0.5</span><span class="p">,</span><span class="mi">2</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">P</span> <span class="o">=</span> <span class="n">Glisseur_courbe_interpolation</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d1</span> <span class="o">=</span> <span class="n">Tangente_glisseur_interpolation</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">P</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="attribute">
+<dt id="wxgeometrie.geolib.lignes.Tangente_glisseur_interpolation.courbe">
+<tt class="descname">courbe</tt><a class="headerlink" href="#wxgeometrie.geolib.lignes.Tangente_glisseur_interpolation.courbe" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Un descripteur pour un argument d&#8217;un objet.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wxgeometrie.geolib.lignes.Tangente_glisseur_interpolation.glisseur">
+<tt class="descname">glisseur</tt><a class="headerlink" href="#wxgeometrie.geolib.lignes.Tangente_glisseur_interpolation.glisseur" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Un descripteur pour un argument d&#8217;un objet.</p>
+</dd></dl>
+
 </dd></dl>
 
 <span class="target" id="module-wxgeometrie.geolib.objet"></span><dl class="attribute">
@@ -3447,12 +3593,53 @@ pour un segment, sa longueur, pour un polygone, son aire...</p>
 <dt id="wxgeometrie.geolib.objet.Objet.label">
 <tt class="descname">label</tt><big>(</big><em>*args</em>, <em>**kw</em><big>)</big><a class="headerlink" href="#wxgeometrie.geolib.objet.Objet.label" title="Lien permanent vers cette définition">¶</a></dt>
 <dd><p>Affiche le label (ou etiquette) de l&#8217;objet.</p>
+<p>Suivant le mode en vigueur, il peut s&#8217;agir du nom de l&#8217;objet,
+éventuellement formaté en LaTeX, ou d&#8217;un texte associé à
+l&#8217;objet:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">wxgeometrie</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">Feuille</span><span class="p">()</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">A</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">objets</span><span class="o">.</span><span class="n">A</span> <span class="o">=</span> <span class="n">Point</span><span class="p">(</span><span class="o">-</span><span class="mf">2.7</span><span class="p">,</span> <span class="mf">3.1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">A</span><span class="o">.</span><span class="n">label</span><span class="p">()</span>
+<span class="go">&#39;$A$&#39;</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">B</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">objets</span><span class="o">.</span><span class="n">B</span> <span class="o">=</span> <span class="n">Point</span><span class="p">(</span><span class="mf">4.8</span><span class="p">,</span> <span class="mf">6.5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">D1</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">objets</span><span class="o">.</span><span class="n">D1</span> <span class="o">=</span> <span class="n">Droite</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">D1</span><span class="o">.</span><span class="n">label</span><span class="p">()</span>
+<span class="go">&#39;&#39;</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">D1</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="n">NOM</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">D1</span><span class="o">.</span><span class="n">label</span><span class="p">())</span>
+<span class="go">$\mathscr{D}_{1}$</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">D1</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s">&quot;Je suis une droite.&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">D1</span><span class="o">.</span><span class="n">label</span><span class="p">())</span>
+<span class="go">Je suis une droite.</span>
+</pre></div>
+</div>
+<p>Si le texte contient des formules entre accolades, elles
+peuvent également être interprétées, si le mode FORMULE
+est activé:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">D1</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s">&quot;A a pour abscisse {A.x}.&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">FORMULE</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">D1</span><span class="o">.</span><span class="n">label</span><span class="p">()</span>
+<span class="go">A a pour abscisse -2.7.</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="staticmethod">
 <dt id="wxgeometrie.geolib.objet.Objet.latex_police_cursive">
 <em class="property">static </em><tt class="descname">latex_police_cursive</tt><big>(</big><em>nom</em><big>)</big><a class="headerlink" href="#wxgeometrie.geolib.objet.Objet.latex_police_cursive" title="Lien permanent vers cette définition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="attribute">
+<dt id="wxgeometrie.geolib.objet.Objet.legende">
+<tt class="descname">legende</tt><a class="headerlink" href="#wxgeometrie.geolib.objet.Objet.legende" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Renvoie le texte brut associé à l&#8217;objet.</p>
+<p>Permet d&#8217;avoir une interface unique pour les objets avec
+étiquette, et les textes (qui sont eux-mêmes leur propre
+étiquette en quelque sorte), qui surclassent cette méthode.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="wxgeometrie.geolib.objet.Objet.message">
@@ -3573,7 +3760,7 @@ Le formatage est respecté (essayez &#8216;un&#8217;, &#8216;UN&#8217;, &#8216;U
 
 <dl class="attribute">
 <dt id="wxgeometrie.geolib.objet.Objet.verrou">
-<tt class="descname">verrou</tt><em class="property"> = &lt;wxgeometrie.geolib.objet.Verrou object at 0xaf7cbec&gt;</em><a class="headerlink" href="#wxgeometrie.geolib.objet.Objet.verrou" title="Lien permanent vers cette définition">¶</a></dt>
+<tt class="descname">verrou</tt><em class="property"> = &lt;wxgeometrie.geolib.objet.Verrou object at 0xa951e6c&gt;</em><a class="headerlink" href="#wxgeometrie.geolib.objet.Objet.verrou" title="Lien permanent vers cette définition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -3989,6 +4176,34 @@ les coordonnées du glisseur M seront déterminées par la formule M = O + r*(co
 </dd></dl>
 
 <dl class="class">
+<dt id="wxgeometrie.geolib.points.Glisseur_courbe_interpolation">
+<em class="property">class </em><tt class="descclassname">wxgeometrie.geolib.points.</tt><tt class="descname">Glisseur_courbe_interpolation</tt><big>(</big><em>courbe</em>, <em>x=None</em>, <em>**styles</em><big>)</big><a class="headerlink" href="#wxgeometrie.geolib.points.Glisseur_courbe_interpolation" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Un point sur une courbe d&#8217;interpolation.
+Point pouvant &#8216;glisser&#8217; sur une courbe:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span> <span class="o">=</span> <span class="n">Glisseur_courbe_interpolation</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span> <span class="o">-</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="attribute">
+<dt id="wxgeometrie.geolib.points.Glisseur_courbe_interpolation.courbe">
+<tt class="descname">courbe</tt><a class="headerlink" href="#wxgeometrie.geolib.points.Glisseur_courbe_interpolation.courbe" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Un descripteur pour un argument d&#8217;un objet.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wxgeometrie.geolib.points.Glisseur_courbe_interpolation.parametre">
+<tt class="descname">parametre</tt><a class="headerlink" href="#wxgeometrie.geolib.points.Glisseur_courbe_interpolation.parametre" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Un descripteur pour un argument d&#8217;un objet.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wxgeometrie.geolib.points.Glisseur_courbe_interpolation.x">
+<tt class="descname">x</tt><a class="headerlink" href="#wxgeometrie.geolib.points.Glisseur_courbe_interpolation.x" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Un descripteur pour un argument d&#8217;un objet.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
 <dt id="wxgeometrie.geolib.points.Glisseur_demidroite">
 <em class="property">class </em><tt class="descclassname">wxgeometrie.geolib.points.</tt><tt class="descname">Glisseur_demidroite</tt><big>(</big><em>demidroite</em>, <em>k=None</em>, <em>**styles</em><big>)</big><a class="headerlink" href="#wxgeometrie.geolib.points.Glisseur_demidroite" title="Lien permanent vers cette définition">¶</a></dt>
 <dd><p>Un point sur une demi-droite.</p>
@@ -4381,6 +4596,26 @@ N = Point_final(A, [A&gt;B, B&gt;C], [-3,2])</p>
 <dl class="attribute">
 <dt id="wxgeometrie.geolib.points.Point_homothetie.point">
 <tt class="descname">point</tt><a class="headerlink" href="#wxgeometrie.geolib.points.Point_homothetie.point" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Un descripteur pour un argument d&#8217;un objet.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="wxgeometrie.geolib.points.Point_interpolation">
+<em class="property">class </em><tt class="descclassname">wxgeometrie.geolib.points.</tt><tt class="descname">Point_interpolation</tt><big>(</big><em>point=None</em>, <em>derivee=None</em>, <em>**styles</em><big>)</big><a class="headerlink" href="#wxgeometrie.geolib.points.Point_interpolation" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Un point avec une pente associée.</p>
+<p>Usage interne : les points d&#8217;interpolation sont utilisés pour la construction
+des courbes d&#8217;interpolation.</p>
+<dl class="attribute">
+<dt id="wxgeometrie.geolib.points.Point_interpolation.derivee">
+<tt class="descname">derivee</tt><a class="headerlink" href="#wxgeometrie.geolib.points.Point_interpolation.derivee" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Un descripteur pour un argument d&#8217;un objet.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wxgeometrie.geolib.points.Point_interpolation.point">
+<tt class="descname">point</tt><a class="headerlink" href="#wxgeometrie.geolib.points.Point_interpolation.point" title="Lien permanent vers cette définition">¶</a></dt>
 <dd><p>Un descripteur pour un argument d&#8217;un objet.</p>
 </dd></dl>
 
@@ -5973,6 +6208,15 @@ le mode est fixé à <cite>TEXTE</cite>.</p>
 </dd></dl>
 
 <dl class="attribute">
+<dt id="wxgeometrie.geolib.textes.Texte_editable_generique.legende">
+<tt class="descname">legende</tt><a class="headerlink" href="#wxgeometrie.geolib.textes.Texte_editable_generique.legende" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Renvoie le texte brut associé à l&#8217;objet.</p>
+<p>Permet d&#8217;avoir une interface unique pour les objets avec
+étiquette, et les textes (qui sont eux-mêmes leur propre
+étiquette en quelque sorte), qui surclassent cette méthode.</p>
+</dd></dl>
+
+<dl class="attribute">
 <dt id="wxgeometrie.geolib.textes.Texte_editable_generique.mode_affichage">
 <tt class="descname">mode_affichage</tt><a class="headerlink" href="#wxgeometrie.geolib.textes.Texte_editable_generique.mode_affichage" title="Lien permanent vers cette définition">¶</a></dt>
 <dd><p>Assure une interface commune entre les objets avec étiquette et les textes.</p>
@@ -6616,7 +6860,7 @@ via le mot-clef <cite>attendu</cite>:</p>
 <span class="go">&#39;2&#39;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">texte</span> <span class="o">=</span> <span class="s">&#39;?&#39;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">label</span><span class="p">())</span>
-<span class="go">1+1=\$?\$ (entrer le resultat)</span>
+<span class="go">1+1=? (entrer le resultat)</span>
 </pre></div>
 </div>
 <p>Si un résultat est attendu, alors le texte rentré par l&#8217;utilisateur passera
@@ -8180,7 +8424,7 @@ la classe Panel_API_graphique, plus evoluée que celle-ci.</p>
 
 <dl class="method">
 <dt id="wxgeometrie.GUI.panel.Panel_simple.param">
-<tt class="descname">param</tt><big>(</big><em>parametre</em>, <em>valeur=&lt;wxgeometrie.pylib.fonctions.NoArgument object at 0xa96b90c&gt;</em>, <em>defaut=False</em><big>)</big><a class="headerlink" href="#wxgeometrie.GUI.panel.Panel_simple.param" title="Lien permanent vers cette définition">¶</a></dt>
+<tt class="descname">param</tt><big>(</big><em>parametre</em>, <em>valeur=&lt;wxgeometrie.pylib.fonctions.NoArgument object at 0xa33c88c&gt;</em>, <em>defaut=False</em><big>)</big><a class="headerlink" href="#wxgeometrie.GUI.panel.Panel_simple.param" title="Lien permanent vers cette définition">¶</a></dt>
 <dd><p>Recherche la valeur d&#8217;un paramètre d&#8217;abord dans les paramètres du module (paramètres locaux), puis dans ceux de wxgéométrie.</p>
 <p>Si defaut vaut True, la valeur par défaut du paramètre est renvoyée.</p>
 </dd></dl>
@@ -8593,17 +8837,6 @@ le module doit définir :</p>
 <tt class="descname">write</tt><big>(</big><em>chaine</em><big>)</big><a class="headerlink" href="#wxgeometrie.initialisation.SortiesMultiples.write" title="Lien permanent vers cette définition">¶</a></dt>
 <dd></dd></dl>
 
-</dd></dl>
-
-<dl class="function">
-<dt id="wxgeometrie.initialisation.gerer_arguments">
-<tt class="descclassname">wxgeometrie.initialisation.</tt><tt class="descname">gerer_arguments</tt><big>(</big><big>)</big><a class="headerlink" href="#wxgeometrie.initialisation.gerer_arguments" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>On récupère les options éventuelles passées au programme.</p>
-<p>-a ou &#8211;all : essaie de détecter tous les modules possibles pour les intégrer au démarrage
-ex: python wxgeometrie.pyw &#8211;all monfichier1.geo monfichier2.geo</p>
-<p>-p ou &#8211;param ou &#8211;parametres : modifier le contenu du module &#8216;param&#8217;. Les parametres sont séparés par des points-virgules.
-ex: python wxgeometrie.pyw &#8211;param version=&#8216;0.1&#8217;;tolerance=0.01 monfichier1.geo monfichier2.geo</p>
-<p>-d ou &#8211;defaut : ne pas charger les préférences</p>
 </dd></dl>
 
 <dl class="function">
@@ -9544,13 +9777,41 @@ l&#8217;ordre des termes (par exemple, transformer <cite>2-x</cite> en <cite>-x+
 </dd></dl>
 
 <dl class="function">
+<dt id="wxgeometrie.mathlib.parsers.latex2mathtext">
+<tt class="descclassname">wxgeometrie.mathlib.parsers.</tt><tt class="descname">latex2mathtext</tt><big>(</big><em>chaine</em><big>)</big><a class="headerlink" href="#wxgeometrie.mathlib.parsers.latex2mathtext" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Convertit la chaîne pour qu&#8217;elle puisse être affichée par mathtext.</p>
+<p>Matplotlib offre 2 possibilités pour l&#8217;affichage de chaînes LaTeX :</p>
+<blockquote>
+<div><ul class="simple">
+<li>soit utiliser une installation LaTeX existante,</li>
+<li>soit utiliser son propre moteur de rendu, mathtext.</li>
+</ul>
+</div></blockquote>
+<p>Le rendu de matplotlib.mathtext est loin d&#8217;avoir la qualité du vrai LaTeX,
+mais il ne nécessite pas d&#8217;avoir LaTeX installé, il est bien plus rapide,
+et il permet l&#8217;export au format vectoriel (matplotlib utilise dvi2png sinon).</p>
+<p>C&#8217;est donc le format utilisé par défaut.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="wxgeometrie.mathlib.parsers.mathtext_parser">
+<tt class="descclassname">wxgeometrie.mathlib.parsers.</tt><tt class="descname">mathtext_parser</tt><big>(</big><em>txt</em><big>)</big><a class="headerlink" href="#wxgeometrie.mathlib.parsers.mathtext_parser" title="Lien permanent vers cette définition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
 <dt id="wxgeometrie.mathlib.parsers.simplifier_ecriture">
 <tt class="descclassname">wxgeometrie.mathlib.parsers.</tt><tt class="descname">simplifier_ecriture</tt><big>(</big><em>formule</em><big>)</big><a class="headerlink" href="#wxgeometrie.mathlib.parsers.simplifier_ecriture" title="Lien permanent vers cette définition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
+<dt id="wxgeometrie.mathlib.parsers.tex_dollars">
+<tt class="descclassname">wxgeometrie.mathlib.parsers.</tt><tt class="descname">tex_dollars</tt><big>(</big><em>txt</em><big>)</big><a class="headerlink" href="#wxgeometrie.mathlib.parsers.tex_dollars" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Rajoute des $ si l&#8217;expression LaTeX ainsi obtenue est correcte.</p>
+</dd></dl>
+
+<dl class="function">
 <dt id="wxgeometrie.mathlib.parsers.traduire_formule">
-<tt class="descclassname">wxgeometrie.mathlib.parsers.</tt><tt class="descname">traduire_formule</tt><big>(</big><em>formule=''</em>, <em>fonctions=()</em>, <em>OOo=True</em>, <em>LaTeX=True</em>, <em>changer_separateurs=False</em>, <em>separateurs_personnels=('</em>, <em>'</em>, <em>';')</em>, <em>simpify=False</em>, <em>verbose=None</em>, <em>mots_cles=('and'</em>, <em>'as'</em>, <em>'assert'</em>, <em>'break'</em>, <em>'class'</em>, <em>'continue'</em>, <em>'def'</em>, <em>'del'</em>, <em>'elif'</em>, <em>'else'</em>, <em>'except'</em>, <em>'exec'</em>, <em>'finally'</em>, <em>'for'</em>, <em>'from'</em>, <em>'global'</em>, <em>'if'</em>, <em>'import'</em>, <em>'in'</em>, <em>'is'</em>, <em>'lambda'</em>, <em>'not'</em>, <em>'or'</em>, <em>'pass'</em>, <em>'print'</em>, <em>'raise'</em>, <em>'return'</em>, <em>'try'</em>, <em>'while'</em>, <em>'with'</em>, <em>'yield')</em><big>)</big><a class="headerlink" href="#wxgeometrie.mathlib.parsers.traduire_formule" title="Lien permanent vers cette définition">¶</a></dt>
+<tt class="descclassname">wxgeometrie.mathlib.parsers.</tt><tt class="descname">traduire_formule</tt><big>(</big><em>formule=''</em>, <em>fonctions=()</em>, <em>OOo=True</em>, <em>LaTeX=True</em>, <em>simpify=False</em>, <em>verbose=None</em>, <em>mots_cles=('and'</em>, <em>'as'</em>, <em>'assert'</em>, <em>'break'</em>, <em>'class'</em>, <em>'continue'</em>, <em>'def'</em>, <em>'del'</em>, <em>'elif'</em>, <em>'else'</em>, <em>'except'</em>, <em>'exec'</em>, <em>'finally'</em>, <em>'for'</em>, <em>'from'</em>, <em>'global'</em>, <em>'if'</em>, <em>'import'</em>, <em>'in'</em>, <em>'is'</em>, <em>'lambda'</em>, <em>'not'</em>, <em>'or'</em>, <em>'pass'</em>, <em>'print'</em>, <em>'raise'</em>, <em>'return'</em>, <em>'try'</em>, <em>'while'</em>, <em>'with'</em>, <em>'yield')</em><big>)</big><a class="headerlink" href="#wxgeometrie.mathlib.parsers.traduire_formule" title="Lien permanent vers cette définition">¶</a></dt>
 <dd></dd></dl>
 
 </div>

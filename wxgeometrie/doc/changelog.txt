@@ -1,0 +1,21 @@
+* Geolib: remove old 'label' style.
+* Fix failing docstrings in geolib (in `Objet.label()`).
+* Add Vigenère method to cryptography module.
+* Add `Objet.legende` to geolib API.
+* When exporting, files extensions was always in uppercase.
+* Fix geolib widgets bugs and failing doctests since API change.
+* Fix small regressions in geolib/widgets.py (since API change).
+* Improve doc-update tool.
+* Fix regression in labels positionning (geolib).
+* Adapt 'GUI/proprietes_objets.py' to new geolib API.
+* Redesign of labels system in geolib.
+* Remove incorrect assertion in unit test.
+* Major redesign of geolib objects labels.
+* Small fixes in geolib, so all tests pass again, before next step in core redesign.
+* Change 'Objet.sauvegarder()' and 'Label_generique.sauvegarder()'
+* Improve display of lists, sets and tuples in `geolib.Interprete`.
+* Fix dependency isue in geolib.Formule.
+* Geolib core redesign (part 2).
+* First draft for geolib core redesign.
+* Geolib core cleaning (first part: renaming).
+* Use new method `Objet.sauvegarder()` for saving sheet content.

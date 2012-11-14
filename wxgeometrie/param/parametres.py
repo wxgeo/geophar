@@ -189,6 +189,7 @@ defaut_objets = {
     "visible": True,
     "niveau": 0,
     "afficher_info": True,
+    "alpha": 1,
     }
 widgets = {"bidon":1,
     }
@@ -320,7 +321,6 @@ cotes = {
     "epaisseur": 1.,
     "style": "-",
     "visible": True,
-    "alpha": 1,
     "niveau": 0,
     "categorie": "lignes",
     "codage": codage_des_lignes[0],
@@ -358,7 +358,6 @@ textes = {
     "niveau": 7,
     "alignement_vertical": "center",
     "alignement_horizontal": "center",
-    "alpha": 1,
     "pad": 2, # distance entre le texte et le cadre, en pixels
     "alpha_fond": 1,
     "formatage": RIEN,
