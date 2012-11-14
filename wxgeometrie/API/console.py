@@ -68,8 +68,10 @@ class Console:
 
         if commande in ('quit', 'exit', 'close'):
             self.parent.close()
+            return
         elif commande in ('restart', '!!!'):
             self.parent.restart()
+            return
 
 #        if param.debug:
 #            self.parent.onglets.onglet_actuel.action_effectuee(u"REQUETE CONSOLE:" + commande)
