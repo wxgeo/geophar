@@ -1300,7 +1300,8 @@ class Objet(object):
                             artist.set(**extra)
                     if not visible:
                         for artist in self._representation:
-                            artist.set_alpha(.4*artist.get_alpha())
+                            alpha = artist.get_alpha()
+                            artist.set_alpha(.4 if alpha is None else .4*alpha)
                     self._creer_trace()
                 else:
                     self._representation = []
