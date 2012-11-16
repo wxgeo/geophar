@@ -250,19 +250,10 @@ class Statistiques(Panel_API_graphique):
         return self._graph
 
 
-
     def EvtChoice(self, index):
         self._graph = self.types_diagrammes[index]
         self.actualiser()
 
-
-    ##def EvtChar(self, event):
-        ##code = event.GetKeyCode()
-##
-        ##if code in (wx.WXK_RETURN, wx.WXK_NUMPAD_ENTER):
-            ##self.actualiser()
-        ##else:
-            ##event.Skip()
 
     def EvtCheck(self, state):
         self.param('hachures', self.onglets_bas.tab_reglages.hachures.isChecked())
@@ -282,7 +273,7 @@ class Statistiques(Panel_API_graphique):
             self.origine_x = onglets.tab_graduation.origine_x.text()
             self.origine_y = onglets.tab_graduation.origine_y.text()
             self.donnees_valeurs = onglets.tab_donnees.valeurs.text()
-            self.onglets_classes = onglets.tab_donnees.classes.text()
+            self.donnees_classes = onglets.tab_donnees.classes.text()
 
             # test choix quantiles
             self.choix_quantiles["mediane"][0] = onglets.tab_quantiles.mediane.isChecked()
