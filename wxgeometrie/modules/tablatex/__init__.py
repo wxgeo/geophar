@@ -31,7 +31,7 @@ from PyQt4.QtGui import (QHBoxLayout, QVBoxLayout, QCheckBox, QPushButton,
 from ...GUI.ligne_commande import LigneCommande
 from ...GUI import MenuBar, Panel_simple
 from ... import param
-from ...pylib import warning
+from ...pylib import warning, print_error
 from ...pylib.erreurs import message
 from .tabsign import tabsign
 from .tabval import tabval
@@ -188,6 +188,10 @@ class TabLaTeX(Panel_simple):
 
 
     def generer_code(self, commande, **kw):
+        if not commande.strip():
+            return
+        # Utilisé pour la sauvegarde automatique:x+3
+
         self.modifie = True
         try:
             if self._param_.mode == 0:
@@ -207,6 +211,7 @@ class TabLaTeX(Panel_simple):
             self.message(u"Le code LaTeX a bien été généré.")
         except BaseException, erreur:
             self.message(u"Impossible de générer le code LaTeX. " + message(erreur))
+            self.code_tableau.setText(u"<i><b>Erreur.</b> Impossible de générer le code LaTeX.</i>")
             self.entree.setFocus()
             if param.debug:
                 raise
@@ -241,3 +246,7 @@ class TabLaTeX(Panel_simple):
             self.formatage_resultats.show()
             self.entree.setToolTip(tabval.__doc__)
             self.code_entete.setText(u"")
+        try:
+            self.entree.valider()
+        except Exception:
+            print_error()
