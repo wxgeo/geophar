@@ -74,10 +74,13 @@ class FenetrePrincipale(QMainWindow):
 
 
         # À créer avant les onglets
-        self.fenetre_sortie = PyOnDemandOutputWindow(title = NOMPROG + u" - messages.")
+        self.fenetre_sortie = PyOnDemandOutputWindow(title=u"%s - messages."
+                                                             % NOMPROG)
+        self.fenetre_sortie.setWindowIcon(
+                            QIcon(path2(u"%/wxgeometrie/images/icone_log.svg")))
         self.fichier_log = fichier_log
 
-        self.setWindowIcon(QIcon(path2(u"%/wxgeometrie/images/icone.ico")))
+        self.setWindowIcon(QIcon(path2(u"%/wxgeometrie/images/icone.svg")))
         self.barre = self.statusBar()
         self.barre_dte = QLabel(self)
 #        self.barre_dte.setText(
@@ -94,8 +97,8 @@ class FenetrePrincipale(QMainWindow):
         self.message(NOMPROG + u" version " + param.version)
 
         #Ligne de commande de débogage
-        self.ligne_commande = LigneCommande(self, 300, action = self.executer_commande, \
-                    afficher_bouton = False, legende = 'Ligne de commande :')
+        self.ligne_commande = LigneCommande(self, 300, action=self.executer_commande,
+                        afficher_bouton=False, legende='Ligne de commande :')
         self.ligne_commande.setVisible(param.ligne_commande)
 
         # Creation des onglets et de leur contenu
@@ -179,7 +182,7 @@ class FenetrePrincipale(QMainWindow):
     def titre(self, texte=None):
         titre = NOMPROG
         if texte:
-            titre += '-' + uu(texte)
+            titre += ' - ' + uu(texte)
         self.setWindowTitle(titre)
 
 
