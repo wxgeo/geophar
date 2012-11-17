@@ -330,15 +330,18 @@ class ProprietesAffichage(QWidget):
             else:
                 etat = Qt.PartiallyChecked
             cb.setCheckState(etat)
-            cb.stateChanged.connect(partial(self.checked, propriete))
+            cb.stateChanged.connect(partial(self.checked, propriete=propriete))
             cb.stateChanged.connect(partial(cb.setTristate, False))
 
 
     def EvtMode(self, valeur):
         self.changements["mode"] = valeur
 
-    def checked(self, propriete, state):
-        self.changements[propriete] = (state == Qt.Checked)
+    def checked(self, state, propriete):
+        # Bug avec Qt 4.8.1 - En cochant la case la première fois, on obtient
+        # Qt.PartiallyChecked, et non Qt.Checked. Si ensuite, on décoche et on
+        # recoche, on obtient bien Qt.Checked.
+        self.changements[propriete] = (state != Qt.Unchecked)
 
     def EvtEtiquette(self):
         self.changements["label"] = self.etiquette.text()
