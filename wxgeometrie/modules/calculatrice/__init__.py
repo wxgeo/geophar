@@ -50,14 +50,17 @@ from ... import param
 class CalculatriceMenuBar(MenuBar):
     def __init__(self, panel):
         MenuBar.__init__(self, panel)
-        self.ajouter(u"Fichier", ["quitter"])
+        self.ajouter(u"Fichier", [u"Nouvelle session",
+                                    u"Réinitialiser la calculatrice.", "Ctrl+N",
+                                    self.panel.initialiser],
+                                [u"ouvrir"], [u"enregistrer"],
+                                [u"enregistrer_sous"], ["quitter"])
         self.ajouter(u"Affichage", ["onglet"])
         for rubrique in __classement__:
             self.ajouter(rubrique, *(self.formater(contenu, rubrique != "Symboles") for contenu in __classement__[rubrique]))
             # pas de parenthese apres un symbole
         self.ajouter(u"Outils",
                         [u"Mémoriser le résultat", u"Copie le resultat du calcul dans le presse-papier, afin de pouvoir l'utiliser ailleurs.", "Ctrl+M", self.panel.vers_presse_papier],
-                        [u"Réinitialiser", u"Réinitialiser la calculatrice.", "Ctrl+I", self.panel.initialiser],
 #                        [u"LaTeX",
 #                            [u"Inverser les sommes", "Inverser l'ordre d'affichage des termes des sommes.", None, self.panel.inverser_sommes_LaTeX, self.panel.inverser_sommes_LaTeX]
 #                            ],
