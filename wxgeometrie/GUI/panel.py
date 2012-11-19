@@ -52,6 +52,8 @@ class Panel_simple(QWidget):
     feuille_actuelle = None # pas de feuille
     # Indique si des modifications ont eu lieu (et s'il faudra donc sauvegarder la session)
     modifie = False
+    # Nom de fichier utilisé pour la dernière sauvegarde (ou restauration).
+    _nom_fichier = ''
 
     def __init__(self, parent, module, menu = True):
         QWidget.__init__(self, parent)
@@ -66,9 +68,6 @@ class Panel_simple(QWidget):
         # ._derniere_signature : sert pour les logs (en cas de zoom de souris essentiellement).
         # (cf. geolib/feuille.py pour plus de détails.)
         self._derniere_signature = None
-        ##if menu:
-            ### Création de la barre de menus associée au panel
-            ##self.menu = self.module._menu_(self)
 
 
     def message(self, texte = ''):
@@ -87,19 +86,31 @@ class Panel_simple(QWidget):
         """
         with BusyCursor():
             if not isinstance(fichier, FichierGEO):
+                if isinstance(fichier, basestring):
+                    # Par défaut, on sauvegardera sous le même nom ensuite.
+                    self._nom_fichier = fichier
                 fichier, message = ouvrir_fichierGEO(fichier)
                 self.message(message)
             if param.debug:
                 print(u'Module "%s": ouverture du fichier "%s".' % (self.nom, fichier.nom))
             self._ouvrir(fichier) # instance de FichierGEO
 
+    @property
+    def nom_sauvegarde(self):
+        u"Nom de sauvegarde gardé en mémoire."
+        return self._nom_fichier
 
-    def sauvegarder(self, nom_fichier = 'sauvegarde', **kw):
+    def sauvegarder(self, nom_fichier='', **kw):
         if nom_fichier:
-            if nom_fichier.endswith(".geoz"):
-                nom_fichier = removeend(nom_fichier.strip(), ".geo", ".geoz") + ".geoz"     # le nom par defaut sera ainsi [nom_de_la_feuille].geo"
-            else:
-                nom_fichier = removeend(nom_fichier.strip(), ".geo", ".geoz") + ".geo"     # le nom par defaut sera ainsi [nom_de_la_feuille].geo"
+            nom_fichier = nom_fichier.strip()
+            extension = ('.geoz' if nom_fichier.endswith('.geoz') else '.geo')
+            # Eviter les doubles extensions ('monfichier.geo.geo' par exemple).
+            nom_fichier = removeend(nom_fichier, ".geo", ".geoz") + extension
+            # Par défaut, on sauvegardera sous le même nom ensuite.
+            self._nom_fichier = nom_fichier
+        elif nom_fichier == '':
+            # Dernier nom utilisé pour sauvegarder.
+            nom_fichier = self._nom_fichier or "sauvegarde"
         try:
             fgeo = FichierGEO(module = self.nom)
             self._sauvegarder(fgeo, **kw)
@@ -258,14 +269,21 @@ class Panel_API_graphique(Panel_simple):
 
 
 
-    def sauvegarder(self, nom_fichier = '', feuille = None):
+    def sauvegarder(self, nom_fichier='', feuille=None):
+        u"""Sauvegarde la feuille `feuille` à l'emplacement `nom_fichier`.
+
+        Par défaut, `feuille` et la feuille courante, et le nom de fichier est
+        celui utilisé précédemment pour sauver la feuille (ou "sauvegarde.geo"
+        si la feuille n'a encore jamais été sauvée).
+
+        NB: si `nom_fichier` vaut None, aucune sauvegarde n'a lieu sur le
+        disque, mais un objet FichierGEO correspondant à la sauvegarde est
+        retourné à la place.
+        """
         if feuille is None:
             feuille = self.feuille_actuelle
         if nom_fichier == '':
-            if feuille.sauvegarde["nom"]:
-                nom_fichier = os.path.join(feuille.sauvegarde["repertoire"], feuille.sauvegarde["nom"])
-            else:
-                nom_fichier = "sauvegarde"
+            nom_fichier = self.nom_sauvegarde or "sauvegarde"
         if nom_fichier is None:
             return Panel_simple.sauvegarder(self, nom_fichier, feuille = feuille)
         Panel_simple.sauvegarder(self, nom_fichier, feuille = feuille)
@@ -275,6 +293,61 @@ class Panel_API_graphique(Panel_simple):
         feuille.sauvegarde["nom"] = removeend(fich, ".geo") # nom sans l'extension
         self.rafraichir_titre()
 
+
+    @property
+    def nom_sauvegarde(self):
+        u"Nom de sauvegarde gardé en mémoire."
+        sauvegarde = self.feuille_actuelle.sauvegarde
+        nom  = sauvegarde['nom']
+        return (os.path.join(sauvegarde["repertoire"], nom) if nom else '')
+
+
+    def _sauvegarder(self, fgeo, feuille = None):
+        if feuille is None:
+            feuille = self.feuille_actuelle
+
+        fgeo.contenu["Figure"] = [feuille.sauvegarder()]
+
+        fgeo.contenu["Affichage"] = [{}]
+        for parametre in self.canvas.parametres:
+            fgeo.contenu["Affichage"][0][parametre] = [repr(getattr(self.canvas, parametre))]
+
+        fgeo.contenu["Meta"] = [{}]
+        feuille.infos(modification = time.strftime("%d/%m/%Y - %H:%M:%S",time.localtime()))
+        for nom, info in feuille.infos().items():
+            fgeo.contenu["Meta"][0][nom] = [info]
+        #fgeo.contenu["Meta"][0]["modification"] = [time.strftime("%d/%m/%Y - %H:%M:%S",time.localtime())]
+
+
+
+
+    def _ouvrir(self, fgeo):
+        if fgeo.contenu.has_key("Affichage"):
+            if fgeo.contenu["Affichage"]:
+                parametres = fgeo.contenu["Affichage"][0]
+                for parametre in parametres.keys():
+                    setattr(self.canvas, parametre, eval_safe(parametres[parametre][0]))
+
+        if fgeo.contenu.has_key("Figure"):
+            for figure in fgeo.contenu["Figure"]:
+                feuille = self.creer_feuille()
+                feuille.charger(figure, mode_tolerant = True)
+
+        if fgeo.contenu.has_key("Meta"): # obligatoirement APRES la creation du document, donc après "Figure"
+            infos = fgeo.contenu["Meta"][0]
+            for key, value in infos.items():
+                self.feuille_actuelle.infos(key = value[0])
+
+
+        for macro in fgeo.contenu.get("Macro", []):
+            code = macro["code"][0]
+            autostart = (macro["autostart"][0].strip().capitalize() == "True")
+            mode_avance = (macro["mode_avance"][0].strip().capitalize() == "True")
+            print "mode avance", mode_avance
+            nom = macro["nom"][0]
+            self.feuille_actuelle.macros[nom] = {"code": code, "autostart": autostart, "mode_avance": mode_avance}
+            if autostart:
+                self.executer_macro(nom = nom, **self.feuille_actuelle.macros[nom])
 
     def _fichiers_ouverts(self):
         u"Retourne la liste des fichiers ouverts (feuilles vierges exceptées)."
@@ -355,56 +428,6 @@ class Panel_API_graphique(Panel_simple):
         self.rafraichir_titre()
 ##        self.canvas.rafraichir_axes = True
         self.affiche()
-
-
-
-
-    def _sauvegarder(self, fgeo, feuille = None):
-        if feuille is None:
-            feuille = self.feuille_actuelle
-
-        fgeo.contenu["Figure"] = [feuille.sauvegarder()]
-
-        fgeo.contenu["Affichage"] = [{}]
-        for parametre in self.canvas.parametres:
-            fgeo.contenu["Affichage"][0][parametre] = [repr(getattr(self.canvas, parametre))]
-
-        fgeo.contenu["Meta"] = [{}]
-        feuille.infos(modification = time.strftime("%d/%m/%Y - %H:%M:%S",time.localtime()))
-        for nom, info in feuille.infos().items():
-            fgeo.contenu["Meta"][0][nom] = [info]
-        #fgeo.contenu["Meta"][0]["modification"] = [time.strftime("%d/%m/%Y - %H:%M:%S",time.localtime())]
-
-
-
-
-    def _ouvrir(self, fgeo):
-        if fgeo.contenu.has_key("Affichage"):
-            if fgeo.contenu["Affichage"]:
-                parametres = fgeo.contenu["Affichage"][0]
-                for parametre in parametres.keys():
-                    setattr(self.canvas, parametre, eval_safe(parametres[parametre][0]))
-
-        if fgeo.contenu.has_key("Figure"):
-            for figure in fgeo.contenu["Figure"]:
-                feuille = self.creer_feuille()
-                feuille.charger(figure, mode_tolerant = True)
-
-        if fgeo.contenu.has_key("Meta"): # obligatoirement APRES la creation du document, donc après "Figure"
-            infos = fgeo.contenu["Meta"][0]
-            for key, value in infos.items():
-                self.feuille_actuelle.infos(key = value[0])
-
-
-        for macro in fgeo.contenu.get("Macro", []):
-            code = macro["code"][0]
-            autostart = (macro["autostart"][0].strip().capitalize() == "True")
-            mode_avance = (macro["mode_avance"][0].strip().capitalize() == "True")
-            print "mode avance", mode_avance
-            nom = macro["nom"][0]
-            self.feuille_actuelle.macros[nom] = {"code": code, "autostart": autostart, "mode_avance": mode_avance}
-            if autostart:
-                self.executer_macro(nom = nom, **self.feuille_actuelle.macros[nom])
 
 
     def executer_macro(self, **kw):

@@ -313,10 +313,10 @@ border-top-right-radius: 4px;
 
 
     def SaveFile(self):
-        actuelle = self.onglet_actuel.feuille_actuelle # feuille de travail courante
-        if actuelle and actuelle.sauvegarde["nom"]:
+        if self.onglet_actuel.nom_sauvegarde:
             self.onglet_actuel.sauvegarder()
         else:
+            # Pas de nom par défaut.
             self.SaveFileAs()
 
 
