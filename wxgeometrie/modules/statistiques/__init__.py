@@ -1114,9 +1114,9 @@ class Statistiques(Panel_API_graphique):
             "serie" : [{"valeurs" : [self.donnees_valeurs], "classes" : [self.donnees_classes]}],
             "legende" : [{"x" : [self.legende_x], "y" : [self.legende_y], "a" : [self.legende_a]}],
             "graduation": [{"x" : [self.gradu_x], "y" : [self.gradu_y], "a" : [self.gradu_a]}],
+            "origine": [{"x" : [self.origine_x], "y": [self.origine_y]}],
             "mode_graphique" : [self.graph]
             }]
-
 
 
     def _ouvrir(self, fgeo):
@@ -1134,6 +1134,9 @@ class Statistiques(Panel_API_graphique):
             gradu_x = gradu['x'][0]
             gradu_y = gradu['y'][0]
             gradu_a = gradu['a'][0]
+            origine = diagramme["origine"][0]
+            origine_x = origine['x'][0]
+            origine_y = origine['y'][0]
             mode_graphique = diagramme["mode_graphique"][0]
 
             self.onglets_bas.tab_legende.x.setText(legende_x)
@@ -1142,6 +1145,8 @@ class Statistiques(Panel_API_graphique):
             self.onglets_bas.tab_graduation.x.setText(gradu_x)
             self.onglets_bas.tab_graduation.y.setText(gradu_y)
             self.onglets_bas.tab_graduation.a.setText(gradu_a)
+            self.onglets_bas.tab_graduation.origine_x.setText(origine_x)
+            self.onglets_bas.tab_graduation.origine_y.setText(origine_y)
             self.onglets_bas.tab_donnees.valeurs.setText(valeurs)
             self.onglets_bas.tab_donnees.classes.setText(classes)
             print('mode_graphique', mode_graphique)
