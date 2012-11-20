@@ -201,7 +201,8 @@ class CustomStrPrinter(StrPrinter):
         if expr.exp.is_Rational and expr.exp.p == 1 and expr.exp.q == 2:
             return 'sqrt(%s)' % self._print(expr.base)
         if expr.exp.is_Rational and expr.exp.is_negative:
-            return '1/%s'%self._print(expr.base**abs(expr.exp))
+            den = self.parenthesize(expr.base**abs(expr.exp), PREC)
+            return '1/%s' % den
         else:
             return '%s^%s'%(self.parenthesize(expr.base, PREC),
                              self.parenthesize(expr.exp, PREC))

@@ -103,6 +103,13 @@ def test_exemples_de_base():
     assert_resultat('-x^2+2x-3>>factor', '-x^2 + 2 x - 3')
     assert_resultat('abs(-24/5 - 2 i/5)', '2 sqrt(145)/5')
 
+
+def test_issue_sialle1():
+    # Problème : Si on tape 1/(1-sqrt(2)), on obtient le résultat 1/-sqrt(2)+1,
+    # qui est faux (il manque les parenthèses...).
+    assert_resultat("1/(1-sqrt(2))", "1/(-sqrt(2)+1)")
+
+
 @XFAIL
 def test_resolution_complexe():
     assert_resultat('resoudre(2+\i=\dfrac{2\i z}{z-1})', '3/5 + 4*i/5', r'\frac{3}{5} + \frac{4}{5} \mathrm{i}')
