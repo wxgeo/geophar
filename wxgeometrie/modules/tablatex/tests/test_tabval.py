@@ -6,8 +6,8 @@ from wxgeometrie.modules.tablatex.tabval import tabval
 from wxgeometrie import param
 
 
-def assert_tabval(chaine, code_latex):
-    assert_tableau(tabval, chaine, code_latex)
+def assert_tabval(chaine, code_latex, **options):
+    assert_tableau(tabval, chaine, code_latex, **options)
 
 
 
@@ -88,3 +88,21 @@ $f(x)$ & $0$  & $0$  & $0.25$ & $0.25$ & $1$  & $2.75$ & $4.5$ & $7.5$ & $20$ & 
         assert_tabval(s, tab)
     finally:
         param.separateur_decimal = ','
+
+
+def test_formatage():
+    s = 'x^2:-2..2'
+    tab = \
+r"""\begin{center}
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+$x$   & $\textbf{-2}$   & $\textbf{-1}$   & $\textbf{0}$    & $\textbf{1}$    & $\textbf{2}$ \\
+\hline
+$x^2$ & $\color{gray}4$ & $\color{gray}1$ & $\color{gray}0$ & $\color{gray}1$ & $\color{gray}4$ \\
+\hline
+\end{tabular}
+\end{center}
+% x^2:-2..2
+"""
+    assert_tabval(s, tab, formatage_antecedents=r'\textbf{VAL}',
+                          formatage_images=r'\color{gray}VAL')

@@ -97,14 +97,14 @@ class TabLaTeX(Panel_simple):
         self.sizer_type.addSpacing(15)
         self.lbl_formatage = lbl = QLabel(u"Formatage des résultats :")
         self.sizer_type.addWidget(lbl)
-        self.formatage_resultats = QLineEdit()
-        self.formatage_resultats.setMinimumWidth(250)
-        self.formatage_resultats.setText(self._param_.formatage_resultats)
+        self.formatage_images = QLineEdit()
+        self.formatage_images.setMinimumWidth(250)
+        self.formatage_images.setText(self._param_.formatage_images)
         aide = u"Formatage à appliquer au résultat (VAL est la valeur du résultat)."
         lbl.setToolTip(aide)
-        self.formatage_resultats.setToolTip(aide)
+        self.formatage_images.setToolTip(aide)
         self.sizer_type.addSpacing(10)
-        self.sizer_type.addWidget(self.formatage_resultats)
+        self.sizer_type.addWidget(self.formatage_images)
 
         self.sizer_type.addStretch()
 
@@ -177,8 +177,8 @@ class TabLaTeX(Panel_simple):
         self.limites.stateChanged.connect(regler_limites)
 
         def masquer_resultat(event = None):
-            self._param_.formatage_resultats = self.formatage_resultats.text()
-        self.formatage_resultats.editingFinished.connect(masquer_resultat)
+            self._param_.formatage_images = self.formatage_images.text()
+        self.formatage_images.editingFinished.connect(masquer_resultat)
 
 
     def activer(self):
@@ -200,7 +200,9 @@ class TabLaTeX(Panel_simple):
             elif self._param_.mode == 1:
                 code_latex = tabsign(commande, cellspace=self._param_.utiliser_cellspace)
             elif self._param_.mode == 2:
-                code_latex = tabval(commande, formatage_resultats=self._param_.formatage_resultats)
+                code_latex = tabval(commande,
+                    formatage_antecedents=self._param_.formatage_antecedents,
+                    formatage_images=self._param_.formatage_images)
             else:
                 warning("Type de tableau non reconnu.")
 
@@ -225,13 +227,13 @@ class TabLaTeX(Panel_simple):
             self.utiliser_cellspace.hide()
             self.derivee.show()
             self.limites.show()
-            self.formatage_resultats.hide()
+            self.formatage_images.hide()
             self.lbl_formatage.hide()
         elif self._param_.mode == 1:
             self.utiliser_cellspace.show()
             self.derivee.hide()
             self.limites.hide()
-            self.formatage_resultats.hide()
+            self.formatage_images.hide()
             self.lbl_formatage.hide()
             self.entree.setToolTip(tabsign.__doc__)
             if self._param_.utiliser_cellspace:
@@ -243,7 +245,7 @@ class TabLaTeX(Panel_simple):
             self.derivee.hide()
             self.limites.hide()
             self.lbl_formatage.show()
-            self.formatage_resultats.show()
+            self.formatage_images.show()
             self.entree.setToolTip(tabval.__doc__)
             self.code_entete.setText(u"")
         try:

@@ -31,7 +31,7 @@ from ...pylib import print_error
 from ... import param
 
 
-def tabval(chaine='', formatage_resultats=False):
+def tabval(chaine='', formatage_antecedents='VAL', formatage_images='VAL'):
     u"""Syntaxe:
 fonction: [precision d'arrondi]: 1ere valeur,2e valeur..valeur finale
 
@@ -41,6 +41,10 @@ h(x)=sin(x)+1: [0.01]: -5,-4.5..0 ; 0,1..3
 
 Utilisez ; pour séparer plusieurs bloc de valeurs, et // pour indiquer
 un retour à la ligne (si le tableau est trop long).
+
+`formatage_images` contient éventuellement une formule pour formater
+les valeurs, par exemple '\nombre{VAL}'. La variable VAL correspond à la
+valeur du résultat.
 """
 
 # f(x)=x+4:-5,-4..0 ; 2 ; 5,7..10// 12,14..20
@@ -107,7 +111,7 @@ un retour à la ligne (si le tableau est trop long).
 
         expression = traduire_latex(expression)
 
-        def formater(expr, formatage=r'\nombre{VAL}'):
+        def formater(expr, formatage='VAL'):
             assert isinstance(expr, float)
             s = str(expr).rstrip('0')
             if s[-1] == '.':
@@ -122,7 +126,7 @@ un retour à la ligne (si le tableau est trop long).
             # on justifie avant chaque nouvelle colonne (le code LaTeX sera plus agréable à lire !)
             code_variable = code_variable.ljust(n)
             code_expression = code_expression.ljust(n)
-            code_variable += '&' + formater(val)
+            code_variable += '&' + formater(val, formatage_antecedents)
             try:
                 dict = maths.__dict__.copy()
                 dict.update({variable: val})
@@ -130,7 +134,7 @@ un retour à la ligne (si le tableau est trop long).
                 if evaluation in (maths.num_oo, maths.num_nan, -maths.num_oo, maths.oo, maths.nan, -maths.oo):
                     code_expression += "& $\\times$ "
                 else:
-                    code_expression += '&' + formater(precision*round(evaluation/precision), formatage_resultats)
+                    code_expression += '&' + formater(precision*round(evaluation/precision), formatage_images)
             except:
                 print_error()
                 code_expression += "& $\\times$ "
