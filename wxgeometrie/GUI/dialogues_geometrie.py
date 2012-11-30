@@ -801,7 +801,10 @@ class DialogueFenetre(Dialogue):
         ##self.sizer.Fit(self)
 
     def commande(self):
-        return "fenetre = " + self.champs["xmin"].text() + "," + self.champs["xmax"].text() + "," + self.champs["ymin"].text() + "," + self.champs["ymax"].text()
+        # Garder l'espace après la virgule (pour éviter la confusion avec le
+        # séparateur décimal).
+        return "fenetre = " + ', '.join(self.champs[nom].text()
+                                   for nom in ('xmin', 'xmax', 'ymin', 'ymax'))
 
     def restaurer(self):
         self.champs["xmin"].setText(str(round(param.fenetre[0], 4)))

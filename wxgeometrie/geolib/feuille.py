@@ -640,7 +640,7 @@ class Interprete_feuille(object):
     def __init__(self, feuille):
         self.feuille = feuille
 
-    def executer(self, commande, parser = True, signature = None):
+    def executer(self, commande, parser=True, signature=None):
         u"""Exécute la commande dans la feuille.
 
         Si parser=False, les facilités de syntaxe (abréviations, etc.)
