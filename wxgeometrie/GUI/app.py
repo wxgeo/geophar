@@ -24,13 +24,21 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 
 from PyQt4.QtGui import QApplication, QPalette, QColor, QPixmap, QSplashScreen, QIcon
-from PyQt4.QtCore import QLocale, QTranslator, QLibraryInfo, Qt
+from PyQt4.QtCore import QLocale, QTranslator, QLibraryInfo, Qt, pyqtSignal
 
 from .. import param
-from ..pylib import path2
+from ..pylib import path2, print_error
+from ..pylib.fonctions import extract_error
 
 
 class App(QApplication):
+
+    # La fenètre principale s'enregistre au lancement,
+    # afin qu'on puisse facilement la retrouver.
+    fenetre_principale = None
+
+    _print_signal = pyqtSignal(basestring)
+
     def __init__(self, args=[], **kw):
         QApplication.__init__(self, args)
         locale = QLocale.system().name()
@@ -40,6 +48,7 @@ class App(QApplication):
         self.installTranslator(translator)
         if param.style_Qt:
             self.setStyle(param.style_Qt)
+        self._print_signal.connect(self._print)
 
     def boucle(self):
         self.exec_()
@@ -51,9 +60,26 @@ class App(QApplication):
         self.clipboard().setText(texte)
         return True
 
-    # La fenÃªtre principale s'enregistre au lancement,
-    # afin qu'on puisse facilement la retrouver.
-    fenetre_principale = None
+    def safe_print(self, texte):
+        u"""Thread-safe print().
+
+        En dehors de la thread principale, il faut impérativement utiliser
+        cette méthode au lieu de `print()` (notamment parce que print()
+        peut provoquer des accès concurrents au fichier de log en écriture).
+        """
+        self._print_signal.emit(texte)
+
+    def safe_print_error(self):
+        u"""Thread-safe print_error().
+
+        En dehors de la thread principale, il faut impérativement utiliser
+        cette méthode au lieu de `print_error()`.
+        """
+        self._print_signal.emit(extract_error())
+
+    def _print(self, texte):
+        print(texte)
+
 
 app = App()
 app.setWindowIcon(QIcon(path2(u"%/wxgeometrie/images/icone.ico")))
