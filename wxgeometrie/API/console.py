@@ -23,19 +23,23 @@ from __future__ import with_statement
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-# NOTES :
-# Un fichier .geo est essentiellement un fichier python (structure par du XML).
-# C'est potentiellement dangereux (en particulier sous Windows), car certains modules python (comme os, sys, ...), et certaines fonctions (write...) peuvent endommager le systeme d'exploitation.
-# Une bonne partie du travail de ce module consiste donc a securiser l'environnement d'execution.
-# Comme je suis loin d'etre un expert, il est possible (voire probable) que des failles subsistent neanmoins.
-# Merci de m'en informer.
+
+import sys
+import traceback
 
 
+def stacktraces():
+    code = []
+    for threadId, stack in sys._current_frames().items():
+        code.append("\n# ThreadID: %s" % threadId)
+        for filename, lineno, name, line in traceback.extract_stack(stack):
+            code.append('File: "%s", line %d, in %s' % (filename, lineno, name))
+            if line:
+                code.append("  %s" % (line.strip()))
+    return "\n".join(code)
 
-#  Il faudra donner a l'utilisateur la possibilite d'autoriser la macro ponctuellement, ou meme de changer le parametre de securite
 
 from .. import param
-
 
 
 class Console:
@@ -65,6 +69,8 @@ class Console:
         commande = commande.replace(u"!g.", u"moteur_graphique.")
         # Fenêtre principale :
         commande = commande.replace(u"!m.", u"main.")
+        # Threads :
+        commande = commande.replace(u"!t", u"print(threads)")
 
         if commande in ('quit', 'exit', 'close'):
             self.parent.close()
@@ -81,6 +87,7 @@ class Console:
         self.locals.update({'panel': self.parent.onglets.onglet_actuel,
                   'canvas': self.parent.onglets.onglet_actuel.canvas,
                   'feuille': self.parent.onglets.onglet_actuel.feuille_actuelle,
+                  'threads': stacktraces(),
                   })
         for nom in param.modules:
             if param.modules_actifs[nom]:
