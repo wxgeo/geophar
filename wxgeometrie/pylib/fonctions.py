@@ -325,21 +325,29 @@ class WeakList(weakref.WeakValueDictionary):
         return item in self.itervalues()
 
 
-def print_error(chaine = ''):
+def extract_error(chaine=''):
+    lignes = []
+    if chaine:
+        lignes.append(chaine)
+    typ, val, tb = sys.exc_info()
+    tb = traceback.extract_tb(tb)
+    lignes.append('Traceback (most recent call last)')
+    for fichier, ligne, fonction, code in tb:
+        lignes.append('    File "%s", line %s, in %s'
+                % (uu(fichier), str(ligne), uu(fonction)))
+        if code is not None:
+            lignes.append('        ' + uu(code))
+    lignes.append(uu(typ.__name__) + ": " + uu(val))
+    lignes.append("Warning: this error was not raised.")
+    return '\n'.join(lignes)
+
+
+
+def print_error(chaine=''):
     u"""Affiche l'erreur sans interrompre le programme.
     C'est un alias de sys.excepthook, mais qui est plus souple avec les encodages.
     """
-    if chaine:
-        print(chaine)
-    typ, val, tb = sys.exc_info()
-    tb = traceback.extract_tb(tb)
-    print 'Traceback (most recent call last)'
-    for fichier, ligne, fonction, code in tb:
-        print '    File "' + uu(fichier) +'", line ' + str(ligne) + ', in ' + uu(fonction)
-        if code is not None:
-            print '        ' + uu(code)
-    print uu(typ.__name__) + ": " + uu(val)
-    print "Warning: this error was not raised."
+    print(extract_error(chaine))
 
 
 def rstrip_(s, end):
@@ -563,7 +571,16 @@ def str3(unicode):
 
 
 def universal_unicode(chaine):
-    u"Convertit en unicode si besoin est, avec l'encodage de 'param.encodage' par défaut."
+    u"""Convertit en unicode, sans renvoyer d'erreur.
+
+    Tente de détecter l'encodage, en essayant successivement :
+        * la valeur de `param.encodage`
+        * utf-8
+        * latin-1
+
+    Si des erreurs persistent, les caractères intraduisibles sont remplacés
+    par des `?`.
+    """
     if not isinstance(chaine, basestring):
         try:
             chaine = unicode(chaine)
@@ -576,7 +593,7 @@ def universal_unicode(chaine):
             try:
                 chaine = chaine.decode('utf8')
             except UnicodeError:
-                chaine = chaine.decode('iso-8859-1')
+                chaine = chaine.decode('iso-8859-1', 'replace')
     return chaine
 
 uu = universal_unicode
