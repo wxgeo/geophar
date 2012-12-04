@@ -39,4 +39,5 @@ sys.path.insert(0, path)
 
 if __name__ == '__main__':
     sys._launch_geophar = True
-    import wxgeometrie
+    from wxgeometrie.initialisation import initialiser
+    initialiser()
