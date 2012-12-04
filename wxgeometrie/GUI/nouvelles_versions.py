@@ -20,7 +20,8 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 
-import urllib, webbrowser
+import webbrowser
+from urllib2 import urlopen
 
 from PyQt4.QtCore import QObject, pyqtSignal
 from PyQt4.QtGui import QMessageBox
@@ -28,7 +29,7 @@ from PyQt4.QtGui import QMessageBox
 from ..pylib import print_error
 from .. import param
 from .wxlib import GenericThread
-
+from .app import app
 
 
 class Gestionnaire_mises_a_jour(QObject):
@@ -58,20 +59,22 @@ class Gestionnaire_mises_a_jour(QObject):
             QMessageBox.warning(self.parent, u"Connexion impossible", u"Impossible de vérifier si une nouvelle version existe.")
 
 
-    def verifier_version(self, event = None):
+    def verifier_version(self, event=None):
         self.thread = GenericThread(self._verifier_version)
         self.thread.start()
 
 
     def _verifier_version(self):
         # /!\ Ne **JAMAIS** utiliser `print()` depuis une autre thread que la principale !
+        # Utiliser `app.safe_print()` à la place.
         version = '?'
         success = False
         update = False
         msg = u'Unknown error.'
         try:
-            filename, headers = urllib.urlretrieve(self.url)
-            f = open(filename)
+            if param.debug:
+                app.safe_print("Checking %s..." % self.url)
+            f = urlopen(self.url)
             version = f.read(60)
             f.close()
             if len(version) > 50 or not version.replace(" ", "").replace(".", "").isalnum():
@@ -82,7 +85,8 @@ class Gestionnaire_mises_a_jour(QObject):
             else:
                 update = False
         except Exception as e:
+            # /!\ print_error() is not thread safe.
+            app.safe_print_error()
             msg = str(e)
-            # XXX: print_error() is not thread safe.
 
         self.sent.emit(success, update, version, msg)
