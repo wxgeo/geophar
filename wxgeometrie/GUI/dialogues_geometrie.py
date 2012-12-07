@@ -765,7 +765,7 @@ class DialogueVariable(Dialogue):
     objet = Variable
     def __init__(self, parent):
         Dialogue.__init__(self, parent)
-        self.ajoute([u"Créer la variable de valeur : ", ("valeur", 15, Objet)],
+        self.ajoute([u"Créer la variable de valeur : ", ("contenu", 15, Objet)],
                     u"Entrez une valeur, entre guillemets pour une valeur 'liée' (consultez l'aide). Exemple : 'A.x+1'")
         self.finalise()
 
