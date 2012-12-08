@@ -37,7 +37,7 @@ _module_path = os.path.split(os.path.realpath(sys._getframe().f_code.co_filename
 ROOTDIR = os.path.abspath(_module_path + '/..') # /.../nom_du_projet/
 WXGEODIR = ROOTDIR + '/wxgeometrie'
 SKIP_DIRS = ['sympy/', 'sympy_OLD/', 'sympy_old/', 'pylib/decorator.py', # already tested by sympy team.
-            'modules/OLD']
+            'modules/OLD', 'BAZAR/']
 
 sys.path.insert(0, WXGEODIR)
 sys.path.insert(0, ROOTDIR)

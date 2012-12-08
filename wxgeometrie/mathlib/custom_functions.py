@@ -458,7 +458,9 @@ def positif(expression, variable = None, strict = False):
         b_ = Wild('b')
         X_ = Wild('X')
         match = expression.match(a_*exp(X_) + b_)
-        if match is not None:
+        if match is not None and X_ in match:
+            # Il faut tester si X_ est dans match, car on peut avoir a_=0, et
+            # X_ non défini.
             a = match[a_]
             b = match[b_]
             X = match[X_]

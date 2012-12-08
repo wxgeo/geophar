@@ -4,13 +4,7 @@
 # XXX but we can't force everyone to install py-lib trunk
 
 import sys
-try:
-    # functools is not available in Python 2.4
-    import functools
-except ImportError:
-    has_functools = False
-else:
-    has_functools = True
+import functools
 
 try:
     # tested with py-lib 0.9.0
@@ -63,10 +57,10 @@ if not USE_PYTEST:
             try:
                 func()
             except Exception:
-                raise XFail()
-            raise XPass()
-        if has_functools:
-            wrapper = functools.update_wrapper(wrapper, func)
+                raise XFail(func.func_name)
+            raise XPass(func.func_name)
+
+        wrapper = functools.update_wrapper(wrapper, func)
         return wrapper
 
     def skip(str):
@@ -149,10 +143,20 @@ else:
             except Outcome:
                 raise   # pass-through test outcome
             except:
-                raise XFail('XFAIL: %s' % func.func_name)
+                raise XFail(func.func_name)
             else:
-                raise XPass('XPASS: %s' % func.func_name)
+                raise XPass(func.func_name)
 
-        if has_functools:
-            func_wrapper = functools.update_wrapper(func_wrapper, func)
+        func_wrapper = functools.update_wrapper(func_wrapper, func)
         return func_wrapper
+
+def SKIP(reason):
+    """Similar to :func:`skip`, but this is a decorator. """
+    def wrapper(func):
+        def func_wrapper():
+            raise Skipped(reason)
+
+        func_wrapper = functools.update_wrapper(func_wrapper, func)
+        return func_wrapper
+
+    return wrapper

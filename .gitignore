@@ -17,6 +17,10 @@ wxgeometrie.e4*
 *.geo
 *.tar.gz
 *.exe
+*.cnf
+
+# Benchmarks sympy
+*benchmark*
 
 # Dossiers "poubelles"
 wxgeometrie/modules/OLD/

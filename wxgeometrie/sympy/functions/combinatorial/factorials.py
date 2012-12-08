@@ -1,6 +1,6 @@
 from sympy.core import S, C, sympify, Function
 from sympy.ntheory import sieve
-from math import sqrt
+from math import sqrt as _sqrt
 
 from sympy.core.compatibility import reduce
 
@@ -70,7 +70,7 @@ class factorial(CombinatorialFunction):
         if n < 33:
             return cls._small_swing[n]
         else:
-            N, primes = int(sqrt(n)), []
+            N, primes = int(_sqrt(n)), []
 
             for prime in sieve.primerange(3, N+1):
                 p, q = 1, n
@@ -152,7 +152,7 @@ class MultiFactorial(CombinatorialFunction):
 class factorial2(CombinatorialFunction):
     """The double factorial n!!, not to be confused with (n!)!
 
-    The double facotrial is defined for integers >= -1 as
+    The double factorial is defined for integers >= -1 as
                  ,
                 |  n*(n - 2)*(n - 4)* ... * 1    for n odd
         n!! =  -|  n*(n - 2)*(n - 4)* ... * 2    for n even
@@ -400,7 +400,7 @@ class binomial(CombinatorialFunction):
                     elif k > n // 2:
                         k = n - k
 
-                    M, result = int(sqrt(n)), 1
+                    M, result = int(_sqrt(n)), 1
 
                     for prime in sieve.primerange(2, n+1):
                         if prime > n - k:

@@ -35,6 +35,7 @@ def test_resoudre():
     assert_resoudre("2*x+3*y=4 et 4*x-2*y=1", u"{x: 11/16, y: 7/8}")
     assert_resoudre("ln(x)<ln(-2*x+1)", "]0;1/3[")
     assert_resoudre("exp(x^2)-x^2-1>=0", "]-oo;+oo[")
+    assert_resoudre(u"x*(sqrt(64-x^2))=32", "{4*sqrt(2)}")
 
 
 def test_positif():

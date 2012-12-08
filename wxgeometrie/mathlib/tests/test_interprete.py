@@ -99,7 +99,7 @@ def test_exemples_de_base():
                     formatage_LaTeX=True)
     assert_resultat('rassemble(1/x+1/(x*(x+1)))', '(x + 2)/(x^2 + x)', r'\frac{x + 2}{x^{2} + x}')
     assert_resultat('factorise(-2 exp(-x) - (3 - 2 x)exp(-x))', '(2 x - 5)exp(-x)',
-                    r'\frac{2 x -5}{\mathrm{e}^{x}}')
+                    r'\left(2 x -5\right) \mathrm{e}^{- x}')
     assert_resultat('-x^2+2x-3>>factor', '-x^2 + 2 x - 3')
     assert_resultat('abs(-24/5 - 2 i/5)', '2 sqrt(145)/5')
 
@@ -199,7 +199,7 @@ def test_session():
     assert resultats[-3:] == [msg_aide, msg_aide, msg_aide]
     # LaTeX
     latex = i.evaluer("gamma(x)")[1]
-    assert latex == r'$\mathrm{\Gamma}\left(x\right)$'
+    assertEqual(latex, r'$\mathrm{\Gamma}\left(x\right)$')
 
 
 def test_issue_sialle1():
@@ -229,7 +229,7 @@ u"""_ = 0
     ]"""
     i.load_state(etat_interne)
     i.evaluer("-1+\i\sqrt{3}")
-    assertDernier(i, '-1 + 3**(1/2)*I')
+    assertDernier(i, '-1 + sqrt(3)*I')
     i.evaluer('-x**2 + 2*x - 3>>factor')
     assertDernier(i, '-x**2 + 2*x - 3')
 
@@ -244,7 +244,7 @@ u"""_ = 0
     ]"""
     i.load_state(etat_interne)
     i.evaluer('abs(-24/5 - 2 i/5)')
-    assertDernier(i, '2*145**(1/2)/5')
+    assertDernier(i, '2*sqrt(145)/5')
 
 
 def test_issue_206_ter():
