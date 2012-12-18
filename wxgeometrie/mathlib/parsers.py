@@ -25,7 +25,10 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 import keyword, re
 from itertools import chain, izip_longest
 
-from matplotlib.mathtext import MathTextParser, AutoHeightChar, Hlist
+from matplotlib.mathtext import (MathTextParser, AutoHeightChar, Hlist, SUB1,
+                                 SUBDROP, Kern, SCRIPT_SPACE, Hbox, HCentered,
+                                 ParseFatalException, Vlist, SUP1, DELTA)
+
 import matplotlib
 from sympy import Expr
 
@@ -776,11 +779,6 @@ def latex2mathtext(chaine):
         if r'\left' in chaine:
             chaine = chaine.replace(r'\left\{', r'\left{')
             chaine = chaine.replace(r'\right\}', r'\right}')
-        # bug dans matplotlib 1.1.1
-        # mathtext(u"$A'$") returne une erreur au premier appel.
-        # => conversion unicode -> string
-        if isinstance(chaine, unicode):
-            chaine = chaine.encode(param.encodage)
     return chaine
 
 
@@ -797,7 +795,9 @@ def tex_dollars(txt):
         return txt
 
 
-# HACK pour contourner un bug de matplotlib mathtext
+# HACK pour contourner un bug de matplotlib mathtext (v 1.1.1)
+# Les délimiteurs \left et \right ne sont pas gérés correctement
+# (à supprimer probablement quand matplotlib 1.2 sera dans les dépôts Ubuntu)
 def _hacked_auto_sized_delimiter(self, s, loc, toks):
     #~ print "auto_sized_delimiter", toks
     front, middle, back = toks
@@ -815,4 +815,153 @@ def _hacked_auto_sized_delimiter(self, s, loc, toks):
     return hlist
 
 
+# HACK pour contourner un bug de matplotlib mathtext (v 1.1.1)
+# L'unicode est mal géré: 'str' utilisé à la place de 'basestring'.
+def _hacked_subsuperscript(self, s, loc, toks):
+    assert(len(toks)==1)
+    # print 'subsuperscript', toks
+
+    nucleus = None
+    sub = None
+    super = None
+
+    # Pick all of the apostrophe's out
+    napostrophes = 0
+    new_toks = []
+    for tok in toks[0]:
+        if isinstance(tok, basestring) and tok not in ('^', '_'):
+            napostrophes += len(tok)
+        else:
+            new_toks.append(tok)
+    toks = new_toks
+
+    if len(toks) == 0:
+        assert napostrophes
+        nucleus = Hbox(0.0)
+    elif len(toks) == 1:
+        if not napostrophes:
+            return toks[0] # .asList()
+        else:
+            nucleus = toks[0]
+    elif len(toks) == 2:
+        op, next = toks
+        nucleus = Hbox(0.0)
+        if op == '_':
+            sub = next
+        else:
+            super = next
+    elif len(toks) == 3:
+        nucleus, op, next = toks
+        if op == '_':
+            sub = next
+        else:
+            super = next
+    elif len(toks) == 5:
+        nucleus, op1, next1, op2, next2 = toks
+        if op1 == op2:
+            if op1 == '_':
+                raise ParseFatalException("Double subscript")
+            else:
+                raise ParseFatalException("Double superscript")
+        if op1 == '_':
+            sub = next1
+            super = next2
+        else:
+            super = next1
+            sub = next2
+    else:
+        raise ParseFatalException(
+            "Subscript/superscript sequence is too long. "
+            "Use braces { } to remove ambiguity.")
+
+    state = self.get_state()
+    rule_thickness = state.font_output.get_underline_thickness(
+        state.font, state.fontsize, state.dpi)
+    xHeight = state.font_output.get_xheight(
+        state.font, state.fontsize, state.dpi)
+
+    if napostrophes:
+        if super is None:
+            super = Hlist([])
+        for i in range(napostrophes):
+            super.children.extend(self.symbol(s, loc, ['\prime']))
+
+    # Handle over/under symbols, such as sum or integral
+    if self.is_overunder(nucleus):
+        vlist = []
+        shift = 0.
+        width = nucleus.width
+        if super is not None:
+            super.shrink()
+            width = max(width, super.width)
+        if sub is not None:
+            sub.shrink()
+            width = max(width, sub.width)
+
+        if super is not None:
+            hlist = HCentered([super])
+            hlist.hpack(width, 'exactly')
+            vlist.extend([hlist, Kern(rule_thickness * 3.0)])
+        hlist = HCentered([nucleus])
+        hlist.hpack(width, 'exactly')
+        vlist.append(hlist)
+        if sub is not None:
+            hlist = HCentered([sub])
+            hlist.hpack(width, 'exactly')
+            vlist.extend([Kern(rule_thickness * 3.0), hlist])
+            shift = hlist.height
+        vlist = Vlist(vlist)
+        vlist.shift_amount = shift + nucleus.depth
+        result = Hlist([vlist])
+        return [result]
+
+    # Handle regular sub/superscripts
+    shift_up = nucleus.height - SUBDROP * xHeight
+    if self.is_dropsub(nucleus):
+        shift_down = nucleus.depth + SUBDROP * xHeight
+    else:
+        shift_down = SUBDROP * xHeight
+    if super is None:
+        # node757
+        sub.shrink()
+        x = Hlist([sub])
+        # x.width += SCRIPT_SPACE * xHeight
+        shift_down = max(shift_down, SUB1)
+        clr = x.height - (abs(xHeight * 4.0) / 5.0)
+        shift_down = max(shift_down, clr)
+        x.shift_amount = shift_down
+    else:
+        super.shrink()
+        x = Hlist([super, Kern(SCRIPT_SPACE * xHeight)])
+        # x.width += SCRIPT_SPACE * xHeight
+        clr = SUP1 * xHeight
+        shift_up = max(shift_up, clr)
+        clr = x.depth + (abs(xHeight) / 4.0)
+        shift_up = max(shift_up, clr)
+        if sub is None:
+            x.shift_amount = -shift_up
+        else: # Both sub and superscript
+            sub.shrink()
+            y = Hlist([sub])
+            # y.width += SCRIPT_SPACE * xHeight
+            shift_down = max(shift_down, SUB1 * xHeight)
+            clr = (2.0 * rule_thickness -
+                   ((shift_up - x.depth) - (y.height - shift_down)))
+            if clr > 0.:
+                shift_up += clr
+                shift_down += clr
+            if self.is_slanted(nucleus):
+                x.shift_amount = DELTA * (shift_up + shift_down)
+            x = Vlist([x,
+                       Kern((shift_up - x.depth) - (y.height - shift_down)),
+                       y])
+            x.shift_amount = shift_down
+
+    result = Hlist([nucleus, x])
+    return [result]
+
+
+
+
 matplotlib.mathtext.Parser.auto_sized_delimiter = _hacked_auto_sized_delimiter
+matplotlib.mathtext.Parser.subsuperscript = _hacked_subsuperscript

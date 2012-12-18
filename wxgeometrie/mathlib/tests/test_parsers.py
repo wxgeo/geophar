@@ -9,10 +9,11 @@ from pytest import XFAIL
 
 from wxgeometrie.mathlib import universal_functions
 from wxgeometrie.mathlib.parsers import (traduire_formule, NBR, NBR_SIGNE, VAR,
-                                        VAR_NOT_ATTR, NBR_OR_VAR, _arguments_latex,
-                                        convertir_en_latex, _fast_closing_bracket_search,
-                                        _fast_opening_bracket_search,
-                                        _rechercher_numerateur, _rechercher_denominateur)
+                            VAR_NOT_ATTR, NBR_OR_VAR, _arguments_latex,
+                            convertir_en_latex, _fast_closing_bracket_search,
+                            _fast_opening_bracket_search, mathtext_parser,
+                            _rechercher_numerateur, _rechercher_denominateur,
+                            )
 from tools.testlib import assertEqual
 
 
@@ -302,3 +303,11 @@ def test_rechercher_denominateur():
     assert_denominateur('cos(x)-x', 'cos(x)')
     assert_denominateur('2^cos(x)-x', '2^cos(x)')
     assert_denominateur('(x+1)^(x-2^cos(x))-3', '(x+1)^(x-2^cos(x))')
+
+def test_mathtext_parser():
+    u"On teste simplement qu'aucune erreur n'est renvoyée."
+    # Bug matplotlib 1.1.1
+    mathtext_parser("$A'$")
+    mathtext_parser(u"$A'$")
+    mathtext_parser(u"$f'$ est la dérivée")
+    mathtext_parser(u"$1^{er}$ dé")
