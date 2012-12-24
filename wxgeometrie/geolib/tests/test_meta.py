@@ -37,7 +37,7 @@ def test_toutes_classes():
     assert 'Carre' in classes_testees, str(classes_testees)
 
     #TODO: tester ces classes restantes.
-    skip_test = set(['Texte_translation', 'Texte_rotation', 'Extremite', 'Point_tangence', 'NuageFonction', 'Mul', 'Cube', 'Cote', 'Sommet_triangle_isocele', 'Axe', 'Courbe', 'Sommet', 'Glisseur_vecteur', 'Add', 'Arete', 'Variable', 'Texte_homothetie', 'Label_vecteur', 'Sommet_polyedre', 'Sommet_rectangle', 'Nuage', 'Point_pondere', 'Sommet_triangle_rectangle', 'PrevisualisationPolygone', 'Texte_reflexion', 'Point_droite', 'Sommet_cube', 'Tetraedre'])
+    skip_test = set(['Texte_translation', 'Texte_rotation', 'Extremite', 'Point_tangence', 'Mul', 'Cube', 'Cote', 'Sommet_triangle_isocele', 'Axe', 'Sommet', 'Glisseur_vecteur', 'Add', 'Arete', 'Variable', 'Texte_homothetie', 'Label_vecteur', 'Sommet_polyedre', 'Sommet_rectangle', 'Point_pondere', 'Sommet_triangle_rectangle', 'PrevisualisationPolygone', 'Texte_reflexion', 'Point_droite', 'Sommet_cube', 'Tetraedre'])
 
     non_testees = classes.difference(classes_testees, skip_test)
     if non_testees:

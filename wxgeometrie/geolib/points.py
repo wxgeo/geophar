@@ -210,7 +210,7 @@ class Point(Objet_avec_coordonnees_modifiables, Point_generique):
                   'Demidroite': 'Glisseur_demidroite',
                   'Cercle_generique': 'Glisseur_cercle',
                   'Arc_generique': 'Glisseur_arc_cercle',
-                  'Interpolation_polynomiale_par_morceaux': 'Glisseur_courbe_interpolation',
+                  'Interpolation_polynomiale_par_morceaux': 'Glisseur_courbe',
                   }
 
     def __new__(cls, *args, **kw):
@@ -984,10 +984,6 @@ class Glisseur_droite(Glisseur_ligne_generique):
 
 
 
-
-
-
-
 class Glisseur_segment(Glisseur_ligne_generique):
     u"""Un point sur un segment.
 
@@ -1010,8 +1006,6 @@ class Glisseur_segment(Glisseur_ligne_generique):
     def _conversion_coordonnees_parametre(self, x, y):
         A = self.__segment._Ligne_generique__point1; B = self.__segment._Ligne_generique__point2
         return produit_scalaire(vect((x,y), A), vect(B, A))/carre_distance(A, B)
-
-
 
 
 
@@ -1141,15 +1135,15 @@ class Glisseur_arc_cercle(Glisseur_generique):
 
 
 
+class Glisseur_courbe(Glisseur_generique):
+    u"""Un point sur une courbe.
 
-class Glisseur_courbe_interpolation(Glisseur_generique):
-    u"""Un point sur une courbe d'interpolation.
-    Point pouvant 'glisser' sur une courbe::
+    Point pouvant 'glisser' sur une courbe d'interpolation ou de fonction::
 
-    >>> G = Glisseur_courbe_interpolation(f, k= -2)
+    >>> G = Glisseur_courbe(c, x=-2)
     """
 
-    courbe = __courbe = Argument("Interpolation_polynomiale_par_morceaux")
+    courbe = __courbe = Argument("Interpolation_polynomiale_par_morceaux, Courbe")
     parametre = x = __x = Argument("Variable_generique")
 
     def __init__(self, courbe, x=None, **styles):
@@ -1160,10 +1154,10 @@ class Glisseur_courbe_interpolation(Glisseur_generique):
         Glisseur_generique.__init__(self, objet=courbe, k=x, **styles)
 
     def _get_coordonnees(self):
-        return self.__x, self.__courbe.foo(float(self.__x))
+        return self.__x, self.__courbe.fonction(float(self.__x))
 
     def _conversion_coordonnees_parametre(self, x, y):
-        # On s'assure qu'on est bien toujours xmin < x < xmax
+        # On s'assure qu'on a bien toujours xmin < x < xmax
         return max(min(x, self.__courbe.xmax), self.__courbe.xmin)
 
 
@@ -1174,8 +1168,8 @@ class Point_interpolation(Point_generique):
     Usage interne : les points d'interpolation sont utilisés pour la construction
     des courbes d'interpolation."""
 
-    point = __point = Argument("Point_generique", defaut = Point)
-    derivee = __derivee = Argument("Variable_generique,NoneType", defaut = None)
+    point = __point = Argument("Point_generique", defaut=Point)
+    derivee = __derivee = Argument("Variable_generique,NoneType", defaut=None)
 
     @staticmethod
     def _convertir(objet):
@@ -1185,9 +1179,7 @@ class Point_interpolation(Point_generique):
             return Point_interpolation(*objet)
         raise TypeError, "'" + str(type(objet)) + "' object is not iterable"
 
-    def __init__(self, point = None, derivee = None, **styles):
-##        if derivee is None:
-##            derivee = 1
+    def __init__(self, point=None, derivee=None, **styles):
         self.__point = point = Ref(point)
         self.__derivee = derivee = Ref(derivee)
         Point_generique.__init__(self, **styles)
@@ -1220,6 +1212,8 @@ class Nuage_generique(Objet):
         else:
             Objet.style(self, nom_style, **kwargs)
 
+    def _contains(self, y):
+        return y in self.points
 
 
 
@@ -1233,6 +1227,12 @@ class Nuage(Nuage_generique):
 
     #TODO: il n'est pas possible actuellement de modifier la taille du nuage de points
     # après création. C'est une limitation de la classe Arguments().
+
+    def __new__(cls, *args, **kw):
+        from .fonctions import Fonction
+        if args and isinstance(args[0], Fonction):
+            return NuageFonction(*args, **kw)
+        return object.__new__(cls, *args, **kw)
 
     def __init__(self, *points, **styles):
         if styles.get('points', None):
@@ -1253,7 +1253,15 @@ class NuageFonction(Nuage_generique):
     __abscisses = abscisses = Arguments('Variable_generique')
 
     def __init__(self, fonction, *abscisses, **styles):
+        self.__fonction = fonction = Ref(fonction)
         if styles.get('abscisses', None):
-            points = styles.pop('abscisses')
-        self.__points = points = tuple(Ref(obj) for obj in points)
+            abscisses = styles.pop('abscisses')
+        self.__abscisses = abscisses = tuple(Ref(x) for x in abscisses)
         Nuage_generique.__init__(self, **styles)
+
+    # TODO: générer les points du nuage, comme on génère les sommets d'un polygone.
+
+
+    @property
+    def points(self):
+        return tuple((x, self.__fonction(x)) for x in self.__abscisses)

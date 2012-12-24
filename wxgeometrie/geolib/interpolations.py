@@ -26,15 +26,21 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 from operator import attrgetter
 
 from numpy import array, arange, append
-# en test ###############
-from numpy import poly1d
-from scipy.interpolate import PiecewisePolynomial
-import fractions as frac
-#########################
+
+try:
+    # wxgeometrie can be imported even if scipy is not found.
+    # Only Interpolation_polynomiale_par_morceaux will fail.
+    from scipy.interpolate import PiecewisePolynomial
+    scipy_found = True
+except ImportError:
+    scipy_found = False
+    def PiecewisePolynomial(*args, **kw):
+        raise NotImplementedError, 'Error: scipy library not found !'
+
 from .objet import Ref, Argument, Arguments
 
 from .courbes import Courbe_generique
-from .lignes import Tangente_courbe
+##from .lignes import Tangente_courbe
 from .contexte import contexte
 
 from ..pylib import fullrange
@@ -329,8 +335,10 @@ class Interpolation_polynomiale_par_morceaux(Interpolation_generique):
     :rtype : numpy.lib.polynomial
 
     """
+    _style_defaut = param.interpolations_polynomiales_par_morceaux
+
     points = __points = Arguments("Point_interpolation")
-    foo = None # fonction d'interpolation
+    fonction = None # fonction d'interpolation
 
     def __init__(self, *points, **styles):
         # TODO: valeurs par défaut "intelligentes" pour les nombres dérivés.
@@ -352,14 +360,14 @@ class Interpolation_polynomiale_par_morceaux(Interpolation_generique):
 
 
     @property
-    def foo(self):
+    def fonction(self):
         """Fonction wrapper vers la fonction de scipy PiecewisePolynomial
 
         """
         pts = self.points_tries
-        xl = [P[0] for P in pts]
-        yl = [P[1] for P in pts]
-        yl_cum = [[yl[i], self._derivees()[i]] for i in range(len(yl))]
+        xl = [P.x for P in pts]
+        yl = [P.y for P in pts]
+        yl_cum = zip(yl, self._derivees())
         return PiecewisePolynomial(xl, yl_cum)
 
 
@@ -389,41 +397,64 @@ class Interpolation_polynomiale_par_morceaux(Interpolation_generique):
                     if B.y >= max(A.y, C.y) or B.y <= min(A.y, C.y):
                         derivees.append(0)
                     else:
-                        dy = C.y - A.y
-                        dx = C.x - A.x
-                        derivees.append(dy/dx if dx else 0)
-                    # Ancienne stratégie. En pratique, la nouvelle stratégie
-                    # (bien plus simple) semble donner des résultats plus
-                    # satisfaisants visuellement.
-                    ##else:
-                        ##dy1 = B.y - A.y
-                        ##dx1 = B.x - A.x
-                        ##der1 = (dy1/dx1 if dx1 else 0)
-                        ##dy2 = C.y - B.y
-                        ##dx2 = C.x - B.x
-                        ##der2 = (dy2/dx2 if dx2 else 0)
-                        ### On prend la pente la plus faible, de façon à être sûr
-                        ### qu'à gauche et à droite du point considéré, la courbe d'interpolation
-                        ### reste comprise en ordonnées entre le point considéré et
-                        ### le point suivant.
-                        ### Cela facilite la construction d'extrema :
-                        ### si A, B, C sont trois points d'interpolation,
-                        ### avec B.y < A.y et B.y < C.y, alors on est assuré que
-                        ### la courbe ne descendra pas en dessous de B.y sur
-                        ### l'intervalle [A.x, C.x].
-                        ##derivees.append(der1 if abs(der1) < abs(der2) else der2)
-                    # Autre stratégie possible, peu concluante en pratique.
-                    ##else:
-                        ##dy1 = B.y - A.y
-                        ##dx1 = B.x - A.x
-                        ##der1 = (dy1/dx1 if dx1 else 0)
-                        ##dy2 = C.y - B.y
-                        ##dx2 = C.x - B.x
-                        ##der2 = (dy2/dx2 if dx2 else 0)
-                        ##derivees.append(.5*(der1+der2))
+                        der = self.strategies.get(self.style('strategie'),
+                                            self._strategie_pente_moyenne)
+                        derivees.append(der(self, A, B, C))
             else:
                 derivees.append(P.derivee)
         return derivees
+
+
+    def _strategie_pente_moyenne(self, A, B, C):
+        u"""La pente en B est celle de la droite (AC).
+
+        Stratégie simple et qui donne un rendu assez esthétique en pratique.
+        """
+        dy = C.y - A.y
+        dx = C.x - A.x
+        return dy/dx if dx else 0
+
+    def _strategie_pente_minimale(self, A, B, C):
+        u"""Pente la plus faible entre celle de (AB) et celle de (BC).
+
+        On prend la pente la plus faible, de façon à être sûr
+        qu'à gauche et à droite du point considéré, la courbe d'interpolation
+        reste comprise en ordonnées entre le point considéré et
+        le point suivant.
+        Cela facilite la construction d'extrema :
+        si A, B, C sont trois points d'interpolation,
+        avec B.y < A.y et B.y < C.y, alors on est assuré que
+        la courbe ne descendra pas en dessous de B.y sur
+        l'intervalle [A.x, C.x].
+        """
+        dy1 = B.y - A.y
+        dx1 = B.x - A.x
+        der1 = (dy1/dx1 if dx1 else 0)
+        dy2 = C.y - B.y
+        dx2 = C.x - B.x
+        der2 = (dy2/dx2 if dx2 else 0)
+        return der1 if abs(der1) < abs(der2) else der2
+
+    def _strategie_moyenne_gauche_droite(self, A, B, C):
+        u"""
+        Moyenne de la pente moyenne à gauche et de la pente moyenne à droite.
+
+        Stratégie peu concluante en pratique.
+        Il faudrait utiliser un barycentre plutôt qu'une moyenne simple.
+        """
+        dy1 = B.y - A.y
+        dx1 = B.x - A.x
+        der1 = (dy1/dx1 if dx1 else 0)
+        dy2 = C.y - B.y
+        dx2 = C.x - B.x
+        der2 = (dy2/dx2 if dx2 else 0)
+        return .5*(der1 + der2)
+
+
+    strategies = {'pente_moyenne': _strategie_pente_moyenne,
+                  'pente_minimale': _strategie_pente_minimale,
+                  'moyenne_gauche_droite': _strategie_moyenne_gauche_droite
+                  }
 
 
     @property
@@ -457,7 +488,7 @@ class Interpolation_polynomiale_par_morceaux(Interpolation_generique):
         x1, y1 = points[0].coordonnees
         x2, y2 = points[-1].coordonnees
         xarray = fullrange(x1, x2, pas)
-        yarray = self.foo(xarray)
+        yarray = self.fonction(xarray)
         plot.set_data(xarray, yarray)
         plot.set(color=couleur, linestyle=style, linewidth=epaisseur)
         plot.zorder = niveau

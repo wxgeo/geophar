@@ -1245,52 +1245,43 @@ class Repere(Objet):
 
 
 
-class Tangente_courbe(Droite_vectorielle):
-    u"""Une tangente à une courbe.
-
-    Une tangente à une courbe. L'application immédiate se trouve dans les courbes d'interpolation.
-    Mais comme la plus simple à utiliser est l'interpolation par morceau, il vaut mieux initialiser
-    la tangente avec le point et le nombre dérivé."""
-    def __init__(self, point = None, cdir = None):
-        v = Rational(str(cdir))
-        Droite_vectorielle.__init__(self, point = point, vecteur = Vecteur_libre(x= v.q, y= v.p))
-
-
-class Tangente_courbe_interpolation(Droite_equation):
-    u"""Une tangente à une courbe de type interpolation polynomiale par morceau.
-
-    Le coefficient directeur est estimé par approximation numérique avec taux de variation
-    sur un pas  self.__canvas__.pas().
-
-    :type courbe: Interpolation_polynomiale_par_morceaux
-    :param courbe: la courbe sur laquelle va se placer la tangente
-    :type x: float
-    :param x: position du point de tangence en abscisse; doit être entre xmin et xmax.
-
-    exemple::
-
-    >>> A = Point(-1,-2)
-    >>> B = Point(2,1)
-    >>> C = Point(8,-3)
-    >>> d = Interpolation_polynomiale_par_morceaux(A,B,C, derivees=[-1,0.5,2])
-    >>> t2 = Tangente_courbe_interpolation(d, x= -2 )
-
-    """
-
-    courbe = __courbe = Argument('Interpolation_polynomiale_par_morceaux')
-    x = __x = Argument('float,int')
-
-    def __init__(self, courbe, x = None):
-        self.__courbe = Ref(courbe)
-        self.__x = Ref(x)
-        P = Point(x, courbe.foo(x))
-        v = courbe.foo.derivative(x, 1)
-        Droite_equation.__init__(self, a= -v, b= 1, c= -P.y + v*P.x.contenu )
-
-    def _get_equation(self):
-        y,v = self.courbe.foo.derivatives(self.x, 2) #f(x), f'(x)
-        self._set_equation(a = -v, b = 1, c = -y + v * self.x)
-        return Droite_equation._get_equation(self)
+##
+##
+##class Tangente_courbe_interpolation(Droite_equation):
+    ##u"""Une tangente à une courbe de type interpolation polynomiale par morceau.
+##
+    ##Le coefficient directeur est estimé par approximation numérique avec taux de variation
+    ##sur un pas  self.__canvas__.pas().
+##
+    ##:type courbe: Interpolation_polynomiale_par_morceaux
+    ##:param courbe: la courbe sur laquelle va se placer la tangente
+    ##:type x: float
+    ##:param x: position du point de tangence en abscisse; doit être entre xmin et xmax.
+##
+    ##exemple::
+##
+    ##>>> A = Point(-1,-2)
+    ##>>> B = Point(2,1)
+    ##>>> C = Point(8,-3)
+    ##>>> d = Interpolation_polynomiale_par_morceaux(A,B,C, derivees=[-1,0.5,2])
+    ##>>> t2 = Tangente_courbe_interpolation(d, x= -2 )
+##
+    ##"""
+##
+    ##courbe = __courbe = Argument('Interpolation_polynomiale_par_morceaux')
+    ##x = __x = Argument('float,int')
+##
+    ##def __init__(self, courbe, x = None):
+        ##self.__courbe = Ref(courbe)
+        ##self.__x = Ref(x)
+        ##P = Point(x, courbe.fonction(x))
+        ##v = courbe.fonction.derivative(x, 1)
+        ##Droite_equation.__init__(self, a= -v, b= 1, c= -P.y + v*P.x.contenu )
+##
+    ##def _get_equation(self):
+        ##y,v = self.courbe.fonction.derivatives(self.x, 2) #f(x), f'(x)
+        ##self._set_equation(a = -v, b = 1, c = -y + v * self.x)
+        ##return Droite_equation._get_equation(self)
 
 
 class Tangente_glisseur_interpolation(Droite_equation):
@@ -1301,7 +1292,7 @@ class Tangente_glisseur_interpolation(Droite_equation):
 
     :type courbe: Interpolation_polynomiale_par_morceaux
     :param courbe: la courbe sur laquelle va se placer la tangente
-    :type P: Glisseur_courbe_interpolation
+    :type P: Glisseur_courbe
     :param P: Point de type glisseur sur la courbe.
 
     exemple::
@@ -1310,22 +1301,21 @@ class Tangente_glisseur_interpolation(Droite_equation):
     >>> B = Point(2,1)
     >>> C = Point(8,-3)
     >>> d = Interpolation_polynomiale_par_morceaux(A,B,C, derivees=[-1,0.5,2])
-    >>> P = Glisseur_courbe_interpolation(d)
+    >>> P = Glisseur_courbe(d)
     >>> d1 = Tangente_glisseur_interpolation(d, P)
 
     """
 
     courbe = __courbe = Argument('Interpolation_polynomiale_par_morceaux')
-    glisseur = __glisseur = Argument('Glisseur_courbe_interpolation')
+    glisseur = __glisseur = Argument('Glisseur_courbe')
 
-    def __init__(self, courbe, P = None):
-        self.__courbe = Ref(courbe)
-        self.__glisseur = Ref(P)
-        v = courbe.foo.derivative(P.x.contenu, 1)
-        Droite_equation.__init__(self, a= -v, b= 1, c= -P.y + v*P.x.contenu )
+    def __init__(self, courbe, glisseur=None):
+        self.__courbe = courbe = Ref(courbe)
+        self.__glisseur = P = Ref(glisseur)
+        Droite_equation.__init__(self)
 
 
     def _get_equation(self):
-        v = self.courbe.foo.derivative(self.glisseur.x.contenu, 1)
+        v = self.courbe.fonction.derivative(self.glisseur.x.contenu, 1)
         self._set_equation(a = -v, b = 1, c = -self.glisseur.y + v*self.glisseur.x.contenu)
         return Droite_equation._get_equation(self)

@@ -22,7 +22,7 @@ from wxgeometrie.geolib import (Glisseur_arc_cercle, Glisseur_cercle, Glisseur_d
                                 Barycentre, Mediatrice, Droite_equation,
                                 Cercle_equation, Polygone, Rotation, Translation,
                                 Vecteur, Vecteur_libre, Representant, Reflexion,
-                                Homothetie, NOM,
+                                Homothetie, NOM, Nuage, Fonction,
                                 )
 
 def test_Point():
@@ -351,5 +351,28 @@ def test_Point_interpolation():
     raise NotImplementedError
 
 @XFAIL
-def test_Glisseur_courbe_interpolation():
-    raise NotImplementedError
+def test_Glisseur_courbe():
+    f = Fonction('x^2+3x-1')
+    M = Point(f, 2)
+    assert f(2) == 2**+3+2-1
+    assert M.y == f(2)
+
+def test_Nuage():
+    A = rand_pt()
+    B = rand_pt()
+    C = rand_pt()
+    D = rand_pt()
+    while D in (A, B, C):
+        D = rand_pt()
+    n = Nuage(A, B, C)
+    assert n.points == (A, B, C)
+    assert A in n
+    assert B in n
+    assert C in n
+    assert D not in n
+
+@XFAIL
+def test_NuageFonction():
+    f = Fonction('x^2+3')
+    m = Nuage(f, 0.5, 1, 2, 3, 4)
+    assert (2, 2**2+3) in m

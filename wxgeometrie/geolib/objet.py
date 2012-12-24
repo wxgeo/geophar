@@ -1433,7 +1433,7 @@ class Objet(object):
         with contexte(exact = False):
             return self._contains(y)
 
-    def _contains(self):
+    def _contains(self, y):
         raise NotImplementedError
 
 

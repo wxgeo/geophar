@@ -170,6 +170,7 @@ styles_de_angles = ['-', '--', '-.', ':', 'steps', 'None']
 familles_de_textes = ["sans-serif", "serif", "cursive", "fantasy", "monospace"]
 codage_des_lignes = ['', '/', '//', '///', 'x', 'o']
 codage_des_angles = ['', '^', ')', '))', ')))', '|', '||', 'x', 'o']
+strategies_interpolation = ['pente_moyenne', 'pente_minimale', 'moyenne_gauche_droite']
 
 # Enumère les styles 'variables' :
 # - soit parce qu'ils ont des significations assez différentes selon les objets
@@ -230,6 +231,9 @@ interpolations = {
     "codage": codage_des_lignes[0],
     "debut": True,
     "fin": True,
+    }
+interpolations_polynomiales_par_morceaux = {
+    'strategie': strategies_interpolation[1],
     }
 droites = {"couleur": "b",
     "epaisseur": 1.,

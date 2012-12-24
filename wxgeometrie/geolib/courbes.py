@@ -28,6 +28,7 @@ from numpy import isnan, isinf, sign, arange, inf, append
 from sympy import oo
 
 from .objet import Objet, Argument, Ref
+from .points import Point_generique
 from .contexte import contexte
 from .routines import distance_segment
 from .. import param
@@ -81,6 +82,15 @@ class Courbe(Courbe_generique):
     """
     _prefixe_nom = "C"
     __fonction = fonction = Argument("Fonction")
+
+    def __new__(cls, *args, **kw):
+        if args and isinstance(args[0], Point_generique):
+            from .interpolations import Interpolation_lineaire, scipy_found,\
+                                        Interpolation_polynomiale_par_morceaux
+            cls = (Interpolation_polynomiale_par_morceaux if scipy_found
+                                            else Interpolation_lineaire)
+            return cls(*args, **kw)
+        return Courbe_generique.__new__(cls, *args, **kw)
 
     def __init__(self, fonction, **styles):
         self.__fonction = fonction = Ref(fonction)
@@ -232,8 +242,8 @@ class Courbe(Courbe_generique):
           alors la limite est -Inf. De même, si elles augmentent, la limite est +Inf.
           On retourne alors une valeur en dehors de la fenêtre d'affichage, qui simule l'infini.
 
-        * Si le résultat est nombre très éloigné de zéro, on le tronque tout en restant en
-          dehors de la fenêtre d'affichage, de manière à simuler l'infini.
+        * Si le résultat est un nombre très éloigné de zéro, on le tronque tout en restant
+          en dehors de la fenêtre d'affichage, de manière à simuler l'infini.
           En effet, le traceur de matplotlib réagit mal aux valeurs "extrêmes".
 
         * Enfin si le résultat est de type NaN, on s'éloigne légèrement (puis de plus en plus vite)
@@ -289,9 +299,17 @@ class Courbe(Courbe_generique):
             return x, y
 
 
+    @property
+    def xmin(self):
+        return self.__fonction._Fonction__unions[0].intervalles[0].inf
+
+    @property
+    def xmax(self):
+        return self.__fonction._Fonction__unions[-1].intervalles[-1].sup
+
     def _espace_vital(self):
-        xmin = self.__fonction._Fonction__unions[0].intervalles[0].inf
-        xmax = self.__fonction._Fonction__unions[-1].intervalles[-1].sup
+        xmin = self.xmin
+        xmax = self.xmax
         if xmin == -oo:
             xmin = None
         if xmax == oo:
