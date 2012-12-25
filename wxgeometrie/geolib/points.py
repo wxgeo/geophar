@@ -214,7 +214,7 @@ class Point(Objet_avec_coordonnees_modifiables, Point_generique):
                   }
 
     def __new__(cls, *args, **kw):
-        if len(args) == 1:
+        if len(args) in (1, 2) and not hasattr(args[0], '__float__'):
             from .. import geolib
             # On regarde si le point peut être construit sur l'objet sélectionné.
             # Par exemple, si l'objet sélectionné est une droite, on construit
@@ -1143,8 +1143,12 @@ class Glisseur_courbe(Glisseur_generique):
     >>> G = Glisseur_courbe(c, x=-2)
     """
 
+    def _set_x(self, val):
+        u"L'abscisse du glisseur est entre les abscisses extrêmes de la courbe."
+        return max(min(val, self.courbe.xmax), self.courbe.xmin)
+
     courbe = __courbe = Argument("Interpolation_polynomiale_par_morceaux, Courbe")
-    parametre = x = __x = Argument("Variable_generique")
+    parametre = x = __x = Argument("Variable_generique", None, _set_x)
 
     def __init__(self, courbe, x=None, **styles):
         if x is None:

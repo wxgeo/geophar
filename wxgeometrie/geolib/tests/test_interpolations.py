@@ -38,9 +38,6 @@ def test_Interpolation_lineaire():
 def test_Interpolation_quadratique():
     raise NotImplementedError
 
-@XFAIL
-def test_Interpolation_cubique_old():
-    raise NotImplementedError
 
 @XFAIL
 def test_Interpolation_cubique():
@@ -57,4 +54,8 @@ def test_Interpolation_polynomiale_par_morceaux():
     assert M.xy[0] == 2
     P = Point(inter)
     assert P.y == inter.fonction(float(P.x))
+    # Sous forme de liste
+    inter2 = Interpolation_polynomiale_par_morceaux([A, B, C, D])
+    M = Point(inter, -7)
+    assert M.x == min(A.x, B.x, C.x, D.x) == inter2.xmin
 

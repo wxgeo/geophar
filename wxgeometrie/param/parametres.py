@@ -620,4 +620,4 @@ else:
     emplacements.setdefault("macros", "%/config/macros") # dans config/macros/ par défaut
     emplacements.setdefault("session", "%/config/session") # dans config/session/ par défaut
 
-print(u'Import des paramètres terminé.')
+##print(u'Import des paramètres terminé.')

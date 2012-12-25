@@ -119,6 +119,8 @@ class Interpolation_lineaire(Interpolation_generique):
     def __init__(self, *points, **styles):
         if styles.get("points", None):
             points = styles.pop("points")
+        elif len(points) == 1 and isinstance(points[0], (list, tuple)):
+            points = points[0]
         self.__points = points = tuple(Ref(pt) for pt in points)
         Interpolation_generique.__init__(self, *points, **styles)
 
@@ -186,6 +188,8 @@ class Interpolation_quadratique(Interpolation_generique):
     def __init__(self, *points, **styles):
         if "points" in styles:
             points = styles.pop("points")
+        elif len(points) == 1 and isinstance(points[0], (list, tuple)):
+            points = points[0]
         self.__points = points = tuple(Ref(pt) for pt in points)
         Interpolation_generique.__init__(self, *points, **styles)
 
@@ -244,6 +248,8 @@ class Interpolation_cubique(Interpolation_generique):
     def __init__(self, *points, **styles):
         if "points" in styles:
             points = styles.pop("points")
+        elif len(points) == 1 and isinstance(points[0], (list, tuple)):
+            points = points[0]
         self.__points = points = tuple(Ref(pt) for pt in points)
         Interpolation_generique.__init__(self, *points, **styles)
 
@@ -341,11 +347,14 @@ class Interpolation_polynomiale_par_morceaux(Interpolation_generique):
     fonction = None # fonction d'interpolation
 
     def __init__(self, *points, **styles):
-        # TODO: valeurs par défaut "intelligentes" pour les nombres dérivés.
         debut = styles.pop("debut", True)
         fin = styles.pop("fin", True)
         if styles.get("points", None):
             points = styles.pop("points")
+        # Accepter Interpolation_polynomiale_par_morceaux([A, B, C])
+        # comme alias de Interpolation_polynomiale_par_morceaux(A, B, C).
+        elif len(points) == 1 and isinstance(points[0], (list, tuple)):
+            points = points[0]
         self.__points = points = tuple(Ref(pt) for pt in points)
         # en test: creation des tangentes: dictionnaire
         # key: nom du point, value: objet Tangente_courbe

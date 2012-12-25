@@ -31,6 +31,8 @@ def test_Segment():
     assert(M not in s)
     assert(N not in s)
     assert(s.mode_affichage == RIEN)
+    K = Point(s, 0.5)
+    assert K == I
 
 def test_Demidroite():
     A = Point(4.5,  7.3)
