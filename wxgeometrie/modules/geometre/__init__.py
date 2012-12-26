@@ -23,7 +23,8 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 
-from ...GUI import MenuBar, Panel_API_graphique
+from ...GUI.menu import MenuBar
+from ...GUI.panel import Panel_API_graphique
 
 class GeometreMenuBar(MenuBar):
     def __init__(self, panel):

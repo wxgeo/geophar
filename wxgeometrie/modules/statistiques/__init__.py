@@ -30,7 +30,8 @@ from PyQt4.QtGui import QVBoxLayout, QLabel, QGroupBox, QHBoxLayout, QComboBox
 
 from numpy import array
 
-from ...GUI import MenuBar, Panel_API_graphique
+from ...GUI.menu import MenuBar
+from ...GUI.panel import Panel_API_graphique
 from .experience import LancerDes, Sondage, ExperienceFrame, alea, sondage, de, DIC
 from .onglets_internes import OngletsStatistiques
 from ...geolib.routines import arrondir

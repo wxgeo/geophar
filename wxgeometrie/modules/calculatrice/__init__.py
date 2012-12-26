@@ -38,7 +38,8 @@ from matplotlib.figure import Figure
 from ...GUI.ligne_commande import LigneCommande
 from ...GUI.wxlib import png
 from ...GUI.inspecteur import FenCode
-from ...GUI import MenuBar, Panel_simple
+from ...GUI.menu import MenuBar
+from ...GUI.panel import Panel_simple
 from ...mathlib.interprete import Interprete
 from ...mathlib.parsers import latex2mathtext
 from ...mathlib.end_user_functions import __classement__

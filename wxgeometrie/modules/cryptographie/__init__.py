@@ -34,7 +34,8 @@ from PyQt4.QtGui import (QVBoxLayout, QInputDialog, QPushButton,
                          QTextEdit, QGridLayout, QLabel, QLineEdit, QSpacerItem)
 from PyQt4.QtCore import Qt, QTimer
 
-from ...GUI import MenuBar, Panel_simple
+from ...GUI.menu import MenuBar
+from ...GUI.panel import Panel_simple
 from ...pylib import print_error
 from ... import param
 

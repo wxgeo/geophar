@@ -19,14 +19,28 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-import sys, time, os, itertools, traceback, imp, subprocess
-from os.path import dirname, realpath
-
+import time
 t0 = time.time()
+import sys, os, itertools, traceback, imp, subprocess
+from os.path import dirname, realpath, normpath
 
-from .arguments import gerer_arguments
+# Emplacement du module python nommé wxgeometrie
+EMPLACEMENT = dirname(dirname(realpath(sys._getframe().f_code.co_filename)))
 
-parametres_additionnels, arguments, options = gerer_arguments()
+from .arguments import lire_arguments, traiter_arguments
+
+options, arguments = lire_arguments()
+
+if not options.script and not options.lister_modules:
+    from .GUI.app import app, splash
+
+    splash_screen = splash(normpath(EMPLACEMENT + '/wxgeometrie/images/logo6.png'))
+    # .showMessage() doit être appelé pour que le splash screen apparaisse.
+    # cf. https://bugreports.qt-project.org/browse/QTBUG-24910
+    splash_screen.showMessage(u'Chargement en cours...')
+    print(u"Démarrage GUI...")
+
+parametres_additionnels, arguments, options = traiter_arguments(options, arguments)
 
 from . import param
 # Attention, les paramètres importés explicitement ici dans l'espace des noms
@@ -39,8 +53,13 @@ from . import param
 from .param import dependances, NOMPROG, NOMPROG2, LOGO, plateforme, GUIlib
 from .pylib.fonctions import path2, uu, str3
 
-# Emplacement du module python nommé wxgeometrie
-param.EMPLACEMENT = dirname(dirname(realpath(sys._getframe().f_code.co_filename)))
+param.EMPLACEMENT = EMPLACEMENT
+
+if not options.script:
+    app.nom(NOMPROG)
+    if param.style_Qt:
+        app.setStyle(param.style_Qt)
+    app.icone(u"%/wxgeometrie/images/icone.ico")
 
 if param.py2exe:
     # cf. py2exe/boot_common.py
@@ -222,7 +241,7 @@ else:
 # (il semble qu'une partie de l'espace des noms ne soit déjà plus accessible au moment où l'erreur
 # est traitée...??)
 try:
-    # à faire avant d'importer API et LIB
+    # à faire avant d'importer API
     if param.verbose:
         print u'Arguments de la ligne de commande :', parametres_additionnels, arguments
         if options.script:
@@ -231,10 +250,6 @@ try:
     if param.py2exe:
         print sys.path
         sys.path.extend(('library.zip\\matplotlib', 'library.zip\\' + GUIlib))
-
-##    #Test des imports
-##    from . import GUI
-##    import wx # après GUI (wxversion.select() must be called before wxPython is imported)
 
     if param.charger_psyco is not False:
         try:
@@ -297,12 +312,8 @@ try:
                 print msg
 
         else:
-            from .GUI.app import app, splash
-            app.nom(NOMPROG)
             # param._restart est mis à True si l'application doit être redémarrée.
             param._restart = False
-
-            splash_screen = splash(path2(LOGO))
 
             from .GUI.fenetre_principale import FenetrePrincipale
             if param.debug:

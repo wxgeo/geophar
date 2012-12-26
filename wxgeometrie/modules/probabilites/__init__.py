@@ -27,7 +27,8 @@ import re
 
 from PyQt4.QtGui import QVBoxLayout, QLabel, QPushButton, QHBoxLayout, QMessageBox, QTextEdit
 
-from ...GUI import MenuBar, Panel_API_graphique
+from ...GUI.menu import MenuBar
+from ...GUI.panel import Panel_API_graphique
 from ...GUI.proprietes_objets import Proprietes
 from ...geolib import Segment, Texte, Point, TEXTE
 from ... import param

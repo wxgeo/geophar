@@ -34,7 +34,8 @@ from PyQt4.QtGui import (QVBoxLayout, QLabel, QPushButton, QHBoxLayout,
 from sympy import S, solve, gcd, simplify
 from sympy.core.sympify import SympifyError
 
-from ...GUI import MenuBar, Panel_API_graphique
+from ...GUI.menu import MenuBar
+from ...GUI.panel import Panel_API_graphique
 from ...GUI.proprietes_objets import Proprietes
 from ...geolib import Segment, Texte, Point, Droite, Champ, TEXTE, NOM
 from ...geolib.routines import nice_str, det, vect

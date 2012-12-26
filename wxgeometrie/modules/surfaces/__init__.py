@@ -33,7 +33,8 @@ from matplotlib.colors import LinearSegmentedColormap
 from numpy import max as nmax, min as nmin, meshgrid
 
 from ...GUI.wxlib import BusyCursor
-from ...GUI import MenuBar, Panel_API_graphique
+from ...GUI.menu import MenuBar
+from ...GUI.panel import Panel_API_graphique
 from ...pylib import fullrange, eval_safe
 from ...pylib.securite import dictionnaire_builtins
 from ...mathlib import end_user_functions

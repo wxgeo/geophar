@@ -38,6 +38,7 @@ from generic_wrapper import GenericWrapper
 from .decorator import decorator
 
 import matplotlib, matplotlib.mathtext
+matplotlib.use(param.moteur_de_rendu, warn=False)
 matplotlib.rcParams['text.usetex'] = param.latex
 matplotlib.rcParams["text.latex.unicode"] = param.latex_unicode
 

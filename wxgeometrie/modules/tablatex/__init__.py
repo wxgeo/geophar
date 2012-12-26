@@ -29,7 +29,8 @@ from PyQt4.QtGui import (QHBoxLayout, QVBoxLayout, QCheckBox, QPushButton,
                          QTextEdit, QLineEdit, QLabel, QComboBox, QGroupBox)
 
 from ...GUI.ligne_commande import LigneCommande
-from ...GUI import MenuBar, Panel_simple
+from ...GUI.menu import MenuBar
+from ...GUI.panel import Panel_simple
 from ... import param
 from ...pylib import warning, print_error
 from ...pylib.erreurs import message

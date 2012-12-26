@@ -31,7 +31,8 @@ from PyQt4.QtGui import QInputDialog, QLineEdit
 
 from sympy import latex
 
-from ...GUI import MenuBar, Panel_API_graphique
+from ...GUI.menu import MenuBar
+from ...GUI.panel import Panel_API_graphique
 from ...mathlib.graphes import Graph, colors, colors_dict
 from .barre_outils_graphes import BarreOutilsGraphes
 from ...geolib import Arc_oriente

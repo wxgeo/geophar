@@ -26,10 +26,6 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 from PyQt4.QtGui import QApplication, QPalette, QColor, QPixmap, QSplashScreen, QIcon
 from PyQt4.QtCore import QLocale, QTranslator, QLibraryInfo, Qt, pyqtSignal
 
-from .. import param
-from ..pylib import path2, print_error
-from ..pylib.fonctions import extract_error
-
 
 class App(QApplication):
 
@@ -46,8 +42,6 @@ class App(QApplication):
         translator.load("qt_" + locale,
                       QLibraryInfo.location(QLibraryInfo.TranslationsPath))
         self.installTranslator(translator)
-        if param.style_Qt:
-            self.setStyle(param.style_Qt)
         self._print_signal.connect(self._print)
 
     def boucle(self):
@@ -55,6 +49,10 @@ class App(QApplication):
 
     def nom(self, nom=''):
         self.setApplicationName(nom)
+
+    def icone(self, path):
+        from ..pylib.fonctions import path2
+        self.setWindowIcon(QIcon(path2(path)))
 
     def vers_presse_papier(self, texte):
         self.clipboard().setText(texte)
@@ -75,6 +73,7 @@ class App(QApplication):
         En dehors de la thread principale, il faut impérativement utiliser
         cette méthode au lieu de `print_error()`.
         """
+        from ..pylib.fonctions import extract_error
         self._print_signal.emit(extract_error())
 
     def _print(self, texte):
@@ -82,7 +81,6 @@ class App(QApplication):
 
 
 app = App()
-app.setWindowIcon(QIcon(path2(u"%/wxgeometrie/images/icone.ico")))
 
 white_palette = QPalette()
 white = QColor(Qt.white)

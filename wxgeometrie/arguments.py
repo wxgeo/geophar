@@ -20,7 +20,7 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 
-import optparse
+import optparse, os, sys
 
 from .version import NOMPROG2, version
 nomprog = NOMPROG2.lower()
@@ -35,7 +35,7 @@ nomprog = NOMPROG2.lower()
 #     nom =
 #     NOMPROG2, version = .split(' version ')
 
-def gerer_arguments():
+def lire_arguments():
     u"""On récupère les options éventuelles passées au programme.
 
     -a ou --all : essaie de détecter tous les modules possibles pour les intégrer au démarrage
@@ -44,9 +44,10 @@ def gerer_arguments():
     -p ou --param ou --parametres : modifier le contenu du module 'param'. Les parametres sont séparés par des points-virgules.
     ex: python wxgeometrie.pyw --param version='0.1';tolerance=0.01 monfichier1.geo monfichier2.geo
 
-    -d ou --defaut : ne pas charger les préférences"""
+    -d ou --defaut : ne pas charger les préférences
 
-    parametres_additionnels = {}
+    Retour : (options, args)
+    """
 
     parser = optparse.OptionParser(prog = NOMPROG2, usage = "usage: %prog [options] [fichiers...]",
                                    version = "%prog " + version,
@@ -67,11 +68,18 @@ def gerer_arguments():
     parser.add_option("-i", "--input", help="(mode script) fichier contenant le script de construction de figure, ou fichier .geo.")
     parser.add_option("-o", "--output", help="(mode script) fichier image. L'extension determine le type de fichier.")
 
-# parser.set_defaults()
+    return parser.parse_args()
 
-    (options, args) = parser.parse_args()
 
+
+def traiter_arguments(options, args):
+    u"""Modification des paramètres en fonction des arguments passés.
+
+    Le traitement des arguments est séparé de leur lecture,
+    afin que le splash screen puisse être affiché le plus tôt possible."""
     from . import param
+
+    parametres_additionnels = {}
 
     if options.defaut:
         param.charger_preferences = False

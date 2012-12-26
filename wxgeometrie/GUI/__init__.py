@@ -19,9 +19,6 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-import traceback
-
-from .. import param
 
 import sip
 # PyQt new API (PyQt 4.6+)
@@ -33,19 +30,6 @@ sip.setapi('QTime', 2)
 sip.setapi('QUrl', 2)
 sip.setapi('QVariant', 2)
 
-
-try:
-    import matplotlib
-    matplotlib.use(param.moteur_de_rendu, warn = False)
-    #import pylab # cette ligne semble nécessaire sous Ubuntu Feisty (python 2.5 - matplotlib 0.87.7) ??
-except Exception:
-    print "Warning : Erreur lors de l'import de pylab.\n"
-    if param.debug:
-        print traceback.format_exc()
-
-from .menu import MenuBar
-from .panel import Panel_simple, Panel_API_graphique
-
-# NB: Ne *PAS* importer modules.py ici (ou alors, modifier le script d'initialisation).
-# En effet, la mise à jour des paramètres en fonction des préférences de l'utilisateur
-# doit avoir lieu avant d'importer modules.py, qui lui-même utilise param.modules_actifs.
+# Important :
+# Pour que le splash screen se charge le plus vite possible,
+# il ne faut rien importer ici (en dehors de sip).
