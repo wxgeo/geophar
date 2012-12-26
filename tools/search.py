@@ -41,7 +41,7 @@ DEFAULT_EDITOR = 'geany'
 
 IGNORE_RE = re.compile('|'.join('(%s)' % pattern.replace('*', '.*').strip()
                                  for pattern in IGNORE if pattern))
-SUPPORTED_EDITORS = ('geany', 'gedit', 'nano', 'vim', 'emacs', 'kate')
+SUPPORTED_EDITORS = ('geany', 'gedit', 'nano', 'vim', 'emacs', 'kate', 'kile')
 
 def gs(chaine='', case=True, exclude_comments=True, extensions=(".py", ".pyw"),
         maximum=100, codec="latin1", statistiques=False, replace=None,
@@ -173,6 +173,8 @@ def gs(chaine='', case=True, exclude_comments=True, extensions=(".py", ".pyw"),
                                   + ','.join(SUPPORTED_EDITORS))
                         elif edit_with in ('geany', 'kate'):
                             command = '%s -l %s %s' % (edit_with, n + 1, f)
+                        elif edit_with in ('kile',):
+                            command = '%s --line %s %s' % (edit_with, n + 1, f)
                         else:
                             command = '%s +%s %s' % (edit_with, n + 1, f)
                         subprocess.call(command, shell=True)
@@ -250,9 +252,31 @@ if __name__ == "__main__":
         else:
             arg = None
         if arg is not None:
-            arg = arg.lstrip('=:')
-            kw['edit_result'] = int(arg[2:])
+            arg = arg[2:].lstrip('=:')
+            kw['edit_result'] = int(arg)
             kw['edit_with'] = DEFAULT_EDITOR
+
+    for i, arg in enumerate(args):
+        if arg.startswith('-x'):
+            print('x')
+            args.pop(i)
+            break
+    else:
+        arg = None
+    if arg is not None:
+        arg = arg[2:].lstrip('=:')
+        kw['extensions'] = arg.split(',')
+
+    for i, arg in enumerate(args):
+        if arg.startswith('-w'):
+            args.pop(i)
+            break
+    else:
+        arg = None
+    if arg is not None:
+        arg = arg[2:].lstrip('=:')
+        kw['edit_with'] = arg
+
     if '-c' in args:
         args.remove('-c')
         kw['color'] = True
@@ -267,8 +291,8 @@ if __name__ == "__main__":
         else:
             arg = None
         if arg is not None:
-            arg = arg.lstrip('=:')
-            kw['maximum'] = int(arg[2:])
+            arg = arg[2:].lstrip('=:')
+            kw['maximum'] = int(arg)
     if '-s' in args:
         args.remove('-s')
         args.insert(0, '')
