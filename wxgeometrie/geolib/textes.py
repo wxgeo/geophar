@@ -118,12 +118,16 @@ class Texte_generique(Objet_avec_coordonnees):
         else:
             # Matplotlib: None donne le style par défaut,
             # 'none' désactive l'affichage.
+            lw = None
             if fond is None:
                 fond = 'none'
             elif cadre is None:
                 cadre = 'none'
+                # Contournement d'un bug de matplotlib 1.1.1
+                lw = 0
             rect.set(visible=True, texte=text, facecolor=fond, edgecolor=cadre,
-                     zorder=niveau, pad=self.style('pad'), alpha=self.style('alpha_fond'))
+                     zorder=niveau, pad=self.style('pad'), alpha=self.style('alpha_fond'),
+                     linewidth=lw)
 
     @property2
     def label_temporaire(self, *val):
