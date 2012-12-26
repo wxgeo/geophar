@@ -34,7 +34,7 @@ from PyQt4.QtCore import Qt, QPoint, QByteArray, QRectF
 from PyQt4.QtSvg import QSvgRenderer
 import matplotlib.backend_bases as backend_bases
 
-from .aide import About, Informations, Notes, Licence
+from .aide import About, Informations
 from .animer import DialogueAnimation
 from .contact import Contact
 from .dialogues_geometrie import EditerObjet, SupprimerObjet
@@ -637,14 +637,6 @@ border-top-right-radius: 4px;
 
     def Aide(self):
         open_new_tab(path2("%/wxgeometrie/doc/html/help.html"))
-
-    def Notes(self):
-        self.notes = Notes(self)
-        self.notes.show()
-
-    def Licence(self):
-        self.licence = Licence(self)
-        self.licence.show()
 
     def Contacter(self):
         self.formulaire = Contact(self)

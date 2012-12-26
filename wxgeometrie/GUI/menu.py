@@ -187,8 +187,6 @@ class MenuBar(QMenuBar):
 "options":  [u"Options", u"Paramètres du programme.", None, self.parent.Options],
 
 "aide":     [u"Aide", u"Obtenir de l'aide sur le programme.", None, self.parent.Aide],
-"notes":    [u"Notes de version", u"Consulter l'historique du projet.", None, self.parent.Notes],
-"licence":    [u"Licence", u"Licence.", None, self.parent.Licence],
 "infos":    [u"Configuration", u"Visualiser la configuration actuelle du système.", None, self.parent.Informations],
 "contact":  [u"Signaler un problème", u"Envoyer un rapport de bug.", None, self.parent.Contacter],
 "versions":    [u"Rechercher des mises à jour", u"Vérifier si une nouvelle version est disponible.", None, self.parent.gestionnaire_de_mises_a_jour.verifier_version],
@@ -203,7 +201,7 @@ class MenuBar(QMenuBar):
         self.menus["avance1"] = [u"Avancé", [u"historique"], [u"ligne_commande"], [u"debug"]]
         self.menus["avance2"] = [u"Avancé", [u"ligne_commande"], ["debug"]]
 
-        self.menus["?"] = ["?", ["aide"], ["notes"], ["licence"], ["infos"], ["contact"], None, ["versions"], None, ["about"]]
+        self.menus["?"] = ["?", ["aide"], ["infos"], ["contact"], None, ["versions"], None, ["about"]]
 
 
 

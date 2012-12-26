@@ -58,7 +58,7 @@ fermeture_instantanee = False # Utile en mode développement
 ligne_commande = debug
 
 GUIlib = 'Qt'
-LOGO = '%/wxgeometrie/images/logo6.png'
+LOGO = '%/wxgeometrie/images/logo6-1.png'
 
 version_wxpython = "2.8-unicode"
 
@@ -94,7 +94,7 @@ modules_par_defaut = (
     "statistiques",
     "calculatrice",
     "probabilites",
-    "surfaces",
+    ##"surfaces",
         )
 
 # Multi-threading pour les macros

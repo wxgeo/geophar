@@ -34,7 +34,7 @@ options, arguments = lire_arguments()
 if not options.script and not options.lister_modules:
     from .GUI.app import app, splash
 
-    splash_screen = splash(normpath(EMPLACEMENT + '/wxgeometrie/images/logo6.png'))
+    splash_screen = splash(normpath(EMPLACEMENT + '/wxgeometrie/images/logo6-1.png'))
     # .showMessage() doit être appelé pour que le splash screen apparaisse.
     # cf. https://bugreports.qt-project.org/browse/QTBUG-24910
     splash_screen.showMessage(u'Chargement en cours...')
