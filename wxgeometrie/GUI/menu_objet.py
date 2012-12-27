@@ -28,7 +28,7 @@ from PyQt4.QtGui import (QDialog, QVBoxLayout, QHBoxLayout, QFrame, QLineEdit,
 from PyQt4.QtCore import Qt
 
 from ..geolib.constantes import NOM, FORMULE, TEXTE, RIEN, MATH
-from ..geolib import Texte_generique, Point_generique, Champ, Texte
+from ..geolib import Texte_generique, Point_generique, Champ, Texte, Polygone_generique
 from .proprietes_objets import Proprietes
 from ..pylib import print_error
 from .wxlib import PopUpMenu
@@ -80,7 +80,19 @@ class MenuActionsObjet(PopUpMenu):
 
         self.addSeparator()
 
-        if isinstance(canvas.select, Point_generique):
+        app_style = self.addMenu(u"Appliquer ce style")
+        if isinstance(select, Polygone_generique):
+            action = app_style.addAction(u"aux côtés de ce polygone")
+            action.triggered.connect(self.copier_style_cotes)
+        action = app_style.addAction(u"aux autres " + select.style('sous-categorie'))
+        action.triggered.connect(partial(self.copier_style, critere='sous-categorie'))
+        action = app_style.addAction(u"à tous les objets compatibles (%s)"
+                                                % select.style('categorie'))
+        action.triggered.connect(partial(self.copier_style, critere='categorie'))
+
+        self.addSeparator()
+
+        if isinstance(select, Point_generique):
             relier = self.addMenu(u"Relier le point")
 
             action = relier.addAction(u"aux axes")
@@ -209,6 +221,30 @@ class MenuActionsObjet(PopUpMenu):
             else:
                 select.label(old_label)
             break
+
+    def copier_style(self, critere='categorie'):
+        u"""Applique le style de l'objets à tous les objets de même catégorie.
+
+        Si `critere='sous-categorie'`, le style est seulement appliqué aux objets
+        de même sous-catégorie (ex. 'vecteurs'), et non à la catégorie entière
+        (ex. 'lignes').
+        """
+        select = self.canvas.select
+        feuille = self.canvas.feuille_actuelle
+        cible = select.style(critere)
+        with self.canvas.geler_affichage(actualiser=True, sablier=True):
+            for obj in feuille.liste_objets(objets_caches=False, etiquettes=True):
+                if obj.style(critere) == cible:
+                    obj.copier_style(select)
+            feuille.interprete.commande_executee()
+
+    def copier_style_cotes(self):
+        u"Applique le style du polygone à ses côtés."
+        select = self.canvas.select
+        with self.canvas.geler_affichage(actualiser=True, sablier=True):
+            for cote in select.cotes:
+                cote.copier_style(select)
+            self.canvas.feuille_actuelle.interprete.commande_executee()
 
     def masquer_nom(self):
         select = self.canvas.select

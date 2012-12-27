@@ -48,7 +48,8 @@ warning = debug
 verbose = 1 # 0, 1, 2 ou 3
 # À terme, verbose=0 doit couper *tous* les messages (pour ne pas parasiter les tests).
 # => créer une fonction print() personnalisée.
-# Indique si geolib doit afficher les différents messages. Dans certaines consoles (ex: pyshell), cela provoque des comportements indésirables.
+# Indique si geolib doit afficher les différents messages.
+# Dans certaines consoles (ex: pyshell), cela provoque des comportements indésirables.
 afficher_messages = True
 #TODO: retravailler ces différents paramètres.
 
@@ -102,10 +103,8 @@ modules_par_defaut = (
 
 multi_threading = False
 
-# c'est assez instable...
-
-if multi_threading is None:
-    multi_threading = (plateforme == 'Windows') # ca ne marche pas avec le serveur X (sous Linux par ex.)
+# C'est assez instable...
+# En particulier, en l'état, ça ne marche pas avec le serveur X (sous Linux par ex.)
 
 
 # Paramètres généraux
@@ -164,7 +163,8 @@ FIN = 1
 
 # Styles liés à la catégorie:
 styles_de_lignes = ['-', '--', '-.', ':', 'None']
-styles_de_points = ['+', 'x', 'o', '.', ',', '1', '2', '3', '4', '<', '>', '^', 'v', 'D', 'H', '_', '|', 'd', 'h', 'p', 's']
+styles_de_points = ['+', 'x', 'o', '.', ',', '1', '2', '3', '4', '<', '>', '^',
+                    'v', 'D', 'H', '_', '|', 'd', 'h', 'p', 's']
 styles_de_textes = ["normal", "italic", "oblique"]
 styles_de_angles = ['-', '--', '-.', ':', 'steps', 'None']
 familles_de_textes = ["sans-serif", "serif", "cursive", "fantasy", "monospace"]
@@ -176,10 +176,14 @@ strategies_interpolation = ['pente_moyenne', 'pente_minimale', 'moyenne_gauche_d
 # - soit parce qu'ils ont des significations assez différentes selon les objets
 # - soit parce qu'ils ne peuvent pas prendre les mêmes valeurs suivant les objets
 # Ces styles ne seront copiés d'un objet à l'autre que s'ils appartiennent à la même catégorie
-styles_a_signification_variable = ("style", "codage", "famille", "taille", "angle")
+styles_a_signification_variable = ("style", "codage", "famille", "taille",
+                                   "angle", "epaisseur", "alpha")
+# (alpha) a toujours la même singification, mais ne doit pas être copié d'une ligne
+# vers un polygone par exemple.
 
 # Ces styles ne seront pas copiés, quelque soit la catégorie de la cible
-styles_a_ne_pas_copier = ("categorie", "niveau", "trace", "fixe", "_rayon_", "_k_", "_angle_", "_noms_", "mode")
+styles_a_ne_pas_copier = ("sous-categorie", "categorie", "niveau", "trace",
+                          "fixe", "_rayon_", "_k_", "_angle_", "_noms_", "mode")
 
 
 types_de_hachures = [' ', '/', '//', '\\', '\\\\', '|', '-', '+', 'x', 'o', 'O', '.', '..', '*']
@@ -202,6 +206,7 @@ points = {
     "epaisseur": 1.,
     "style": "+",
     "categorie": "points",
+    "sous-categorie": "points ordinaires",
     "taille": 8,
     "visible": True,
     "niveau": 6,
@@ -211,6 +216,7 @@ points_deplacables = {
     "couleur": "r",
     "niveau": 10,
     "fixe": False,
+    "sous-categorie": u"points déplaçables",
     }
 segments = {
     "couleur": "g",
@@ -219,6 +225,7 @@ segments = {
     "visible": True,
     "niveau": 3,
     "categorie": "lignes",
+    "sous-categorie": "segments",
     "codage": codage_des_lignes[0],
     }
 interpolations = {
@@ -228,6 +235,7 @@ interpolations = {
     "visible": True,
     "niveau": 3,
     "categorie": "lignes",
+    "sous-categorie": "courbes",
     "codage": codage_des_lignes[0],
     "debut": True,
     "fin": True,
@@ -241,6 +249,7 @@ droites = {"couleur": "b",
     "visible": True,
     "niveau": 2,
     "categorie": "lignes",
+    "sous-categorie": "droites",
     }
 courbes = {"couleur": "b",
     "epaisseur": 1.,
@@ -250,6 +259,7 @@ courbes = {"couleur": "b",
     "categorie": "lignes",
     "extremites": True,
     "extremites_cachees": (),
+    "sous-categorie": "courbes",
     }
 vecteurs = {
     "couleur": "g",
@@ -259,6 +269,7 @@ vecteurs = {
     "visible": True,
     "niveau": 4,
     "categorie": "lignes",
+    "sous-categorie": "vecteurs",
     "angle": 60,
     "position": FIN,
     "double_fleche": False,
@@ -271,6 +282,7 @@ axes = {
     "visible": True,
     "niveau": .1,
     "categorie": "lignes",
+    "sous-categorie": "axes",
     "angle": 60,
     "position": FIN,
     "double_fleche": False,
@@ -288,6 +300,7 @@ cercles = {
     "visible": True,
     "niveau": 1,
     "categorie": "lignes",
+    "sous-categorie": "cercles",
     }
 arcs = {
     "couleur": "b",
@@ -296,6 +309,7 @@ arcs = {
     "visible": True,
     "niveau": 1,
     "categorie": "lignes",
+    "sous-categorie": "arcs",
     "codage": codage_des_lignes[0],
     }
 arcs_orientes = {
@@ -306,6 +320,7 @@ arcs_orientes = {
     "visible": True,
     "niveau": 4,
     "categorie": "lignes",
+    "sous-categorie": "arcs",
     "angle": 60,
     "position": FIN,
     "double_fleche": False,
@@ -318,15 +333,17 @@ polygones = {
     "alpha": .2,
     "niveau": 0.1,
     "hachures": types_de_hachures[0],
-    "categorie": "lignes",
+    "categorie": "surfaces",
+    "sous-categorie": u"polygones",
     }
 cotes = {
     "couleur": "y",
     "epaisseur": 1.,
     "style": "-",
     "visible": True,
-    "niveau": 0,
+    "niveau": 0.11,
     "categorie": "lignes",
+    "sous-categorie": "segments",
     "codage": codage_des_lignes[0],
     }
 polyedres = {
@@ -337,7 +354,8 @@ polyedres = {
     "alpha": .2,
     "niveau": 0,
     "hachures": types_de_hachures[0],
-    "categorie": "lignes",
+    "categorie": "surfaces",
+    "sous-categorie": u"polyèdres",
     }
 aretes = {
     "couleur": "y",
@@ -346,6 +364,7 @@ aretes = {
     "visible": True,
     "niveau": 0.5,
     "categorie": "lignes",
+    "sous-categorie": "segments",
     }
 textes = {
     "couleur": "k",
@@ -359,6 +378,7 @@ textes = {
     "mode": TEXTE,
     "fixe": False,
     "categorie": "textes",
+    "sous-categorie": "textes ordinaires",
     "niveau": 7,
     "alignement_vertical": "center",
     "alignement_horizontal": "center",
@@ -369,6 +389,7 @@ textes = {
 champs = {
     "formatage": MATH,
     "fixe": True,
+    "sous-categorie": "champs de texte",
     }
 boutons = {
     "couleur": 'k',
@@ -381,6 +402,7 @@ boutons = {
     "mode": TEXTE,
     "fixe": True,
     "categorie": "widgets",
+    "sous-categorie": "boutons",
     "niveau": 10,
     "alignement_vertical": "center",
     "alignement_horizontal": "center",
@@ -398,6 +420,7 @@ labels = {
     "mode": RIEN,
     "fixe": False,
     "categorie": "textes",
+    "sous-categorie": u"étiquettes",
     "niveau": 7,
     "alignement_vertical": "bottom",
     "alignement_horizontal": "left",
@@ -416,6 +439,7 @@ angles = {
     "visible": True,
     "niveau": 5,
     "categorie": "angles",
+    "sous-categorie": "angles",
     "codage": codage_des_angles[0],
     "alpha": .2,
 }
@@ -431,8 +455,6 @@ angles = {
 
 del NOM, FORMULE, TEXTE, RIEN, DEBUT, MILIEU, FIN
 
-
-
 # Options de style pour les objets geometriques :
 #   couleur:      str
 #   epaisseur:    float
@@ -443,7 +465,10 @@ del NOM, FORMULE, TEXTE, RIEN, DEBUT, MILIEU, FIN
 #   label:        str
 #   extra:       dict
 # 'extra' est un dictionnaire d'options de matplotlib
-# attention, ces options seront appliquees a toutes les composantes (plot, fill, text) de la representation graphique
+# Attention, ces options seront appliquees a toutes les composantes
+# (plot, fill, text) de la representation graphique.
+
+
 
 codage = {"angle": 60, "taille": 6, "rayon": 20}
 codage_automatique_angle_droits = True

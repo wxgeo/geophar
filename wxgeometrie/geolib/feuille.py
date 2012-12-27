@@ -646,10 +646,13 @@ class Interprete_feuille(object):
     def executer(self, commande, parser=True, signature=None):
         u"""Exécute la commande dans la feuille.
 
-        Si parser=False, les facilités de syntaxe (abréviations, etc.)
+        Si `parser=False`, les facilités de syntaxe (abréviations, etc.)
         sont désactivées pour plus de rapidité.
 
-        Si signature != None, elle est utilisée pour la gestion de l'historique."""
+        Si `signature != None`, elle est utilisée pour la gestion de l'historique.
+
+        Voir aussi `commande_executee()`.
+        """
         if parser:
             commande = self.parser(commande)
 
@@ -808,7 +811,18 @@ class Historique_feuille(object):
         self.feuille.vierge = True
 
 
-    def archiver(self, signature = None):
+    def archiver(self, signature=None):
+        u"""Sauvegarde l'état actuel de la feuille.
+
+        Notes concernant l'implémentation::
+
+            * si l'état de la feuille n'a pas changé depuis la dernière sauvegarde,
+              la nouvelle demande de sauvegarde n'est pas prise en compte.
+            * si `signature` est différente de `None`, une demande effectuée
+              avec la même signature que la précédente écrase la précédente.
+              Ceci sert essentiellement pour les zooms avec la molette de la souris,
+              afin d'éviter de saturer l'historique.
+        """
         sauvegarde = self.feuille.sauvegarder()
         # On évite de stocker deux fois de suite la même chose dans l'historique.
         if self.etats and hash(sauvegarde) == self.last_hash and sauvegarde == self.etats[-1]:
