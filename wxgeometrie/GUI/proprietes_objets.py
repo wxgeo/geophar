@@ -246,9 +246,12 @@ class ProprietesAffichage(QWidget):
             angle.addWidget(QLabel(u"Angle (en degré) : "))
             self.angle = QSpinBox()
             self.angle.setMinimumWidth(30)
-            self.angle.setRange(-360, 360)
+            self.angle.setRange(-180, 180)
+            self.angle.setSpecialValueText('auto')
+            self.angle.setSuffix(u'°');
+            self.angle.setWrapping(True)
             if all(objet.style("angle") == ang for objet in objets):
-                self.angle.setValue(ang)
+                self.angle.setValue(ang if ang != 'auto' else -180)
             else:
                 self.angle.setSpecialValueText(' ')
                 print(u'FIXME: cas non géré.')
@@ -420,7 +423,8 @@ class ProprietesAffichage(QWidget):
         self.changements["taille"] = self.taille.value()/10
 
     def EvtAngle(self):
-        self.changements["angle"] = self.angle.value()
+        angle = self.angle.value()
+        self.changements["angle"] = (angle if angle != -180 else 'auto')
 
     def EvtPosition(self):
         self.changements["position"] = self.position.value()/100

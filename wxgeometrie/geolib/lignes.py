@@ -209,6 +209,13 @@ class Ligne_generique(Objet_avec_equation):
             assert len(points) <= 2
             return points
 
+    def angle_affichage(self):
+        u"Angle, à l'écran, de la ligne par rapport l'horizontale, en radians."
+        x1, y1 = self.__point1.coordonnees
+        x2, y2 = self.__point2.coordonnees
+        dx, dy = self.canvas.dcoo2pix(x2 - x1, y2 - y1)
+        return atan2(-dy, dx)
+
 
 
 class Segment(Ligne_generique):

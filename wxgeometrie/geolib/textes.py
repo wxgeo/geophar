@@ -109,7 +109,13 @@ class Texte_generique(Objet_avec_coordonnees):
             font.set_family(self.style("famille"))
             text._text = latex2mathtext(texte)
 
-        text.set_rotation(self.style("angle"))
+        angle = self.angle()
+        try:
+            angle = float(angle)
+        except (ValueError, TypeError):
+            # angle = 'auto' par exemple (sauf si la méthode .angle() est surclassée)
+            angle = 0
+        text.set_rotation(angle)
         text.set_verticalalignment(av)
         text.set_horizontalalignment(ah)
         text.zorder = niveau + .001
@@ -157,7 +163,11 @@ class Texte_generique(Objet_avec_coordonnees):
         xmax, ymax = can.pix2coo(_xmax, _ymin)
         return xmin, xmax, ymin, ymax
 
+    def angle(self):
+        u"""Angle du texte.
 
+        À surclasser éventuellement pour implémenter un style 'auto'."""
+        return self.style('angle')
 
     def _distance_inf(self, x, y, d):
         xmin, xmax, ymin, ymax = self._boite()

@@ -132,6 +132,18 @@ class Label_generique(Texte_editable_generique):
 
     y = __y
 
+    def angle(self):
+        angle = self.style('angle')
+        if angle == 'auto' and hasattr(self.parent, 'angle_affichage'):
+            angle = 180*self.parent.angle_affichage()/pi
+            # L'angle doit resté compris entre -90° et 90°, pour que le texte
+            # ne soit pas "à l'envers".
+            if angle < -90:
+                angle += 180
+            elif angle > 90:
+                angle -= 180
+            return angle
+        return angle
 
 
 class Label_point(Label_generique):
