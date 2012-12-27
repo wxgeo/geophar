@@ -70,7 +70,9 @@ class Texte_generique(Objet_avec_coordonnees):
         fond = self.style("fond")
         cadre = self.style('cadre')
         niveau = self.style("niveau")
-        av = self.style("alignement_vertical")
+        # Le style alignement_vertical peut avoir un mode 'auto', il bénéficie
+        # par conséquent d'une méthode dédiée.
+        av = self.alignement_vertical()
         ah = self.style("alignement_horizontal")
         if av not in ('center', 'top', 'bottom', 'baseline'):
             av = 'bottom'
@@ -166,8 +168,14 @@ class Texte_generique(Objet_avec_coordonnees):
     def angle(self):
         u"""Angle du texte.
 
-        À surclasser éventuellement pour implémenter un style 'auto'."""
+        À surclasser éventuellement pour implémenter un mode 'auto'."""
         return self.style('angle')
+
+    def alignement_vertical(self):
+        u"""Angle du texte.
+
+        À surclasser éventuellement pour implémenter un mode 'auto'."""
+        return self.style('alignement_vertical')
 
     def _distance_inf(self, x, y, d):
         xmin, xmax, ymin, ymax = self._boite()

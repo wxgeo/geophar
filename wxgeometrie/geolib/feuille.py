@@ -499,6 +499,9 @@ class Dictionnaire_objets(dict):
         kw:
         * `type` : types à inclure
         * `sauf` : types à exclure
+
+        note:: Utiliser plutôt `Feuille.liste_objets()`, qui bénéficie d'une mise
+               en cache des résultats.
         """
         sauf = kw.get("sauf", ())
         type = kw.get("type", Objet)

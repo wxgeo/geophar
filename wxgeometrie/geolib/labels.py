@@ -133,6 +133,13 @@ class Label_generique(Texte_editable_generique):
     y = __y
 
     def angle(self):
+        u"""L'angle d'affichage du texte.
+
+        Pour les objets qui ont une pente (droites, segments), si
+        style('angle') == 'auto', alors l'angle retourné est celui correspondant
+        à la pente de l'objet, de sorte que le texte ait la même inclinaison
+        que l'objet.
+        """
         angle = self.style('angle')
         if angle == 'auto' and hasattr(self.parent, 'angle_affichage'):
             angle = 180*self.parent.angle_affichage()/pi
@@ -142,8 +149,21 @@ class Label_generique(Texte_editable_generique):
                 angle += 180
             elif angle > 90:
                 angle -= 180
-            return angle
         return angle
+
+    def alignement_vertical(self):
+        u"""L'alignement vertical du texte ('top', 'bottom' ou 'center').
+
+        Pour les objets qui ont une pente (droites, segments), si
+        style('alignement_vertical') == 'auto', alors l'alignement retourné est
+        'bottom' si la droite 'monte', et 'top' si elle descend.
+
+        Ceci est utilisé essentiellement pour les arbres de probabilité.
+        """
+        av = self.style('alignement_vertical')
+        if av == 'auto' and hasattr(self.parent, 'angle_affichage'):
+            av = ('bottom' if self.parent.angle_affichage() >= 0 else 'top')
+        return av
 
 
 class Label_point(Label_generique):

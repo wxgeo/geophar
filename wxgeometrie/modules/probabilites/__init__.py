@@ -233,7 +233,20 @@ omega
                 texte = formater_texte(texte)
                 s = Segment(point1, point2)
                 s.label(texte)
-                s.etiquette.style(_rayon_ = 0, niveau = 15, alignement_vertical = "center", alignement_horizontal = "center", fond = "w")
+                style = {'_rayon_': 0, 'niveau': 15}
+                placement = self.param('placement_probabilites')
+                if placement == 'dessus':
+                    style.update(alignement_vertical='center', fond='w',
+                                 alignement_horizontal='center', angle=0)
+                elif placement == 'longe':
+                    style.update(alignement_vertical='auto', fond='none',
+                                 alignement_horizontal='center', angle='auto')
+                elif placement == 'decale':
+                    style.update(alignement_vertical='auto', fond='none',
+                                 alignement_horizontal='right', angle=0)
+                else:
+                    print(u"Placement: mode '%s' non reconnu." % placement)
+                s.etiquette.style(**style)
                 return s
 
             ramification = [0] # astuce pour avoir un "objet modifiable" (a mutable object)
