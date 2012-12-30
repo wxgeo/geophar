@@ -349,7 +349,6 @@ class Calculatrice(Panel_simple):
         Panel_simple.__init__(self, *args, **kw)
         self.interprete = Interprete(calcul_exact = self.param("calcul_exact"),
                                 ecriture_scientifique = self.param("ecriture_scientifique"),
-                                copie_automatique = self.param("copie_automatique"),
                                 formatage_OOo = self.param("formatage_OOo"),
                                 formatage_LaTeX = self.param("formatage_LaTeX"),
                                 ecriture_scientifique_decimales = self.param("ecriture_scientifique_decimales"),

@@ -122,6 +122,7 @@ def test_resoudre():
                 r'\left\{- 6 \sqrt{7} + 14\,;\, 2\,;\, 14 + 6 \sqrt{7}\right\}')
     # assert_resoudre(r'ln(x^2)-ln(x+1)>1', ']-1;e/2 - sqrt(4 e + exp(2))/2[U]e/2 + sqrt(4 e + exp(2))/2;+oo[')
     assert_resoudre(r'ln(x^2)-ln(x+1)>1', ']-1 ; -sqrt(e + 4)exp(1/2)/2 + e/2[U]e/2 + sqrt(e + 4)exp(1/2)/2 ; +oo[')
+    assert_resoudre('0.5 exp(-0.5 x + 0.4)=0.5', '{4/5}')
 
 #TODO: @SLOW wrapper should be defined, and the test only run in some circonstances
 # (for ex, a 'slow' keyword in tools/tests.py arguments)
@@ -207,6 +208,9 @@ def test_issue_sialle1():
     # qui est faux (il manque les parenthèses...).
     assert_resultat("1/(1-sqrt(2))", "1/(-sqrt(2) + 1)")
 
+def test_1_pas_en_facteur():
+    #FIXME: résultat LaTeX mal formaté
+    assert_resultat("together(1/x-.5)", "-0,5(x - 2)/x", r"- 0,5 \frac{x -2}{x}")
 
 def test_issue_129():
     assert_resultat('"x(x+1)" + """x!"""', '"x(x+1)x!"')
@@ -261,7 +265,7 @@ u"""_ = 0
 
 
 def test_systeme():
-    i = Interprete(verbose = VERBOSE, adapter_separateur=False)
+    i = Interprete(verbose = VERBOSE)
     i.evaluer("g(x)=a x^3+b x^2 + c x + d")
     i.evaluer("resoudre(g(-3)=2 et g(1)=6 et g(5)=3 et g'(1)=0)")
     res = i.derniers_resultats[-1]

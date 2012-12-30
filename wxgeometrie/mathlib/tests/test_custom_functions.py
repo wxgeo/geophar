@@ -37,6 +37,12 @@ def test_resoudre():
     assert_resoudre("exp(x^2)-x^2-1>=0", "]-oo;+oo[")
     assert_resoudre(u"x*(sqrt(64-x^2))=32", "{4*sqrt(2)}")
 
+@XFAIL
+def test_resoudre_floats():
+    # pass (Geophar 12.08 revision 64f4bb42)
+    assert_resoudre(u"0.5*exp(-0.5*x + 0.4)=0.5", "{0.800000000000000}")
+    # fail (Geophar 12.08 revision 64f4bb42)
+    assert_resoudre(u"exp(-0.5*x - 0.4)-1=0", "{-0.800000000000000}")
 
 def test_positif():
     x = Symbol("x")

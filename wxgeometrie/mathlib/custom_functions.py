@@ -541,6 +541,10 @@ def positif(expression, variable = None, strict = False):
 
 
 def resoudre(chaine, variables = (), local_dict = None):
+    u"""Résout une équation ou inéquation, rentrée sous forme de chaîne.
+
+
+    """
     if local_dict is None:
         evaluer = sympify
     else:

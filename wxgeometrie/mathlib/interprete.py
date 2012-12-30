@@ -27,7 +27,7 @@ import re, math, types
 import  numpy
 
 import sympy
-from sympy import Symbol, Basic, Float, sympify
+from sympy import Symbol, Basic, Float, sympify, Rational
 
 from .intervalles import Ensemble
 from .custom_functions import custom_str, custom_latex
@@ -83,12 +83,42 @@ class LocalDict(dict):
 
 
 class Interprete(object):
+    u"""Un interprêteur de commandes mathématiques, avec gestion des sessions.
+
+    Les options sont les suivantes::
+
+        * `calcul_exact`: mode calcul exact ou calcul approché
+        * `ecriture_scientifique`: affiche les résultats en écriture scientifique
+          (essentiellement pertinent pour des résultats numériques)
+        * `forme_algebrique`: affiche les nombres complexes sous la forme a+ib
+        * `simplifier_ecriture_resultat`: Écrire le résultat sous une forme plus
+          agréable à lire (suppression des '*' dans '2*x', etc.)
+        * `separateur_decimal`: point ou virgule (',' par défaut)
+        * `convertir_decimaux_en_fractions`: convertit automatiquement les
+          décimaux entrés en fraction. Ceci améliore la résolution des équations
+          notamment. Les fractions sont utilisées à la place des décimaux pour
+          le calcul interne, puis elles sont reconverties en décimaux au moment
+          de l'affichage.
+        * `formatage_OOo`: convertir et interpréter les formules OpenOffice
+          ou LibreOffice
+        * `formatage_LaTeX`: convertir et interpréter les formules LaTeX
+        * `ecriture_scientifique_decimales`: nombre de décimales affichées
+          en mode écriture scientifique.
+        * `precision_calcul`: précision utilisée en interne pour les calculs
+          approchés (nombre de chiffres).
+        * `precision_affichage`: nombre de chiffres affichés pour les résultats
+          approchés
+        * `simpify`: convertir automatiquement les expressions au format sympy
+        * `verbose`: afficher le détail des transformations effectuées
+        * `appliquer_au_resultat`: une fonction à appliquer éventuellement
+          au résultat
+    """
     def __init__(self,  calcul_exact=True,
                         ecriture_scientifique=False,
                         forme_algebrique=True,
                         simplifier_ecriture_resultat=True,
                         separateur_decimal=',',
-                        copie_automatique=False,
+                        convertir_decimaux_en_fractions=True,
                         formatage_OOo=True,
                         formatage_LaTeX=True,
                         ecriture_scientifique_decimales=2,
@@ -97,7 +127,6 @@ class Interprete(object):
                         simpify=True,
                         verbose=None,
                         appliquer_au_resultat=None,
-                        adapter_separateur=None,
                         ):
         # Dictionnaire local (qui contiendra toutes les variables définies par l'utilisateur).
         self.locals = LocalDict()
@@ -125,8 +154,15 @@ class Interprete(object):
         # ainsi, "c and(a or b)" ne deviendra pas "c and*(a or b)" !
         # self.globals.update({}.fromkeys(securite.keywords_autorises, lambda:None))
 
-        # On import les fonctions python qui peuvent avoir une utilité éventuel (et ne présentent pas de problème de sécurité)
-        a_importer = ['all', 'unicode', 'isinstance', 'dict', 'oct', 'sorted', 'list', 'iter', 'set', 'reduce', 'issubclass', 'getattr', 'hash', 'len', 'frozenset', 'ord', 'filter', 'pow', 'float', 'divmod', 'enumerate', 'basestring', 'zip', 'hex', 'chr', 'type', 'tuple', 'reversed', 'hasattr', 'delattr', 'setattr', 'str', 'int', 'unichr', 'any', 'min', 'complex', 'bool', 'max', 'True', 'False']
+        # On importe les fonctions python qui peuvent avoir une utilité éventuelle
+        # (et ne présentent pas de problème de sécurité)
+        a_importer = ['all', 'unicode', 'isinstance', 'dict', 'oct', 'sorted',
+                      'list', 'iter', 'set', 'reduce', 'issubclass', 'getattr',
+                      'hash', 'len', 'frozenset', 'ord', 'filter', 'pow',
+                      'float', 'divmod', 'enumerate', 'basestring', 'zip',
+                      'hex', 'chr', 'type', 'tuple', 'reversed', 'hasattr',
+                      'delattr', 'setattr', 'str', 'int', 'unichr', 'any',
+                      'min', 'complex', 'bool', 'max', 'True', 'False']
 
         for nom in a_importer:
             self.globals[nom] = __builtins__[nom]
@@ -139,14 +175,13 @@ class Interprete(object):
         self.ecriture_scientifique = ecriture_scientifique
         # mettre les résultats complexes sous forme algébrique
         self.forme_algebrique = forme_algebrique
+        self.convertir_decimaux_en_fractions = convertir_decimaux_en_fractions
         # Écrire le résultat sous une forme plus agréable à lire
         # (suppression des '*' dans '2*x', etc.)
         self.simplifier_ecriture_resultat = simplifier_ecriture_resultat
         # appliquer les séparateurs personnalisés
         self.separateur_decimal = separateur_decimal or param.separateur_decimal
         # d'autres choix sont possibles, mais pas forcément heureux...
-        # copie automatique de chaque résultat dans le presse-papier
-        self.copie_automatique = copie_automatique
         self.formatage_OOo = formatage_OOo
         self.formatage_LaTeX = formatage_LaTeX
         self.ecriture_scientifique_decimales = ecriture_scientifique_decimales
@@ -156,14 +191,18 @@ class Interprete(object):
         self.simpify = simpify
         # une fonction à appliquer à tous les résultats
         self.appliquer_au_resultat = appliquer_au_resultat
-        self.adapter_separateur = (param.adapter_separateur if adapter_separateur is None
-                                                            else adapter_separateur)
         self.latex_dernier_resultat = ''
         self.initialiser()
 
-    def _decimal(self, nbr, prec = None):
+    def _decimal(self, nbr, prec=None, fractions=None):
         if prec is None:
             prec = self.precision_calcul
+        if fractions is None:
+            fractions = self.convertir_decimaux_en_fractions
+        if fractions:
+            # On indique qu'il faudra reconvertir les résultats en décimaux.
+            self.reconvertir_en_decimaux = True
+            return Rational(nbr)
         return Float(nbr, prec)
 
     def initialiser(self):
@@ -373,25 +412,31 @@ class Interprete(object):
         else:
             self.locals["_"] = None
 
-##        keywords_interdits = [kw + " " for kw in securite.__keywords_interdits__] + [kw + "(" for kw in securite.__keywords_interdits__]
-##        instruction = recursive_mreplace(instruction, keywords_interdits)
         if securite.keywords_interdits_presents(instruction):
             self.warning += 'Les mots-clefs ' + ', '.join(sorted(securite.keywords_interdits)) \
                             + ' sont interdits.'
             raise RuntimeError, "Mots-clefs interdits."
-##        regsub(re_keywords(securite.keywords_interdits), instruction, " ")
 
-        #print self.globals.keys()
+        self.reconvertir_en_decimaux = False
         try:
             exec(instruction, self.globals, self.locals)
         except NotImplementedError:
             print_error()
             self.locals["_"] = "?"
-        if self.forme_algebrique and isinstance(self.locals["_"], Basic) and hasattr(self.locals["_"], "is_number") and self.locals["_"].is_number:
-            try:
-                self.locals["_"] = self.locals["_"].expand(complex=True)
-            except NotImplementedError:
-                print_error()
+        if isinstance(self.locals["_"], Basic):
+            self.locals["_"] = self.locals["_"].subs({1.0: 1, -1.0: -1})
+            if (self.forme_algebrique and self.locals["_"].is_number):
+                try:
+                    self.locals["_"] = self.locals["_"].expand(complex=True)
+                except NotImplementedError:
+                    print_error()
+            if self.reconvertir_en_decimaux:
+                dico = {}
+                for a in self.locals["_"].atoms():
+                    if a.is_Rational and not a.is_integer:
+                        dico[a] = self._decimal(a, fractions=False)
+                self.locals["_"] = self.locals["_"].subs(dico)
+
         if self.appliquer_au_resultat is not None:
             self.locals["_"] = self.appliquer_au_resultat(self.locals["_"])
 

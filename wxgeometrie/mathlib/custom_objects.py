@@ -196,17 +196,19 @@ class CustomStrPrinter(StrPrinter):
     def _print_log(self, expr):
         return "ln(%s)"%self.stringify(expr.args, ", ")
 
-    def _print_Pow(self, expr):
-        PREC = precedence(expr)
-        if expr.exp.is_Rational and expr.exp.p == 1 and expr.exp.q == 2:
-            return 'sqrt(%s)' % self._print(expr.base)
-        if expr.exp.is_Rational and expr.exp.is_negative:
-            den = self.parenthesize(expr.base**abs(expr.exp), PREC)
-            return '1/%s' % den
-        else:
-            return '%s^%s'%(self.parenthesize(expr.base, PREC),
-                             self.parenthesize(expr.exp, PREC))
-
+    def _print_Pow(self, *args, **kw):
+        return StrPrinter._print_Pow(self, *args, **kw).replace('**', '^')
+    ##def _print_Pow(self, expr):
+        ##PREC = precedence(expr)
+        ##if expr.exp.is_Rational and expr.exp.p == 1 and expr.exp.q == 2:
+            ##return 'sqrt(%s)' % self._print(expr.base)
+        ##if expr.exp.is_Rational and expr.exp.is_negative:
+            ##den = self.parenthesize(expr.base**abs(expr.exp), PREC)
+            ##return '1/%s' % den
+        ##else:
+            ##return '%s^%s'%(self.parenthesize(expr.base, PREC),
+                             ##self.parenthesize(expr.exp, PREC))
+##
     def _print_Float(self, expr):
         string = StrPrinter._print_Float(self, expr)
         return string.replace('e+', '*10^').replace('e-', '*10^-')
@@ -239,8 +241,9 @@ class CustomLatexPrinter(LatexPrinter):
     def _print_Exp1(self, expr):
         return r"\mathrm{e}"
 
-    def _print_Abs(self, expr):
-        return r'\left|{%s}\right|'%self._print(expr.args[0])
+    def _print_Abs(self, *args, **kw):
+        res = LatexPrinter._print_Abs(self, *args, **kw)
+        return res.replace(r'\lvert', r'\left|').replace(r'\rvert', r'\right|')
 
     def _print_ImaginaryUnit(self, expr):
         return r"\mathrm{i}"
@@ -287,13 +290,13 @@ class CustomLatexPrinter(LatexPrinter):
         return r"\mathcal{O}\left(%s\right)" % \
             self._print(expr.args[0])
 
-    def _print_abs(self, expr, exp=None):
-        tex = r"\left|{%s}\right|" % self._print(expr.args[0])
-
-        if exp is not None:
-            return r"%s^{%s}" % (tex, exp)
-        else:
-            return tex
+    ##def _print_abs(self, expr, exp=None):
+        ##tex = r"\left|{%s}\right|" % self._print(expr.args[0])
+##
+        ##if exp is not None:
+            ##return r"%s^{%s}" % (tex, exp)
+        ##else:
+            ##return tex
 
     def _print_Union(self, expr):
         tex = r"\cup".join(self._print(intervalle) for intervalle in expr.intervalles)
