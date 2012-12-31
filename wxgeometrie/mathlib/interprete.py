@@ -30,7 +30,8 @@ import sympy
 from sympy import Symbol, Basic, Float, sympify, nsimplify
 
 from .intervalles import Ensemble
-from .custom_functions import custom_str, custom_latex, frac, rationals2floats
+from .printers import custom_str, custom_latex
+from .custom_functions import frac, rationals2floats
 from .custom_objects import Temps, Fonction, Matrice, ProduitEntiers
 from . import sympy_functions
 from ..mathlib import end_user_functions

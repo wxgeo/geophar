@@ -34,7 +34,7 @@ import numpy
 from sympy import sqrt as s_sqrt
 from .contexte import contexte
 from ..mathlib.universal_functions import arg as u_arg, sqrt as u_sqrt
-from ..mathlib.custom_functions import custom_str
+from ..mathlib.printers import custom_str
 
 
 

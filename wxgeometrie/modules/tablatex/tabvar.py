@@ -29,7 +29,7 @@ import re
 from sympy import sympify, oo, nan, limit, Symbol, Float
 
 from .tablatexlib import convertir_en_latex, test_parentheses, resoudre, nice_str
-from ...mathlib.custom_functions import ensemble_definition, custom_str
+from ...mathlib.custom_functions import ensemble_definition
 from ...mathlib.intervalles import R, conversion_chaine_ensemble
 from ...mathlib.interprete import Interprete
 from ... import param

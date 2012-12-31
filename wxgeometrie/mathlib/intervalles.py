@@ -32,6 +32,7 @@ import sympy
 from ..pylib import print_error, str2
 from .. import param
 from .parsers import _convertir_latex_frac
+from .printers import custom_str as str
 
 
 class Ensemble(object):
@@ -360,7 +361,6 @@ class Intervalle(Union):
 
 
     def __str__(self):
-        from .custom_functions import custom_str as str
         if self.vide:
             return "{}"
         elif self.inf == self.sup:

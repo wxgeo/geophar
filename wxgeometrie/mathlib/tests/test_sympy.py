@@ -31,6 +31,7 @@ def test_sympy():
 
 @XFAIL
 def test_sympy_solving_with_floats():
+    x = Symbol('x', real = True)
     assert solve(exp(-Float('0.5')*x - Float('0.4')) - 1) == [Float('-0.8')]
     assert solve(exp(-Float('0.5', 10)*x + Float('0.4', 10)) - 1) == [Float('0.8')]
 

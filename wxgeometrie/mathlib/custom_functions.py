@@ -29,13 +29,14 @@ import math
 from types import FunctionType
 
 from sympy import (exp, ln, tan, pi, E, Rational, Symbol, oo, diff, log, floor,
-                    Add, Mul, sqrt, solve, Wild, sympify, FunctionClass, Float,
+                    Add, Mul, sqrt, solve, Wild, sympify, Float,
                     nsimplify, Basic
                     )
 from .intervalles import Intervalle, vide, Union, R
-from .custom_objects import Temps, CustomLatexPrinter, CustomStrPrinter, Fonction
+from .custom_objects import Temps, Fonction
 from .internal_functions import extract_var, count_syms
-from ..pylib import msplit, split_around_parenthesis
+from .printers import custom_str
+from ..pylib import split_around_parenthesis
 from .. import param
 
 
@@ -183,13 +184,6 @@ def rationals2floats(expr, precision=None):
         if a.is_Rational and a.is_finite and not a.is_integer:
             dico[a] = Float(a, precision)
     return expr.subs(dico)
-
-
-def custom_latex(expr, profile = None):
-    return CustomLatexPrinter(profile).doprint(expr)
-
-def custom_str(expr, profile = None):
-    return CustomStrPrinter(profile).doprint(expr)
 
 def _Pow2list(expression):
     u"""On décompose une puissance en liste de facteurs."""
