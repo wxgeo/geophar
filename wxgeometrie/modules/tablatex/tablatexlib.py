@@ -30,7 +30,7 @@ from sympy import oo, nan
 
 from ...mathlib import universal_functions as maths
 from ...mathlib.parsers import traduire_formule, simplifier_ecriture, convertir_en_latex
-from ...mathlib.custom_functions import nul
+from ...mathlib.solvers import nul
 from ...pylib import advanced_split
 from ...geolib.routines import nice_str
 

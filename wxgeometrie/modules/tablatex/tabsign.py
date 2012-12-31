@@ -30,7 +30,7 @@ from sympy import oo, nan, Symbol
 from .tablatexlib import convertir_en_latex, traduire_latex, test_parentheses,\
                          maths, extraire_facteurs, resoudre, nice_str
 from ...mathlib.intervalles import R, conversion_chaine_ensemble
-from ...mathlib.custom_functions import ensemble_definition
+from ...mathlib.solvers import ensemble_definition
 from ...mathlib.interprete import Interprete
 from ... import param
 

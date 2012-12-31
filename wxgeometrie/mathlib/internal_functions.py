@@ -33,8 +33,18 @@ from ..pylib import warning
 from .. import param
 
 
-def _is_num(val):
+def is_float(val):
     return isinstance(val, (float, Float))
+
+def is_pos(expr):
+    return getattr(expr, "is_positive", float(expr) > 0)
+
+def is_neg(expr):
+    return getattr(expr, "is_negative", float(expr) < 0)
+
+def is_var(expression, variable):
+    return hasattr(expression, "has_any_symbols") and expression.has(variable)
+
 
 def poly_factor(polynome, variable, corps = None, approchee = None):
     u"""Factorise un polynome à une variable.
@@ -52,7 +62,7 @@ def poly_factor(polynome, variable, corps = None, approchee = None):
     sym_poly = polynome.as_poly(variable)
     coeffs = sym_poly.all_coeffs()
 
-    if any(_is_num(coeff) for coeff in coeffs):
+    if any(is_float(coeff) for coeff in coeffs):
         approchee = True
         racines_brutes = {}.fromkeys(nroots(coeffs),  1)
     else:

@@ -6,7 +6,7 @@ from pytest import XFAIL
 from sympy import exp, sqrt, Symbol
 
 #from tools.testlib import *
-from wxgeometrie.mathlib.custom_functions import resoudre, positif, ensemble_definition
+from wxgeometrie.mathlib.solvers import resoudre, positif, ensemble_definition
 
 
 #VERBOSE = False

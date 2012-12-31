@@ -82,7 +82,7 @@ from .sympy_functions import evalf
 evalue = evalf
 __classement__[u"Algèbre"].append((u"Évalue", "evalue", u"Calculer une valeur approchée."))
 
-from .custom_functions import resoudre
+from .solvers import resoudre
 solve = resous = resoudre
 __classement__[u"Algèbre"].append((u"Résous", "resous", u"Résoudre une (in)équation ou un système dans R. ex: resous(2x-3>0 et 3x+1<=0"))
 
