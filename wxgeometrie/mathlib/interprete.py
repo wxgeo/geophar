@@ -30,7 +30,7 @@ import sympy
 from sympy import Symbol, Basic, Float, sympify, nsimplify
 
 from .intervalles import Ensemble
-from .custom_functions import custom_str, custom_latex, frac
+from .custom_functions import custom_str, custom_latex, frac, rationals2floats
 from .custom_objects import Temps, Fonction, Matrice, ProduitEntiers
 from . import sympy_functions
 from ..mathlib import end_user_functions
@@ -420,38 +420,36 @@ class Interprete(object):
 ##        else:
 ##            instruction = "_=" + instruction
 
+        loc = self.locals
+
         if securite.expression_affectable(instruction):
             instruction = "_=" + instruction
         else:
-            self.locals["_"] = None
+            loc["_"] = None
 
         if securite.keywords_interdits_presents(instruction):
-            self.warning += 'Les mots-clefs ' + ', '.join(sorted(securite.keywords_interdits)) \
-                            + ' sont interdits.'
+            self.warning += ('Les mots-clefs %s sont interdits.'
+                               % ', '.join(sorted(securite.keywords_interdits)))
             raise RuntimeError, "Mots-clefs interdits."
 
         self.reconvertir_en_decimaux = False
         try:
-            exec(instruction, self.globals, self.locals)
+            exec(instruction, self.globals, loc)
         except NotImplementedError:
             print_error()
-            self.locals["_"] = "?"
-        if isinstance(self.locals["_"], Basic):
-            self.locals["_"] = self.locals["_"].subs({1.0: 1, -1.0: -1})
-            if (self.forme_algebrique and self.locals["_"].is_number):
+            loc["_"] = "?"
+        if isinstance(loc["_"], Basic):
+            loc["_"] = loc["_"].subs({1.0: 1, -1.0: -1})
+            if (self.forme_algebrique and loc["_"].is_number):
                 try:
-                    self.locals["_"] = self.locals["_"].expand(complex=True)
+                    loc["_"] = loc["_"].expand(complex=True)
                 except NotImplementedError:
                     print_error()
             if self.reconvertir_en_decimaux:
-                dico = {}
-                for a in self.locals["_"].atoms():
-                    if a.is_Rational and not a.is_integer:
-                        dico[a] = self._decimal(a, fractions=False)
-                self.locals["_"] = self.locals["_"].subs(dico)
+                loc["_"] = rationals2floats(loc["_"], self.precision_calcul)
 
         if self.appliquer_au_resultat is not None:
-            self.locals["_"] = self.appliquer_au_resultat(self.locals["_"])
+            loc["_"] = self.appliquer_au_resultat(loc["_"])
 
 
     def vars(self):

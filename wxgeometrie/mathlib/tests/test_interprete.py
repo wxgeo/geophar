@@ -102,6 +102,7 @@ def test_exemples_de_base():
                     r'\left(2 x -5\right) \mathrm{e}^{- x}')
     assert_resultat('-x^2+2x-3>>factor', '-x^2 + 2 x - 3')
     assert_resultat('abs(-24/5 - 2 i/5)', '2 sqrt(145)/5')
+    assert_resultat('+oo - 2,5', '+oo', r'+\infty')
 
 def test_ecriture_decimale_periodique():
     assert_resultat('0,[3]', '1/3', r'\frac{1}{3}')

@@ -28,8 +28,10 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 import math
 from types import FunctionType
 
-from sympy import exp, ln, tan, pi, E, Rational, Symbol, oo, diff, log, floor,\
-                    Add, Mul, sqrt, solve, Wild, sympify, FunctionClass
+from sympy import (exp, ln, tan, pi, E, Rational, Symbol, oo, diff, log, floor,
+                    Add, Mul, sqrt, solve, Wild, sympify, FunctionClass, Float,
+                    nsimplify, Basic
+                    )
 from .intervalles import Intervalle, vide, Union, R
 from .custom_objects import Temps, CustomLatexPrinter, CustomStrPrinter, Fonction
 from .internal_functions import extract_var, count_syms
@@ -142,9 +144,45 @@ def bin(n):
     return s
 
 
+def floats2rationals(expr):
+    u"""Convertit tous les flottants d'une expression sympy en rationnels.
+
+    Si l'expression est de type `list` ou `tuple`, la fonction est appelée
+    récursivement.
+    Sinon, si elle n'est pas de type sympy, l'expression est renvoyée telle
+    qu'elle.
+    """
+    if isinstance(expr, (list, tuple)):
+        return expr.__class__(floats2rationals(item) for item in expr)
+    elif not isinstance(expr, Basic):
+        return expr
+    dico = {}
+    for a in expr.atoms():
+        if a.is_Float:
+            dico[a] = nsimplify(a, rational=True)
+    return expr.subs(dico)
 
 
+def rationals2floats(expr, precision=None):
+    u"""Convertit tous les rationnels d'une expression sympy en flottants.
 
+    On peut spécifier via `precision` le nombre de chiffres significatifs.
+
+    Si l'expression est de type `list` ou `tuple`, la fonction est appelée
+    récursivement.
+    Sinon, si elle n'est pas de type sympy, l'expression est renvoyée telle
+    qu'elle.
+    """
+    if isinstance(expr, (list, tuple)):
+        return expr.__class__(rationals2floats(item) for item in expr)
+    elif not isinstance(expr, Basic):
+        return expr
+    dico = {}
+    for a in expr.atoms():
+        # Dans sympy, l'infini est un rationnel !
+        if a.is_Rational and a.is_finite and not a.is_integer:
+            dico[a] = Float(a, precision)
+    return expr.subs(dico)
 
 
 def custom_latex(expr, profile = None):
@@ -545,11 +583,14 @@ def resoudre(chaine, variables = (), local_dict = None):
 
 
     """
-    if local_dict is None:
-        evaluer = sympify
-    else:
-        def evaluer(expression, local_dict = local_dict):
-            return eval(expression, local_dict.globals, local_dict)
+    def evaluer(expression, local_dict=local_dict):
+        if local_dict is None:
+            expression = sympify(expression)
+        else:
+            expression = eval(expression, local_dict.globals, local_dict)
+        # sympy se débrouille bien mieux avec des rationnels
+        expression = floats2rationals(expression)
+        return expression
 
     # Préformatage:
     chaine = chaine.replace(')et', ') et').replace(')ou', ') ou').replace('et(', 'et (').replace('ou(', 'ou (')
