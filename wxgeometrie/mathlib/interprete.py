@@ -27,10 +27,10 @@ import re, math, types
 import  numpy
 
 import sympy
-from sympy import Symbol, Basic, Float, sympify, Rational
+from sympy import Symbol, Basic, Float, sympify, nsimplify
 
 from .intervalles import Ensemble
-from .custom_functions import custom_str, custom_latex
+from .custom_functions import custom_str, custom_latex, frac
 from .custom_objects import Temps, Fonction, Matrice, ProduitEntiers
 from . import sympy_functions
 from ..mathlib import end_user_functions
@@ -148,6 +148,7 @@ class Interprete(object):
                 "__local_dict__": self.locals,
                 "range": numpy.arange,
                 "arange": numpy.arange,
+                "frac": self._frac,
                             })
         # pour éviter que les procédures de réécriture des formules ne touchent au mots clefs,
         # on les référence comme fonctions (elles seront inaccessibles, mais ce n'est pas grave).
@@ -202,8 +203,20 @@ class Interprete(object):
         if fractions:
             # On indique qu'il faudra reconvertir les résultats en décimaux.
             self.reconvertir_en_decimaux = True
-            return Rational(nbr)
+            return nsimplify(nbr, rational=True)
         return Float(nbr, prec)
+
+    def _frac(self, arg):
+        u"""Convertit en fraction, ou désactive la reconversion en décimaux.
+
+        Si self.convertir_decimaux_en_fractions=True, le résultat est déjà en
+        fraction en interne, on désactive simplement la reconversion en décimaux.
+        """
+        self.reconvertir_en_decimaux = False
+        if self.convertir_decimaux_en_fractions:
+            return arg
+        else:
+            return frac(arg)
 
     def initialiser(self):
         self.locals.clear()

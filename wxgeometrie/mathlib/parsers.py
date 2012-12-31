@@ -310,11 +310,11 @@ def traduire_formule(formule='', fonctions=(), OOo=True, LaTeX=True,
     # Conversion écriture décimale infinie périodique -> fraction
     def to_frac(reg):
         p_entiere, p_decimale, periode = reg.groups()
-        chaine = '((' + p_entiere + p_decimale
+        chaine = '((' + p_entiere.lstrip('0') + p_decimale
         chaine += '+' + (periode.lstrip('0') or '0') + '/' + len(periode)*'9'
         chaine += ')/1' + len(p_decimale)*'0' + ')'
         return chaine
-    formule = re.sub(r"(\d+)[.](\d*)\[(\d+)\]", to_frac, formule)
+    formule = re.sub(r"(\d+)[.,](\d*)\[(\d+)\]", to_frac, formule)
     # exemple: 17.03[45] -> ((1703+45/99)/100)
     # Après calcul, on on obtiendra bien 17.03454545... = 9369/550
 

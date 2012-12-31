@@ -103,13 +103,21 @@ def test_exemples_de_base():
     assert_resultat('-x^2+2x-3>>factor', '-x^2 + 2 x - 3')
     assert_resultat('abs(-24/5 - 2 i/5)', '2 sqrt(145)/5')
 
+def test_ecriture_decimale_periodique():
+    assert_resultat('0,[3]', '1/3', r'\frac{1}{3}')
+    assert_resultat('0,1783[3]', '107/600', r'\frac{107}{600}')
 
 @XFAIL
 def test_resolution_complexe():
-    assert_resultat('resoudre(2+\i=\dfrac{2\i z}{z-1})', '3/5 + 4*i/5', r'\frac{3}{5} + \frac{4}{5} \mathrm{i}')
+    assert_resultat('resoudre(2+\i=\dfrac{2\i z}{z-1})', '3/5 + 4*i/5',
+                                        r'\frac{3}{5} + \frac{4}{5} \mathrm{i}')
 
 def test_fonctions_avances():
     pass
+
+def test_frac():
+    assert_resultat('frac(0,25)', '1/4', r'\frac{1}{4}')
+    assert_resultat('frac(0,333333333333333)', '1/3', r'\frac{1}{3}')
 
 def test_resoudre():
     assert_resoudre('2x+3>5x-4 et 3x+1>=4x-4', r']-oo ; 7/3[')
