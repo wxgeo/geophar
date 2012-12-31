@@ -23,73 +23,75 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #along with this program; if not, write to the Free Software
 #Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-# version unicode
 
 __doc__ = """
-Cette librairie contient des versions modifiées des fonctions courantes, pour qu'elles puissent être appliquées aussi bien à des nombres qu'à des variables formelles ou encore des listes...
+Cette librairie contient des versions modifiées des fonctions courantes,
+pour qu'elles puissent être appliquées aussi bien à des nombres
+qu'à des variables formelles ou encore des listes...
 
-Le dictionnaire fonctions_mathematiques contient les infos suivantes : {<nom de la fonction>: [<nom dans math>, <nom dans numpy>, <nom dans sympy>]}
+Le dictionnaire fonctions_mathematiques contient les infos suivantes :
+{<nom de la fonction>: [<nom dans math>, <nom dans numpy>, <nom dans sympy>]}
 
-Il est générée via le code suivant :
+Il est générée via le code suivant::
 
-import math
-liste = math.__dict__.items()
-dico = {}
-ignore_liste = ("ldexp", "frexp", "pow", "degrees", "radians", "atan2", "hypot", "modf", "fmod", "fabs")
-dico.update([(nom,[nom,nom,nom]) for nom, objet in liste if not nom.startswith("_") and hasattr(objet, "__call__") and not nom in ignore_liste])
-# fonctions ayant un nom différent dans numpy :
-dico["asin"][1] = "arcsin"; dico["acos"][1] = "arccos"; dico["atan"][1] = "arctan"
-# fonctions ayant un nom différent dans sympy :
-dico["ceil"][2] = "ceiling"
-# fonctions à renommer :
-dico["ln"] = dico.pop("log")
-dico["log"] = dico.pop("log10")
-liste = dico.items()
-liste.sort()
-s = "_fonctions_mathematiques = " + repr(liste).replace("[(", "{\n").replace(")]", "}").replace(", [", ": [").replace("), (", ",\n")
-print s
-exec(s)
+    import math
+    liste = math.__dict__.items()
+    dico = {}
+    ignore_liste = ("ldexp", "frexp", "pow", "degrees", "radians", "atan2", "hypot", "modf", "fmod", "fabs")
+    dico.update([(nom,[nom,nom,nom]) for nom, objet in liste if not nom.startswith("_") and hasattr(objet, "__call__") and not nom in ignore_liste])
+    # fonctions ayant un nom différent dans numpy :
+    dico["asin"][1] = "arcsin"; dico["acos"][1] = "arccos"; dico["atan"][1] = "arctan"
+    # fonctions ayant un nom différent dans sympy :
+    dico["ceil"][2] = "ceiling"
+    # fonctions à renommer :
+    dico["ln"] = dico.pop("log")
+    dico["log"] = dico.pop("log10")
+    liste = dico.items()
+    liste.sort()
+    s = "_fonctions_mathematiques = " + repr(liste).replace("[(", "{\n").replace(")]", "}").replace(", [", ": [").replace("), (", ",\n")
+    print s
+    exec(s)
 
-# Vérification du contenu du dictionnaire :
-import math, sympy, numpy
-sympy.log10 = lambda x: sympy.log(x, 10)
-for elt in _fonctions_mathematiques.items():
-m, n, s = elt[1]
-getattr(math, m)
-getattr(numpy, n)
-getattr(sympy, s)
+    # Vérification du contenu du dictionnaire :
+    import math, sympy, numpy
+    sympy.log10 = lambda x: sympy.log(x, 10)
+    for elt in _fonctions_mathematiques.items():
+    m, n, s = elt[1]
+    getattr(math, m)
+    getattr(numpy, n)
+    getattr(sympy, s)
 
-# Génération du code :
+    # Génération du code :
 
-_fonctions_mathematiques = {
-    'acos': ['acos', 'acos', 'acos'],
-    'asin': ['asin', 'asin', 'asin'],
-    'atan': ['atan', 'atan', 'atan'],
-    'ceil': ['ceil', 'ceil', 'ceiling'],
-    'cos': ['cos', 'cos', 'cos'],
-    'cosh': ['cosh', 'cosh', 'cosh'],
-    'exp': ['exp', 'exp', 'exp'],
-    'floor': ['floor', 'floor', 'floor'],
-    'ln': ['log', 'log', 'log'],
-    'log': ['log10', 'log10', 'log10'],
-    'sin': ['sin', 'sin', 'sin'],
-    'sinh': ['sinh', 'sinh', 'sinh'],
-    'sqrt': ['sqrt', 'sqrt', 'sqrt'],
-    'tan': ['tan', 'tan', 'tan'],
-    'tanh': ['tanh', 'tanh', 'tanh']}
+    _fonctions_mathematiques = {
+        'acos': ['acos', 'acos', 'acos'],
+        'asin': ['asin', 'asin', 'asin'],
+        'atan': ['atan', 'atan', 'atan'],
+        'ceil': ['ceil', 'ceil', 'ceiling'],
+        'cos': ['cos', 'cos', 'cos'],
+        'cosh': ['cosh', 'cosh', 'cosh'],
+        'exp': ['exp', 'exp', 'exp'],
+        'floor': ['floor', 'floor', 'floor'],
+        'ln': ['log', 'log', 'log'],
+        'log': ['log10', 'log10', 'log10'],
+        'sin': ['sin', 'sin', 'sin'],
+        'sinh': ['sinh', 'sinh', 'sinh'],
+        'sqrt': ['sqrt', 'sqrt', 'sqrt'],
+        'tan': ['tan', 'tan', 'tan'],
+        'tanh': ['tanh', 'tanh', 'tanh']}
 
-for _nom, _noms in _fonctions_mathematiques.items():
-    _nom_math, _nom_numpy, _nom_sympy = _noms
-    print  '''\n\ndef %s(*args, **kw):
-    arg0 = args[0]
-    if isinstance(arg0, (int, float, long)):
-        return _math.%s(*args,**kw)
-    elif isinstance(arg0, complex):
-        return _cmath.%s(*args,**kw)
-    elif isinstance(arg0, _sympy.Basic):
-        return _sympy.%s(*args,**kw)
-    else:
-        return _numpy.%s(*args,**kw)''' %(_nom, _nom_math, _nom_math, _nom_sympy, _nom_numpy)
+    for _nom, _noms in _fonctions_mathematiques.items():
+        _nom_math, _nom_numpy, _nom_sympy = _noms
+        print  '''\n\ndef %s(*args, **kw):
+        arg0 = args[0]
+        if isinstance(arg0, (int, float, long)):
+            return _math.%s(*args,**kw)
+        elif isinstance(arg0, complex):
+            return _cmath.%s(*args,**kw)
+        elif isinstance(arg0, _sympy.Basic):
+            return _sympy.%s(*args,**kw)
+        else:
+            return _numpy.%s(*args,**kw)''' %(_nom, _nom_math, _nom_math, _nom_sympy, _nom_numpy)
 
 """
 

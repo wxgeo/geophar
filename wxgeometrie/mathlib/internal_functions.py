@@ -33,15 +33,6 @@ from ..pylib import warning
 from .. import param
 
 
-def _simplify(expr):
-    u"""Simplifie une expression.
-
-    Alias de simplify (sympy 0.6.4).
-    Mais simplify n'est pas garanti d'être stable dans le temps.
-    (Cf. simplify.__doc__)."""
-    return together(expand(Poly.cancel(powsimp(expr))))
-#TODO: Mettre à jour simplify
-
 def _is_num(val):
     return isinstance(val, (float, Float))
 
