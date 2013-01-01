@@ -289,7 +289,9 @@ class ExercicesEquationsDroites(Exercice):
                   % (eq1, eq2), "xmin", "ymax", fond='#ffffb5', fixe=True,
                   alignement_horizontal='left', alignement_vertical='top')
         self.feuille_actuelle.objets['txt1'] = txt
-        champ = Champ('', xmin, ymin, prefixe=u"Le couple solution du système est (",
+        systeme = r'$\left\{\stackrel{%s}{%s}\right.$' % (eq1.strip('$'), eq2.strip('$'))
+        champ = Champ('', "xmin", "ymin",
+                 prefixe=(u"Le couple solution du système %s est (" % systeme),
                  alignement_vertical='bottom', alignement_horizontal='left',
                  attendu=str(C), fond='#ffffb5', suffixe=')')
         self.feuille_actuelle.objets['champ1'] = champ
