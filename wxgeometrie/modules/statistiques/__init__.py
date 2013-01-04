@@ -104,8 +104,9 @@ class StatMenuBar(MenuBar):
     def __init__(self, panel):
         MenuBar.__init__(self, panel)
 
-        self.ajouter("Fichier", ["nouveau"], ["ouvrir"], ["ouvrir ici"],
+        self.ajouter("Fichier", ["nouveau"], ["ouvrir"], ["ouvrir ici"], None,
                     ["enregistrer"], ["enregistrer_sous"], ["exporter"], None,
+                    ['session'], None,
                     ["imprimer"], [u"presse-papier"], None, ["proprietes"], None,
                     self.panel.doc_ouverts, None, ["fermer"], ["quitter"])
         self.ajouter("Editer", ["annuler"], ["refaire"], ["modifier"], ["supprimer"])

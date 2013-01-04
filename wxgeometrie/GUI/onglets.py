@@ -29,7 +29,7 @@ from functools import partial
 from cStringIO import StringIO
 
 from PyQt4.QtGui import QTabWidget, QToolButton, QIcon, QMessageBox, QFileDialog, \
-                        QDialog, QPainter, QPrintDialog, QPrinter
+                        QDialog, QPainter, QPrintDialog, QPrinter, QFont
 from PyQt4.QtCore import Qt, QPoint, QByteArray, QRectF
 from PyQt4.QtSvg import QSvgRenderer
 import matplotlib.backend_bases as backend_bases
@@ -43,7 +43,7 @@ from .inspecteur import FenCode
 from .nouvelles_versions import Gestionnaire_mises_a_jour
 from .proprietes_feuille import ProprietesFeuille
 from .proprietes_objets import Proprietes
-from .wxlib import PopUpMenu
+from .wxlib import PopUpMenu, png_pth
 from . import dialogues_geometrie
 from ..API.sauvegarde import FichierGEO, ouvrir_fichierGEO
 from .. import param, modules, geolib
@@ -53,28 +53,31 @@ from ..param.options import options as param_options
 
 
 class Onglets(QTabWidget):
+
+    _nom_fichier_session = ''
+
     def __init__(self, parent):
         self.parent = parent
         QTabWidget.__init__(self, parent)
         self.setStyleSheet("""
-QTabBar::tab:selected {
-background: white;
-border: 1px solid #C4C4C3;
-border-bottom-color: white; /* same as the pane color */
-border-top-left-radius: 4px;
-border-top-right-radius: 4px;
-min-width: 8ex;
-padding: 7px;
-}
-QStackedWidget {background:white}
-QTabBar QToolButton {
-background:white;
-border: 1px solid #C4C4C3;
-border-bottom-color: white; /* same as the pane color */
-border-top-left-radius: 4px;
-border-top-right-radius: 4px;
-}
-""")
+            QTabBar::tab:selected {
+            background: white;
+            border: 1px solid #C4C4C3;
+            border-bottom-color: white; /* same as the pane color */
+            border-top-left-radius: 4px;
+            border-top-right-radius: 4px;
+            min-width: 8ex;
+            padding: 7px;
+            }
+            QStackedWidget {background:white}
+            QTabBar QToolButton {
+            background:white;
+            border: 1px solid #C4C4C3;
+            border-bottom-color: white; /* same as the pane color */
+            border-top-left-radius: 4px;
+            border-top-right-radius: 4px;
+            }
+            """)
         self.setTabsClosable(False)
         self.setMovable(True)
         ##self.tabCloseRequested.connect(self.fermer_onglet)
@@ -141,10 +144,26 @@ border-top-right-radius: 4px;
         u"""Affiche un menu permettant d'activer des modules."""
         menu = PopUpMenu(u"Module à activer", self, 'crayon')
         deja_charges = [onglet.__module__.split('.')[-1] for onglet in self]
+        exercices = None
         for nom in param.modules:
             if nom not in deja_charges:
-                action = menu.addAction(param.descriptions_modules[nom]['titre'])
+                titre = param.descriptions_modules[nom]['titre']
+                if titre.startswith('Exercices - '):
+                    if exercices is None:
+                        exercices = menu.addMenu(u'Exercices')
+                    action = exercices.addAction(titre[12:])
+                else:
+                    action = menu.addAction(titre)
                 action.triggered.connect(partial(self.activer_module, nom, selectionner=True))
+        menu.addSeparator()
+        print png_pth('reload')
+        action = menu.addAction(QIcon(png_pth('reload')), u"Restaurer la session précédente")
+        action.setIconVisibleInMenu(True)
+        action.triggered.connect(self.ChargerSessionPrecedente)
+        font = QFont()
+        ##font.setBold(True)
+        font.setStyle(QFont.StyleItalic)
+        action.setFont(font)
         menu.exec_(self.newTabButton.mapToGlobal(QPoint(0, self.newTabButton.height())))
 
     def activer_module(self, nom, selectionner=True):
@@ -307,6 +326,8 @@ border-top-right-radius: 4px;
     filtres_save = (u"Fichiers " + NOMPROG + u" (*.geo);;"
                     u"Fichiers " + NOMPROG + u" compressés (*.geoz);;"
                     u"Tous les fichiers (*.*)")
+
+    filtre_session = u"Session Géophar (*.geos)"
 
     def NewFile(self):
         self.onglet_actuel.creer_feuille()
@@ -488,6 +509,48 @@ border-top-right-radius: 4px;
 
     def CloseFile(self):
         self.onglet_actuel.fermer_feuille()
+
+    def NouvelleSession(self):
+        reponse = QMessageBox.question(self, u'Ouvrir une session vierge ?',
+                                       u'Voulez-vous démarrer une nouvelle session ?\n'
+                                       u'Attention, la session actuelle sera perdue.',
+                                       QMessageBox.Yes | QMessageBox.No,
+                                       QMessageBox.Yes)
+        if reponse == QMessageBox.Yes:
+            self.parent.gestion.reinitialiser_session()
+
+    def SauverSession(self):
+        filtre = self.filtre_session
+        path = self._nom_fichier_session
+        path, filtre = QFileDialog.getSaveFileNameAndFilter(self, u"Sauver la session sous ...",
+                                           path, filtre, filtre)
+        if path:
+            # Mémorise l'emplacement pour la prochaine fois
+            self._nom_fichier_session = path
+            # Enregistrement de la session
+            self.parent.gestion.sauver_session(lieu=path)
+
+    def ChargerSession(self):
+        filtre = self.filtre_session
+        path = self._nom_fichier_session
+        path, filtre = QFileDialog.getOpenFileNameAndFilter(self, u"Choisissez un fichier de session",
+                                           path, filtre, filtre)
+        if path:
+            if not path.endswith('.geos'):
+                path += '.geos'
+            # Mémorise l'emplacement pour la prochaine fois
+            self._nom_fichier_session = path
+            # Charge la session
+            self.parent.gestion.charger_session(lieu=path)
+
+    def ChargerSessionPrecedente(self):
+        reponse = QMessageBox.question(self, u'Recharger la session précédente ?',
+                                       u'Voulez-vous recharger la session précédente ?\n'
+                                       u'Attention, la session actuelle sera perdue.',
+                                       QMessageBox.Yes | QMessageBox.No,
+                                       QMessageBox.Yes)
+        if reponse == QMessageBox.Yes:
+            self.parent.gestion.charger_session('session-precedente')
 
     # ----------
     # Impression

@@ -56,7 +56,7 @@ afficher_messages = True
 fermeture_instantanee = False # Utile en mode développement
 
 # affichage de la ligne de commande (utile pour le développement)
-ligne_commande = debug
+ligne_commande = False
 
 GUIlib = 'Qt'
 LOGO = '%/wxgeometrie/images/logo6-1.png'
@@ -90,11 +90,12 @@ charger_psyco = False
 
 # Modules activés par défaut
 modules_par_defaut = (
-    "geometre",
-    "traceur",
-    "statistiques",
-    "calculatrice",
-    "probabilites",
+    "bienvenue",
+    ##"geometre",
+    ##"traceur",
+    ##"statistiques",
+    ##"calculatrice",
+    ##"probabilites",
     ##"surfaces",
         )
 

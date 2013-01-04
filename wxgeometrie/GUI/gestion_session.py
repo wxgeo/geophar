@@ -56,7 +56,7 @@ class GestionnaireSession(object):
             Thread(target=self.sauver_session, kwargs={'forcer': True}).start()
             self.__sauver_session = False
 
-    def sauver_session(self, lieu=None, seulement_si_necessaire=True, forcer=False):
+    def sauver_session(self, lieu=None, nom='session', seulement_si_necessaire=True, forcer=False):
         if param.sauver_session or forcer:
             fichiers_ouverts = []
             if seulement_si_necessaire and not any(onglet.modifie for onglet in self.onglets):
@@ -68,18 +68,18 @@ class GestionnaireSession(object):
                 return
             session = FichierSession(*fichiers_ouverts, **{'onglet_actif': self.onglets.onglet_actuel.nom})
             if lieu is None:
-                lieu = path2(param.emplacements['session'] + "/session.tar.gz")
+                lieu = path2(''.join((param.emplacements['session'], '/', nom, '.geos')))
                 for onglet in self.onglets:
                     onglet.modifie = False
             session.ecrire(lieu, compresser = True)
             print(u"Session sauvée : (%s)" %lieu)
 
 
-    def charger_session(self, lieu=None, reinitialiser=True, activer_modules=True):
+    def charger_session(self, lieu=None, nom='session', reinitialiser=True, activer_modules=True):
         if reinitialiser:
             self.reinitialiser_session()
         if lieu is None:
-            lieu = path2(param.emplacements['session'] + "/session.tar.gz")
+            lieu = path2(''.join((param.emplacements['session'], '/', nom, '.geos')))
         session = FichierSession().ouvrir(lieu)
         for fichier in session:
             if activer_modules or param.modules_actifs[fichier.module]:

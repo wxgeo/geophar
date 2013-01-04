@@ -224,7 +224,11 @@ class FenetrePrincipale(QMainWindow):
                         return
 
                 self.gestion.sauver_preferences()
-                self.gestion.sauver_session()
+                # Enregistre sous le nom 'session-precedente', et non 'session'
+                # (nom par défaut) pour pouvoir ouvrir la session précédente
+                # même après le démarrage de WxGéométrie (session.tar.gz a alors
+                # été remplacé par la sauvegarde automatique de la nouvelle session).
+                self.gestion.sauver_session(nom='session-precedente')
 
 #                for onglet in self.onglets:
 #                    try:

@@ -39,10 +39,13 @@ class TraceurMenuBar(MenuBar):
     def __init__(self, panel):
         MenuBar.__init__(self, panel)
 
-        self.ajouter(u"Fichier", [u"nouveau"], [u"ouvrir"], [u"ouvrir ici"], [u"enregistrer"],
-                                 [u"enregistrer_sous"], [u"exporter"], [u"exporter&sauver"],
-                                 None, [u"imprimer"], [u"presse-papier"],
-                                 None, [u"proprietes"], None, self.panel.doc_ouverts, None,
+        self.ajouter(u"Fichier", [u"nouveau"], [u"ouvrir"], [u"ouvrir ici"], None,
+                                 [u"enregistrer"], [u"enregistrer_sous"],
+                                 [u"exporter"], [u"exporter&sauver"], None,
+                                 [u'session'], None,
+                                 [u"imprimer"], [u"presse-papier"], None,
+                                 [u"proprietes"], None,
+                                 self.panel.doc_ouverts, None,
                                  ["fermer"], ["quitter"])
         self.ajouter(u"Editer", ["annuler"], ["refaire"], ["modifier"], ["supprimer"])
         self.ajouter(u"creer")

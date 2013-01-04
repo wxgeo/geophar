@@ -51,11 +51,11 @@ from ... import param
 class CalculatriceMenuBar(MenuBar):
     def __init__(self, panel):
         MenuBar.__init__(self, panel)
-        self.ajouter(u"Fichier", [u"Nouvelle session",
+        self.ajouter(u"Fichier", [u"Réinitialiser",
                                     u"Réinitialiser la calculatrice.", "Ctrl+N",
                                     self.panel.initialiser],
                                 [u"ouvrir"], [u"enregistrer"],
-                                [u"enregistrer_sous"], ["quitter"])
+                                [u"enregistrer_sous"], ['session'], None, ["quitter"])
         self.ajouter(u"Affichage", ["onglet"])
         for rubrique in __classement__:
             self.ajouter(rubrique, *(self.formater(contenu, rubrique != "Symboles") for contenu in __classement__[rubrique]))

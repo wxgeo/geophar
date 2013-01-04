@@ -173,6 +173,12 @@ class MenuBar(QMenuBar):
 "exporter": [u"Exporter...", u"Exporter l'image.", u"Ctrl+E", self.parent.ExportFile],
 "exporter&sauver": [u"Exporter et sauver", u"Exporter l'image, et sauvegarder le document.", u"Alt+Ctrl+E", self.parent.ExportAndSaveFile],
 ##"mise en page": [u"Paramètres d'impression", u"Régler les paramètres d'impression.", None, self.parent.PageSetup],
+"session":  [u"Sessions",
+                [u'Nouvelle session', u'Réinitialiser la session.', None, self.parent.NouvelleSession],
+                [u'Session précédente', u'Recharger la session précédente.', None, self.parent.ChargerSessionPrecedente],
+                [u'Ouvrir la session...', u'Charger une autre session.', None, self.parent.ChargerSession],
+                [u'Enregistrer sous...', u'Enregistrer la session actuelle.', None, self.parent.SauverSession],
+            ],
 "imprimer": [u"Imprimer", u"Imprimer la figure géométrique courante.", u"Ctrl+P", self.parent.Printout],
 "proprietes": [u"Propriétés", u"Modifier les informations relatives au document", None, self.parent.Proprietes],
 "fermer":   [u"Fermer", u"Fermer la feuille courante.", u"Ctrl+W", self.parent.CloseFile],
@@ -195,7 +201,10 @@ class MenuBar(QMenuBar):
         }
 
 
-        self.menus["fichier"] = ["Fichier", ["nouveau"], ["ouvrir"], ["ouvrir ici"], ["enregistrer"], ["enregistrer_sous"], ["exporter"], ["exporter&sauver"], None, ["imprimer"], None, ["fermer"], ["quitter"]]
+        self.menus["fichier"] = ["Fichier", ["nouveau"], ["ouvrir"], ["ouvrir ici"],
+                                None, ["enregistrer"], ["enregistrer_sous"],
+                                ["exporter"], ["exporter&sauver"], None, ['session'],
+                                None, ["imprimer"], None, ["fermer"], ["quitter"]]
 
 
         self.menus["avance1"] = [u"Avancé", [u"historique"], [u"ligne_commande"], [u"debug"]]

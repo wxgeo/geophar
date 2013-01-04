@@ -39,10 +39,12 @@ class ProbaMenuBar(MenuBar):
     def __init__(self, panel):
         MenuBar.__init__(self, panel)
 
-        self.ajouter(u"Fichier", [u"nouveau"], [u"ouvrir"], [u"ouvrir ici"],
+        self.ajouter(u"Fichier", [u"nouveau"], [u"ouvrir"], [u"ouvrir ici"], None,
                     [u"enregistrer"], [u"enregistrer_sous"], [u"exporter"],
-                    [u"exporter&sauver"], None, [u"imprimer"], [u"presse-papier"],
-                    None, [u"proprietes"], None, self.panel.doc_ouverts, None, ["fermer"], ["quitter"])
+                    [u"exporter&sauver"], None, ['session'], None,
+                    [u"imprimer"], [u"presse-papier"], None,
+                    [u"proprietes"], None, self.panel.doc_ouverts, None,
+                    ["fermer"], ["quitter"])
         self.ajouter(u"Editer", ["annuler"], ["refaire"], ["modifier"], ["supprimer"])
         self.ajouter(u"creer")
         self.ajouter(u"Affichage", ["onglet"], None, ["repere"], ["quadrillage"],

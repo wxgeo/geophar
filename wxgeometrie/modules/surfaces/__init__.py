@@ -45,7 +45,7 @@ class SurfacesMenuBar(MenuBar):
     def __init__(self, panel):
         MenuBar.__init__(self, panel)
 
-        self.ajouter(u"Fichier", [u"exporter"], [u"presse-papier"], [u"quitter"])
+        self.ajouter(u"Fichier", [u"exporter"], ['session'], [u"presse-papier"], [u"quitter"])
         self.ajouter(u"Affichage", [u"onglet"])#, ["repere"], ["quadrillage"], ["orthonorme"], ["fenetre"], ["zoomer"], ["dezoomer"], ["orthonormaliser"], [u"zoom_auto"])
         self.ajouter(u"Outils", [u"debug"], [u"options"])
         self.ajouter(u"?")
