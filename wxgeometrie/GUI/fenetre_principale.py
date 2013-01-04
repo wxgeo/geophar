@@ -87,11 +87,6 @@ class FenetrePrincipale(QMainWindow):
         self.barre.addPermanentWidget(self.barre_dte)
 
 
-#        # Barre de statut
-#        self.barre = wx.StatusBar(self, -1)
-#        self.barre.SetFieldsCount(2)
-#        self.barre.SetStatusWidths([-3, -2])
-#        self.SetStatusBar(self.barre)
 
         self.message(u"  Bienvenue !", 1)
         self.message(NOMPROG + u" version " + param.version)
@@ -119,16 +114,11 @@ class FenetrePrincipale(QMainWindow):
         self.setAcceptDrops(True)
         self.setFocus()
 
-#        self.Bind (wx.EVT_IDLE, self.OnIdle)
-
         # closing == True si l'application est en train d'être fermée
         self.closing = False
 
         self.gestion = GestionnaireSession(self.onglets)
 
-
-    ##def OnIdle(self, evt):
-        ##self.gestion.autosave()
 
     def dragEnterEvent(self, event):
         if event.mimeData().hasUrls():
@@ -251,12 +241,8 @@ class FenetrePrincipale(QMainWindow):
         sys.stderr = sys.__stderr__
         if hasattr(self, "fenetre_sortie"):
             self.fenetre_sortie.close()
-#        # Si le premier onglet n'est pas actif au moment de quitter, cela produit une "Segmentation fault" sous Linux.
-#        # Quant à savoir pourquoi...
-#        if self.onglets.GetRowCount():
-#            self.onglets.ChangeSelection(0)
         print "On ferme !"
-#        event.Skip()
+
 
     def restart(self):
         param._restart = True
