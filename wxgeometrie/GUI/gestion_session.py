@@ -24,37 +24,38 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os
-from threading import Thread
 from time import sleep
+
+from PyQt4.QtCore import pyqtSignal, QObject
 
 from ..pylib import uu, print_error, path2, debug, warning
 from ..API.sauvegarde import FichierSession
 from ..API.parametres import sauvegarder_module
 from .. import param
+from .wxlib import GenericThread
 
 
-class GestionnaireSession(object):
+class GestionnaireSession(QObject):
+
+    session_a_sauver = pyqtSignal()
+
     def __init__(self, onglets):
+        super(GestionnaireSession, self).__init__()
         self.onglets = onglets
-        thread = Thread(target=self._autosave_timer)
-        thread.daemon = True
-        thread.start()
+        self.thread = GenericThread(function=self._autosave_timer)
+        self.thread.start()
+        self.session_a_sauver.connect(self.sauver_session)
 
     def _autosave_timer(self):
         try:
             while True:
                 if param.sauvegarde_automatique:
-                    self.__sauver_session = True
+                    self.session_a_sauver.emit()
                 sleep(max(10*param.sauvegarde_automatique, 2))
         except AttributeError:
             print('Warning: closing thread...')
             # Si le programme est en train d'être fermé, param peut ne
             # plus exister.
-
-    def autosave(self):
-        if self.__sauver_session:
-            Thread(target=self.sauver_session, kwargs={'forcer': True}).start()
-            self.__sauver_session = False
 
     def sauver_session(self, lieu=None, nom='session', seulement_si_necessaire=True, forcer=False):
         if param.sauver_session or forcer:
