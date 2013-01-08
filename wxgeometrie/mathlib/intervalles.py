@@ -25,7 +25,7 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 import re, math
 import numpy
 
-from sympy import oo, sympify
+from sympy import oo, sympify, S
 from sympy.core.sympify import SympifyError
 import sympy
 
@@ -496,7 +496,8 @@ def preformatage_geolib_ensemble(chaine):
 
 
 def formatage_ensemble(chaine, preformatage = True, utiliser_sympy = False):
-    u"""Les symboles à utiliser sont 'U' pour l'union, '^' pour l'intersection, '-' ou '\\' pour la soustraction.
+    u"""Les symboles à utiliser sont 'U' pour l'union, '^' pour l'intersection,
+    '-' ou '\\' pour la soustraction.
     R, R+, R*+, R-, R*- sont aussi acceptés."""
 
     if preformatage:
@@ -505,7 +506,8 @@ def formatage_ensemble(chaine, preformatage = True, utiliser_sympy = False):
     def f1(matchobject): # conversion ]-2;sqrt(3)] -> Intervalle(-2, sqrt(3), False, True)
         chaine = matchobject.group()
         sep = chaine.find(";")
-        return "Intervalle(%s,%s,%s,%s)" %(chaine[1:sep],chaine[sep+1:-1],chaine[0]=="[",chaine[-1]=="]")
+        return "Intervalle(%s, %s, %s, %s)" % (chaine[1:sep], chaine[sep+1:-1],
+                                             chaine[0] == "[", chaine[-1] == "]")
     chaine = re.sub("[][][-+*/0-9.A-Za-z_)( ]+[;][-+*/0-9.A-Za-z_)( ]+[][]", f1, chaine)
 
     def f2(matchobject): # conversion {-1;2;sqrt(3)} -> Union(-1, 2, sqrt(3))
@@ -522,6 +524,13 @@ def conversion_chaine_ensemble(chaine, utiliser_sympy = False):
     dico = math.__dict__.copy()
     if utiliser_sympy:
         dico.update(sympy.__dict__)
+    # Contourne un bug de sympy 0.7.2
+    # cf. http://code.google.com/p/sympy/issues/detail?id=3588
+    def mySymbol(nom):
+        if nom == '_kern':
+            return S(1)
+        else:
+            return Symbol(nom)
     # À faire en dernier (remplace sympy.Union par intervalles.Union).
     dico.update({"__builtins__": None,
             "Intervalle": Intervalle,
@@ -529,16 +538,18 @@ def conversion_chaine_ensemble(chaine, utiliser_sympy = False):
             "oo": oo,
             "False": False,
             "True": True,
+            "Symbol": mySymbol,
             })
 
+    chaine = str2(chaine)
     if utiliser_sympy:
         try:
             #print str2(chaine), dico
-            return sympify(str2(chaine), dico)
+            return sympify(chaine, dico)
         except (SympifyError, TypeError) as e:
             print "Warning: %s in %s." %(e, str2(chaine))
             print_error()
-    return eval(str2(chaine), dico, dico)
+    return eval(chaine, dico, dico)
 
 IR = R = Intervalle()
 O = vide = Union()

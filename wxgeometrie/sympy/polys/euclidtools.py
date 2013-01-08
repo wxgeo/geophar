@@ -14,16 +14,16 @@ from sympy.polys.densebasic import (
 from sympy.polys.densearith import (
     dup_sub_mul,
     dup_neg, dmp_neg,
-    dup_add, dmp_add,
-    dup_sub, dmp_sub,
+    dmp_add,
+    dmp_sub,
     dup_mul, dmp_mul,
-    dup_pow, dmp_pow,
+    dmp_pow,
     dup_div, dmp_div,
-    dup_rem, dmp_rem,
+    dup_rem,
     dup_quo, dmp_quo,
     dup_prem, dmp_prem,
     dup_mul_ground, dmp_mul_ground,
-    dup_mul_term, dmp_mul_term,
+    dmp_mul_term,
     dup_quo_ground, dmp_quo_ground,
     dup_max_norm, dmp_max_norm)
 
@@ -52,13 +52,15 @@ from sympy.utilities import cythonized
 
 from sympy.ntheory import nextprime
 
+
 def dup_half_gcdex(f, g, K):
     """
     Half extended Euclidean algorithm in `F[x]`.
 
     Returns ``(s, h)`` such that ``h = gcd(f, g)`` and ``s*f = h (mod g)``.
 
-    **Examples**
+    Examples
+    ========
 
     >>> from sympy.polys.domains import QQ
     >>> from sympy.polys.euclidtools import dup_half_gcdex
@@ -85,11 +87,13 @@ def dup_half_gcdex(f, g, K):
 
     return a, f
 
+
 def dmp_half_gcdex(f, g, u, K):
     """
     Half extended Euclidean algorithm in `F[X]`.
 
-    **Examples**
+    Examples
+    ========
 
     >>> from sympy.polys.domains import QQ
     >>> from sympy.polys.euclidtools import dmp_half_gcdex
@@ -100,13 +104,15 @@ def dmp_half_gcdex(f, g, u, K):
     else:
         raise MultivariatePolynomialError(f, g)
 
+
 def dup_gcdex(f, g, K):
     """
     Extended Euclidean algorithm in `F[x]`.
 
     Returns ``(s, t, h)`` such that ``h = gcd(f, g)`` and ``s*f + t*g = h``.
 
-    **Examples**
+    Examples
+    ========
 
     >>> from sympy.polys.domains import QQ
     >>> from sympy.polys.euclidtools import dup_gcdex
@@ -125,11 +131,13 @@ def dup_gcdex(f, g, K):
 
     return s, t, h
 
+
 def dmp_gcdex(f, g, u, K):
     """
     Extended Euclidean algorithm in `F[X]`.
 
-    **Examples**
+    Examples
+    ========
 
     >>> from sympy.polys.domains import QQ
     >>> from sympy.polys.euclidtools import dmp_gcdex
@@ -140,11 +148,13 @@ def dmp_gcdex(f, g, u, K):
     else:
         raise MultivariatePolynomialError(f, g)
 
+
 def dup_invert(f, g, K):
     """
     Compute multiplicative inverse of `f` modulo `g` in `F[x]`.
 
-    **Examples**
+    Examples
+    ========
 
     >>> from sympy.polys.domains import QQ
     >>> from sympy.polys.euclidtools import dup_invert
@@ -169,11 +179,13 @@ def dup_invert(f, g, K):
     else:
         raise NotInvertible("zero divisor")
 
+
 def dmp_invert(f, g, u, K):
     """
     Compute multiplicative inverse of `f` modulo `g` in `F[X]`.
 
-    **Examples**
+    Examples
+    ========
 
     >>> from sympy.polys.domains import QQ
     >>> from sympy.polys.euclidtools import dmp_invert
@@ -184,11 +196,13 @@ def dmp_invert(f, g, u, K):
     else:
         raise MultivariatePolynomialError(f, g)
 
+
 def dup_euclidean_prs(f, g, K):
     """
     Euclidean polynomial remainder sequence (PRS) in `K[x]`.
 
-    **Examples**
+    Examples
+    ========
 
     >>> from sympy.polys.domains import QQ
     >>> from sympy.polys.euclidtools import dup_euclidean_prs
@@ -222,11 +236,13 @@ def dup_euclidean_prs(f, g, K):
 
     return prs
 
+
 def dmp_euclidean_prs(f, g, u, K):
     """
     Euclidean polynomial remainder sequence (PRS) in `K[X]`.
 
-    **Examples**
+    Examples
+    ========
 
     >>> from sympy.polys.domains import QQ
     >>> from sympy.polys.euclidtools import dmp_euclidean_prs
@@ -237,11 +253,13 @@ def dmp_euclidean_prs(f, g, u, K):
     else:
         raise MultivariatePolynomialError(f, g)
 
+
 def dup_primitive_prs(f, g, K):
     """
     Primitive polynomial remainder sequence (PRS) in `K[x]`.
 
-    **Examples**
+    Examples
+    ========
 
     >>> from sympy.polys.domains import ZZ
     >>> from sympy.polys.euclidtools import dup_primitive_prs
@@ -275,11 +293,13 @@ def dup_primitive_prs(f, g, K):
 
     return prs
 
+
 def dmp_primitive_prs(f, g, u, K):
     """
     Primitive polynomial remainder sequence (PRS) in `K[X]`.
 
-    **Examples**
+    Examples
+    ========
 
     >>> from sympy.polys.domains import ZZ
     >>> from sympy.polys.euclidtools import dmp_primitive_prs
@@ -289,6 +309,7 @@ def dmp_primitive_prs(f, g, u, K):
         return dup_primitive_prs(f, g, K)
     else:
         raise MultivariatePolynomialError(f, g)
+
 
 @cythonized("n,m,d,k")
 def dup_inner_subresultants(f, g, K):
@@ -300,7 +321,8 @@ def dup_inner_subresultants(f, g, K):
     sequences of values are necessary for computing the resultant in
     :func:`dup_prs_resultant`.
 
-    **Examples**
+    Examples
+    ========
 
     >>> from sympy.polys.domains import ZZ
     >>> from sympy.polys.euclidtools import dup_inner_subresultants
@@ -322,8 +344,8 @@ def dup_inner_subresultants(f, g, K):
     R = [f, g]
     d = n - m
 
-    b = (-K.one)**(d+1)
-    c =  -K.one
+    b = (-K.one)**(d + 1)
+    c = -K.one
 
     B, D = [b], [d]
 
@@ -342,26 +364,29 @@ def dup_inner_subresultants(f, g, K):
         if not d:
             q = c
         else:
-            q = c**(d-1)
+            q = c**(d - 1)
 
         c = K.quo((-lc)**d, q)
-        b = -lc * c**(m-k)
+        b = -lc * c**(m - k)
 
-        f, g, m, d = g, h, k, m-k
+        f, g, m, d = g, h, k, m - k
 
         B.append(b)
         D.append(d)
 
         h = dup_prem(f, g, K)
+
         h = dup_quo_ground(h, b, K)
 
     return R, B, D
+
 
 def dup_subresultants(f, g, K):
     """
     Computes subresultant PRS of two polynomials in `K[x]`.
 
-    **Examples**
+    Examples
+    ========
 
     >>> from sympy.polys.domains import ZZ
     >>> from sympy.polys.euclidtools import dup_subresultants
@@ -375,12 +400,14 @@ def dup_subresultants(f, g, K):
     """
     return dup_inner_subresultants(f, g, K)[0]
 
+
 @cythonized("s,i,du,dv,dw")
 def dup_prs_resultant(f, g, K):
     """
     Resultant algorithm in `K[x]` using subresultant PRS.
 
-    **Examples**
+    Examples
+    ========
 
     >>> from sympy.polys.domains import ZZ
     >>> from sympy.polys.euclidtools import dup_prs_resultant
@@ -406,17 +433,17 @@ def dup_prs_resultant(f, g, K):
     p, q = K.one, K.one
 
     for b, d in list(zip(B, D))[:-1]:
-        du = dup_degree(R[i-1])
+        du = dup_degree(R[i - 1])
         dv = dup_degree(R[i  ])
-        dw = dup_degree(R[i+1])
+        dw = dup_degree(R[i + 1])
 
         if du % 2 and dv % 2:
             s = -s
 
-        lc, i = dup_LC(R[i], K), i+1
+        lc, i = dup_LC(R[i], K), i + 1
 
-        p *= b**dv * lc**(du-dw)
-        q *= lc**(dv*(1+d))
+        p *= b**dv * lc**(du - dw)
+        q *= lc**(dv*(1 + d))
 
     if s < 0:
         p = -p
@@ -424,15 +451,18 @@ def dup_prs_resultant(f, g, K):
     i = dup_degree(R[-2])
 
     res = dup_LC(R[-1], K)**i
+
     res = K.quo(res*p, q)
 
     return res, R
 
-def dup_resultant(f, g, K):
+
+def dup_resultant(f, g, K, includePRS=False):
     """
     Computes resultant of two polynomials in `K[x]`.
 
-    **Examples**
+    Examples
+    ========
 
     >>> from sympy.polys.domains import ZZ
     >>> from sympy.polys.euclidtools import dup_resultant
@@ -444,14 +474,18 @@ def dup_resultant(f, g, K):
     4
 
     """
+    if includePRS:
+        return dup_prs_resultant(f, g, K)
     return dup_prs_resultant(f, g, K)[0]
+
 
 @cythonized("u,v,n,m,d,k")
 def dmp_inner_subresultants(f, g, u, K):
     """
     Subresultant PRS algorithm in `K[X]`.
 
-    **Examples**
+    Examples
+    ========
 
     >>> from sympy.polys.domains import ZZ
     >>> from sympy.polys.euclidtools import dmp_inner_subresultants
@@ -484,7 +518,7 @@ def dmp_inner_subresultants(f, g, u, K):
     d = n - m
     v = u - 1
 
-    b = dmp_pow(dmp_ground(-K.one, v), d+1, v, K)
+    b = dmp_pow(dmp_ground(-K.one, v), d + 1, v, K)
     c = dmp_ground(-K.one, v)
 
     B, D = [b], [d]
@@ -506,28 +540,31 @@ def dmp_inner_subresultants(f, g, u, K):
         if not d:
             q = c
         else:
-            q = dmp_pow(c, d-1, v, K)
+            q = dmp_pow(c, d - 1, v, K)
 
         c = dmp_quo(p, q, v, K)
         b = dmp_mul(dmp_neg(lc, v, K),
-                    dmp_pow(c, m-k, v, K), v, K)
+                    dmp_pow(c, m - k, v, K), v, K)
 
-        f, g, m, d = g, h, k, m-k
+        f, g, m, d = g, h, k, m - k
 
         B.append(b)
         D.append(d)
 
         h = dmp_prem(f, g, u, K)
+
         h = [ dmp_quo(ch, b, v, K) for ch in h ]
 
     return R, B, D
+
 
 @cythonized("u")
 def dmp_subresultants(f, g, u, K):
     """
     Computes subresultant PRS of two polynomials in `K[X]`.
 
-    **Examples**
+    Examples
+    ========
 
     >>> from sympy.polys.domains import ZZ
     >>> from sympy.polys.euclidtools import dmp_subresultants
@@ -544,12 +581,14 @@ def dmp_subresultants(f, g, u, K):
     """
     return dmp_inner_subresultants(f, g, u, K)[0]
 
+
 @cythonized("u,v,s,i,d,du,dv,dw")
 def dmp_prs_resultant(f, g, u, K):
     """
     Resultant algorithm in `K[X]` using subresultant PRS.
 
-    **Examples**
+    Examples
+    ========
 
     >>> from sympy.polys.domains import ZZ
     >>> from sympy.polys.euclidtools import dmp_prs_resultant
@@ -568,33 +607,33 @@ def dmp_prs_resultant(f, g, u, K):
         return dup_prs_resultant(f, g, K)
 
     if dmp_zero_p(f, u) or dmp_zero_p(g, u):
-        return (dmp_zero(u-1), [])
+        return (dmp_zero(u - 1), [])
 
     R, B, D = dmp_inner_subresultants(f, g, u, K)
 
     if dmp_degree(R[-1], u) > 0:
-        return (dmp_zero(u-1), R)
+        return (dmp_zero(u - 1), R)
     if dmp_one_p(R[-2], u, K):
         return (dmp_LC(R[-1], K), R)
 
-    s, i, v = 1, 1, u-1
+    s, i, v = 1, 1, u - 1
 
     p = dmp_one(v, K)
     q = dmp_one(v, K)
 
     for b, d in list(zip(B, D))[:-1]:
-        du = dmp_degree(R[i-1], u)
+        du = dmp_degree(R[i - 1], u)
         dv = dmp_degree(R[i  ], u)
-        dw = dmp_degree(R[i+1], u)
+        dw = dmp_degree(R[i + 1], u)
 
         if du % 2 and dv % 2:
             s = -s
 
-        lc, i = dmp_LC(R[i], K), i+1
+        lc, i = dmp_LC(R[i], K), i + 1
 
         p = dmp_mul(dmp_mul(p, dmp_pow(b, dv, v, K), v, K),
-                               dmp_pow(lc, du-dw, v, K), v, K)
-        q = dmp_mul(q, dmp_pow(lc, dv*(1+d), v, K), v, K)
+                    dmp_pow(lc, du - dw, v, K), v, K)
+        q = dmp_mul(q, dmp_pow(lc, dv*(1 + d), v, K), v, K)
 
         _, p, q = dmp_inner_gcd(p, q, v, K)
 
@@ -608,12 +647,14 @@ def dmp_prs_resultant(f, g, u, K):
 
     return res, R
 
+
 @cythonized("u,v,n,m,N,M,B")
 def dmp_zz_modular_resultant(f, g, p, u, K):
     """
     Compute resultant of `f` and `g` modulo a prime `p`.
 
-    **Examples**
+    Examples
+    ========
 
     >>> from sympy.polys.domains import ZZ
     >>> from sympy.polys.euclidtools import dmp_zz_modular_resultant
@@ -680,16 +721,19 @@ def dmp_zz_modular_resultant(f, g, p, u, K):
 
     return r
 
+
 def _collins_crt(r, R, P, p, K):
     """Wrapper of CRT for Collins's resultant algorithm. """
     return gf_int(gf_crt([r, R], [P, p], K), P*p)
+
 
 @cythonized("u,v,n,m")
 def dmp_zz_collins_resultant(f, g, u, K):
     """
     Collins's modular resultant algorithm in `Z[X]`.
 
-    **Examples**
+    Examples
+    ========
 
     >>> from sympy.polys.domains import ZZ
     >>> from sympy.polys.euclidtools import dmp_zz_collins_resultant
@@ -706,7 +750,7 @@ def dmp_zz_collins_resultant(f, g, u, K):
     m = dmp_degree(g, u)
 
     if n < 0 or m < 0:
-        return dmp_zero(u-1)
+        return dmp_zero(u - 1)
 
     A = dmp_max_norm(f, u, K)
     B = dmp_max_norm(g, u, K)
@@ -716,7 +760,7 @@ def dmp_zz_collins_resultant(f, g, u, K):
 
     v = u - 1
 
-    B = K(2)*K.factorial(n+m)*A**m*B**n
+    B = K(2)*K.factorial(K(n + m))*A**m*B**n
     r, p, P = dmp_zero(v), K.one, K.one
 
     while P <= B:
@@ -742,12 +786,14 @@ def dmp_zz_collins_resultant(f, g, u, K):
 
     return r
 
+
 @cythonized("u,n,m")
 def dmp_qq_collins_resultant(f, g, u, K0):
     """
     Collins's modular resultant algorithm in `Q[X]`.
 
-    **Examples**
+    Examples
+    ========
 
     >>> from sympy.polys.domains import QQ
     >>> from sympy.polys.euclidtools import dmp_qq_collins_resultant
@@ -763,7 +809,7 @@ def dmp_qq_collins_resultant(f, g, u, K0):
     m = dmp_degree(g, u)
 
     if n < 0 or m < 0:
-        return dmp_zero(u-1)
+        return dmp_zero(u - 1)
 
     K1 = K0.get_ring()
 
@@ -774,18 +820,20 @@ def dmp_qq_collins_resultant(f, g, u, K0):
     g = dmp_convert(g, u, K0, K1)
 
     r = dmp_zz_collins_resultant(f, g, u, K1)
-    r = dmp_convert(r, u-1, K1, K0)
+    r = dmp_convert(r, u - 1, K1, K0)
 
     c = K0.convert(cf**m * cg**n, K1)
 
-    return dmp_quo_ground(r, c, u-1, K0)
+    return dmp_quo_ground(r, c, u - 1, K0)
+
 
 @cythonized("u")
-def dmp_resultant(f, g, u, K):
+def dmp_resultant(f, g, u, K, includePRS=False):
     """
     Computes resultant of two polynomials in `K[X]`.
 
-    **Examples**
+    Examples
+    ========
 
     >>> from sympy.polys.domains import ZZ
     >>> from sympy.polys.euclidtools import dmp_resultant
@@ -798,7 +846,10 @@ def dmp_resultant(f, g, u, K):
 
     """
     if not u:
-        return dup_resultant(f, g, K)
+        return dup_resultant(f, g, K, includePRS=includePRS)
+
+    if includePRS:
+        return dmp_prs_resultant(f, g, u, K)
 
     if K.has_Field:
         if K.is_QQ and query('USE_COLLINS_RESULTANT'):
@@ -809,12 +860,14 @@ def dmp_resultant(f, g, u, K):
 
     return dmp_prs_resultant(f, g, u, K)[0]
 
+
 @cythonized("d,s")
 def dup_discriminant(f, K):
     """
     Computes discriminant of a polynomial in `K[x]`.
 
-    **Examples**
+    Examples
+    ========
 
     >>> from sympy.polys.domains import ZZ
     >>> from sympy.polys.euclidtools import dup_discriminant
@@ -828,19 +881,21 @@ def dup_discriminant(f, K):
     if d <= 0:
         return K.zero
     else:
-        s = (-1)**((d*(d-1)) // 2)
+        s = (-1)**((d*(d - 1)) // 2)
         c = dup_LC(f, K)
 
         r = dup_resultant(f, dup_diff(f, 1, K), K)
 
         return K.quo(r, c*K(s))
 
+
 @cythonized("u,v,d,s")
 def dmp_discriminant(f, u, K):
     """
     Computes discriminant of a polynomial in `K[X]`.
 
-    **Examples**
+    Examples
+    ========
 
     >>> from sympy.polys.domains import ZZ
     >>> from sympy.polys.euclidtools import dmp_discriminant
@@ -854,18 +909,19 @@ def dmp_discriminant(f, u, K):
     if not u:
         return dup_discriminant(f, K)
 
-    d, v = dmp_degree(f, u), u-1
+    d, v = dmp_degree(f, u), u - 1
 
     if d <= 0:
         return dmp_zero(v)
     else:
-        s = (-1)**((d*(d-1)) // 2)
+        s = (-1)**((d*(d - 1)) // 2)
         c = dmp_LC(f, K)
 
         r = dmp_resultant(f, dmp_diff(f, 1, u, K), u, K)
         c = dmp_mul_ground(c, K(s), v, K)
 
         return dmp_quo(r, c, v, K)
+
 
 def _dup_rr_trivial_gcd(f, g, K):
     """Handle trivial cases in GCD algorithm over a ring. """
@@ -884,6 +940,7 @@ def _dup_rr_trivial_gcd(f, g, K):
 
     return None
 
+
 def _dup_ff_trivial_gcd(f, g, K):
     """Handle trivial cases in GCD algorithm over a field. """
     if not (f or g):
@@ -894,6 +951,7 @@ def _dup_ff_trivial_gcd(f, g, K):
         return dup_monic(f, K), [dup_LC(f, K)], []
     else:
         return None
+
 
 @cythonized("u")
 def _dmp_rr_trivial_gcd(f, g, u, K):
@@ -918,6 +976,7 @@ def _dmp_rr_trivial_gcd(f, g, u, K):
     else:
         return None
 
+
 @cythonized("u")
 def _dmp_ff_trivial_gcd(f, g, u, K):
     """Handle trivial cases in GCD algorithm over a field. """
@@ -938,6 +997,7 @@ def _dmp_ff_trivial_gcd(f, g, u, K):
         return _dmp_simplify_gcd(f, g, u, K)
     else:
         return None
+
 
 @cythonized("u,v,df,dg")
 def _dmp_simplify_gcd(f, g, u, K):
@@ -967,6 +1027,7 @@ def _dmp_simplify_gcd(f, g, u, K):
 
     return [h], cff, cfg
 
+
 def dup_rr_prs_gcd(f, g, K):
     """
     Computes polynomial GCD using subresultants over a ring.
@@ -974,7 +1035,8 @@ def dup_rr_prs_gcd(f, g, K):
     Returns ``(h, cff, cfg)`` such that ``a = gcd(f, g)``, ``cff = quo(f, h)``,
     and ``cfg = quo(g, h)``.
 
-    **Examples**
+    Examples
+    ========
 
     >>> from sympy.polys.domains import ZZ
     >>> from sympy.polys.euclidtools import dup_rr_prs_gcd
@@ -1009,6 +1071,7 @@ def dup_rr_prs_gcd(f, g, K):
 
     return h, cff, cfg
 
+
 def dup_ff_prs_gcd(f, g, K):
     """
     Computes polynomial GCD using subresultants over a field.
@@ -1016,7 +1079,8 @@ def dup_ff_prs_gcd(f, g, K):
     Returns ``(h, cff, cfg)`` such that ``a = gcd(f, g)``, ``cff = quo(f, h)``,
     and ``cfg = quo(g, h)``.
 
-    **Examples**
+    Examples
+    ========
 
     >>> from sympy.polys.domains import QQ
     >>> from sympy.polys.euclidtools import dup_ff_prs_gcd
@@ -1041,6 +1105,7 @@ def dup_ff_prs_gcd(f, g, K):
 
     return h, cff, cfg
 
+
 @cythonized("u")
 def dmp_rr_prs_gcd(f, g, u, K):
     """
@@ -1049,7 +1114,8 @@ def dmp_rr_prs_gcd(f, g, u, K):
     Returns ``(h, cff, cfg)`` such that ``a = gcd(f, g)``, ``cff = quo(f, h)``,
     and ``cfg = quo(g, h)``.
 
-    **Examples**
+    Examples
+    ========
 
     >>> from sympy.polys.domains import ZZ
     >>> from sympy.polys.euclidtools import dmp_rr_prs_gcd
@@ -1073,7 +1139,7 @@ def dmp_rr_prs_gcd(f, g, u, K):
     gc, G = dmp_primitive(g, u, K)
 
     h = dmp_subresultants(F, G, u, K)[-1]
-    c, _, _ = dmp_rr_prs_gcd(fc, gc, u-1, K)
+    c, _, _ = dmp_rr_prs_gcd(fc, gc, u - 1, K)
 
     if K.is_negative(dmp_ground_LC(h, u, K)):
         h = dmp_neg(h, u, K)
@@ -1086,6 +1152,7 @@ def dmp_rr_prs_gcd(f, g, u, K):
 
     return h, cff, cfg
 
+
 @cythonized("u")
 def dmp_ff_prs_gcd(f, g, u, K):
     """
@@ -1094,7 +1161,8 @@ def dmp_ff_prs_gcd(f, g, u, K):
     Returns ``(h, cff, cfg)`` such that ``a = gcd(f, g)``, ``cff = quo(f, h)``,
     and ``cfg = quo(g, h)``.
 
-    **Examples**
+    Examples
+    ========
 
     >>> from sympy.polys.domains import QQ
     >>> from sympy.polys.euclidtools import dmp_ff_prs_gcd
@@ -1118,7 +1186,7 @@ def dmp_ff_prs_gcd(f, g, u, K):
     gc, G = dmp_primitive(g, u, K)
 
     h = dmp_subresultants(F, G, u, K)[-1]
-    c, _, _ = dmp_ff_prs_gcd(fc, gc, u-1, K)
+    c, _, _ = dmp_ff_prs_gcd(fc, gc, u - 1, K)
 
     _, h = dmp_primitive(h, u, K)
     h = dmp_mul_term(h, c, 0, u, K)
@@ -1131,6 +1199,7 @@ def dmp_ff_prs_gcd(f, g, u, K):
 
 HEU_GCD_MAX = 6
 
+
 def _dup_zz_gcd_interpolate(h, x, K):
     """Interpolate polynomial GCD from integer GCD. """
     f = []
@@ -1142,9 +1211,10 @@ def _dup_zz_gcd_interpolate(h, x, K):
             g -= x
 
         f.insert(0, g)
-        h = (h-g) // x
+        h = (h - g) // x
 
     return f
+
 
 @cythonized("i,df,dg")
 def dup_zz_heu_gcd(f, g, K):
@@ -1167,7 +1237,8 @@ def dup_zz_heu_gcd(f, g, K):
     by interpolation.  The final step is to verify if the result is the
     correct GCD. This gives cofactors as a side effect.
 
-    **Examples**
+    Examples
+    ========
 
     >>> from sympy.polys.domains import ZZ
     >>> from sympy.polys.euclidtools import dup_zz_heu_gcd
@@ -1178,7 +1249,8 @@ def dup_zz_heu_gcd(f, g, K):
     >>> dup_zz_heu_gcd(f, g, ZZ)
     ([1, -1], [1, 1], [1, -2])
 
-    **References**
+    References
+    ==========
 
     1. [Liao95]_
 
@@ -1199,7 +1271,7 @@ def dup_zz_heu_gcd(f, g, K):
     f_norm = dup_max_norm(f, K)
     g_norm = dup_max_norm(g, K)
 
-    B = 2*min(f_norm, g_norm) + 29
+    B = K(2*min(f_norm, g_norm) + 29)
 
     x = max(min(B, 99*K.sqrt(B)),
             2*min(f_norm // abs(dup_LC(f, K)),
@@ -1247,11 +1319,12 @@ def dup_zz_heu_gcd(f, g, K):
 
                 if not r:
                     h = dup_mul_ground(h, gcd, K)
-                    return h, cff, cfg
+                    return h, cff_, cfg
 
         x = 73794*x * K.sqrt(K.sqrt(x)) // 27011
 
     raise HeuristicGCDFailed('no luck')
+
 
 @cythonized("v")
 def _dmp_zz_gcd_interpolate(h, x, v, K):
@@ -1265,10 +1338,11 @@ def _dmp_zz_gcd_interpolate(h, x, v, K):
         h = dmp_sub(h, g, v, K)
         h = dmp_quo_ground(h, x, v, K)
 
-    if K.is_negative(dmp_ground_LC(f, v+1, K)):
-        return dmp_neg(f, v+1, K)
+    if K.is_negative(dmp_ground_LC(f, v + 1, K)):
+        return dmp_neg(f, v + 1, K)
     else:
         return f
+
 
 @cythonized("u,v,i,dg,df")
 def dmp_zz_heu_gcd(f, g, u, K):
@@ -1289,11 +1363,12 @@ def dmp_zz_heu_gcd(f, g, u, K):
     f and g at certain points and computing (fast) integer GCD of those
     evaluations. The polynomial GCD is recovered from the integer image
     by interpolation. The evaluation proces reduces f and g variable by
-    variable into a large integer.  The final step  is to verify if the
+    variable into a large integer.  The final step is to verify if the
     interpolated polynomial is the correct GCD. This gives cofactors of
     the input polynomials as a side effect.
 
-    **Examples**
+    Examples
+    ========
 
     >>> from sympy.polys.domains import ZZ
     >>> from sympy.polys.euclidtools import dmp_zz_heu_gcd
@@ -1304,7 +1379,8 @@ def dmp_zz_heu_gcd(f, g, u, K):
     >>> dmp_zz_heu_gcd(f, g, 1, ZZ)
     ([[1], [1, 0]], [[1], [1, 0]], [[1], []])
 
-    **References**
+    References
+    ==========
 
     1. [Liao95]_
 
@@ -1317,15 +1393,12 @@ def dmp_zz_heu_gcd(f, g, u, K):
     if result is not None:
         return result
 
-    df = dmp_degree(f, u)
-    dg = dmp_degree(g, u)
-
     gcd, f, g = dmp_ground_extract(f, g, u, K)
 
     f_norm = dmp_max_norm(f, u, K)
     g_norm = dmp_max_norm(g, u, K)
 
-    B = 2*min(f_norm, g_norm) + 29
+    B = K(2*min(f_norm, g_norm) + 29)
 
     x = max(min(B, 99*K.sqrt(B)),
             2*min(f_norm // abs(dmp_ground_LC(f, u, K)),
@@ -1378,6 +1451,7 @@ def dmp_zz_heu_gcd(f, g, u, K):
 
     raise HeuristicGCDFailed('no luck')
 
+
 def dup_qq_heu_gcd(f, g, K0):
     """
     Heuristic polynomial GCD in `Q[x]`.
@@ -1385,7 +1459,8 @@ def dup_qq_heu_gcd(f, g, K0):
     Returns ``(h, cff, cfg)`` such that ``a = gcd(f, g)``,
     ``cff = quo(f, h)``, and ``cfg = quo(g, h)``.
 
-    **Examples**
+    Examples
+    ========
 
     >>> from sympy.polys.domains import QQ
     >>> from sympy.polys.euclidtools import dup_qq_heu_gcd
@@ -1425,6 +1500,7 @@ def dup_qq_heu_gcd(f, g, K0):
 
     return h, cff, cfg
 
+
 @cythonized("u")
 def dmp_qq_heu_gcd(f, g, u, K0):
     """
@@ -1433,7 +1509,8 @@ def dmp_qq_heu_gcd(f, g, u, K0):
     Returns ``(h, cff, cfg)`` such that ``a = gcd(f, g)``,
     ``cff = quo(f, h)``, and ``cfg = quo(g, h)``.
 
-    **Examples**
+    Examples
+    ========
 
     >>> from sympy.polys.domains import QQ
     >>> from sympy.polys.euclidtools import dmp_qq_heu_gcd
@@ -1473,6 +1550,7 @@ def dmp_qq_heu_gcd(f, g, u, K0):
 
     return h, cff, cfg
 
+
 def dup_inner_gcd(f, g, K):
     """
     Computes polynomial GCD and cofactors of `f` and `g` in `K[x]`.
@@ -1480,7 +1558,8 @@ def dup_inner_gcd(f, g, K):
     Returns ``(h, cff, cfg)`` such that ``a = gcd(f, g)``,
     ``cff = quo(f, h)``, and ``cfg = quo(g, h)``.
 
-    **Examples**
+    Examples
+    ========
 
     >>> from sympy.polys.domains import ZZ
     >>> from sympy.polys.euclidtools import dup_inner_gcd
@@ -1509,6 +1588,7 @@ def dup_inner_gcd(f, g, K):
 
         return dup_rr_prs_gcd(f, g, K)
 
+
 @cythonized("u")
 def _dmp_inner_gcd(f, g, u, K):
     """Helper function for `dmp_inner_gcd()`. """
@@ -1523,11 +1603,12 @@ def _dmp_inner_gcd(f, g, u, K):
     else:
         if K.is_ZZ and query('USE_HEU_GCD'):
             try:
-                 return dmp_zz_heu_gcd(f, g, u, K)
+                return dmp_zz_heu_gcd(f, g, u, K)
             except HeuristicGCDFailed:
                 pass
 
         return dmp_rr_prs_gcd(f, g, u, K)
+
 
 @cythonized("u")
 def dmp_inner_gcd(f, g, u, K):
@@ -1537,7 +1618,8 @@ def dmp_inner_gcd(f, g, u, K):
     Returns ``(h, cff, cfg)`` such that ``a = gcd(f, g)``,
     ``cff = quo(f, h)``, and ``cfg = quo(g, h)``.
 
-    **Examples**
+    Examples
+    ========
 
     >>> from sympy.polys.domains import ZZ
     >>> from sympy.polys.euclidtools import dmp_inner_gcd
@@ -1559,11 +1641,13 @@ def dmp_inner_gcd(f, g, u, K):
             dmp_inflate(cff, J, u, K),
             dmp_inflate(cfg, J, u, K))
 
+
 def dup_gcd(f, g, K):
     """
     Computes polynomial GCD of `f` and `g` in `K[x]`.
 
-    **Examples**
+    Examples
+    ========
 
     >>> from sympy.polys.domains import ZZ
     >>> from sympy.polys.euclidtools import dup_gcd
@@ -1577,12 +1661,14 @@ def dup_gcd(f, g, K):
     """
     return dup_inner_gcd(f, g, K)[0]
 
+
 @cythonized("u")
 def dmp_gcd(f, g, u, K):
     """
     Computes polynomial GCD of `f` and `g` in `K[X]`.
 
-    **Examples**
+    Examples
+    ========
 
     >>> from sympy.polys.domains import ZZ
     >>> from sympy.polys.euclidtools import dmp_gcd
@@ -1596,11 +1682,13 @@ def dmp_gcd(f, g, u, K):
     """
     return dmp_inner_gcd(f, g, u, K)[0]
 
+
 def dup_rr_lcm(f, g, K):
     """
     Computes polynomial LCM over a ring in `K[x]`.
 
-    **Examples**
+    Examples
+    ========
 
     >>> from sympy.polys.domains import ZZ
     >>> from sympy.polys.euclidtools import dup_rr_lcm
@@ -1622,11 +1710,13 @@ def dup_rr_lcm(f, g, K):
 
     return dup_mul_ground(h, c, K)
 
+
 def dup_ff_lcm(f, g, K):
     """
     Computes polynomial LCM over a field in `K[x]`.
 
-    **Examples**
+    Examples
+    ========
 
     >>> from sympy.polys.domains import QQ
     >>> from sympy.polys.euclidtools import dup_ff_lcm
@@ -1643,11 +1733,13 @@ def dup_ff_lcm(f, g, K):
 
     return dup_monic(h, K)
 
+
 def dup_lcm(f, g, K):
     """
     Computes polynomial LCM of `f` and `g` in `K[x]`.
 
-    **Examples**
+    Examples
+    ========
 
     >>> from sympy.polys.domains import ZZ
     >>> from sympy.polys.euclidtools import dup_lcm
@@ -1664,12 +1756,14 @@ def dup_lcm(f, g, K):
     else:
         return dup_rr_lcm(f, g, K)
 
+
 @cythonized("u")
 def dmp_rr_lcm(f, g, u, K):
     """
     Computes polynomial LCM over a ring in `K[X]`.
 
-    **Examples**
+    Examples
+    ========
 
     >>> from sympy.polys.domains import ZZ
     >>> from sympy.polys.euclidtools import dmp_rr_lcm
@@ -1691,12 +1785,14 @@ def dmp_rr_lcm(f, g, u, K):
 
     return dmp_mul_ground(h, c, u, K)
 
+
 @cythonized("u")
 def dmp_ff_lcm(f, g, u, K):
     """
     Computes polynomial LCM over a field in `K[X]`.
 
-    **Examples**
+    Examples
+    ========
 
     >>> from sympy.polys.domains import QQ
     >>> from sympy.polys.euclidtools import dmp_ff_lcm
@@ -1713,12 +1809,14 @@ def dmp_ff_lcm(f, g, u, K):
 
     return dmp_ground_monic(h, u, K)
 
+
 @cythonized("u")
 def dmp_lcm(f, g, u, K):
     """
     Computes polynomial LCM of `f` and `g` in `K[X]`.
 
-    **Examples**
+    Examples
+    ========
 
     >>> from sympy.polys.domains import ZZ
     >>> from sympy.polys.euclidtools import dmp_lcm
@@ -1738,12 +1836,14 @@ def dmp_lcm(f, g, u, K):
     else:
         return dmp_rr_lcm(f, g, u, K)
 
+
 @cythonized("u,v")
 def dmp_content(f, u, K):
     """
     Returns GCD of multivariate coefficients.
 
-    **Examples**
+    Examples
+    ========
 
     >>> from sympy.polys.domains import ZZ
     >>> from sympy.polys.euclidtools import dmp_content
@@ -1754,7 +1854,7 @@ def dmp_content(f, u, K):
     [2, 6]
 
     """
-    cont, v = dmp_LC(f, K), u-1
+    cont, v = dmp_LC(f, K), u - 1
 
     if dmp_zero_p(f, u):
         return cont
@@ -1770,12 +1870,14 @@ def dmp_content(f, u, K):
     else:
         return cont
 
+
 @cythonized("u,v")
 def dmp_primitive(f, u, K):
     """
     Returns multivariate content and a primitive polynomial.
 
-    **Examples**
+    Examples
+    ========
 
     >>> from sympy.polys.domains import ZZ
     >>> from sympy.polys.euclidtools import dmp_primitive
@@ -1786,18 +1888,20 @@ def dmp_primitive(f, u, K):
     ([2, 6], [[1], [2]])
 
     """
-    cont, v = dmp_content(f, u, K), u-1
+    cont, v = dmp_content(f, u, K), u - 1
 
     if dmp_zero_p(f, u) or dmp_one_p(cont, v, K):
         return cont, f
     else:
         return cont, [ dmp_quo(c, cont, v, K) for c in f ]
 
+
 def dup_cancel(f, g, K, include=True):
     """
     Cancel common factors in a rational function `f/g`.
 
-    **Examples**
+    Examples
+    ========
 
     >>> from sympy.polys.domains import ZZ
     >>> from sympy.polys.euclidtools import dup_cancel
@@ -1811,11 +1915,13 @@ def dup_cancel(f, g, K, include=True):
     """
     return dmp_cancel(f, g, 0, K, include=include)
 
+
 def dmp_cancel(f, g, u, K, include=True):
     """
     Cancel common factors in a rational function `f/g`.
 
-    **Examples**
+    Examples
+    ========
 
     >>> from sympy.polys.domains import ZZ
     >>> from sympy.polys.euclidtools import dmp_cancel

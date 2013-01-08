@@ -61,7 +61,7 @@ def test_exemples_de_base():
     # Algèbre
     assert_resultat('developpe((x-3)(x+7)(2y+x+5))', \
                                     'x^3 + 2 x^2 y + 9 x^2 + 8 x y - x - 42 y - 105', \
-                                    'x^{3} + 2 x^{2} y + 9 x^{2} + 8 x y - x - 42 y -105')
+                                    'x^{3} + 2 x^{2} y + 9 x^{2} + 8 x y - x - 42 y - 105')
     assert_resultat('factorise(x^2-7x+3)', \
                                     '(x - 7/2 - sqrt(37)/2)(x - 7/2 + sqrt(37)/2)',
                                     r'\left(x - \frac{7}{2} - \frac{1}{2} \sqrt{37}\right) \left(x - \frac{7}{2} + \frac{1}{2} \sqrt{37}\right)')
@@ -86,7 +86,7 @@ def test_exemples_de_base():
     assert_resultat('product(x^2;x;1;7)', '25401600', '25401600')
     assert_resultat('limit(x^2-x, oo)', '+oo', '+\infty')
     assert_resultat('abs(pi-5)', '-pi + 5', r'- \pi + 5')
-    assert_resultat('abs(x-5)', 'abs(x - 5)', r'\left|{x -5}\right|')
+    assert_resultat('abs(x-5)', 'abs(x - 5)', r'\left|{x - 5}\right|')
     assert_resultat('i(1+i)', r'-1 + i',  r'-1 + \mathrm{i}')
     assert_resultat('i sqrt(3)', r'sqrt(3)i',  r'\sqrt{3} \mathrm{i}')
     assert_resultat('pi sqrt(3)', r'sqrt(3)pi',  r'\sqrt{3} \pi')
@@ -99,7 +99,7 @@ def test_exemples_de_base():
                     formatage_LaTeX=True)
     assert_resultat('rassemble(1/x+1/(x*(x+1)))', '(x + 2)/(x^2 + x)', r'\frac{x + 2}{x^{2} + x}')
     assert_resultat('factorise(-2 exp(-x) - (3 - 2 x)exp(-x))', '(2 x - 5)exp(-x)',
-                    r'\left(2 x -5\right) \mathrm{e}^{- x}')
+                    r'\left(2 x - 5\right) \mathrm{e}^{- x}')
     assert_resultat('-x^2+2x-3>>factor', '-x^2 + 2 x - 3')
     assert_resultat('abs(-24/5 - 2 i/5)', '2 sqrt(145)/5')
     assert_resultat('+oo - 2,5', '+oo', r'+\infty')
@@ -209,7 +209,7 @@ def test_session():
     assert resultats[-3:] == [msg_aide, msg_aide, msg_aide]
     # LaTeX
     latex = i.evaluer("gamma(x)")[1]
-    assertEqual(latex, r'$\mathrm{\Gamma}\left(x\right)$')
+    assertEqual(latex, r'$\Gamma\left(x\right)$')
 
 
 def test_issue_sialle1():
@@ -218,8 +218,8 @@ def test_issue_sialle1():
     assert_resultat("1/(1-sqrt(2))", "1/(-sqrt(2) + 1)")
 
 def test_1_pas_en_facteur():
-    #FIXME: résultat LaTeX mal formaté
-    assert_resultat("together(1/x-.5)", "-0,5(x - 2)/x", r"- 0,5 \frac{x -2}{x}")
+    #FIXME: résultat LaTeX peu élégant (il manque un \times entre le 0,5 et le \frac)
+    assert_resultat("together(1/x-.5)", "-0,5(x - 2)/x", r"- 0,5 \frac{x - 2}{x}")
 
 def test_issue_129():
     assert_resultat('"x(x+1)" + """x!"""', '"x(x+1)x!"')

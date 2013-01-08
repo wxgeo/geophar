@@ -27,13 +27,25 @@ def test_sympy():
     assert limit(1 + 1/x, x, 0, dir='-') == -oo
     assert limit(1/x**2, x, 0, dir='-') == oo
     assert sympify(u'45') == 45 # issue 2508
-    assert solve(exp(-Float('0.5')*x + Float('0.4')) - 1) == [Float('0.8')]
 
-@XFAIL
+
 def test_sympy_solving_with_floats():
     x = Symbol('x', real = True)
-    assert solve(exp(-Float('0.5')*x - Float('0.4')) - 1) == [Float('-0.8')]
-    assert solve(exp(-Float('0.5', 10)*x + Float('0.4', 10)) - 1) == [Float('0.8')]
+
+    sols = solve(exp(-Float('0.5')*x + Float('0.4')) - 1)
+    assert len(sols) == 1
+    sol = sols[0]
+    assertAlmostEqual(sol, Float('0.8'))
+
+    sols = solve(exp(-Float('0.5')*x - Float('0.4')) - 1)
+    assert len(sols) == 1
+    sol = sols[0]
+    assertAlmostEqual(sol, Float('-0.8'))
+
+    sols = solve(exp(-Float('0.5', 10)*x + Float('0.4', 10)) - 1)
+    assert len(sols) == 1
+    sol = sols[0]
+    assertAlmostEqual(sol, Float('0.8'))
 
 @XFAIL
 def test_sympy_1_div_0():
@@ -45,4 +57,4 @@ def test_sympy_files():
         assert os.path.isfile(os.path.join(sympy_dir, path))
     tst('AUTHORS')
     tst('LICENSE')
-    tst('README')
+    tst('README.rst')

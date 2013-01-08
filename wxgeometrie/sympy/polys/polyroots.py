@@ -1,14 +1,12 @@
 """Algorithms for computing symbolic roots of polynomials. """
 
 from sympy.core.symbol import Dummy
-from sympy.core.add import Add
-from sympy.core.mul import Mul
-from sympy.core import S, I, Basic
+from sympy.core import S, I
 from sympy.core.sympify import sympify
 from sympy.core.numbers import Rational, igcd
 
 from sympy.ntheory import divisors, isprime, nextprime
-from sympy.functions import exp, sqrt, re, im
+from sympy.functions import exp, sqrt
 
 from sympy.polys.polytools import Poly, cancel, factor, gcd_list
 from sympy.polys.specialpolys import cyclotomic_poly
@@ -20,6 +18,7 @@ from sympy.utilities import default_sort_key
 from sympy.core.compatibility import reduce
 
 import math
+
 
 def roots_linear(f):
     """Returns a list of roots of a linear polynomial."""
@@ -33,6 +32,7 @@ def roots_linear(f):
             r = simplify(r)
 
     return [r]
+
 
 def roots_quadratic(f):
     """Returns a list of roots of a quadratic polynomial."""
@@ -58,7 +58,7 @@ def roots_quadratic(f):
         else:
             R = sqrt(r)
 
-        r0 =  R
+        r0 = R
         r1 = -R
     else:
         d = b**2 - 4*a*c
@@ -80,12 +80,13 @@ def roots_quadratic(f):
 
     return sorted([r0, r1], key=default_sort_key)
 
+
 def roots_cubic(f):
     """Returns a list of roots of a cubic polynomial."""
     _, a, b, c = f.monic().all_coeffs()
 
     if c is S.Zero:
-        x1, x2 = roots([1,a,b], multiple = True)
+        x1, x2 = roots([1, a, b], multiple=True)
         return [x1, S.Zero, x2]
 
     p = b - a**2/3
@@ -118,6 +119,7 @@ def roots_cubic(f):
 
     return soln
 
+
 def roots_quartic(f):
     r"""
     Returns a list of roots of a quartic polynomial.
@@ -141,7 +143,8 @@ def roots_quartic(f):
         a) `p == 0`
         b) `p != 0`
 
-    **Examples**
+    Examples
+    ========
 
         >>> from sympy import Poly, symbols, I
         >>> from sympy.polys.polyroots import roots_quartic
@@ -152,7 +155,8 @@ def roots_quartic(f):
         >>> sorted(str(tmp.evalf(n=2)) for tmp in r)
         ['1.0 + 1.7*I', '1.0 - 1.7*I', '2.0 + 1.0*I', '2.0 - 1.0*I']
 
-    **References**
+    References
+    ==========
 
     1. http://mathforum.org/dr.math/faq/faq.cubic.equations.html
     2. http://en.wikipedia.org/wiki/Quartic_function#Summary_of_Ferrari.27s_method
@@ -190,10 +194,10 @@ def roots_quartic(f):
 
         if f is S.Zero:
             y1, y2 = [sqrt(tmp) for tmp in
-                      roots([1, e, g], multiple = True)]
+                      roots([1, e, g], multiple=True)]
             return [tmp - aon4 for tmp in [-y1, -y2, y1, y2]]
         if g is S.Zero:
-            y = [S.Zero] + roots([1, 0, e, f], multiple = True)
+            y = [S.Zero] + roots([1, 0, e, f], multiple=True)
             return [tmp - aon4 for tmp in y]
         else:
             p = -e**2/12 - g
@@ -204,8 +208,8 @@ def roots_quartic(f):
             else:
                 # with p !=0 then u below is not 0
                 root = sqrt(q**2/4 + p**3/27)
-                r = -q/2 + root # or -q/2 - root
-                u = r**TH # primary root of solve(x**3-r, x)
+                r = -q/2 + root  # or -q/2 - root
+                u = r**TH  # primary root of solve(x**3-r, x)
                 y = -5*e/6 + u - p/u/3
             w = sqrt(e + 2*y)
             arg1 = 3*e + 2*y
@@ -216,6 +220,7 @@ def roots_quartic(f):
                     ans.append((s*w - t*root)/2 - aon4)
 
     return ans
+
 
 def roots_binomial(f):
     """Returns a list of roots of a binomial polynomial."""
@@ -235,11 +240,13 @@ def roots_binomial(f):
 
     return sorted(roots, key=default_sort_key)
 
+
 def _inv_totient_estimate(m):
     """
     Find ``(L, U)`` such that ``L <= phi^-1(m) <= U``.
 
-    **Examples**
+    Examples
+    ========
 
     >>> from sympy.polys.polyroots import _inv_totient_estimate
 
@@ -278,22 +285,23 @@ def _inv_totient_estimate(m):
 
     return L, U
 
+
 def roots_cyclotomic(f, factor=False):
     """Compute roots of cyclotomic polynomials. """
     L, U = _inv_totient_estimate(f.degree())
 
-    for n in xrange(L, U+1):
+    for n in xrange(L, U + 1):
         g = cyclotomic_poly(n, f.gen, polys=True)
 
         if f == g:
             break
-    else: # pragma: no cover
+    else:  # pragma: no cover
         raise RuntimeError("failed to find index of a cyclotomic polynomial")
 
     roots = []
 
     if not factor:
-        for k in xrange(1, n+1):
+        for k in xrange(1, n + 1):
             if igcd(k, n) == 1:
                 roots.append(exp(2*k*S.Pi*I/n).expand(complex=True))
     else:
@@ -303,6 +311,7 @@ def roots_cyclotomic(f, factor=False):
             roots.append(-h.TC())
 
     return sorted(roots, key=default_sort_key)
+
 
 def roots_rational(f):
     """Returns a list of rational roots of a polynomial."""
@@ -334,6 +343,7 @@ def roots_rational(f):
                 zeros.append(-zero)
 
     return sorted(zeros, key=default_sort_key)
+
 
 def _integer_basis(poly):
     """Compute coefficient basis for a polynomial over integers. """
@@ -368,6 +378,7 @@ def _integer_basis(poly):
                     break
         else:
             return div
+
 
 def preprocess_roots(poly):
     """Try to get rid of symbolic coefficients from ``poly``. """
@@ -430,12 +441,13 @@ def preprocess_roots(poly):
             n = poly.degree()
 
             def func(k, coeff):
-                return coeff//basis**(n-k[0])
+                return coeff//basis**(n - k[0])
 
             poly = poly.termwise(func)
             coeff *= basis
 
     return coeff, poly
+
 
 def roots(f, *gens, **flags):
     """
@@ -459,7 +471,8 @@ def roots(f, *gens, **flags):
     case of multiple roots.  However to get a tuple containing all
     those roots set the ``multiple`` flag to True.
 
-    **Examples**
+    Examples
+    ========
 
     >>> from sympy import Poly, roots
     >>> from sympy.abc import x, y
@@ -498,10 +511,10 @@ def roots(f, *gens, **flags):
 
         x = Dummy('x')
 
-        poly, i = {}, len(f)-1
+        poly, i = {}, len(f) - 1
 
         for coeff in f:
-            poly[i], i = sympify(coeff), i-1
+            poly[i], i = sympify(coeff), i - 1
 
         f = Poly(poly, x, field=True)
     else:
@@ -581,7 +594,7 @@ def roots(f, *gens, **flags):
     if not k:
         zeros = {}
     else:
-        zeros = {S(0) : k}
+        zeros = {S(0): k}
 
     coeff, f = preprocess_roots(f)
 
@@ -623,10 +636,10 @@ def roots(f, *gens, **flags):
 
     if filter not in [None, 'C']:
         handlers = {
-            'Z' : lambda r: r.is_Integer,
-            'Q' : lambda r: r.is_Rational,
-            'R' : lambda r: r.is_real,
-            'I' : lambda r: r.is_imaginary,
+            'Z': lambda r: r.is_Integer,
+            'Q': lambda r: r.is_Rational,
+            'R': lambda r: r.is_real,
+            'I': lambda r: r.is_imaginary,
         }
 
         try:
@@ -653,11 +666,13 @@ def roots(f, *gens, **flags):
 
         return sorted(zeros, key=default_sort_key)
 
+
 def root_factors(f, *gens, **args):
     """
     Returns all factors of a univariate polynomial.
 
-    **Examples**
+    Examples
+    ========
 
     >>> from sympy.abc import x, y
     >>> from sympy.polys.polyroots import root_factors
@@ -687,10 +702,10 @@ def root_factors(f, *gens, **args):
         factors, N = [], 0
 
         for r, n in zeros.iteritems():
-            factors, N = factors + [Poly(x-r, x)]*n, N + n
+            factors, N = factors + [Poly(x - r, x)]*n, N + n
 
         if N < F.degree():
-            G = reduce(lambda p,q: p*q, factors)
+            G = reduce(lambda p, q: p*q, factors)
             factors.append(F.quo(G))
 
     if not isinstance(f, Poly):

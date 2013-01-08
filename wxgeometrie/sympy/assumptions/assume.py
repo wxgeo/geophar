@@ -1,6 +1,9 @@
 import inspect
+from sympy.core.cache import cacheit
+from sympy.core.singleton import S
+from sympy.logic.boolalg import Boolean
 from sympy.utilities.source import get_class
-from sympy.logic.boolalg import Boolean, Not
+
 
 class AssumptionsContext(set):
     """Set representing assumptions.
@@ -9,7 +12,9 @@ class AssumptionsContext(set):
     class to create your own local assumptions contexts. It is basically a thin
     wrapper to Python's set, so see its documentation for advanced usage.
 
-    Examples:
+    Examples
+    ========
+
         >>> from sympy import global_assumptions, AppliedPredicate, Q
         >>> global_assumptions
         AssumptionsContext()
@@ -31,6 +36,7 @@ class AssumptionsContext(set):
 
 global_assumptions = AssumptionsContext()
 
+
 class AppliedPredicate(Boolean):
     """The class of expressions resulting from applying a Predicate.
 
@@ -47,14 +53,16 @@ class AppliedPredicate(Boolean):
     def __new__(cls, predicate, arg):
         return Boolean.__new__(cls, predicate, arg)
 
-    is_Atom = True # do not attempt to decompose this
+    is_Atom = True  # do not attempt to decompose this
 
     @property
     def arg(self):
         """
         Return the expression used by this assumption.
 
-        Examples:
+        Examples
+        ========
+
             >>> from sympy import Q, Symbol
             >>> x = Symbol('x')
             >>> a = Q.integer(x + 1)
@@ -72,6 +80,10 @@ class AppliedPredicate(Boolean):
     def func(self):
         return self._args[0]
 
+    @cacheit
+    def sort_key(self, order=None):
+        return self.class_key(), (2, (self.func.name, self.arg.sort_key())), S.One.sort_key(), S.One
+
     def __eq__(self, other):
         if type(other) is AppliedPredicate:
             return self._args == other._args
@@ -83,12 +95,13 @@ class AppliedPredicate(Boolean):
     def _eval_ask(self, assumptions):
         return self.func.eval(self.arg, assumptions)
 
+
 class Predicate(Boolean):
     """A predicate is a function that returns a boolean value.
 
     Predicates merely wrap their argument and remain unevaluated:
 
-        >>> from sympy import Q, ask, Symbol
+        >>> from sympy import Q, ask, Symbol, S
         >>> x = Symbol('x')
         >>> Q.prime(7)
         Q.prime(7)
@@ -102,6 +115,8 @@ class Predicate(Boolean):
     The tautological predicate `Q.is_true` can be used to wrap other objects:
 
         >>> Q.is_true(x > 1)
+        Q.is_true(x > 1)
+        >>> Q.is_true(S(1) < x)
         Q.is_true(1 < x)
 
     """
@@ -128,6 +143,10 @@ class Predicate(Boolean):
 
     def remove_handler(self, handler):
         self.handlers.remove(handler)
+
+    @cacheit
+    def sort_key(self, order=None):
+        return self.class_key(), (1, (self.name,)), S.One.sort_key(), S.One
 
     def eval(self, expr, assumptions=True):
         """

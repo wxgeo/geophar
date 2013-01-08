@@ -3,11 +3,29 @@
 www.cs.ubc.ca/~hoos/SATLIB/Benchmarks/SAT/satformat.ps
 
 """
+from __future__ import with_statement
+
 from sympy.core import Symbol
 from sympy.logic.boolalg import And, Or
 import re
 
+
 def load(s):
+    """Loads a boolean expression from a string.
+
+    Examples
+    ========
+
+    >>> from sympy.logic.utilities.dimacs import load
+    >>> load('1')
+    cnf_1
+    >>> load('1 2')
+    Or(cnf_1, cnf_2)
+    >>> load('1 \\n 2')
+    And(cnf_1, cnf_2)
+    >>> load('1 2 \\n 3')
+    And(Or(cnf_1, cnf_2), cnf_3)
+    """
     clauses = []
 
     lines = s.split('\n')
@@ -15,39 +33,39 @@ def load(s):
     pComment = re.compile('c.*')
     pStats = re.compile('p\s*cnf\s*(\d*)\s*(\d*)')
 
-
-    numVars = 0
-    numClauses = 0
-
     while len(lines) > 0:
         line = lines.pop(0)
 
         # Only deal with lines that aren't comments
         if not pComment.match(line):
             m = pStats.match(line)
-            if m:
-                numVars = int(m.group(1))
-                numClauses = int(m.group(2))
 
-            else:
+            if not m:
                 nums = line.rstrip('\n').split(' ')
                 list = []
                 for lit in nums:
                     if lit != '':
-                        if int(lit) == 0: continue
+                        if int(lit) == 0:
+                            continue
                         num = abs(int(lit))
                         sign = True
                         if int(lit) < 0:
                             sign = False
 
-                        if sign: list.append(Symbol("cnf_%s" % num))
-                        else: list.append(~Symbol("cnf_%s" % num))
+                        if sign:
+                            list.append(Symbol("cnf_%s" % num))
+                        else:
+                            list.append(~Symbol("cnf_%s" % num))
 
                 if len(list) > 0:
                     clauses.append(Or(*list))
 
     return And(*clauses)
 
+
 def load_file(location):
-    s = open(location).read()
+    """Loads a boolean expression from a file."""
+    with open(location) as f:
+        s = f.read()
+
     return load(s)

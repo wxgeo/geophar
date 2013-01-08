@@ -2,6 +2,7 @@ from sympy.core import Add, S, C, sympify, oo, pi
 from sympy.core.function import Function, ArgumentIndexError
 from zeta_functions import zeta
 from error_functions import erf
+from sympy.core import Dummy, Rational
 from sympy.functions.elementary.exponential import log
 from sympy.functions.elementary.integers import floor
 from sympy.functions.elementary.miscellaneous import sqrt
@@ -12,16 +13,18 @@ from sympy.functions.combinatorial.factorials import rf
 ############################ COMPLETE GAMMA FUNCTION ##########################
 ###############################################################################
 
+
 class gamma(Function):
     """The gamma function returns a function which passes through the integral
     values of the factorial function, i.e. though defined in the complex plane,
-    when n is an integer, gamma(n) = (n - 1)!
+    when n is an integer, `gamma(n) = (n - 1)!`
 
     Reference:
         http://en.wikipedia.org/wiki/Gamma_function
     """
 
     nargs = 1
+    unbranched = True
 
     def fdiff(self, argindex=1):
         if argindex == 1:
@@ -38,7 +41,7 @@ class gamma(Function):
                 return S.Infinity
             elif arg.is_Integer:
                 if arg.is_positive:
-                    return C.factorial(arg-1)
+                    return C.factorial(arg - 1)
                 else:
                     return S.ComplexInfinity
             elif arg.is_Rational:
@@ -63,18 +66,21 @@ class gamma(Function):
                     else:
                         return 2**n*sqrt(S.Pi) / coeff
 
-
-    def _eval_expand_func(self, deep=True, **hints):
-        if deep:
-            arg = self.args[0].expand(deep, **hints)
-        else:
-            arg = self.args[0]
+    def _eval_expand_func(self, **hints):
+        arg = self.args[0]
+        if arg.is_Rational:
+            if abs(arg.p) > arg.q:
+                x = Dummy('x')
+                n = arg.p // arg.q
+                p = arg.p - n*arg.q
+                return gamma(x + n)._eval_expand_func().subs(x, Rational(p, arg.q))
 
         if arg.is_Add:
             coeff, tail = arg.as_coeff_add()
             if coeff and coeff.q != 1:
-                tail = (C.Rational(1, coeff.q),) + tail
-                coeff = floor(coeff)
+                intpart = floor(coeff)
+                tail = (coeff - intpart,) + tail
+                coeff = intpart
             tail = arg._new_rawargs(*tail, **dict(reeval=False))
             return gamma(tail)*C.RisingFactorial(tail, coeff)
 
@@ -100,7 +106,7 @@ class gamma(Function):
 
 class lowergamma(Function):
     r"""
-    Lower incomplete gamma function
+    The lower incomplete gamma function.
 
     It can be defined as the meromorphic continuation of
 
@@ -110,13 +116,18 @@ class lowergamma(Function):
     This can be shown to be the same as
 
     .. math ::
-        \gamma(s, x) = \frac{x^s}{s} {}_1F_1\left.\left({s \atop s+1} \right| -x\right),
+        \gamma(s, x) = \frac{x^s}{s} {}_1F_1\left({s \atop s+1} \middle| -x\right),
 
     where :math:`{}_1F_1` is the (confluent) hypergeometric function.
 
-    **See also:** :class:`gamma`, :class:`uppergamma`, :class:`hyper`.
+    See Also
+    ========
 
-    **Examples**
+    gamma, uppergamma
+    sympy.functions.special.hyper.hyper
+
+    Examples
+    ========
 
     >>> from sympy import lowergamma, S
     >>> from sympy.abc import s, x
@@ -127,31 +138,61 @@ class lowergamma(Function):
     >>> lowergamma(-S(1)/2, x)
     -2*sqrt(pi)*erf(sqrt(x)) - 2*exp(-x)/sqrt(x)
 
-    **References**
+    References
+    ==========
 
     - Abramowitz, Milton; Stegun, Irene A., eds. (1965), Chapter 6, Section 5,
       Handbook of Mathematical Functions with Formulas, Graphs, and Mathematical
       Tables
     - http://en.wikipedia.org/wiki/Incomplete_gamma_function
+
     """
 
     nargs = 2
 
     def fdiff(self, argindex=2):
-        from sympy import meijerg
+        from sympy import meijerg, unpolarify
         if argindex == 2:
             a, z = self.args
-            return C.exp(-z)*z**(a-1)
+            return C.exp(-unpolarify(z))*z**(a - 1)
         elif argindex == 1:
             a, z = self.args
             return gamma(a)*digamma(a) - log(z)*uppergamma(a, z) \
-                   + meijerg([], [1, 1], [0, 0, a], [], z)
+                + meijerg([], [1, 1], [0, 0, a], [], z)
 
         else:
             raise ArgumentIndexError(self, argindex)
 
     @classmethod
     def eval(cls, a, x):
+        # For lack of a better place, we use this one to extract branching
+        # information. The following can be
+        # found in the literature (c/f references given above), albeit scattered:
+        # 1) For fixed x != 0, lowergamma(s, x) is an entire function of s
+        # 2) For fixed positive integers s, lowergamma(s, x) is an entire
+        #    function of x.
+        # 3) For fixed non-positive integers s,
+        #    lowergamma(s, exp(I*2*pi*n)*x) =
+        #              2*pi*I*n*(-1)**(-s)/factorial(-s) + lowergamma(s, x)
+        #    (this follows from lowergamma(s, x).diff(x) = x**(s-1)*exp(-x)).
+        # 4) For fixed non-integral s,
+        #    lowergamma(s, x) = x**s*gamma(s)*lowergamma_unbranched(s, x),
+        #    where lowergamma_unbranched(s, x) is an entire function (in fact
+        #    of both s and x), i.e.
+        #    lowergamma(s, exp(2*I*pi*n)*x) = exp(2*pi*I*n*a)*lowergamma(a, x)
+        from sympy import unpolarify, I, factorial, exp
+        nx, n = x.extract_branch_factor()
+        if a.is_integer and a > 0:
+            nx = unpolarify(x)
+            if nx != x:
+                return lowergamma(a, nx)
+        elif a.is_integer and a <= 0:
+            if n != 0:
+                return 2*pi*I*n*(-1)**(-a)/factorial(-a) + lowergamma(a, nx)
+        elif n != 0:
+            return exp(2*pi*I*n*a)*lowergamma(a, nx)
+
+        # Special values.
         if a.is_Number:
             # TODO this should be non-recursive
             if a is S.One:
@@ -177,6 +218,16 @@ class lowergamma(Function):
         mp.prec = oprec
         return Expr._from_mpmath(res, prec)
 
+    def _eval_rewrite_as_uppergamma(self, s, x):
+        return gamma(s) - uppergamma(s, x)
+
+    def _eval_rewrite_as_expint(self, s, x):
+        from sympy import expint
+        if s.is_integer and s.is_nonpositive:
+            return self
+        return self.rewrite(uppergamma).rewrite(expint)
+
+
 class uppergamma(Function):
     r"""
     Upper incomplete gamma function
@@ -191,11 +242,15 @@ class uppergamma(Function):
 
     .. math ::
         \Gamma(s, x) = \Gamma(s)
-                - \frac{x^s}{s} {}_1F_1\left.\left({s \atop s+1} \right| -x\right),
+                - \frac{x^s}{s} {}_1F_1\left({s \atop s+1} \middle| -x\right),
 
     where :math:`{}_1F_1` is the (confluent) hypergeometric function.
 
-    **Examples**
+    The upper incomplete gamma function is also essentially equivalent to the
+    generalized exponential integral.
+
+    Examples
+    ========
 
     >>> from sympy import uppergamma, S
     >>> from sympy.abc import s, x
@@ -205,24 +260,32 @@ class uppergamma(Function):
     x**2*exp(-x) + 2*x*exp(-x) + 2*exp(-x)
     >>> uppergamma(-S(1)/2, x)
     -2*sqrt(pi)*(-erf(sqrt(x)) + 1) + 2*exp(-x)/sqrt(x)
+    >>> uppergamma(-2, x)
+    expint(3, x)/x**2
 
-    **See also:** :class:`gamma`, :class:`lowergamma`, :class:`hyper`.
+    See Also
+    ========
 
-    **References**
+    gamma, lowergamma
+    sympy.functions.special.hyper.hyper
+
+    References
+    ==========
 
     - Abramowitz, Milton; Stegun, Irene A., eds. (1965), Chapter 6, Section 5,
       Handbook of Mathematical Functions with Formulas, Graphs, and Mathematical
       Tables
     - http://en.wikipedia.org/wiki/Incomplete_gamma_function
+
     """
 
     nargs = 2
 
     def fdiff(self, argindex=2):
-        from sympy import meijerg
+        from sympy import meijerg, unpolarify
         if argindex == 2:
             a, z = self.args
-            return -C.exp(-z)*z**(a-1)
+            return -C.exp(-unpolarify(z))*z**(a - 1)
         elif argindex == 1:
             a, z = self.args
             return uppergamma(a, z)*log(z) + meijerg([], [1, 1], [0, 0, a], [], z)
@@ -242,6 +305,7 @@ class uppergamma(Function):
 
     @classmethod
     def eval(cls, a, z):
+        from sympy import unpolarify, I, factorial, exp, expint
         if z.is_Number:
             if z is S.NaN:
                 return S.NaN
@@ -250,28 +314,53 @@ class uppergamma(Function):
             elif z is S.Zero:
                 return gamma(a)
 
+        # We extract branching information here. C/f lowergamma.
+        nx, n = z.extract_branch_factor()
+        if a.is_integer and a > 0:
+            nx = unpolarify(z)
+            if z != nx:
+                return uppergamma(a, nx)
+        elif a.is_integer and a <= 0:
+            if n != 0:
+                return -2*pi*I*n*(-1)**(-a)/factorial(-a) + uppergamma(a, nx)
+        elif n != 0:
+            return gamma(a)*(1 - exp(2*pi*I*n*a)) + exp(2*pi*I*n*a)*uppergamma(a, nx)
+
+        # Special values.
         if a.is_Number:
             # TODO this should be non-recursive
             if a is S.One:
                 return C.exp(-z)
             elif a is S.Half:
-                return sqrt(pi)*(1 - erf(sqrt(z))) # TODO could use erfc...
+                return sqrt(pi)*(1 - erf(sqrt(z)))  # TODO could use erfc...
             elif a.is_Integer or (2*a).is_Integer:
                 b = a - 1
                 if b.is_positive:
                     return b*cls(b, z) + z**b * C.exp(-z)
+                elif b.is_Integer:
+                    return expint(-b, z)*unpolarify(z)**(b + 1)
 
                 if not a.is_Integer:
                     return (cls(a + 1, z) - z**a * C.exp(-z))/a
 
+    def _eval_rewrite_as_lowergamma(self, s, x):
+        return gamma(s) - lowergamma(s, x)
+
+    def _eval_rewrite_as_expint(self, s, x):
+        from sympy import expint
+        return expint(1 - s, x)*x**s
 
 
 ###############################################################################
 ########################### GAMMA RELATED FUNCTIONS ###########################
 ###############################################################################
-
 class polygamma(Function):
-    """The function polygamma(n, z) returns log(gamma(z)).diff(n + 1)
+    """The function `polygamma(n, z)` returns `log(gamma(z)).diff(n + 1)`
+
+       See Also
+       ========
+
+       gamma, digamma, trigamma
 
     Reference:
         http://en.wikipedia.org/wiki/Polygamma_function
@@ -281,8 +370,8 @@ class polygamma(Function):
 
     def fdiff(self, argindex=2):
         if argindex == 2:
-            n, z = self.args[0:2]
-            return polygamma(n+1, z)
+            n, z = self.args[:2]
+            return polygamma(n + 1, z)
         else:
             raise ArgumentIndexError(self, argindex)
 
@@ -299,7 +388,7 @@ class polygamma(Function):
 
     def _eval_aseries(self, n, args0, x, logx):
         if args0[1] != oo or not \
-           (self.args[0].is_Integer and self.args[0].is_nonnegative):
+                (self.args[0].is_Integer and self.args[0].is_nonnegative):
             return super(polygamma, self)._eval_aseries(n, args0, x, logx)
         z = self.args[1]
         N = self.args[0]
@@ -312,7 +401,7 @@ class polygamma(Function):
             if n < 2:
                 o = C.Order(1/z, x)
             else:
-                m = C.ceiling((n+1)//2)
+                m = C.ceiling((n + 1)//2)
                 l = [bernoulli(2*k) / (2*k*z**(2*k)) for k in range(1, m)]
                 r -= Add(*l)
                 o = C.Order(1/z**(2*m), x)
@@ -325,9 +414,9 @@ class polygamma(Function):
             #    quite a long time!
             fac = gamma(N)
             e0 = fac + N*fac/(2*z)
-            m = C.ceiling((n+1)//2)
+            m = C.ceiling((n + 1)//2)
             for k in range(1, m):
-                fac = fac*(2*k+N-1)*(2*k+N-2) / ((2*k)*(2*k-1))
+                fac = fac*(2*k + N - 1)*(2*k + N - 2) / ((2*k)*(2*k - 1))
                 e0 += bernoulli(2*k)*fac/z**(2*k)
             o = C.Order(1/z**(2*m), x)
             if n == 0:
@@ -340,9 +429,15 @@ class polygamma(Function):
     @classmethod
     def eval(cls, n, z):
         n, z = map(sympify, (n, z))
+        from sympy import unpolarify
 
         if n.is_integer:
-            if n.is_negative:
+            if n.is_nonnegative:
+                nz = unpolarify(z)
+                if z != nz:
+                    return polygamma(n, nz)
+
+            if n == -1:
                 return loggamma(z)
             else:
                 if z.is_Number:
@@ -359,18 +454,32 @@ class polygamma(Function):
                             return S.ComplexInfinity
                         else:
                             if n is S.Zero:
-                                return -S.EulerGamma + C.harmonic(z-1, 1)
+                                return -S.EulerGamma + C.harmonic(z - 1, 1)
                             elif n.is_odd:
-                                return (-1)**(n+1)*C.factorial(n)*zeta(n+1, z)
+                                return (-1)**(n + 1)*C.factorial(n)*zeta(n + 1, z)
 
+        if n == 0 and z.is_Rational:
+            # TODO actually *any* n/m can be done, but that is messy
+            lookup = {S(1)/2: -2*log(2) - S.EulerGamma,
+                      S(1)/3: -S.Pi/2/sqrt(3) - 3*log(3)/2 - S.EulerGamma,
+                      S(1)/4: -S.Pi/2 - 3*log(2) - S.EulerGamma,
+                      S(3)/4: -3*log(2) - S.EulerGamma + S.Pi/2,
+                      S(2)/3: -3*log(3)/2 + S.Pi/2/sqrt(3) - S.EulerGamma}
+            if z > 0:
+                n = floor(z)
+                z0 = z - n
+                if z0 in lookup:
+                    return lookup[z0] + Add(*[1/(z0 + k) for k in range(n)])
+            elif z < 0:
+                n = floor(1 - z)
+                z0 = z + n
+                if z0 in lookup:
+                    return lookup[z0] - Add(*[1/(z0 - 1 - k) for k in range(n)])
 
-    def _eval_expand_func(self, deep=True, **hints):
-        if deep:
-            hints['func'] = False
-            n = self.args[0].expand(deep, **hints)
-            z = self.args[1].expand(deep, **hints)
-        else:
-            n, z = self.args[0], self.args[1].expand(deep, func=True)
+        # TODO n == 1 also can do some rational z
+
+    def _eval_expand_func(self, **hints):
+        n, z = self.args
 
         if n.is_Integer and n.is_nonnegative:
             if z.is_Add:
@@ -378,26 +487,40 @@ class polygamma(Function):
                 if coeff.is_Integer:
                     e = -(n + 1)
                     if coeff > 0:
-                        tail = Add(*[C.Pow(z - i, e)  for i in xrange(1, int(coeff) + 1)])
+                        tail = Add(*[C.Pow(
+                            z - i, e) for i in xrange(1, int(coeff) + 1)])
                     else:
-                        tail = -Add(*[C.Pow(z + i, e)  for i in xrange(0, int(-coeff))])
+                        tail = -Add(*[C.Pow(
+                            z + i, e) for i in xrange(0, int(-coeff))])
                     return polygamma(n, z - coeff) + (-1)**n*C.factorial(n)*tail
 
             elif z.is_Mul:
                 coeff, z = z.as_two_terms()
                 if coeff.is_Integer and coeff.is_positive:
-                    tail = [ polygamma(n, z + C.Rational(i, coeff)) for i in xrange(0, int(coeff)) ]
+                    tail = [ polygamma(n, z + C.Rational(
+                        i, coeff)) for i in xrange(0, int(coeff)) ]
                     if n == 0:
                         return Add(*tail)/coeff + log(coeff)
                     else:
-                        return Add(*tail)/coeff**(n+1)
+                        return Add(*tail)/coeff**(n + 1)
+                z *= coeff
 
         return polygamma(n, z)
 
     def _eval_rewrite_as_zeta(self, n, z):
-        return (-1)**(n+1)*C.factorial(n)*zeta(n+1, z-1)
+        return (-1)**(n + 1)*C.factorial(n)*zeta(n + 1, z - 1)
+
 
 class loggamma(Function):
+    """
+    The loggamma function is `ln(gamma(x))`.
+
+    References
+    ==========
+
+    http://mathworld.wolfram.com/LogGammaFunction.html
+
+    """
 
     nargs = 1
 
@@ -405,14 +528,14 @@ class loggamma(Function):
         if args0[0] != oo:
             return super(loggamma, self)._eval_aseries(n, args0, x, logx)
         z = self.args[0]
-        m = min(n, C.ceiling((n+S(1))/2))
-        r = log(z)*(z-S(1)/2) - z + log(2*pi)/2
-        l = [bernoulli(2*k) / (2*k*(2*k-1)*z**(2*k-1)) for k in range(1, m)]
+        m = min(n, C.ceiling((n + S(1))/2))
+        r = log(z)*(z - S(1)/2) - z + log(2*pi)/2
+        l = [bernoulli(2*k) / (2*k*(2*k - 1)*z**(2*k - 1)) for k in range(1, m)]
         o = None
         if m == 0:
             o = C.Order(1, x)
         else:
-            o = C.Order(1/z**(2*m-1), x)
+            o = C.Order(1/z**(2*m - 1), x)
         # It is very inefficient to first add the order and then do the nseries
         return (r + Add(*l))._eval_nseries(x, n, logx) + o
 
@@ -428,15 +551,43 @@ class loggamma(Function):
         else:
             raise ArgumentIndexError(self, argindex)
 
+
 def digamma(x):
+    """
+    The digamma function is the logarithmic derivative of the gamma function.
+
+
+    In this case, `digamma(x) = polygamma(0, x)`.
+
+    See Also
+    ========
+
+    gamma, trigamma, polygamma
+
+    """
     return polygamma(0, x)
 
+
 def trigamma(x):
+    """
+    The trigamma function is the second of the polygamma functions.
+
+    In this case, `trigamma(x) = polygamma(1, x)`.
+
+    See Also
+    ========
+
+    gamma, digamma, polygamma
+
+    """
     return polygamma(1, x)
 
-def beta(x, y):
-    """ Euler Beta function
-    beta(x, y) == gamma(x)*gamma(y) / gamma(x+y)
-    """
-    return gamma(x)*gamma(y) / gamma(x+y)
 
+def beta(x, y):
+    """
+    Euler Beta function
+
+    ``beta(x, y) == gamma(x)*gamma(y) / gamma(x+y)``
+
+    """
+    return gamma(x)*gamma(y) / gamma(x + y)

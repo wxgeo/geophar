@@ -1,16 +1,12 @@
 """Computational algebraic number field theory. """
 
 from sympy import (
-    S, Expr, I, Integer, Rational, Float,
+    S, Expr, Rational,
     Symbol, Add, Mul, sympify, Q, ask, Dummy, Tuple
 )
 
 from sympy.polys.polytools import (
     Poly, PurePoly, sqf_norm, invert, factor_list, groebner,
-)
-
-from sympy.polys.polyutils import (
-    basic_from_dict,
 )
 
 from sympy.polys.polyclasses import (
@@ -32,11 +28,13 @@ from sympy.utilities import (
 from sympy.ntheory import sieve
 from sympy.mpmath import pslq, mp
 
+
 def minimal_polynomial(ex, x=None, **args):
     """
     Computes the minimal polynomial of an algebraic number.
 
-    **Example**
+    Examples
+    ========
 
     >>> from sympy import minimal_polynomial, sqrt
     >>> from sympy.abc import x
@@ -75,7 +73,7 @@ def minimal_polynomial(ex, x=None, **args):
                     return update_mapping(ex, 2, 1)
                 else:
                     return symbols[ex]
-            elif ex.is_Rational and ex.q != 0:
+            elif ex.is_Rational:
                 return ex
         elif ex.is_Add:
             return Add(*[ bottom_up_scan(g) for g in ex.args ])
@@ -99,7 +97,8 @@ def minimal_polynomial(ex, x=None, **args):
                         ex = base**(-ex.exp)
 
                 if not ex.exp.is_Integer:
-                    base, exp = (ex.base**ex.exp.p).expand(), Rational(1, ex.exp.q)
+                    base, exp = (
+                        ex.base**ex.exp.p).expand(), Rational(1, ex.exp.q)
                 else:
                     base, exp = ex.base, ex.exp
 
@@ -125,7 +124,7 @@ def minimal_polynomial(ex, x=None, **args):
             return ex.minpoly.as_expr(x)
         else:
             return ex.minpoly.replace(x)
-    elif ex.is_Rational and ex.q != 0:
+    elif ex.is_Rational:
         result = ex.q*x - ex.p
     else:
         F = [x - bottom_up_scan(ex)] + mapping.values()
@@ -139,7 +138,7 @@ def minimal_polynomial(ex, x=None, **args):
             for result, _ in factors:
                 if result.subs(x, ex).evalf(chop=True) == 0:
                     break
-            else: # pragma: no cover
+            else:  # pragma: no cover
                 raise NotImplementedError("multiple candidates for the minimal polynomial of %s" % ex)
 
     if polys:
@@ -149,10 +148,12 @@ def minimal_polynomial(ex, x=None, **args):
 
 minpoly = minimal_polynomial
 
+
 def _coeffs_generator(n):
     """Generate coefficients for `primitive_element()`. """
-    for coeffs in variations([1,-1], n, repetition=True):
+    for coeffs in variations([1, -1], n, repetition=True):
         yield list(coeffs)
+
 
 def primitive_element(extension, x=None, **args):
     """Construct a common number field for all extensions. """
@@ -206,12 +207,13 @@ def primitive_element(extension, x=None, **args):
 
         for i, (h, y) in enumerate(zip(H, Y)):
             try:
-                H[i] = Poly(y - h, x, domain='QQ').all_coeffs() # XXX: composite=False
-            except CoercionFailed: # pragma: no cover
-                break # G is not a triangular set
+                H[i] = Poly(y - h, x,
+                            domain='QQ').all_coeffs()  # XXX: composite=False
+            except CoercionFailed:  # pragma: no cover
+                break  # G is not a triangular set
         else:
             break
-    else: # pragma: no cover
+    else:  # pragma: no cover
         raise RuntimeError("run out of coefficient configurations")
 
     _, g = g.clear_denoms()
@@ -221,7 +223,6 @@ def primitive_element(extension, x=None, **args):
     else:
         return g, coeffs, H
 
-primelt = primitive_element
 
 def is_isomorphism_possible(a, b):
     """Returns `True` if there is a chance for isomorphism. """
@@ -252,6 +253,7 @@ def is_isomorphism_possible(a, b):
         i += 1
 
     return True
+
 
 def field_isomorphism_pslq(a, b):
     """Construct field isomorphism using PSLQ algorithm. """
@@ -290,10 +292,10 @@ def field_isomorphism_pslq(a, b):
         h = Poly(coeffs, f.gen, domain='QQ')
 
         if f.compose(h).rem(g).is_zero:
-            d, approx = len(coeffs)-1, 0
+            d, approx = len(coeffs) - 1, 0
 
             for i, coeff in enumerate(coeffs):
-                approx += coeff*B**(d-i)
+                approx += coeff*B**(d - i)
 
             if A*approx < 0:
                 return [ -c for c in coeffs ]
@@ -306,6 +308,7 @@ def field_isomorphism_pslq(a, b):
 
     return None
 
+
 def field_isomorphism_factor(a, b):
     """Construct field isomorphism via factorization. """
     _, factors = factor_list(a.minpoly, extension=b)
@@ -313,10 +316,10 @@ def field_isomorphism_factor(a, b):
     for f, _ in factors:
         if f.degree() == 1:
             coeffs = f.rep.TC().to_sympy_list()
-            d, terms = len(coeffs)-1, []
+            d, terms = len(coeffs) - 1, []
 
             for i, coeff in enumerate(coeffs):
-                terms.append(coeff*b.root**(d-i))
+                terms.append(coeff*b.root**(d - i))
 
             root = Add(*terms)
 
@@ -327,6 +330,7 @@ def field_isomorphism_factor(a, b):
                 return [ -c for c in coeffs ]
     else:
         return None
+
 
 def field_isomorphism(a, b, **args):
     """Construct an isomorphism between two number fields. """
@@ -361,6 +365,7 @@ def field_isomorphism(a, b, **args):
 
     return field_isomorphism_factor(a, b)
 
+
 def to_number_field(extension, theta=None, **args):
     """Express `extension` in the field generated by `theta`. """
     gen = args.get('gen')
@@ -389,7 +394,9 @@ def to_number_field(extension, theta=None, **args):
         if coeffs is not None:
             return AlgebraicNumber(theta, coeffs)
         else:
-            raise IsomorphismFailed("%s is not in a subfield of %s" % (root, theta.root))
+            raise IsomorphismFailed(
+                "%s is not in a subfield of %s" % (root, theta.root))
+
 
 class AlgebraicNumber(Expr):
     """Class for representing algebraic numbers in SymPy. """
@@ -398,7 +405,7 @@ class AlgebraicNumber(Expr):
 
     is_AlgebraicNumber = True
 
-    def __new__(cls, expr, coeffs=None, **args):
+    def __new__(cls, expr, coeffs=Tuple(), alias=None, **args):
         """Construct a new algebraic number. """
         expr = sympify(expr)
 
@@ -410,31 +417,38 @@ class AlgebraicNumber(Expr):
         elif expr.is_AlgebraicNumber:
             minpoly, root = expr.minpoly, expr.root
         else:
-            minpoly, root = minimal_polynomial(expr, args.get('gen'), polys=True), expr
+            minpoly, root = minimal_polynomial(
+                expr, args.get('gen'), polys=True), expr
 
         dom = minpoly.get_domain()
 
-        if coeffs is not None:
+        if coeffs != Tuple():
             if not isinstance(coeffs, ANP):
                 rep = DMP.from_sympy_list(sympify(coeffs), 0, dom)
+                scoeffs = Tuple(*coeffs)
             else:
                 rep = DMP.from_list(coeffs.to_list(), 0, dom)
+                scoeffs = Tuple(*coeffs.to_list())
 
             if rep.degree() >= minpoly.degree():
                 rep = rep.rem(minpoly.rep)
+
+            sargs = (root, scoeffs)
+
         else:
             rep = DMP.from_list([1, 0], 0, dom)
 
             if ask(Q.negative(root)):
                 rep = -rep
 
-        alias = args.get('alias')
+            sargs = (root, coeffs)
 
         if alias is not None:
             if not isinstance(alias, Symbol):
                 alias = Symbol(alias)
+            sargs = sargs + (alias,)
 
-        obj = Expr.__new__(cls)
+        obj = Expr.__new__(cls, *sargs)
 
         obj.rep = rep
         obj.root = root
@@ -442,19 +456,6 @@ class AlgebraicNumber(Expr):
         obj.minpoly = minpoly
 
         return obj
-
-    def __eq__(a, b):
-        if not getattr(b, 'is_AlgebraicNumber', False):
-            try:
-                b = to_number_field(b, a)
-            except (NotAlgebraic, IsomorphismFailed):
-                return False
-
-        return a.rep == b.rep and \
-            a.minpoly.all_coeffs() == b.minpoly.all_coeffs()
-
-    def __ne__(a, b):
-        return not a.__eq__(b)
 
     def __hash__(self):
         return super(AlgebraicNumber, self).__hash__()
@@ -464,11 +465,11 @@ class AlgebraicNumber(Expr):
 
     @property
     def is_aliased(self):
-        """Returns `True` if `alias` was set. """
+        """Returns ``True`` if ``alias`` was set. """
         return self.alias is not None
 
     def as_poly(self, x=None):
-        """Create a Poly instance from `self`. """
+        """Create a Poly instance from ``self``. """
         if x is not None:
             return Poly.new(self.rep, x)
         else:
@@ -478,7 +479,7 @@ class AlgebraicNumber(Expr):
                 return PurePoly.new(self.rep, Dummy('x'))
 
     def as_expr(self, x=None):
-        """Create a Basic expression from `self`. """
+        """Create a Basic expression from ``self``. """
         return self.as_poly(x or self.root).as_expr().expand()
 
     def coeffs(self):
@@ -490,19 +491,20 @@ class AlgebraicNumber(Expr):
         return self.rep.all_coeffs()
 
     def to_algebraic_integer(self):
-        """Convert `self` to an algebraic integer. """
+        """Convert ``self`` to an algebraic integer. """
         f = self.minpoly
 
         if f.LC() == 1:
             return self
 
-        coeff = f.LC()**(f.degree()-1)
-        poly  = f.compose(Poly(f.gen/f.LC()))
+        coeff = f.LC()**(f.degree() - 1)
+        poly = f.compose(Poly(f.gen/f.LC()))
 
         minpoly = poly*coeff
-        root    = f.LC()*self.root
+        root = f.LC()*self.root
 
         return AlgebraicNumber((minpoly, root), self.coeffs())
+
 
 class IntervalPrinter(LambdaPrinter):
     """Use ``lambda`` printer but print numbers as ``mpi`` intervals. """
@@ -516,6 +518,7 @@ class IntervalPrinter(LambdaPrinter):
     def _print_Pow(self, expr):
         return super(IntervalPrinter, self)._print_Pow(expr, rational=True)
 
+
 def isolate(alg, eps=None, fast=False):
     """Give a rational isolating interval for an algebraic number. """
     alg = sympify(alg)
@@ -523,8 +526,8 @@ def isolate(alg, eps=None, fast=False):
     if alg.is_Rational:
         return (alg, alg)
     elif not ask(Q.real(alg)):
-        raise NotImplementedError("complex algebraic numbers are not supported")
-
+        raise NotImplementedError(
+            "complex algebraic numbers are not supported")
 
     func = lambdify((), alg, modules="mpmath", printer=IntervalPrinter())
 

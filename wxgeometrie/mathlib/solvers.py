@@ -379,11 +379,12 @@ def resoudre(chaine, variables = (), local_dict = None):
     """
     def evaluer(expression, local_dict=local_dict):
         if local_dict is None:
-            expression = sympify(expression)
+            # sympy se débrouille bien mieux avec des rationnels
+            expression = sympify(expression, rational=True)
         else:
             expression = eval(expression, local_dict.globals, local_dict)
-        # sympy se débrouille bien mieux avec des rationnels
-        expression = floats2rationals(expression)
+            # sympy se débrouille bien mieux avec des rationnels
+            expression = floats2rationals(expression)
         return expression
 
     # Préformatage:
