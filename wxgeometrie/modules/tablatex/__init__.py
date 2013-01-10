@@ -159,6 +159,8 @@ class TabLaTeX(Panel_simple):
 
         def regler_mode_copie():
             self._param_.copie_automatique = self.cb.isChecked()
+            if self._param_.copie_automatique:
+                copier_code()
         self.cb.stateChanged.connect(regler_mode_copie)
 
         def regler_cellspace():
@@ -167,18 +169,22 @@ class TabLaTeX(Panel_simple):
                 self.code_entete.setText(u"\\usepackage{cellspace}")
             else:
                 self.code_entete.setText(u"")
+            self.valider()
         self.utiliser_cellspace.stateChanged.connect(regler_cellspace)
 
         def regler_derivee():
             self._param_.derivee = self.derivee.isChecked()
+            self.valider()
         self.derivee.stateChanged.connect(regler_derivee)
 
         def regler_limites(event = None):
             self._param_.limites = self.limites.isChecked()
+            self.valider()
         self.limites.stateChanged.connect(regler_limites)
 
         def masquer_resultat(event = None):
             self._param_.formatage_images = self.formatage_images.text()
+            self.valider()
         self.formatage_images.editingFinished.connect(masquer_resultat)
 
 
@@ -249,6 +255,10 @@ class TabLaTeX(Panel_simple):
             self.formatage_images.show()
             self.entree.setToolTip(tabval.__doc__)
             self.code_entete.setText(u"")
+        self.valider()
+
+
+    def valider(self):
         try:
             self.entree.valider()
         except Exception:
