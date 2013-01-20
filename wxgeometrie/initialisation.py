@@ -26,11 +26,7 @@ from os.path import dirname, realpath, normpath
 
 # Emplacement du module python nommé wxgeometrie
 EMPLACEMENT = dirname(dirname(realpath(sys._getframe().f_code.co_filename)))
-# TODO :
-# Un identifiant unique pour chaque instance de wxgeometrie lancée.
-# Doit permettre notamment de gérer les accès simultannés aux ressources
-# (sauvegardes automatiques) ?
-# ID = repr(t0).replace('.','-')
+
 
 from .arguments import lire_arguments, traiter_arguments
 
@@ -59,6 +55,15 @@ from .param import dependances, NOMPROG, NOMPROG2, LOGO, plateforme, GUIlib
 from .pylib.fonctions import path2, uu, str3
 
 param.EMPLACEMENT = EMPLACEMENT
+# Un identifiant unique pour chaque instance de wxgeometrie lancée.
+# Doit permettre notamment de gérer les accès simultannés aux ressources
+# (sauvegardes automatiques).
+# Chaque session est sauvée automatiquement sous le nom :
+# 'config/session/session-%s.geos' % ID
+# Les ID successifs sont strictement incrémentaux, ce qui fait qu'en cas de crash
+# il est facile de retrouver le dernier fichier de session (pour le recharger),
+# c'est celui qui a l'ID le plus élevé.
+param.ID = ID = repr(t0).replace('.','-')
 
 if not options.script:
     app.nom(NOMPROG)
@@ -346,8 +351,7 @@ try:
                     # En général, ne pas activer automatiquement tous les modules
                     # de la session précédente, mais seulement ceux demandés.
                     else:
-                        frame.gestion.charger_session(activer_modules=crash,
-                                                      nom='session-precedente')
+                        frame.gestion.charger_session(activer_modules=crash)
                 except:
                     print(u"Warning: La session n'a pas pu être restaurée.")
                     print_error()

@@ -116,6 +116,8 @@ utilisateur = "" # nom de l'utilisateur, pour inclure dans les documents créés
 dimensions_fenetre = (890, 630)
 confirmer_quitter = True
 nbr_annulations = 50
+# Nombre de sessions sauvées
+nbr_sessions = 20
 # Créer un fichier .log (conseillé)
 historique_log = True
 # Modifier ce fichier en temps réel (peu utile)

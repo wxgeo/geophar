@@ -91,6 +91,7 @@ valeurs_a_ne_pas_sauver = (
 "NOMPROG",
 "NOMPROG2",
 "GUIlib",
+"ID",
 )
 
 # IMPORTANT !

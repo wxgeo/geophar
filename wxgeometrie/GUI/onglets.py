@@ -156,7 +156,6 @@ class Onglets(QTabWidget):
                     action = menu.addAction(titre)
                 action.triggered.connect(partial(self.activer_module, nom, selectionner=True))
         menu.addSeparator()
-        print png_pth('reload')
         action = menu.addAction(QIcon(png_pth('reload')), u"Restaurer la session précédente")
         action.setIconVisibleInMenu(True)
         action.triggered.connect(self.ChargerSessionPrecedente)
@@ -550,7 +549,7 @@ class Onglets(QTabWidget):
                                        QMessageBox.Yes | QMessageBox.No,
                                        QMessageBox.Yes)
         if reponse == QMessageBox.Yes:
-            self.parent.gestion.charger_session('session-precedente')
+            self.parent.gestion.charger_session()
 
     # ----------
     # Impression

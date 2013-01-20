@@ -202,7 +202,7 @@ class Credits(QWidget):
         <p>Nous ne sommes jamais que <i>« des nains juchés sur des épaules de géants » (Bernard de Chartres)</i>.
         <br>
         <p><i>À Sophie.</i></p>
-        <p><i>« Il y a des yeux qui reçoivent la lumière et il y a des yeux qui la donnent » (Paul Claudel)</i>
+        <p><i>« Il y a des yeux qui reçoivent la lumière, et il y a des yeux qui la donnent. » (Paul Claudel)</i>
         </p>
         """ % globals()
         label = QLabel(texte)
