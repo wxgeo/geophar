@@ -162,6 +162,7 @@ def test_session():
     i.evaluer("f(x)=x^2-7x+3")
     i.evaluer("f'(x)")
     assertDernier(i, "2*x - 7")
+
     # Noms réservés
     assertRaises(NameError, i.evaluer, "e=3")
     assertRaises(NameError, i.evaluer, "pi=3")
@@ -169,6 +170,7 @@ def test_session():
     assertRaises(NameError, i.evaluer, "oo=3")
     assertRaises(NameError, i.evaluer, "factorise=3")
     # Etc.
+
     # Test des générateurs
     i.evaluer('f(x)=x+3')
     i.evaluer('[f(j) for j in range(1, 11)]')
@@ -177,6 +179,7 @@ def test_session():
     assertDernier(i, '(0, 1, 2, 3, 4, 5, 6)')
     i.evaluer('[j for j in range(7)]')
     assertDernier(i, '[0, 1, 2, 3, 4, 5, 6]')
+
     # _11 is an alias for ans(11)
     i.evaluer('_11 == _')
     assertDernier(i, 'True')
@@ -189,9 +192,11 @@ def test_session():
     assertDernier(i, "2*x - 7")
     i.evaluer('______') # ans(-6)
     assertDernier(i, '(0, 1, 2, 3, 4, 5, 6)')
+
     # Affichage des chaînes en mode text (et non math)
     i.evaluer('"Bonjour !"')
     assert i.latex_dernier_resultat == u'\u201CBonjour !\u201D'
+
     # Virgule comme séparateur décimal
     resultat, latex = i.evaluer('1,2')
     assert resultat == '1,2'
@@ -207,9 +212,15 @@ def test_session():
     msg_aide = u"\n== Aide sur aide ==\nRetourne (si possible) de l'aide sur la fonction saisie."
     resultats = i.derniers_resultats
     assert resultats[-3:] == [msg_aide, msg_aide, msg_aide]
+
     # LaTeX
     latex = i.evaluer("gamma(x)")[1]
     assertEqual(latex, r'$\Gamma\left(x\right)$')
+
+    # Vérifier qu'on ait bien ln(x) et non log(x) qui s'affiche
+    resultat, latex = i.evaluer('f(x)=(ln(x)+5)**2')
+    assertEqual(resultat, 'x -> (ln(x) + 5)^2')
+    assertEqual(latex, r'$x\mapsto \left(\ln(x) + 5\right)^{2}$')
 
 
 def test_issue_sialle1():

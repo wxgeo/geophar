@@ -63,8 +63,12 @@ class CustomStrPrinter(StrPrinter):
     def _print_Union(self, expr):
         return expr.__str__()
 
+    def _print_Fonction(self, expr):
+        return ", ".join(expr._variables()) + " -> " + self._print(expr.expression)
+
     def doprint(self, expr):
         return StrPrinter.doprint(self, expr) if not isinstance(expr, unicode) else expr
+
 
 
 class CustomLatexPrinter(LatexPrinter):
