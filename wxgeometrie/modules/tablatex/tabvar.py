@@ -26,7 +26,7 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 import re
 
-from sympy import sympify, oo, nan, limit, Symbol, Float
+from sympy import sympify, oo, nan, limit, Symbol, Float, Rational
 
 from .tablatexlib import convertir_en_latex, test_parentheses, resoudre, nice_str
 from ...mathlib.solvers import ensemble_definition
@@ -35,7 +35,7 @@ from ...mathlib.interprete import Interprete
 from ... import param
 
 
-def _auto_tabvar(chaine='', derivee=True, limites=True, decimales=3):
+def _auto_tabvar(chaine='', derivee=True, limites=True, decimales=3, approche=False):
     u"""Génère le code du tableau de variations d'une fonction à variable réelle.
 
     On suppose que la fonction est de classe C1 sur tout intervalle ouvert de son
@@ -47,7 +47,9 @@ def _auto_tabvar(chaine='', derivee=True, limites=True, decimales=3):
     après la virgule, etc.
     """
     def nice_str2(x):
-        if decimales is not None and isinstance(x, (float, Float)):
+        if decimales is not None and (isinstance(x, (float, Float))
+                    or (approche and x not in (-oo, oo)) and
+                    not isinstance(x, Rational)):
             x = round(x, decimales)
         return nice_str(x)
 
@@ -171,7 +173,7 @@ def _auto_tabvar(chaine='', derivee=True, limites=True, decimales=3):
 
 
 
-def tabvar(chaine="", derivee=True, limites=True, decimales=3):
+def tabvar(chaine="", derivee=True, limites=True, decimales=3, approche=False):
     u"""Indiquer les variations de la fonction.
 
 Exemples :
@@ -184,7 +186,7 @@ f: (-oo;3) << (1;2;0) << (3;+oo|-oo) << (5;2) >> (+oo;-oo)
     #ligne_variable = ligne_derivee = ligne_fonction = ""
 
     if not ':' in chaine and not '>>' in chaine and not '==' in chaine and not '<<' in chaine:
-        return _auto_tabvar(chaine, derivee=derivee, limites=limites, decimales=decimales)
+        return _auto_tabvar(chaine, derivee=derivee, limites=limites, decimales=decimales, approche=approche)
 
     chaine = chaine.replace("-oo", "-\\infty").replace("+oo", "+\\infty")
 
