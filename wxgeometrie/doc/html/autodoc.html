@@ -1794,6 +1794,16 @@ Exemple : &#8216;2x^2-1/x+1&#8217;</p>
 <tt class="descname">supprimer_valeurs_extremes</tt><big>(</big><em>x</em>, <em>y</em>, <em>fonction</em><big>)</big><a class="headerlink" href="#wxgeometrie.geolib.courbes.Courbe.supprimer_valeurs_extremes" title="Lien permanent vers cette définition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="attribute">
+<dt id="wxgeometrie.geolib.courbes.Courbe.xmax">
+<tt class="descname">xmax</tt><a class="headerlink" href="#wxgeometrie.geolib.courbes.Courbe.xmax" title="Lien permanent vers cette définition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="wxgeometrie.geolib.courbes.Courbe.xmin">
+<tt class="descname">xmin</tt><a class="headerlink" href="#wxgeometrie.geolib.courbes.Courbe.xmin" title="Lien permanent vers cette définition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="class">
@@ -1871,6 +1881,10 @@ des objets retournés.</p>
 <p>kw:
 * <cite>type</cite> : types à inclure
 * <cite>sauf</cite> : types à exclure</p>
+<dl class="docutils">
+<dt>note:: Utiliser plutôt <cite>Feuille.liste_objets()</cite>, qui bénéficie d&#8217;une mise</dt>
+<dd>en cache des résultats.</dd>
+</dl>
 </dd></dl>
 
 <dl class="attribute">
@@ -2160,7 +2174,16 @@ et de le restaurer ensuite.</p>
 <dl class="method">
 <dt id="wxgeometrie.geolib.feuille.Historique_feuille.archiver">
 <tt class="descname">archiver</tt><big>(</big><em>signature=None</em><big>)</big><a class="headerlink" href="#wxgeometrie.geolib.feuille.Historique_feuille.archiver" title="Lien permanent vers cette définition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Sauvegarde l&#8217;état actuel de la feuille.</p>
+<p>Notes concernant l&#8217;implémentation:</p>
+<div class="highlight-python"><pre>* si l'état de la feuille n'a pas changé depuis la dernière sauvegarde,
+  la nouvelle demande de sauvegarde n'est pas prise en compte.
+* si `signature` est différente de `None`, une demande effectuée
+  avec la même signature que la précédente écrase la précédente.
+  Ceci sert essentiellement pour les zooms avec la molette de la souris,
+  afin d'éviter de saturer l'historique.</pre>
+</div>
+</dd></dl>
 
 <dl class="method">
 <dt id="wxgeometrie.geolib.feuille.Historique_feuille.refaire">
@@ -2190,9 +2213,10 @@ Si l&#8217;on n&#8217;a pas utilisé la méthode executer(), il faut alors l&#82
 <dt id="wxgeometrie.geolib.feuille.Interprete_feuille.executer">
 <tt class="descname">executer</tt><big>(</big><em>commande</em>, <em>parser=True</em>, <em>signature=None</em><big>)</big><a class="headerlink" href="#wxgeometrie.geolib.feuille.Interprete_feuille.executer" title="Lien permanent vers cette définition">¶</a></dt>
 <dd><p>Exécute la commande dans la feuille.</p>
-<p>Si parser=False, les facilités de syntaxe (abréviations, etc.)
+<p>Si <cite>parser=False</cite>, les facilités de syntaxe (abréviations, etc.)
 sont désactivées pour plus de rapidité.</p>
-<p>Si signature != None, elle est utilisée pour la gestion de l&#8217;historique.</p>
+<p>Si <cite>signature != None</cite>, elle est utilisée pour la gestion de l&#8217;historique.</p>
+<p>Voir aussi <cite>commande_executee()</cite>.</p>
 </dd></dl>
 
 <dl class="staticmethod">
@@ -2344,8 +2368,8 @@ l&#8217;abscisse xl.</p>
 </table>
 <p>:rtype : numpy.lib.polynomial</p>
 <dl class="attribute">
-<dt id="wxgeometrie.geolib.interpolations.Interpolation_polynomiale_par_morceaux.foo">
-<tt class="descname">foo</tt><a class="headerlink" href="#wxgeometrie.geolib.interpolations.Interpolation_polynomiale_par_morceaux.foo" title="Lien permanent vers cette définition">¶</a></dt>
+<dt id="wxgeometrie.geolib.interpolations.Interpolation_polynomiale_par_morceaux.fonction">
+<tt class="descname">fonction</tt><a class="headerlink" href="#wxgeometrie.geolib.interpolations.Interpolation_polynomiale_par_morceaux.fonction" title="Lien permanent vers cette définition">¶</a></dt>
 <dd><p>Fonction wrapper vers la fonction de scipy PiecewisePolynomial</p>
 </dd></dl>
 
@@ -2358,6 +2382,11 @@ l&#8217;abscisse xl.</p>
 <dl class="attribute">
 <dt id="wxgeometrie.geolib.interpolations.Interpolation_polynomiale_par_morceaux.points_tries">
 <tt class="descname">points_tries</tt><a class="headerlink" href="#wxgeometrie.geolib.interpolations.Interpolation_polynomiale_par_morceaux.points_tries" title="Lien permanent vers cette définition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="wxgeometrie.geolib.interpolations.Interpolation_polynomiale_par_morceaux.strategies">
+<tt class="descname">strategies</tt><em class="property"> = {'moyenne_gauche_droite': &lt;function _strategie_moyenne_gauche_droite at 0xaa4164c&gt;, 'pente_minimale': &lt;function _strategie_pente_minimale at 0xaa41614&gt;, 'pente_moyenne': &lt;function _strategie_pente_moyenne at 0xaa415dc&gt;}</em><a class="headerlink" href="#wxgeometrie.geolib.interpolations.Interpolation_polynomiale_par_morceaux.strategies" title="Lien permanent vers cette définition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -2616,6 +2645,26 @@ Il faut ensuite tester les solutions potentielles avec ._tester_solution().</p>
 <dd><p>Un label (étiquette accolée à l&#8217;objet)</p>
 <p>Le label est crée automatiquement lors de la création de l&#8217;objet.
 Le label n&#8217;est pas un &#8216;vrai&#8217; objet, il n&#8217;est pas enregistré sur la feuille.</p>
+<dl class="method">
+<dt id="wxgeometrie.geolib.labels.Label_generique.alignement_vertical">
+<tt class="descname">alignement_vertical</tt><big>(</big><big>)</big><a class="headerlink" href="#wxgeometrie.geolib.labels.Label_generique.alignement_vertical" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>L&#8217;alignement vertical du texte (&#8216;top&#8217;, &#8216;bottom&#8217; ou &#8216;center&#8217;).</p>
+<p>Pour les objets qui ont une pente (droites, segments), si
+style(&#8216;alignement_vertical&#8217;) == &#8216;auto&#8217;, alors l&#8217;alignement retourné est
+&#8216;bottom&#8217; si la droite &#8216;monte&#8217;, et &#8216;top&#8217; si elle descend.</p>
+<p>Ceci est utilisé essentiellement pour les arbres de probabilité.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="wxgeometrie.geolib.labels.Label_generique.angle">
+<tt class="descname">angle</tt><big>(</big><big>)</big><a class="headerlink" href="#wxgeometrie.geolib.labels.Label_generique.angle" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>L&#8217;angle d&#8217;affichage du texte.</p>
+<p>Pour les objets qui ont une pente (droites, segments), si
+style(&#8216;angle&#8217;) == &#8216;auto&#8217;, alors l&#8217;angle retourné est celui correspondant
+à la pente de l&#8217;objet, de sorte que le texte ait la même inclinaison
+que l&#8217;objet.</p>
+</dd></dl>
+
 <dl class="attribute">
 <dt id="wxgeometrie.geolib.labels.Label_generique.existe">
 <tt class="descname">existe</tt><a class="headerlink" href="#wxgeometrie.geolib.labels.Label_generique.existe" title="Lien permanent vers cette définition">¶</a></dt>
@@ -3031,6 +3080,12 @@ On peut, au choix, entrer un angle ou 3 points comme argument.</p>
 <em class="property">class </em><tt class="descclassname">wxgeometrie.geolib.lignes.</tt><tt class="descname">Ligne_generique</tt><big>(</big><em>point1</em>, <em>point2</em>, <em>**styles</em><big>)</big><a class="headerlink" href="#wxgeometrie.geolib.lignes.Ligne_generique" title="Lien permanent vers cette définition">¶</a></dt>
 <dd><p>Une ligne générique.</p>
 <p>Usage interne : la classe mère pour les droites, segments, demi-droites.</p>
+<dl class="method">
+<dt id="wxgeometrie.geolib.lignes.Ligne_generique.angle_affichage">
+<tt class="descname">angle_affichage</tt><big>(</big><big>)</big><a class="headerlink" href="#wxgeometrie.geolib.lignes.Ligne_generique.angle_affichage" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Angle, à l&#8217;écran, de la ligne par rapport l&#8217;horizontale, en radians.</p>
+</dd></dl>
+
 <dl class="attribute">
 <dt id="wxgeometrie.geolib.lignes.Ligne_generique.copente">
 <tt class="descname">copente</tt><a class="headerlink" href="#wxgeometrie.geolib.lignes.Ligne_generique.copente" title="Lien permanent vers cette définition">¶</a></dt>
@@ -3274,57 +3329,8 @@ Le dernier paramètre (True/False) sert à distinguer les deux tangentes.
 </dd></dl>
 
 <dl class="class">
-<dt id="wxgeometrie.geolib.lignes.Tangente_courbe">
-<em class="property">class </em><tt class="descclassname">wxgeometrie.geolib.lignes.</tt><tt class="descname">Tangente_courbe</tt><big>(</big><em>point=None</em>, <em>cdir=None</em><big>)</big><a class="headerlink" href="#wxgeometrie.geolib.lignes.Tangente_courbe" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Une tangente à une courbe.</p>
-<p>Une tangente à une courbe. L&#8217;application immédiate se trouve dans les courbes d&#8217;interpolation.
-Mais comme la plus simple à utiliser est l&#8217;interpolation par morceau, il vaut mieux initialiser
-la tangente avec le point et le nombre dérivé.</p>
-</dd></dl>
-
-<dl class="class">
-<dt id="wxgeometrie.geolib.lignes.Tangente_courbe_interpolation">
-<em class="property">class </em><tt class="descclassname">wxgeometrie.geolib.lignes.</tt><tt class="descname">Tangente_courbe_interpolation</tt><big>(</big><em>courbe</em>, <em>x=None</em><big>)</big><a class="headerlink" href="#wxgeometrie.geolib.lignes.Tangente_courbe_interpolation" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Une tangente à une courbe de type interpolation polynomiale par morceau.</p>
-<p>Le coefficient directeur est estimé par approximation numérique avec taux de variation
-sur un pas  self.__canvas__.pas().</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Paramètres:</th><td class="field-body"><ul class="first last simple">
-<li><strong>courbe</strong> (<em>Interpolation_polynomiale_par_morceaux</em>) &#8211; la courbe sur laquelle va se placer la tangente</li>
-<li><strong>x</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; position du point de tangence en abscisse; doit être entre xmin et xmax.</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-<p>exemple:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">A</span> <span class="o">=</span> <span class="n">Point</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">2</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">B</span> <span class="o">=</span> <span class="n">Point</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">C</span> <span class="o">=</span> <span class="n">Point</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span><span class="o">-</span><span class="mi">3</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">d</span> <span class="o">=</span> <span class="n">Interpolation_polynomiale_par_morceaux</span><span class="p">(</span><span class="n">A</span><span class="p">,</span><span class="n">B</span><span class="p">,</span><span class="n">C</span><span class="p">,</span> <span class="n">derivees</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mf">0.5</span><span class="p">,</span><span class="mi">2</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">t2</span> <span class="o">=</span> <span class="n">Tangente_courbe_interpolation</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span> <span class="o">-</span><span class="mi">2</span> <span class="p">)</span>
-</pre></div>
-</div>
-<dl class="attribute">
-<dt id="wxgeometrie.geolib.lignes.Tangente_courbe_interpolation.courbe">
-<tt class="descname">courbe</tt><a class="headerlink" href="#wxgeometrie.geolib.lignes.Tangente_courbe_interpolation.courbe" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Un descripteur pour un argument d&#8217;un objet.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="wxgeometrie.geolib.lignes.Tangente_courbe_interpolation.x">
-<tt class="descname">x</tt><a class="headerlink" href="#wxgeometrie.geolib.lignes.Tangente_courbe_interpolation.x" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Un descripteur pour un argument d&#8217;un objet.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="class">
 <dt id="wxgeometrie.geolib.lignes.Tangente_glisseur_interpolation">
-<em class="property">class </em><tt class="descclassname">wxgeometrie.geolib.lignes.</tt><tt class="descname">Tangente_glisseur_interpolation</tt><big>(</big><em>courbe</em>, <em>P=None</em><big>)</big><a class="headerlink" href="#wxgeometrie.geolib.lignes.Tangente_glisseur_interpolation" title="Lien permanent vers cette définition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">wxgeometrie.geolib.lignes.</tt><tt class="descname">Tangente_glisseur_interpolation</tt><big>(</big><em>courbe</em>, <em>glisseur=None</em><big>)</big><a class="headerlink" href="#wxgeometrie.geolib.lignes.Tangente_glisseur_interpolation" title="Lien permanent vers cette définition">¶</a></dt>
 <dd><p>Une tangente à une courbe de type interpolation polynomiale par morceau, et qui glisse.</p>
 <p>Le coefficient directeur est estimé par approximation numérique avec taux de variation
 sur un pas  self.__canvas__.pas().</p>
@@ -3334,7 +3340,7 @@ sur un pas  self.__canvas__.pas().</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Paramètres:</th><td class="field-body"><ul class="first last simple">
 <li><strong>courbe</strong> (<em>Interpolation_polynomiale_par_morceaux</em>) &#8211; la courbe sur laquelle va se placer la tangente</li>
-<li><strong>P</strong> (<em>Glisseur_courbe_interpolation</em>) &#8211; Point de type glisseur sur la courbe.</li>
+<li><strong>P</strong> (<em>Glisseur_courbe</em>) &#8211; Point de type glisseur sur la courbe.</li>
 </ul>
 </td>
 </tr>
@@ -3345,7 +3351,7 @@ sur un pas  self.__canvas__.pas().</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">B</span> <span class="o">=</span> <span class="n">Point</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">C</span> <span class="o">=</span> <span class="n">Point</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span><span class="o">-</span><span class="mi">3</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">d</span> <span class="o">=</span> <span class="n">Interpolation_polynomiale_par_morceaux</span><span class="p">(</span><span class="n">A</span><span class="p">,</span><span class="n">B</span><span class="p">,</span><span class="n">C</span><span class="p">,</span> <span class="n">derivees</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mf">0.5</span><span class="p">,</span><span class="mi">2</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">P</span> <span class="o">=</span> <span class="n">Glisseur_courbe_interpolation</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">P</span> <span class="o">=</span> <span class="n">Glisseur_courbe</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">d1</span> <span class="o">=</span> <span class="n">Tangente_glisseur_interpolation</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">P</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -3760,7 +3766,7 @@ Le formatage est respecté (essayez &#8216;un&#8217;, &#8216;UN&#8217;, &#8216;U
 
 <dl class="attribute">
 <dt id="wxgeometrie.geolib.objet.Objet.verrou">
-<tt class="descname">verrou</tt><em class="property"> = &lt;wxgeometrie.geolib.objet.Verrou object at 0xa951e6c&gt;</em><a class="headerlink" href="#wxgeometrie.geolib.objet.Objet.verrou" title="Lien permanent vers cette définition">¶</a></dt>
+<tt class="descname">verrou</tt><em class="property"> = &lt;wxgeometrie.geolib.objet.Verrou object at 0xa7ad44c&gt;</em><a class="headerlink" href="#wxgeometrie.geolib.objet.Objet.verrou" title="Lien permanent vers cette définition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -4176,28 +4182,28 @@ les coordonnées du glisseur M seront déterminées par la formule M = O + r*(co
 </dd></dl>
 
 <dl class="class">
-<dt id="wxgeometrie.geolib.points.Glisseur_courbe_interpolation">
-<em class="property">class </em><tt class="descclassname">wxgeometrie.geolib.points.</tt><tt class="descname">Glisseur_courbe_interpolation</tt><big>(</big><em>courbe</em>, <em>x=None</em>, <em>**styles</em><big>)</big><a class="headerlink" href="#wxgeometrie.geolib.points.Glisseur_courbe_interpolation" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Un point sur une courbe d&#8217;interpolation.
-Point pouvant &#8216;glisser&#8217; sur une courbe:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span> <span class="o">=</span> <span class="n">Glisseur_courbe_interpolation</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span> <span class="o">-</span><span class="mi">2</span><span class="p">)</span>
+<dt id="wxgeometrie.geolib.points.Glisseur_courbe">
+<em class="property">class </em><tt class="descclassname">wxgeometrie.geolib.points.</tt><tt class="descname">Glisseur_courbe</tt><big>(</big><em>courbe</em>, <em>x=None</em>, <em>**styles</em><big>)</big><a class="headerlink" href="#wxgeometrie.geolib.points.Glisseur_courbe" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Un point sur une courbe.</p>
+<p>Point pouvant &#8216;glisser&#8217; sur une courbe d&#8217;interpolation ou de fonction:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span> <span class="o">=</span> <span class="n">Glisseur_courbe</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">x</span><span class="o">=-</span><span class="mi">2</span><span class="p">)</span>
 </pre></div>
 </div>
 <dl class="attribute">
-<dt id="wxgeometrie.geolib.points.Glisseur_courbe_interpolation.courbe">
-<tt class="descname">courbe</tt><a class="headerlink" href="#wxgeometrie.geolib.points.Glisseur_courbe_interpolation.courbe" title="Lien permanent vers cette définition">¶</a></dt>
+<dt id="wxgeometrie.geolib.points.Glisseur_courbe.courbe">
+<tt class="descname">courbe</tt><a class="headerlink" href="#wxgeometrie.geolib.points.Glisseur_courbe.courbe" title="Lien permanent vers cette définition">¶</a></dt>
 <dd><p>Un descripteur pour un argument d&#8217;un objet.</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="wxgeometrie.geolib.points.Glisseur_courbe_interpolation.parametre">
-<tt class="descname">parametre</tt><a class="headerlink" href="#wxgeometrie.geolib.points.Glisseur_courbe_interpolation.parametre" title="Lien permanent vers cette définition">¶</a></dt>
+<dt id="wxgeometrie.geolib.points.Glisseur_courbe.parametre">
+<tt class="descname">parametre</tt><a class="headerlink" href="#wxgeometrie.geolib.points.Glisseur_courbe.parametre" title="Lien permanent vers cette définition">¶</a></dt>
 <dd><p>Un descripteur pour un argument d&#8217;un objet.</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="wxgeometrie.geolib.points.Glisseur_courbe_interpolation.x">
-<tt class="descname">x</tt><a class="headerlink" href="#wxgeometrie.geolib.points.Glisseur_courbe_interpolation.x" title="Lien permanent vers cette définition">¶</a></dt>
+<dt id="wxgeometrie.geolib.points.Glisseur_courbe.x">
+<tt class="descname">x</tt><a class="headerlink" href="#wxgeometrie.geolib.points.Glisseur_courbe.x" title="Lien permanent vers cette définition">¶</a></dt>
 <dd><p>Un descripteur pour un argument d&#8217;un objet.</p>
 </dd></dl>
 
@@ -4395,6 +4401,11 @@ et d&#8217;une liste d&#8217;abscisses.</p>
 <tt class="descname">fonction</tt><a class="headerlink" href="#wxgeometrie.geolib.points.NuageFonction.fonction" title="Lien permanent vers cette définition">¶</a></dt>
 <dd><p>Un descripteur pour un argument d&#8217;un objet.</p>
 </dd></dl>
+
+<dl class="attribute">
+<dt id="wxgeometrie.geolib.points.NuageFonction.points">
+<tt class="descname">points</tt><a class="headerlink" href="#wxgeometrie.geolib.points.NuageFonction.points" title="Lien permanent vers cette définition">¶</a></dt>
+<dd></dd></dl>
 
 </dd></dl>
 
@@ -6250,6 +6261,20 @@ Ex: couleur, taille = A.style((&#8216;couleur&#8217;, &#8216;taille&#8217;))</p>
 <em class="property">class </em><tt class="descclassname">wxgeometrie.geolib.textes.</tt><tt class="descname">Texte_generique</tt><big>(</big><em>**styles</em><big>)</big><a class="headerlink" href="#wxgeometrie.geolib.textes.Texte_generique" title="Lien permanent vers cette définition">¶</a></dt>
 <dd><p>Un texte générique.</p>
 <p>La classe mère de tous les objets Texte. (Usage interne).</p>
+<dl class="method">
+<dt id="wxgeometrie.geolib.textes.Texte_generique.alignement_vertical">
+<tt class="descname">alignement_vertical</tt><big>(</big><big>)</big><a class="headerlink" href="#wxgeometrie.geolib.textes.Texte_generique.alignement_vertical" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Angle du texte.</p>
+<p>À surclasser éventuellement pour implémenter un mode &#8216;auto&#8217;.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="wxgeometrie.geolib.textes.Texte_generique.angle">
+<tt class="descname">angle</tt><big>(</big><big>)</big><a class="headerlink" href="#wxgeometrie.geolib.textes.Texte_generique.angle" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Angle du texte.</p>
+<p>À surclasser éventuellement pour implémenter un mode &#8216;auto&#8217;.</p>
+</dd></dl>
+
 <dl class="method">
 <dt id="wxgeometrie.geolib.textes.Texte_generique.encadrer">
 <tt class="descname">encadrer</tt><big>(</big><em>couleur='k'</em>, <em>couleur_fond=None</em>, <em>alpha=1</em><big>)</big><a class="headerlink" href="#wxgeometrie.geolib.textes.Texte_generique.encadrer" title="Lien permanent vers cette définition">¶</a></dt>
@@ -8120,6 +8145,21 @@ Cela sert pour le bouton sauvegarde par exemple.</p>
 <dt id="wxgeometrie.GUI.menu_objet.MenuActionsObjet">
 <em class="property">class </em><tt class="descclassname">wxgeometrie.GUI.menu_objet.</tt><tt class="descname">MenuActionsObjet</tt><big>(</big><em>canvas</em><big>)</big><a class="headerlink" href="#wxgeometrie.GUI.menu_objet.MenuActionsObjet" title="Lien permanent vers cette définition">¶</a></dt>
 <dd><dl class="method">
+<dt id="wxgeometrie.GUI.menu_objet.MenuActionsObjet.copier_style">
+<tt class="descname">copier_style</tt><big>(</big><em>critere='categorie'</em><big>)</big><a class="headerlink" href="#wxgeometrie.GUI.menu_objet.MenuActionsObjet.copier_style" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Applique le style de l&#8217;objets à tous les objets de même catégorie.</p>
+<p>Si <cite>critere=&#8217;sous-categorie&#8217;</cite>, le style est seulement appliqué aux objets
+de même sous-catégorie (ex. &#8216;vecteurs&#8217;), et non à la catégorie entière
+(ex. &#8216;lignes&#8217;).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="wxgeometrie.GUI.menu_objet.MenuActionsObjet.copier_style_cotes">
+<tt class="descname">copier_style_cotes</tt><big>(</big><big>)</big><a class="headerlink" href="#wxgeometrie.GUI.menu_objet.MenuActionsObjet.copier_style_cotes" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Applique le style du polygone à ses côtés.</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="wxgeometrie.GUI.menu_objet.MenuActionsObjet.etiquette">
 <tt class="descname">etiquette</tt><big>(</big><big>)</big><a class="headerlink" href="#wxgeometrie.GUI.menu_objet.MenuActionsObjet.etiquette" title="Lien permanent vers cette définition">¶</a></dt>
 <dd></dd></dl>
@@ -8329,6 +8369,12 @@ Cela concerne essentiellement les modules qui ont besoin de tracer des objets g�
 <tt class="descname">modifie</tt><a class="headerlink" href="#wxgeometrie.GUI.panel.Panel_API_graphique.modifie" title="Lien permanent vers cette définition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="attribute">
+<dt id="wxgeometrie.GUI.panel.Panel_API_graphique.nom_sauvegarde">
+<tt class="descname">nom_sauvegarde</tt><a class="headerlink" href="#wxgeometrie.GUI.panel.Panel_API_graphique.nom_sauvegarde" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Nom de sauvegarde gardé en mémoire.</p>
+</dd></dl>
+
 <dl class="method">
 <dt id="wxgeometrie.GUI.panel.Panel_API_graphique.ouvrir">
 <tt class="descname">ouvrir</tt><big>(</big><em>fichier</em><big>)</big><a class="headerlink" href="#wxgeometrie.GUI.panel.Panel_API_graphique.ouvrir" title="Lien permanent vers cette définition">¶</a></dt>
@@ -8355,7 +8401,14 @@ Cela concerne essentiellement les modules qui ont besoin de tracer des objets g�
 <dl class="method">
 <dt id="wxgeometrie.GUI.panel.Panel_API_graphique.sauvegarder">
 <tt class="descname">sauvegarder</tt><big>(</big><em>nom_fichier=''</em>, <em>feuille=None</em><big>)</big><a class="headerlink" href="#wxgeometrie.GUI.panel.Panel_API_graphique.sauvegarder" title="Lien permanent vers cette définition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Sauvegarde la feuille <cite>feuille</cite> à l&#8217;emplacement <cite>nom_fichier</cite>.</p>
+<p>Par défaut, <cite>feuille</cite> et la feuille courante, et le nom de fichier est
+celui utilisé précédemment pour sauver la feuille (ou &#8220;sauvegarde.geo&#8221;
+si la feuille n&#8217;a encore jamais été sauvée).</p>
+<p>NB: si <cite>nom_fichier</cite> vaut None, aucune sauvegarde n&#8217;a lieu sur le
+disque, mais un objet FichierGEO correspondant à la sauvegarde est
+retourné à la place.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="wxgeometrie.GUI.panel.Panel_API_graphique.sauver_preferences">
@@ -8415,6 +8468,12 @@ la classe Panel_API_graphique, plus evoluée que celle-ci.</p>
 <tt class="descname">modifie</tt><em class="property"> = False</em><a class="headerlink" href="#wxgeometrie.GUI.panel.Panel_simple.modifie" title="Lien permanent vers cette définition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="attribute">
+<dt id="wxgeometrie.GUI.panel.Panel_simple.nom_sauvegarde">
+<tt class="descname">nom_sauvegarde</tt><a class="headerlink" href="#wxgeometrie.GUI.panel.Panel_simple.nom_sauvegarde" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Nom de sauvegarde gardé en mémoire.</p>
+</dd></dl>
+
 <dl class="method">
 <dt id="wxgeometrie.GUI.panel.Panel_simple.ouvrir">
 <tt class="descname">ouvrir</tt><big>(</big><em>fichier</em><big>)</big><a class="headerlink" href="#wxgeometrie.GUI.panel.Panel_simple.ouvrir" title="Lien permanent vers cette définition">¶</a></dt>
@@ -8424,7 +8483,7 @@ la classe Panel_API_graphique, plus evoluée que celle-ci.</p>
 
 <dl class="method">
 <dt id="wxgeometrie.GUI.panel.Panel_simple.param">
-<tt class="descname">param</tt><big>(</big><em>parametre</em>, <em>valeur=&lt;wxgeometrie.pylib.fonctions.NoArgument object at 0xa33c88c&gt;</em>, <em>defaut=False</em><big>)</big><a class="headerlink" href="#wxgeometrie.GUI.panel.Panel_simple.param" title="Lien permanent vers cette définition">¶</a></dt>
+<tt class="descname">param</tt><big>(</big><em>parametre</em>, <em>valeur=&lt;wxgeometrie.pylib.fonctions.NoArgument object at 0xa75eb6c&gt;</em>, <em>defaut=False</em><big>)</big><a class="headerlink" href="#wxgeometrie.GUI.panel.Panel_simple.param" title="Lien permanent vers cette définition">¶</a></dt>
 <dd><p>Recherche la valeur d&#8217;un paramètre d&#8217;abord dans les paramètres du module (paramètres locaux), puis dans ceux de wxgéométrie.</p>
 <p>Si defaut vaut True, la valeur par défaut du paramètre est renvoyée.</p>
 </dd></dl>
@@ -8438,7 +8497,7 @@ la classe Panel_API_graphique, plus evoluée que celle-ci.</p>
 
 <dl class="method">
 <dt id="wxgeometrie.GUI.panel.Panel_simple.sauvegarder">
-<tt class="descname">sauvegarder</tt><big>(</big><em>nom_fichier='sauvegarde'</em>, <em>**kw</em><big>)</big><a class="headerlink" href="#wxgeometrie.GUI.panel.Panel_simple.sauvegarder" title="Lien permanent vers cette définition">¶</a></dt>
+<tt class="descname">sauvegarder</tt><big>(</big><em>nom_fichier=''</em>, <em>**kw</em><big>)</big><a class="headerlink" href="#wxgeometrie.GUI.panel.Panel_simple.sauvegarder" title="Lien permanent vers cette définition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -8883,16 +8942,6 @@ le module doit définir :</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="wxgeometrie.mathlib.custom_functions.custom_latex">
-<tt class="descclassname">wxgeometrie.mathlib.custom_functions.</tt><tt class="descname">custom_latex</tt><big>(</big><em>expr</em>, <em>profile=None</em><big>)</big><a class="headerlink" href="#wxgeometrie.mathlib.custom_functions.custom_latex" title="Lien permanent vers cette définition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="wxgeometrie.mathlib.custom_functions.custom_str">
-<tt class="descclassname">wxgeometrie.mathlib.custom_functions.</tt><tt class="descname">custom_str</tt><big>(</big><em>expr</em>, <em>profile=None</em><big>)</big><a class="headerlink" href="#wxgeometrie.mathlib.custom_functions.custom_str" title="Lien permanent vers cette définition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
 <dt id="wxgeometrie.mathlib.custom_functions.deg">
 <tt class="descclassname">wxgeometrie.mathlib.custom_functions.</tt><tt class="descname">deg</tt><big>(</big><em>x</em><big>)</big><a class="headerlink" href="#wxgeometrie.mathlib.custom_functions.deg" title="Lien permanent vers cette définition">¶</a></dt>
 <dd><p>Conversion radians -&gt; degrés.</p>
@@ -8910,9 +8959,14 @@ le module doit définir :</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="wxgeometrie.mathlib.custom_functions.ensemble_definition">
-<tt class="descclassname">wxgeometrie.mathlib.custom_functions.</tt><tt class="descname">ensemble_definition</tt><big>(</big><em>expression</em>, <em>variable=None</em><big>)</big><a class="headerlink" href="#wxgeometrie.mathlib.custom_functions.ensemble_definition" title="Lien permanent vers cette définition">¶</a></dt>
-<dd></dd></dl>
+<dt id="wxgeometrie.mathlib.custom_functions.floats2rationals">
+<tt class="descclassname">wxgeometrie.mathlib.custom_functions.</tt><tt class="descname">floats2rationals</tt><big>(</big><em>expr</em><big>)</big><a class="headerlink" href="#wxgeometrie.mathlib.custom_functions.floats2rationals" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Convertit tous les flottants d&#8217;une expression sympy en rationnels.</p>
+<p>Si l&#8217;expression est de type <cite>list</cite> ou <cite>tuple</cite>, la fonction est appelée
+récursivement.
+Sinon, si elle n&#8217;est pas de type sympy, l&#8217;expression est renvoyée telle
+qu&#8217;elle.</p>
+</dd></dl>
 
 <dl class="function">
 <dt id="wxgeometrie.mathlib.custom_functions.frac">
@@ -8967,21 +9021,9 @@ le module doit définir :</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="wxgeometrie.mathlib.custom_functions.nul">
-<tt class="descclassname">wxgeometrie.mathlib.custom_functions.</tt><tt class="descname">nul</tt><big>(</big><em>expression</em>, <em>variable=None</em>, <em>intervalle=True</em><big>)</big><a class="headerlink" href="#wxgeometrie.mathlib.custom_functions.nul" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Retourne l&#8217;ensemble sur lequel une expression à variable réelle est nulle.</p>
-</dd></dl>
-
-<dl class="function">
 <dt id="wxgeometrie.mathlib.custom_functions.pgcd">
 <tt class="descclassname">wxgeometrie.mathlib.custom_functions.</tt><tt class="descname">pgcd</tt><big>(</big><em>*termes</em><big>)</big><a class="headerlink" href="#wxgeometrie.mathlib.custom_functions.pgcd" title="Lien permanent vers cette définition">¶</a></dt>
 <dd><p>Le plus grand dénominateur commun à un nombre quelconque d&#8217;entiers.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="wxgeometrie.mathlib.custom_functions.positif">
-<tt class="descclassname">wxgeometrie.mathlib.custom_functions.</tt><tt class="descname">positif</tt><big>(</big><em>expression</em>, <em>variable=None</em>, <em>strict=False</em><big>)</big><a class="headerlink" href="#wxgeometrie.mathlib.custom_functions.positif" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Retourne l&#8217;ensemble sur lequel une expression à variable réelle est positive (resp. strictement positive).</p>
 </dd></dl>
 
 <dl class="function">
@@ -9002,9 +9044,15 @@ le module doit définir :</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="wxgeometrie.mathlib.custom_functions.resoudre">
-<tt class="descclassname">wxgeometrie.mathlib.custom_functions.</tt><tt class="descname">resoudre</tt><big>(</big><em>chaine</em>, <em>variables=()</em>, <em>local_dict=None</em><big>)</big><a class="headerlink" href="#wxgeometrie.mathlib.custom_functions.resoudre" title="Lien permanent vers cette définition">¶</a></dt>
-<dd></dd></dl>
+<dt id="wxgeometrie.mathlib.custom_functions.rationals2floats">
+<tt class="descclassname">wxgeometrie.mathlib.custom_functions.</tt><tt class="descname">rationals2floats</tt><big>(</big><em>expr</em>, <em>precision=None</em><big>)</big><a class="headerlink" href="#wxgeometrie.mathlib.custom_functions.rationals2floats" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Convertit tous les rationnels d&#8217;une expression sympy en flottants.</p>
+<p>On peut spécifier via <cite>precision</cite> le nombre de chiffres significatifs.</p>
+<p>Si l&#8217;expression est de type <cite>list</cite> ou <cite>tuple</cite>, la fonction est appelée
+récursivement.
+Sinon, si elle n&#8217;est pas de type sympy, l&#8217;expression est renvoyée telle
+qu&#8217;elle.</p>
+</dd></dl>
 
 <dl class="function">
 <dt id="wxgeometrie.mathlib.custom_functions.root">
@@ -9014,37 +9062,12 @@ le module doit définir :</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="wxgeometrie.mathlib.custom_functions.systeme">
-<tt class="descclassname">wxgeometrie.mathlib.custom_functions.</tt><tt class="descname">systeme</tt><big>(</big><em>chaine</em>, <em>variables=()</em>, <em>local_dict=None</em><big>)</big><a class="headerlink" href="#wxgeometrie.mathlib.custom_functions.systeme" title="Lien permanent vers cette définition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
 <dt id="wxgeometrie.mathlib.custom_functions.variance">
 <tt class="descclassname">wxgeometrie.mathlib.custom_functions.</tt><tt class="descname">variance</tt><big>(</big><em>serie</em>, <em>coeffs=None</em><big>)</big><a class="headerlink" href="#wxgeometrie.mathlib.custom_functions.variance" title="Lien permanent vers cette définition">¶</a></dt>
 <dd><p>Calcule la variance de la serie des (xi, fi)</p>
 </dd></dl>
 
 <span class="target" id="module-wxgeometrie.mathlib.custom_objects"></span><dl class="class">
-<dt id="wxgeometrie.mathlib.custom_objects.CustomLatexPrinter">
-<em class="property">class </em><tt class="descclassname">wxgeometrie.mathlib.custom_objects.</tt><tt class="descname">CustomLatexPrinter</tt><big>(</big><em>profile=None</em><big>)</big><a class="headerlink" href="#wxgeometrie.mathlib.custom_objects.CustomLatexPrinter" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><dl class="method">
-<dt id="wxgeometrie.mathlib.custom_objects.CustomLatexPrinter.doprint">
-<tt class="descname">doprint</tt><big>(</big><em>expr</em><big>)</big><a class="headerlink" href="#wxgeometrie.mathlib.custom_objects.CustomLatexPrinter.doprint" title="Lien permanent vers cette définition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="wxgeometrie.mathlib.custom_objects.CustomStrPrinter">
-<em class="property">class </em><tt class="descclassname">wxgeometrie.mathlib.custom_objects.</tt><tt class="descname">CustomStrPrinter</tt><big>(</big><em>settings=None</em><big>)</big><a class="headerlink" href="#wxgeometrie.mathlib.custom_objects.CustomStrPrinter" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><dl class="method">
-<dt id="wxgeometrie.mathlib.custom_objects.CustomStrPrinter.doprint">
-<tt class="descname">doprint</tt><big>(</big><em>expr</em><big>)</big><a class="headerlink" href="#wxgeometrie.mathlib.custom_objects.CustomStrPrinter.doprint" title="Lien permanent vers cette définition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="class">
 <dt id="wxgeometrie.mathlib.custom_objects.Fonction">
 <em class="property">class </em><tt class="descclassname">wxgeometrie.mathlib.custom_objects.</tt><tt class="descname">Fonction</tt><big>(</big><em>variables</em>, <em>expression</em><big>)</big><a class="headerlink" href="#wxgeometrie.mathlib.custom_objects.Fonction" title="Lien permanent vers cette définition">¶</a></dt>
 <dd><dl class="attribute">
@@ -9056,7 +9079,7 @@ le module doit définir :</p>
 
 <dl class="class">
 <dt id="wxgeometrie.mathlib.custom_objects.Matrice">
-<em class="property">class </em><tt class="descclassname">wxgeometrie.mathlib.custom_objects.</tt><tt class="descname">Matrice</tt><big>(</big><em>*args</em><big>)</big><a class="headerlink" href="#wxgeometrie.mathlib.custom_objects.Matrice" title="Lien permanent vers cette définition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">wxgeometrie.mathlib.custom_objects.</tt><tt class="descname">Matrice</tt><a class="headerlink" href="#wxgeometrie.mathlib.custom_objects.Matrice" title="Lien permanent vers cette définition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="class">
@@ -9199,6 +9222,26 @@ choose manually the first nodes to be visited.</p>
 <tt class="descclassname">wxgeometrie.mathlib.internal_functions.</tt><tt class="descname">extract_var</tt><big>(</big><em>expression</em><big>)</big><a class="headerlink" href="#wxgeometrie.mathlib.internal_functions.extract_var" title="Lien permanent vers cette définition">¶</a></dt>
 <dd><p>Retourne la variable de l&#8217;expression (renvoie un avertissement s&#8217;il y en a plusieurs, et &#8216;x&#8217; par défaut s&#8217;il n&#8217;y en a pas).</p>
 </dd></dl>
+
+<dl class="function">
+<dt id="wxgeometrie.mathlib.internal_functions.is_float">
+<tt class="descclassname">wxgeometrie.mathlib.internal_functions.</tt><tt class="descname">is_float</tt><big>(</big><em>val</em><big>)</big><a class="headerlink" href="#wxgeometrie.mathlib.internal_functions.is_float" title="Lien permanent vers cette définition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="wxgeometrie.mathlib.internal_functions.is_neg">
+<tt class="descclassname">wxgeometrie.mathlib.internal_functions.</tt><tt class="descname">is_neg</tt><big>(</big><em>expr</em><big>)</big><a class="headerlink" href="#wxgeometrie.mathlib.internal_functions.is_neg" title="Lien permanent vers cette définition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="wxgeometrie.mathlib.internal_functions.is_pos">
+<tt class="descclassname">wxgeometrie.mathlib.internal_functions.</tt><tt class="descname">is_pos</tt><big>(</big><em>expr</em><big>)</big><a class="headerlink" href="#wxgeometrie.mathlib.internal_functions.is_pos" title="Lien permanent vers cette définition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="wxgeometrie.mathlib.internal_functions.is_var">
+<tt class="descclassname">wxgeometrie.mathlib.internal_functions.</tt><tt class="descname">is_var</tt><big>(</big><em>expression</em>, <em>variable</em><big>)</big><a class="headerlink" href="#wxgeometrie.mathlib.internal_functions.is_var" title="Lien permanent vers cette définition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="function">
 <dt id="wxgeometrie.mathlib.internal_functions.poly_factor">
@@ -9744,7 +9787,8 @@ Exemple :
 <dl class="function">
 <dt id="wxgeometrie.mathlib.intervalles.formatage_ensemble">
 <tt class="descclassname">wxgeometrie.mathlib.intervalles.</tt><tt class="descname">formatage_ensemble</tt><big>(</big><em>chaine</em>, <em>preformatage=True</em>, <em>utiliser_sympy=False</em><big>)</big><a class="headerlink" href="#wxgeometrie.mathlib.intervalles.formatage_ensemble" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Les symboles à utiliser sont &#8216;U&#8217; pour l&#8217;union, &#8216;^&#8217; pour l&#8217;intersection, &#8216;-&#8216; ou &#8216;&#8217; pour la soustraction.
+<dd><p>Les symboles à utiliser sont &#8216;U&#8217; pour l&#8217;union, &#8216;^&#8217; pour l&#8217;intersection,
+&#8216;-&#8216; ou &#8216;&#8217; pour la soustraction.
 R, R+, R*+, R-, R*- sont aussi acceptés.</p>
 </dd></dl>
 
