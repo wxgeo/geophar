@@ -88,7 +88,7 @@ VAR_NOT_ATTR = "(?:(?<![.A-Za-z0-9_])[A-Za-z_][A-Za-z0-9_]*)"
 ##VAR_NOT_ATTR_compile = re.compile(VAR_NOT_ATTR)
 ##NBR = "([+-]?[ ]?(([0-9]+[.]?)|([0-9]*[.][0-9]+)))"
 # Nombre avec un signe éventuel devant
-NBR_SIGNE = "(?:(?<![.A-Za-z0-9_])(?:(((?<=[*/^])|^)[+-])?[ ]?(?:[0-9]*[.][0-9]+|[0-9]+[.]?)))"
+NBR_SIGNE = "(?:(?<![.A-Za-z0-9_])(?:(((?<=[*/^()])|^)[+-])?[ ]?(?:[0-9]*[.][0-9]+|[0-9]+[.]?)))"
 # Nombre sans signe
 NBR = "(?:(?<![.A-Za-z0-9_])(?:[0-9]*[.][0-9]+|[0-9]+[.]?))"
 # Nombre à virgule écrit au format français (le séparateur décimal est la virgule, et non le point)

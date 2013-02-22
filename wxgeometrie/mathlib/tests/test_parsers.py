@@ -173,6 +173,8 @@ def test_NBR():
     assert_NBR("740.54")
     assert_not_NBR("5-6")
     assert_not_NBR(".")
+    # Regression test for issue FS#252
+    assert_match('\(' + NBR_SIGNE, "(-2.3")
 
 def test_VAR():
     assert_VAR("Arertytre")

@@ -745,10 +745,12 @@ class Interprete_feuille(object):
 
 
         # Exception à la conversion décimale :
-        # (1,2) est compris comme (1 ; 2) et non (1.2), qui est très peu probable.
+        # (1,2) est compris comme (1, 2) et non (1.2), qui est très peu probable.
+        # Par contre, f(1,5) ne doit pas être converti en f(1, 5), mais en f(1.5) !
         def _virg(m):
             return m.group().replace(',', ', ')
-        commande = re.sub(r'[(]%s,%s[)]' % (NBR_SIGNE, NBR_SIGNE), _virg, commande)
+        commande = re.sub(r'(?<!\w)[(]%s,%s[)]' % (NBR_SIGNE, NBR_SIGNE),
+                                                                _virg, commande)
         # Conversion décimale : 1,2 -> 1.2
         commande = _convertir_separateur_decimal(commande)
 
