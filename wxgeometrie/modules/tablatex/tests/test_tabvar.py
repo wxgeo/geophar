@@ -227,18 +227,18 @@ x                                    &-\infty      &        &3  &      &+\infty\
 
 
 def test_issue_189():
-    # Tableaux de signes et de variation avec des dÃ©cimaux
+    # Tableaux de signes et de variation avec des décimaux
     s = 'f(x) = (x -4)\e^{-0,25x+5} sur [4;20]'
     options = {'derivee': False, 'decimales': 3}
     tab = \
 r'''\[\begin{tabvar}{|C|CCCCC|}
 \hline
-x                                    &4             &      &8     &        &20\\
+x                                    &4             &      &8        &        &20\\
 \hline
-\niveau{1}{2}\raisebox{0.5em}{$f(x)$}&\niveau{1}{2}0&\croit&80,342&\decroit&16\\
+\niveau{1}{2}\raisebox{0.5em}{$f(x)$}&\niveau{1}{2}0&\croit&4 \exp(3)&\decroit&16\\
 \hline
 \end{tabvar}\]
-% x;f(x) :(4;0) << (8;80,342) >> (20;16)
+% x;f(x) :(4;0) << (8;4*exp(3)) >> (20;16)
 % f(x) = (x -4)\e^{-0,25x+5} sur [4;20]
 '''
     assert_tabvar(s, tab, **options)
@@ -246,12 +246,12 @@ x                                    &4             &      &8     &        &20\\
     tab = \
 r'''\[\begin{tabvar}{|C|CCCCC|}
 \hline
-x                                    &4             &      &8    &        &20\\
+x                                    &4             &      &8        &        &20\\
 \hline
-\niveau{1}{2}\raisebox{0.5em}{$f(x)$}&\niveau{1}{2}0&\croit&80,34&\decroit&16\\
+\niveau{1}{2}\raisebox{0.5em}{$f(x)$}&\niveau{1}{2}0&\croit&4 \exp(3)&\decroit&16\\
 \hline
 \end{tabvar}\]
-% x;f(x) :(4;0) << (8;80,34) >> (20;16)
+% x;f(x) :(4;0) << (8;4*exp(3)) >> (20;16)
 % f(x) = (x -4)\e^{-0,25x+5} sur [4;20]
 '''
     assert_tabvar(s, tab, **options)

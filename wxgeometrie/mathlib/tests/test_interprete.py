@@ -67,7 +67,8 @@ def test_exemples_de_base():
                                     r'\left(x - \frac{7}{2} - \frac{1}{2} \sqrt{37}\right) \left(x - \frac{7}{2} + \frac{1}{2} \sqrt{37}\right)')
     assert_resultat('factorise(x^2+x)', 'x(x + 1)',  'x \\left(x + 1\\right)')
     assert_resultat('factor(exp(x)x^2+5/2x*exp(x)+exp(x))', '(x + 1/2)(x + 2)exp(x)')
-    assert_resultat('factor(exp(x)x^2+2.5x*exp(x)+exp(x))', '(x + 0,5)(x + 2)exp(x)')
+    ##assert_resultat('factor(exp(x)x^2+2.5x*exp(x)+exp(x))', '(x + 0,5)(x + 2)exp(x)')
+    assert_resultat('factor(exp(x)x^2+2.5x*exp(x)+exp(x))', '(x + 1/2)(x + 2)exp(x)')
     assert_resultat('factorise(exp(2x)*x^2+x*exp(x))', \
                                     'x(x exp(x) + 1)exp(x)',  \
                                     'x \\left(x \\mathrm{e}^{x} + 1\\right) \\mathrm{e}^{x}')
@@ -229,8 +230,8 @@ def test_issue_sialle1():
     assert_resultat("1/(1-sqrt(2))", "1/(-sqrt(2) + 1)")
 
 def test_1_pas_en_facteur():
-    #FIXME: résultat LaTeX peu élégant (il manque un \times entre le 0,5 et le \frac)
-    assert_resultat("together(1/x-.5)", "-0,5(x - 2)/x", r"- 0,5 \frac{x - 2}{x}")
+    assert_resultat("together(1/x-.5)", "-(x - 2)/(2 x)", r"- \frac{x - 2}{2 x}")
+    ##assert_resultat("together(1/x-.5)", "-0,5(x - 2)/x", r"- 0,5 \frac{x - 2}{x}")
 
 def test_issue_129():
     assert_resultat('"x(x+1)" + """x!"""', '"x(x+1)x!"')
@@ -291,3 +292,23 @@ def test_systeme():
     res = i.derniers_resultats[-1]
     assert isinstance(res, dict)
     assertEqual(res, {S('a'): S(1)/128, S('b'): -S(31)/128, S('c'): S(59)/128, S('d'): S(739)/128})
+
+
+def test_ecriture_fraction_decimaux():
+    # En interne, les décimaux sont remplacés par des fractions.
+    # Cela évite la perte de précision inhérente aux calculs avec flottants.
+    # Ce remplacement doit être autant que possible transparent pour l'utilisateur,
+    # qui, s'il rentre des décimaux, doit voir des décimaux s'afficher.
+    i = Interprete(verbose = VERBOSE)
+    r, l = i.evaluer('0,3+0,8')
+    assertEqual(r, '1,1')
+    r, l = i.evaluer('a=1,7')
+    assertEqual(r, '1,7')
+    r, l = i.evaluer("f(x)=0,3x+0,7")
+    assertEqual(r, 'x -> 0,3 x + 0,7')
+    # Le calcul suivant ne fonctionne pas en utilisant en interne des flottants
+    # (le coefficient devant le x^2 n'est pas tout à fait nul lorsqu'on développe).
+    # En utilisant en interne des fractions, par contre, le calcul est exact.
+    i.evaluer("C(x)=0,003 x^2 + 60 x + 48000")
+    r, l = i.evaluer("expand(C(x+1)-C(x))")
+    assertEqual(r, '0,006 x + 60,003')

@@ -35,7 +35,8 @@ from sympy import Basic, expand as expand_, apart, Function, Integer, factorint,
                     limit as limit_, factor as factor_, integrate as integrate_, Sum,\
                     sqrtdenest, solve as solve_, product as product_
 
-from .custom_objects import Matrice, Fonction, ProduitEntiers
+from .custom_objects import Matrice, Fonction, ProduitEntiers, Decim, \
+                            convert2decim
 from .internal_functions import extract_var, poly_factor, syms
 from .custom_functions import auto_collect, derivee
 from ..pylib import print_error
@@ -44,9 +45,13 @@ from .. import param
 def expand(expression, variable = None):
     expression = expand_(expression)
     if isinstance(expression, Basic) and expression.is_rational_function():
-        if variable is None:
-           variable = extract_var(expression)
-        return apart(expression, variable)
+        # Éviter d'appeler `apart()` pour rien, d'autant que FloatFrac() n'est
+        # pas compatible avec apart() (sympy v0.7.2).
+        num, den = expression.as_numer_denom()
+        if den.free_symbols:
+            if variable is None:
+               variable = extract_var(expression)
+            return apart(expression, variable)
     return expression
 
 
@@ -83,7 +88,10 @@ def factor(expression, variable = None, ensemble = None, decomposer_entiers = Tr
             return factor_(expression)
         else:
             try:
-                return poly_factor(expression, variable, ensemble)
+                result = poly_factor(expression, variable, ensemble)
+                if any(isinstance(a, Decim) for a in expression.atoms()):
+                    result = convert2decim(result)
+                return result
             except NotImplementedError:
                 if param.debug:
                     print_error()

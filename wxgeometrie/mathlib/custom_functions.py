@@ -31,7 +31,7 @@ from types import FunctionType
 from sympy import (pi, E, Rational, Symbol, diff, log, floor,
                     sqrt, sympify, Float, nsimplify, Basic
                     )
-from .custom_objects import Temps, Fonction
+from .custom_objects import Temps, Fonction, Decim
 from .printers import custom_str
 ##from .. import param
 
@@ -115,20 +115,24 @@ def n_premiers(n = 100, maximum = 50000): # securite face aux erreurs de frappe.
 # cf. http://fr.wikipedia.org/wiki/Fraction_continue
 def frac(valeur, n = 20, epsilon = 1e-15):
     u"Donne une fraction approximativement égale à la valeur."
-    assert epsilon > 0
-    p_ = 0
-    p = 1
-    q_ = 1
-    q = 0
-    x = valeur
-    for i in xrange(n):
-        a = int(x)
-        p, p_ = a*p + p_, p
-        q, q_ = a*q + q_, q
-        delta = x - a
-        if abs(delta) < epsilon or abs(valeur - p/q) < epsilon:
-            return Rational(p, q)
-        x = 1/delta
+    if isinstance(valeur, Rational):
+        if isinstance(valeur, Decim):
+            valeur = valeur.to_Rational()
+    else:
+        assert epsilon > 0
+        p_ = 0
+        p = 1
+        q_ = 1
+        q = 0
+        x = valeur
+        for i in xrange(n):
+            a = int(x)
+            p, p_ = a*p + p_, p
+            q, q_ = a*q + q_, q
+            delta = x - a
+            if abs(delta) < epsilon or abs(valeur - p/q) < epsilon:
+                return Rational(p, q)
+            x = 1/delta
     return valeur
 
 

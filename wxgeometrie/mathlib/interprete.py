@@ -32,13 +32,14 @@ from sympy import Symbol, Basic, Float, sympify, nsimplify
 from .intervalles import Ensemble
 from .printers import custom_str, custom_latex
 from .custom_functions import frac, rationals2floats
-from .custom_objects import Temps, Fonction, Matrice, ProduitEntiers
+from .custom_objects import Temps, Fonction, Matrice, ProduitEntiers, Decim
 from . import sympy_functions
 from ..mathlib import end_user_functions
 from ..pylib import print_error, split_around_parenthesis, regsub,\
                     securite
 from .parsers import simplifier_ecriture, NBR, traduire_formule
 from .. import param
+
 
 class LocalDict(dict):
     globals = {}
@@ -171,7 +172,6 @@ class Interprete(object):
 
         self.locals.globals = self.globals
 
-        # gerer les fractions et les racines de maniere exacte si possible.
         self.calcul_exact = calcul_exact
         # afficher les resultats en ecriture scientifique.
         self.ecriture_scientifique = ecriture_scientifique
@@ -197,27 +197,21 @@ class Interprete(object):
         self.initialiser()
 
     def _decimal(self, nbr, prec=None, fractions=None):
+        u"""Convertit en flottant, ou en fraction avec affichage décimal,
+        selon le mode.
+        """
         if prec is None:
             prec = self.precision_calcul
         if fractions is None:
             fractions = self.convertir_decimaux_en_fractions
         if fractions:
-            # On indique qu'il faudra reconvertir les résultats en décimaux.
-            self.reconvertir_en_decimaux = True
-            return nsimplify(nbr, rational=True)
+            return Decim(nsimplify(nbr, rational=True), prec=prec)
         return Float(nbr, prec)
 
     def _frac(self, arg):
-        u"""Convertit en fraction, ou désactive la reconversion en décimaux.
-
-        Si self.convertir_decimaux_en_fractions=True, le résultat est déjà en
-        fraction en interne, on désactive simplement la reconversion en décimaux.
+        u"""Convertit en fraction.
         """
-        self.reconvertir_en_decimaux = False
-        if self.convertir_decimaux_en_fractions:
-            return arg
-        else:
-            return frac(arg)
+        return frac(arg)
 
     def initialiser(self):
         self.locals.clear()
@@ -433,7 +427,6 @@ class Interprete(object):
                                % ', '.join(sorted(securite.keywords_interdits)))
             raise RuntimeError, "Mots-clefs interdits."
 
-        self.reconvertir_en_decimaux = False
         try:
             exec(instruction, self.globals, loc)
         except NotImplementedError:
@@ -446,8 +439,6 @@ class Interprete(object):
                     loc["_"] = loc["_"].expand(complex=True)
                 except NotImplementedError:
                     print_error()
-            if self.reconvertir_en_decimaux:
-                loc["_"] = rationals2floats(loc["_"], self.precision_calcul)
 
         if self.appliquer_au_resultat is not None:
             loc["_"] = self.appliquer_au_resultat(loc["_"])

@@ -25,10 +25,13 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ## Surclasse les printers de sympy
 
-from sympy import Symbol, Integer
-
+from sympy import Symbol, Integer, Float, Basic
 from sympy.printing.latex import LatexPrinter
-from sympy.printing.str import StrPrinter
+from sympy.printing.str import StrPrinter, precedence
+from sympy.core import S, Rational, Pow, Mul
+from sympy.core.mul import _keep_coeff
+
+from .custom_objects import Decim
 
 
 class CustomStrPrinter(StrPrinter):
@@ -64,9 +67,26 @@ class CustomStrPrinter(StrPrinter):
         return expr.__str__()
 
     def _print_Fonction(self, expr):
-        return ", ".join(expr._variables()) + " -> " + self._print(expr.expression)
+        return "%s -> %s" % (", ".join(expr._variables()),
+                        self._print(self._convert_Decim(expr.expression)))
+
+    def _convert_Decim(self, expr):
+        conv = self._convert_Decim
+        if hasattr(expr, 'atoms') and hasattr(expr, 'subs'):
+            dico = {}
+            for a in expr.atoms():
+                if a.is_Rational and isinstance(a, Decim):
+                    dico[a] = Float(a, prec=a.prec)
+            expr = expr.subs(dico)
+        elif isinstance(expr, (list, tuple)):
+            return expr.__class__(conv(item) for item in expr)
+        elif isinstance(expr, dict):
+            return dict((conv(key), conv(val)) for key, val in expr.iteritems())
+        return expr
 
     def doprint(self, expr):
+        # Mieux vaut faire la substitution une seule fois dès le départ.
+        expr = self._convert_Decim(expr)
         return StrPrinter.doprint(self, expr) if not isinstance(expr, unicode) else expr
 
 
@@ -127,7 +147,7 @@ class CustomLatexPrinter(LatexPrinter):
         return "\\times ".join((str(entier) + formater(exposant)) for entier, exposant in expr.couples)
 
     def _print_Float(self, expr):
-        s = str(expr)
+        s = LatexPrinter._print_Float(self, expr)
         if "e" in s:
             nombre,  exposant = s.split("e")
             return nombre + "\\times 10^{" + exposant.lstrip("+") + "}"
@@ -173,6 +193,9 @@ class CustomLatexPrinter(LatexPrinter):
 
     def _print_function(self, expr):
         return r"\mathrm{Fonction}\, " + expr.func_name
+
+    def _print_Decim(self, expr):
+        return self._print_Float(Float(expr, prec=expr.prec))
 
     def doprint(self, expr):
         tex = LatexPrinter.doprint(self, expr)

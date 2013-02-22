@@ -25,13 +25,95 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ## Objets complémentaires à ceux de sympy
 
-from sympy import Symbol, Matrix
+from functools import partial
+
+from sympy import Symbol, Matrix, Rational, Expr, Integer
+from sympy.core.cache import cacheit
+from sympy.core.numbers import Infinity
 
 from .internal_objects import ObjetMathematique
 from ..pylib import GenericWrapper
 
 
+
+def convert2decim(expr, prec=None):
+    dico = {}
+    for a in expr.atoms():
+        if a.is_Rational:
+            dico[a] = Decim(a, prec=prec)
+    return expr.subs(dico)
+
+
+
+class Decim(Rational):
+    """
+    Fonctionne comme un rationnel sympy, mais s'affiche comme un décimal.
+
+    Ceci permet, dans la calculatrice, de faire des calculs avec des décimaux,
+    tout en ayant en interne des résultats exacts, et donc d'éviter les cumuls
+    d'erreurs d'arrondis.
+    """
+
+    __slots__ = ['p', 'q', 'prec']
+
+    @cacheit
+    def __new__(cls, p, q=None, prec=15):
+        rat = Rational.__new__(cls, p, q)
+        if isinstance(rat, (Integer, Infinity)):
+            return rat
+        obj = Expr.__new__(cls)
+        obj.p = rat.p
+        obj.q = rat.q
+        obj.prec = prec
+        return obj
+
+    def to_Rational(self):
+        return Rational(self.p, self.q)
+
+    def __neg__(self):
+        return Decim(-self.p, self.q, prec=self.prec)
+
+    def __abs__(self):
+        return Decim(abs(self.p), self.q, prec=self.prec)
+
+    def __repr__(self):
+        return str(float(self)) + '...'
+
+
+# On modifie les méthodes __add__, __sub__, etc. de Rational()
+# pour renvoyer un objet Decim() si l'un des objets de l'opération
+# est de type Decim.
+
+def _compatible(meth):
+    u"Modifie la méthode `meth` pour qu'elle prenne en compte le type Decim()."
+    # La méthode doit avoir exactement 2 arguments.
+    # Exemple type : .__add__(self, other).
+    assert meth.func_code.co_argcount == 2
+    def new_meth(self, other):
+        result = meth(self, other)
+        prec = None
+        if isinstance(self, Decim):
+            prec = self.prec
+        if isinstance(other, Decim):
+            prec = max(prec, other.prec)
+        if prec is not None:
+            if isinstance(result, Rational):
+                result = Decim(result, prec=prec)
+            else:
+                result = convert2decim(result, prec=prec)
+        return result
+    return new_meth
+
+for _name in ('__add__', '__radd__', '__sub__', '__mul__', '__div__',
+                     '__rdiv__', '__pow__', '__rpow__', '__mod__', '__rmod__',
+                     '_eval_power', '__truediv__'):
+    setattr(Rational, _name, _compatible(getattr(Rational, _name)))
+
+del _name, _compatible
+
+
 class Fonction(ObjetMathematique):
+    u"""Une fonction de une ou plusieurs variables."""
     def __init__(self, variables, expression):
         if not isinstance(variables, (list, tuple)):
             variables = (variables,)
@@ -75,7 +157,7 @@ class Fonction(ObjetMathematique):
             else:
                 return Fonction(self.variables, getattr(self.expression, op)(y),)
         exec("%s=__op__" %op)
-    del __op__
+    del __op__, op
 
     def __ne__(self):
         return Fonction(self.variables, -self.expression)
@@ -151,9 +233,9 @@ class MesureDegres(GenericWrapper):
 class Temps(object):
     def __init__(self, secondes = 0, **kw):
         self.secondes = secondes + kw.get("s", 0) \
-                                                + 60*kw.get("m", 0) + 60*kw.get("min", 0) \
-                                                + 3600*kw.get("h", 0) \
-                                                + 86400*kw.get("j", 0) + 86400*kw.get("d", 0)
+                                 + 60*kw.get("m", 0) + 60*kw.get("min", 0) \
+                                 + 3600*kw.get("h", 0) \
+                                 + 86400*kw.get("j", 0) + 86400*kw.get("d", 0)
 
     def jhms(self):
         s = float(self.secondes)
