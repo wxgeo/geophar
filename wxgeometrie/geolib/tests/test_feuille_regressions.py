@@ -32,8 +32,40 @@ def test_issue_176():
     del f.objets.A, f.objets.B, f.objets.s
     assert set(('A', 'B', 's')).isdisjoint(f.objets.noms)
 
+@XFAIL
 def test_issue_227():
-    pass
+    f = Feuille()
+    f.executer('F = (1;0)')
+    f.executer('O = (0;0)')
+    f.executer('ABCDEF = Polygone_regulier_centre(n=6,centre=O,sommet=F)')
+    try:
+        f.executer('ABCDEF = Polygone_regulier_centre(n=6,centre=O,sommet=F)')
+    except NameError:
+        pass
+    f.executer('S5.renommer("A", afficher_nom=True)')
+    f.executer('S4.renommer("B", afficher_nom=True)')
+    f.executer('S3.renommer("C", afficher_nom=True)')
+    f.executer('S2.renommer("D", afficher_nom=True)')
+    f.executer('S1.renommer("E", afficher_nom=True)')
+    assert 'S1' not in f.objets
+    assert 'S2' not in f.objets
+    assert 'S3' not in f.objets
+    assert 'S4' not in f.objets
+    assert 'S5' not in f.objets
+    f.executer('O = (-1;0)')
+    f.historique.annuler()
+    f.historique.refaire()
+    print(f.objets)
+
+def test_issue_227_bis():
+    f = Feuille()
+    f.executer('F = (1;0)')
+    f.executer('O = (0;0)')
+    f.executer('ABCDEF = Polygone_regulier_centre(n=6,centre=O,sommet=F)')
+    f.executer('S5.renommer("A", afficher_nom=True)')
+    f.executer('A.renommer("B", afficher_nom=True)')
+    assert 'S5' not in f.objets
+    assert 'A' not in f.objets
 
 def test_issue_252():
     # Test de la conversion intelligente des virgules en points
