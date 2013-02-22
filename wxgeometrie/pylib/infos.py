@@ -148,9 +148,10 @@ def informations_configuration():
     try:
         from .. import param
         dossier_wxgeometrie.version = param.version
+        dossier_wxgeometrie.session = param.ID
     except Exception:
         dossier_wxgeometrie.version = "?"
-
+        dossier_wxgeometrie.session = "?"
 
     return (dossier_os.contenu() + dossier_local.contenu() + dossier_python.contenu()
                                 + dossier_pyqt.contenu() + dossier_matplotlib.contenu()

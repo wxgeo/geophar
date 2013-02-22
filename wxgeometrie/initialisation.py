@@ -32,7 +32,10 @@ from .arguments import lire_arguments, traiter_arguments
 
 options, arguments = lire_arguments()
 
-if not options.script and not options.lister_modules:
+# Le splash screen doit être affiché le plus tôt possible.
+# Par contre, il ne doit pas être affiché si le fichier est importé simplement
+# comme module.
+if getattr(sys, '_launch_geophar', False) and not (options.script or options.lister_modules):
     from .GUI.app import app, splash
 
     splash_screen = splash(normpath(EMPLACEMENT + '/wxgeometrie/images/logo6-1.png'))
