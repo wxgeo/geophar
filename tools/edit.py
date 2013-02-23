@@ -42,7 +42,7 @@ def edit(file_and_line, editor=DEFAULT_EDITOR):
 
     file_and_line = file_and_line.strip()
     try:
-        m = re.search('File "?([^"]+[.]py)"?, line ([0-9]+)', file_and_line)
+        m = re.search('[Ff]ile "?([^"]+[.]py)"?, line ([0-9]+)', file_and_line)
         if m is None:
             # Format pyflakes
             m = re.search('([^"]+[.]py):([0-9]+)', file_and_line)

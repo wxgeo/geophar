@@ -45,7 +45,7 @@ SUPPORTED_EDITORS = ('geany', 'gedit', 'nano', 'vim', 'emacs', 'kate', 'kile')
 
 def gs(chaine='', case=True, exclude_comments=True, extensions=(".py", ".pyw"),
         maximum=100, codec="latin1", statistiques=False, replace=None,
-        color=None, edit_with=None, edit_result=None):
+        color=None, edit_with=None, edit_result=None, skip_ignore=False):
     u"""Parcourt le répertoire courant et les sous-répertoire, à la recherche
     des fichiers dont l'extension est comprise dans 'extensions',
     mais passe les répertoires et les fichiers dont le nom commence par
@@ -107,7 +107,7 @@ def gs(chaine='', case=True, exclude_comments=True, extensions=(".py", ".pyw"),
     # Nombre d'occurences trouvées.
     occurences = 0
     for f in fichiers:
-        if re.search(IGNORE_RE, f):
+        if re.search(IGNORE_RE, f) and not skip_ignore:
             continue
         F += 1
         with open(f, "r") as fichier:
@@ -225,6 +225,9 @@ def usage():
         $ ./tools/search.py -m "hello world!"
     - Personnaliser le nombre maximum de résultats retournés:
         $ ./tools/search.py -m2500 "hello world!"
+    - Inclure également dans les résultats les répertoires contenus dans
+      la variable de configuration IGNORE (ne pas tenir compte de IGNORE).
+        $ ./tools/search.py -k "hello world!"
         """
     exit()
 
@@ -280,6 +283,9 @@ if __name__ == "__main__":
     if '-c' in args:
         args.remove('-c')
         kw['color'] = True
+    if '-k' in args:
+        args.remove('-k')
+        kw['skip_ignore'] = True
     if '-m' in args:
         args.remove('-m')
         kw['maximum'] = 1000
