@@ -89,7 +89,13 @@ class CustomStrPrinter(StrPrinter):
         expr = self._convert_Decim(expr)
         return StrPrinter.doprint(self, expr) if not isinstance(expr, unicode) else expr
 
+def custom_str(expr, **settings):
+    return CustomStrPrinter(settings).doprint(expr)
 
+# Modifie Basic.__repr__ pour utiliser `custom_str` au lieu de `sstr` (printer de sympy)
+# Can't use partial() for this (cf. http://bugs.python.org/issue4331)
+
+Basic.__repr__ = (lambda self: custom_str(self, order=None))
 
 class CustomLatexPrinter(LatexPrinter):
     def __init__(self, profile = None):
@@ -204,8 +210,3 @@ class CustomLatexPrinter(LatexPrinter):
 
 def custom_latex(expr, profile = None):
     return CustomLatexPrinter(profile).doprint(expr)
-
-
-def custom_str(expr, profile = None):
-    return CustomStrPrinter(profile).doprint(expr)
-

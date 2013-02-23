@@ -27,7 +27,7 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 from functools import partial
 
-from sympy import Symbol, Matrix, Rational, Expr, Integer
+from sympy import Symbol, Matrix, Rational, Expr, Integer, Float
 from sympy.core.cache import cacheit
 from sympy.core.numbers import Infinity
 
@@ -77,7 +77,9 @@ class Decim(Rational):
         return Decim(abs(self.p), self.q, prec=self.prec)
 
     def __repr__(self):
-        return str(float(self)) + '...'
+        #return "%s('%s/%s', prec=%s)" % (self.__class__.__name__, self.p, self.q, self.prec)
+        # Précision suffisante pour pouvoir reconvertir en fraction ensuite
+        return repr(Float(self, prec=20)).rstrip('0')
 
 
 # On modifie les méthodes __add__, __sub__, etc. de Rational()
