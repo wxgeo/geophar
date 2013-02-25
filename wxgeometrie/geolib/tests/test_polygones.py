@@ -1,7 +1,7 @@
 # -*- coding: iso-8859-1 -*-
 from __future__ import division, absolute_import # 1/2 == .5 (par defaut, 1/2 == 0)
 
-from math import pi, sin, cos
+from math import pi, sin, cos, sqrt
 from random import random
 
 from tools.testlib import assertAlmostEqual, assertEqual, randint
@@ -14,7 +14,7 @@ from wxgeometrie.geolib import (Point, Polygone, Milieu, Label_polygone, Barycen
                                 Carre, Polygone_regulier, Carre_centre,
                                 Triangle_equilateral_centre, Polygone_regulier_centre,
                                 Losange, Mediatrice, Triangle_isocele_rectangle,
-                                Triangle_rectangle, contexte,
+                                Triangle_rectangle, contexte, Sommet, Cote,
                                 )
 
 # def test_Cote():
@@ -284,3 +284,31 @@ def test_issue_215():
         for i in range(10):
             t = Triangle_isocele()
             assert abs(t.angle.rad) > pi/6
+
+def test_Sommet():
+    A = Point(1, 0)
+    O = Point(0, 0)
+    p = Carre_centre(O, A)
+    assert len(p.sommets) == 4
+    coordonnees = [sommet.xy for sommet in p.sommets]
+    assertAlmostEqual(coordonnees, [(1, 0), (0, 1), (-1, 0), (0, -1)])
+    # Si l'on tente de recréer un sommet, le sommet existant est renvoyé.
+    S0 = p.sommets[0]
+    assert S0.style('couleur') != 'y' # modifier la couleur dans le test sinon
+    M0 = Sommet(p, 0, couleur='y')
+    assert M0 is S0
+    assert S0.style('couleur') == 'y'
+
+def test_Cote():
+    A = Point(1, 0)
+    O = Point(0, 0)
+    p = Carre_centre(O, A)
+    assert len(p.cotes) == 4
+    for cote in p.cotes:
+        assertAlmostEqual(cote.longueur, sqrt(2))
+    # Si l'on tente de recréer un côté, le côté existant est renvoyé.
+    c0 = p.cotes[0]
+    assert c0.style('couleur') != 'pink' # modifier la couleur dans le test sinon
+    d0 = Cote(p, 0, couleur='pink')
+    assert d0 is c0
+    assert c0.style('couleur') == 'pink'

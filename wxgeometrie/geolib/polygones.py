@@ -59,10 +59,28 @@ class Cote(Segment):
     polygone = __polygone = ArgumentNonModifiable("Polygone_generique")
     n = __n = ArgumentNonModifiable("int")
 
+    def __new__(cls, polygone, n, **styles):
+        try:
+            # Si le côté existe déjà, on retourne simplement le côté existant.
+            # Ceci évite de créer en double le même côté, lorsque la feuille
+            # est sauvegardée puis rechargée. En effet, lors du chargement de la
+            # feuille, des côtés vont être créés automatiquement à la création
+            # du polygone, puis de nouveau lorsque `c0 = Cote(p, 0, ...)` va
+            # être exécuté.
+            # Attention, Cote.__init__() va être appelé de nouveau !
+            return polygone.cotes[n]
+        except (AttributeError, IndexError):
+            cote = object.__new__(cls)
+            return cote
+
     def __init__(self, polygone, n, **styles):
-        self.__polygone = polygone
-        self.__n = n
-        Segment.__init__(self, polygone._Polygone_generique__sommets[n], polygone._Polygone_generique__sommets[(n + 1)%len(polygone._Polygone_generique__sommets)], **styles)
+        if not hasattr(self, "_style"):
+            self.__polygone = polygone
+            self.__n = n
+            sommets = polygone._Polygone_generique__sommets
+            Segment.__init__(self, sommets[n], sommets[(n + 1)%len(sommets)], **styles)
+        else:
+            self.style(**styles)
 
     def _modifier_hierarchie(self, valeur = None):
         # Voir commentaires pour Sommet._modifier_hierarchie
@@ -84,7 +102,7 @@ class Cote(Segment):
 
         ..note::
             Il n'y a aucun intérêt à supprimer uniquement le côté
-            (d'autant qu'un sommet supprimé ne peut pas facilement être
+            (d'autant qu'un côté supprimé ne peut pas facilement être
             rétabli), et si un côté est supprimé sans le polygone, on a parfois
             l'impression d'un bug (impossible de placer un point sur le côté par
             exemple)."""
@@ -110,10 +128,27 @@ class Sommet(Point_generique):
     polygone = __polygone = ArgumentNonModifiable("Polygone_generique")
     n = __n = ArgumentNonModifiable("int")
 
+    def __new__(cls, polygone, n, **styles):
+        try:
+            # Si le sommet existe déjà, on retourne simplement le sommet existant.
+            # Ceci évite de créer en double le même sommet, lorsque la feuille
+            # est sauvegardée puis rechargée. En effet, lors du chargement de la
+            # feuille, des sommets vont être créés automatiquement à la création
+            # du polygone, puis de nouveau lorsque `S0 = Sommet(p, 0, ...)` va
+            # être exécuté.
+            # Attention, Sommet.__init__() va être appelé de nouveau !
+            return polygone.sommets[n]
+        except (AttributeError, IndexError):
+            sommet = object.__new__(cls)
+            return sommet
+
     def __init__(self, polygone, n, **styles):
-        self.__polygone = polygone
-        self.__n = n
-        Point_generique.__init__(self, **styles)
+        if not hasattr(self, "_style"):
+            self.__polygone = polygone
+            self.__n = n
+            Point_generique.__init__(self, **styles)
+        else:
+            self.style(**styles)
 
     def _get_coordonnees(self):
         return self.__polygone._Polygone_generique__points[self.__n].coordonnees
@@ -128,8 +163,9 @@ class Sommet(Point_generique):
         # Par exemple, si le polygone a 4 sommets, et si sa place dans la hierarchie est 18, ses trois sommets
         # auront  comme valeur hierarchique, dans l'ordre, 18.1, 18.2, 18.3 et 18.4,
         # et ses cotés auront pour valeur hiérarchique 18.6, 18.7, 18.8, 18.9.
-        N = len(self.__polygone._Polygone_generique__points)
-        Objet._modifier_hierarchie(self, self.__polygone._hierarchie + (self.__n + 1)/(2*N + 2))
+        poly = self.__polygone
+        N = len(poly._Polygone_generique__points)
+        Objet._modifier_hierarchie(self, poly._hierarchie + (self.__n + 1)/(2*N + 2))
 
     def _update(self, objet):
         u"""Pseudo mise à jour: seul un objet identique est accepté.
@@ -158,6 +194,7 @@ class Sommet(Point_generique):
             (d'autant qu'un sommet supprimé ne peut pas facilement être
             rétabli)."""
         self.__polygone.supprimer()
+
 
 
 class Polygone_generique(Objet):
@@ -260,7 +297,10 @@ class Polygone_generique(Objet):
         points_feuille = self.feuille.objets.lister(Point_generique)
         noms = self._style.get("_noms_", {"sommets": n*("", ), "cotes": n*("", )})
         for i in xrange(n):
-            # On exclue les sommets qui seraient déjà dans la feuille :
+            # On enregistre le sommet seulement si le point correspondant n'est
+            # pas enregistré dans la feuille.
+            # Par exemple, `Carre(A, B)` a déjà deux points (A et B) enregistrés
+            # dans la feuille. On enregistre uniquement les deux derniers sommets.
             if not is_in(self.__points[i], points_feuille):
                 nom = noms["sommets"][i]
                 self.feuille.objets[nom] = self.__sommets[i]
@@ -864,14 +904,11 @@ class Polygone_regulier(Polygone_generique):
         if n is None:
             n = 3 + abs(int(normalvariate(0,4)))
         if n == 3:
-            newclass = Triangle_equilateral
+            return Triangle_equilateral(point1, point2, **styles)
         elif n == 4:
-            newclass = Carre
+            return Carre(point1, point2, **styles)
         else:
             return object.__new__(cls)
-        objet = newclass.__new__(newclass, point1, point2, **styles)
-        objet.__init__(point1, point2, **styles)
-        return objet
 
     point1 = __point1 = Argument("Point_generique", defaut = Point)
     point2 = __point2 = Argument("Point_generique", defaut = Point)

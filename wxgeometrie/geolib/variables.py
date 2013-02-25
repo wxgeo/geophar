@@ -108,6 +108,8 @@ class Variable(Variable_generique):
         Retourne une liste composée alternativement d'instructions et d'objets de la feuille,
         et un ensemble constitué des objets de la feuille mis en jeu dans le code.
         (... à documenter ...)"""
+        if isinstance(valeur, Variable):
+            valeur = valeur.contenu
         if isinstance(valeur, basestring) and self.feuille is not None:
             liste = re.split(self.__re, valeur)
             ensemble = set()

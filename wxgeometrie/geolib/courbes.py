@@ -90,7 +90,7 @@ class Courbe(Courbe_generique):
             cls = (Interpolation_polynomiale_par_morceaux if scipy_found
                                             else Interpolation_lineaire)
             return cls(*args, **kw)
-        return Courbe_generique.__new__(cls, *args, **kw)
+        return object.__new__(cls)
 
     def __init__(self, fonction, **styles):
         self.__fonction = fonction = Ref(fonction)

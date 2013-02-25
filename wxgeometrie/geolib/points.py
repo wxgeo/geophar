@@ -253,7 +253,12 @@ class Point(Objet_avec_coordonnees_modifiables, Point_generique):
         if not isinstance(objet, Point):
             objet = self._convertir(objet)
         if isinstance(objet, Point):
-            self.coordonnees = objet.coordonnees
+            # Ne PAS utiliser `.coordonnees` ici, car `objet.coordonnees`
+            # peut renvoyer `None` dans certains cas particuliers.
+            # (Par exemple, si `objet.x` ou `objet.y` contient une formule,
+            # et qu'aucune feuille n'est définie pour cette variable).
+            self.x = objet.x
+            self.y = objet.y
         else:
             raise TypeError, "L'objet n'est pas un point."
 
@@ -1236,7 +1241,7 @@ class Nuage(Nuage_generique):
         from .fonctions import Fonction
         if args and isinstance(args[0], Fonction):
             return NuageFonction(*args, **kw)
-        return object.__new__(cls, *args, **kw)
+        return object.__new__(cls)
 
     def __init__(self, *points, **styles):
         if styles.get('points', None):

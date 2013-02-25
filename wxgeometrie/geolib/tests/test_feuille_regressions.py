@@ -32,7 +32,7 @@ def test_issue_176():
     del f.objets.A, f.objets.B, f.objets.s
     assert set(('A', 'B', 's')).isdisjoint(f.objets.noms)
 
-@XFAIL
+
 def test_issue_227():
     f = Feuille()
     f.executer('F = (1;0)')
@@ -55,7 +55,7 @@ def test_issue_227():
     f.executer('O = (-1;0)')
     f.historique.annuler()
     f.historique.refaire()
-    print(f.objets)
+
 
 def test_issue_227_bis():
     f = Feuille()

@@ -306,7 +306,9 @@ class Dictionnaire_objets(dict):
 
         Remarque: les syntaxes `objets['a'] = 3` et `objets.a = 3` sont équivalentes.
 
-        NB: Les objets d'une feuille (contrairement aux objets Python par exemple)
+        ::note::
+
+        Les objets d'une feuille (contrairement aux objets Python par exemple)
         ne peuvent pas être redéfinis librement...
         En général, quand on essaie d'attribuer un nom qui existe déjà,
         ce n'est pas volontaire. Pour éviter les erreurs, on impose de
@@ -315,11 +317,16 @@ class Dictionnaire_objets(dict):
         Certains noms sont également réservés, et ne peuvent pas être
         attribués ainsi. Si l'on veut outrepasser la protection, il faut
         utiliser la méthode `.update()` pour les attribuer (à bon escient !).
+
+        Enfin, si l'on essaie d'enregistrer dans la feuille un objet qui y est
+        déjà présent, l'objet est simplement renommé, au lieu d'être enregistré
+        sous deux noms différents.
         """
+        feuille = self.feuille
 
         # Paramètres du repère -> géré directement par la feuille
-        if nom in self.feuille._parametres_repere:
-            return setattr(self.feuille, nom, valeur)
+        if nom in feuille._parametres_repere:
+            return setattr(feuille, nom, valeur)
             # Ne pas oublier le 'return' !
 
         nom = self.__convertir_nom(nom) or '_'
@@ -335,16 +342,19 @@ class Dictionnaire_objets(dict):
 
         if self.has_key(nom):
             try:
-                # Pour que les variables puissent être interprétées, il faut que la feuille soit donnée
-                if isinstance(valeur, Objet) and valeur.feuille is None:
-                    valeur.feuille = self.feuille
+                # Ne PAS rattacher la feuille à l'objet tant qu'il n'est pas enregistré
+                # sur la feuille. En particulier, pour un polygone, rattacher la feuille
+                # provoque déjà l'enregistrement des sommets sur la feuille, alors que rien
+                # ne garantisse que le polygone lui-même soit enregistré avec succès.
                 self[nom]._update(valeur)
-                #self.__refresh_needed(nom)
-                return # on quitte, car le nom doit toujours référer à l'objet initial !
+                # On quitte, car le nom fait toujours référence au même objet, qui est
+                # déjà enregistré sur la feuille.
+                return
             except Exception:
-                print_error()
+                if param.debug:
+                    print_error()
                 if self.__renommer_au_besoin:
-                    new = self.feuille.nom_aleatoire(valeur, prefixe=nom)
+                    new = feuille.nom_aleatoire(valeur, prefixe=nom)
                     print("Warning: '%s' renommé en '%s'." %(nom, new))
                     nom = self.__tmp_dict[nom] = new
                 else:
@@ -352,7 +362,10 @@ class Dictionnaire_objets(dict):
 
 
         if not isinstance(valeur, Objet):
-            # Permet de construire des points à la volée : '=((i,sqrt(i)) for i in (3,4,5,6))'
+            # On tente de convertir valeur en un objet Geolib.
+
+            # La conversion des générateurs permet de construire des points
+            # à la volée : '=((i,sqrt(i)) for i in (3,4,5,6))'
             if isinstance(valeur, GeneratorType) and nom == "_":
                 for item in valeur:
                     self.__setitem__('', item)
@@ -387,21 +400,28 @@ class Dictionnaire_objets(dict):
                     else:
                         # A=(1,2) cree un point.
                         valeur = Point(*valeur)
+        else:
+            # On vérifie que l'objet n'est pas déjà enregistré dans la feuille
+            # sous un autre nom. Si c'est le cas, on le renomme (pour ne pas
+            # l'enregistrer deux fois dans la feuille sous deux noms différents).
+            if valeur._nom:
+                # L'objet est déjà référencé dans une feuille ssi il a un nom.
+                assert (valeur.feuille is feuille), \
+                        "L'objet %s (%s) est deja enregistre dans une autre feuille (%s)." \
+                        % (valeur.nom, valeur, valeur.feuille)
+                valeur.renommer(nom)
+                return
 
+        # On n'a pas réussi à convertir `valeur` en un objet Geolib.
         if not isinstance(valeur, Objet):
             self.erreur("type d'objet incorrect :(%s,%s)"%(nom, valeur), TypeError)
 
         self.__verifier_syntaxe_nom(valeur, nom)
 
-        if valeur._nom:
-            # L'objet est déjà référencé sur la feuille ssi il a un nom.
-            # On en fait alors une copie : ainsi, A = B est remplacé par A = B.copy()
-            valeur = valeur.copy()
-
 
         # On enregistre le nom (éventuellement provisoire) car la méthode '_set_feuille' de l'objet en a besoin.
         valeur._nom = nom
-        valeur.feuille = self.feuille
+        valeur.feuille = feuille
 
         if nom == "_":
             # Attention, la feuille doit être déjà definie !

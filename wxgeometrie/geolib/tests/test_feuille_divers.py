@@ -121,8 +121,8 @@ def test_modification_variable():
     o.fa = "5*sin(4/(a+.5))-1.5"
     o.A = Point(o.a, o.fa)
     o.fa = "-5*sin(4/(a+.5))+5.5"
-    o.A = Point(o.a, o.fa)
-    assertAlmostEqual(o.A.x, o.a)
+    o.A = Point(2, o.fa)
+    assertAlmostEqual(o.A.x, 2)
     assertAlmostEqual(o.A.y, o.fa)
 
 def test_fenetre():
@@ -150,7 +150,6 @@ def test_fenetre():
     assert f.objets.A.xy == (2, 10)
 
 
-@XFAIL
 def test_dependances():
     f = Feuille()
     A = f.objets.A = Point(1, 2)
