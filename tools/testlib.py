@@ -21,12 +21,9 @@ def rand():
     return randint(50) - randint(50) + random()
 
 def assertAlmostEqual(x, y):
-    if isinstance(x, tuple) and isinstance(y, tuple):
+    if type(x) == type(y) and isinstance(x, (tuple, list)):
         for x_elt, y_elt in zip(x, y):
-            TEST = abs(y_elt - x_elt) < EPSILON
-            if not TEST:
-                print x_elt,  "!=",  y_elt
-            assert TEST
+            assertAlmostEqual(x_elt, y_elt)
     else:
         TEST = abs(y - x) < EPSILON
         if not TEST:
