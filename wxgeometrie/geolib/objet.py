@@ -1200,6 +1200,19 @@ class Objet(object):
         À surclasser.
         """
 
+    def _update(self, objet):
+        u"""Indique dans quelles conditions un objet peut-être mis à jour.
+
+        Ceci est utilisé par exemple quand, dans une feuille, on exécute
+        une instruction du style `A = Point(2, 3)` et que le point A existe déjà.
+        Dans ce cas, on met à jour les coordonnées du point A, plutôt que de
+        renvoyer une erreur.
+
+        À surclasser.
+        """
+        if objet is not self:
+            raise RuntimeError
+
 
     def on_register(self):
         u"""Actions à effectuer lorsque l'objet est enregistré dans la feuille.

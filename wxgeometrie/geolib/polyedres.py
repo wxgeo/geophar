@@ -56,43 +56,38 @@ class Arete(Segment):
     L'objet est créé automatiquement lors de la création du polyèdre.
     De plus, si l'objet est supprimé, le polyèdre est automatiquement supprimé."""
 
-#    _style_defaut = param.aretes
     _prefixe_nom = "a"
 
     polyedre = __polyedre = ArgumentNonModifiable("Polyedre_generique")
     n = __n = ArgumentNonModifiable("int")
     p = __p = ArgumentNonModifiable("int")
 
-    def __init__(self, polyedre, n, p, **styles):
-        self.__polyedre = polyedre
-        self.__n = n
-        self.__p = p
-        self._cachee = False
-#        _styles = styles
-#        styles = dict(polyedre.style())
-#        styles.update(_styles)
-        Segment.__init__(self, polyedre._Polyedre_generique__sommets[n], polyedre._Polyedre_generique__sommets[p], **styles)
-        self.__polyedre._cache.remove('test_aretes')
-#        Segment.__init__(self, polyedre._Polyedre_generique__sommets[n], polyedre._Polyedre_generique__sommets[(n + 1)%len(polyedre._Polyedre_generique__sommets)], **polyedre.style())
-#        self._enregistrer = False # l'objet ne doit pas être sauvegardé
+    def __new__(cls, polyedre, n, p, **styles):
+        try:
+            return polyedres.aretes[n]
+            # Attention, Arete.__init__() va être appelé de nouveau !
+        except (AttributeError, IndexError):
+            arete = object.__new__(cls)
+            return arete
 
-#    def supprimer(self):
-#        self.__polyedre.supprimer()
+    def __init__(self, polyedre, n, p, **styles):
+        if not self._initialise:
+            self.__polyedre = polyedre
+            self.__n = n
+            self.__p = p
+            self._cachee = False
+            Segment.__init__(self, polyedre._Polyedre_generique__sommets[n], polyedre._Polyedre_generique__sommets[p], **styles)
+            self.__polyedre._cache.remove('test_aretes')
+        else:
+            self.style(**styles)
+
+    def supprimer(self):
+        self.__polyedre.supprimer()
 
     def _modifier_hierarchie(self, valeur = None):
         # Voir commentaires pour Sommet_polyedre._modifier_hierarchie
         N = len(self.__polyedre._Polyedre_generique__points)
         Objet._modifier_hierarchie(self, self.__polyedre._hierarchie + (self.__n + self.__p/N + N + 2)/(3*N + 2))
-
-
-    def _update(self, objet):
-        u"""Pseudo mise à jour: seul un objet identique est accepté.
-
-        Cela sert pour les objets créés automatiquement, qui peuvent être enregistrés deux fois dans la feuille."""
-        if isinstance(objet, Arete) and self.__polyedre is objet._Arete__polyedre and self.__n == objet._Arete__n and self.__p is objet._Arete__p:
-            self.style(**objet.style())
-        else:
-            raise RuntimeError
 
     def cachee(self, value = None):
         if value is True:
@@ -104,11 +99,6 @@ class Arete(Segment):
         return self._cachee
 
     cachee = property(cachee, cachee)
-
-#    def style(self, nom_de_style = None, refresh = False, **kwargs):
-#        self.__polyedre._cache.remove('test_aretes')
-#        Objet.style(self, nom_de_style = nom_de_style, refresh = refresh, **kwargs)
-
 
     def _creer_figure(self):
         # On s'assure que le test des arêtes a bien eu lieu.
@@ -125,7 +115,6 @@ class Sommet_polyedre(Point_generique):
     L'objet est créé automatiquement lors de la création du polyedre.
     De plus, si l'objet est supprimé, le polyèdre est automatiquement supprimé."""
 
-##    _style_defaut = {"legende" : wxgeo.RIEN}
     _prefixe_nom = "S"
 
     # Un sommet peut-être lié à un point, c'est-à-dire avoir toujours les mêmes coordonnées que ce point
@@ -134,10 +123,27 @@ class Sommet_polyedre(Point_generique):
     polyedre = __polyedre = ArgumentNonModifiable("Polyedre_generique")
     n = __n = ArgumentNonModifiable("int")
 
+    def __new__(cls, polyedre, n, **styles):
+        try:
+            # Si le sommet existe déjà, on retourne simplement le sommet existant.
+            # Ceci évite de créer en double le même sommet, lorsque la feuille
+            # est sauvegardée puis rechargée. En effet, lors du chargement de la
+            # feuille, des sommets vont être créés automatiquement à la création
+            # du polygone, puis de nouveau lorsque `S0 = Sommet(p, 0, ...)` va
+            # être exécuté.
+            return polyedre.sommets[n]
+            # Attention, Sommet.__init__() va être appelé de nouveau !
+        except (AttributeError, IndexError):
+            sommet = object.__new__(cls)
+            return sommet
+
     def __init__(self, polyedre, n, **styles):
-        self.__polyedre = polyedre
-        self.__n = n
-        Point_generique.__init__(self, **styles)
+        if not self._initialise:
+            self.__polyedre = polyedre
+            self.__n = n
+            Point_generique.__init__(self, **styles)
+        else:
+            self.style(**styles)
 
     def _get_coordonnees(self):
         return self.__polyedre._Polyedre_generique__points[self.__n].coordonnees
@@ -154,15 +160,6 @@ class Sommet_polyedre(Point_generique):
         # et ses arêtes auront pour valeur hiérarchique 18.6, 18.7, 18.8, 18.9.
         N = len(self.__polyedre._Polyedre_generique__points)
         Objet._modifier_hierarchie(self, self.__polyedre._hierarchie + (self.__n + 1)/(3*N + 2))
-
-    def _update(self, objet):
-        u"""Pseudo mise à jour: seul un objet identique est accepté.
-
-        Cela sert pour les objets créés automatiquement, qui peuvent être enregistrés deux fois dans la feuille."""
-        if isinstance(objet, Sommet_polyedre) and self.__polyedre is objet._Sommet_polyedre__polyedre and self.__n == objet._Sommet_polyedre__n :
-            self.style(**objet.style())
-        else:
-            raise RuntimeError
 
     def _lier_sommet(self, point):
         u"""Lie le sommet à un point, en le rendant déplaçable."""
@@ -209,83 +206,47 @@ class Polyedre_generique(Objet):
         self.__faces_principales = tuple(faces_principales)
 
 
-    def _set_feuille(self):
-        n = len(self.__points)
-        p = len(self.__aretes)
-        # On enregistre sur la feuille les arguments créés par défauts qui doivent l'être
-        if hasattr(self,  "_valeurs_par_defaut")\
-                and self._valeurs_par_defaut\
-                and not self._style.has_key("_noms_"):
-            noms = re.findall(RE_NOM_OBJET, self._nom)
-            noms_args, args = zip(*self._iter_arguments)
-            correspondance = True
-            # On tente de détecter via le nom  de l'objet le nom que doit prendre chacun de ses arguments.
-            # Par exemple, si un rectangle s'appelle ABCD, alors les points qui le constituent
-            # doivent prendre pour noms A, B, C et D.
-            if len(noms) == n:
-                for i in xrange(n):
-                    if self.__points[i]._nom != "" and self.__points[i]._nom != noms[i]:
-                        correspondance = False
-                        break
-            else:
-                correspondance = False
-            if correspondance:
-                self._style["_noms_"] = {"sommets": n*[""], "aretes": p*("", )}
-                mode = "points"
-                for i in xrange(n):
-                    if mode == "points":
-                        if i < len(args) and is_in(args[i], self.__points):
-                            if "_" + self.__class__.__name__ + "__" + noms_args[i] in self._valeurs_par_defaut:
-                                self.feuille.objets[noms[i]] = args[i]
-                        else:
-                            mode = "sommets"
-                    if mode == "sommets":
-                        self._style["_noms_"]["sommets"][i] = noms[i]
-                self._style["_noms_"]["sommets"] = tuple(self._style["_noms_"]["sommets"])
-                print "SOMMETS", self._style["_noms_"]["sommets"]
-            # Échec du nommage intelligent : on se rabat sur des noms aléatoires
-            else:
-                for nom_arg in self._valeurs_par_defaut:
-                    self.feuille.objets[''] = getattr(self, nom_arg)
+    def on_register(self):
+        u"""Enregistre les arêtes et les sommets du polyedre dans la feuille lors
+        de l'enregistrement du polyedre."""
+        # On enregistre toutes les arêtes dans la feuille.
+        for arete in self.__aretes:
+            self.feuille.objets.add(arete)
+
+        # on enregistre ensuite les sommets.
+        # On essaie de nommer intelligemment les sommets.
+        # Par exemple, si un rectangle s'appelle ABCD, les points libres
+        # s'appelleront si possible A et B, et les deux autres sommets
+        # s'appelleront C et D.
+        sommets = []
+        noms_args, args = zip(*self._iter_arguments)
+        for sommet, point in zip(self.__sommets, self.__points):
+            sommets.append(point if is_in(point, args) else sommet)
+
+        n = len(sommets)
+
+        noms = re.findall(RE_NOM_OBJET, self._nom)
+        if ''.join(noms) == self._nom and len(noms) == n:
+            for sommet, nom in zip(sommets, noms):
+                if sommet._nom and sommet._nom != nom:
+                    noms = n*['']
+                    break
+        else:
+            noms = n*['']
+
+        add = self.feuille.objets.add
+        for sommet, nom in zip(sommets, noms):
+            if not sommet._nom:
+                add(sommet, nom_suggere=nom)
+
+        if self._valeurs_par_defaut:
+            # Par défaut, on essaie d'éviter un polygone croisé, à l'aide
+            # de la méthode `._affecter_coordonnees_par_defaut()`.
+            if len(args) == n:
+                if all(isinstance(arg, Point) for arg in args):
+                    self._affecter_coordonnees_par_defaut(args)
             self._valeurs_par_defaut = []
 
-        # On référence automatiquement tous les côtés et sommets du polyèdre dans la feuille.
-        # (En particulier, en mode graphique, cela permet de faire apparaitre tous les sommets du polyèdre lorsque celui-ci est créé)
-        points_feuille = self.feuille.objets.lister(Point_generique)
-        noms = self._style.get("_noms_", {"sommets": n*("", ), "aretes": p*("", )})
-        for i in xrange(n):
-            # On exclue les sommets qui seraient déjà dans la feuille :
-            if not is_in(self.__points[i], points_feuille):
-                nom = noms["sommets"][i]
-                self.feuille.objets[nom] = self.__sommets[i]
-        for i in xrange(p):
-            nom = noms["aretes"][i]
-            self.feuille.objets[nom] = self.__aretes[i]
-        # Exceptionnellement, il ne faut pas faire appel à la méthode Objet._set_feuille.
-
-
-##    def _set_feuille(self):
-##        # On référence automatiquement tous les côtés et sommets du polyedre dans la feuille.
-##        # (En particulier, en mode graphique, cela permet de faire apparaitre tous les sommets du polyedre lorsque celui-ci est créé)
-##        Objet._set_feuille(self)
-##        n = len(self.__points)
-##        p = len(self.__aretes)
-##        points_feuille = self.__feuille__.objets(Point_generique)
-##        noms = self._style.get("_noms_", {"sommets": n*("", ), "aretes": p*("", )})
-##        for i in xrange(n):
-##            # On exclue les sommets qui seraient déjà dans la feuille :
-##            if not is_in(self.__points[i], points_feuille):
-##                nom = noms["sommets"][i]
-##                self.__feuille__.objets[nom] = self.__sommets[i]
-##        for i in xrange(p):
-##            nom = noms["aretes"][i]
-##            self.__feuille__.objets[nom] = self.__aretes[i]
-
-
-    def __repr__(self, *args, **kwargs):
-        self.style(_noms_ = { "sommets" : tuple(sommet.nom for sommet in self.__sommets),
-                                        "aretes": tuple(arete.nom for arete in self.__aretes)})
-        return Objet.__repr__(self, *args, **kwargs)
 
     @property
     def centre(self):
@@ -304,7 +265,6 @@ class Polyedre_generique(Objet):
 ##    @property
 ##    def faces(self):
 ##        return self.__faces
-
 
 
     def _creer_figure(self):

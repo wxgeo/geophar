@@ -87,16 +87,6 @@ class Cote(Segment):
         N = len(self.__polygone._Polygone_generique__points)
         Objet._modifier_hierarchie(self, self.__polygone._hierarchie + (self.__n + N + 2)/(2*N + 2))
 
-
-    def _update(self, objet):
-        u"""Pseudo mise à jour: seul un objet identique est accepté.
-
-        Cela sert pour les objets créés automatiquement, qui peuvent être enregistrés deux fois dans la feuille."""
-        if isinstance(objet, Cote) and self.__polygone is objet._Cote__polygone and self.__n == objet._Cote__n :
-            self.style(**objet.style())
-        else:
-            raise RuntimeError
-
     def supprimer(self):
         u"""Supprime le polygone auquel appartient le côté.
 
@@ -176,15 +166,6 @@ class Sommet(Point_generique):
         N = len(poly._Polygone_generique__points)
         Objet._modifier_hierarchie(self, poly._hierarchie + (self.__n + 1)/(2*N + 2))
 
-    def _update(self, objet):
-        u"""Pseudo mise à jour: seul un objet identique est accepté.
-
-        Cela sert pour les objets créés automatiquement, qui peuvent être enregistrés deux fois dans la feuille."""
-        if isinstance(objet, Sommet) and self.__polygone is objet._Sommet__polygone and self.__n == objet._Sommet__n :
-            self.style(**objet.style())
-        else:
-            raise RuntimeError
-
     def _lier_sommet(self, point):
         u"""Lie le sommet à un point, en le rendant déplaçable."""
         self._point_lie = point
@@ -224,7 +205,6 @@ class Polygone_generique(Objet):
         self.etiquette = Label_polygone(self)
         self.__sommets = tuple(Sommet(self, i) for i in xrange(n))
         self.__cotes = tuple(Cote(self, i) for i in xrange(n))
-
 
 
     def _affecter_coordonnees_par_defaut(self, points):
@@ -298,7 +278,6 @@ class Polygone_generique(Objet):
                 if all(isinstance(arg, Point) for arg in args):
                     self._affecter_coordonnees_par_defaut(args)
             self._valeurs_par_defaut = []
-
 
 
     @property

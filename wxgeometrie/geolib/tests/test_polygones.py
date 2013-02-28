@@ -14,7 +14,7 @@ from wxgeometrie.geolib import (Point, Polygone, Milieu, Label_polygone, Barycen
                                 Carre, Polygone_regulier, Carre_centre,
                                 Triangle_equilateral_centre, Polygone_regulier_centre,
                                 Losange, Mediatrice, Triangle_isocele_rectangle,
-                                Triangle_rectangle, contexte, Sommet, Cote,
+                                Triangle_rectangle, contexte, Sommet, Cote, Feuille,
                                 )
 
 # def test_Cote():
@@ -312,3 +312,16 @@ def test_Cote():
     d0 = Cote(p, 0, couleur='pink')
     assert d0 is c0
     assert c0.style('couleur') == 'pink'
+
+def test_cotes_sommets():
+    # Teste qu'on puisse enregistrer plusieurs fois le même sommet ou le même
+    # côté sur la feuille sans erreur
+    f = Feuille()
+    p = f.objets.p = Parallelogramme()
+    assert f.objets.S1 is p.sommets[3]
+    assert f.objets.c1 is p.cotes[0]
+    # Ne doit pas renvoyer d'erreur :
+    f.objets.S1 = Sommet(p, 3)
+    f.objets.c1 = Cote(p, 0)
+    assert f.objets.S1 is p.sommets[3]
+    assert f.objets.c1 is p.cotes[0]
