@@ -12,7 +12,8 @@ from wxgeometrie.geolib.tests.geotestlib import rand_pt
 from wxgeometrie.geolib import (Triangle_rectangle, DescripteurFeuille, Point, Segment,
                     Vecteur, Fonction, Variable, Feuille, Angle, contexte, Arc_cercle,
                     Texte, Droite, Carre, Triangle, Polygone, Cercle, Parallelogramme,
-                    NOM, Droite_equation, Cercle_equation, Courbe, FORMULE, Formule
+                    NOM, Droite_equation, Cercle_equation, Courbe, FORMULE, Formule,
+                    Representant
                     )
 from wxgeometrie.geolib.routines import nice_display
 from wxgeometrie.geolib.feuille import parse_equation, is_equation
@@ -157,6 +158,17 @@ def test_nommage_intelligent_lent():
     s = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     p = f.objets[s] = Polygone(26)
     assert(list(pt.nom for pt in p.points) == list(s))
+
+
+def test_nommage_intelligent_vecteur_et_representant():
+    f = Feuille()
+    o = f.objets
+    o.AB = Vecteur()
+    assert(o.AB.point1.nom == "A")
+    assert(o.AB.point2.nom == "B")
+    o.CD = Representant(o.AB)
+    assert(o.CD.origine.nom == "C")
+    assert(o.CD.extremite.nom == "D")
 
 
 def test_acces_objets():

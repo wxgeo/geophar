@@ -67,14 +67,14 @@ class Cote(Segment):
             # feuille, des côtés vont être créés automatiquement à la création
             # du polygone, puis de nouveau lorsque `c0 = Cote(p, 0, ...)` va
             # être exécuté.
-            # Attention, Cote.__init__() va être appelé de nouveau !
             return polygone.cotes[n]
+            # Attention, Cote.__init__() va être appelé de nouveau !
         except (AttributeError, IndexError):
             cote = object.__new__(cls)
             return cote
 
     def __init__(self, polygone, n, **styles):
-        if not hasattr(self, "_style"):
+        if not self._initialise:
             self.__polygone = polygone
             self.__n = n
             sommets = polygone._Polygone_generique__sommets
@@ -109,6 +109,15 @@ class Cote(Segment):
         self.__polygone.supprimer()
 
 
+# Pourquoi une classe Sommet ?
+# - afin de clarifier l'affichage de geolib (par ex, pour un parallélogramme,
+#   le titre "Sommet S1" est plus explicite que "Barycentre S1",
+#   qui reflète des détails d'implémentation).
+# - pour des questions de dépendance : le sommet S1 dépend du parallélogramme, alors
+#   que le barycentre qui est utilisé pour la construction ne dépend que des
+#   3 autres points du parallélogramme.
+
+
 
 class Sommet(Point_generique):
     u"""Un sommet.
@@ -136,14 +145,14 @@ class Sommet(Point_generique):
             # feuille, des sommets vont être créés automatiquement à la création
             # du polygone, puis de nouveau lorsque `S0 = Sommet(p, 0, ...)` va
             # être exécuté.
-            # Attention, Sommet.__init__() va être appelé de nouveau !
             return polygone.sommets[n]
+            # Attention, Sommet.__init__() va être appelé de nouveau !
         except (AttributeError, IndexError):
             sommet = object.__new__(cls)
             return sommet
 
     def __init__(self, polygone, n, **styles):
-        if not hasattr(self, "_style"):
+        if not self._initialise:
             self.__polygone = polygone
             self.__n = n
             Point_generique.__init__(self, **styles)
@@ -249,70 +258,48 @@ class Polygone_generique(Objet):
             pt._Point__y = y0 + k*sin(t)
 
 
-    def _set_feuille(self):
-        n = len(self.__points)
-        # On enregistre sur la feuille les arguments créés par défauts qui doivent l'être
-        if hasattr(self,  "_valeurs_par_defaut")\
-                and self._valeurs_par_defaut:
-            # On essaie d'éviter un polygone croisé
-            if len(self._noms_arguments) == n:
-                args = [arg for nom, arg in self._iter_arguments]
+    def on_register(self):
+        u"""Enregistre les côtés et les sommets du polygone dans la feuille lors
+        de l'enregistrement du polygone."""
+        # On enregistre tous les côtés dans la feuille.
+        for cote in self.__cotes:
+            self.feuille.objets.add(cote)
+
+        # on enregistre ensuite les sommets.
+        # On essaie de nommer intelligemment les sommets.
+        # Par exemple, si un rectangle s'appelle ABCD, les points libres
+        # s'appelleront si possible A et B, et les deux autres sommets
+        # s'appelleront C et D.
+        sommets = []
+        noms_args, args = zip(*self._iter_arguments)
+        for sommet, point in zip(self.__sommets, self.__points):
+            sommets.append(point if is_in(point, args) else sommet)
+
+        n = len(sommets)
+
+        noms = re.findall(RE_NOM_OBJET, self._nom)
+        if ''.join(noms) == self._nom and len(noms) == n:
+            for sommet, nom in zip(sommets, noms):
+                if sommet._nom and sommet._nom != nom:
+                    noms = n*['']
+                    break
+        else:
+            noms = n*['']
+
+        add = self.feuille.objets.add
+        for sommet, nom in zip(sommets, noms):
+            if not sommet._nom:
+                add(sommet, nom_suggere=nom)
+
+        if self._valeurs_par_defaut:
+            # Par défaut, on essaie d'éviter un polygone croisé, à l'aide
+            # de la méthode `._affecter_coordonnees_par_defaut()`.
+            if len(args) == n:
                 if all(isinstance(arg, Point) for arg in args):
                     self._affecter_coordonnees_par_defaut(args)
-            if not self._style.has_key("_noms_"):
-                noms = re.findall(RE_NOM_OBJET, self._nom)
-                noms_args, args = zip(*self._iter_arguments)
-                correspondance = True
-                # On tente de détecter via le nom  de l'objet le nom que doit prendre chacun de ses arguments.
-                # Par exemple, si un rectangle s'appelle ABCD, alors les points qui le constituent
-                # doivent prendre pour noms A, B, C et D.
-                if len(noms) == n:
-                    for i in xrange(n):
-                        if self.__points[i]._nom != "" and self.__points[i]._nom != noms[i]:
-                            correspondance = False
-                            break
-                else:
-                    correspondance = False
-                if correspondance:
-                    self._style["_noms_"] = {"sommets": n*[""], "cotes": n*("", )}
-                    mode = "points"
-                    for i in xrange(n):
-                        if mode == "points":
-                            if i < len(args) and is_in(args[i], self.__points):
-                                if "_" + self.__class__.__name__ + "__" + noms_args[i] in self._valeurs_par_defaut:
-                                    self.feuille.objets[noms[i]] = args[i]
-                            else:
-                                mode = "sommets"
-                        if mode == "sommets":
-                            self._style["_noms_"]["sommets"][i] = noms[i]
-                    self._style["_noms_"]["sommets"] = tuple(self._style["_noms_"]["sommets"])
-                # Échec du nommage intelligent : on se rabat sur des noms aléatoires
-                else:
-                    for nom_arg in self._valeurs_par_defaut:
-                        self.feuille.objets[''] = getattr(self, nom_arg)
-                self._valeurs_par_defaut = []
-
-        # On référence automatiquement tous les côtés et sommets du polygone dans la feuille.
-        # (En particulier, en mode graphique, cela permet de faire apparaitre tous les sommets du polygone lorsque celui-ci est créé)
-        points_feuille = self.feuille.objets.lister(Point_generique)
-        noms = self._style.get("_noms_", {"sommets": n*("", ), "cotes": n*("", )})
-        for i in xrange(n):
-            # On enregistre le sommet seulement si le point correspondant n'est
-            # pas enregistré dans la feuille.
-            # Par exemple, `Carre(A, B)` a déjà deux points (A et B) enregistrés
-            # dans la feuille. On enregistre uniquement les deux derniers sommets.
-            if not is_in(self.__points[i], points_feuille):
-                nom = noms["sommets"][i]
-                self.feuille.objets[nom] = self.__sommets[i]
-            nom = noms["cotes"][i]
-            self.feuille.objets[nom] = self.__cotes[i]
-        # Exceptionnellement, il ne faut pas faire appel à la méthode Objet._set_feuille.
+            self._valeurs_par_defaut = []
 
 
-    def __repr__(self, *args, **kwargs):
-        self.style(_noms_ = { "sommets" : tuple(sommet.nom for sommet in self.__sommets),
-                                        "cotes": tuple(cote.nom for cote in self.__cotes)})
-        return Objet.__repr__(self, *args, **kwargs)
 
     @property
     def centre(self):
@@ -499,28 +486,17 @@ class Polygone(Polygone_generique):
         self.__points = points = tuple(Ref(obj) for obj in points)
         Polygone_generique.__init__(self, *points, **styles)
 
-    def _set_feuille(self):
+
+    def on_register(self):
         if self._points_crees_automatiquement:
-            self._affecter_coordonnees_par_defaut(self.__points)
+            args = self.__points
+            self._affecter_coordonnees_par_defaut(args)
             # Nommage intelligent des sommets par défaut
             noms = re.findall(RE_NOM_OBJET, self._nom)
-            if "".join(noms) == self._nom and len(self.__points) == len(noms):
-                for arg, nom in zip(self.__points, noms):
-                    if self.feuille.objets.has_key(nom):
-                        nom = ''
-                    self.feuille.objets[nom] = arg
-            else:
-                for point in self.__points:
-                    self.feuille.objets[''] = point
-        Objet._set_feuille(self)
-
-
-
-
-
-
-
-
+            if "".join(noms) != self._nom or len(args) != len(noms):
+                noms = len(args)*['']
+            for arg, nom in zip(args, noms):
+                self.feuille.objets.add(arg, nom_suggere=nom)
 
 
 class Triangle(Polygone_generique):

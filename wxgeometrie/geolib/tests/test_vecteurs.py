@@ -5,7 +5,9 @@ from random import random
 from math import sqrt
 
 from tools.testlib import assertAlmostEqual, assertEqual
-from wxgeometrie.geolib import Point, Vecteur_unitaire, Vecteur, Vecteur_libre, Representant, Label_vecteur, Somme_vecteurs
+from wxgeometrie.geolib import Point, Vecteur_unitaire, Vecteur, Vecteur_libre, \
+                               Representant, Label_vecteur, Somme_vecteurs, \
+                               Extremite
 
 
 def setUp():
@@ -59,3 +61,13 @@ def test_Somme_vecteurs():
     assert(tuple(vec.coordonnees) == (23, -19))
     assertEqual(type(vec.coordonnees),  tuple)
     assertEqual(vec.coordonnees,  Somme_vecteurs((u, v, w), (2, 1, -5)).coordonnees)
+
+def test_Extremite():
+    v=Vecteur_libre(-4.2, -6.7)
+    w = Representant(v)
+    A = w.origine
+    B = w.extremite
+    assertAlmostEqual((B.x - A.x, B.y - A.y), (v.x, v.y))
+    C = Extremite(w, couleur = 'purple')
+    assert C is B
+    assert C.style('couleur') == 'purple'

@@ -37,7 +37,7 @@ def test_toutes_classes():
     assert 'Carre' in classes_testees, str(classes_testees)
 
     #TODO: tester ces classes restantes.
-    skip_test = set(['Texte_translation', 'Texte_rotation', 'Extremite',
+    skip_test = set(['Texte_translation', 'Texte_rotation',
                      'Point_tangence', 'Mul', 'Cube', 'Sommet_triangle_isocele',
                      'Axe', 'Glisseur_vecteur', 'Add', 'Arete', 'Variable',
                      'Texte_homothetie', 'Label_vecteur', 'Sommet_polyedre', 'Sommet_rectangle',

@@ -66,10 +66,10 @@ def test_polygones_et_representants_de_vecteurs():
     f.objets.C = C = rand_pt()
     f.objets.p = Parallelogramme(A, B, C)
     f.objets.S1.renommer("D")
-    s = repr(f.objets.p)
+    s = 'p=%s\nD=%s' % (repr(f.objets.p), repr(f.objets.D))
     del f.objets.p
     assert("D" not in f.objets)
-    exec("p=" + s, f.objets)
+    exec(s, f.objets)
     assert("D" in f.objets)
     assert(f.objets.D is f.objets.p.sommets[3])
 

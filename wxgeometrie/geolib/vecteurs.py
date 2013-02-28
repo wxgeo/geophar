@@ -26,9 +26,12 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 from random import uniform, normalvariate
 from numpy import ndarray
+import re
 
-from .objet import Argument, Arguments, Ref, Objet_avec_coordonnees, Objet, G,\
-                    contexte, TYPES_REELS, Objet_avec_coordonnees_modifiables
+from .objet import (Argument, Arguments, Ref, Objet_avec_coordonnees, Objet, G,
+                    contexte, TYPES_REELS, Objet_avec_coordonnees_modifiables,
+                    RE_NOM_OBJET
+                    )
 from .points import Point, Point_generique, Point_final
 from .variables import Variable_generique
 from .routines import norme, vect
@@ -351,9 +354,26 @@ class Extremite(Point_generique):
 
     representant = __representant = Argument("Representant")
 
+    def __new__(cls, representant, **styles):
+        try:
+            # Si l'extrémité existe déjà, on la retourne simplement.
+            # Ceci évite de la créer en double, lorsque la feuille
+            # est sauvegardée puis rechargée. En effet, lors du chargement de la
+            # feuille, des extrémités vont être créés automatiquement à la création
+            # du réprésentant, puis de nouveau lorsque `M1 = Extremite(v, ...)` va
+            # être exécuté.
+            return representant.extremite
+            # Attention, Extremite.__init__() va être appelé de nouveau !
+        except AttributeError:
+            extremite = object.__new__(cls)
+            return extremite
+
     def __init__(self, representant, **styles):
-        self.__representant = representant = Ref(representant)
-        Point_generique.__init__(self, **styles)
+        if not self._initialise:
+            self.__representant = representant = Ref(representant)
+            Point_generique.__init__(self, **styles)
+        else:
+            self.style(**styles)
 
     def _get_coordonnees(self):
         return self.__representant._Vecteur__point2.coordonnees
@@ -390,11 +410,22 @@ class Representant(Vecteur):
 #        self._autres_dependances.append(point2)
 
 
-    def _set_feuille(self):
-        nom = self._style.get("_noms_",  {"extremite": ""})["extremite"]
-        self.feuille.objets[nom] = self.__extremite
-
-
-    def __repr__(self, *args, **kwargs):
-        self.style(_noms_ = {"extremite": self.__extremite.nom})
-        return Objet.__repr__(self, *args, **kwargs)
+    def on_register(self):
+        u"""Lorsque le vecteur est enregistré dans la feuille, on enregistre
+        également son extrémité, et son origine si elle ne l'est pas déjà.
+        """
+        # On tente de nommer l'origine et l'extrémité du représentant de vecteur intelligemment.
+        # Si le représentant s'appelle AB, l'origine, si elle n'a pas de nom,
+        # va s'appeler A, et l'extrémité B.
+        nom_origine = nom_extremite = ''
+        noms = re.findall(RE_NOM_OBJET, self._nom)
+        if '_Representant__origine' in self._valeurs_par_defaut:
+            # L'origine a été générée automatiquement, il faut donc l'enregistrer
+            # dans la feuille.
+            if len(noms) == 2:
+                nom_origine, nom_extremite = noms
+            self.feuille.objets.add(self.__origine, nom_suggere=nom_origine)
+        # On enregistre l'extrémité dans la feuille.
+        if self.__origine._nom == noms[0]:
+            nom_extremite = noms[1]
+        self.feuille.objets.add(self.__extremite, nom_suggere=nom_extremite)

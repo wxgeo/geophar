@@ -63,7 +63,7 @@ def _detecter_modules():
 try:
     modules, descriptions_modules = _detecter_modules()
 except OSError:
-    print("Warning: impossible de détecter les modules !")
+    print(u"Warning: impossible de détecter les modules !")
     modules = []
     descriptions_modules = {}
 

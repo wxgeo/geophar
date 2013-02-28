@@ -458,7 +458,8 @@ class BaseArgument(object):
     def _definir(self, obj, value):
         self._definir_type()
         if not hasattr(obj, "_valeurs_par_defaut"):
-            # indique les arguments qui ont été initialisés avec une valeur par défaut
+            # Indique les arguments pour lesquels l'utilisateur n'a pas spécifié
+            # de valeur, et qui ont été initialisés avec une valeur par défaut.
             obj._valeurs_par_defaut = []
         if not isinstance(value, Ref):
             raise TypeError, "l'argument doit etre encapsule dans un objet 'Ref' lors d'une premiere definition."
@@ -763,7 +764,6 @@ class Objet(object):
 
             # Valeurs mises en cache (coordonnées, etc.)
             self._cache = Cache()
-
 
             # gestion des styles par défaut
             self._creer_style_par_defaut()
@@ -1187,28 +1187,62 @@ class Objet(object):
 
 
     def _set_feuille(self):
-        if hasattr(self,  "_valeurs_par_defaut") and self._valeurs_par_defaut:
+        u"""Actions à effectuer lorsque l'objet est rattaché à une feuille.
+
+        ::note::
+
+        Attention, "rattaché à une feuille" signifie simplement que objet.feuille
+        est désormais défini.
+        Cela ne signifie *pas* que l'objet est explicitement référencé dans la
+        feuille (il n'a pas forcément de nom, et n'apparaît pas forcément
+        sur le graphique ; il peut être seulement un intermédiaire de construction).
+
+        À surclasser.
+        """
+
+
+    def on_register(self):
+        u"""Actions à effectuer lorsque l'objet est enregistré dans la feuille.
+
+        ::note::
+
+        "Enregistré" signifie que l'objet est explicitement référencé dans la
+        feuille (il a un nom, et apparaît généralement sur le graphique).
+
+        Cette méthode provoque l'enregistrement sur la feuille des arguments de
+        l'objet, dans le cas où ceux-ci sont des valeurs par défaut.
+
+        À surclasser éventuellement.
+        """
+        if getattr(self, '_valeurs_par_defaut', None):
             noms_args, args = zip(*self._iter_arguments)
-            correspondance = False
+            dict_noms = {}
             # On tente de détecter via le nom  de l'objet le nom que doit prendre chacun de ses arguments.
-            # Par exemple, si un rectangle s'appelle ABCD, alors les points qui le constituent
-            # doivent prendre pour noms A, B, C et D.
+            # Par exemple, si un triangle s'appelle ABC, alors les points qui le constituent
+            # doivent prendre pour noms A, B et C.
             if all(isinstance(arg, G.Point_generique) for arg in args):
                 noms = re.findall(RE_NOM_OBJET, self._nom)
-                if len(args) == len(noms):
-                    correspondance = True
-                    for i in xrange(len(args)):
-                        if args[i]._nom != "" and args[i]._nom != noms[i]:
-                            correspondance = False
+                if ''.join(noms) == self._nom and len(args) == len(noms):
+                    for arg, nom in zip(args, noms):
+                        if arg._nom and arg._nom != nom:
+                            # Échec du nommage intelligent : on se rabat sur des noms aléatoires.
                             break
-                    if correspondance:
-                        for i in xrange(len(args)):
-                            if "_" + self.__class__.__name__ + "__" + noms_args[i] in self._valeurs_par_defaut:
-                                self.feuille.objets[noms[i]] = args[i]
-            # Échec du nommage intelligent : on se rabat sur des noms aléatoires
-            if not correspondance:
-                for nom_arg in self._valeurs_par_defaut:
-                    self.feuille.objets[''] = getattr(self, nom_arg)
+                    else:
+                        dict_noms = dict(zip(noms_args, noms))
+
+            for nom_arg in self._valeurs_par_defaut:
+                nom_arg = nom_arg.split('__', 1)[1]
+                arg = getattr(self, nom_arg)
+                # Il n'est pas forcément utile d'enregistrer *tous* les arguments par défaut
+                # dans la feuille. Par exemple, lorsqu'on crée un point avec la
+                # commande `=Point()`, les variables correspondant à x et y n'ont pas
+                # d'être enregistrées dans la feuille.
+                # On n'enregistre que les arguments potentiellement visibles
+                # sur le graphique.
+                if arg.visible:
+                    nom = dict_noms.get(nom_arg, '')
+                    self.feuille.objets.add(arg, nom_suggere=nom)
+
             self._valeurs_par_defaut = []
 
 

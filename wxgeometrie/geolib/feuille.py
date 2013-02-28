@@ -285,11 +285,16 @@ class Dictionnaire_objets(dict):
         self.update(d)
 
 
-    def add(self, valeur):
+    def add(self, valeur, nom_suggere=''):
         u"""Ajoute l'objet `valeur` à la feuille.
 
-        Un nom lui est automatiquement attribué."""
-        self["_"] = valeur
+        Si `nom_suggere` est donné, et que le nom suggéré n'est pas déjà
+        utilisé, l'objet est référencé sous ce nom.
+        Sinon, un nom lui est automatiquement attribué.
+        """
+        if nom_suggere and nom_suggere in self:
+            nom_suggere = ''
+        self[nom_suggere] = valeur
 
 
     def _dereferencer(self, objet):
@@ -355,7 +360,8 @@ class Dictionnaire_objets(dict):
                     print_error()
                 if self.__renommer_au_besoin:
                     new = feuille.nom_aleatoire(valeur, prefixe=nom)
-                    print("Warning: '%s' renommé en '%s'." %(nom, new))
+                    if param.debug:
+                        print("Warning: '%s' renommé en '%s'." %(nom, new))
                     nom = self.__tmp_dict[nom] = new
                 else:
                     self.erreur(u"Ce nom est d\xe9ja utilis\xe9 : " + nom, NameError)
@@ -418,9 +424,6 @@ class Dictionnaire_objets(dict):
 
         self.__verifier_syntaxe_nom(valeur, nom)
 
-
-        # On enregistre le nom (éventuellement provisoire) car la méthode '_set_feuille' de l'objet en a besoin.
-        valeur._nom = nom
         valeur.feuille = feuille
 
         if nom == "_":
@@ -430,20 +433,21 @@ class Dictionnaire_objets(dict):
             if valeur.mode_affichage == NOM:
                 valeur.label(mode = RIEN)
 
-        # les objets commencant par "_" ne sont pas affichés par défaut (pure convention) :
+        # Les objets dont le nom commence par "_" ne sont pas affichés par défaut (pure convention) :
         if nom[0] == "_":
             valeur.style(visible = False)
 
-##        if is_in(valeur, self.itervalues()):
-##            # si l'objet est deja reference sur la feuille, on en fait une copie.
-##            valeur = valeur.copy() # ainsi, A = B est remplace par A = B.copy()
-
+        # Enregistrement de l'objet dans la feuille.
         dict.__setitem__(self, nom, valeur)
-##        dict.__setattr__(self,  "__derniere_valeur__", weakref.ref(valeur))
         valeur._nom = nom
+        valeur.on_register()
+
+        # L'attribut `_timestamp` permet de classer les objets par date de création.
+        # (Il sert essentiellement à pouvoir supprimer le dernier objet créé.)
         valeur._timestamp = self.__timestamp
         object.__setattr__(self, "_Dictionnaire_objets__timestamp", self.__timestamp + 1)
-##        valeur.creer_figure(True)
+
+        # Indiquer que la feuille doit être rafraichie (l'affichage notamment).
         self.feuille._actualiser_liste_objets = True
         self.feuille.affichage_perime()
 
