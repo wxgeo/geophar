@@ -43,6 +43,8 @@ class App(QApplication):
                       QLibraryInfo.location(QLibraryInfo.TranslationsPath))
         self.installTranslator(translator)
         self._print_signal.connect(self._print)
+        # Pour Mac OS X
+        self.setAttribute(Qt.AA_DontUseNativeMenuBar)
 
     def boucle(self):
         self.exec_()

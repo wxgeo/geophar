@@ -75,17 +75,18 @@ if not options.script:
     app.icone(u"%/wxgeometrie/images/icone.ico")
 
 if param.py2exe:
-    # cf. py2exe/boot_common.py
-    # Par défaut dans py2exe, sys.stdout redirige nul part,
-    # et sys.stderr redirige vers un fichier .log via un mécanisme assez élaboré
-    sys._py2exe_stderr = sys.stderr
-    sys._py2exe_stdout = sys.stdout
-    def msgbox(titre='Message', texte='', MB=sys._py2exe_stderr.write.func_defaults[0]):
-        MB(0, texte.encode(param.encodage), titre.encode(param.encodage))
-    # Outil de débogage avec py2exe
-    def _test(condition = True):
-        msgbox('** Test **', ('Success !' if condition else 'Failure.'))
-
+    # Ce qui suit concerne seulement py2exe, et non py2app.
+    if param.plateforme != 'Darwin':
+        # cf. py2exe/boot_common.py
+        # Par défaut dans py2exe, sys.stdout redirige nul part,
+        # et sys.stderr redirige vers un fichier .log via un mécanisme assez élaboré
+        sys._py2exe_stderr = sys.stderr
+        sys._py2exe_stdout = sys.stdout
+        def msgbox(titre='Message', texte='', MB=sys._py2exe_stderr.write.func_defaults[0]):
+            MB(0, texte.encode(param.encodage), titre.encode(param.encodage))
+        # Outil de débogage avec py2exe
+        def _test(condition = True):
+            msgbox('** Test **', ('Success !' if condition else 'Failure.'))
 else:
     # Ne pas faire ces tests avec py2exe (non seulement inutiles, mais en plus ils échouent).
     # Make sure I have the right Python version.
