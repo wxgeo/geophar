@@ -77,7 +77,7 @@ class CustomStrPrinter(StrPrinter):
             for a in expr.atoms():
                 if a.is_Rational and isinstance(a, Decim):
                     dico[a] = Float(a, prec=a.prec)
-            expr = expr.subs(dico)
+            expr = expr.subs(dico).subs(Float(1), S.One)
         elif isinstance(expr, (list, tuple)):
             return expr.__class__(conv(item) for item in expr)
         elif isinstance(expr, dict):
@@ -204,6 +204,7 @@ class CustomLatexPrinter(LatexPrinter):
         return self._print_Float(Float(expr, prec=expr.prec))
 
     def doprint(self, expr):
+        ##expr = expr.subs(Float(1), S.One)
         tex = LatexPrinter.doprint(self, expr)
         return tex.replace(r'\operatorname{', r'\mathrm{')
 

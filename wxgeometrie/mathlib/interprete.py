@@ -27,7 +27,7 @@ import re, math, types
 import  numpy
 
 import sympy
-from sympy import Symbol, Basic, Float, sympify, nsimplify
+from sympy import Symbol, Basic, Float, sympify, nsimplify, S
 
 from .intervalles import Ensemble
 from .printers import custom_str, custom_latex
@@ -37,7 +37,7 @@ from . import sympy_functions
 from ..mathlib import end_user_functions
 from ..pylib import print_error, split_around_parenthesis, regsub,\
                     securite
-from .parsers import simplifier_ecriture, NBR, traduire_formule
+from .parsers import simplifier_ecriture, NBR, traduire_formule, NBR_FLOTTANT
 from .. import param
 
 
@@ -96,11 +96,6 @@ class Interprete(object):
         * `simplifier_ecriture_resultat`: Écrire le résultat sous une forme plus
           agréable à lire (suppression des '*' dans '2*x', etc.)
         * `separateur_decimal`: point ou virgule (',' par défaut)
-        * `convertir_decimaux_en_fractions`: convertit automatiquement les
-          décimaux entrés en fraction. Ceci améliore la résolution des équations
-          notamment. Les fractions sont utilisées à la place des décimaux pour
-          le calcul interne, puis elles sont reconverties en décimaux au moment
-          de l'affichage.
         * `formatage_OOo`: convertir et interpréter les formules OpenOffice
           ou LibreOffice
         * `formatage_LaTeX`: convertir et interpréter les formules LaTeX
@@ -120,7 +115,6 @@ class Interprete(object):
                         forme_algebrique=True,
                         simplifier_ecriture_resultat=True,
                         separateur_decimal=',',
-                        convertir_decimaux_en_fractions=True,
                         formatage_OOo=True,
                         formatage_LaTeX=True,
                         ecriture_scientifique_decimales=2,
@@ -151,6 +145,7 @@ class Interprete(object):
                 "range": numpy.arange,
                 "arange": numpy.arange,
                 "frac": self._frac,
+                "Decim": Decim,
                             })
         # pour éviter que les procédures de réécriture des formules ne touchent au mots clefs,
         # on les référence comme fonctions (elles seront inaccessibles, mais ce n'est pas grave).
@@ -177,7 +172,6 @@ class Interprete(object):
         self.ecriture_scientifique = ecriture_scientifique
         # mettre les résultats complexes sous forme algébrique
         self.forme_algebrique = forme_algebrique
-        self.convertir_decimaux_en_fractions = convertir_decimaux_en_fractions
         # Écrire le résultat sous une forme plus agréable à lire
         # (suppression des '*' dans '2*x', etc.)
         self.simplifier_ecriture_resultat = simplifier_ecriture_resultat
@@ -196,17 +190,12 @@ class Interprete(object):
         self.latex_dernier_resultat = ''
         self.initialiser()
 
-    def _decimal(self, nbr, prec=None, fractions=None):
-        u"""Convertit en flottant, ou en fraction avec affichage décimal,
-        selon le mode.
+    def _decimal(self, nbr, prec=None):
+        u"""Convertit en fraction avec affichage décimal.
         """
         if prec is None:
             prec = self.precision_calcul
-        if fractions is None:
-            fractions = self.convertir_decimaux_en_fractions
-        if fractions:
-            return Decim(nsimplify(nbr, rational=True), prec=prec)
-        return Float(nbr, prec)
+        return Decim(nsimplify(nbr, rational=True), prec=prec)
 
     def _frac(self, arg):
         u"""Convertit en fraction.
@@ -308,6 +297,8 @@ class Interprete(object):
 
     def _formater(self, valeur):
 ##        resultat = self._formatage_simple(valeur)
+        if isinstance(valeur, Basic):
+            valeur = valeur.subs(Float(1), S.One)
         resultat = custom_str(valeur)
         if valeur is None:
             latex = ""
@@ -473,6 +464,8 @@ class Interprete(object):
     def load_state(self, state):
         def evaltry(expr):
             u"Evalue l'expression. En cas d'erreur, intercepte l'erreur et retourne None."
+            #XXX: ne pas remplacer à l'intérieur d'une chaîne.
+            expr = re.sub(NBR_FLOTTANT, (lambda x: "Decim('%s')" % x.group()), expr)
             try:
                 return eval(expr, self.globals, self.locals)
             except Exception:
