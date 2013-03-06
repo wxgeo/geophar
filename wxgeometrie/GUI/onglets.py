@@ -532,8 +532,10 @@ class Onglets(QTabWidget):
     def ChargerSession(self):
         filtre = self.filtre_session
         path = self._nom_fichier_session
-        path, filtre = QFileDialog.getOpenFileNameAndFilter(self, u"Choisissez un fichier de session",
-                                           path, filtre, filtre)
+        path, filtre = QFileDialog.getOpenFileNameAndFilter(self,
+                            u"Choisissez un fichier de session",
+                            path or path2(param.emplacements['session']),
+                            filtre, filtre)
         if path:
             if not path.endswith('.geos'):
                 path += '.geos'
