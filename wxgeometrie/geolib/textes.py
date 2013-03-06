@@ -210,6 +210,7 @@ class Texte_editable_generique(Texte_generique):
     def _set_texte(self, value):
         if not isinstance(value, unicode):
             value = uu(value)
+        value = value.replace("_prime", "'")
         if self._initialise and self._style['mode'] == FORMULE:
             self.formule = value
         # Il faudra vérifier que le texte ne provoque pas d'erreur

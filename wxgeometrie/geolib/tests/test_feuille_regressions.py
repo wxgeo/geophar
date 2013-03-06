@@ -92,3 +92,9 @@ def test_issue_252():
     assertAlmostEqual(f.objets.a, -2.6)
     f.executer("=Point(-1,5 ; g2(-1,5))")
     assertAlmostEqual(f.objets.M2.xy, (-1.5, -3.5))
+
+def test_issue_250():
+    # «'» transformé en «_prime»
+    f = Feuille()
+    f.executer("txt=`prix unitaire en milliers d'euros`")
+    assert f.objets.txt.texte == "prix unitaire en milliers d'euros"
