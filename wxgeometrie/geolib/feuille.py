@@ -264,7 +264,7 @@ class Dictionnaire_objets(dict):
         self.update(pi = PI, e = E, oo = oo, \
                     Intervalle = Intervalle, Union = Union, \
                     x = Symbol("x"), y = Symbol("y"), z = Symbol("z"), \
-                    t = Symbol("t"))
+                    t = Symbol("t"), range=range, xrange=xrange)
 
         self.update(pause = self.feuille.pause, erreur = self.feuille.erreur,
                     effacer = self.feuille.effacer,

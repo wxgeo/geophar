@@ -219,6 +219,40 @@ def filtre_versions_anterieures(fgeo):
             if version < [12, 8]:
                 figures[i] = figures[i].replace("DemiPlan(", "Demiplan(")
 
+            if version < [13, 1]:
+                # Patch partiel, mais au moins les figures se chargent
+                lignes = figures[i].split("\n")
+                remplace = (lambda r:r.group(0).replace('legende', 'mode'))
+
+                RE_LABEL = re.compile(", 'label': (u?'[^']*')")
+                RE_STYLE = re.compile(r'([^(]+)\.style\(\*\*{')
+                RE_TEXTE = re.compile(r'[^(]+(Texte\()')
+                RE_LEGENDE = re.compile(", 'legende': [0-3]")
+
+                for j, ligne in enumerate(lignes):
+                    m1 = re.match(RE_STYLE, ligne)
+                    if m1 is None:
+                        m1 = re.match(RE_TEXTE, ligne)
+                    if m1 is not None:
+                        nom = m1.group(1)
+
+                    ligne = re.sub(RE_LEGENDE, remplace, ligne)
+                    m2 = re.search(RE_LABEL, ligne)
+                    if m2 is not None:
+                        ligne = ligne.replace(m2.group(0), '')
+                        txt = m2.group(1)
+                    if m1 is not None and m2 is not None:
+                        if '.etiquette' in nom:
+                            ligne += '\n%s.texte = %s' % (nom, txt)
+                        elif nom == 'Texte(':
+                            ligne = ligne.replace("Texte(''", "Texte(" + txt)
+                    ligne = re.sub(RE_LABEL, '', ligne)
+                    lignes[j] = ligne
+
+
+                figures[i] = '\n'.join(lignes)
+
+
     if fgeo.contenu.has_key("Courbe") and fgeo.module == 'traceur':
         courbes = fgeo.contenu["Courbe"]
         figures = fgeo.contenu["Figure"]

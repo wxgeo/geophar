@@ -64,7 +64,7 @@ class Arete(Segment):
 
     def __new__(cls, polyedre, n, p, **styles):
         try:
-            return polyedres.aretes[n]
+            return polyedre.aretes[n]
             # Attention, Arete.__init__() va être appelé de nouveau !
         except (AttributeError, IndexError):
             arete = object.__new__(cls)

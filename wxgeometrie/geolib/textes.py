@@ -220,17 +220,16 @@ class Texte_editable_generique(Texte_generique):
 
     texte = __texte = Argument("unicode", _get_texte, _set_texte)
 
+    # Contiendra éventuellement une formule (si le mode formule est activé).
+    _formule = None
+
     def __init__(self, texte='', **styles):
         if not isinstance(texte, (Ref, unicode)):
             texte = uu(texte)
 
         self.__texte = texte = Ref(texte)
 
-        # Contiendra éventuellement une formule (si le mode formule est activé).
-        self._formule = None
-
         Texte_generique.__init__(self, **styles)
-
 
     @property2
     def formule(self, txt=no_argument):
