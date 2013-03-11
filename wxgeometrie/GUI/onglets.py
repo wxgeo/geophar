@@ -366,7 +366,11 @@ class Onglets(QTabWidget):
             self.onglet_actuel.sauvegarder(path)
 
 
-    def OpenFile(self, detecter_module=True):
+    def OpenFile(self, _event=None, detecter_module=True):
+        # `_event=None` est un argument factice, qui est sert à consommer le booléen
+        # renvoyé en argument lorsque OpenFile est lié au signal QAction.triggered.
+        # Cf. doc Qt :
+        # void QAction::triggered ( bool checked = false )   [signal]
         if param.rep_open is None:
             dir = param.repertoire
         else:
@@ -394,7 +398,7 @@ class Onglets(QTabWidget):
         u"""Ouvrir le fichier dans le module courant.
 
         Par défaut, sinon, le fichier est ouvert dans le module qui l'a crée."""
-        self.OpenFile(detecter_module = False)
+        self.OpenFile(detecter_module=False)
 
 
     def ouvrir(self, fichier, en_arriere_plan = False):
