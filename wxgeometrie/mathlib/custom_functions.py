@@ -118,7 +118,8 @@ def frac(valeur, n = 20, epsilon = 1e-15):
     if isinstance(valeur, Rational):
         if isinstance(valeur, Decim):
             valeur = valeur.to_Rational()
-    else:
+    elif isinstance(valeur, Basic) and valeur.is_number \
+            or isinstance(valeur, (float, int, long)):
         assert epsilon > 0
         p_ = 0
         p = 1
@@ -133,6 +134,14 @@ def frac(valeur, n = 20, epsilon = 1e-15):
             if abs(delta) < epsilon or abs(valeur - p/q) < epsilon:
                 return Rational(p, q)
             x = 1/delta
+    elif isinstance(valeur, (list, tuple)):
+        return expr.__class__(frac(item) for item in expr)
+    elif isinstance(valeur, Basic):
+        dico = {}
+        for a in valeur.atoms():
+            if isinstance(a, Decim):
+                dico[a] = frac(a)
+        return valeur.subs(dico)
     return valeur
 
 
