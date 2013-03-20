@@ -24,6 +24,7 @@ from itertools import chain
 from operator import attrgetter
 from string import ascii_lowercase
 
+import matplotlib
 from matplotlib.colors import colorConverter
 from matplotlib.transforms import Bbox
 from matplotlib.backends.backend_agg import FigureCanvasAgg
@@ -333,7 +334,10 @@ class Angle(Polygon):
             self.cost = ncos(t)
             self.sint = nsin(t)
             xy.extend(self.arc_angle(i=max(0, self.style.count(')') - 1)))
-        self.xy = xy
+        if matplotlib.__version__ < '1.1':
+            self.xy = xy
+        else:
+            self.xy = xy + [xy[0]]
 
     def arc_angle(self, i=0):
         r = self.rayon
@@ -353,7 +357,10 @@ class CodageAngle(Codage):
         Codage.__init__(self, canvas, **kw)
 
     def _maj_data(self):
-        lignes = [self.angle_associe.xy[1:]]
+        if matplotlib.__version__ < '1.1':
+            lignes = [self.angle_associe.xy[1:]]
+        else:
+            lignes = [self.angle_associe.xy[1:-1]]
         a, b = self.angle_associe.intervalle
         r = self.angle_associe.rayon
         x0, y0 = self.angle_associe.P # pixels
