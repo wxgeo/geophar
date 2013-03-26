@@ -304,9 +304,11 @@ def traduire_formule(formule='', fonctions=(), OOo=True, LaTeX=True,
     formule = formule.replace(u'\u2074',"**4").replace(u'\u2075',"**5").replace(u'\u2076',"**6")
     formule = formule.replace(u'\u2077',"**7").replace(u'\u2078',"**8").replace(u'\u2079',"**9")
 
-    # Caractères unicode
-    # remplace le tiret long en '-'
+    # Caractères unicode.
+    # Soustraction: remplace le tiret long en '-'.
     formule = formule.replace(u'\u2013', "-").replace(u'\u2212', "-")
+    # Division et multiplication
+    formule = formule.replace(u"\u00D7", "*").replace(u"\u00F7", "/")
 
 
     # Conversion écriture décimale infinie périodique -> fraction
