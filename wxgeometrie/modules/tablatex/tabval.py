@@ -30,13 +30,55 @@ from .tablatexlib import traduire_latex, maths
 from ...pylib import print_error
 from ... import param
 
+def _eval_math(chaine):
+    return float(eval(chaine, maths.__dict__))
 
-def tabval(chaine='', formatage_antecedents='VAL', formatage_images='VAL'):
-    u"""Syntaxe:
+
+def _auto_tabval(chaine='', formatage_antecedents='VAL', formatage_images='VAL', precision=0.01):
+
+    chaine_initiale = chaine
+
+    chaine = chaine.replace(param.separateur_decimal, ".")
+
+
+    m = re.match(r"(?P<fonction>[^:]+)"            # "f(x)=2x+3"
+                 r"[ ]+sur[ ]+"                    # " sur "
+                 r"\[(?P<intervalle>[^]]+)\]"      # "[-5;5]"
+                 r"(.*[ ]+pas[ ]+(de[ ]+)?"        # " avec un pas de "
+                 r"(?P<pas>[0-9.]+))?",            # "0,01"
+                 chaine)
+
+    # NOTA: Pour l'instant, seul un intervalle de la forme [a;b] est supporté.
+
+    if m is None:
+        raise ValueError, "Format incorrect."
+
+    fonction = m.group('fonction')
+    intervalle = m.group('intervalle')
+    pas = _eval_math(m.group('pas') or '1')
+
+
+    # Correction automatique: [-5,5] est remplacé par [-5;5]
+    # (Attention, toutes les virgules ont été converties en points auparavant !)
+    if ';' not in intervalle:
+        intervalle = intervalle.replace('.', ';')
+    a, b = intervalle.split(';')
+    a = _eval_math(a)
+
+    code = "%s:[%s]:%s,%s..%s" % (fonction, precision, a, a + pas, b)
+
+    if param.debug and param.verbose:
+        print 'Code TABVal:', code
+    return tabval(code, formatage_antecedents=formatage_antecedents, formatage_images=formatage_images) + '% ' + chaine_initiale + '\n'
+
+
+
+def tabval(chaine='', formatage_antecedents='VAL', formatage_images='VAL', precision=0.01):
+    ur"""Syntaxe:
 fonction: [precision d'arrondi]: 1ere valeur,2e valeur..valeur finale
 
 Exemples:
-\\sin(x): -5,-4.9..5
+\sin(x): -5,-4.9..5
 h(x)=sin(x)+1: [0.01]: -5,-4.5..0 ; 0,1..3
 
 Utilisez ; pour séparer plusieurs bloc de valeurs, et // pour indiquer
@@ -52,8 +94,17 @@ valeur du résultat.
 # f(x)=x+4:-5 -4+1..0
 
     chaine_originale = chaine = chaine.strip()
+
+    if ':' not in chaine:
+        return _auto_tabval(chaine, formatage_antecedents=formatage_antecedents,
+                                     formatage_images=formatage_images,
+                                     precision=precision)
+
     chaine = chaine.replace(r'\\', '\n').replace('//', '\n')
     sequence = chaine.split(":", 2)
+
+    if len(sequence) == 3:
+        precision = _eval_math(sequence[1].strip('[] '))
 
     legende = [txt.strip() for txt in sequence[0].split("=", 1)]
     if len(legende) == 2:
@@ -73,7 +124,6 @@ valeur du résultat.
         # Si on n'en trouve pas, la variable sera 'x'
         variable = m.group() if m else 'x'
 
-    precision = (float(eval(sequence[1].strip('[] '), maths.__dict__)) if len(sequence) == 3 else 0.01)
 
     lignes = [txt.strip() for txt in sequence[-1].split('\n') if txt.strip()]
 

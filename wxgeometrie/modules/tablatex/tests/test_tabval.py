@@ -44,7 +44,7 @@ $f(x)$ & $0$  & $0$  & $0,25$ & $0,25$ & $1$  & $2,75$ & $4,5$ & $7,5$ & $20$ & 
     assert_tabval(s, tab)
 
 
-def test_mode_auto():
+def test_coupure():
     s = "(2x+3)^2:-10..0// 1..10"
     tab = \
 r"""\begin{center}
@@ -65,6 +65,40 @@ $(2x+3)^2$ & $25$ & $49$ & $81$ & $121$ & $169$ & $225$ & $289$ & $361$ & $441$ 
 \end{tabular}
 \end{center}
 % (2x+3)^2:-10..0// 1..10
+"""
+    assert_tabval(s, tab)
+
+
+def test_mode_auto():
+    s = r"\frac{x^2}{2} sur [-4;4]"
+    tab = \
+r"""\begin{center}
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|}
+\hline
+$x$             & $-4$ & $-3$  & $-2$ & $-1$  & $0$ & $1$   & $2$ & $3$   & $4$ \\
+\hline
+$\frac{x^2}{2}$ & $8$  & $4,5$ & $2$  & $0,5$ & $0$ & $0,5$ & $2$ & $4,5$ & $8$ \\
+\hline
+\end{tabular}
+\end{center}
+% \frac{x^2}{2}:[0.01]:-4.0,-3.0..4
+% \frac{x^2}{2} sur [-4;4]
+"""
+    assert_tabval(s, tab)
+
+    s = r"\frac{x^2}{2} sur [-4;4] pas 0,5"
+    tab = \
+r"""\begin{center}
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|}
+\hline
+$x$             & $-4$ & $-3,5$ & $-3$  & $-2,5$ & $-2$ & $-1,5$ & $-1$  & $-0,5$ & $0$ & $0,5$  & $1$   & $1,5$  & $2$ & $2,5$  & $3$   & $3,5$  & $4$ \\
+\hline
+$\frac{x^2}{2}$ & $8$  & $6,13$ & $4,5$ & $3,13$ & $2$  & $1,13$ & $0,5$ & $0,13$ & $0$ & $0,13$ & $0,5$ & $1,13$ & $2$ & $3,13$ & $4,5$ & $6,13$ & $8$ \\
+\hline
+\end{tabular}
+\end{center}
+% \frac{x^2}{2}:[0.01]:-4.0,-3.5..4
+% \frac{x^2}{2} sur [-4;4] pas 0,5
 """
     assert_tabval(s, tab)
 

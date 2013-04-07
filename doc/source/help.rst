@@ -698,7 +698,28 @@ Si le logiciel n'arrive pas à déterminer le signe de la fonction, ou si l'on s
 Tableau de valeurs
 ------------------
 
-Pour obtenir un tableau de valeur, il faut saisir la fonction, les antécédents (séparés par des points-virgules), et (éventuellement) la précision souhaitée.
+Mode automatique
+~~~~~~~~~~~~~~~~
+
+Comme pour les tableaux de variations et de signes, il est possible de générer
+automatiquement le tableau de valeur, en rentrant la fonction, l'intervalle et
+éventuellement le pas (1 par défaut).
+
+*Exemple* :
+
+En saisissant ``f(x)=x^2 sur [-3;3] pas 0,5``, on obtient~:
+
+    .. image:: img/tabvalx2.png
+         :align: center
+
+
+
+Mode « expert »
+~~~~~~~~~~~~~~~
+
+Pour obtenir un tableau de valeur plus personnalisé, il faut utiliser la syntaxe avancée.
+
+Il faut saisir la fonction, les antécédents (séparés par des points-virgules), et (éventuellement) la précision souhaitée.
 
 La syntaxe est la suivante : *fonction: valeur1 ; valeur2 ; valeur3 ; ...* ou encore *fonction: [precision]: valeur1 ; valeur2 ; valeur3 ; ...*
 
