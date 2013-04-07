@@ -12,7 +12,7 @@ VERBOSE = False
 
 
 def assert_resultat(s, resultat, latex = None, **parametres):
-    i = Interprete(verbose = VERBOSE, **parametres)
+    i = Interprete(verbose=VERBOSE, **parametres)
     r, l = i.evaluer(s)
     if r != resultat:
         i = Interprete(verbose = True, **parametres)
@@ -152,7 +152,7 @@ def test_approches():
 
 
 def test_session():
-    i = Interprete(verbose = VERBOSE)
+    i = Interprete(verbose=VERBOSE)
     i.evaluer("1+7")
     i.evaluer("x-3")
     i.evaluer("ans()+ans(1)")
@@ -238,14 +238,14 @@ def test_issue_129():
     assert_resultat(r'""" "" """ + " \"\"\" "', r'" \"\"  \"\"\" "')
 
 def test_issue_185():
-    i = Interprete(verbose = VERBOSE)
+    i = Interprete(verbose=VERBOSE)
     i.evaluer("a=1+I")
     i.evaluer("a z")
     assertDernier(i, 'z*(1 + I)')
 
 
 def test_issue_206():
-    i = Interprete(verbose = VERBOSE)
+    i = Interprete(verbose=VERBOSE)
     etat_interne = \
 u"""_ = 0
 
@@ -260,7 +260,7 @@ u"""_ = 0
 
 
 def test_issue_206_bis():
-    i = Interprete(verbose = VERBOSE)
+    i = Interprete(verbose=VERBOSE)
     etat_interne = \
 u"""_ = 0
 
@@ -273,7 +273,7 @@ u"""_ = 0
 
 
 def test_issue_206_ter():
-    i = Interprete(verbose = VERBOSE)
+    i = Interprete(verbose=VERBOSE)
     etat_interne = \
 u"""_ = 0
 
@@ -286,7 +286,7 @@ u"""_ = 0
 
 
 def test_systeme():
-    i = Interprete(verbose = VERBOSE)
+    i = Interprete(verbose=VERBOSE)
     i.evaluer("g(x)=a x^3+b x^2 + c x + d")
     i.evaluer("resoudre(g(-3)=2 et g(1)=6 et g(5)=3 et g'(1)=0)")
     res = i.derniers_resultats[-1]
@@ -299,7 +299,7 @@ def test_ecriture_fraction_decimaux():
     # Cela évite la perte de précision inhérente aux calculs avec flottants.
     # Ce remplacement doit être autant que possible transparent pour l'utilisateur,
     # qui, s'il rentre des décimaux, doit voir des décimaux s'afficher.
-    i = Interprete(verbose = VERBOSE)
+    i = Interprete(verbose=VERBOSE)
     r, l = i.evaluer('0,3+0,8')
     assertEqual(r, '1,1')
     r, l = i.evaluer('a=1,7')
@@ -318,3 +318,19 @@ def test_ecriture_fraction_decimaux():
     assertEqual(r, '1/6')
     r, l = i.evaluer('frac(0,5x+0.3333333333333333)')
     assertEqual(r, 'x/2 + 1/3')
+
+def test_proba_stats_basic_API():
+    assert_resultat("inv_normal(.975)", "1,95996398612019")
+    assert_resultat("normal(-1.96, 1.96)", "0,950004209703559")
+    assert_resultat("normal(-1, 5, 7, 4)", "0,285787406777808")
+    assert_resultat("binomial(2, 5, 7, 0.3)", "0,666792")
+    assert_resultat("fluctu(0.54, 150)", "(0,460239799398447 ; 0,619760200601553)")
+    assert_resultat("confiance(0.27, 800)", "(0,234644660940673 ; 0,305355339059327)")
+
+
+@XFAIL
+def test_proba_stats_advanced_API():
+    r, l = i.evaluer('X = normal()')
+    r, l = i.evaluer('P(-1 < X < 1)')
+    r, l = i.evaluer('P(X >= 2)')
+    r, l = i.evaluer('P(X = 2)')

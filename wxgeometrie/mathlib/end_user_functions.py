@@ -52,19 +52,38 @@ arcsin = asin
 arccos = acos
 arctan = atan
 
-from .custom_functions import derivee, moyenne, variance, ecart_type, covariance, linreg, aide
+from .custom_functions import derivee, moyenne, variance, ecart_type, \
+                               covariance, linreg, aide, normal, binomial, \
+                               inv_normal, fluctu, confiance
 
 
 __classement__[u"Statistiques"].append((u"Moyenne", "moyenne", u"Moyenne de la série, éventuellement coefficientée."
                                      u" Ex: moyenne((12, 13, 15), (1, 1, 2))"))
 __classement__[u"Statistiques"].append((u"Variance", "variance", u"Variance de la série, éventuellement coefficientée."
                                      u" Ex: variance((12, 13, 15), (1, 1, 2))"))
-__classement__[u"Statistiques"].append((u"Écart-type", "ecart_type", u"Écart-type de la série, éventuellement coefficientée."
+__classement__[u"Statistiques"].append((u"Écart-type", "ecart_type",
+                        u"Écart-type de la série, éventuellement coefficientée."
                                      u" Ex: ecart_type((12, 13, 15), (1, 1, 2))"))
 __classement__[u"Statistiques"].append((u"Covariance", "covariance", u"Covariance de deux séries."
                                      u" Ex: covariance((1,2,3),(2,5,7))"))
-__classement__[u"Statistiques"].append((u"Droite de régression", "linreg", u"Retourne (a, b) pour une droite d'ajustement d'équation y=ax+b"
+__classement__[u"Statistiques"].append((u"Droite de régression", "linreg",
+                u"Retourne (a, b) pour une droite d'ajustement d'équation y=ax+b"
                                      u" (moindres carrés). Ex: linreg((1,2,3),(2,5,7))"))
+__classement__[u"Statistiques"].append((u"Loi normale", "normal",
+                u"Usage: normal(a, b, mu, sigma). Retourne P(a \u2264 X \u2264 b), où "
+                u"X suit une loi normale d'espérance mu et de variance sigma²."))
+__classement__[u"Statistiques"].append((u"Loi binomiale", "binomial",
+                u"Usage: normal(a, b, n, p). Retourne P(a \u2264 X \u2264 b), où "
+                u"X suit une loi binomiale de paramètres n et p."))
+__classement__[u"Statistiques"].append((u"Inverser la loi normale", "inv_normal",
+                u"Usage: inv_normal(p). Retourne a tel que P(X \u2264 a)=p, où "
+                u"X suit une loi normale centrée réduite."))
+__classement__[u"Statistiques"].append((u"Intervalle de fluctuation", "fluctu",
+                u"Usage: fluctu(p, n, seuil). Retourne l'intervalle de fluctuation "
+                u"pour un échantillon de taille n, et une proportion p."))
+__classement__[u"Statistiques"].append((u"Intervalle de confiance", "confiance",
+                u"Usage: estim95(f, n). Retourne l'intervalle de confiance "
+                u"pour un échantillon de taille n, et une fréquence f."))
 
 from .sympy_functions import expand
 developpe = expand
@@ -161,8 +180,8 @@ from sympy import ff
 arrangements = nAr = nA = ff
 __classement__[u"Arithmétique"].append((u"Arrangements", "nAr", u"Nombre d'arrangements."))
 
-from sympy import binomial
-combinaisons = binome = nCr = nC = Binomial = binomial
+from sympy import binomial as binome
+combinaisons = combi = nCr = nC = binome
 __classement__[u"Arithmétique"].append((u"Combinaisons", "nCr", u"Nombre de combinaisons."))
 
 from .sympy_functions import limit

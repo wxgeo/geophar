@@ -31,6 +31,8 @@ from types import FunctionType
 from sympy import (pi, E, Rational, Symbol, diff, log, floor,
                     sqrt, sympify, Float, nsimplify, Basic
                     )
+from sympy.stats import Normal, Binomial, P
+import sympy.stats
 from .custom_objects import Temps, Fonction, Decim
 from .printers import custom_str
 ##from .. import param
@@ -135,7 +137,7 @@ def frac(valeur, n = 20, epsilon = 1e-15):
                 return Rational(p, q)
             x = 1/delta
     elif isinstance(valeur, (list, tuple)):
-        return expr.__class__(frac(item) for item in expr)
+        return valeur.__class__(frac(item) for item in valeur)
     elif isinstance(valeur, Basic):
         dico = {}
         for a in valeur.atoms():
@@ -325,7 +327,134 @@ def aide(fonction):
                 return hlp
         return "Pas d'aide disponible."
 
+
 def arrondir(valeur, chiffres = 0):
     # Nombre de chiffres de la partie entière :
     n = floor(log(valeur, 10)) + 1
     return sympify(valeur).evalf(chiffres + n)
+
+
+def inv_normal(p):
+    """
+    Lower tail quantile for standard normal distribution function.
+
+    This function returns an approximation of the inverse cumulative
+    standard normal distribution function.  I.e., given P, it returns
+    an approximation to the X satisfying P = Pr{Z <= X} where Z is a
+    random variable from the standard normal distribution.
+
+    The algorithm uses a minimax approximation by rational functions
+    and the result has a relative error whose absolute value is less
+    than 1.15e-9.
+
+    Author:      Peter John Acklam
+    Time-stamp:  2000-07-19 18:26:14
+    E-mail:      pjacklam@online.no
+    WWW URL:     http://home.online.no/~pjacklam
+    """
+
+    if p <= 0 or p >= 1:
+        # The original perl code exits here, we'll throw an exception instead
+        raise ValueError("Argument to inv_normal %f must be in open interval (0,1)" % p)
+
+    # Coefficients in rational approximations.
+    a = (-3.969683028665376e+01,  2.209460984245205e+02, \
+         -2.759285104469687e+02,  1.383577518672690e+02, \
+         -3.066479806614716e+01,  2.506628277459239e+00)
+    b = (-5.447609879822406e+01,  1.615858368580409e+02, \
+         -1.556989798598866e+02,  6.680131188771972e+01, \
+         -1.328068155288572e+01 )
+    c = (-7.784894002430293e-03, -3.223964580411365e-01, \
+         -2.400758277161838e+00, -2.549732539343734e+00, \
+          4.374664141464968e+00,  2.938163982698783e+00)
+    d = (7.784695709041462e-03,  3.224671290700398e-01, \
+          2.445134137142996e+00,  3.754408661907416e+00)
+
+    # Define break-points.
+    plow  = 0.02425
+    phigh = 1 - plow
+
+    # Rational approximation for lower region:
+    if p < plow:
+       q  = math.sqrt(-2*math.log(p))
+       return (((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5]) / \
+               ((((d[0]*q+d[1])*q+d[2])*q+d[3])*q+1)
+
+    # Rational approximation for upper region:
+    if phigh < p:
+       q  = math.sqrt(-2*math.log(1-p))
+       return -(((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5]) / \
+                ((((d[0]*q+d[1])*q+d[2])*q+d[3])*q+1)
+
+    # Rational approximation for central region:
+    q = p - 0.5
+    r = q*q
+    return (((((a[0]*r+a[1])*r+a[2])*r+a[3])*r+a[4])*r+a[5])*q / \
+           (((((b[0]*r+b[1])*r+b[2])*r+b[3])*r+b[4])*r+1)
+
+
+def fluctu(probabilite, taille=1000, seuil=None):
+    u"""Intervalle de fluctuation.
+
+    Retourne l'intervalle de fluctuation correspondant à un échantillon de taille
+    `taille`, lorsque la probabilité est `probabilite`.
+
+    Par défaut, lorsque le seuil n'est pas fixé, l'approximation
+    [p - 1.96*sqrt(p(1-p)/n), p + 1.96*sqrt(p(1-p)/n)] est utilisée,
+    pour un seuil environ égal à 95%.
+    """
+    if seuil is None:
+        # Approximation usuelle pour un seuil à 95%
+        a = 1.96
+    else:
+        # P(-a < X < a) == seuil <=> P(X < a) == (seuil + 1)/2
+        a = inv_normal((seuil + 1)/2)
+    delta = a*math.sqrt(probabilite*(1 - probabilite)/taille)
+    return probabilite - delta, probabilite + delta
+
+
+def confiance(frequence, taille=1000, seuil=None):
+    u"""Intervalle de confiance au seuil de 95%.
+
+    Retourne l'intervalle de confiance correspondant à un échantillon de taille
+    `taille`, lorsque la fréquence observée sur l'échantillon est `frequence`.
+
+    Par défaut, si seuil n'est pas fixé, l'approximation utilisée est
+    [f - 1/sqrt(n), f + 1/sqrt(n)], pour un seuil environ égal à 95%.
+    """
+    if seuil is not None:
+        return fluctu(frequence, taille, seuil)
+    delta = 1/math.sqrt(taille)
+    return frequence - delta, frequence + delta
+
+
+def normal(a, b, mu=0, sigma=1):
+    u"""Retourne P(a < X < b), où X suit la loi normale N(mu, sigma²).
+    """
+    X = Normal('X', mu, sigma)
+    return (P(X <= b) - P(X < a)).evalf()
+
+
+def binomial(a, b, n, p):
+    u"""Retourne P(a <= X <= b), où X suit la loi binomiale B(n, p).
+
+    ..note:: Taper binomial(a, a, n, p) pour calculer P(X = a).
+    """
+    X = Binomial('X', n, p)
+    return (P(X <= b) - P(X < a)).evalf()
+
+
+def va(loi, *parametres):
+    # [key for key, val in sympy.stats.__dict__.items()
+    #                if isinstance(val, types.FunctionType)
+    #                   and len(key) > 1 and key[0].isupper()]
+    loi = loi.capitalize()
+    synonymes = {'Binomiale': 'Binomial',  'Hypergeometrique': 'Hypergeometric',
+                 'Uniforme': 'Uniform', 'De': 'Die', 'Piece': 'Coin',
+                 'Triangulaire': 'Triangular', 'Normale': 'Normal',
+                }
+    loi = synonymes.get(loi, loi)
+    try:
+        return sympy.stats.__dict__[loi]('X', *parametres)
+    except KeyError:
+        raise KeyError('Loi "%s" inconnue !' % loi)
