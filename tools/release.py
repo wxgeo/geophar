@@ -44,11 +44,12 @@ parser.add_option("-q", "--quiet",
 
 (options, args) = parser.parse_args()
 
+s.cd('..')
+sys.path.append(os.getcwd())
+from wxgeometrie.param import version, NOMPROG2
+nom_prog = NOMPROG2.lower()
+
 if len(args) != 1:
-    s.cd('..')
-    sys.path.append(os.getcwd())
-    from wxgeometrie.param import version, NOMPROG2
-    nom_prog = NOMPROG2.lower()
     parser.error("fournir un (et un seul) argument (numero de version).\nVersion actuelle: " + version)
 version = args[0]
 
@@ -62,6 +63,7 @@ def test_version(version):
     if re.match(reg, version):
         return version
 
+s.cd('wxgeometrie')
 
 sys.path.insert(0, os.getcwd())
 
@@ -133,7 +135,7 @@ s.command('git add doc/changelog.txt')
 s.command('git add version.py')
 s.command('git commit -m %s' %repr('Version ' + version))
 
-archive_tar = "wxgeometrie_%s.tar" %version
+archive_tar = "%s_%s.tar" % (nom_prog, version)
 archive_gz = archive_tar + '.gz'
 
 print(u'\nCréation du paquet...')
@@ -145,17 +147,17 @@ s.rm(archive_gz, quiet=True)
 
 # Création d'un répertoire temporaire build_/
 s.mkdir('build_')
-s.mkdir('build_/wxgeometrie')
+s.mkdir('build_/%s' % nom_prog)
 
 # Création du tag de release
 tag = 'v' + version
 s.command('git tag -am %s %s' %(repr(options.message or 'Version ' + version), tag))
 
 # Récupération des fichiers via git
-s.command('git archive %s -o build_/wxgeometrie.tar' %tag)
+s.command('git archive %s -o build_/%s.tar' % (tag, nom_prog))
 s.cd('build_')
-s.command('tar -xf wxgeometrie.tar --directory wxgeometrie')
-s.rm('wxgeometrie.tar')
+s.command('tar -xf %s.tar --directory %s' % (nom_prog, nom_prog))
+s.rm('%s.tar' % nom_prog)
 
 # Personnalisation du contenu
 s.cd('wxgeometrie')
@@ -166,11 +168,11 @@ s.rename('wxgeometrie/param/personnaliser_.py', 'wxgeometrie/param/personnaliser
 s.cd('..')
 
 # Création de l'archive .tar.gz
-s.command('tar -cf %s wxgeometrie' %archive_tar)
-s.command('gzip %s' %archive_tar)
+s.command('tar -cf %s %s' % (archive_tar, nom_prog))
+s.command('gzip %s' % archive_tar)
 s.mv(archive_gz, options.output)
 
-print(u'\nPaquet créé dans %s.\n' %os.path.abspath(options.output))
+print(u'\nPaquet créé dans %s.\n' % os.path.abspath(options.output))
 
 # Nettoyage
 s.cd('..')
