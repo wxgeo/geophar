@@ -50,8 +50,11 @@ def _detecter_modules():
                     try:
                         d = {}
                         execfile(description_file, d)
-                        modules.append(nom)
+                        if d['description']['groupe'] != "Modules":
+                            # Sert à désactiver les modules en construction.
+                            continue
                         descriptions[nom] = d['description']
+                        modules.append(nom)
                     except:
                         err(nom, u"fichier '%s' incorrect" %description_file)
                 except Exception:

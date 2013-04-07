@@ -8,6 +8,6 @@
 description = {
 "titre":                    u"Exercices - Trigonométrie",
 "description":              u"Repérage sur le cercle, cosinus et sinus remarquables.",
-"groupe":                   u"Modules",
+"groupe":                   u"Modules en construction",
 "defaut":  True,
 }

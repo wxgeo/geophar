@@ -8,6 +8,6 @@
 description = {
 "titre":                    u"Exercices - Inéquations produits et quotients",
 "description":              u"Résolution d'inéquations à l'aide de tableaux de signes.",
-"groupe":                   u"Modules",
+"groupe":                   u"Modules en construction",
 "defaut":  True,
 }
