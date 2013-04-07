@@ -127,7 +127,9 @@ enregistrer_messages = True
 # Sauver les préférences à la fermeture du programme, pour les restaurer au prochain démarrage
 sauver_preferences = True
 # Sauver la session en cours à la fermeture du programme, pour la restaurer au prochain démarrage
-sauver_session = True
+# (Remarque: la session est sauvegardée dans tous les cas, mais n'est restaurée
+#  que si `auto_restaurer_session` vaut `True`.)
+auto_restaurer_session = False
 # Paramètre utilisé essentiellement en interne (quand on lance WxGéometrie avec l'option --defaut)
 charger_preferences = True
 

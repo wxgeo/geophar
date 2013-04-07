@@ -346,7 +346,7 @@ try:
                 except:
                     print_error() # affiche l'erreur interceptée, à titre informatif
                     print(arg)
-            elif (param.sauver_session or crash) and not options.nouveau:
+            elif (param.auto_restaurer_session or crash) and not options.nouveau:
                 try:
                     if crash:
                         print(NOMPROG + u" n'a pas été fermé correctement.\n"

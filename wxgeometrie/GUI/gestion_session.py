@@ -70,24 +70,23 @@ class GestionnaireSession(QObject):
                                 if re.match(r'session-\d+-\d+\.geos$', name))
 
 
-    def sauver_session(self, lieu=None, seulement_si_necessaire=True, forcer=False):
-        if param.sauver_session or forcer:
-            fichiers_ouverts = []
-            if seulement_si_necessaire and not any(onglet.modifie for onglet in self.onglets):
-                return
+    def sauver_session(self, lieu=None, seulement_si_necessaire=True):
+        fichiers_ouverts = []
+        if seulement_si_necessaire and not any(onglet.modifie for onglet in self.onglets):
+            return
+        for onglet in self.onglets:
+            fichiers_ouverts.extend(onglet._fichiers_ouverts())
+        if self.onglets.onglet_actuel is None:
+            print("Warning: Aucun onglet ouvert ; impossible de sauver la session !")
+            return
+        kw = {'onglet_actif': self.onglets.onglet_actuel.nom}
+        session = FichierSession(*fichiers_ouverts, **kw)
+        if lieu is None:
+            lieu = self._session_path('session-%s.geos' % param.ID)
             for onglet in self.onglets:
-                fichiers_ouverts.extend(onglet._fichiers_ouverts())
-            if self.onglets.onglet_actuel is None:
-                print("Warning: Aucun onglet ouvert ; impossible de sauver la session !")
-                return
-            kw = {'onglet_actif': self.onglets.onglet_actuel.nom}
-            session = FichierSession(*fichiers_ouverts, **kw)
-            if lieu is None:
-                lieu = self._session_path('session-%s.geos' % param.ID)
-                for onglet in self.onglets:
-                    onglet.modifie = False
-            session.ecrire(lieu, compresser = True)
-            print(u"Session sauvée : (%s)" % lieu)
+                onglet.modifie = False
+        session.ecrire(lieu, compresser = True)
+        print(u"Session sauvée : (%s)" % lieu)
 
 
     def charger_session(self, lieu=None, reinitialiser=True, activer_modules=True):
