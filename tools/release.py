@@ -160,7 +160,7 @@ s.command('tar -xf %s.tar --directory %s' % (nom_prog, nom_prog))
 s.rm('%s.tar' % nom_prog)
 
 # Personnalisation du contenu
-s.cd('wxgeometrie')
+s.cd(nom_prog)
 s.rename('README.md', 'README')
 s.rm('MANIFEST.in')
 s.rm('.gitignore')
