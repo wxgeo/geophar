@@ -78,7 +78,7 @@ contenu = []
 with open('version.py', 'r') as f:
     for line in f:
         if line.startswith('date_version = '):
-            contenu.append('date_version = ' + date)
+            contenu.append('date_version = ' + date + '\n')
         elif line.startswith('version = '):
             version_precedente = line[11:].split('#')[0].strip()[:-1]
             # Changement du numéro de version
