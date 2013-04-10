@@ -29,14 +29,13 @@ import math
 from types import FunctionType
 
 from sympy import (pi, E, Rational, Symbol, diff, log, floor,
-                    sqrt, sympify, Float, nsimplify, Basic
+                    sqrt, sympify, Float, nsimplify, Basic, S
                     )
 from sympy.stats import Normal, Binomial, P
 import sympy.stats
 from .custom_objects import Temps, Fonction, Decim
 from .printers import custom_str
 ##from .. import param
-
 
 
 #def deg(x):
@@ -334,6 +333,15 @@ def arrondir(valeur, chiffres = 0):
     return sympify(valeur).evalf(chiffres + n)
 
 
+def proba(relation):
+    if relation is True:
+        return S.One
+    elif relation is False:
+        return S.Zero
+    else:
+        return P(relation)
+
+
 def inv_normal(p):
     """
     Lower tail quantile for standard normal distribution function.
@@ -432,7 +440,7 @@ def normal(a, b, mu=0, sigma=1):
     u"""Retourne P(a < X < b), où X suit la loi normale N(mu, sigma²).
     """
     X = Normal('X', mu, sigma)
-    return (P(X <= b) - P(X < a)).evalf()
+    return (proba(X <= b) - proba(X < a)).evalf()
 
 
 def binomial(a, b, n, p):
@@ -441,7 +449,7 @@ def binomial(a, b, n, p):
     ..note:: Taper binomial(a, a, n, p) pour calculer P(X = a).
     """
     X = Binomial('X', n, p)
-    return (P(X <= b) - P(X < a)).evalf()
+    return (proba(X <= b) - proba(X < a)).evalf()
 
 
 def va(loi, *parametres):
