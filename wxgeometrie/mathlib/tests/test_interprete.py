@@ -319,6 +319,16 @@ def test_ecriture_fraction_decimaux():
     r, l = i.evaluer('frac(0,5x+0.3333333333333333)')
     assertEqual(r, 'x/2 + 1/3')
 
+
+def test_issue_258():
+    # Issue: "Le mode approché ne fonctionne pas pour une liste."
+    i = Interprete(verbose=VERBOSE)
+    i.evaluer("v(p,n) = (p-1.96*sqrt(p*(1-p))/sqrt(n), p+1.96*sqrt(p*(1-p))/sqrt(n))")
+    r, l = i.evaluer("v(0.28, 50)", calcul_exact=False)
+    assertEqual(r, "(0,155543858327521659 ; 0,404456141672478341)")
+    assertEqual(l, r"$\left(0,155543858327521659;\,0,404456141672478341\right)$")
+
+
 def test_proba_stats_basic_API():
     assert_resultat("inv_normal(.975)", "1,95996398612019")
     assert_resultat("normal(-1.96, 1.96)", "0,950004209703559")

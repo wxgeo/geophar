@@ -202,11 +202,16 @@ class Interprete(object):
         """
         return frac(arg)
 
+
     def initialiser(self):
         self.locals.clear()
         self.derniers_resultats = []
 
-    def evaluer(self, calcul = ""):
+
+    def evaluer(self, calcul = "", calcul_exact=None):
+        if calcul_exact is None:
+            calcul_exact = self.calcul_exact
+
         self.warning = ""
         # calcul = re.sub("[_]+", "_", calcul.strip()) # par mesure de sécurité, les "__" sont interdits.
         # Cela permet éventuellement d'interdire l'accès à des fonctions.
@@ -254,7 +259,7 @@ class Interprete(object):
             calcul = 'aide(%s)' %calcul[:-1]
 
         try:
-            param.calcul_approche = not self.calcul_exact
+            param.calcul_approche = not calcul_exact
             # utilisé en particulier dans la factorisation des polynômes
             self._executer(calcul)
         finally:
@@ -262,7 +267,7 @@ class Interprete(object):
 
         self.derniers_resultats.append(self.locals["_"])
 
-        if not self.calcul_exact:
+        if not calcul_exact:
             return self._formater(sympy_functions.evalf(self.locals["_"], self.precision_calcul))
         return self._formater(self.locals["_"])
 

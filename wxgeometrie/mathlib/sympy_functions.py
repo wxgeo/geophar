@@ -55,12 +55,26 @@ def expand(expression, variable = None):
     return expression
 
 
-def evalf(expression, precision = 60):
+def evalf(expression, precision=60):
     u"""Evalue l'expression en respectant sa structure.
 
     Par exemple, un polynôme factorisé reste factorisé après évaluation.
+
+    >>> from wxgeometrie.mathlib.sympy_functions import evalf
+    >>> from sympy import var, pi
+    >>> var('x')
+    >>> x*(x+pi)
+    x*(x+pi)
+    >>> evalf(x*(x+pi), precision=7)
+    x*(x + 3.141593)
+    >>> evalf([pi, pi + 1, pi + 2], precision=3)
+    [3.14, 4.14, 5.14]
     """
-    if not isinstance(expression, Basic):
+    if isinstance(expression, (list, tuple)):
+        return expression.__class__(evalf(val, precision) for val in expression)
+    elif isinstance(expression, dict):
+        return dict((key, evalf(val, precision)) for key, val in expression.items())
+    elif not isinstance(expression, Basic):
         if hasattr(expression, 'evalf'):
             return expression.evalf(precision)
         elif hasattr(expression, '__float__'):
@@ -69,7 +83,7 @@ def evalf(expression, precision = 60):
     elif expression.is_Atom or isinstance(expression, Function):
         return expression.evalf(precision)
     else:
-        return expression.func(*(evalf(arg) for arg in expression.args))
+        return expression.func(*(evalf(arg, precision) for arg in expression.args))
 
 
 def factor(expression, variable = None, ensemble = None, decomposer_entiers = True):
