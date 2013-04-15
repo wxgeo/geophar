@@ -226,52 +226,108 @@ def _ajouter_mult_manquants(formule, fonctions = (), verbose = None, mots_cles =
     return formule
 
 
-def _extract_inner_str(s):
-    # <@> is a marker for substring emplacements.
-    s = s.replace('@', '@@')
-    start = end = None
-    morceaux = []
-    subs = []
-    pos = 0
-    while pos < len(s):
-        if start is None:
-            # Start of a new substring.
-            start = s.find('"', pos)
-            if start == -1:
-                start = None
-            morceaux.append(s[end:start])
-            if start is None:
-                break
-            # Two types of substrings are recognised: "type 1", and """type 2""".
-            marker = ('"""' if s.startswith('"""', start) else '"')
-            n = len(marker)
-            pos = start + n
-        else:
-            # End of the substring.
-            end = s.find(marker, pos)
-            if s.endswith('\\', 0, end):
-                # Use \" to escape " caracter.
-                pos = end + 1 # '"""\"+1\" ici, et non \"+n\""""'
-                continue
-            if end == -1:
-                raise SyntaxError, "String unclosed !"
-            end += n
-            subs.append(s[start:end])
-            pos = end
-            start = None
-    return '<@>'.join(morceaux), subs
-
-
-def _inject_inner_str(s, str_list):
-    s_list = s.split('<@>')
-    # Combine alternativement les 2 listes
-    i = filter(None, chain.from_iterable(izip_longest(s_list, str_list)))
-    return ''.join(i).replace('@@', '@')
-
-
 def _convertir_separateur_decimal(s):
     s = regsub(NBR_VIRGULE, s, (lambda s: s.replace(',', '.')))
     return s.replace(';', ',')
+
+
+def extraire_chaines(chaine):
+    u"""Extrait les chaînes de caractères trouvées dans `chaine`.
+
+    Chaque chaîne interne est remplacée par <@> (et le symbole @ lui-même
+    est remplacé par @@).
+    La fonction renvoie la chaîne ainsi modifiée, et une liste des chaînes
+    internes extraites.
+
+    Exemple::
+
+    >>> from wxgeometrie.mathlib.parsers import extraire_chaines as extraire
+    >>> chaine = '''Voici une chaine: 'Bonjour ' et une autre: "l'ami !"'''
+    >>> chaine, sous_chaines = extraire(chaine)
+    >>> chaine
+    'Voici une chaine: <@> et une autre: <@>'
+    >>> sous_chaines
+    ["'Bonjour ", '"l\'ami !']
+    """
+    # Fin d'une chaîne interne.
+    fin = 0
+    # position pour la recherche
+    position = 0
+    # La chaîne s'étend de debut inclus à fin exclu.
+    mode = None
+    reste = []
+    chaines = []
+
+    chaine = chaine.replace('@', '@@')
+
+    for i in xrange(10000):
+        if mode is None:
+            # On recherche le début de la chaîne interne.
+            debut1 = chaine.find("'", position)
+            debut2 = chaine.find('"', position)
+            if debut1 == -1:
+                debut = debut2
+            elif debut2 == -1:
+                debut = debut1
+            else:
+                debut = min(debut1, debut2)
+            if debut == -1:
+                reste.append(chaine[fin:])
+                break
+            caractere = chaine[debut]
+            # Dans certains cas, les caractères ' et " n'indiquent pas un début de chaîne.
+            if debut:
+                caractere_precedent = chaine[debut - 1]
+                if caractere == "'" and (caractere_precedent.isalnum() or caractere_precedent in "_'"):
+                    # f' n'indique pas un début de chaine, mais la dérivée de f
+                    position += 1
+                    continue
+            # Détection de ''' ou """
+            if chaine[debut:].startswith(3*caractere):
+                mode = 3*caractere
+            else:
+                mode = caractere
+            reste.append(chaine[fin:debut])
+            position = debut + len(mode)
+
+        else:
+            # On recherche la fin de la chaîne interne.
+            fin = chaine.find(mode, position)
+            caractere_precedent = chaine[fin - 1]
+            # Dans certains cas, les caractères ' et " n'indiquent pas une fin de chaîne.
+            if caractere_precedent == '\\':
+                # On parcourt la chaîne à l'envers, pour déterminer si le "\"
+                # s'applique au guillemet ou non (au cas où la chaîne se
+                # termine par "\"). On compte les "\" et on regarde s'ils
+                # sont en nombre pair.
+                count = 0
+                for car in reversed(chaine[:fin]):
+                    if car != '\\':
+                        break
+                    count += 1
+                if count%2:
+                    # Le dernier "\" se rapporte au guillemet, qui ne doit
+                    # pas être pris en compte.
+                    position += 1
+                    continue
+            if fin == -1:
+                # Erreur: la chaîne ne se ferme pas.
+                print("Warning: guillemets manquants dans %s" % repr(chaine))
+                reste[-1] += chaine[debut:]
+                break
+            position = fin = fin + len(mode)
+            chaines.append(chaine[debut:fin])
+            mode = None
+    else:
+        raise SyntaxError('Error while scanning %s' % repr(chaine))
+    return '<@>'.join(reste), chaines
+
+
+def injecter_chaines(chaine, sous_chaines):
+    for valeur in sous_chaines:
+        chaine = chaine.replace('<@>', valeur, 1)
+    assert '<@>' not in chaine
+    return chaine.replace('@@', '@')
 
 
 def traduire_formule(formule='', fonctions=(), OOo=True, LaTeX=True,
@@ -287,8 +343,7 @@ def traduire_formule(formule='', fonctions=(), OOo=True, LaTeX=True,
     #- remplacer <@> par les chaînes prélablement enregistrées
     #-remplacer @@ par @
 
-
-    formule, substrings_list = _extract_inner_str(formule)
+    formule, chaines = extraire_chaines(formule)
 
     # En français, le séparateur décimal est la virgule.
     formule = _convertir_separateur_decimal(formule)
@@ -435,7 +490,7 @@ def traduire_formule(formule='', fonctions=(), OOo=True, LaTeX=True,
                 return "__sympify__(" + chaine + ")"
         formule = regsub(NBR, formule, transformer)
 
-    formule = _inject_inner_str(formule, substrings_list)
+    formule = injecter_chaines(formule, chaines)
 
     if verbose is not False:
         debug(formule, "[formule transformee]")

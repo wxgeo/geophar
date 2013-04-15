@@ -329,6 +329,11 @@ def test_issue_258():
     assertEqual(l, r"$\left(0,155543858327521659;\,0,404456141672478341\right)$")
 
 
+def test_issue_129():
+    assert_resultat("'1.2345'", '"1.2345"')
+    assert_resultat("'x(x+1)'", '"x(x+1)"')
+
+
 def test_proba_stats_basic_API():
     assert_resultat("inv_normal(.975)", "1,95996398612019")
     assert_resultat("normal(-1.96, 1.96)", "0,950004209703559")
