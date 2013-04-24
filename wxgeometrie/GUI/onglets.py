@@ -59,6 +59,8 @@ class Onglets(QTabWidget):
     def __init__(self, parent):
         self.parent = parent
         QTabWidget.__init__(self, parent)
+        ##self.setUpdatesEnabled(False)
+        ##self.hide()
         self.setStyleSheet("""
             QTabBar::tab:selected {
             background: white;
@@ -134,6 +136,12 @@ class Onglets(QTabWidget):
             self.evt_changer(0)
             ##self.actualise_onglet(self._liste[0])
             ##self._liste[0].activer()
+        ##self.setVisible(True)
+        ##self.setUpdatesEnabled(True)
+
+        # Use the tabMoved signal of QTabBar. You can get the QTabBar used
+        # in QTabWidget with the tabBar() method.
+        self.tabBar().tabMoved.connect(self.evt_deplacer_onglet)
 
 
     # -------------------
@@ -239,6 +247,11 @@ class Onglets(QTabWidget):
         else:
             self._ancien_onglet = None
 
+
+    def evt_deplacer_onglet(self, new_index, old_index):
+        # Mise à jour de self._liste
+        # XXX: self._liste est-il toujours utile depuis le passage à Qt ?
+        self._liste.insert(new_index, self._liste.pop(old_index))
 
 
     def actualise_onglet(self, onglet):
@@ -648,12 +661,6 @@ class Onglets(QTabWidget):
             if objets:
                 win = Proprietes(self, objets)
                 win.show()
-                ##def fermeture(event, win = win):
-                    ##win.Unbind(wx.EVT_CLOSE)
-                    ##win.close()
-                    ##self.editer()
-                ##win.Bind(wx.EVT_CLOSE, fermeture)
-        #self.parent.Raise()
 
 
     def creer_objet(self, classe):
