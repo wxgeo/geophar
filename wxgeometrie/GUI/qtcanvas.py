@@ -32,7 +32,7 @@ from ..API.canvas import Canvas
 from .app import app
 from .menu_objet import MenuActionsObjet
 from .proprietes_objets import Proprietes
-from .wxlib import (BusyCursor, shift_down, alt_down, ctrl_down, left_down,
+from .qtlib import (BusyCursor, shift_down, alt_down, ctrl_down, left_down,
                    right_down, meta_down, lieu, PopUpMenu)
 from .. import param
 from ..pylib import print_error, debug

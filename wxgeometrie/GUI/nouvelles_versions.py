@@ -28,7 +28,7 @@ from PyQt4.QtGui import QMessageBox
 
 from ..pylib import print_error
 from .. import param
-from .wxlib import GenericThread
+from .qtlib import GenericThread
 from .app import app
 
 

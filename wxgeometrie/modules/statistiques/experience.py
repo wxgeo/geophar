@@ -29,7 +29,7 @@ import math
 from numpy import sum
 # NB: numpy.sum est 100 fois plus rapide que __builtin__.sum !
 
-from ...GUI.wxlib import MyMiniFrame
+from ...GUI.qtlib import MyMiniFrame
 from ...pylib import msplit
 
 ent = int

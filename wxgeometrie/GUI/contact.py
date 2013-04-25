@@ -32,7 +32,7 @@ from .. import param
 from ..pylib import path2
 from ..pylib.bugs_report import rapporter
 from .app import white_palette
-from .wxlib import GenericThread
+from .qtlib import GenericThread
 from ..pylib.infos import informations_configuration
 
 

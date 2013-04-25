@@ -31,7 +31,7 @@ from ..geolib.constantes import NOM, FORMULE, TEXTE, RIEN, MATH
 from ..geolib import Texte_generique, Point_generique, Champ, Texte, Polygone_generique
 from .proprietes_objets import Proprietes
 from ..pylib import print_error
-from .wxlib import PopUpMenu
+from .qtlib import PopUpMenu
 
 
 class MenuActionsObjet(PopUpMenu):

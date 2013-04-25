@@ -43,7 +43,7 @@ from .inspecteur import FenCode
 from .nouvelles_versions import Gestionnaire_mises_a_jour
 from .proprietes_feuille import ProprietesFeuille
 from .proprietes_objets import Proprietes
-from .wxlib import PopUpMenu, png_pth
+from .qtlib import PopUpMenu, png_pth
 from . import dialogues_geometrie
 from ..API.sauvegarde import FichierGEO, ouvrir_fichierGEO
 from .. import param, modules, geolib

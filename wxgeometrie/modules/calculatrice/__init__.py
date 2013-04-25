@@ -36,7 +36,7 @@ from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 
 from ...GUI.ligne_commande import LigneCommande
-from ...GUI.wxlib import png
+from ...GUI.qtlib import png
 from ...GUI.inspecteur import FenCode
 from ...GUI.menu import MenuBar
 from ...GUI.panel import Panel_simple

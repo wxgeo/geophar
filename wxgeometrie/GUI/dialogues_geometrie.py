@@ -29,7 +29,7 @@ from PyQt4.QtGui import (QDialog, QVBoxLayout, QHBoxLayout, QFrame, QLabel,
                          QLineEdit, QPushButton, QMenu)
 from PyQt4.QtCore import Qt, QSize
 
-from .wxlib import MultipleChoiceDialog
+from .qtlib import MultipleChoiceDialog
 from ..pylib import regsub
 from ..geolib.textes import Texte
 from ..geolib.points import Point_generique, Barycentre, Point, Milieu, Centre,\

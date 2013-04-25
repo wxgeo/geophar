@@ -37,7 +37,7 @@ from sympy.core.sympify import SympifyError
 from ...GUI.menu import MenuBar
 from ...GUI.panel import Panel_API_graphique
 from ...GUI.proprietes_objets import Proprietes
-from ...GUI.wxlib import BusyCursor
+from ...GUI.qtlib import BusyCursor
 from ...geolib import Segment, Texte, Point, Champ, TEXTE
 from ...geolib.routines import nice_str
 from ...pylib import OrderedDict, print_error

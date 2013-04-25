@@ -30,7 +30,7 @@ from sympy.core.sympify import SympifyError
 
 from ...GUI.panel import Panel_API_graphique
 from ...GUI.exercice import ExerciceMenuBar, Exercice
-from ...GUI.wxlib import BusyCursor
+from ...GUI.qtlib import BusyCursor
 from ...geolib import Champ
 from ...geolib.routines import nice_str
 from ...pylib import OrderedDict, print_error

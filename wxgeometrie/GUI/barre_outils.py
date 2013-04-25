@@ -29,7 +29,7 @@ from PyQt4.QtGui import (QWidget, QToolButton, QInputDialog, QLineEdit, QHBoxLay
                          QIcon, QMenu, QShortcut)
 ##from PyQt4.QtCore import Qt
 
-from .wxlib import png
+from .qtlib import png
 from ..pylib import is_in
 from ..geolib.routines import distance
 from ..geolib.textes import Texte_generique

@@ -32,7 +32,7 @@ from ..pylib import uu, print_error, path2, debug, warning
 from ..API.sauvegarde import FichierSession
 from ..API.parametres import sauvegarder_module
 from .. import param
-from .wxlib import GenericThread
+from .qtlib import GenericThread
 
 
 class GestionnaireSession(QObject):

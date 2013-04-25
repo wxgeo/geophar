@@ -29,8 +29,8 @@ from PyQt4.QtGui import QWidget, QVBoxLayout, QLayout
 from .barre_outils import BarreOutils
 from .menu import RSSMenu
 from .console_geolib import ConsoleGeolib
-from .wxlib import BusyCursor
-from .wxcanvas import QtCanvas
+from .qtlib import BusyCursor
+from .qtcanvas import QtCanvas
 from .app import app
 from ..API.sauvegarde import ouvrir_fichierGEO, FichierGEO
 from ..API.parametres import sauvegarder_module

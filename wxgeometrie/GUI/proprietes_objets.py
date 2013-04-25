@@ -34,7 +34,7 @@ from PyQt4.QtGui import (QDialog, QPushButton, QWidget, QLabel, QGroupBox,
 from matplotlib.colors import colorConverter as colorConverter
 
 
-from .wxlib import ColorSelecter
+from .qtlib import ColorSelecter
 from .app import white_palette, app
 from .. import param
 from ..pylib import print_error, debug, advanced_split, OrderedDict
