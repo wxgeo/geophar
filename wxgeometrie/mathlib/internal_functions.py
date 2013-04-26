@@ -135,6 +135,7 @@ def poly_factor(polynome, variable, corps = None, approchee = None):
 #    print produit
     quotient, reste = div(polynome, coefficient*produit, variable)
     if reste != 0 and not approchee:
+        ##print(polynome, coefficient*produit, variable)
         raise NotImplementedError
     poly_factorise = coefficient*produit*quotient
     if isinstance(poly_factorise, Mul) and poly_factorise.args[0] == 1.:

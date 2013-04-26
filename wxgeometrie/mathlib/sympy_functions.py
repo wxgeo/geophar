@@ -223,6 +223,7 @@ def product(expression,
             return product_(expression, (Symbol("x"), args[0], args[1]))
     return product_(expression, *args)
 
+
 def solve(expression, *variables, **kw):
     ensemble = kw.get("ensemble", "R")
     if not variables:
@@ -230,11 +231,19 @@ def solve(expression, *variables, **kw):
     if len(variables) == 1:
         solutions = solve_(expression, variables[0])
         if ensemble == "R":
-            return tuple(solution for solution in solutions if solution.is_real)
+            solutions_reelles = []
+            for solution in solutions:
+                if solution.is_real:
+                    solutions_reelles.append(solution)
+                elif solution.is_real is None:
+                    real, imag = solution.as_real_imag()
+                    if abs(imag) < 10**-200:
+                        solutions_reelles.append(real)
+            return solutions_reelles
         elif ensemble == "Q":
-            return tuple(solution for solution in solutions if solution.is_rational)
+            return [solution for solution in solutions if solution.is_rational]
         elif ensemble == "N":
-            return tuple(solution for solution in solutions if solution.is_integer)
+            return [solution for solution in solutions if solution.is_integer]
         else:
             return solutions
     else:
