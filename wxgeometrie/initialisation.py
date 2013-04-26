@@ -346,7 +346,10 @@ try:
                 except:
                     print_error() # affiche l'erreur interceptée, à titre informatif
                     print(arg)
-            elif (param.auto_restaurer_session or crash) and not options.nouveau:
+            elif options.restaurer or ((param.auto_restaurer_session or crash)
+                                        and not options.nouveau):
+                # On recharge la session précédente.
+                # (options.restaurer est utilisé quand on redémarre l'application)
                 try:
                     if crash:
                         print(NOMPROG + u" n'a pas été fermé correctement.\n"
@@ -360,19 +363,18 @@ try:
                     print(u"Warning: La session n'a pas pu être restaurée.")
                     print_error()
             frame.show()
-            if param._restart:
-                frame.restart()
-            else:
-                if param.debug:
-                    print('Temps de démarrage: %f s' % (time.time() - t0))
-                app.boucle()
+            if param.debug:
+                print('Temps de démarrage: %f s' % (time.time() - t0))
+            app.boucle()
             sorties.close()
         try:
             os.remove(path_lock)
         except OSError:
             print("Warning: impossible de supprimer %s." % repr(path_lock))
         if param._restart:
-            os.execl(sys.executable, sys.executable, *sys.argv[:1])
+            # Nota: execv() a une syntaxe étrange : le nom de la commande lancée
+            # (ie. sys.executable) doit réapparaître au début de la liste des arguments.
+            os.execv(sys.executable, [sys.executable] + sys.argv[:1] + ['--restaurer'])
 
 except Exception: # do *NOT* catch SystemExit ! ("wxgeometrie -h" use it)
     if param.py2exe:

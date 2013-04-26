@@ -58,6 +58,7 @@ def lire_arguments():
     parser.add_option("-l", "--lister-modules", action = "store_true", help="affiche la liste des modules disponibles.")
     parser.add_option("-d", "--defaut", action = "store_true", help="utiliser les parametres par defaut, sans tenir compte des preferences")
     parser.add_option("-n", "--nouveau", action = "store_true", help="ouvrir une nouvelle session vierge")
+    parser.add_option("--restaurer", action = "store_true", help="restaurer ponctuellement la session precedente.")
     parser.add_option("-b", "--debug", action = "store_true", help="afficher les eventuels messages d'erreurs lors de l'execution")
     parser.add_option("--nodebug", action = "store_true", help="ne pas afficher les messages d'erreurs lors de l'execution")
     parser.add_option("-w", "--warning", action = "store_true", help="afficher les eventuels avertissements lors de l'execution")
