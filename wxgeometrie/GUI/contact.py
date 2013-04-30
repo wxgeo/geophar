@@ -31,6 +31,7 @@ from PyQt4.QtGui import (QHBoxLayout, QVBoxLayout, QCheckBox, QPushButton, QDial
 from .. import param
 from ..pylib import path2
 from ..pylib.bugs_report import rapporter
+from ..API.sauvegarde import FichierGEO
 from .app import white_palette
 from .qtlib import GenericThread
 from ..pylib.infos import informations_configuration
@@ -155,10 +156,19 @@ vous êtes invités à signaler tout problème rencontré.</i>""", panel)
                 file.close()
         else:
             msg = ""
+
+        try:
+            fgeo = FichierGEO(module=module.nom)
+            module._sauvegarder(fgeo)
+            fichier_courant = fgeo.data
+        except Exception as e:
+            fichier_courant = "Impossible de recuperer le fichier courant (%s)." % e
+
         self.hide()
         kw = {'titre': self.titre.text(), 'auteur': self.nom.text(),
               'email': self.mail.text(), 'description': self.commentaire.toPlainText(),
               'historique': histo, 'log': msg, 'config': informations_configuration(),
+              'fichier': fichier_courant
              }
         self.thread = GenericThread(self._rapporter, **kw)
         self.thread.start()

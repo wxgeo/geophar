@@ -20,13 +20,14 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import urllib
+import cgi
 
 from .. import param
 from .infos import informations_configuration
 from .fonctions import uu
 
 def rapporter(titre='', auteur='', email='', description='', historique='',
-              log='', config=''):
+              log='', config='', fichier=''):
     parametres = param.__dict__.copy()
     parametres.pop("__builtins__", None)
     parametres = "\n".join(str(key) + " = " + repr(val) for key, val in parametres.items())
@@ -41,10 +42,11 @@ def rapporter(titre='', auteur='', email='', description='', historique='',
     "description": description,
     "historique": historique,
     "log": log,
+    "fichier": fichier, # fichier en cours
     }
     for key, value in data.items():
 #        data[key] = zlib.compress(uu(value.replace("\n", "\n<br>\n")).encode("utf-8"), 9).replace("\x01", "\x01\x03").replace("\x00", "\x01\x02") # php n'aime pas les caractères nuls dans une chaîne semble-t-il...
-        data[key] = uu(value).replace("\n", "\n<br>\n").encode("iso-8859-1", 'xmlcharrefreplace')
+        data[key] = cgi.escape(uu(value)).replace("\n", "\n<br>\n").encode("iso-8859-1", 'xmlcharrefreplace')
     msg = 'Erreur inconnue.'
     try:
         filename, headers = urllib.urlretrieve("http://wxgeo.free.fr/wordpress/contact")

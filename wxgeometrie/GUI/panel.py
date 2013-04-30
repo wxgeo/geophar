@@ -303,6 +303,13 @@ class Panel_API_graphique(Panel_simple):
 
 
     def _sauvegarder(self, fgeo, feuille = None):
+        u"""Sauvegarde le contenu de la feuille actuelle dans le fichier fgeo.
+
+        Le fichier fgeo (de type FichierGEO) est purement virtuel à ce stade,
+        son contenu n'est pas écrit sur le disque dur.
+
+        Pour réaliser une sauvegarde physique, utiliser la méthode `.sauvegarder()`.
+        """
         if feuille is None:
             feuille = self.feuille_actuelle
 
