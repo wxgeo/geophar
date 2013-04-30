@@ -45,15 +45,11 @@ class Contact(QDialog):
     def __init__(self, parent):
         QDialog.__init__(self, parent)
         self.setWindowTitle(u"Contacter l'auteur")
-        #style = wx.FRAME_FLOAT_ON_PARENT|wx.CLIP_CHILDREN|wx.CLOSE_BOX|wx.CAPTION)
         self.setPalette(white_palette)
 
         self.parent = parent
 
         panel = QWidget(self)
-#        italic = wx.Font(panel.GetFont().GetPointSize(), panel.GetFont().GetFamily(), wx.ITALIC, wx.NORMAL)
-#        bold_italic = wx.Font(panel.GetFont().GetPointSize(), panel.GetFont().GetFamily(), wx.ITALIC, wx.BOLD)
-#        panel.setStyleSheet("background-color:white")
 
         panelSizer = QVBoxLayout()
 
@@ -81,7 +77,7 @@ vous êtes invités à signaler tout problème rencontré.</i>""", panel)
 
         rapport.addWidget(QLabel(u"Description du problème :", panel))
         self.commentaire = commentaire = QTextEdit(panel)
-        commentaire.setMinimumSize(200, 100)
+        commentaire.setMinimumSize(200, 150)
         rapport.addWidget(commentaire)
 
         panelSizer.addWidget(rapport_box)
@@ -100,20 +96,6 @@ vous êtes invités à signaler tout problème rencontré.</i>""", panel)
 
         panelSizer.addWidget(coordonnees_box)
 
-        options = QVBoxLayout()
-        options_box = QGroupBox(u"Options", panel)
-        options_box.setLayout(options)
-        self.histo = histo = QCheckBox("Inclure l'historique du module courant.")
-        histo.setChecked(True)
-        options.addWidget(histo)
-
-        self.msg = msg = QCheckBox("Inclure l'historique des commandes.")
-        msg.setChecked(True)
-        options.addWidget(msg)
-
-        panelSizer.addWidget(options_box)
-
-
         btnOK = QPushButton(u"Envoyer", panel)
         btnOK.setToolTip(u"Envoyer les informations.")
         btnCancel = QPushButton(u"Annuler", panel)
@@ -125,14 +107,11 @@ vous êtes invités à signaler tout problème rencontré.</i>""", panel)
         sizer.addWidget(btnCancel)
         panelSizer.addLayout(sizer)
 
-#        panel.SetAutoLayout(True)
         panel.setLayout(panelSizer)
-#        panelSizer.Fit(panel)
 
         topSizer = QHBoxLayout()
         topSizer.addWidget(panel)
 
-#        self.SetAutoLayout(True)
         self.setLayout(topSizer)
 
         self.sent.connect(self.termine)
@@ -140,22 +119,24 @@ vous êtes invités à signaler tout problème rencontré.</i>""", panel)
         btnCancel.clicked.connect(self.close)
 
 
+
     def rapporter(self):
         module = self.parent.onglet(self.modules.currentIndex())
-        if self.histo.isChecked() and hasattr(module, "log"):
+
+        try:
             histo = module.log.contenu()
-        else:
-            histo = ""
-        if self.msg.isChecked():
-            sys.stdout.flush()
-            filename = path2(param.emplacements['log'] + u"/messages.log")
-            try:
-                file = open(filename, 'r')
-                msg = file.read()
-            finally:
-                file.close()
-        else:
-            msg = ""
+        except Exception as e:
+            histo = "Impossible de recuperer l'historique du module (%s)." % e
+
+        sys.stdout.flush()
+        filename = path2(param.emplacements['log'] + u"/messages.log")
+        try:
+            file = open(filename, 'r')
+            msg = file.read()
+        except Exception as e:
+            msg = "Impossible de recuperer le journal (%s)." % e
+        finally:
+            file.close()
 
         try:
             fgeo = FichierGEO(module=module.nom)
