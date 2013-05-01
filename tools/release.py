@@ -129,8 +129,16 @@ if not options.fake:
 date = time.strftime("%d/%m/%Y")
 s.command(u'echo "%s version %s\nPubliée le %s\n\n">doc/changelog.txt'
                         % (NOMPROG, version, date))
-derniere_version_majeure = '.'.join(version_precedente.split('.')[:2])
-s.command('git log v%s..HEAD --no-merges --pretty="* %%s">>doc/changelog.txt' % derniere_version_majeure)
+
+tags = s.command('git tag').strip().split('\n')
+# On inverse la liste et on supprime les 'v' devant chaque tag.
+tags = [tag[1:] for tag in reversed(tags)]
+# On récupère la version majeure précédente
+for tag in tags:
+    if tag.count('.') == 1 and not version.startswith(tag):
+        break
+
+s.command('git log v%s..HEAD --no-merges --pretty="* %%s">>doc/changelog.txt' % tag)
 
 # Commit correspondant
 s.command('git add doc/changelog.txt')
