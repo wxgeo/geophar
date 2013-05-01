@@ -1,5 +1,16 @@
-geophar version 07/04/2013
-Publiée le 13.04.1
+Géophar version 13.04.2
+Publiée le 01/05/2013
 
 
+* Display all changes since last major version in changelog.
+* Remove options from contact form.
+* Add current file in bug report attachments.
+* [Issue 230] Some real solutions were not returned by solver.
+* Add option `--restaurer` to launch geophar and restore previous session.
+* Rename wxlib to qtlib, and wxcanvas to qtcanvas.
+* [Issue 261] When moved, a tab freezed.
+* Improve strings handling in parser.
+* Issue 258: lists and tuples should be evaluated too if mode is set to approximate calculation.
+* Fix normal() and binomial() functions when domain extremity is infinity.
+* Version 13.04.1
 * Fix regression in tools/release.py
