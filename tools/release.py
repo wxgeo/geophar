@@ -46,7 +46,7 @@ parser.add_option("-q", "--quiet",
 
 s.cd('..')
 sys.path.append(os.getcwd())
-from wxgeometrie.param import version, NOMPROG2
+from wxgeometrie.param import version, NOMPROG2, NOMPROG
 nom_prog = NOMPROG2.lower()
 
 if len(args) != 1:
@@ -127,8 +127,10 @@ if not options.fake:
 
 # Création du changelog correspondant
 date = time.strftime("%d/%m/%Y")
-s.command(u'echo "%s version %s\nPubliée le %s\n\n">doc/changelog.txt' %(nom_prog, date, version))
-s.command('git log v%s..HEAD --no-merges --pretty="* %%s">>doc/changelog.txt' % version_precedente)
+s.command(u'echo "%s version %s\nPubliée le %s\n\n">doc/changelog.txt'
+                        % (NOMPROG, version, date))
+derniere_version_majeure = '.'.join(version_precedente.split('.')[:2])
+s.command('git log v%s..HEAD --no-merges --pretty="* %%s">>doc/changelog.txt' % derniere_version_majeure)
 
 # Commit correspondant
 s.command('git add doc/changelog.txt')

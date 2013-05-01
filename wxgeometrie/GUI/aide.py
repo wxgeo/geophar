@@ -147,7 +147,7 @@ class Notes(QWidget):
         texte = QTextEdit(self)
         with open(path2("%/wxgeometrie/doc/changelog.txt"), "r") as f:
             msg = f.read().decode("utf8").replace('\n', '<br>')
-        titre = u"<b>Changements apportés par la version %s :</b>" % param.version
+        titre = u"<b>Changements apportés par la version courante (%s) :</b>" % param.version
         msg = '<br>'.join((titre, '', msg))
         texte.setHtml(msg)
         texte.setMinimumHeight(500)
