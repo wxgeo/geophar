@@ -1,7 +1,9 @@
-Géophar version 13.04.3
+Géophar version 13.04.4
 Publiée le 01/05/2013
 
 
+* Add word wrap in About dialog.
+* Version 13.04.3
 * Improve changelog.
 * Version 13.04.2
 * Display all changes since last major version in changelog.
