@@ -1,7 +1,10 @@
-Géophar version 13.04.4
-Publiée le 01/05/2013
+Géophar version 13.04.5
+Publiée le 04/05/2013
 
 
+* [Tablatex] Add spinbox in GUI to select decimals precision for tabvar and tabval.
+* Fix bug when starting some modules for the first time.
+* Version 13.04.4
 * Add word wrap in About dialog.
 * Version 13.04.3
 * Improve changelog.
