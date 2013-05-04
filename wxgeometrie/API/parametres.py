@@ -60,13 +60,7 @@ def sauvegarder_module(module, nom = "main"):
 
 def actualiser_module(module, fichier):
     u"Rafraichit le contenu d'un module à partir d'un fichier XML."
-    if fichier:
-        fgeo, msg = sauvegarde.ouvrir_fichierGEO(fichier)
-    else:
-        fgeo = None
-    copie = module.__dict__.copy()
-    copie.pop("__builtins__", None)
-    setattr(module, "_parametres_par_defaut", copie)
+    fgeo, msg = sauvegarde.ouvrir_fichierGEO(fichier)
     if fgeo is not None:
         parametres = fgeo.contenu["Parametres"][-1]
         try:

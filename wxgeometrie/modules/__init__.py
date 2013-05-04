@@ -22,7 +22,7 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-import os
+import os, sys
 
 from ..GUI.menu import MenuBar
 from ..GUI.panel import Panel_simple, Panel_API_graphique
@@ -32,9 +32,9 @@ from .. import param
 from ..pylib import print_error, str2, path2
 
 
-def importer_module(nom_module, forcer = False):
+def importer_module(nom_module):
     u"Retourne le module si l'import a réussi, None sinon."
-    if param.modules_actifs[nom_module] or forcer:
+    if param.modules_actifs[nom_module]:
         if param.verbose:
             print("Import du module '%s'..." %nom_module)
         try:
@@ -70,6 +70,9 @@ def importer_module(nom_module, forcer = False):
                 param_pth = 'wxgeometrie.modules.%s._param_' %nom_module
                 wxgeometrie = __import__(param_pth, level=2)
                 panel._param_ = eval(param_pth)
+                copie = panel._param_.__dict__.copy()
+                copie.pop("__builtins__", None)
+                setattr(panel._param_, "_parametres_par_defaut", copie)
                 path = path2(param.emplacements['preferences'] + "/" + nom_module + "/parametres.xml")
                 if param.sauver_preferences and param.charger_preferences and os.path.exists(path):
                     try:
@@ -86,12 +89,11 @@ def importer_module(nom_module, forcer = False):
                                     getattr(panel._param_, dicname).setdefault(key, val)
                     except:
                         print_error(u"\n\nImpossible d'actualiser les préférences du module '%s'" %nom_module)
+
             except ImportError:
-                panel._param_ = None
                 print_error(u"\n\nImpossible d'importer les paramètres du module '%s'" %nom_module)
             except:
                 print_error(u"\n\nImpossible d'importer les paramètres du module '%s'" %nom_module)
-                panel._param_ = None
 
         except:
             print_error(u"\nError: Impossible d'importer le module '%s'" %nom_module)

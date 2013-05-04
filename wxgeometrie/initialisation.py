@@ -292,28 +292,30 @@ try:
             print(u"Warning: impossible de créer le fichier '%s'." %path_lock)
             param.ecriture_possible = False
 
-        # Mise à jour des paramètres en fonction des préférences de l'utilisateur
+        # On sauvegarde la valeur des paramètres par défaut.
+        copie = param.__dict__.copy()
+        copie.pop("__builtins__", None)
+        setattr(param, "_parametres_par_defaut", copie)
+
+        # Mise à jour des paramètres en fonction des préférences de l'utilisateur.
         # (NB: à faire avant d'importer modules.py, qui lui-même utilise param.modules_actifs)
         path = path2(param.emplacements['preferences'] + "/parametres.xml")
         try:
-            if os.path.exists(path):
-                if param.charger_preferences:
-                    if param.verbose:
-                        print(u"Chargement des préférences...")
-                    # On charge les préférences de l'utilisateur depuis parametres.xml.
-                    a_verifier = dict((dicname, getattr(param, dicname)) for dicname in param.a_mettre_a_jour)
-                    actualiser_module(param, path)
-                    # Certains paramètres peuvent avoir besoin d'une mise à jour
-                    # (en cas de changement de version du programme par exemple).
-                    # Cela concerne en particulier les dictionnaires, qui peuvent gagner de nouvelles clés.
-                    for dicname in param.a_mettre_a_jour:
-                        for key, val in a_verifier[dicname].iteritems():
-                            getattr(param, dicname).setdefault(key, val)
-                    # Mise à jour du contexte de geolib:
-                    for parametre in ('decimales', 'unite_angle', 'tolerance'):
-                        contexte[parametre] = getattr(param,  parametre)
-                else:
-                    actualiser_module(param, None)
+            if os.path.exists(path) and param.charger_preferences:
+                if param.verbose:
+                    print(u"Chargement des préférences...")
+                # On charge les préférences de l'utilisateur depuis parametres.xml.
+                a_verifier = dict((dicname, getattr(param, dicname)) for dicname in param.a_mettre_a_jour)
+                actualiser_module(param, path)
+                # Certains paramètres peuvent avoir besoin d'une mise à jour
+                # (en cas de changement de version du programme par exemple).
+                # Cela concerne en particulier les dictionnaires, qui peuvent gagner de nouvelles clés.
+                for dicname in param.a_mettre_a_jour:
+                    for key, val in a_verifier[dicname].iteritems():
+                        getattr(param, dicname).setdefault(key, val)
+                # Mise à jour du contexte de geolib:
+                for parametre in ('decimales', 'unite_angle', 'tolerance'):
+                    contexte[parametre] = getattr(param,  parametre)
         except:
             sys.excepthook(*sys.exc_info())
 

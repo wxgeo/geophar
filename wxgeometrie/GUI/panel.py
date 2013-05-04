@@ -54,6 +54,9 @@ class Panel_simple(QWidget):
     modifie = False
     # Nom de fichier utilisé pour la dernière sauvegarde (ou restauration).
     _nom_fichier = ''
+    # Gestion des paramètres (voir wxgeometrie.modules.__init__.py).
+    _parametres_par_defaut = {}
+    _param_ = None
 
     def __init__(self, parent, module, menu = True):
         QWidget.__init__(self, parent)
@@ -147,8 +150,10 @@ class Panel_simple(QWidget):
 
 
     def param(self, parametre, valeur = no_argument, defaut = False):
-        u"""Recherche la valeur d'un paramètre d'abord dans les paramètres du module (paramètres locaux), puis dans ceux de wxgéométrie.
+        u"""Renvoie la valeur du paramètre `parametre`.
 
+        Recherche la valeur d'un paramètre d'abord dans les paramètres du module
+        _(paramètres locaux), puis dans ceux de wxgéométrie.
         Si defaut vaut True, la valeur par défaut du paramètre est renvoyée."""
         if valeur is not no_argument:
             setattr(self._param_, parametre, valeur)
