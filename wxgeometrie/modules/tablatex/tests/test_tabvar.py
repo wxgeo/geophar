@@ -255,3 +255,21 @@ x                                    &4             &      &8        &        &2
 % f(x) = (x -4)\e^{-0,25x+5} sur [4;20]
 '''
     assert_tabvar(s, tab, **options)
+
+def test_valeur_approchee():
+    s = "f(x)=1/x sur [4;6]"
+    options = {'derivee': True, 'decimales': 4, 'approche': True}
+    tab = \
+r'''\[\begin{tabvar}{|C|CCC|}
+\hline
+x                                    &4                &        &6\\
+\hline
+f'(x)                                &                 &-       & \\
+\hline
+\niveau{1}{2}\raisebox{0.5em}{$f(x)$}&\niveau{2}{2}0,25&\decroit&0,1667\\
+\hline
+\end{tabvar}\]
+% x;f(x):(4;0,25) >> (6;0,1667)
+% f(x)=1/x sur [4;6]
+'''
+    assert_tabvar(s, tab, **options)

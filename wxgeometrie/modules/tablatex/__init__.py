@@ -23,11 +23,12 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-from functools import partial
 
 from PyQt4.QtGui import (QHBoxLayout, QVBoxLayout, QCheckBox, QPushButton,
-                         QTextEdit, QLineEdit, QLabel, QComboBox, QGroupBox)
+                         QTextEdit, QLineEdit, QLabel, QComboBox, QGroupBox,
+                         QSpinBox)
 
+from ...GUI.app import app
 from ...GUI.ligne_commande import LigneCommande
 from ...GUI.menu import MenuBar
 from ...GUI.panel import Panel_simple
@@ -49,7 +50,9 @@ class TabLaTeXMenuBar(MenuBar):
         self.ajouter(u"Fichier", ['session'], ["quitter"])
         self.ajouter(u"Affichage", ["onglet"])
         self.ajouter(u"Outils",
-                        [u"Mémoriser le résultat", u"Copie le code LaTeX généré dans le presse-papier, afin de pouvoir l'utiliser ailleurs.", "Ctrl+M", self.panel.vers_presse_papier],
+                        [u"Mémoriser le résultat", u"Copie le code LaTeX généré "
+                        "dans le presse-papier, afin de pouvoir l'utiliser ailleurs.",
+                        "Ctrl+M", self.panel.vers_presse_papier],
                         None,
                         [u"options"])
         self.ajouter(u"avance2")
@@ -71,15 +74,17 @@ class TabLaTeX(Panel_simple):
 
         self.sizer_type = QHBoxLayout()
         self.type_tableau = QComboBox(self)
-        self.type_tableau.addItems([u"Tableau de variations", u"Tableau de signes", u"Tableau de valeurs"])
+        self.type_tableau.addItems([u"Tableau de variations", u"Tableau de signes",
+                                    u"Tableau de valeurs"])
         self.type_tableau.setCurrentIndex(self._param_.mode)
-        self.sizer_type.addWidget(QLabel(u"Type de tableau à générer :", self))
+        self.sizer_type.addWidget(QLabel(u"Type de tableau :", self))
         self.sizer_type.addWidget(self.type_tableau)
         self.sizer_type.addSpacing(15)
 
         self.utiliser_cellspace = QCheckBox(u"Utiliser le paquetage cellspace.", self)
         self.utiliser_cellspace.setChecked(self._param_.utiliser_cellspace)
-        self.utiliser_cellspace.setToolTip(u"Le paquetage cellspace évite que certains objets (comme les fractions) touchent les bordures du tableaux.")
+        self.utiliser_cellspace.setToolTip(u"Le paquetage cellspace évite que "
+                "certains objets (comme les fractions) touchent les bordures du tableaux.")
         self.sizer_type.addSpacing(10)
         self.sizer_type.addWidget(self.utiliser_cellspace)
 
@@ -95,11 +100,32 @@ class TabLaTeX(Panel_simple):
         self.sizer_type.addSpacing(10)
         self.sizer_type.addWidget(self.limites)
 
+        self.decimales_tabvar = QSpinBox()
+        self.decimales_tabvar.setRange(-1, 20)
+        self.decimales_tabvar.setSuffix(u" décimales")
+        self.decimales_tabvar.setSpecialValueText(u"Valeurs exactes")
+        self.decimales_tabvar.setValue(self._param_.decimales_tabvar)
+        ##self.decimales_tabvar.setAccelerated(True)
+        aide = u"Nombre de décimales pour l'affichage des extrema, ou valeur exacte."
+        self.decimales_tabvar.setToolTip(aide)
+        self.sizer_type.addSpacing(10)
+        self.sizer_type.addWidget(self.decimales_tabvar)
+
+        self.decimales_tabval = QSpinBox()
+        self.decimales_tabval.setRange(0, 20)
+        self.decimales_tabval.setSuffix(u" décimales")
+        self.decimales_tabval.setValue(self._param_.decimales_tabval)
+        ##self.decimales_tabval.setAccelerated(True)
+        aide = u"Nombre de décimales pour les valeurs du tableau."
+        self.decimales_tabval.setToolTip(aide)
+        self.sizer_type.addSpacing(10)
+        self.sizer_type.addWidget(self.decimales_tabval)
+
         self.sizer_type.addSpacing(15)
         self.lbl_formatage = lbl = QLabel(u"Formatage des résultats :")
         self.sizer_type.addWidget(lbl)
         self.formatage_images = QLineEdit()
-        self.formatage_images.setMinimumWidth(250)
+        ##self.formatage_images.setMinimumWidth(200)
         self.formatage_images.setText(self._param_.formatage_images)
         aide = u"Formatage à appliquer au résultat (VAL est la valeur du résultat)."
         lbl.setToolTip(aide)
@@ -123,7 +149,8 @@ class TabLaTeX(Panel_simple):
         self.copier_code = QPushButton(u"Copier dans le presse-papier", self)
         self.bsizer.addWidget(self.copier_code)
 
-        self.bsizer.addWidget(QLabel(u"Pensez à rajouter dans l'entête de votre fichier LaTeX la ligne suivante :", self))
+        txt = u"Pensez à rajouter dans l'entête de votre fichier LaTeX la ligne suivante :"
+        self.bsizer.addWidget(QLabel(txt, self))
 
         self.sizer_entete = QHBoxLayout()
         self.code_entete = QLineEdit(self)
@@ -172,20 +199,28 @@ class TabLaTeX(Panel_simple):
             self.valider()
         self.utiliser_cellspace.stateChanged.connect(regler_cellspace)
 
-        def regler_derivee():
+        def regler_parametres(event=None):
             self._param_.derivee = self.derivee.isChecked()
-            self.valider()
-        self.derivee.stateChanged.connect(regler_derivee)
-
-        def regler_limites(event = None):
             self._param_.limites = self.limites.isChecked()
-            self.valider()
-        self.limites.stateChanged.connect(regler_limites)
-
-        def masquer_resultat(event = None):
             self._param_.formatage_images = self.formatage_images.text()
             self.valider()
-        self.formatage_images.editingFinished.connect(masquer_resultat)
+
+        def regler_decimales(event=None):
+            try:
+                self.focus_widget = app.focusWidget()
+                self._param_.decimales_tabvar = self.decimales_tabvar.value()
+                self._param_.decimales_tabval = self.decimales_tabval.value()
+                self.valider()
+            finally:
+                self.focus_widget = self.entree
+
+        self.derivee.stateChanged.connect(regler_parametres)
+        self.limites.stateChanged.connect(regler_parametres)
+        self.formatage_images.editingFinished.connect(regler_parametres)
+        self.decimales_tabvar.valueChanged.connect(regler_decimales)
+        self.decimales_tabval.valueChanged.connect(regler_decimales)
+
+        self.focus_widget = self.entree
 
 
     def activer(self):
@@ -203,20 +238,23 @@ class TabLaTeX(Panel_simple):
         try:
             if self._param_.mode == 0:
                 code_latex = tabvar(commande, derivee=self._param_.derivee,
-                                    limites=self._param_.limites)
+                                    limites=self._param_.limites,
+                                    decimales=self._param_.decimales_tabvar,
+                                    approche=(self._param_.decimales_tabvar != -1))
             elif self._param_.mode == 1:
                 code_latex = tabsign(commande, cellspace=self._param_.utiliser_cellspace)
             elif self._param_.mode == 2:
                 code_latex = tabval(commande,
                     formatage_antecedents=self._param_.formatage_antecedents,
-                    formatage_images=self._param_.formatage_images)
+                    formatage_images=self._param_.formatage_images,
+                    precision=10**-self._param_.decimales_tabval)
             else:
                 warning("Type de tableau non reconnu.")
 
             self.code_tableau.setText(code_latex)
             if self._param_.copie_automatique:
                 self.vers_presse_papier(texte = code_latex)
-            self.entree.setFocus()
+            self.focus_widget.setFocus()
             self.message(u"Le code LaTeX a bien été généré.")
         except BaseException, erreur:
             self.message(u"Impossible de générer le code LaTeX. " + message(erreur))
@@ -228,29 +266,38 @@ class TabLaTeX(Panel_simple):
 
     def EvtChoix(self, event = None):
         self._param_.mode = self.type_tableau.currentIndex()
+        # Tableaux de variations
         if self._param_.mode == 0:
             self.code_entete.setText(u"\\usepackage{tabvar}")
             self.entree.setToolTip(tabvar.__doc__)
             self.utiliser_cellspace.hide()
             self.derivee.show()
             self.limites.show()
+            self.decimales_tabvar.show()
             self.formatage_images.hide()
             self.lbl_formatage.hide()
+            self.decimales_tabval.hide()
+        # Tableaux de signes
         elif self._param_.mode == 1:
             self.utiliser_cellspace.show()
             self.derivee.hide()
             self.limites.hide()
             self.formatage_images.hide()
             self.lbl_formatage.hide()
+            self.decimales_tabvar.hide()
+            self.decimales_tabval.hide()
             self.entree.setToolTip(tabsign.__doc__)
             if self._param_.utiliser_cellspace:
                 self.code_entete.setText(u"\\usepackage{cellspace}")
             else:
                 self.code_entete.setText(u"")
+        # Tableaux de valeurs
         elif self._param_.mode == 2:
             self.utiliser_cellspace.hide()
             self.derivee.hide()
             self.limites.hide()
+            self.decimales_tabvar.hide()
+            self.decimales_tabval.show()
             self.lbl_formatage.show()
             self.formatage_images.show()
             self.entree.setToolTip(tabval.__doc__)

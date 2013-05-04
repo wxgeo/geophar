@@ -47,9 +47,8 @@ def _auto_tabvar(chaine='', derivee=True, limites=True, decimales=3, approche=Fa
     après la virgule, etc.
     """
     def nice_str2(x):
-        if decimales is not None and (isinstance(x, (float, Float))
-                    or (approche and x not in (-oo, oo)) and
-                    not isinstance(x, Rational)):
+        if (isinstance(x, (float, Float)) and not isinstance(x, Rational)
+                or approche and x not in (-oo, oo)):
             x = round(x, decimales)
         return nice_str(x)
 
