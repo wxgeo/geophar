@@ -98,6 +98,10 @@ NBR_VIRGULE = "(?:(?<![.A-Za-z0-9_])(?:[0-9]+[,][0-9]+))"
 # Nombre sans signe ou variable
 NBR_OR_VAR = "(?:" + NBR + "|" + VAR + ")"
 NBR_SIGNE_OR_VAR = "(?:" + NBR_SIGNE + "|" + VAR + ")"
+# Liste simple (non imbriquée)
+LISTE_SIMPLE = "\[[^][]+\]"
+# Matrice
+MATRICE = r"\[ ?(%s ?, ?)*(%s) ?\]" % (LISTE_SIMPLE, LISTE_SIMPLE)
 
 
 def _simplifier(formule):
@@ -437,6 +441,9 @@ def traduire_formule(formule='', fonctions=(), OOo=True, LaTeX=True,
 
         formule = formule.replace("{", "(").replace("}", ")")
 
+    # Détection des matrices:
+    # [[1, 2], [3, 4]] -> mat([[1, 2], [3, 4]])
+    formule = regsub(r'(?<!mat\()' + MATRICE, formule, (lambda s: 'mat(%s)' % s))
 
     if OOo:
         # transforme les accolades en parentheses (utile par exemple pour les fonctions issues d'OpenOffice.org).

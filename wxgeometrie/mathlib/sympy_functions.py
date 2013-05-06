@@ -30,12 +30,13 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 from types import FunctionType
 
-from sympy import Basic, expand as expand_, apart, Function, Integer, factorint, Symbol,\
-                    diff as diff_, divisors as divisors_, cancel, together as together_,\
-                    limit as limit_, factor as factor_, integrate as integrate_, Sum,\
-                    sqrtdenest, solve as solve_, product as product_
+from sympy import (Basic, expand as expand_, apart, Function, Integer, factorint, Symbol,
+                    diff as diff_, divisors as divisors_, cancel, together as together_,
+                    limit as limit_, factor as factor_, integrate as integrate_, Sum,
+                    sqrtdenest, solve as solve_, product as product_, Matrix,
+                    ZeroMatrix, Identity, FunctionMatrix, Lambda)
 
-from .custom_objects import Matrice, Fonction, ProduitEntiers, Decim, \
+from .custom_objects import Fonction, ProduitEntiers, Decim, \
                             convert2decim
 from .internal_functions import extract_var, poly_factor, syms
 from .custom_functions import auto_collect, derivee
@@ -273,21 +274,59 @@ def simplifier_racines(expression):
         return expression
 
 def mat(*args):
-    if len(args) >= 2:
-        args = list(args)
-        args[0] = int(args[0])
-        args[1] = int(args[1])
-        if len(args) == 2:
-            args.append(lambda i,j:i==j,)
-        elif not isinstance(args[2], FunctionType):
-            if isinstance(args[2], Basic):
-                li = Symbol("li")
-                co = Symbol("co")
-                args = [[args[2].subs({co: j+1, li: i+1}) for j in xrange(args[1])] for i in xrange(args[0])]
-            else:
-                args[2] = lambda i, j, val = args[2]: val
-#    print args, [type(arg) for arg in args], args[2](1, 1), type(args[2](1, 1))
-    return Matrice(*args)
+    u"""Crée une matrice.
+
+    * Si une liste est donné en argument, la liste est convertie en matrice::
+
+        >>> from wxgeometrie.mathlib.sympy_functions import mat
+        >>> mat([[1, 2], [3, 4]])
+        [1, 2]
+        [3, 4]
+        >>> mat([[1, 2, 3, 4]])
+        [1, 2, 3, 4]
+        >>> mat([1, 2, 3, 4])  # Synonyme de mat([[1], [2], [3], [4]])
+        [1]
+        [2]
+        [3]
+        [4]
+
+    * Si un entier `n` est donné en argument, une matrice identité carrée de taille `n`
+      est renvoyée::
+
+        >>> mat(3)
+        [1, 0, 0]
+        [0, 1, 0]
+        [0, 0, 1]
+
+    * Si deux entiers `n` et `p` sont donnés en arguments, une matrice zéro de taille `n*p`
+      est renvoyée::
+
+        >>> mat(1, 2)
+        [0, 0]
+
+    * Enfin, on peut construire une matrice personnalisée en précisant ses dimensions
+      `n` et `p`, et l'expression générale de ses coefficients.
+      On utilise les symboles `li` et `co` pour le numéro de ligne et le numéro de colonne::
+
+      >>> mat(3, 3, li*co)
+      [0, 0, 0]
+      [0, 1, 2]
+      [0, 2, 4]
+    """
+    assert (len(args) < 3), "La fonction mat() prend 3 arguments au maximum."
+    if len(args) == 1:
+        if isinstance(args[0], (tuple, list, Matrix)):
+            return Matrix(args[0])
+        return Matrix(Identity(args[0]))
+    elif len(args) == 2:
+        return Matrix(ZeroMatrix(*args))
+    else:
+        li = Symbol("li")
+        co = Symbol("co")
+        if isinstance(args[2], (Fonction, FunctionType)):
+            args[2] = args[2](li, co)
+        return Matrix(FunctionMatrix(args[0], args[1], Lambda((li, co), args[2])))
+
 
 def together(expression):
     return cancel(together_(expression))

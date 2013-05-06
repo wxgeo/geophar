@@ -130,6 +130,13 @@ def test_tous_modes():
     assert_all('5|x+3|+1-|2x|', '5*abs(x+3)+1-abs(2*x)')
 
 
+def test_matrice():
+    # Rajouter mat() quand il n'y est pas.
+    assert_all(u"[[1, 2], [3, 4]]", u"mat([[1,2],[3,4]])")
+    assert_all(u"[ [1,2;2,5] ; [-3,4;4,2] ]", u"mat([[1.2,2.5],[-3.4,4.2]])")
+    # Ne pas rajouter mat() quand il y est déjà.
+    assert_all(u"mat([[1, 2], [3, 4]])", u"mat([[1,2],[3,4]])")
+    assert_all(u"mat( [[1, 2], [3, 4]] )", u"mat([[1,2],[3,4]])")
 
 
 def test_mode_OOo():

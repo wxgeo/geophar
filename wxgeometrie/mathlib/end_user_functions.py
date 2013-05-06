@@ -129,7 +129,7 @@ __classement__[u"Algèbre"].append(None)
 
 from .sympy_functions import mat
 Matrice = Matrix = Mat = matrix = matrice = mat
-__classement__[u"Algèbre"].append((u"Matrice", "mat", u"Génère une matrice. ex: mat([[1,2],[3,4]]), mat(4,4,0), mat(4,4,2*li+3*co)"))
+__classement__[u"Algèbre"].append((u"Matrice", "mat", u"Génère une matrice. ex: mat([[1;2];[3;4]]); mat(4;4;0); mat(4;4;2*li+3*co)"))
 
 
 from sympy import isprime

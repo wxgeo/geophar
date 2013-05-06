@@ -334,6 +334,29 @@ def test_issue_129():
     assert_resultat("'x(x+1)'", '"x(x+1)"')
 
 
+def test_issue_263():
+    i = Interprete(verbose=VERBOSE)
+    i.evaluer("A = mat([[1;2];[3;4]])")
+    i.evaluer("B = mat(2)")
+    i.evaluer("C = A*B")
+    assert 'C' in i.vars()
+    r, l = i.evaluer("C")
+    assertEqual(r, "[1 ; 2]\n[3 ; 4]")
+    etat_interne = i.save_state()
+    i.clear_state()
+    assert 'C' not in i.vars()
+    i.load_state(etat_interne)
+    assert 'C' in i.vars()
+    r, l = i.evaluer("C")
+    assertEqual(r, "[1 ; 2]\n[3 ; 4]")
+    i.evaluer("A=[[0,1 ; 0,8]; [0,5; 0,5]]")
+    r, l = i.evaluer("[[0,3 ; 0,4]]*A")
+    assertEqual(r, "[23/100 ; 11/25]")
+    # ou encore [0,23 ; 0,44]
+    assertEqual(l, r"$\begin{pmatrix}0,23 & 0,44\end{pmatrix}$")
+
+
+
 def test_proba_stats_basic_API():
     assert_resultat("inv_normal(.975)", "1,95996398612019")
     assert_resultat("normal(-1.96, 1.96)", "0,950004209703559")

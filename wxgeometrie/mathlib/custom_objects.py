@@ -180,11 +180,6 @@ class Fonction(ObjetMathematique):
             return self.expression > y
 
 
-class Matrice(Matrix):
-    def __repr__(self):
-        return "Matrice(%s)" %repr(self.mat)
-
-
 class ProduitEntiers(long):
     u"""Usage interne : destiné à être utilisé avec sympy.factorint."""
 

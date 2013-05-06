@@ -27,12 +27,12 @@ import re, math, types
 import  numpy
 
 import sympy
-from sympy import Symbol, Basic, Float, sympify, nsimplify, S
+from sympy import Symbol, Basic, Float, sympify, nsimplify, S, Matrix
 
 from .intervalles import Ensemble
 from .printers import custom_str, custom_latex
 from .custom_functions import frac, rationals2floats
-from .custom_objects import Temps, Fonction, Matrice, ProduitEntiers, Decim
+from .custom_objects import Temps, Fonction, ProduitEntiers, Decim
 from . import sympy_functions
 from ..mathlib import end_user_functions
 from ..pylib import print_error, split_around_parenthesis, regsub,\
@@ -68,17 +68,6 @@ class LocalDict(dict):
         if isinstance(value, str):
             # exec/eval encodent les chaînes crées en utf8.
             value = value.decode("utf8").encode(param.encodage)
-        # [[1,2],[3,4]] est converti en une matrice
-        if isinstance(value, list) and len(value):
-            if isinstance(value[0], list):
-                n = len(value[0])
-                test = True
-                for elt in value[1:]:
-                    if not isinstance(elt, list) or len(elt) != n:
-                        test = False
-                        break
-                if test:
-                    value = sympy_functions.mat(value)
         dict.__setitem__(self, name, value)
 
 
@@ -131,7 +120,7 @@ class Interprete(object):
         self.globals.update({
                 "__builtins__": None,
                 "Fonction": Fonction,
-                "Matrice": Matrice,
+                "Matrice": Matrix,
                 "Temps": Temps,
                 "ProduitEntiers": ProduitEntiers,
                 "Ensemble": Ensemble,
@@ -462,9 +451,13 @@ class Interprete(object):
         def repr2(expr):
             if isinstance(expr, (types.BuiltinFunctionType, types.TypeType, types.FunctionType)):
                 return expr.__name__
+            elif isinstance(expr, Matrix):
+                return 'Matrix([%s])' % ', '.join(repr(expr).split('\n'))
             return repr(expr)
-        return '\n'.join(k + ' = ' + repr2(v) for k, v in self.locals.items()) \
-                + '\n\n@derniers_resultats = [\n    ' + '\n    '.join(repr(repr2(res)) +',' for res in self.derniers_resultats) + '\n    ]'
+        variables = '\n'.join(k + ' = ' + repr2(v) for k, v in self.locals.items())
+        resultats = '\n    '.join(repr(repr2(res)) + ',' for res in self.derniers_resultats)
+        return '%s\n\n@derniers_resultats = [\n    %s\n    ]' % (variables, resultats)
+
 
     def load_state(self, state):
         def evaltry(expr):
