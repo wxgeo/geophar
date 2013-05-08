@@ -89,7 +89,7 @@ class CryptographieMenuBar(MenuBar):
     def __init__(self, panel):
         MenuBar.__init__(self, panel)
         self.ajouter(u"Fichier", ["quitter"])
-        self.ajouter(u"Affichage", ["onglet"])
+        self.ajouter(u"Affichage", ["onglet"], ["plein_ecran"])
         self.ajouter(u"Outils",
                         [u"Coder un message", u"Code le message par substitution mono-alphabétique.",
                                 "Ctrl+K", panel.coder],

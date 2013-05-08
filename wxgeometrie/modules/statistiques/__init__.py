@@ -111,7 +111,7 @@ class StatMenuBar(MenuBar):
                     self.panel.doc_ouverts, None, ["fermer"], ["quitter"])
         self.ajouter("Editer", ["annuler"], ["refaire"], ["modifier"], ["supprimer"])
         self.ajouter("creer")
-        self.ajouter("Affichage", ["onglet"], None, ["barre_outils"],
+        self.ajouter("Affichage", ["onglet"], ["plein_ecran"], None, ["barre_outils"],
                      ["console_geolib"], None, ["zoom_texte"], ["zoom_ligne"],
                      ["zoom_general"])
         self.ajouter("Outils", [u"Expérience", u"Simuler une expérience.",

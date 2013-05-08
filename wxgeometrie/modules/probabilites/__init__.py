@@ -47,7 +47,7 @@ class ProbaMenuBar(MenuBar):
                     ["fermer"], ["quitter"])
         self.ajouter(u"Editer", ["annuler"], ["refaire"], ["modifier"], ["supprimer"])
         self.ajouter(u"creer")
-        self.ajouter(u"Affichage", ["onglet"], None, ["repere"], ["quadrillage"],
+        self.ajouter(u"Affichage", ["onglet"], ["plein_ecran"], None, ["repere"], ["quadrillage"],
                                    ["orthonorme"], None, ["zoom_texte"],
                                    ["zoom_ligne"], ["zoom_general"], None,
                                    ["fenetre"], ["zoomer"], ["dezoomer"],

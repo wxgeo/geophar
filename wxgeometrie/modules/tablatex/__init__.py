@@ -48,7 +48,7 @@ class TabLaTeXMenuBar(MenuBar):
     def __init__(self, panel):
         MenuBar.__init__(self, panel)
         self.ajouter(u"Fichier", ['session'], ["quitter"])
-        self.ajouter(u"Affichage", ["onglet"])
+        self.ajouter(u"Affichage", [u"onglet"], ["plein_ecran"])
         self.ajouter(u"Outils",
                         [u"Mémoriser le résultat", u"Copie le code LaTeX généré "
                         "dans le presse-papier, afin de pouvoir l'utiliser ailleurs.",

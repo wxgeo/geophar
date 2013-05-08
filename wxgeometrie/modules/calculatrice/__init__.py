@@ -56,7 +56,7 @@ class CalculatriceMenuBar(MenuBar):
                                     self.panel.initialiser],
                                 [u"ouvrir"], [u"enregistrer"],
                                 [u"enregistrer_sous"], ['session'], None, ["quitter"])
-        self.ajouter(u"Affichage", ["onglet"])
+        self.ajouter(u"Affichage", ["onglet"], ["plein_ecran"])
         for rubrique in __classement__:
             self.ajouter(rubrique, *(self.formater(contenu, rubrique != "Symboles") for contenu in __classement__[rubrique]))
             # pas de parenthese apres un symbole

@@ -33,6 +33,7 @@ class AccueilMenuBar(MenuBar):
     def __init__(self, panel):
         MenuBar.__init__(self, panel)
         self.ajouter(u"Fichier", [u"ouvrir"], ['session'], None, [u"quitter"])
+        self.ajouter(u"Affichage", [u"onglet"], ["plein_ecran"])
         self.ajouter(u"Outils", [u"options"])
         self.ajouter(u"?")
 
