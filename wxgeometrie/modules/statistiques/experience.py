@@ -223,6 +223,7 @@ class Sondage(MyMiniFrame):
         boutons.addWidget(fermer)
         lancer = QPushButton(u"Lancer l'experience")
         boutons.addWidget(lancer)
+        lancer.setDefault(True)
         fermer.clicked.connect(self.close)
         lancer.clicked.connect(self.actualiser)
 
@@ -234,6 +235,7 @@ class Sondage(MyMiniFrame):
         self.parent.actualiser(False)
         self.parent.graph = 'batons'
         echantillon = self.sc1.value()
+        self.parent.intervalle_fluctuation = (echantillon if self.cb.isChecked() else None)
         n = self.sc2.value()
         esperance = self.experience.value()
         self.parent.ajouter_valeurs(*[sondage(esperance, echantillon) for i in xrange(n)])
