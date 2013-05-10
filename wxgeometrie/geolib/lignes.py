@@ -967,32 +967,40 @@ class Demiplan(Objet_avec_equation):
         if not self._representation:
             self._representation = [self.rendu.ligne(), self.rendu.polygone()]
         plot, fill = self._representation
-        points = self._points_extremes()
+        # Intersection de la droite frontière avec le cadre de la fenêtre :
+        points = self.__droite._points_extremes()
         couleur, niveau = self.style(('couleur', 'niveau'))
         xmin, xmax, ymin, ymax = self.canvas.fenetre
-        coins = [(xmin, ymin), (xmin, ymax), (xmax, ymin), (xmax, ymax)]
+        # Liste des coins de la fenêtre en tournant dans le sens direct.
+        coins = [(xmin, ymin), (xmax, ymin), (xmax, ymax), (xmin, ymax)]
         sommets = [coin for coin in coins if (coin in self)]
 
         if len(points) == 2:
+            # La droite frontière partage la fenêtre en 2
             (x1, y1), (x2, y2) = points
             plot.set_data((x1, x2), (y1, y2))
             plot.set(color = couleur, linestyle = self.style("style"),
                      linewidth = self.style("epaisseur"), zorder = niveau + 0.01)
             sommets.extend([(x1, y1), (x2, y2)])
             x0, y0 = (x1 + x2)/2, (y1 + y2)/2
+            sommets.sort(key = lambda xy: atan2(xy[0] - x0, xy[1] - y0))
 
         elif len(sommets) > 1:
             # La droite délimitant le demi-plan ne coupe pas la fenêtre (ou seulement en un coin).
-            # Dans ce cas, si 2 sommets sont dans le 1/2 plan, tous y sont.
+            # Dans ce cas, si au moins 2 sommets sont dans le 1/2 plan, tous y sont.
             assert len(sommets) == 4
-            sommets.sort(key = lambda xy: atan2(xy[0] - x0, xy[1] - y0))
-            fill.xy = sommets
+
         else:
             fill.set(visible=False)
             return
 
+        fill.set_xy(sommets + [sommets[0]])
         fill.set(edgecolor=couleur, facecolor=couleur, alpha=self.style('alpha'),
-                 zorder=niveau, visible=True)
+                 zorder=niveau, visible=True, hatch=self.style('hachures'))
+
+
+    def _distance_inf(self, x, y, d):
+        return self.canvas.pix2coo(x, y) in self
 
 
 
@@ -1304,6 +1312,8 @@ class Tangente_glisseur_interpolation(Droite_equation):
 
     exemple::
 
+    >>> from wxgeometrie import Point, Interpolation_polynomiale_par_morceaux
+    >>> from wxgeometrie import Glisseur_courbe, Tangente_glisseur_interpolation
     >>> A = Point(-1,-2)
     >>> B = Point(2,1)
     >>> C = Point(8,-3)

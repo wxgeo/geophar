@@ -885,7 +885,7 @@ class Objet(object):
 
             >>> D1.label("A a pour abscisse {A.x}.", mode=FORMULE)
             >>> D1.label()
-            A a pour abscisse -2.7.
+            u'A a pour abscisse -2,7.'
 
         """
         if self.etiquette is None:
@@ -1252,7 +1252,7 @@ class Objet(object):
                 # d'être enregistrées dans la feuille.
                 # On n'enregistre que les arguments potentiellement visibles
                 # sur le graphique.
-                if arg.visible:
+                if getattr(arg, 'visible', False):
                     nom = dict_noms.get(nom_arg, '')
                     self.feuille.objets.add(arg, nom_suggere=nom)
 
