@@ -1145,7 +1145,15 @@ class Glisseur_courbe(Glisseur_generique):
 
     Point pouvant 'glisser' sur une courbe d'interpolation ou de fonction::
 
+    >>> from wxgeometrie import Glisseur_courbe, Courbe, Feuille
+    >>> f = Feuille()
+    >>> c = f.objets.c = Courbe("x^2")
     >>> G = Glisseur_courbe(c, x=-2)
+    >>> G.y
+    4.0
+    >>> G.x = 5
+    >>> G.y
+    25.0
     """
 
     def _set_x(self, val):

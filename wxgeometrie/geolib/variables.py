@@ -283,14 +283,14 @@ class Rayon(Variable_generique):
 
     >>> from wxgeometrie.geolib import Cercle, Rayon
     >>> c = Cercle((0, 0), 1)
-    >>> c.rayon
-    1
+    >>> float(c.rayon)
+    1.0
     >>> r = Rayon(c)
-    >>> r.val
-    1
+    >>> float(r)
+    1.0
     >>> c.rayon = 2
-    >>> r.val
-    2
+    >>> float(r)
+    2.0
     """
 
     __cercle = cercle = Argument("Cercle_Arc_generique")

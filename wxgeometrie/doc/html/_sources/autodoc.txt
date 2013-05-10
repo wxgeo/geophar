@@ -109,14 +109,6 @@ wxgeo.geolib
    :members:
    :undoc-members:
 
-.. automodule:: wxgeometrie.geolib.tests.test_intersections
-   :members:
-   :undoc-members:
-
-.. automodule:: wxgeometrie.geolib.tests.test_meta
-   :members:
-   :undoc-members:
-
 .. automodule:: wxgeometrie.geolib.textes
    :members:
    :undoc-members:
@@ -173,11 +165,11 @@ wxgeo.GUI
    :members:
    :undoc-members:
 
-.. automodule:: wxgeometrie.GUI.wxcanvas
+.. automodule:: wxgeometrie.GUI.qtcanvas
    :members:
    :undoc-members:
 
-.. automodule:: wxgeometrie.GUI.wxlib
+.. automodule:: wxgeometrie.GUI.qtlib
    :members:
    :undoc-members:
 

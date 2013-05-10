@@ -395,7 +395,14 @@ Ici, la fonction `g` est définie comme la dérivée de la fonction `f`.
 
 .. note:: Certaines variables sont protégées (i, e ou E, pi, ...).
 
+.. warning:: Par défaut, le séparateur décimal est la virgule.
+             Les différents arguments des fonctions sont séparés par des points-virgules
+             (ou une virgule et un espace).
 
+*Exemple*:
+
+    ``normal(1,2 ; 1,7)`` : probabilité que la variable aléatoire X soit comprise
+    entre 1,2 et 1,7, lorsque X suit une loi normale N(0;1).
 
 Le module statistiques
 ======================

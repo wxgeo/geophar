@@ -251,7 +251,7 @@ def extraire_chaines(chaine):
     >>> chaine
     'Voici une chaine: <@> et une autre: <@>'
     >>> sous_chaines
-    ["'Bonjour ", '"l\'ami !']
+    ["'Bonjour '", '"l\\'ami !"']
     """
     # Fin d'une chaîne interne.
     fin = 0
