@@ -64,8 +64,9 @@ def evalf(expression, precision=60):
     >>> from wxgeometrie.mathlib.sympy_functions import evalf
     >>> from sympy import var, pi
     >>> var('x')
+    x
     >>> x*(x+pi)
-    x*(x+pi)
+    x*(x + pi)
     >>> evalf(x*(x+pi), precision=7)
     x*(x + 3.141593)
     >>> evalf([pi, pi + 1, pi + 2], precision=3)
@@ -304,16 +305,29 @@ def mat(*args):
         >>> mat(1, 2)
         [0, 0]
 
-    * Enfin, on peut construire une matrice personnalisée en précisant ses dimensions
+    * On peut construire une matrice personnalisée en précisant ses dimensions
       `n` et `p`, et l'expression générale de ses coefficients.
       On utilise les symboles `li` et `co` pour le numéro de ligne et le numéro de colonne::
 
+      >>> from sympy import var
+      >>> var('li,co')
+      (li, co)
       >>> mat(3, 3, li*co)
       [0, 0, 0]
       [0, 1, 2]
       [0, 2, 4]
+
+    * Enfin, on peut obtenir le même résultat en donnant comme 3e argument une
+      fonction f, qui prend comme arguments le numéro de ligne et le numéro de
+      colonne::
+
+      >>> f = lambda x, y: x*y
+      >>> mat(3, 3, f)
+      [0, 0, 0]
+      [0, 1, 2]
+      [0, 2, 4]
     """
-    assert (len(args) < 3), "La fonction mat() prend 3 arguments au maximum."
+    assert (len(args) < 4), "La fonction mat() prend 3 arguments au maximum."
     if len(args) == 1:
         if isinstance(args[0], (tuple, list, Matrix)):
             return Matrix(args[0])
@@ -323,9 +337,10 @@ def mat(*args):
     else:
         li = Symbol("li")
         co = Symbol("co")
-        if isinstance(args[2], (Fonction, FunctionType)):
-            args[2] = args[2](li, co)
-        return Matrix(FunctionMatrix(args[0], args[1], Lambda((li, co), args[2])))
+        expr = args[2]
+        if isinstance(expr, (Fonction, FunctionType)):
+            expr = expr(li, co)
+        return Matrix(FunctionMatrix(args[0], args[1], Lambda((li, co), expr)))
 
 
 def together(expression):
