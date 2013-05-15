@@ -1,7 +1,17 @@
-Géophar version 13.04.5
-Publiée le 04/05/2013
+Géophar version 13.04.6
+Publiée le 15/05/2013
 
 
+* Improve compatibility with old .geo files.
+* Fix failing docstring tests.
+* Fix: mat() function optional third argument was not properly handled.
+* Fix numerous bugs in class DemiPlan.
+* Fix a bug in stat module for opinion survey simulation.
+* Fix import issue when running doctests.
+* Enable fullscreen mode for all modules.
+* [Calc] Improve matrices support.
+* Fix bug when saving session.
+* Version 13.04.5
 * [Tablatex] Add spinbox in GUI to select decimals precision for tabvar and tabval.
 * Fix bug when starting some modules for the first time.
 * Version 13.04.4
