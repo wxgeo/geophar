@@ -222,36 +222,74 @@ def filtre_versions_anterieures(fgeo):
             if version < [13, 1]:
                 # Patch partiel, mais au moins les figures se chargent
                 lignes = figures[i].split("\n")
-                remplace = (lambda r:r.group(0).replace('legende', 'mode'))
 
-                RE_LABEL = re.compile(", 'label': (u?'[^']*')")
-                RE_STYLE = re.compile(r'([^(]+)\.style\(\*\*{')
-                RE_TEXTE = re.compile(r'[^(]+(Texte\()')
-                RE_LEGENDE = re.compile(", 'legende': [0-3]")
+                RE_LABEL = re.compile(r"(, )?'label': "
+                    r"""(?P<txt>u?('([^\\]\\'|[^'])*'|"([^\\]\\"|[^"])*"))""")
+                RE_LEGENDE = re.compile(r"((, )|{)'legende': ([0-3])")
+                RE_NOMOBJET = re.compile(r"\w+")
 
                 for j, ligne in enumerate(lignes):
-                    m1 = re.match(RE_STYLE, ligne)
-                    if m1 is None:
-                        m1 = re.match(RE_TEXTE, ligne)
-                    if m1 is not None:
-                        nom = m1.group(1)
-
-                    ligne = re.sub(RE_LEGENDE, remplace, ligne)
-                    m2 = re.search(RE_LABEL, ligne)
-                    if m2 is not None:
-                        ligne = ligne.replace(m2.group(0), '')
-                        txt = m2.group(1)
-                    if m1 is not None and m2 is not None:
-                        if '.etiquette' in nom:
-                            ligne += '\n%s.texte = %s' % (nom, txt)
-                        elif nom == 'Texte(':
-                            ligne = ligne.replace("Texte(''", "Texte(" + txt)
+                    # A.style('legende') -> A.etiquette.style('mode')
+                    # On cherche la dernière occurence de `legende=...`.
+                    match = None
+                    for match in re.finditer(RE_LEGENDE, ligne):
+                        pass
+                    ligne = re.sub(RE_LEGENDE, '', ligne)
+                    if match is not None:
+                        mode = match.group(3)
+                        m = re.match(r"(\w+) ?=", ligne)
+                        if m is not None:
+                            nom_obj = m.group(1)
+                            ligne = ("%s\nif %s.etiquette is not None:\n" \
+                                     "    %s.etiquette.style(mode = %s)"
+                                        % (ligne, nom_obj, nom_obj, mode))
+                    # A.style('label') -> A.etiquette.texte
+                    # On cherche la dernière occurence de `label=...`.
+                    match = None
+                    for match in re.finditer(RE_LABEL, ligne):
+                        pass
                     ligne = re.sub(RE_LABEL, '', ligne)
+                    if match is not None:
+                        txt = match.group('txt')
+                        m = re.match(r"(\w+) ?=", ligne)
+                        if m is not None:
+                            nom_obj = m.group(1)
+                            ligne = ("%s\nif %s.etiquette is not None and %s.__class__.__name__ != 'Texte':\n" \
+                                     "    %s.etiquette.texte = %s"
+                                        % (ligne, nom_obj, nom_obj, nom_obj, txt))
+
                     lignes[j] = ligne
 
 
                 figures[i] = '\n'.join(lignes)
 
+                print(figures[i])
+
+    if version < [13, 1]:
+        if fgeo.contenu.has_key("Diagramme") and fgeo.module == "statistiques":
+            diag = fgeo.contenu["Diagramme"][0]
+            origine = diag.setdefault("origine", [{}])[0]
+            origine.setdefault('x', [''])
+            origine.setdefault('y', [''])
+            legende = diag.setdefault("legende", [{}])[0]
+            legende.setdefault('x', [''])
+            legende.setdefault('y', [''])
+            legende.setdefault('a', [''])
+            graduation = diag.setdefault("graduation", [{}])[0]
+            graduation.setdefault('x', [''])
+            graduation.setdefault('y', [''])
+            graduation.setdefault('a', [''])
+
+            mode_graphique = diag['mode_graphique']
+            types_diagrammes = ('barres', 'batons', 'histogramme', 'cumul_croissant',
+                        'cumul_decroissant', 'bandes', 'circulaire',
+                        'semi-circulaire', 'boite')
+            try:
+                # Ancien format: indice au lieu du texte
+                n = int(mode_graphique[0])
+                mode_graphique[0] = types_diagrammes[n]
+            except ValueError:
+                pass
 
     if fgeo.contenu.has_key("Courbe") and fgeo.module == 'traceur':
         courbes = fgeo.contenu["Courbe"]
@@ -265,3 +303,5 @@ def filtre_versions_anterieures(fgeo):
             code = "\nf%(n)s = Fonction(expression=u'%(Y)s',ensemble='%(intervalle)s',variable='x')\n" %locals()
             code += "Cf%(n)s = Courbe(fonction=f%(n)s, **{'couleur': u'%(couleur)s', 'visible': %(visible)s})\n" %locals()
             figures[0] += code
+
+
