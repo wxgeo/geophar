@@ -27,7 +27,7 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 from functools import partial
 
-from sympy import Symbol, Matrix, Rational, Expr, Integer, Float
+from sympy import Symbol, Matrix, Rational, Expr, Integer, Float, Basic
 from sympy.core.cache import cacheit
 from sympy.core.numbers import Infinity
 
@@ -37,6 +37,8 @@ from ..pylib import GenericWrapper
 
 
 def convert2decim(expr, prec=None):
+    if not isinstance(expr, Basic):
+        return expr
     dico = {}
     for a in expr.atoms():
         if a.is_Rational:
