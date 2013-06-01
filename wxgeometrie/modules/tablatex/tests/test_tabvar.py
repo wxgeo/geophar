@@ -290,3 +290,21 @@ f'(x)         &                    &+     &0      &-       &0       &+     &&\db
 % x;f:(-oo;-oo) << (-17,25;-141,87) >> (-0,13;-5594,67) << (0;+oo|+oo;|) >> (17,39;204,54) >> (+oo;+oo)
 % 5x+31+(1500x+100)/(x^2)
 '''
+
+def test_issue_249():
+    s = "f(x) = 0,5x + \text{e}^{-0,5x + 0,4}"
+    options = {'derivee': True, 'decimales': 2, 'approche': True}
+    tab = \
+r'''\[\begin{tabvar}{|C|CCCCC|}
+\hline
+x                                    &-\infty             &        &0,8&      &+\infty\\
+\hline
+f'(x)                                &                    &-       &0  &+     & \\
+\hline
+\niveau{1}{2}\raisebox{0.5em}{$f(x)$}&\niveau{2}{2}+\infty&\decroit&1,4&\croit&+\infty\\
+\hline
+\end{tabvar}\]
+% x;f(x) :(-oo;+oo) >> (0,8;1,4) << (+oo;+oo)
+% f(x) = 0,5x + \text{e}^{-0,5x + 0,4}
+'''
+
