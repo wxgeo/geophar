@@ -28,7 +28,8 @@ import re
 from sympy import oo, nan, Symbol
 
 from .tablatexlib import convertir_en_latex, traduire_latex, test_parentheses,\
-                         maths, extraire_facteurs, resoudre, nice_str
+                         maths, extraire_facteurs, nice_str
+from ...mathlib.sympy_functions import solve
 from ...mathlib.intervalles import R, conversion_chaine_ensemble
 from ...mathlib.solvers import ensemble_definition
 from ...mathlib.interprete import Interprete
@@ -100,7 +101,8 @@ def _auto_tabsign(chaine, cellspace = False):
         f_expr = interprete.ans()
         f_ens_def = ensemble_definition(f_expr, var)
         valeurs = {xmin: None, xmax: None}
-        solutions = [sol for sol in resoudre(f_expr, var) if sol.is_real and xmin <= sol <= xmax]
+        solutions = [sol for sol in solve(f_expr, var)
+                        if xmin.evalf(200) <= sol.evalf(200) <= xmax.evalf(200)]
         for sol in solutions:
             valeurs[sol] = 0
         for val in valeurs_interdites:

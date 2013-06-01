@@ -273,3 +273,20 @@ f'(x)                                &                 &-       & \\
 % f(x)=1/x sur [4;6]
 '''
     assert_tabvar(s, tab, **options)
+
+def test_issue_187():
+    s = "5x+31+(1500x+100)/(x^2)"
+    options = {'derivee': True, 'decimales': 2, 'approche': True}
+    tab = \
+r'''\[\begin{tabvar}{|C|CCCCCCCCCCCCC|}
+\hline
+x             &-\infty             &      &-17,25 &        &-0,13   &      & &0&                                &        &17,39 &        &+\infty\\
+\hline
+f'(x)         &                    &+     &0      &-       &0       &+     &&\dbarre&                           &-       &      &-       & \\
+\hline
+\niveau{2}{3}f&\niveau{1}{3}-\infty&\croit&-141,87&\decroit&-5594,67&\croit&+\infty&\dbarre&\niveau{3}{3}+\infty&\decroit&204,54&\decroit&+\infty\\
+\hline
+\end{tabvar}\]
+% x;f:(-oo;-oo) << (-17,25;-141,87) >> (-0,13;-5594,67) << (0;+oo|+oo;|) >> (17,39;204,54) >> (+oo;+oo)
+% 5x+31+(1500x+100)/(x^2)
+'''

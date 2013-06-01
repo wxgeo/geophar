@@ -28,8 +28,9 @@ import re
 
 from sympy import sympify, oo, nan, limit, Symbol, Float, Rational
 
-from .tablatexlib import convertir_en_latex, test_parentheses, resoudre, nice_str
+from .tablatexlib import convertir_en_latex, test_parentheses, nice_str
 from ...mathlib.solvers import ensemble_definition
+from ...mathlib.sympy_functions import solve
 from ...mathlib.intervalles import R, conversion_chaine_ensemble
 from ...mathlib.interprete import Interprete
 from ... import param
@@ -99,19 +100,25 @@ def _auto_tabvar(chaine='', derivee=True, limites=True, decimales=3, approche=Fa
     # On étudie la dérivée
     df = expr.diff(var)
     ens_def_deriv = ensemble_definition(df, var)
-    solutions = [sol for sol in resoudre(df, var) if sol.is_real]
+    # Liste des zéros de la dérivée
+    solutions = solve(df, var)
 
-    # On liste toutes les valeurs remarquables pour la fonction
-    # NB: on les convertit toutes au format Sympy, pour qu'il n'y ait pas
-    # par exemple deux zéros "différents" listés (int(0), et sympy.Integer(0))
+    # On liste toutes les valeurs remarquables pour la fonction.
+    # Remarques:
+    # - On les convertit toutes au format Sympy, pour qu'il n'y ait pas
+    #   par exemple deux zéros "différents" listés (int(0), et sympy.Integer(0)).
+    # - Sympy n'arrive pas à ordonner certaines expressions compliquées,
+    #   commme les racines de certains polynômes de degré 3 par exemple.
+    #   Il faut donc évaluer les valeurs avec '.evalf(200)' lorsqu'on cherche
+    #   à les comparer ou à les ordonner.
     valeurs = {sympify(xmin): None, sympify(xmax): None}
     for sol in solutions:
-        if xmin <= sol <= xmax:
-            valeurs[sympify(sol)] = 0
+        if xmin <= sol.evalf(200) <= xmax:
+            valeurs[sol] = 0
     for val in valeurs_interdites:
         if xmin <= val <= xmax:
             valeurs[sympify(val)] = nan
-    liste_valeurs = sorted(valeurs)
+    liste_valeurs = sorted(valeurs, key=(lambda x: x.evalf(200)))
 
 ##    def reel(val):
 ##        return val.is_real and -oo < val < oo

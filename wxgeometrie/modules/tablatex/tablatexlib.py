@@ -30,7 +30,6 @@ from sympy import oo, nan
 
 from ...mathlib import universal_functions as maths
 from ...mathlib.parsers import traduire_formule, simplifier_ecriture, convertir_en_latex
-from ...mathlib.solvers import nul
 from ...pylib import advanced_split
 from ...geolib.routines import nice_str
 
@@ -43,15 +42,12 @@ maths.pi = math.pi
 maths.e = math.e
 
 
-resoudre = functools.partial(nul, intervalle = False)
-# resoudre = sympy.solve
 
 #TODO: déplacer autant que possibles ces fonctions vers le parser de mathlib.
 
 def traduire_latex(expression):
     return traduire_formule(expression, fonctions=maths.__dict__, OOo=False,
                                                                   LaTeX=True)
-
 
 
 def test_parentheses(chaine):
