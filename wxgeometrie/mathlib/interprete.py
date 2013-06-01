@@ -261,57 +261,62 @@ class Interprete(object):
         return self._formater(self.locals["_"])
 
 
-    def _ecriture_scientifique(self, chaine):
-        valeur = float(chaine)
-        mantisse = int(math.floor(math.log10(abs(valeur))))
-        chaine = str(round(valeur/10.**mantisse, self.ecriture_scientifique_decimales))
-        if mantisse:
-            chaine += "*10^"+str(mantisse)
-        return  chaine
-
-    def _ecriture_scientifique_latex(self, chaine):
-        valeur = float(chaine)
-        mantisse = int(math.floor(math.log10(abs(valeur))))
-        chaine = str(round(valeur/10.**mantisse, self.ecriture_scientifique_decimales))
-        if mantisse:
-            chaine += "\\times 10^{%s}" %mantisse
-        return  chaine
-
-
+    ##def _ecriture_scientifique(self, chaine):
+        ##valeur = float(chaine)
+        ##mantisse = int(math.floor(math.log10(abs(valeur))))
+        ##chaine = str(round(valeur/10.**mantisse, self.ecriture_scientifique_decimales))
+        ##if mantisse:
+            ##chaine += "*10^"+str(mantisse)
+        ##return  chaine
+##
+    ##def _ecriture_scientifique_latex(self, chaine):
+        ##valeur = float(chaine)
+        ##mantisse = int(math.floor(math.log10(abs(valeur))))
+        ##chaine = str(round(valeur/10.**mantisse, self.ecriture_scientifique_decimales))
+        ##if mantisse:
+            ##chaine += "\\times 10^{%s}" %mantisse
+        ##return  chaine
 
 
-    def _formater_decimaux(self, chaine):
-        if "." in chaine:
-            chaine = str(Float(str(chaine), self.precision_calcul).evalf(self.precision_affichage))
-            chaine = chaine.rstrip('0')
-            if chaine.endswith("."):
-                chaine = chaine[:-1]
-        return chaine
+
+
+    ##def _formater_decimaux(self, chaine):
+        ##if "." in chaine:
+            ##chaine = str(Float(str(chaine), self.precision_calcul).evalf(self.precision_affichage))
+            ##chaine = chaine.rstrip('0')
+            ##if chaine.endswith("."):
+                ##chaine = chaine[:-1]
+        ##return chaine
 
 
     def _formater(self, valeur):
 ##        resultat = self._formatage_simple(valeur)
         if isinstance(valeur, Basic):
             valeur = valeur.subs(Float(1), S.One)
-        resultat = custom_str(valeur)
+
+        parametres = {'decimales': self.precision_affichage,
+                      'mode_scientifique': self.ecriture_scientifique,
+                      'decimales_sci': self.ecriture_scientifique_decimales,
+                      }
+        resultat = custom_str(valeur, **parametres)
         if valeur is None:
             latex = ""
         else:
             try:
-                latex = custom_latex(valeur)
+                latex = custom_latex(valeur, **parametres)
             except Exception:
                 print_error()
                 latex = ''
 
 
-        if self.ecriture_scientifique and not self.calcul_exact:
-            resultat = regsub(NBR, resultat, self._ecriture_scientifique)
-            latex = regsub(NBR, latex, self._ecriture_scientifique_latex)
-        else:
+        ##if self.ecriture_scientifique and not self.calcul_exact:
+            ##resultat = regsub(NBR, resultat, self._ecriture_scientifique)
+            ##latex = regsub(NBR, latex, self._ecriture_scientifique_latex)
+        ##else:
 ##            print "initial", resultat
-            resultat = regsub(NBR, resultat, self._formater_decimaux)
+            ##resultat = regsub(NBR, resultat, self._formater_decimaux)
 ##            print "final", resultat
-            latex = regsub(NBR, latex, self._formater_decimaux)
+            ##latex = regsub(NBR, latex, self._formater_decimaux)
 
 ##        if re.match("[0-9]*[.][0-9]+$", resultat):
 ##            resultat = resultat.rstrip('0')

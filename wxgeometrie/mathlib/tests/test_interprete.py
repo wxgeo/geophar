@@ -42,6 +42,7 @@ def assertDernier(i, s):
 def test_exemples_de_base():
     # Nombres
     assert_resultat('2+2', '4', '4')
+    assert_resultat('0,1^10', '1,0*10^-10', r'10^{-10}')
     # Symboles
     assert_resultat('pi+1+2pi', '1 + 3 pi', '1 + 3 \\pi')
     assert_resultat('oo+5*oo', '+oo')
@@ -355,6 +356,11 @@ def test_issue_263():
     # ou encore [0,23 ; 0,44]
     assertEqual(l, r"$\begin{pmatrix}0,23 & 0,44\end{pmatrix}$")
 
+def test_issue_259():
+    i = Interprete(verbose=VERBOSE)
+    r, l = i.evaluer("normal(140,1 ; 50,30)")
+    assertEqual(r, "1,0*10^-125")
+    assertEqual(l, r"$10^{-125}$")
 
 
 def test_proba_stats_basic_API():

@@ -78,12 +78,6 @@ class Decim(Rational):
     def __abs__(self):
         return Decim(abs(self.p), self.q, prec=self.prec)
 
-    def __repr__(self):
-        #return "%s('%s/%s', prec=%s)" % (self.__class__.__name__, self.p, self.q, self.prec)
-        # Précision suffisante pour pouvoir reconvertir en fraction ensuite
-        return repr(Float(self, prec=20)).rstrip('0')
-
-
 # On modifie les méthodes __add__, __sub__, etc. de Rational()
 # pour renvoyer un objet Decim() si l'un des objets de l'opération
 # est de type Decim.
@@ -242,10 +236,12 @@ class Temps(object):
         j, s = s//86400, s%86400
         h, s = s//3600, s%3600
         m, s = s//60, s%60
-        return j, h, m, s + dec
+        if dec:
+            s += dec
+        return j, h, m, s
 
     def __str__(self):
-        return  "%s j %s h %s min %s s" %self.jhms()
+        return  "%s j %s h %s min %s s" % self.jhms()
 
     def __repr__(self):
         return "Temps(%s)" %self.secondes

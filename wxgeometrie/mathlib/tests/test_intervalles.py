@@ -42,17 +42,17 @@ def test_intervalle():
     assert(str(Intervalle(8) + Intervalle(9)) == '[8;+oo[')
     assert(str(Intervalle("{0}")) == '{0}')
     # Remplacement automatique de la virgule par un point si possible
-    # FIXME: supprimer les dÃ©cimales inutiles (zÃ©ros)
-    assert(str(Intervalle("[2,5;3,5]")) == '[2.50000000000000;3.50000000000000]')
-    # En cas d'ambiguitÃ©, la virgule reste un sÃ©parateur entre deux nombres
+    # FIXME: supprimer les décimales inutiles (zéros)
+    assert(str(Intervalle("[2,5;3,5]")) == '[2.5;3.5]')
+    # En cas d'ambiguité, la virgule reste un séparateur entre deux nombres
     assert(str(Intervalle("R-{2,3}")) == ']-oo;2[U]2;3[U]3;+oo[')
 
 def test_evalf():
     i = intervalles.conversion_chaine_ensemble(']-oo;-2]U[1/4;1/2[')
-    assert(str(i.evalf()) == ']-oo;-2.0]U[0.25;0.5[')
+    assertEqual(str(i.evalf()), ']-oo;-2.0]U[0.25;0.5[')
     i = Intervalle(-sqrt(2), pi)
-    assert(str(i.evalf()) == '[-1.41421356237310;3.14159265358979]')
-    assert(str(i.evalf(n = 3)) == '[-1.41;3.14]')
+    assertEqual(str(i.evalf()), '[-1.4142135623731;3.14159265358979]')
+    assertEqual(str(i.evalf(n = 3)), '[-1.41;3.14]')
 
 def test_asarray():
     i = intervalles.Ensemble('{2}')

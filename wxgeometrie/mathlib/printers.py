@@ -34,18 +34,58 @@ from sympy.core.mul import _keep_coeff
 from .custom_objects import Decim
 
 
-class CustomStrPrinter(StrPrinter):
+class DecimGenericPrinter(object):
+    u"Classe implémentant des méthodes génériques pour gérer les objets Decim."
+    def _convert_Decim(self, expr):
+        conv = self._convert_Decim
+        if hasattr(expr, 'atoms') and hasattr(expr, 'subs'):
+            dico = {}
+            for a in expr.atoms():
+                if a.is_Rational and isinstance(a, Decim):
+                    dico[a] = Float(a, prec=60)
+            expr = expr.subs(dico).subs(Float(1), S.One)
+        elif isinstance(expr, (list, tuple)):
+            return expr.__class__(conv(item) for item in expr)
+        elif isinstance(expr, dict):
+            return dict((conv(key), conv(val)) for key, val in expr.iteritems())
+        return expr
+
+    def _float_evalf(self, expr):
+        u"Évalue le flottant en respectant le réglage du printer (nombre de décimales)."
+        if self._settings['mode_scientifique']:
+            decimales = self._settings['decimales_sci']
+        else:
+            decimales = self._settings['decimales']
+        # Le nombre de décimales ne doit pas dépasser la précision interne
+        # du flottant, au risque d'ajouter des décimales fausses.
+        # Cette précision interne est notée en bits, qu'il faut convertir en
+        # nombre de décimales.
+        # Nota: log(2)/log(10) = 0.3010299956639812
+        precision_interne = round(expr._prec*0.3010299956639812) - 1
+        decimales = max(min(decimales, precision_interne), 1)
+        return expr.evalf(decimales)
+
+
+class CustomStrPrinter(StrPrinter, DecimGenericPrinter):
+    def __init__(self, settings):
+        defaults = {'decimales': 18,
+                    'mode_scientifique': False,
+                    'decimales_sci': 2
+                    }
+        self._default_settings.update(defaults)
+        StrPrinter.__init__(self, settings)
+
     def _print_str(self, expr):
-        return '"%s"' %expr.replace('"', r'\"')
+        return '"%s"' % expr.replace('"', r'\"')
 
     def _print_unicode(self, expr):
-        return '"%s"' %expr.replace('"', r'\"')
+        return '"%s"' % expr.replace('"', r'\"')
 
     def _print_Exp1(self, expr):
         return 'e'
 
     def _print_Abs(self, expr):
-        return 'abs(%s)'%self._print(expr.args[0])
+        return 'abs(%s)' % self._print(expr.args[0])
 
     def _print_ImaginaryUnit(self, expr):
         return 'i'
@@ -54,14 +94,32 @@ class CustomStrPrinter(StrPrinter):
         return '+oo'
 
     def _print_log(self, expr):
-        return "ln(%s)"%self.stringify(expr.args, ", ")
+        return "ln(%s)" % self.stringify(expr.args, ", ")
 
     def _print_Pow(self, *args, **kw):
         return StrPrinter._print_Pow(self, *args, **kw).replace('**', '^')
 
     def _print_Float(self, expr):
-        string = StrPrinter._print_Float(self, expr)
-        return string.replace('e+', '*10^').replace('e-', '*10^-')
+        s = StrPrinter._print_Float(self, self._float_evalf(expr))
+        ##return string.replace('e+', '*10^').replace('e-', '*10^-')
+        ##print('dbg4578845::')
+        ##print(decimales)
+        if 'e' in s:
+            mantisse, exposant = s.split('e')
+            mantisse = mantisse.rstrip('0')
+            # On laisse la mantisse sous forme de flottant.
+            # Ainsi, '2,00000*10^-8' devient '2,0*10^-8', et non '2*10^-8'.
+            # Lorsqu'on sauvegarde l'état de l'interprète de la calculatrice,
+            # les décimaux du type 0,00000002 sont ainsi sauvegardés sous
+            # forme décimale, et non sous forme fractionnaire.
+            if mantisse.endswith('.'):
+                mantisse += '0'
+            exposant = exposant.lstrip('+')
+            return '%s*10^%s' % (mantisse, exposant)
+        else:
+            # Par contre, lorsque les décimaux sont des entiers, inutile de les
+            # sauvegarder sous forme décimale.
+            return s.rstrip('0').rstrip('.')
 
     def _print_Union(self, expr):
         return expr.__str__()
@@ -69,20 +127,6 @@ class CustomStrPrinter(StrPrinter):
     def _print_Fonction(self, expr):
         return "%s -> %s" % (", ".join(expr._variables()),
                         self._print(self._convert_Decim(expr.expression)))
-
-    def _convert_Decim(self, expr):
-        conv = self._convert_Decim
-        if hasattr(expr, 'atoms') and hasattr(expr, 'subs'):
-            dico = {}
-            for a in expr.atoms():
-                if a.is_Rational and isinstance(a, Decim):
-                    dico[a] = Float(a, prec=a.prec)
-            expr = expr.subs(dico).subs(Float(1), S.One)
-        elif isinstance(expr, (list, tuple)):
-            return expr.__class__(conv(item) for item in expr)
-        elif isinstance(expr, dict):
-            return dict((conv(key), conv(val)) for key, val in expr.iteritems())
-        return expr
 
     def doprint(self, expr):
         # Mieux vaut faire la substitution une seule fois dès le départ.
@@ -97,19 +141,21 @@ def custom_str(expr, **settings):
 
 Basic.__repr__ = (lambda self: custom_str(self, order=None))
 
-class CustomLatexPrinter(LatexPrinter):
-    def __init__(self, profile = None):
-        _profile = {
-            "mat_str" : "pmatrix",
-            "mat_delim" : "",
-            "mode": "inline",
-        }
-        if profile is not None:
-            _profile.update(profile)
-        LatexPrinter.__init__(self, _profile)
+
+class CustomLatexPrinter(LatexPrinter, DecimGenericPrinter):
+    def __init__(self, settings):
+        defaults = {'decimales': 18,
+                    'mode_scientifique': False,
+                    'decimales_sci': 2,
+                    "mat_str" : "pmatrix",
+                    "mat_delim" : "",
+                    "mode": "inline",
+                    }
+        self._default_settings.update(defaults)
+        LatexPrinter.__init__(self, settings)
 
     def _print_Temps(self, expr):
-        return r"%s \mathrm{j}\, %s \mathrm{h}\, %s \mathrm{min}\, %s \mathrm{s}" %expr.jhms()
+        return r"%s \mathrm{j}\, %s \mathrm{h}\, %s \mathrm{min}\, %s \mathrm{s}" % expr.jhms()
 
     def _print_exp(self, expr, exp=None):
         tex = r"\mathrm{e}^{%s}" % self._print(expr.args[0])
@@ -153,12 +199,16 @@ class CustomLatexPrinter(LatexPrinter):
         return "\\times ".join((str(entier) + formater(exposant)) for entier, exposant in expr.couples)
 
     def _print_Float(self, expr):
-        s = LatexPrinter._print_Float(self, expr)
-        if "e" in s:
-            nombre,  exposant = s.split("e")
-            return nombre + "\\times 10^{" + exposant.lstrip("+") + "}"
-        else:
-            return s
+        s = LatexPrinter._print_Float(self, self._float_evalf(expr))
+        if self._settings['mode_scientifique']:
+            # TODO: Gestion de l'écriture scientifique.
+            pass
+        if s.startswith(r'1.0 \times '):
+            return s[11:]
+        elif r'\times' not in s:
+            # Ne pas supprimer un zéro de la puissance !
+            s = s.rstrip('0').rstrip('.')
+        return s
 
     def _print_Infinity(self, expr):
         return r"+\infty"
@@ -204,10 +254,10 @@ class CustomLatexPrinter(LatexPrinter):
         return self._print_Float(Float(expr, prec=expr.prec))
 
     def doprint(self, expr):
-        ##expr = expr.subs(Float(1), S.One)
+        expr = self._convert_Decim(expr)
         tex = LatexPrinter.doprint(self, expr)
         return tex.replace(r'\operatorname{', r'\mathrm{')
 
 
-def custom_latex(expr, profile = None):
-    return CustomLatexPrinter(profile).doprint(expr)
+def custom_latex(expr, **settings):
+    return CustomLatexPrinter(settings).doprint(expr)

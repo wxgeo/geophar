@@ -64,6 +64,6 @@ def test_ensemble_definition():
     assert_ens_def((2 - x)/(6 - 5*x + x**2), ']-oo;2[U]2;3[U]3;+oo[')
 
 def test_issue_230():
-    # 3 racines rÃ©elles pour le polynÃ´me.
+    # 3 racines réelles pour le polynôme.
     assertEqual(str(resoudre("x^3+7*x^2-5*x-4==0").evalf()),
-            '{-7.58937000406433 ; -0.488827742140880 ; 1.07819774620521}')
+          '{-7.58937000406433 ; -0.48882774214088 ; 1.07819774620521}')
