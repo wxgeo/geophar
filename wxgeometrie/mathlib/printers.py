@@ -25,11 +25,12 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ## Surclasse les printers de sympy
 
+from math import floor, log
+
 from sympy import Symbol, Integer, Float, Basic
 from sympy.printing.latex import LatexPrinter
-from sympy.printing.str import StrPrinter, precedence
-from sympy.core import S, Rational, Pow, Mul
-from sympy.core.mul import _keep_coeff
+from sympy.printing.str import StrPrinter
+from sympy.core import S
 
 from .custom_objects import Decim
 
@@ -53,7 +54,7 @@ class DecimGenericPrinter(object):
     def _float_evalf(self, expr):
         u"Évalue le flottant en respectant le réglage du printer (nombre de décimales)."
         if self._settings['mode_scientifique']:
-            decimales = self._settings['decimales_sci']
+            decimales = self._settings['decimales_sci'] + 1
         else:
             decimales = self._settings['decimales']
         # Le nombre de décimales ne doit pas dépasser la précision interne
@@ -100,12 +101,21 @@ class CustomStrPrinter(StrPrinter, DecimGenericPrinter):
         return StrPrinter._print_Pow(self, *args, **kw).replace('**', '^')
 
     def _print_Float(self, expr):
-        s = StrPrinter._print_Float(self, self._float_evalf(expr))
-        ##return string.replace('e+', '*10^').replace('e-', '*10^-')
-        ##print('dbg4578845::')
-        ##print(decimales)
-        if 'e' in s:
-            mantisse, exposant = s.split('e')
+        exposant = None
+        if self._settings['mode_scientifique']:
+            # Conversion en écriture scientifique.
+            puissance = floor(log(expr, 10))
+            flottant = self._float_evalf(expr*10**-puissance)
+            mantisse = StrPrinter._print_Float(self, flottant)
+            exposant = str(puissance)
+        else:
+            chaine = StrPrinter._print_Float(self, self._float_evalf(expr))
+            if 'e' in chaine:
+                # Déjà en mode scientifique (ex: 1.3e-15)
+                mantisse, exposant = chaine.split('e')
+
+        if exposant is not None:
+            # Affichage en mode scientifique
             mantisse = mantisse.rstrip('0')
             # On laisse la mantisse sous forme de flottant.
             # Ainsi, '2,00000*10^-8' devient '2,0*10^-8', et non '2*10^-8'.
@@ -119,7 +129,7 @@ class CustomStrPrinter(StrPrinter, DecimGenericPrinter):
         else:
             # Par contre, lorsque les décimaux sont des entiers, inutile de les
             # sauvegarder sous forme décimale.
-            return s.rstrip('0').rstrip('.')
+            return chaine.rstrip('0').rstrip('.')
 
     def _print_Union(self, expr):
         return expr.__str__()
@@ -199,10 +209,12 @@ class CustomLatexPrinter(LatexPrinter, DecimGenericPrinter):
         return "\\times ".join((str(entier) + formater(exposant)) for entier, exposant in expr.couples)
 
     def _print_Float(self, expr):
-        s = LatexPrinter._print_Float(self, self._float_evalf(expr))
         if self._settings['mode_scientifique']:
-            # TODO: Gestion de l'écriture scientifique.
-            pass
+            # Gestion de l'écriture scientifique.
+            n = floor(log(expr, 10))
+            s = LatexPrinter._print_Float(self, self._float_evalf(expr*10**-n))
+            return r"%s \times 10^{%s}" % (s, n)
+        s = LatexPrinter._print_Float(self, self._float_evalf(expr))
         if s.startswith(r'1.0 \times '):
             return s[11:]
         elif r'\times' not in s:

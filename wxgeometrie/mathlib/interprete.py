@@ -23,7 +23,7 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #along with this program; if not, write to the Free Software
 #Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-import re, math, types
+import re, types
 import  numpy
 
 import sympy
@@ -31,12 +31,11 @@ from sympy import Symbol, Basic, Float, sympify, nsimplify, S, Matrix
 
 from .intervalles import Ensemble
 from .printers import custom_str, custom_latex
-from .custom_functions import frac, rationals2floats
+from .custom_functions import frac
 from .custom_objects import Temps, Fonction, ProduitEntiers, Decim
 from . import sympy_functions
 from ..mathlib import end_user_functions
-from ..pylib import print_error, split_around_parenthesis, regsub,\
-                    securite
+from ..pylib import print_error, split_around_parenthesis, securite
 from .parsers import simplifier_ecriture, NBR, traduire_formule, NBR_FLOTTANT
 from .. import param
 

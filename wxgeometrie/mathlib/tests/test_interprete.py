@@ -238,6 +238,11 @@ def test_issue_129():
     assert_resultat('"x(x+1)" + """x!"""', '"x(x+1)x!"')
     assert_resultat(r'""" "" """ + " \"\"\" "', r'" \"\"  \"\"\" "')
 
+def test_issue_129bis():
+    assert_resultat("'1.2345'", '"1.2345"')
+    assert_resultat("'x(x+1)'", '"x(x+1)"')
+
+
 def test_issue_185():
     i = Interprete(verbose=VERBOSE)
     i.evaluer("a=1+I")
@@ -328,11 +333,6 @@ def test_issue_258():
     r, l = i.evaluer("v(0.28, 50)", calcul_exact=False)
     assertEqual(r, "(0,155543858327521659 ; 0,404456141672478341)")
     assertEqual(l, r"$\left(0,155543858327521659;\,0,404456141672478341\right)$")
-
-
-def test_issue_129():
-    assert_resultat("'1.2345'", '"1.2345"')
-    assert_resultat("'x(x+1)'", '"x(x+1)"')
 
 
 def test_issue_263():
