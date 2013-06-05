@@ -184,6 +184,9 @@ s.mv(archive_gz, options.output)
 
 print(u'\nPaquet créé dans %s.\n' % os.path.abspath(options.output))
 
+# Mettre à jour le fichier de version...
+# http://wxgeo.free.fr/wordpress/update_geophar_version.php?version=13.04.8
+
 # Nettoyage
 s.cd('..')
 s.rmdir('build_')

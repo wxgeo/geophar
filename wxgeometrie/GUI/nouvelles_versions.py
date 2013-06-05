@@ -33,7 +33,8 @@ from .app import app
 
 
 class Gestionnaire_mises_a_jour(QObject):
-    url = "http://wxgeo.free.fr/wordpress/version"
+    url_version = "http://wxgeo.free.fr/wordpress/version_geophar"
+    url_telechargement = "http://sourceforge.net/projects/geophar/files/latest/download"
 
     def __init__(self, parent):
         QObject.__init__(self)
@@ -49,14 +50,21 @@ class Gestionnaire_mises_a_jour(QObject):
             if update:
                 self.derniere_version = version
                 QMessageBox.information(self.parent, u"Une mise à jour a été trouvée.",
-                        u"La version %s de WxGéométrie est sortie.\nVous allez être redirigé vers la page de téléchargement." %version)
-                webbrowser.open("http://sourceforge.net/projects/wxgeometrie/files/WxGeometrie/")
+                        (u"La version %s de %s est sortie.\n"
+                        u"Vous allez être redirigé vers la page de téléchargement.")
+                        % (version, param.NOMPROG))
+                webbrowser.open(url_telechargement)
             else:
                 QMessageBox.information(self.parent, u"Aucune mise à jour trouvée.",
-                        u"Aucune mise à jour n'est disponible actuellement.\nConsultez http://wxgeo.free.fr pour plus d'informations.", )
+                        u"Aucune mise à jour n'est disponible actuellement.<br>"
+                        u"Consultez <a href='http://wxgeo.free.fr/wordpress/'>"
+                        u"http://wxgeo.free.fr</a> pour plus d'informations.")
         else:
             print(u'Connexion impossible à ' + self.url + ' : ' + msg)
-            QMessageBox.warning(self.parent, u"Connexion impossible", u"Impossible de vérifier si une nouvelle version existe.")
+            QMessageBox.warning(self.parent, u"Connexion impossible",
+                    u"Impossible de vérifier si une nouvelle version existe.<br>"
+                    u"Consultez <a href='http://wxgeo.free.fr/wordpress/'>"
+                    u"http://wxgeo.free.fr</a> pour plus d'informations.")
 
 
     def verifier_version(self, event=None):
