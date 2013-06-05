@@ -63,10 +63,11 @@ Il est générée via le code suivant::
 
     # Génération du code :
 
+    # Nom de la fonction dans les modules math, numpy et sympy respectivement.
     _fonctions_mathematiques = {
-        'acos': ['acos', 'acos', 'acos'],
-        'asin': ['asin', 'asin', 'asin'],
-        'atan': ['atan', 'atan', 'atan'],
+        'acos': ['acos', 'arccos', 'acos'],
+        'asin': ['asin', 'arcsin', 'asin'],
+        'atan': ['atan', 'arctan', 'atan'],
         'ceil': ['ceil', 'ceil', 'ceiling'],
         'cos': ['cos', 'cos', 'cos'],
         'cosh': ['cosh', 'cosh', 'cosh'],
@@ -96,11 +97,12 @@ Il est générée via le code suivant::
 """
 
 
+# Nom de la fonction dans les modules math, numpy et sympy respectivement.
 _fonctions_mathematiques = {
     'abs':['abs', 'abs', 'abs'],
-    'acos': ['acos', 'acos', 'acos'],
-    'asin': ['asin', 'asin', 'asin'],
-    'atan': ['atan', 'atan', 'atan'],
+    'acos': ['acos', 'arccos', 'acos'],
+    'asin': ['asin', 'arcsin', 'asin'],
+    'atan': ['atan', 'arctan', 'atan'],
     'ceil': ['ceil', 'ceil', 'ceiling'],
     'cos': ['cos', 'cos', 'cos'],
     'cosh': ['cosh', 'cosh', 'cosh'],
@@ -145,7 +147,7 @@ def asin(*args, **kw):
     elif isinstance(arg0, _sympy.Basic):
         return _sympy.asin(*args,**kw)
     else:
-        return _numpy.asin(*args,**kw)
+        return _numpy.arcsin(*args,**kw)
 
 
 def cos(*args, **kw):
@@ -181,7 +183,7 @@ def atan(*args, **kw):
     elif isinstance(arg0, _sympy.Basic):
         return _sympy.atan(*args,**kw)
     else:
-        return _numpy.atan(*args,**kw)
+        return _numpy.arctan(*args,**kw)
 
 
 def floor(*args, **kw):
@@ -265,7 +267,7 @@ def acos(*args, **kw):
     elif isinstance(arg0, _sympy.Basic):
         return _sympy.acos(*args,**kw)
     else:
-        return _numpy.acos(*args,**kw)
+        return _numpy.arccos(*args,**kw)
 
 
 def ceil(*args, **kw):
