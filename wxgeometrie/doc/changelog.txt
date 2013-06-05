@@ -1,7 +1,15 @@
-Géophar version 13.04.6
-Publiée le 15/05/2013
+Géophar version 13.04.7
+Publiée le 05/06/2013
 
 
+* Fix issue with arctan, arcsin and arccos in `universal_functions.py`.
+* Improve scientific notation display in calc.
+* Support for scientific notation in calc is back.
+* Issue 259 fixed. Most of floats printing code had to be rewritten.
+* Add test for fixed issue 249 (Tablatex module).
+* Fix issue 187: incorrect variations of some functions in Tablatex module.
+* [Calc] Fix important regression involving powers and decimals.
+* Version 13.04.6
 * Improve compatibility with old .geo files.
 * Fix failing docstring tests.
 * Fix: mat() function optional third argument was not properly handled.
