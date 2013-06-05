@@ -106,6 +106,19 @@ def test(*args):
 def doctest(*args):
     "Run all doctests."
     os.chdir(WXGEODIR)
+    try:
+        import sip
+        # PyQt new API (PyQt 4.6+)
+        sip.setapi('QDate', 2)
+        sip.setapi('QDateTime', 2)
+        sip.setapi('QString', 2)
+        sip.setapi('QTextStream', 2)
+        sip.setapi('QTime', 2)
+        sip.setapi('QUrl', 2)
+        sip.setapi('QVariant', 2)
+    except ValueError:
+        print("Warning: SIP API has already been set.")
+
     param.debug = False
     param.verbose = False
     sys.argv = [sys.argv[0], '--defaut']
@@ -125,7 +138,7 @@ def help():
     - Launch all unit tests:
         $ ./tools/test.py
     - Launch all doctests:
-        $ ./tools/test.py --doctest
+        $ ./tools/test.py --doc
     - Launch all unit tests and doctests:
         $ ./tools/test.py --all
     - Clear working wxgeometrie directories:
@@ -141,6 +154,8 @@ def help():
         $ ./tools/test.py objets
     """)
     sys.exit()
+
+
 
 # Actions are launched
 if args:
