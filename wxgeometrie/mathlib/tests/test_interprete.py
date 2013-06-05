@@ -31,6 +31,11 @@ def assert_resoudre(s, *args, **kw):
 def assert_approche(s, resultat, latex = None, **parametres):
     assert_resultat(s, resultat, latex, calcul_exact = False, **parametres)
 
+def assert_ecriture_scientifique(s, resultat, latex=None, decimales=3, **parametres):
+    assert_resultat(s, resultat, latex,
+                    calcul_exact=False, ecriture_scientifique=True,
+                    ecriture_scientifique_decimales=decimales, **parametres)
+
 def assertEqual(x, y):
     if x != y:
         print "ERREUR:", repr(x), "!=", repr(y)
@@ -151,6 +156,9 @@ def test_approches():
                     '{-1,87450786638754354 ; 2 ; 29,8745078663875435}',
                     r'\left\{-1,87450786638754354\,;\, 2\,;\, 29,8745078663875435\right\}')
 
+def test_ecriture_scientifique():
+    assert_ecriture_scientifique('25470', '2,55*10^4', r'2,55 \times 10^{4}', decimales=2)
+    assert_ecriture_scientifique('pi/1000', '3,14159265*10^-3', r'3,14159265 \times 10^{-3}', decimales=8)
 
 def test_session():
     i = Interprete(verbose=VERBOSE)

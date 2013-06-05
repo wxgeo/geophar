@@ -104,7 +104,7 @@ class CustomStrPrinter(StrPrinter, DecimGenericPrinter):
         exposant = None
         if self._settings['mode_scientifique']:
             # Conversion en écriture scientifique.
-            puissance = floor(log(expr, 10))
+            puissance = int(floor(log(expr, 10)))
             flottant = self._float_evalf(expr*10**-puissance)
             mantisse = StrPrinter._print_Float(self, flottant)
             exposant = str(puissance)
@@ -211,7 +211,7 @@ class CustomLatexPrinter(LatexPrinter, DecimGenericPrinter):
     def _print_Float(self, expr):
         if self._settings['mode_scientifique']:
             # Gestion de l'écriture scientifique.
-            n = floor(log(expr, 10))
+            n = int(floor(log(expr, 10)))
             s = LatexPrinter._print_Float(self, self._float_evalf(expr*10**-n))
             return r"%s \times 10^{%s}" % (s, n)
         s = LatexPrinter._print_Float(self, self._float_evalf(expr))
