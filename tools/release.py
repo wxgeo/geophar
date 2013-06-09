@@ -23,7 +23,9 @@ from __future__ import with_statement, print_function
 
 
 import os, sys, time, re, types
+from os.path import isfile
 from optparse import OptionParser
+from urllib2 import urlopen
 import scriptlib as s
 
 _module_path = os.path.split(os.path.realpath(sys._getframe().f_code.co_filename))[0]
@@ -38,16 +40,51 @@ parser.add_option("-m", "--message", dest="message",
 parser.add_option("-n", "--dry-run",
                   action="store_true", dest="fake", default=False,
                   help="simulate only")
+parser.add_option("-p", "--publish",
+                  action="store_true", dest="publish", default=False,
+                  help=("publish on sourceforge (source package only)\n"
+                        "and change current version number online."))
+parser.add_option("-b", "--publish-only",
+                  action="store_true", dest="publish_only", default=False,
+                  help="Publish last (already existing) release.")
 parser.add_option("-q", "--quiet",
                   action="store_true", dest="quiet", default=False,
                   help="don't ask for confirmation")
 
 (options, args) = parser.parse_args()
 
+def publish(filename, version):
+    u"""Publie le fichier sur sourceforge, et met à jour le fichier distant
+    contenant le numéro de la dernière version.
+    """
+    SOURCEFORGE_CONFIG = 'tools/.sourceforge'
+    if isfile(SOURCEFORGE_CONFIG):
+        with open(SOURCEFORGE_CONFIG) as _file:
+            key = _file.read(1000)
+    else:
+        key = raw_input('API-key:')
+    print(u'\nMise en ligne de la version %s (%s)' % (version, filename))
+    remote_dir = '/home/frs/project/geophar/Geophar/version_%s' % version
+    s.command('cat %s | ssh wxgeo@shell.sourceforge.net "mkdir -p %s;cat > %s/%s"'
+                % (filename, remote_dir, remote_dir, filename))
+    # http://sourceforge.net/p/forge/community-docs/Using%20the%20Release%20API/
+    s.command(('curl -H "Accept: application/json" '
+               '-X PUT -d "default=linux&default=bsd&default=solaris&default=others"'
+               '-d "api_key=%s" '
+               'https://sourceforge.net/projects/geophar/files/Geophar/version_%s/%s')
+               % (key, version, filename))
+    urlopen('http://wxgeo.free.fr/wordpress/update_geophar_version.php?version=%s' % version)
+
 s.cd('..')
 sys.path.append(os.getcwd())
 from wxgeometrie.param import version, NOMPROG2, NOMPROG
 nom_prog = NOMPROG2.lower()
+
+if options.publish_only:
+    filename = '%s_%s.tar.gz' % (nom_prog, version)
+    publish(filename, version)
+    print(u'\nTerminé.')
+    sys.exit()
 
 if len(args) != 1:
     parser.error("fournir un (et un seul) argument (numero de version).\nVersion actuelle: " + version)
@@ -130,7 +167,7 @@ date = time.strftime("%d/%m/%Y")
 s.command(u'echo "%s version %s\nPubliée le %s\n\n">doc/changelog.txt'
                         % (NOMPROG, version, date))
 
-tags = s.command('git tag').strip().split('\n')
+tags = s.command('git tag', quiet=True).strip().split('\n')
 # On inverse la liste et on supprime les 'v' devant chaque tag.
 tags = [tag[1:] for tag in reversed(tags)]
 # On récupère la version majeure précédente
@@ -184,8 +221,9 @@ s.mv(archive_gz, options.output)
 
 print(u'\nPaquet créé dans %s.\n' % os.path.abspath(options.output))
 
-# Mettre à jour le fichier de version...
-# http://wxgeo.free.fr/wordpress/update_geophar_version.php?version=13.04.8
+# Publie sur sourceforge et met à jour le fichier de version...
+if options.publish:
+    publish(archive_gz, version)
 
 # Nettoyage
 s.cd('..')
