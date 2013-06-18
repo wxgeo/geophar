@@ -60,18 +60,18 @@ class MenuActionsObjet(PopUpMenu):
         action = self.addAction(u"Renommer")
         action.triggered.connect(self.renommer)
 
-        msg = u"Éditer le texte" if isinstance(select, Texte_generique) else u"Texte associé"
-        action = self.addAction(msg)
-        action.triggered.connect(self.etiquette)
-
         if isinstance(select, Texte_generique):
+            action = self.addAction(u"Éditer le texte")
+            action.triggered.connect(self.etiquette)
             action = self.addAction(u"Formatage mathématique" if select.style('formatage') == RIEN
                                             else u"Formatage par défaut")
             action.triggered.connect(self.mode_formatage)
-        else:
+            
+        elif select.etiquette is not None:
+            action = self.addAction(u"Texte associé")
+            action.triggered.connect(self.etiquette)
             action = self.addAction((u"Masquer" if select.label() else u"Afficher") + u" nom/texte")
             action.triggered.connect(self.masquer_nom)
-
 
         self.addSeparator()
 
@@ -140,14 +140,8 @@ class MenuActionsObjet(PopUpMenu):
 
     def etiquette(self):
         select = self.canvas.select
-        old_style = select.style().copy()
-        if isinstance(select, Texte_generique):
-            old_label = select.texte
-        elif select.etiquette is not None:
-            old_label = select.etiquette.texte
-        else:
-            # L'objet n'a pas d'étiquette (Variable, etc.)
-            return
+        etiquette = select.etiquette if select.etiquette is not None else select
+        old = {'mode': etiquette.style("mode"), 'texte': etiquette.texte}
 
         # ----------------
         # Cas particuliers
@@ -169,7 +163,6 @@ class MenuActionsObjet(PopUpMenu):
                 select.label(text)
             return
 
-
         # -----------
         # Cas général
         # -----------
@@ -181,7 +174,7 @@ class MenuActionsObjet(PopUpMenu):
         sizer.addWidget(QLabel(u"Note: le code LATEX doit etre entre $$. Ex: $\\alpha$"))
 
         dlg.text = QTextEdit(dlg)
-        dlg.text.setPlainText(old_label)
+        dlg.text.setPlainText(etiquette.texte)
         dlg.setMinimumSize(300, 50)
         sizer.addWidget(dlg.text)
 
@@ -215,11 +208,14 @@ class MenuActionsObjet(PopUpMenu):
                     mode = (FORMULE if dlg.cb.isChecked() else TEXTE)
                     self.executer(u"%s.label(%s, %s)" %(nom, txt, mode))
                 except:
-                    select.style(**old_style)
+					# Au cas où une formule incorrecte fasse buguer l'affichage (?)
+                    etiquette.texte = old['texte']
+                    etiquette.style(mode=old['mode'])
                     print_error()
                     continue
             else:
-                select.label(old_label)
+                etiquette.texte = old['texte']
+                etiquette.style(mode=old['mode'])
             break
 
     def copier_style(self, critere='categorie'):

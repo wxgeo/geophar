@@ -900,10 +900,18 @@ class Objet(object):
         Permet d'avoir une interface unique pour les objets avec
         étiquette, et les textes (qui sont eux-mêmes leur propre
         étiquette en quelque sorte), qui surclassent cette méthode.
+
+        Pour obtenir le texte formaté (en fonction du mode d'affichage),
+        utiliser la méthode `.label()`.
+
+        Note::
+
+        Le mode d'affichage est accessible via l'attribut `.mode_affichage`.
         """
         if self.etiquette is None:
             return None
         return self.etiquette.texte
+
 
     def style(self, nom_style = None, **kw):
         u"""Renvoie le ou les styles demandés, ou modifie les styles de l'objet.

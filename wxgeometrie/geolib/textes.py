@@ -242,16 +242,27 @@ class Texte_editable_generique(Texte_generique):
 
 
     def label(self, texte=None, mode=None):
-        u"""Affiche le label (ou étiquette) de l'objet.
+        u"""Affiche ou modifie le label (ou étiquette) de l'objet.
 
-        La chaine renvoyée dépendra de la valeur du style mode:
+        Si `texte` ou `mode` est spécifié, modifie le contenu du texte,
+        et/ou le mode associé, et ne renvoie rien (`None`).
+
+        (Si aucun mode n'est spécifié, le mode est fixé à `TEXTE`.)
+
+        Sinon, renvoie le label de l'objet.
+
+        La signification de la chaine renvoyée dépendra du mode d'affichage de l'objet::
+
         - si mode = 0 (`param.RIEN`), renvoie ''
         - si mode = 1 (`param.NOM`), renvoie le nom de l'objet
         - si mode = 2 (`param.TEXTE`), renvoie le label proprement dit de l'objet
         - si mode = 3  (`param.FORMULE`), renvoie le label interprété comme une formule
 
-        Si le paramètre label est spécifié, le label est modifié, et par défaut
-        le mode est fixé à `TEXTE`."""
+        Note::
+
+        Le mode d'affichage est accessible en lecture seule via l'attribut `.mode_affichage`,
+        et le texte interne (non formaté) via l'attribut `.legende`.
+        """
         if texte is not None:
             if mode is None:
                 mode = TEXTE
