@@ -223,6 +223,8 @@ class Texte_editable_generique(Texte_generique):
     # Contiendra éventuellement une formule (si le mode formule est activé).
     _formule = None
 
+    _modes = (RIEN, NOM, TEXTE, FORMULE)
+
     def __init__(self, texte='', **styles):
         if not isinstance(texte, (Ref, unicode)):
             texte = uu(texte)
@@ -273,10 +275,15 @@ class Texte_editable_generique(Texte_generique):
             self.texte = texte
 
         elif mode is not None:
+            if mode not in self._modes:
+                raise ValueError, ('Mode inconnu (%s)' % mode)
             self.style(mode=mode)
 
         else:
             mode = self.style("mode")
+            if mode not in self._modes:
+                print('Warning: Mode inconnu (%s)' % mode)
+                mode = TEXTE
             if mode == NOM:
                 return self.nom_latex
             elif mode == TEXTE:
@@ -286,8 +293,6 @@ class Texte_editable_generique(Texte_generique):
                 label = unicode(self.formule)
             elif mode == RIEN:
                 return ""
-            else:
-                print('Warning: mode inconnu (%s)' % mode)
 
             old_label = label
 

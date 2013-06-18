@@ -381,16 +381,18 @@ class ProprietesAffichage(QWidget):
                         if objet.style(key) is None: # le style n'a pas de sens pour l'objet
                             changements.pop(key)
                     if mode is not None or label is not None:
-                        self.canvas.executer(u"%s.label(%s, %s)" %(objet.nom, repr(label), mode))
                         if mode is None:
-                            mode = objet.etiquette.style("mode")
-                            self.changements["mode"] = mode
-                            self.radios[mode].setChecked(True)
-
-                    if self.islabel:
-                        self.canvas.executer(u"%s.etiquette.style(**%s)" %(objet.parent.nom, changements))
-                    else:
-                        self.canvas.executer(u"%s.style(**%s)" %(objet.nom, changements))
+                            # Conserver le mode formule, sinon basculer en mode TEXTE.
+                            mode = (FORMULE if objet.mode_affichage == FORMULE else TEXTE)
+                        self.canvas.executer(u"%s.label(%s, %s)" %(objet.nom, repr(label), mode))
+                        self.radios[mode].setChecked(True)
+                        # Le texte a pu changer (ajout automatique des accolades en mode formule)
+                        self.etiquette.setText(objet.legende)
+                    if changements:
+                        if self.islabel:
+                            self.canvas.executer(u"%s.etiquette.style(**%s)" %(objet.parent.nom, changements))
+                        else:
+                            self.canvas.executer(u"%s.style(**%s)" %(objet.nom, changements))
             except:
                 print_error()
 

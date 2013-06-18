@@ -76,3 +76,17 @@ def test_latex_incorrect():
     A.label('$M__i$')
     assertEqual(A.label(), r'\$M__i\$')
     A.label('2$')
+    
+def test_changement_mode():
+    A = rand_pt()
+    f = Feuille()
+    f.objets.A = A
+    A.label('-6', 3)
+    assertEqual(A.label(), u'-6')
+    assertEqual(A.legende, u'{-6}')
+    A.label('-3', 2)
+    assertEqual(A.legende, u'-3')
+    #~ A.label('-6',2)
+    #~ A.legende
+    #~ u'{-6}'
+
