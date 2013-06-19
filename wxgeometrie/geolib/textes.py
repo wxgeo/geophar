@@ -196,6 +196,13 @@ class Texte_editable_generique(Texte_generique):
     (Usage interne).
     """
 
+    # Note concernant les formules.
+    # Il y a 3 cas où `self._formule` doit être modifié :
+    # - lorsqu'on passe d'un autre mode au mode FORMULE,
+    # - lorsqu'on passe du mode FORMULE à un autre mode,
+    # - lorsqu'on conserve le mode FORMULE et qu'on change `self.texte`.
+
+
     def _get_texte(self, value):
         if self._initialise:
             formule = self.formule
@@ -271,7 +278,11 @@ class Texte_editable_generique(Texte_generique):
             # Il faut changer le mode **avant** de changer le texte.
             # On utilise une commande de bas niveau, pour éviter de modifier
             # réellement la formule tant que le texte n'est pas le bon.
-            self._style['mode'] = mode
+            # On supprime également la formule si l'on quitte le mode formule.
+            if self._style['mode'] != mode:
+                if self._style['mode'] == FORMULE:
+                    self.formule = None
+                self._style['mode'] = mode
             self.texte = texte
 
         elif mode is not None:
@@ -343,8 +354,10 @@ class Texte_editable_generique(Texte_generique):
         if mode is not None and self._style['mode'] != mode:
             # On met à jour la formule si besoin est.
             if mode == FORMULE:
+                # On passe en mode formule
                 self.formule = self.texte
-            else:
+            elif self._style['mode'] == FORMULE:
+                # On quitte le mode formule
                 self.formule = None
 
         return Objet.style(self, nom_style, **kw)

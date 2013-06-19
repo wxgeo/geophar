@@ -76,17 +76,23 @@ def test_latex_incorrect():
     A.label('$M__i$')
     assertEqual(A.label(), r'\$M__i\$')
     A.label('2$')
-    
+
 def test_changement_mode():
+    u"Test pour les issues FS#240 et FS#266."
     A = rand_pt()
     f = Feuille()
     f.objets.A = A
     A.label('-6', 3)
-    assertEqual(A.label(), u'-6')
-    assertEqual(A.legende, u'{-6}')
+    assertEqual(A.label(), '-6')
+    assertEqual(A.legende, '{-6}')
     A.label('-3', 2)
-    assertEqual(A.legende, u'-3')
-    #~ A.label('-6',2)
-    #~ A.legende
-    #~ u'{-6}'
-
+    assertEqual(A.legende, '-3')
+    A.x = -7
+    A.label('A.x', 3)
+    assertEqual(A.legende, '{A.x}')
+    assertEqual(A.label(), '-7')
+    # Il ne doit pas y avoir d'erreur : le changement de mode doit être
+    # effectué **avant** le changement de texte.
+    A.label('-----', 2)
+    assertEqual(A.legende, '-----')
+    assertEqual(A.label(), '-----')
