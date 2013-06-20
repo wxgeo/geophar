@@ -46,6 +46,8 @@ class Texte_generique(Objet_avec_coordonnees):
 
     _style_defaut = param.textes
     _prefixe_nom = "txt"
+    # À cause du fond de couleur.
+    _affichage_depend_de_la_fenetre = True
 
     # Utilisé pour éditer le texte interactivement dans le canvas.
     _label_temporaire = None
