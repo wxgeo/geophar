@@ -1039,3 +1039,5 @@ def _hacked_subsuperscript(self, s, loc, toks):
 
 matplotlib.mathtext.Parser.auto_sized_delimiter = _hacked_auto_sized_delimiter
 matplotlib.mathtext.Parser.subsuperscript = _hacked_subsuperscript
+# Changement de nom dans matplotlib 1.2
+matplotlib.mathtext.Parser.subsuper = _hacked_subsuperscript
