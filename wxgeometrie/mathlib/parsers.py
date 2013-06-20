@@ -818,7 +818,7 @@ def convertir_en_latex(chaine, mode='$'):
     l'ordre des termes (par exemple, transformer `2-x` en `-x+2`).
     """
     chaine = _convertir_en_latex(chaine)
-    if mode == '$':
+    if mode == '$' and chaine:
         chaine = "$" + chaine + "$"
     return chaine
 

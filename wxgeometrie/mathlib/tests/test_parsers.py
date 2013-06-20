@@ -227,6 +227,10 @@ def test_convertir_en_LaTeX():
     assert_conv('sqrt(x) + exp(-y)', r'\sqrt{x}+\exp(-y)')
     assert_conv('+oo', r'+\infty')
 
+def test_convertir_en_LaTeX_mode_dollars():
+    assertEqual(convertir_en_latex('-1', mode='$'), '$-1$')
+    assertEqual(convertir_en_latex('', mode='$'), '') # '' et non '$$' !
+
 def test_convertir_en_LaTeX_fractions():
     assert_conv('2/3', r'\frac{2}{3}')
     assert_conv('-2/3', r'-\frac{2}{3}')
