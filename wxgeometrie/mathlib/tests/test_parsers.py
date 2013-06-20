@@ -324,3 +324,4 @@ def test_mathtext_parser():
     mathtext_parser(u"$A'$")
     mathtext_parser(u"$f'$ est la dérivée")
     mathtext_parser(u"$1^{er}$ dé")
+    mathtext_parser(r"$\left]-\infty;\frac{1}{3}\right]\cup\left[2;5\right[$")

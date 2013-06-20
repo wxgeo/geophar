@@ -845,6 +845,14 @@ def latex2mathtext(chaine):
         if r'\left' in chaine:
             chaine = chaine.replace(r'\left\{', r'\left{')
             chaine = chaine.replace(r'\right\}', r'\right}')
+            # Test des crochets (intervalles).
+            # mathtext n'accepte pas (matplotlib version 1.2) `\left]` ni `\right[`.
+            # Pour des questions d'équilibrage, si l'on détecte
+            # l'un ou l'autre, on enlève tous les \left et \right devant les crochets.
+            # (Patch provisoire en attendant de modifier matplotlib.)
+            if r'\left]' in chaine or r'\right[' in chaine:
+                chaine = chaine.replace(r'\left]', ']').replace(r'\left[', '[').replace(r'\right]', ']').replace(r'\right[', '[')
+
     return chaine
 
 
