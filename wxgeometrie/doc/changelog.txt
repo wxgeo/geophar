@@ -1,7 +1,19 @@
-Géophar version 13.04.7
-Publiée le 05/06/2013
+Géophar version 13.04.8
+Publiée le 22/06/2013
 
 
+* [wx->Qt] Animations work again.
+* Improve matplotlib 1.2 compatibility.
+* Fix issue FS#234 : matplotlib doesn't support `\left]` nor `\right]`.
+* Small fix for `convertir_en_LaTeX()`.
+* Fix issue FS#255 : text background is redrawn when window size change.
+* [Geolib] Fix issues FS#240 et FS#266 concerning labels.
+* Improve label editing.
+* Fix text and label editing in object context menu.
+* Improve release process.
+* [wx->Qt] Update version check utility.
+* Fix doctest utility.
+* Version 13.04.7
 * Fix issue with arctan, arcsin and arccos in `universal_functions.py`.
 * Improve scientific notation display in calc.
 * Support for scientific notation in calc is back.
