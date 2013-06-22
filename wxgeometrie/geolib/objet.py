@@ -42,12 +42,6 @@ from .contexte import contexte
 from .. import param
 
 
-# XXX: Comment traduire wx.YieldIfNeeded() pour PyQt ?
-# Ou alors, est-ce inutile avec PyQt ?
-def souffler():
-    pass
-    # wx.YieldIfNeeded()
-
 
 class _(object):
     pass
@@ -1116,6 +1110,16 @@ class Objet(object):
             return "f"
 
 
+    @property
+    def info(self):
+        u"""À surclasser, en donnant une information significative pour l'objet.
+
+        Par exemple, pour un point ou un vecteur, ses coordonnées,
+        pour un segment, sa longueur, pour un polygone, son aire...
+        """
+        return self.nom_complet
+
+
 # Gestion des dépendances
 ###########################"
 
@@ -1293,14 +1297,29 @@ class Objet(object):
         else:
             raise RuntimeError, str2(message)
 
-    @property
-    def info(self):
-        u"""À surclasser, en donnant une information significative pour l'objet.
 
-        Par exemple, pour un point ou un vecteur, ses coordonnées,
-        pour un segment, sa longueur, pour un polygone, son aire...
+    @staticmethod
+    def souffler():
+        u"""Indique au système qu'il faut exécuter les évènements en attente.
+
+        Ceci est utile en particulier pour rafraîchir l'affichage dans une
+        boucle, lorsque geolib est appelé depuis une interface graphique.
+        Cela permet de faire des animations dans "geler" l'affichage.
+
+        Cette méthode est statique, et doit être modifiée par le gestionnaire
+        d'affichage::
+
+            Objet.souffler = ma_methode
+
+        Par exemple, pour pyQt::
+
+            Objet.souffler = QCoreApplication.processEvents
+
+        ou pour WxPython::
+
+            Objet.souffler = wx.YieldIfNeeded
         """
-        return self.nom_complet
+        print("Warning: method `souffler()` is presently not implemented.")
 
 
 # API graphique (affichage et gestion des coordonnees)

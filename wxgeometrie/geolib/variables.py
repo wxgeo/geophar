@@ -26,7 +26,7 @@ import re, time
 
 from sympy import Symbol, Basic, sympify
 
-from .objet import Ref, Argument, Objet, Objet_numerique, souffler, TYPES_REELS,\
+from .objet import Ref, Argument, Objet, Objet_numerique, TYPES_REELS,\
                    contexte
 from ..pylib import property2, print_error, fullrange, is_in
 from ..mathlib.parsers import VAR_NOT_ATTR, NBR_SIGNE
@@ -246,10 +246,10 @@ class Variable(Variable_generique):
                 t = time.clock()
                 self.val = i
                 while time.clock() < t + periode:
-                    souffler()
+                    self.souffler()
                     if self.feuille._stop:
                         break
-                souffler()
+                self.souffler()
                 if self.feuille._stop:
                     break
 

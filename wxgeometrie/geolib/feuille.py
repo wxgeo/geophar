@@ -43,7 +43,7 @@ from ..mathlib.intervalles import Union, Intervalle
 from ..mathlib.parsers import VAR, NBR_SIGNE, traduire_formule, \
                         _convertir_separateur_decimal
 
-from .objet import Objet, contexte, souffler, G
+from .objet import Objet, contexte, G
 from .angles import Secteur_angulaire
 from .lignes import Segment
 from .fonctions import Fonction
@@ -1515,8 +1515,22 @@ class Feuille(object):
         self._stop = True
 
     def animer(self, nom, debut = 0, fin = 1, pas = 0.02, periode = 0.03):
-        u"Anime la variable nommée 'nom'."
-        self.objets[nom].varier(debut, fin, pas, periode)
+        u"""Anime la variable nommée `nom`.
+
+        :param nom: nom de la variable dont on souhaite faire varier la valeur.
+        :param debut: valeur initiale de la variable.
+        :param fin: valeur finale de la variable.
+        :param pas: de combien on incrémente la variable à chaque étape.
+        :param periode: durée (en secondes) entre 2 incrémentations.
+
+        `nom` peut aussi être une expression correspondant à une variable::
+
+            >>> from wxgeometrie.geolib import Point, Feuille
+            >>> f = Feuille()
+            >>> f.objets.A = A = Point()
+            >>> f.animer("A.x", 0, 5, .1)
+        """
+        eval(nom, self.objets).varier(debut, fin, pas, periode)
 
 #######################################################################################
 
@@ -1655,6 +1669,6 @@ class Feuille(object):
 
 
     def pause(self):
-        souffler()
+        Objet.souffler()
         if self._stop:
             raise RuntimeError, "Interruption de la macro."

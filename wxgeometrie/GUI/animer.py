@@ -26,10 +26,14 @@ from operator import attrgetter
 
 from PyQt4.QtGui import (QDialog, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QMenu,
                          QLineEdit, QPushButton, QFrame,)
-from PyQt4.QtCore import Qt
+from PyQt4.QtCore import Qt, QCoreApplication
 
 ##from .wxlib import MyMiniFrame
-from ..geolib.variables import Variable
+from ..geolib.variables import Variable, Objet
+
+
+# Nécessaire pour que l'affichage soit rafraîchi au sein d'une boucle.
+Objet.souffler = QCoreApplication.processEvents
 
 
 class DialogueAnimation(QDialog):
@@ -103,9 +107,9 @@ class DialogueAnimation(QDialog):
         else:
             self.en_cours = True
             self.btn_lancer.setText('Stop')
-            self.feuille_actuelle.animer(nom = self.var.text(),
-                        debut=float(self.deb.text()), fin=float(self.fin.text()),
-                        pas=float(self.pas.text()), periode=float(self.periode.text()))
+            self.feuille_actuelle.animer(nom=self.var.text(),
+                        debut=self.evaluer(self.deb), fin=self.evaluer(self.fin),
+                        pas=self.evaluer(self.pas), periode=self.evaluer(self.periode))
         self.en_cours = False
         self.btn_lancer.setText('Animer')
 
@@ -122,3 +126,6 @@ class DialogueAnimation(QDialog):
             action = menu.exec_()
             if action:
                 self.var.setText(action.nom)
+
+    def evaluer(self, champ):
+        return eval(champ.text(), self.feuille_actuelle.objets)
