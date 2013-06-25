@@ -18,6 +18,7 @@ wxgeometrie.e4*
 *.tar.gz
 *.exe
 *.cnf
+*.7z
 
 # Benchmarks sympy
 *benchmark*
