@@ -1546,7 +1546,7 @@ class Objet(object):
         self.feuille.redefinir(self, valeur)
 
 
-    def __repr__(self, styles = True):
+    def __repr__(self, styles=True):
         u"""Méthode utilisée pour obtenir une forme évaluable de l'objet.
 
         Attention, le résultat n'est pas forcément très lisible !
@@ -1574,13 +1574,13 @@ class Objet(object):
                 else:
                     return objet.__repr__(styles)
             if isinstance(objet, (list, tuple)):
-                return "[" + ",".join([formater(item) for item in objet]) + "]"
+                return "[" + ", ".join([formater(item) for item in objet]) + "]"
             # Le 'float()' servent à contourner un bug de numpy 1.1.x et numpy 1.2.x (repr de float64) :
             if isinstance(objet, numpy.floating):
                 return repr(float(objet))
             return repr(objet)
 
-        args = ",".join(key + "=" + formater(val) for key, val in self._iter_arguments)
+        args = ", ".join(key + "=" + formater(val) for key, val in self._iter_arguments)
         s = self.classe() + "(" + args
 
         if styles:
