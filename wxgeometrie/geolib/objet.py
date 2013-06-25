@@ -1319,7 +1319,8 @@ class Objet(object):
 
             Objet.souffler = wx.YieldIfNeeded
         """
-        print("Warning: method `souffler()` is presently not implemented.")
+        if contexte['afficher_messages'] and param.verbose:
+            print("Warning: method `souffler()` is presently not implemented.")
 
 
 # API graphique (affichage et gestion des coordonnees)

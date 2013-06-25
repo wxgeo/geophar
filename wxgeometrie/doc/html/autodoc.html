@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Autodoc &mdash; Geophar 13.04.5 documentation</title>
+    <title>Autodoc &mdash; Geophar 13.04.8 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '13.04.5',
+        VERSION:     '13.04.8',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -27,7 +27,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="_static/translations.js"></script>
     <script type="text/javascript" src="_static/jsMath/easy/load.js"></script>
-    <link rel="top" title="Geophar 13.04.5 documentation" href="index.html" />
+    <link rel="top" title="Geophar 13.04.8 documentation" href="index.html" />
     <link rel="prev" title="Formats de fichiers" href="format.geo.html" /> 
   </head>
   <body>
@@ -43,7 +43,7 @@
         <li class="right" >
           <a href="format.geo.html" title="Formats de fichiers"
              accesskey="P">précédent</a> |</li>
-        <li><a href="index.html">Geophar 13.04.5 documentation</a> &raquo;</li> 
+        <li><a href="index.html">Geophar 13.04.8 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -1084,7 +1084,7 @@ Renvoie le contenu, ou la nouvelle racine crée (si le contenu était vide).</p>
 
 <dl class="attribute">
 <dt id="wxgeometrie.API.sauvegarde.FichierGEO.defaut">
-<tt class="descname">defaut</tt><em class="property"> = {'nom': '', 'version': '13.04.5', 'type': 'Fichier WxGeometrie', 'module': '', 'repertoire': ''}</em><a class="headerlink" href="#wxgeometrie.API.sauvegarde.FichierGEO.defaut" title="Lien permanent vers cette définition">¶</a></dt>
+<tt class="descname">defaut</tt><em class="property"> = {'nom': '', 'version': '13.04.8', 'type': 'Fichier WxGeometrie', 'module': '', 'repertoire': ''}</em><a class="headerlink" href="#wxgeometrie.API.sauvegarde.FichierGEO.defaut" title="Lien permanent vers cette définition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -1927,7 +1927,29 @@ n&#8217;a lieu, mais la feuille est juste marquée comme étant à actualiser.</
 <dl class="method">
 <dt id="wxgeometrie.geolib.feuille.Feuille.animer">
 <tt class="descname">animer</tt><big>(</big><em>nom</em>, <em>debut=0</em>, <em>fin=1</em>, <em>pas=0.02</em>, <em>periode=0.03</em><big>)</big><a class="headerlink" href="#wxgeometrie.geolib.feuille.Feuille.animer" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Anime la variable nommée &#8216;nom&#8217;.</p>
+<dd><p>Anime la variable nommée <cite>nom</cite>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Paramètres:</th><td class="field-body"><ul class="first last simple">
+<li><strong>nom</strong> &#8211; nom de la variable dont on souhaite faire varier la valeur.</li>
+<li><strong>debut</strong> &#8211; valeur initiale de la variable.</li>
+<li><strong>fin</strong> &#8211; valeur finale de la variable.</li>
+<li><strong>pas</strong> &#8211; de combien on incrémente la variable à chaque étape.</li>
+<li><strong>periode</strong> &#8211; durée (en secondes) entre 2 incrémentations.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p><cite>nom</cite> peut aussi être une expression correspondant à une variable:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">wxgeometrie.geolib</span> <span class="kn">import</span> <span class="n">Point</span><span class="p">,</span> <span class="n">Feuille</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">Feuille</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="o">.</span><span class="n">objets</span><span class="o">.</span><span class="n">A</span> <span class="o">=</span> <span class="n">A</span> <span class="o">=</span> <span class="n">Point</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="o">.</span><span class="n">animer</span><span class="p">(</span><span class="s">&quot;A.x&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="o">.</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="attribute">
@@ -2388,7 +2410,7 @@ l&#8217;abscisse xl.</p>
 
 <dl class="attribute">
 <dt id="wxgeometrie.geolib.interpolations.Interpolation_polynomiale_par_morceaux.strategies">
-<tt class="descname">strategies</tt><em class="property"> = {'moyenne_gauche_droite': &lt;function _strategie_moyenne_gauche_droite at 0xb2db41c&gt;, 'pente_minimale': &lt;function _strategie_pente_minimale at 0xb2db3e4&gt;, 'pente_moyenne': &lt;function _strategie_pente_moyenne at 0xb2db3ac&gt;}</em><a class="headerlink" href="#wxgeometrie.geolib.interpolations.Interpolation_polynomiale_par_morceaux.strategies" title="Lien permanent vers cette définition">¶</a></dt>
+<tt class="descname">strategies</tt><em class="property"> = {'moyenne_gauche_droite': &lt;function _strategie_moyenne_gauche_droite at 0x46908c0&gt;, 'pente_minimale': &lt;function _strategie_pente_minimale at 0x4690848&gt;, 'pente_moyenne': &lt;function _strategie_pente_moyenne at 0x46907d0&gt;}</em><a class="headerlink" href="#wxgeometrie.geolib.interpolations.Interpolation_polynomiale_par_morceaux.strategies" title="Lien permanent vers cette définition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -3649,6 +3671,10 @@ est activé:</p>
 <p>Permet d&#8217;avoir une interface unique pour les objets avec
 étiquette, et les textes (qui sont eux-mêmes leur propre
 étiquette en quelque sorte), qui surclassent cette méthode.</p>
+<p>Pour obtenir le texte formaté (en fonction du mode d&#8217;affichage),
+utiliser la méthode <cite>.label()</cite>.</p>
+<p>Note:</p>
+<p>Le mode d&#8217;affichage est accessible via l&#8217;attribut <cite>.mode_affichage</cite>.</p>
 </dd></dl>
 
 <dl class="method">
@@ -3736,6 +3762,28 @@ qui est purement à usage interne (appels récursifs).</p>
 </table>
 </dd></dl>
 
+<dl class="staticmethod">
+<dt id="wxgeometrie.geolib.objet.Objet.souffler">
+<em class="property">static </em><tt class="descname">souffler</tt><big>(</big><big>)</big><a class="headerlink" href="#wxgeometrie.geolib.objet.Objet.souffler" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Indique au système qu&#8217;il faut exécuter les évènements en attente.</p>
+<p>Ceci est utile en particulier pour rafraîchir l&#8217;affichage dans une
+boucle, lorsque geolib est appelé depuis une interface graphique.
+Cela permet de faire des animations dans &#8220;geler&#8221; l&#8217;affichage.</p>
+<p>Cette méthode est statique, et doit être modifiée par le gestionnaire
+d&#8217;affichage:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">Objet</span><span class="o">.</span><span class="n">souffler</span> <span class="o">=</span> <span class="n">ma_methode</span>
+</pre></div>
+</div>
+<p>Par exemple, pour pyQt:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">Objet</span><span class="o">.</span><span class="n">souffler</span> <span class="o">=</span> <span class="n">QCoreApplication</span><span class="o">.</span><span class="n">processEvents</span>
+</pre></div>
+</div>
+<p>ou pour WxPython:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">Objet</span><span class="o">.</span><span class="n">souffler</span> <span class="o">=</span> <span class="n">wx</span><span class="o">.</span><span class="n">YieldIfNeeded</span>
+</pre></div>
+</div>
+</dd></dl>
+
 <dl class="method">
 <dt id="wxgeometrie.geolib.objet.Objet.style">
 <tt class="descname">style</tt><big>(</big><em>nom_style=None</em>, <em>**kw</em><big>)</big><a class="headerlink" href="#wxgeometrie.geolib.objet.Objet.style" title="Lien permanent vers cette définition">¶</a></dt>
@@ -3783,7 +3831,7 @@ Le formatage est respecté (essayez &#8216;un&#8217;, &#8216;UN&#8217;, &#8216;U
 
 <dl class="attribute">
 <dt id="wxgeometrie.geolib.objet.Objet.verrou">
-<tt class="descname">verrou</tt><em class="property"> = &lt;wxgeometrie.geolib.objet.Verrou object at 0xb0554cc&gt;</em><a class="headerlink" href="#wxgeometrie.geolib.objet.Objet.verrou" title="Lien permanent vers cette définition">¶</a></dt>
+<tt class="descname">verrou</tt><em class="property"> = &lt;wxgeometrie.geolib.objet.Verrou object at 0x43c9910&gt;</em><a class="headerlink" href="#wxgeometrie.geolib.objet.Objet.verrou" title="Lien permanent vers cette définition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -4064,11 +4112,6 @@ prendra fin.</p>
 <dl class="function">
 <dt id="wxgeometrie.geolib.objet.pi_">
 <tt class="descclassname">wxgeometrie.geolib.objet.</tt><tt class="descname">pi_</tt><big>(</big><big>)</big><a class="headerlink" href="#wxgeometrie.geolib.objet.pi_" title="Lien permanent vers cette définition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="wxgeometrie.geolib.objet.souffler">
-<tt class="descclassname">wxgeometrie.geolib.objet.</tt><tt class="descname">souffler</tt><big>(</big><big>)</big><a class="headerlink" href="#wxgeometrie.geolib.objet.souffler" title="Lien permanent vers cette définition">¶</a></dt>
 <dd></dd></dl>
 
 <span class="target" id="module-wxgeometrie.geolib.points"></span><dl class="class">
@@ -6189,14 +6232,20 @@ u et v doivent être de type list, tuple, array, ou geolib.Vecteur.</p>
 <dl class="method">
 <dt id="wxgeometrie.geolib.textes.Texte_editable_generique.label">
 <tt class="descname">label</tt><big>(</big><em>texte=None</em>, <em>mode=None</em><big>)</big><a class="headerlink" href="#wxgeometrie.geolib.textes.Texte_editable_generique.label" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Affiche le label (ou étiquette) de l&#8217;objet.</p>
-<p>La chaine renvoyée dépendra de la valeur du style mode:
-- si mode = 0 (<cite>param.RIEN</cite>), renvoie &#8216;&#8217;
-- si mode = 1 (<cite>param.NOM</cite>), renvoie le nom de l&#8217;objet
-- si mode = 2 (<cite>param.TEXTE</cite>), renvoie le label proprement dit de l&#8217;objet
-- si mode = 3  (<cite>param.FORMULE</cite>), renvoie le label interprété comme une formule</p>
-<p>Si le paramètre label est spécifié, le label est modifié, et par défaut
-le mode est fixé à <cite>TEXTE</cite>.</p>
+<dd><p>Affiche ou modifie le label (ou étiquette) de l&#8217;objet.</p>
+<p>Si <cite>texte</cite> ou <cite>mode</cite> est spécifié, modifie le contenu du texte,
+et/ou le mode associé, et ne renvoie rien (<cite>None</cite>).</p>
+<p>(Si aucun mode n&#8217;est spécifié, le mode est fixé à <cite>TEXTE</cite>.)</p>
+<p>Sinon, renvoie le label de l&#8217;objet.</p>
+<p>La signification de la chaine renvoyée dépendra du mode d&#8217;affichage de l&#8217;objet:</p>
+<div class="highlight-python"><pre>- si mode = 0 (`param.RIEN`), renvoie ''
+- si mode = 1 (`param.NOM`), renvoie le nom de l'objet
+- si mode = 2 (`param.TEXTE`), renvoie le label proprement dit de l'objet
+- si mode = 3  (`param.FORMULE`), renvoie le label interprété comme une formule</pre>
+</div>
+<p>Note:</p>
+<p>Le mode d&#8217;affichage est accessible en lecture seule via l&#8217;attribut <cite>.mode_affichage</cite>,
+et le texte interne (non formaté) via l&#8217;attribut <cite>.legende</cite>.</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -8471,7 +8520,7 @@ la classe Panel_API_graphique, plus evoluée que celle-ci.</p>
 
 <dl class="method">
 <dt id="wxgeometrie.GUI.panel.Panel_simple.param">
-<tt class="descname">param</tt><big>(</big><em>parametre</em>, <em>valeur=&lt;wxgeometrie.pylib.fonctions.NoArgument object at 0xb003d2c&gt;</em>, <em>defaut=False</em><big>)</big><a class="headerlink" href="#wxgeometrie.GUI.panel.Panel_simple.param" title="Lien permanent vers cette définition">¶</a></dt>
+<tt class="descname">param</tt><big>(</big><em>parametre</em>, <em>valeur=&lt;wxgeometrie.pylib.fonctions.NoArgument object at 0x419ab90&gt;</em>, <em>defaut=False</em><big>)</big><a class="headerlink" href="#wxgeometrie.GUI.panel.Panel_simple.param" title="Lien permanent vers cette définition">¶</a></dt>
 <dd><p>Renvoie la valeur du paramètre <cite>parametre</cite>.</p>
 <p>Recherche la valeur d&#8217;un paramètre d&#8217;abord dans les paramètres du module
 _(paramètres locaux), puis dans ceux de wxgéométrie.
@@ -9720,11 +9769,6 @@ Permet de leur appliquer les opérations mathématiques de pylab.</p>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="wxgeometrie.mathlib.internal_objects.Reel.ones_like">
-<tt class="descname">ones_like</tt><big>(</big><em>*args</em><big>)</big><a class="headerlink" href="#wxgeometrie.mathlib.internal_objects.Reel.ones_like" title="Lien permanent vers cette définition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
 <dt id="wxgeometrie.mathlib.internal_objects.Reel.power">
 <tt class="descname">power</tt><big>(</big><em>*args</em><big>)</big><a class="headerlink" href="#wxgeometrie.mathlib.internal_objects.Reel.power" title="Lien permanent vers cette définition">¶</a></dt>
 <dd></dd></dl>
@@ -10108,7 +10152,7 @@ affichées), la fonction renvoie False, sinon, True.</p>
         <li class="right" >
           <a href="format.geo.html" title="Formats de fichiers"
              >précédent</a> |</li>
-        <li><a href="index.html">Geophar 13.04.5 documentation</a> &raquo;</li> 
+        <li><a href="index.html">Geophar 13.04.8 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
