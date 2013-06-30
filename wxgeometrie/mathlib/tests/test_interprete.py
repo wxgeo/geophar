@@ -116,6 +116,24 @@ def test_ecriture_decimale_periodique():
     assert_resultat('0,1783[3]', '107/600', r'\frac{107}{600}')
 
 @XFAIL
+def test_issue_270():
+    u"""Bug 270: les décimaux s'affichent parfois en écriture scientifique.
+
+    Exemple avec 3 chiffres significatifs:
+
+        Calcul n°59 : 160000000000700,4
+        Résultat : 160000000000700
+
+        Calcul n°60 : 16000000000700,4
+        Résultat : 1,6*10^13
+    """
+    i = Interprete(precision_affichage=3)
+    r, l = i.evaluer("160000000000700,4")
+    assert r == "160000000000700" # 1,6*10^14 environ
+    r, l = i.evaluer("16000000000700,4")
+    assert r == "16000000000700" # 1,6*10^13 environ
+
+@XFAIL
 def test_resolution_complexe():
     assert_resultat('resoudre(2+\i=\dfrac{2\i z}{z-1})', '3/5 + 4*i/5',
                                         r'\frac{3}{5} + \frac{4}{5} \mathrm{i}')
