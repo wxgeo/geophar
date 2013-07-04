@@ -167,7 +167,7 @@ class ExercicesTrigonometrie(Panel_API_graphique):
             reponse = ('y=%s*x+%s' % self.eq_reduite(pointA, pointB))
         xmin, xmax, ymin, ymax = self.canvas.fenetre
         print 'Fenetre::', self.canvas.fenetre, '--', xmin, ymin
-        champ = Champ('', xmin, ymin, fond='#ffffb5',
+        champ = Champ('', xmin, ymin, fond=True, couleur_fond='#ffffb5',
                     prefixe=(ur"Dans le repère $(O;\,\vec\imath,\,\vec\jmath)$, "
                              u"la droite $(AB)$ a pour équation "),
                     alignement_horizontal='left', alignement_vertical='bottom',
@@ -356,12 +356,13 @@ class ExercicesTrigonometrie(Panel_API_graphique):
         txt = Texte((u"On note $d_1$ la droite d'équation %s, "
                   u"et $d_2$ la droite d'équation %s.\n"
                   u"Construire les droites $d_1$ puis $d_2$ dans le repère ci-dessous.")
-                  % (eq1, eq2), xmin, ymax, fond='#ffffb5', fixe=True,
+                  % (eq1, eq2), xmin, ymax, fond=True, couleur_fond='#ffffb5', fixe=True,
                   alignement_horizontal='left', alignement_vertical='top')
         self.feuille_actuelle.objets['txt1'] = txt
         champ = Champ('', xmin, ymin, prefixe=u"Le couple solution du système est (",
                  alignement_vertical='bottom', alignement_horizontal='left',
-                 attendu=str(C), fond='#ffffb5', suffixe=')')
+                 attendu=str(C), fond=True, couleur_fond='#ffffb5', suffixe=')',
+                 )
         self.feuille_actuelle.objets['champ1'] = champ
         champ.valider = self.valider_couple
         champ.evt_valider = self.compter_points

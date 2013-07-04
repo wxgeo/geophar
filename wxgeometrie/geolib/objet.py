@@ -910,12 +910,18 @@ class Objet(object):
     def style(self, nom_style = None, **kw):
         u"""Renvoie le ou les styles demandés, ou modifie les styles de l'objet.
 
-        * ``nom_style`` est un nom de style, ou une liste de noms de styles:
-        La propriété correspondante est recherchée dans self._style.
-        Ex: couleur, taille = A.style(('couleur', 'taille'))
+        :param nom_style: un nom de style, ou une liste de noms de styles.
+        :param **kw: sert à modifier des styles.
 
-        * ``**kw`` sert à modifier des styles.
-        Ex: A.style(couleur = 'blue')
+            >>> from wxgeometrie import Point
+            >>> A = Point(couleur='blue', taille=25)
+            >>> A.style(['couleur', 'taille'])
+            ['blue', 25]
+            >>> A.style(couleur = 'green')
+            >>> A.style('couleur')
+            'green'
+
+        :note: les propriétés sont stockées en interne dans ``self._style``.
         """
         if kw:
             if 'label' in kw or 'legende' in kw:
@@ -1372,7 +1378,11 @@ class Objet(object):
                     extra = self.style("extra")
                     if extra:
                         for artist in self._representation:
-                            artist.set(**extra)
+                            try:
+                                artist.set(**extra)
+                            except Exception:
+                                if param.verbose:
+                                    print_error()
                     if not visible:
                         for artist in self._representation:
                             alpha = artist.get_alpha()

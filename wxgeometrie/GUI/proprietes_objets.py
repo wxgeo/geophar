@@ -29,7 +29,7 @@ from PyQt4.QtCore import Qt
 from PyQt4.QtGui import (QDialog, QPushButton, QWidget, QLabel, QGroupBox,
                          QHBoxLayout, QVBoxLayout, QTabWidget, QColor,
                          QLineEdit, QComboBox, QCheckBox, QRadioButton,
-                         QSpinBox, QTextEdit,
+                         QSpinBox, QTextEdit, QDoubleSpinBox,
                          )
 from matplotlib.colors import colorConverter as colorConverter
 
@@ -101,187 +101,107 @@ class ProprietesAffichage(QWidget):
 
         encadre2 = QVBoxLayout()
 
-        objets = [objet for objet in self.objets if objet.style("style") is not None]
-        # on ne peut regler les styles simultanement que pour des objets de meme categorie
-        categorie = objets and objets[0].style("categorie") or None
+        hb = QHBoxLayout()
+        styles_possibles = getattr(param, "styles_de_%s" % objets[0].style("categorie"), [])
+        # On ne peut régler les styles simultanément que pour des objets de même catégorie.
+        if self.add_combo_box(hb, 'style', u"Style de l'objet : ", styles_possibles,
+                              verifier_categorie=True):
+            encadre2.addLayout(hb)
 
-        if objets and categorie and all(objet.style("categorie") == categorie for objet in objets):
-            choix = QHBoxLayout()
-            choix.addWidget(QLabel(u"Style de l'objet : "))
+        hb = QHBoxLayout()
+        types_de_hachures = getattr(param, "types_de_hachures", [])
+        if self.add_combo_box(hb, 'hachures', u"Style des hâchures : ", types_de_hachures):
+            encadre2.addLayout(hb)
 
-            #categorie = objets[0].style("categorie") or "lignes"
-            self.liste_styles = getattr(param, "styles_de_" + categorie, [])
-            self.style = QComboBox()
-            self.style.addItems(self.liste_styles)
-            self.style.currentIndexChanged.connect(self.EvtStyle)
+        hb = QHBoxLayout()
+        familles_possibles = getattr(param, "familles_de_%s" % objets[0].style("categorie"), [])
+        if self.add_combo_box(hb, 'famille', 'Police : ', familles_possibles,
+                              verifier_categorie=True):
+            encadre2.addLayout(hb)
 
-            style = objets[0].style("style")
-            if style in self.liste_styles and all(objet.style("style") == style for objet in objets):
-                self.style.setCurrentIndex(self.liste_styles.index(style)) # on sélectionne le style actuel
-            choix.addWidget(self.style)
-            choix.addStretch()
-            encadre2.addLayout(choix)
+        hb = QHBoxLayout()
+        if self.add_color_selecter(hb, 'couleur', "Couleur de l'objet : "):
+            encadre2.addLayout(hb)
 
+        hb = QHBoxLayout()
+        if self.add_spin_box(hb, 'epaisseur', u'Épaisseur : ', .1, 1000, .5, ' px'):
+            encadre2.addLayout(hb)
 
-        objets = [objet for objet in self.objets if objet.style("hachures") is not None]
-        if objets:
-            choix = QHBoxLayout()
-            choix.addWidget(QLabel(u"Style des hâchures : "))
+        hb = QHBoxLayout()
+        if self.add_spin_box(hb, 'taille', u'Taille : ', .1, 1000, .5, ' px'):
+            #~ hb.addStretch()
+            encadre2.addLayout(hb)
 
-            self.types_de_hachures = getattr(param, "types_de_hachures", [])
-            self.hachures = QComboBox()
-            self.hachures.addItems(self.types_de_hachures)
-            self.hachures.currentIndexChanged.connect(self.EvtHachures)
+        hb = QHBoxLayout()
+        if self.add_spin_box(hb, 'position', u"Position de la flêche : ", 0, 100, 5, coeff=100):
+            #~ hb.addStretch()
+            encadre2.addLayout(hb)
 
-            hachures = objets[0].style("hachures")
-            if hachures in self.types_de_hachures and all(objet.style("hachures") == hachures for objet in objets):
-                self.hachures.setCurrentIndex(self.types_de_hachures.index(hachures)) # on sélectionne les hachures actuelles
-            choix.addWidget(self.hachures)
-            choix.addStretch()
-            encadre2.addLayout(choix)
-
-
-        objets = [objet for objet in self.objets if objet.style("famille") is not None]
-        categorie = objets and objets[0].style("categorie") or None
-
-        if objets and categorie and all(objet.style("categorie") == categorie for objet in objets):
-            choix = QHBoxLayout()
-            choix.addWidget(QLabel("Police : "))
-
-            #categorie = self.objet.style("categorie") or "lignes"
-            self.liste_familles = getattr(param, "familles_de_" + categorie, [])
-            self.famille = QComboBox()
-            self.famille.addItems(self.liste_familles)
-            self.famille.currentIndexChanged.connect(self.EvtFamille)
-
-            famille = objets[0].style("famille")
-            if famille in self.liste_familles and all(objet.style("famille") == famille for objet in objets):
-                self.famille.setCurrentIndex(self.liste_familles.index(famille)) # on sélectionne la famille actuelle
-
-            choix.addWidget(self.famille)
-            choix.addStretch()
-            encadre2.addLayout(choix)
-
-
-        objets = [objet for objet in self.objets if objet.style("couleur") is not None]
-        if objets:
-            couleur = objets[0].style("couleur")
-            choix = QHBoxLayout()
-            choix.addWidget(QLabel(u"Couleur de l'objet : "))
-            if all(objet.style("couleur") == couleur for objet in objets):
-                # conversion du format matplotlib au format Qt
-                r, g, b = colorConverter.to_rgb(couleur)
-                couleur = QColor(int(255*r), int(255*g), int(255*b))
-            else:
-                couleur = None
-            b = ColorSelecter(self, color=couleur)
-            b.colorSelected.connect(self.OnSelectColour)
-            choix.addWidget(b)
-            choix.addStretch()
-            encadre2.addLayout(choix)
-
-
-        objets = [objet for objet in self.objets if objet.style("epaisseur") is not None]
-        if objets:
-            epaiss = objets[0].style("epaisseur")
-            epaisseur = QHBoxLayout()
-            epaisseur.addWidget(QLabel(u"Epaisseur (en 10e de pixels) : "))
-            self.epaisseur = QSpinBox()
-            self.epaisseur.setMinimumWidth(30)
-            self.epaisseur.setRange(1, 10000)
-            if all(objet.style("epaisseur") == epaiss for objet in objets):
-                self.epaisseur.setValue(10*epaiss)
-            else:
-                self.epaisseur.setSpecialValueText(' ')
-                print(u'FIXME: cas non géré.')
-            self.epaisseur.valueChanged.connect(self.EvtEpaisseur)
-            epaisseur.addWidget(self.epaisseur)
-            epaisseur.addStretch()
-            encadre2.addLayout(epaisseur)
-
-
-        objets = [objet for objet in self.objets if objet.style("taille") is not None]
-        if objets:
-            tail = objets[0].style("taille")
-            taille = QHBoxLayout()
-            taille.addWidget(QLabel(u"Taille (en 10e de pixels) : "))
-            self.taille = QSpinBox()
-            self.taille.setMinimumWidth(30)
-            self.taille.setRange(1,10000)
-            if all(objet.style("taille") == tail for objet in objets):
-                self.taille.setValue(10*tail)
-            else:
-                self.taille.setSpecialValueText(' ')
-                print(u'FIXME: cas non géré.')
-            self.taille.valueChanged.connect(self.EvtTaille)
-            taille.addWidget(self.taille)
-            taille.addStretch()
-            encadre2.addLayout(taille)
-
-
-        objets = [objet for objet in self.objets if objet.style("position") is not None]
-        if objets:
-            pos = objets[0].style("position")
-            position = QHBoxLayout()
-            position.addWidget(QLabel(u"Position de la flêche : "))
-            self.position = QSpinBox()
-            self.position.setMinimumWidth(30)
-            self.position.setRange(0, 100)
-            if all(objet.style("position") == pos for objet in objets):
-                self.position.setValue(100*pos)
-            else:
-                self.position.setSpecialValueText(' ')
-                print(u'FIXME: cas non géré.')
-            self.position.valueChanged.connect(self.EvtPosition)
-            position.addWidget(self.position)
-            position.addStretch()
-            encadre2.addLayout(position)
-
-
-
-        objets = [objet for objet in self.objets if objet.style("angle") is not None]
-        if objets:
-            ang = objets[0].style("angle")
-            angle = QHBoxLayout()
-            angle.addWidget(QLabel(u"Angle (en degré) : "))
-            self.angle = QSpinBox()
-            self.angle.setMinimumWidth(30)
-            self.angle.setRange(-180, 180)
-            self.angle.setSpecialValueText('auto')
-            self.angle.setSuffix(u'°');
-            self.angle.setWrapping(True)
-            if all(objet.style("angle") == ang for objet in objets):
-                self.angle.setValue(ang if ang != 'auto' else -180)
-            else:
-                self.angle.setSpecialValueText(' ')
-                print(u'FIXME: cas non géré.')
-            self.angle.valueChanged.connect(self.EvtAngle)
-            angle.addWidget(self.angle)
-            angle.addStretch()
-            encadre2.addLayout(angle)
+        hb = QHBoxLayout()
+        if self.add_spin_box(hb, 'angle', u"Angle : ", -180, 180,
+                             suffixe=u'°', wrapping=True, special_value='auto'):
+            #~ hb.addStretch()
+            encadre2.addLayout(hb)
 
         self.add_checkbox(encadre, 'double_fleche', u"Flêche double")
 
-        objets = [objet for objet in self.objets if objet.style("codage") is not None]
-        # on ne peut regler les codages simultanement que pour des objets de meme categorie
-        categorie = objets and objets[0].style("categorie") or None
+        hb = QHBoxLayout()
+        codages_possibles = getattr(param, "codage_des_%s" % objets[0].style("categorie"), [])
+        # On ne peut régler les codages simultanément que pour des objets de même catégorie.
+        if self.add_combo_box(hb, 'codage', 'Codage : ', codages_possibles,
+                              verifier_categorie=True):
+            encadre2.addLayout(hb)
+
+        # --------------------------------------------------------
+        # Styles s'appliquant aux textes seulement (fond et cadre)
+        # --------------------------------------------------------
+
+        encadre3 = QVBoxLayout()
+        if all(objet.style("categorie") == 'textes' for objet in objets):
+
+            #  FOND
+            #  ====
+
+            # Réglage de l'opacité du fond
+            # ----------------------------
+            hb2 = QHBoxLayout()
+            widgets = self.add_spin_box(hb2, 'alpha_fond', u'Opacité : ', 0, 100, 5, '%', coeff=100)
+
+            # Réglage de la couleur du fond
+            # -----------------------------
+            widgets.extend(self.add_color_selecter(hb2, 'couleur_fond', 'Couleur : '))
+
+            # Activation/désactivation du fond
+            # --------------------------------
+            hb1 = QHBoxLayout()
+            self.add_checkbox(hb1, 'fond', 'Fond', fils=widgets)
+            encadre3.addLayout(hb1)
+            encadre3.addLayout(hb2)
 
 
-        if objets and categorie and all(objet.style("categorie") == categorie for objet in objets):
-            choix = QHBoxLayout()
-            choix.addWidget(QLabel("Codage : "))
+            #  CADRE
+            #  =====
 
-            #categorie = objets[0].style("categorie") or "lignes"
-            self.liste_codages = getattr(param, "codage_des_" + categorie, [])
-            self.codage = QComboBox()
-            self.codage.addItems(self.liste_codages)
-            self.codage.currentIndexChanged.connect(self.EvtCodage)
+            # Réglage de l'épaisseur du cadre
+            # -------------------------------
+            hb2 = QHBoxLayout()
+            widgets = self.add_spin_box(hb2, 'epaisseur_cadre', u'Épaisseur : ', 0, 100, 0.5, ' px')
 
-            codage = objets[0].style("codage")
-            if codage in self.liste_codages and all(objet.style("codage") == codage for objet in objets):
-                self.codage.setCurrentIndex(self.liste_codages.index(codage)) # on sélectionne le codage actuel
-            choix.addWidget(self.codage)
-            encadre2.addLayout(choix)
+            # Réglage de la couleur du cadre
+            # ------------------------------
+            widgets.extend(self.add_color_selecter(hb2, 'couleur_cadre', 'Couleur : '))
+
+            # Réglage du style du cadre
+            # -------------------------
+            widgets.extend(self.add_combo_box(hb2, 'style_cadre', 'Style : ', param.styles_de_lignes))
+
+            # Activation/désactivation du cadre
+            # ---------------------------------
+            hb1 = QHBoxLayout()
+            self.add_checkbox(hb1, 'cadre', 'Cadre', fils=widgets)
+            encadre3.addLayout(hb1)
+            encadre3.addLayout(hb2)
+
 
 
         boutons = QHBoxLayout()
@@ -302,69 +222,174 @@ class ProprietesAffichage(QWidget):
         annuler.clicked.connect(self.EvtAnnuler)
         boutons.addWidget(annuler)
 
-        if encadre.count(): # ne pas afficher une rubrique vide !
-            encadre_box = QGroupBox(u"Mode d'affichage")
-            encadre_box.setLayout(encadre)
-            self.sizer.addWidget(encadre_box)
-        if encadre1.count():
-            encadre1_box = QGroupBox(u"Etiquette")
-            encadre1_box.setLayout(encadre1)
-            self.sizer.addWidget(encadre1_box)
-        if encadre2.count():
-            encadre2_box = QGroupBox(u"Styles")
-            encadre2_box.setLayout(encadre2)
-            self.sizer.addWidget(encadre2_box)
+        self.add_groupbox(encadre, u"Mode d'affichage")
+        self.add_groupbox(encadre1, u"Etiquette")
+        self.add_groupbox(encadre2, u"Styles")
+        self.add_groupbox(encadre3, u"Fond et encadrement")
         self.sizer.addLayout(boutons)
         self.setLayout(self.sizer)
         ##self.parent.parent.dim1 = self.sizer.CalcMin().Get()
 
 
-    def add_checkbox(self, layout, propriete, titre):
+    def add_groupbox(self, layout, titre):
+        # Ne pas afficher une rubrique vide !
+        if layout.count():
+            box = QGroupBox(titre)
+            box.setLayout(layout)
+            self.sizer.addWidget(box)
+            return [box]
+        return []
+
+    def add_checkbox(self, layout, propriete, titre, fils=()):
         objets = [objet for objet in self.objets if objet.style(propriete) is not None]
-        if objets:
-            cb = QCheckBox(titre)
-            cb.setTristate(True)
-            layout.addWidget(cb)
-            verifies = [objet.style(propriete) is True for objet in objets]
-            if not any(verifies):
-                etat = Qt.Unchecked
-            elif all(verifies):
-                etat = Qt.Checked
+        if not objets:
+            return []
+        cb = QCheckBox(titre)
+        cb.setTristate(True)
+        layout.addWidget(cb)
+        layout.addStretch()
+        verifies = [objet.style(propriete) is True for objet in objets]
+        if not any(verifies):
+            etat = Qt.Unchecked
+        elif all(verifies):
+            etat = Qt.Checked
+        else:
+            etat = Qt.PartiallyChecked
+        cb.setCheckState(etat)
+        for widget in fils:
+            widget.setVisible(etat != Qt.Unchecked)
+        cb.stateChanged.connect(partial(self.checked, propriete=propriete, fils=fils))
+        cb.stateChanged.connect(partial(cb.setTristate, False))
+        return [cb]
+
+
+    def add_color_selecter(self, layout, propriete, titre):
+        objets = [objet for objet in self.objets if objet.style(propriete) is not None]
+        if not objets:
+            return []
+        couleur = objets[0].style(propriete)
+        label = QLabel(titre)
+        layout.addWidget(label)
+
+        if couleur and all(objet.style(propriete) == couleur for objet in objets):
+            # conversion du format matplotlib au format Qt
+            r, g, b = colorConverter.to_rgb(couleur)
+            couleur = QColor(int(255*r), int(255*g), int(255*b))
+        else:
+            couleur = None
+        selecter = ColorSelecter(self, color=couleur)
+        layout.addWidget(selecter)
+        layout.addStretch()
+        selecter.colorSelected.connect(partial(self.colour_selected, propriete=propriete))
+        return [label, selecter]
+
+
+    def add_spin_box(self, layout, propriete, titre, min_, max_,
+                     step=1, suffixe=None, coeff=1, wrapping=False, special_value=None):
+        u"""Ajouter un widget QSpinBox.
+        """
+        assert special_value != ' ' # Réservé au cas où les objets ont des valeurs différentes.
+        objets = [objet for objet in self.objets if objet.style(propriete) is not None]
+        if not objets:
+            return []
+        val = objets[0].style(propriete)
+        label = QLabel(titre)
+        layout.addWidget(label)
+        if isinstance(step, float):
+            widget = QDoubleSpinBox()
+            widget.setDecimals(len(str(step).split('.')[1]))
+        else:
+            widget = QSpinBox()
+        widget.setMinimumWidth(30)
+        widget.setSingleStep(step)
+        widget.setWrapping(wrapping)
+        widget.setRange(min_, max_)
+        if special_value is not None:
+            widget.setSpecialValueText(special_value)
+        if suffixe is not None:
+            widget.setSuffix(suffixe)
+        if all(objet.style(propriete) == val for objet in objets):
+            if special_value is not None and val == special_value:
+                widget.setValue(min_)
             else:
-                etat = Qt.PartiallyChecked
-            cb.setCheckState(etat)
-            cb.stateChanged.connect(partial(self.checked, propriete=propriete))
-            cb.stateChanged.connect(partial(cb.setTristate, False))
+                widget.setValue(coeff*val)
+        else:
+            # Lorsque tous les objets sélectionnés n'ont pas la même valeur
+            # pour ce paramètre, on affiche ' '.
+            widget.setMinimum(min_ - step)
+            widget.setSpecialValueText(' ')
+            widget.setValue(min_ - step)
+        widget.valueChanged.connect(partial(self.spin_changed, propriete=propriete, widget=widget, coeff=coeff))
+        layout.addWidget(widget)
+        layout.addStretch()
+        return [label, widget]
+
+
+    def add_combo_box(self, layout, propriete, titre, liste, verifier_categorie=False):
+        objets = [objet for objet in self.objets if objet.style(propriete) is not None]
+        if not objets:
+            print("pas d'objets... (%s)" % propriete)
+            return []
+
+        # On ne peut régler simultanément certains styles que pour des objets de même catégorie.
+        categorie = objets[0].style('categorie')
+        if verifier_categorie and any(objet.style("categorie") != categorie for objet in objets):
+            print(u"Objets hétérogènes: " + propriete)
+            return []
+
+        label = QLabel(titre)
+        layout.addWidget(label)
+
+        widget = QComboBox()
+        widget.addItems(liste)
+        widget.currentIndexChanged.connect(partial(self.item_selected, propriete=propriete, liste=liste))
+
+        val = objets[0].style(propriete)
+        if val in liste and all(objet.style(propriete) == val for objet in objets):
+            # On sélectionne la valeur actuelle du paramètre.
+            widget.setCurrentIndex(liste.index(val))
+        layout.addWidget(widget)
+        layout.addStretch()
+        return [label, widget]
 
 
     def EvtMode(self, valeur):
         self.changements["mode"] = valeur
 
-    def checked(self, state, propriete):
+    def EvtEtiquette(self):
+        self.changements["label"] = self.etiquette.text()
+
+    def checked(self, state, propriete, fils):
         # Bug avec Qt 4.8.1 - En cochant la case la première fois, on obtient
         # Qt.PartiallyChecked, et non Qt.Checked. Si ensuite, on décoche et on
         # recoche, on obtient bien Qt.Checked.
         self.changements[propriete] = (state != Qt.Unchecked)
+        for widget in fils:
+            widget.setVisible(state != Qt.Unchecked)
 
-    def EvtEtiquette(self):
-        self.changements["label"] = self.etiquette.text()
 
-    def OnSelectColour(self, color):
+    def colour_selected(self, color, propriete):
         # conversion du format Qt au format matplotlib
         r, g, b, a = color.getRgb()
-        self.changements["couleur"] = (r/255, g/255, b/255, a/255)
+        self.changements[propriete] = (r/255, g/255, b/255, a/255)
 
-    def EvtStyle(self, index):
-        self.changements["style"] = self.liste_styles[index]
+    def spin_changed(self, value, propriete, widget, coeff):
+        special_value = widget.specialValueText()
+        if value == widget.minimum() and special_value:
+            if special_value == ' ':
+                # ' ' est affiché initialement lorsque tous les objets sélectionnés
+                # n'ont pas la même valeur pour ce paramètre.
+                # L'utilisateur peut remettre la valeur à ' ' manuellement
+                # s'il ne souhaite plus modifier ce paramètre.
+                del self.changements[propriete]
+            else:
+                self.changements[propriete] = special_value
+        else:
+            self.changements[propriete] = value/coeff
 
-    def EvtHachures(self, index):
-        self.changements["hachures"] = self.types_de_hachures[index]
+    def item_selected(self, index, propriete, liste):
+        self.changements[propriete] = liste[index]
 
-    def EvtCodage(self, index):
-        self.changements["codage"] = self.liste_codages[index]
-
-    def EvtFamille(self, index):
-        self.changements["famille"] = self.liste_familles[index]
 
     def EvtOk(self):
         self.EvtAppliquer()
@@ -417,19 +442,6 @@ class ProprietesAffichage(QWidget):
                                        if objet.etiquette is not None], True)
         win.show()
 
-
-    def EvtEpaisseur(self):
-        self.changements["epaisseur"] = self.epaisseur.value()/10
-
-    def EvtTaille(self):
-        self.changements["taille"] = self.taille.value()/10
-
-    def EvtAngle(self):
-        angle = self.angle.value()
-        self.changements["angle"] = (angle if angle != -180 else 'auto')
-
-    def EvtPosition(self):
-        self.changements["position"] = self.position.value()/100
 
 
 
@@ -535,7 +547,7 @@ class ProprietesAvance(QWidget):
             style = QVBoxLayout()
             style_box = QGroupBox(u"Style de l'objet")
             style_box.setLayout(style)
-            style.addWidget(QLabel(u"Attention, ne modifiez ce contenu que si vous savez ce que vous faites."))
+            style.addWidget(QLabel(u"<span style='color:red;font-style:italic;'>Attention, ne modifiez ce contenu que si vous savez ce que vous faites.</span>"))
             self.avance = QTextEdit()
             self.avance.setMinimumSize(350, 200)
             self.actualiser()

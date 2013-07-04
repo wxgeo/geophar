@@ -209,7 +209,7 @@ variables = {
 points = {
     "couleur": "b",
     "epaisseur": 1.,
-    "style": "+",
+    "style": styles_de_points[0],
     "categorie": "points",
     "sous-categorie": "points ordinaires",
     "taille": 8,
@@ -226,7 +226,7 @@ points_deplacables = {
 segments = {
     "couleur": "g",
     "epaisseur": 1.,
-    "style": "-",
+    "style": styles_de_lignes[0],
     "visible": True,
     "niveau": 3,
     "categorie": "lignes",
@@ -236,7 +236,7 @@ segments = {
 interpolations = {
     "couleur": "g",
     "epaisseur": 1.,
-    "style": "-",
+    "style": styles_de_lignes[0],
     "visible": True,
     "niveau": 3,
     "categorie": "lignes",
@@ -258,7 +258,7 @@ droites = {"couleur": "b",
     }
 courbes = {"couleur": "b",
     "epaisseur": 1.,
-    "style": "-",
+    "style": styles_de_lignes[0],
     "visible": True,
     "niveau": 2,
     "categorie": "lignes",
@@ -269,7 +269,7 @@ courbes = {"couleur": "b",
 vecteurs = {
     "couleur": "g",
     "epaisseur": 1.,
-    "style": "-",
+    "style": styles_de_lignes[0],
     "taille": 10,
     "visible": True,
     "niveau": 4,
@@ -282,7 +282,7 @@ vecteurs = {
 axes = {
     "couleur": "k",
     "epaisseur": 1.,
-    "style": "-",
+    "style": styles_de_lignes[0],
     "taille": 10,
     "visible": True,
     "niveau": .1,
@@ -301,7 +301,7 @@ axes = {
 cercles = {
     "couleur": "b",
     "epaisseur": 1.,
-    "style": "-",
+    "style": styles_de_lignes[0],
     "visible": True,
     "niveau": 1,
     "categorie": "lignes",
@@ -310,7 +310,7 @@ cercles = {
 arcs = {
     "couleur": "b",
     "epaisseur": 1.,
-    "style": "-",
+    "style": styles_de_lignes[0],
     "visible": True,
     "niveau": 1,
     "categorie": "lignes",
@@ -320,7 +320,7 @@ arcs = {
 arcs_orientes = {
     "couleur": "g",
     "epaisseur": 1.,
-    "style": "-",
+    "style": styles_de_lignes[0],
     "taille": 10,
     "visible": True,
     "niveau": 4,
@@ -333,7 +333,7 @@ arcs_orientes = {
 polygones = {
     "couleur": "y",
     "epaisseur": 1.,
-    "style": "-",
+    "style": styles_de_lignes[0],
     "visible": True,
     "alpha": .2,
     "niveau": 0.1,
@@ -344,7 +344,7 @@ polygones = {
 cotes = {
     "couleur": "y",
     "epaisseur": 1.,
-    "style": "-",
+    "style": styles_de_lignes[0],
     "visible": True,
     "niveau": 0.11,
     "categorie": "lignes",
@@ -365,7 +365,7 @@ polyedres = {
 aretes = {
     "couleur": "y",
     "epaisseur": 1.,
-    "style": "-",
+    "style": styles_de_lignes[0],
     "visible": True,
     "niveau": 0.5,
     "categorie": "lignes",
@@ -388,7 +388,13 @@ textes = {
     "alignement_vertical": "center",
     "alignement_horizontal": "center",
     "pad": 2, # distance entre le texte et le cadre, en pixels
+    "fond": False,
+    "couleur_fond": "w", # couleur
     "alpha_fond": 1,
+    "cadre": False,
+    "epaisseur_cadre": 1,
+    'couleur_cadre': 'k',
+    "style_cadre": styles_de_lignes[0],
     "formatage": RIEN,
     }
 champs = {
@@ -481,7 +487,7 @@ codage_automatique_angle_droits = True
 
 # taille de differents elements graphiques
 
-taille = {"o" : 3, "(" : 5, ">" : 10, "|" : 8}
+taille = {"o" : 2, "(" : 4, ">" : 10, "|" : 8}
 
 
 # Distance maximale entre une etiquette et son objet associé :
@@ -552,7 +558,8 @@ quadrillages = (((None, None), ":", .5, "k"),)
 couleur_papier_millimetre = '#aa7733' # couleur à utiliser pour le papier millimétré entre autres
 
 resolution = 1000 # resolution utilisee pour le tracage des courbes (plus la valeur est importante, plus la courbe est lisse)
-fenetre = (origine_axes[0]-8, origine_axes[0]+8, origine_axes[1]-5, origine_axes[1]+5)   # xmin, xmax, ymin, ymax
+fenetre = (origine_axes[0] - 8, origine_axes[0] + 8,
+           origine_axes[1] - 5, origine_axes[1] + 5)   # xmin, xmax, ymin, ymax
 
 zoom_in = 1.1 # coefficient d'agrandissement des objets lors d'un zoom.
 zoom_out = 0.9 # coefficient de reduction des objets lors d'un zoom.

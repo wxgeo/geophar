@@ -5,7 +5,7 @@ Manuel de l'utilisateur
     :alt: Géophar
     :align: center
 
-« Le couteau-suisse du prof de maths. »
+    « Le couteau-suisse du prof de maths. »
 
 *Copyright © 2005-2012 Nicolas Pourcelot*
 

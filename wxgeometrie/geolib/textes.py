@@ -123,21 +123,20 @@ class Texte_generique(Objet_avec_coordonnees):
         text.set_verticalalignment(av)
         text.set_horizontalalignment(ah)
         text.zorder = niveau + .001
-        if fond is None and cadre is None:
+        if not fond and not cadre:
             rect.set_visible(False)
         else:
             # Matplotlib: None donne le style par défaut,
             # 'none' désactive l'affichage.
-            lw = None
-            if fond is None:
-                fond = 'none'
-            elif cadre is None:
-                cadre = 'none'
-                # Contournement d'un bug de matplotlib 1.1.1
-                lw = 0
-            rect.set(visible=True, texte=text, facecolor=fond, edgecolor=cadre,
+            couleur_fond = (self.style('couleur_fond') if fond is not None else 'none')
+            couleur_cadre = (self.style('couleur_cadre') if cadre is not None else 'none')
+            # Contournement d'un bug de matplotlib 1.1.1
+            lw = (self.style('epaisseur_cadre') if cadre is not None else 0)
+            conv = {'-': 'solid', '--': 'dashed', '.-': 'dashdot', ':': 'dotted'}
+            linestyle = conv.get(self.style('style_cadre'), 'none')
+            rect.set(visible=True, texte=text, facecolor=couleur_fond, edgecolor=couleur_cadre,
                      zorder=niveau, pad=self.style('pad'), alpha=self.style('alpha_fond'),
-                     linewidth=lw)
+                     linewidth=lw, linestyle=linestyle)
 
     @property2
     def label_temporaire(self, *val):
@@ -438,10 +437,16 @@ class Texte(Texte_editable_generique, Objet_avec_coordonnees_modifiables):
 
     def _en_gras(self, booleen):
         figure = self.figure
+        # La figure est vide si l'objet est masqué.
         if figure:
-            # La figure est vide si l'objet est masqué.
+            lw = 1
+            # On augmente l'épaisseur du cadre de 1 (s'il existe).
+            if self.style('cadre'):
+                epaisseur = self.style('epaisseur_cadre')
+                if epaisseur is not None:
+                    lw = epaisseur + 1
             if booleen:
-                figure[0]._bbox = {'alpha': 0.5, 'linewidth': 1, 'fill': False}
+                figure[0]._bbox = {'alpha': 0.5, 'linewidth': lw, 'fill': False, 'linestyle': 'dotted'}
             else:
                 figure[0]._bbox = None
 

@@ -227,7 +227,9 @@ omega
                 texte = formater_texte(texte)
                 M = Point(x, y, style = "o", couleur = "w", taille = 0)
                 M.label(texte)
-                M.etiquette.style(_rayon_ = 0, niveau = 15, alignement_vertical = "center", alignement_horizontal = "center", fond = "w")
+                M.etiquette.style(_rayon_=0, niveau=15, alignement_vertical="center",
+                                  alignement_horizontal="center", fond=True,
+                                  couleur_fond="w")
                 return M
 
 
@@ -238,13 +240,14 @@ omega
                 style = {'_rayon_': 0, 'niveau': 15}
                 placement = self.param('placement_probabilites')
                 if placement == 'dessus':
-                    style.update(alignement_vertical='center', fond='w',
-                                 alignement_horizontal='center', angle=0)
+                    style.update(alignement_vertical='center', couleur_fond='w',
+                                 fond=True, alignement_horizontal='center',
+                                 angle=0)
                 elif placement == 'longe':
-                    style.update(alignement_vertical='auto', fond='none',
+                    style.update(alignement_vertical='auto', fond=False,
                                  alignement_horizontal='center', angle='auto')
                 elif placement == 'decale':
-                    style.update(alignement_vertical='auto', fond='none',
+                    style.update(alignement_vertical='auto', fond=False,
                                  alignement_horizontal='right', angle=0)
                 else:
                     print(u"Placement: mode '%s' non reconnu." % placement)
