@@ -167,9 +167,12 @@ class ColorSelecter(QPushButton):
             # Couleur invalide -> l'utilisateur a cliqué sur "Annuler"
             self.color = color
             if color is not None:
-                self.setStyleSheet("ColorSelecter { border-radius: 4px; background-color: %s }"
-                               "ColorSelecter:hover { background-color: %s }" % (
-                               color.name(), color.light(125).name()))
+                self.setStyleSheet("ColorSelecter { border-radius: 4px; \
+                    background-color: %s ; border-color:#AAAAAA #AAAAAA #444444 #444444; \
+                    border-style:solid; border-width:1px;} \
+                    ColorSelecter:disabled {border-color:#AAAAAA #AAAAAA #444444 #444444;} \
+                    ColorSelecter:hover { background-color: %s }"
+                    % (color.name(), color.light(125).name()))
             self.colorSelected.emit(color)
 
 
