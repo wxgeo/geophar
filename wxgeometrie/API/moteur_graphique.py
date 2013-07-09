@@ -1309,6 +1309,39 @@ class Moteur_graphique(object):
         self.axes.add_collection(f1)
         self.canvas.draw()
 
+    def _test4(self):
+        u"""Teste la rapidité du moteur d'affichage.
+
+        Un point rouge est déposé partout où la souris passe.
+        Pour que le teste soit fiable, il faut qu'il n'y ait aucun objet
+        (à part éventuellement le quadrillage).
+        """
+        def mouseMoveEvent(self, event, m=self, color=[100, 0, 0]):
+            m._restaurer(m._dernier_dessin)
+            # On dessine dans le buffer
+            x, y = self.coordonnees(event)
+            #~ artist = Line2D([x], [y], color='red', linestyle='+')
+            #~ artist.set_axes(m.axes)
+            #~ m.axes.draw_artist(artist)
+            if color[0] and not color[2]:
+                color[0] -= 1
+                color[1] += 1
+            elif color[1]:
+                color[1] -= 1
+                color[2] += 1
+            else:
+                color[2] -= 1
+                color[0] += 1
+            m.ajouter_point(x, y, color=tuple(n/100. for n in color))
+            m._dessiner_artistes()
+            # Affichage proprement dit (copie du buffer à l'écran)
+            self.blit(m.axes.bbox)
+            # Garde en mémoire l'affichage pour éviter de redessiner la fenêtre
+            # dans certains cas (fenêtre masquée, etc.)
+            m._dernier_dessin = m._en_cache()
+            m._effacer_artistes()
+        self.canvas.__class__.mouseMoveEvent = mouseMoveEvent
+        print(u"Warning: Redémarrer l'application pour quitter le test.")
 
 
 class ConvertisseurBase(object):
