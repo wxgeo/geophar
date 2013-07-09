@@ -50,7 +50,7 @@ from .fonctions import Fonction
 from .points import Point
 from .cercles import Arc_generique
 from .courbes import Courbe
-from .textes import Texte
+from .textes import Texte, Texte_generique
 ##from .labels import Label_generique
 from .vecteurs import Vecteur_libre
 from .variables import Variable, XMinVar, XMaxVar, YMinVar, YMaxVar, Dpx, Dpy
@@ -1383,9 +1383,11 @@ class Feuille(object):
     def nettoyer(self):
         u"""Supprime les objets cachés inutiles.
 
-        Un objet caché est inutile si aucun objet visible ne dépend de lui."""
-        objets = sorted((obj for obj in self.liste_objets(True) if not obj.visible),
-                            key = attrgetter("_hierarchie"), reverse = True)
+        Un objet caché est inutile si aucun objet visible ne dépend de lui.
+        Les textes vides sont également supprimés."""
+        objets = [obj for obj in self.liste_objets(True) if not obj.visible
+                  or isinstance(obj, Texte_generique) and not obj.texte]
+        objets.sort(key=attrgetter("_hierarchie"), reverse=True)
         for obj in objets:
             if obj.nom not in self.objets._suppression_impossible:
                 if not any(self.contient_objet(heritier) for heritier in obj._heritiers()):

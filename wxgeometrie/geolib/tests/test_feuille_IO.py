@@ -126,6 +126,14 @@ def test_nettoyer():
     noms -= set(("B", "I"))
     assertEqual(o.noms, noms)
 
+    # Les textes vides sont supprimés.
+    ex('txt = Texte()')
+    noms.add('txt')
+    assertEqual(o.noms, noms)
+    f.nettoyer()
+    noms.remove('txt')
+    assertEqual(o.noms, noms)
+
 
 def test_feuille_modifiee():
     f = Feuille()
