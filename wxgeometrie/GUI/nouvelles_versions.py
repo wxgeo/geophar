@@ -53,14 +53,14 @@ class Gestionnaire_mises_a_jour(QObject):
                         (u"La version %s de %s est sortie.\n"
                         u"Vous allez être redirigé vers la page de téléchargement.")
                         % (version, param.NOMPROG))
-                webbrowser.open(url_telechargement)
+                webbrowser.open(self.url_telechargement)
             else:
                 QMessageBox.information(self.parent, u"Aucune mise à jour trouvée.",
                         u"Aucune mise à jour n'est disponible actuellement.<br>"
                         u"Consultez <a href='http://wxgeo.free.fr/wordpress/'>"
                         u"http://wxgeo.free.fr</a> pour plus d'informations.")
         else:
-            print(u'Connexion impossible à ' + self.url + ' : ' + msg)
+            print(u'Connexion impossible à ' + self.url_version + ' : ' + msg)
             QMessageBox.warning(self.parent, u"Connexion impossible",
                     u"Impossible de vérifier si une nouvelle version existe.<br>"
                     u"Consultez <a href='http://wxgeo.free.fr/wordpress/'>"
@@ -81,8 +81,8 @@ class Gestionnaire_mises_a_jour(QObject):
         msg = u'Unknown error.'
         try:
             if param.debug:
-                app.safe_print("Checking %s..." % self.url)
-            f = urlopen(self.url)
+                app.safe_print("Checking %s..." % self.url_version)
+            f = urlopen(self.url_version)
             version = f.read(60)
             f.close()
             if len(version) > 50 or not version.replace(" ", "").replace(".", "").isalnum():
