@@ -34,10 +34,15 @@ if sys.platform == 'win32':
 else:
     sys.stdout = getwriter('utf8')(sys.stdout)
 
-path = dirname(realpath(sys._getframe().f_code.co_filename))
-sys.path.insert(0, path)
+if getattr(sys, 'frozen', False):
+    application_path = os.path.dirname(sys.executable)
+else:
+    application_path = dirname(realpath(sys._getframe().f_code.co_filename))
+
+sys.path.insert(0, application_path)
 
 if __name__ == '__main__':
     sys._launch_geophar = True
+    #print sys.path
     from wxgeometrie.initialisation import initialiser
     initialiser()
