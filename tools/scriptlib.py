@@ -48,13 +48,23 @@ def mv(src, dst):
 
 def rm(*paths, **kw):
     quiet = kw.get('quiet', False)
+    recursive = kw.get('recursive', False)
+    if recursive:
+        cwd = os.getcwdu()
+        listcwd = os.listdir('.')
     for path in paths:
         pths = glob.glob(norm(path))
-        if not (pths or quiet):
+        if not (pths or quiet or recursive):
             print "Warning: %s not found, couldn't be removed." %path
         for pth in pths:
             if os.path.isfile(pth):
                 os.remove(pth)
+        if recursive:
+            for pth in listcwd:
+                if os.path.isdir(pth):
+                    cd(pth)
+                    rm(*paths, **kw)
+                    cd(cwd)
 
 def rename(src, dst):
     os.rename(norm(src), norm(dst))
