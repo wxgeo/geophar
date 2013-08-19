@@ -3,7 +3,7 @@
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------#######
-#                Calculatrice                 #
+#                Cryptographie                #
 ##--------------------------------------#######
 #    WxGeometrie
 #    Dynamic geometry, graph plotter, and more for french mathematic teachers.
@@ -26,7 +26,6 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 from string import ascii_uppercase as majuscules
 from functools import partial
-from itertools import cycle, izip
 from random import shuffle
 import re
 
@@ -37,7 +36,7 @@ from PyQt4.QtCore import Qt, QTimer
 from ...GUI.menu import MenuBar
 from ...GUI.panel import Panel_simple
 from ...pylib import print_error
-from ... import param
+#~ from ... import param
 
 
 dict_accents = {

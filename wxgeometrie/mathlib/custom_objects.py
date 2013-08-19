@@ -25,9 +25,7 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ## Objets complémentaires à ceux de sympy
 
-from functools import partial
-
-from sympy import Symbol, Matrix, Rational, Expr, Integer, Float, Basic
+from sympy import Symbol, Rational, Expr, Integer, Basic
 from sympy.core.cache import cacheit
 from sympy.core.numbers import Infinity
 

@@ -25,7 +25,7 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 import re, math
 import numpy
 
-from sympy import oo, sympify, S
+from sympy import oo, sympify, S, Symbol
 from sympy.core.sympify import SympifyError
 import sympy
 

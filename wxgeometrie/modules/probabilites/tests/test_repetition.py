@@ -33,6 +33,7 @@ def test_repetition_plusieurs_niveaux():
 >>&S_2:1/4
 >>>S_3:3/4
 >>>&S_3:1/4'''
+    assertEqual(s, resultat)
 
 
 def test_repetition_sans_numeroter():

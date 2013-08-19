@@ -86,19 +86,19 @@ __classement__[u"Statistiques"].append((u"Intervalle de confiance", "confiance",
                 u"pour un échantillon de taille n, et une fréquence f."))
 
 from .sympy_functions import expand
-developpe = expand
+developper = developpe = expand
 __classement__[u"Algèbre"].append((u"Développe", "developpe", u"Développer une expression."))
 
 from .sympy_functions import factor
-factorise = factor
+factoriser = factorise = factor
 __classement__[u"Algèbre"].append((u"Factorise", "factorise", u"Factoriser une expression."))
 
 from .sympy_functions import together
-rassemble = together
+rassembler = rassemble = together
 __classement__[u"Algèbre"].append((u"Une seule fraction", "rassemble", u"Mettre sur le même dénominateur."))
 
 from .sympy_functions import evalf
-evalue = evalf
+evaluer = evalue = evalf
 __classement__[u"Algèbre"].append((u"Évalue", "evalue", u"Calculer une valeur approchée."))
 
 from .solvers import resoudre
@@ -108,7 +108,7 @@ __classement__[u"Algèbre"].append((u"Résous", "resous", u"Résoudre une (in)équat
 __classement__[u"Algèbre"].append(None)
 
 from .sympy_functions import cfactor
-cfactorise = cfactor
+cfactoriser = cfactorise = cfactor
 __classement__[u"Algèbre"].append((u"Factorise dans C", "cfactorise", u"Factoriser une expression dans le corps des complexes."))
 
 from sympy import conjugate

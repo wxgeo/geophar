@@ -27,8 +27,7 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 from numpy import roots as nroots
 
-from sympy import Mul, Float, Basic, Poly, together, expand, powsimp, roots,\
-                    sympify, div, Symbol
+from sympy import Mul, Float, Basic, roots, sympify, div, Symbol
 from ..pylib import warning
 from .. import param
 

@@ -133,9 +133,8 @@ def test_issue_270():
     r, l = i.evaluer("16000000000700,4")
     assert r == "16000000000700" # 1,6*10^13 environ
 
-@XFAIL
 def test_resolution_complexe():
-    assert_resultat('resoudre(2+\i=\dfrac{2\i z}{z-1})', '3/5 + 4*i/5',
+    assert_resultat("resoudre(2+\i=\dfrac{2\i z}{z-1}, ensemble='C')", '3/5 + 4*i/5',
                                         r'\frac{3}{5} + \frac{4}{5} \mathrm{i}')
 
 def test_fonctions_avances():
@@ -403,6 +402,7 @@ def test_proba_stats_basic_API():
 
 @XFAIL
 def test_proba_stats_advanced_API():
+    i = Interprete(verbose=VERBOSE)
     r, l = i.evaluer('X = normal()')
     r, l = i.evaluer('P(-1 < X < 1)')
     r, l = i.evaluer('P(X >= 2)')

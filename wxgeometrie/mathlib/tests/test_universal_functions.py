@@ -5,7 +5,7 @@ import math
 import numpy
 import sympy
 from tools.testlib import assertAlmostEqual, assertEqual
-from wxgeometrie.mathlib.universal_functions import sin, cos, tan, asin, acos, atan
+from wxgeometrie.mathlib.universal_functions import asin, acos, atan
 
 x = sympy.Symbol('x')
 

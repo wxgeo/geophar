@@ -41,11 +41,27 @@ from .. import param
 
 
 
-def nul(expression, variable = None, intervalle = True):
-    u"""Retourne l'ensemble sur lequel une expression à variable réelle est nulle."""
+def nul(expression, variable=None, intervalle=True, ensemble='R'):
+    u"""Retourne l'ensemble sur lequel une expression à variable réelle est nulle.
+
+    :param expression: une expression mathématique
+    :type expression: string
+    :param variable: un nom de variable
+    :type variable: string
+    :param intervalle: returne le résultat sous forme d'intervalle
+    :type intervalle: bool
+    :param ensemble: dans quel ensemble l'équation doit être résolue ('R' ou 'C')
+    :type ensemble: string
+
+    .. note:: Si la variable n'est pas précisée, elle est déduite de l'expression.
+              (S'il y a plusieurs variables, une des variables est choisie au hasard.)
+
+    """
+    if ensemble == 'C':
+        intervalle = False
     if variable is None:
         variable = extract_var(expression)
-    expression = factor(expression, variable, "R", decomposer_entiers = False)
+    expression = factor(expression, variable, ensemble, decomposer_entiers = False)
     if expression.is_Mul:
         facteurs = expression.args
     else:
@@ -54,7 +70,7 @@ def nul(expression, variable = None, intervalle = True):
     solutions = (vide if intervalle else set())
 
     for facteur in facteurs:
-        liste_solutions = solve_(facteur, variable, ensemble = "R")
+        liste_solutions = solve_(facteur, variable, ensemble=ensemble)
         if intervalle:
             solutions += Union(*liste_solutions)
         else:
@@ -372,7 +388,7 @@ def positif(expression, variable = None, strict = False):
     raise NotImplementedError
 
 
-def resoudre(chaine, variables = (), local_dict = None):
+def resoudre(chaine, variables=(), local_dict=None, ensemble='R'):
     u"""Résout une équation ou inéquation, rentrée sous forme de chaîne.
 
 
@@ -419,6 +435,9 @@ def resoudre(chaine, variables = (), local_dict = None):
 
     if len(variables) > 1:
         return systeme(chaine, local_dict = local_dict)
+
+    assert len(variables) == 1
+    variable = tuple(variables)[0]
 #    fin = ",".join(arguments[1:])
 #    if fin:
 #        fin = "," + fin
@@ -453,24 +472,34 @@ def resoudre(chaine, variables = (), local_dict = None):
 
     if ">=" in chaine:
         gauche, droite = chaine.split(">=")
-        return positif(evaluer(gauche + "-(" + droite + ")"), *variables)
+        if ensemble != 'R':
+            print("Warning: can't solve in '%s', solving in 'R'." % ensemble)
+        return positif(evaluer(gauche + "-(" + droite + ")"), variable)
     elif "<=" in chaine:
         gauche, droite = chaine.split("<=")
-        return positif(evaluer(droite + "-(" + gauche + ")"), *variables)
+        if ensemble != 'R':
+            print("Warning: can't solve in '%s', solving in 'R'." % ensemble)
+        return positif(evaluer(droite + "-(" + gauche + ")"), variable)
     if ">" in chaine:
         gauche, droite = chaine.split(">")
-        return positif(evaluer(gauche + "-(" + droite + ")"), *variables, **{"strict": True})
+        if ensemble != 'R':
+            print("Warning: can't solve in '%s', solving in 'R'." % ensemble)
+        return positif(evaluer(gauche + "-(" + droite + ")"), variable, **{"strict": True})
     elif "<" in chaine:
         gauche, droite = chaine.split("<")
-        return positif(evaluer(droite + "-(" + gauche + ")"), *variables, **{"strict": True})
+        if ensemble != 'R':
+            print("Warning: can't solve in '%s', solving in 'R'." % ensemble)
+        return positif(evaluer(droite + "-(" + gauche + ")"), variable, **{"strict": True})
     elif "!=" in chaine:
         gauche, droite = chaine.split("!=")
         expression = evaluer(gauche + "-(" + droite + ")")
-        return ensemble_definition(expression, *variables) - nul(expression, *variables)
+        if ensemble != 'R':
+            print("Warning: can't solve in '%s', solving in 'R'." % ensemble)
+        return ensemble_definition(expression, variable) - nul(expression, variable)
     elif "=" in chaine:
         gauche, droite = chaine.split("=")
         expression = evaluer(gauche + "-(" + droite + ")")
-        return nul(expression, *variables)
+        return nul(expression, variable, ensemble=ensemble)
     else:
         raise TypeError, "'" + chaine + "' must be an (in)equation."
 

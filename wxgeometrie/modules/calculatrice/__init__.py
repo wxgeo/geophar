@@ -25,13 +25,11 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 from functools import partial
 
-#import wx
 from PyQt4.QtGui import (QHBoxLayout, QVBoxLayout, QCheckBox, QIcon, QPushButton,
                          QTextEdit, QMenu, QLabel, QSpinBox, QCursor, QTextCursor,
-                         QToolButton, QWidget, QTabWidget, QGroupBox)
+                         QToolButton, QWidget, QTabWidget, QGroupBox, QComboBox)
 from PyQt4.QtCore import Qt
 
-#from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigureCanvas
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 
@@ -208,6 +206,8 @@ class Options(QWidget):
         self.parent = parent
         prm = parent.param
 
+        self.ensembles = ('R', 'C')
+
         ### Liste des options de la calculatrice ###
         self.pave = QVBoxLayout()
 
@@ -273,12 +273,25 @@ class Options(QWidget):
         ligne.addStretch()
 
         self.pave.addWidget(box)
+        #~ self.pave.addStretch()
+
+        box = QGroupBox(u"Ensemble de résolution")
+        box_layout = QVBoxLayout()
+        box.setLayout(box_layout)
+        ligne = QHBoxLayout()
+        box_layout.addLayout(ligne)
+        ligne.addWidget(QLabel(u'Résoudre et factoriser dans '))
+        self.cb_ensemble = cb = QComboBox()
+        ligne.addWidget(cb)
+        cb.addItems((u'R (réels)', u'C (complexes)'))
+        cb.setCurrentIndex(self.ensembles.index(prm('ensemble')))
+        cb.currentIndexChanged.connect(self.EvtEnsemble)
+        self.pave.addWidget(box)
         self.pave.addStretch()
 
         self.setLayout(self.pave)
         # Pour (dés)activer la ligne "Copie au format LaTeX" au besoin.
         self.EvtCopieAutomatique()
-
 
     def EvtPrecisionAffichage(self, event=None):
         val = self.sc_precision_affichage.value()
@@ -304,6 +317,11 @@ class Options(QWidget):
     def EvtCopieAutomatiqueLatex(self, event=None):
         val = self.cb_copie_automatique_LaTeX.isChecked()
         self.parent.param("copie_automatique_LaTeX", val)
+
+
+    def EvtEnsemble(self, index):
+        self.parent.param("ensemble", self.ensembles[index])
+
 
 
 
@@ -355,6 +373,7 @@ class Calculatrice(Panel_simple):
                                 precision_calcul = self.param("precision_calcul"),
                                 precision_affichage = self.param("precision_affichage"),
                                 simpify = True,
+                                ensemble=self.param('ensemble'),
                                 )
 
         bouton = BoutonValider(self)

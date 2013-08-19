@@ -97,6 +97,7 @@ class Interprete(object):
         * `verbose`: afficher le détail des transformations effectuées
         * `appliquer_au_resultat`: une fonction à appliquer éventuellement
           au résultat
+        * `ensemble`: 'R' ou 'C' (utilisé pour la résolution des équations).
     """
     def __init__(self,  calcul_exact=True,
                         ecriture_scientifique=False,
@@ -111,6 +112,7 @@ class Interprete(object):
                         simpify=True,
                         verbose=None,
                         appliquer_au_resultat=None,
+                        ensemble='R'
                         ):
         # Dictionnaire local (qui contiendra toutes les variables définies par l'utilisateur).
         self.locals = LocalDict()
@@ -175,6 +177,7 @@ class Interprete(object):
         self.simpify = simpify
         # une fonction à appliquer à tous les résultats
         self.appliquer_au_resultat = appliquer_au_resultat
+        self.ensemble = ensemble
         self.latex_dernier_resultat = ''
         self.initialiser()
 
@@ -362,7 +365,7 @@ class Interprete(object):
                         verbose = self.verbose,
                         )
 
-        formule = re.sub("(?<![A-Za-z0-9_])(resous|solve)", "resoudre", formule)
+        formule = re.sub("(?<![A-Za-z0-9_])(resous|solve)[(]", "resoudre(", formule)
         i = formule.find("resoudre(")
         if i != -1:
             while formule.find("(et)") != -1:
@@ -373,9 +376,18 @@ class Interprete(object):
                         .replace("*ou-", " ou -").replace("*et-", " et -")\
                         .replace("*ou+", " ou +").replace("*et+", " et +")
             deb, bloc, fin = split_around_parenthesis(formule, i)
-            formule = deb + '("' + bloc[1:-1] + '", local_dict = __local_dict__)'
+            formule = ('%s("%s", local_dict=__local_dict__, ensemble=%s)'
+                       % (deb, bloc[1:-1], repr(self.ensemble)))
         if self.verbose or (self.verbose is None and param.debug):
-            print "test_resoudre: ", i, formule
+            print "Debugging resoudre(): ", i, formule
+        formule = re.sub("(?<![A-Za-z0-9_])(factor|factorise)[(]", "factoriser(", formule)
+        i = formule.find("factoriser(")
+        if i != -1:
+            deb, bloc, fin = split_around_parenthesis(formule, i)
+            formule = ('%s(%s, ensemble=%s)'
+                       % (deb, bloc[1:-1], repr(self.ensemble)))
+        if self.verbose or (self.verbose is None and param.debug):
+            print "Debugging factor(): ", formule
         return formule
 
 
