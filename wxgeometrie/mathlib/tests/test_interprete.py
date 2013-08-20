@@ -134,8 +134,18 @@ def test_issue_270():
     assert r == "16000000000700" # 1,6*10^13 environ
 
 def test_resolution_complexe():
-    assert_resultat("resoudre(2+\i=\dfrac{2\i z}{z-1}, ensemble='C')", '3/5 + 4*i/5',
-                                        r'\frac{3}{5} + \frac{4}{5} \mathrm{i}')
+    i = Interprete(verbose=VERBOSE, ensemble='C')
+    r, l = i.evaluer("resoudre(x^2=-1")
+    assert r in ('{i ; -i}', '{-i ; i}')
+    assert l in (r'$\left{- \mathrm{i}\,;\,\mathrm{i}\right}$',
+                 r'$\left{\mathrm{i}\,;\,- \mathrm{i}\right}$')
+    r, l = i.evaluer("resoudre(2+\i=\dfrac{2\i z}{z-1}")
+    assertEqual(r, '{3/5 + 4 i/5}')
+    assertEqual(l, r'$\left{\frac{3}{5} + \frac{4}{5} \mathrm{i}\right}$')
+    r, l = i.evaluer("resoudre(x^2=-1 et 2x=-2i")
+    assertEqual(r, '{i}')
+    assertEqual(l, r'$\left{\mathrm{i}\right}$')
+
 
 def test_fonctions_avances():
     pass

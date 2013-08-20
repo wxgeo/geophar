@@ -134,6 +134,9 @@ class CustomStrPrinter(StrPrinter, DecimGenericPrinter):
     def _print_Union(self, expr):
         return expr.__str__()
 
+    def _print_set(self, expr):
+        return '{%s}' % ' ; '.join(self._print(val) for val in expr)
+
     def _print_Fonction(self, expr):
         return "%s -> %s" % (", ".join(expr._variables()),
                         self._print(self._convert_Decim(expr.expression)))
@@ -233,6 +236,9 @@ class CustomLatexPrinter(LatexPrinter, DecimGenericPrinter):
         tex = r"\cup".join(self._print(intervalle) for intervalle in expr.intervalles)
         tex = tex.replace(r"\right\}\cup\left\{", "\,;\, ")
         return tex
+
+    def _print_set(self, expr):
+        return r'\left{%s\right}' % '\,;\,'.join(self._print(val) for val in expr)
 
     def _print_Intervalle(self, expr):
         if expr.vide:

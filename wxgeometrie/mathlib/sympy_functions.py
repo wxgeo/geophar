@@ -269,7 +269,8 @@ def simplifier_racines(expression):
         elif getattr(expression, "is_Add", False):
             return reduce(lambda x,y:x+y, [simplifier_racines(term) for term in expression.args], 0)
         return expression
-    except TypeError:
+    except Exception:
+        # sqrtdenest() renvoie assez souvent des erreurs.
         if param.debug:
             print "Warning: error occured during expression denesting:", expression
         return expression

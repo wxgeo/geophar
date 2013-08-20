@@ -61,7 +61,7 @@ def nul(expression, variable=None, intervalle=True, ensemble='R'):
         intervalle = False
     if variable is None:
         variable = extract_var(expression)
-    expression = factor(expression, variable, ensemble, decomposer_entiers = False)
+    expression = factor(expression, variable, ensemble=ensemble, decomposer_entiers=False)
     if expression.is_Mul:
         facteurs = expression.args
     else:
@@ -442,30 +442,31 @@ def resoudre(chaine, variables=(), local_dict=None, ensemble='R'):
 #    if fin:
 #        fin = "," + fin
     debut = ''
+    _resoudre = partial(resoudre, variables=variables, ensemble=ensemble, local_dict=local_dict)
     while chaine:
         l = [s for s in split_around_parenthesis(chaine)]
         if len(l) == 3:
             if l[0].strip() == l[2].strip() == '':
-                return resoudre(chaine[1:-1], variables = variables, local_dict = local_dict)
+                return _resoudre(chaine[1:-1])
             if ' et ' in l[0]:
                 retour = chaine.split(' et ', 1)
                 retour[0] = debut + retour[0]
-                return resoudre(retour[0], variables = variables, local_dict = local_dict)*resoudre(retour[1], variables = variables, local_dict = local_dict)
+                return _resoudre(retour[0])*_resoudre(retour[1])
             elif ' ou ' in l[0]:
                 retour = chaine.split(' ou ', 1)
                 retour[0] = debut + retour[0]
-                return resoudre(retour[0], variables = variables, local_dict = local_dict) + resoudre(retour[1], variables = variables, local_dict = local_dict)
+                return _resoudre(retour[0]) + _resoudre(retour[1])
             chaine = l[2]
             debut += l[0] + l[1]
         else:
             if ' et ' in chaine:
                 retour = chaine.split(' et ', 1)
                 retour[0] = debut + retour[0]
-                return resoudre(retour[0], variables = variables, local_dict = local_dict)*resoudre(retour[1], variables = variables, local_dict = local_dict)
+                return _resoudre(retour[0])*_resoudre(retour[1])
             elif ' ou ' in chaine:
                 retour = chaine.split(' ou ', 1)
                 retour[0] = debut + retour[0]
-                return resoudre(retour[0], variables = variables, local_dict = local_dict) + resoudre(retour[1], variables = variables, local_dict = local_dict)
+                return _resoudre(retour[0]) + _resoudre(retour[1])
             else:
                 break
     chaine = debut + chaine
