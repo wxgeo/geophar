@@ -24,7 +24,7 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 
-
+from functools import partial
 
 from sympy import (exp, ln, tan, pi, Symbol, oo, solve, Wild, sympify,
                     Add, Mul, sqrt,
@@ -451,22 +451,22 @@ def resoudre(chaine, variables=(), local_dict=None, ensemble='R'):
             if ' et ' in l[0]:
                 retour = chaine.split(' et ', 1)
                 retour[0] = debut + retour[0]
-                return _resoudre(retour[0])*_resoudre(retour[1])
+                return _resoudre(retour[0]) & _resoudre(retour[1])
             elif ' ou ' in l[0]:
                 retour = chaine.split(' ou ', 1)
                 retour[0] = debut + retour[0]
-                return _resoudre(retour[0]) + _resoudre(retour[1])
+                return _resoudre(retour[0]) | _resoudre(retour[1])
             chaine = l[2]
             debut += l[0] + l[1]
         else:
             if ' et ' in chaine:
                 retour = chaine.split(' et ', 1)
                 retour[0] = debut + retour[0]
-                return _resoudre(retour[0])*_resoudre(retour[1])
+                return _resoudre(retour[0]) & _resoudre(retour[1])
             elif ' ou ' in chaine:
                 retour = chaine.split(' ou ', 1)
                 retour[0] = debut + retour[0]
-                return _resoudre(retour[0]) + _resoudre(retour[1])
+                return _resoudre(retour[0]) | _resoudre(retour[1])
             else:
                 break
     chaine = debut + chaine

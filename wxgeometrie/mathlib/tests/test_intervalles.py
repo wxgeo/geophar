@@ -5,7 +5,8 @@ from sympy import sqrt, pi
 
 from tools.testlib import assertEqual
 import wxgeometrie.mathlib.intervalles as intervalles
-from wxgeometrie.mathlib.intervalles import Intervalle, conversion_chaine_ensemble
+from wxgeometrie.mathlib.intervalles import Intervalle, Ensemble, \
+                                            conversion_chaine_ensemble
 
 
 def assert_intervalle_preformater(x, y):
@@ -66,3 +67,15 @@ def test_conversion_chaine_ensemble():
                "/(16*(-3616 + 64*sqrt(8113))^(1/3))}')"
     resultat = repr(conversion_chaine_ensemble(chaine, utiliser_sympy=True))
     assertEqual(resultat, attendu)
+
+def test_operations():
+    I = Ensemble('[2;4]')
+    J = Ensemble('[3;5[')
+    assertEqual(I & J, Ensemble('[3;4]'))
+    assertEqual(I*J, Ensemble('[3;4]'))
+    assertEqual(I | J, Ensemble('[2;5['))
+    assertEqual(I + J, Ensemble('[2;5['))
+    assertEqual(I - J, Ensemble('[2;3['))
+    assertEqual(J - I, Ensemble(']4;5['))
+    assertEqual(-I, Ensemble(']-oo;2[U]4;+oo['))
+    assertEqual(-J, Ensemble(']-oo;3[U[5;+oo['))

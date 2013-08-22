@@ -49,8 +49,8 @@ class Union(Ensemble):
     Lors de l'initialisation, elle est reecrite sous forme d'union disjointe et ordonnée.
 
     Les opération sur les unions d'intervalles sont :
-    - l'union : symbole "A+B"
-    - l'intersection : symbole "A*B"
+    - l'union : symbole "A+B" ou "A|B'
+    - l'intersection : symbole "A*B" ou "A&B"
     - la différence : symbole "A-B"
     - le complémentaire : symbole -A
 
@@ -104,6 +104,9 @@ class Union(Ensemble):
     def __radd__(self, y):
         return self.__add__(y)
 
+    __or__ = __add__
+    __ror__ = __radd__
+
     def __mul__(self, y):
         "intersection"
         if not isinstance(y, Union):
@@ -113,14 +116,17 @@ class Union(Ensemble):
         else:
             return Union(*[i*j for i in self.intervalles for j in y.intervalles])
 
-    def __pow__(self, y): # alias pour l'intersection (le symbole '^' rappelle vagument le symbole 'inter')
-        return self.__add__(y)
-
     def __rmul__(self, y):
         self.__mul__(y)
 
-    def __rpow__(self, y):
-        self.__radd__(y)
+    __and__ = __mul__
+    __rand__ = __rmul__
+
+    ##def __pow__(self, y): # alias pour l'intersection (le symbole '^' rappelle vagument le symbole 'inter')
+        ##return self.__add__(y)
+##
+    ##def __rpow__(self, y):
+        ##self.__radd__(y)
 
     def simplifier(self):
         ints = [intervalle for intervalle in self.intervalles if not intervalle.vide]

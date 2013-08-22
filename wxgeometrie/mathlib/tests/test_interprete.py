@@ -143,8 +143,8 @@ def test_resolution_complexe():
     assertEqual(r, '{3/5 + 4 i/5}')
     assertEqual(l, r'$\left{\frac{3}{5} + \frac{4}{5} \mathrm{i}\right}$')
     r, l = i.evaluer("resoudre(x^2=-1 et 2x=-2i")
-    assertEqual(r, '{i}')
-    assertEqual(l, r'$\left{\mathrm{i}\right}$')
+    assertEqual(r, '{-i}')
+    assertEqual(l, r'$\left{- \mathrm{i}\right}$')
 
 
 def test_fonctions_avances():
