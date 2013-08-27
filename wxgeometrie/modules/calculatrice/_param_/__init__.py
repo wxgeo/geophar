@@ -16,3 +16,5 @@ forme_affichage_complexe = ("algebrique", "exponentielle")[0]
 appliquer_au_resultat = None
 # Domaine de résolution des équations ('R' ou 'C')
 ensemble = 'R'
+# Index de l'onglet affiché au démarrage
+onglet = 0

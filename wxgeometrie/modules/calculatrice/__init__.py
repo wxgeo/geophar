@@ -393,7 +393,10 @@ class Calculatrice(Panel_simple):
         resultats.setMinimumSize(450, 310)
         resultats.setReadOnly(True)
         corps.addWidget(resultats, 1)
-        corps.addWidget(OngletsCalc(self))
+        onglets = OngletsCalc(self)
+        corps.addWidget(onglets)
+        onglets.setCurrentIndex(self.param('onglet'))
+        onglets.currentChanged.connect(self.EvtCurrentChanged)
 
         self.figure = Figure(figsize=(5,1.3), frameon=True, facecolor="w")
         self.visualisation = FigureCanvas(self.figure)
@@ -599,6 +602,9 @@ class Calculatrice(Panel_simple):
         menu.exec_(QCursor.pos())
 #        self.PopupMenu(menu)
 #        menu.Destroy()
+
+    def EvtCurrentChanged(self, index):
+        self.param('onglet', index)
 
     def param(self, parametre, valeur = no_argument, defaut = False):
         if valeur is not no_argument:
