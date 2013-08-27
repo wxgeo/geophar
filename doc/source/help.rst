@@ -186,8 +186,8 @@ En cliquant avec le bouton du milieu de la souris dans un champ, vous ferez
 également apparaitre diverses propositions.
 
 Vous pouvez utiliser les notations suivantes : ``[A B]`` pour le segment [AB],
-``(A B)`` pour la droite (AB), ``(A>B)`` pour le vecteur
-:math:`\overrightarrow{AB}`, ``||A>B||`` pour sa norme.
+``(A B)`` pour la droite (AB), ``A->B`` pour le vecteur
+:math:`\overrightarrow{AB}`, ``||A->B||`` pour sa norme.
 
 .. note:: Remarquez l'espace entre les lettres « A » et « B » dans les deux premiers cas.
 
@@ -250,37 +250,37 @@ Voici quelques exemples qui parleront mieux qu'un long discours...
 *Exemples*
 
 
-1.  « ``A=Point(1,2)`` » ou « ``A=(1,2)`` »
+1.  « ``A = Point(1, 2)`` » ou « ``A = (1, 2)`` »
 
     Création d'un point A de coordonnées (1 ; 2).
 
-2.  « ``u=Vecteur(1,2)`` » ou « ``u=(1,2)`` »
+2.  « ``u = Vecteur(1, 2)`` » ou « ``u = (1, 2)`` »
 
     Création d'un vecteur u de coordonnées (1 ; 2).
 
-3.  « ``AB=Segment(A,B)`` » ou « ``AB=[A B]`` »
+3.  « ``AB = Segment(A,B)`` » ou « ``AB = [A B]`` »
 
     Création du segment [AB].
 
     *Attention à l'espace entre les lettres dans le deuxième cas.*
 
-4.  « ``d=Droite(A,B)`` » ou « ``d=(A B)`` »
+4.  « ``d = Droite(A,B)`` » ou « ``d = (A B)`` »
 
     Création de la droite (AB).
 
     *Attention à l'espace entre les lettres dans le deuxième cas.*
 
-5.  « ``u=Vecteur(A,B)`` » ou « ``u=A>B`` »
+5.  « ``u = Vecteur(A,B)`` » ou « ``u = A->B`` »
 
     Création du vecteur :math:`\overrightarrow{AB}`.
 
-6.  « ``M=C+2*(A>B)`` »
+6.  « ``M = C + 2*A->B`` »
 
     Création du point M vérifiant :math:`\overrightarrow{CM}=2\overrightarrow{AB}`.
 
     *Les parenthèses sont obligatoires.*
 
-7.  « ``fenetre=(-10,10,-5,5)`` »
+7.  « ``fenetre = (-10, 10, -5, 5)`` »
 
     Changement de la fenetre d'affichage (xmin, xmax, ymin, ymax).
 
@@ -290,7 +290,7 @@ Les droites, les cercles et les courbes de fonctions peuvent également être cr
 
 *Exemple :*
 
-« ``y=2x+1`` », « ``y=ln(x)`` », « ``x² - 6x + y² + 2y + 5`` »
+« ``y = 2x + 1`` », « ``y = ln(x)`` », « ``x² - 6x + y² + 2y + 5 = 0`` »
 
 
 Le traceur de courbes

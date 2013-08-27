@@ -79,12 +79,18 @@ def test_executer():
     assert(o.M4.xy == (5, sqrt(5)))
     assert(o.M5.xy == (6, sqrt(6)))
     f.executer("B= -1;7")
-    f.executer("u=A>B")
-    assert o.u.xy == (o.B.x - o.A.x, o.B.y - o.A.y)
+    ##f.executer("u=A>B")
+    ##assert o.u.xy == (o.B.x - o.A.x, o.B.y - o.A.y)
     f.executer("K=(-1.3,2.5)")
     assert o.K.xy == (-1.3, 2.5)
     f.executer("K=(1,2)")
     assert o.K.xy == (1, 2)
+    f.executer("u = A->B")
+    assert o.u.xy == (o.B.x - o.A.x, o.B.y - o.A.y)
+    f.executer("v = A->B + M3 -> M4")
+    assertAlmostEqual(o.v.x, o.B.x - o.A.x + o.M4.x - o.M3.x)
+    assertAlmostEqual(o.v.y, o.B.y - o.A.y + o.M4.y - o.M3.y)
+
 
 
 

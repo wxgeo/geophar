@@ -793,10 +793,15 @@ class Interprete_feuille(object):
             return "%s.norme" % m.groups()
         commande = re.sub(r"\|\|[ ]?(%s)[ ]?\|\|" % VAR, _normu, commande)
 
-        # ||A>B|| -> (A>B).norme
+        # ||A>B|| ou ||A->B|| -> (A->B).norme
         def _normAB(m):
-            return "(%s>%s).norme" % m.groups()
-        commande = re.sub(r"\|\|[ ]?(%s)>(%s)[ ]?\|\|" % (VAR, VAR), _normAB, commande)
+            return "(%s->%s).norme" % m.groups()
+        commande = re.sub(r"\|\|[ ]*(%s)[ ]*-?>[ ]*(%s)[ ]*\|\|" % (VAR, VAR), _normAB, commande)
+
+        # ||A>B|| ou ||A->B|| -> (A->B).norme
+        def _vecAB(m):
+            return "Vecteur(%s, %s)" % m.groups()
+        commande = re.sub(r"(%s)[ ]*->[ ]*(%s)" % (VAR, VAR), _vecAB, commande)
 
         # 1,2 ou 1;2 ou 1 2 ou (1,2) ou (1;2) ou (1 2) *uniquement* -> Point(1,2)
         m = re.match("(\()?(?P<x>%s)[ ]?[;, ][ ]?(?P<y>%s)(?(1)\))$" % (NBR_SIGNE, NBR_SIGNE), commande)
