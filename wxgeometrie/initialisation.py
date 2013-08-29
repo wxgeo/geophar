@@ -336,48 +336,54 @@ if getattr(sys, '_launch_geophar', False):
                 if param.debug:
                     print("Temps d'initialisation: %f s" % (time.time() - t0))
                 frame = FenetrePrincipale(app, fichier_log = fichier_log)
-                splash_screen.finish(frame)
-                if isinstance(sys.stdout, SortiesMultiples):
+                if not param._restart:
+                    splash_screen.finish(frame)
+                    if isinstance(sys.stdout, SortiesMultiples):
+                        if param.debug:
+                            for msg in sys.stdout.facultatives[0]:
+                                frame.fenetre_sortie.write(msg)
+                        sys.stdout.facultatives[0] = frame.fenetre_sortie
+                    if arguments:
+                        try:
+                            for arg in arguments:
+                                frame.onglets.ouvrir(arg) # ouvre le fichier passé en paramètre
+                        except:
+                            print_error() # affiche l'erreur interceptée, à titre informatif
+                            print(arg)
+                    elif options.restaurer or ((param.auto_restaurer_session or crash)
+                                                and not options.nouveau):
+                        # On recharge la session précédente.
+                        # (options.restaurer est utilisé quand on redémarre l'application)
+                        try:
+                            if crash:
+                                print(NOMPROG + u" n'a pas été fermé correctement.\n"
+                                      "Tentative de restauration de la session en cours...")
+                            # En général, ne pas activer automatiquement tous les modules
+                            # de la session précédente, mais seulement ceux demandés.
+                            frame.gestion.charger_session(activer_modules=crash)
+                        except:
+                            print(u"Warning: La session n'a pas pu être restaurée.")
+                            print_error()
+                    frame.show()
                     if param.debug:
-                        for msg in sys.stdout.facultatives[0]:
-                            frame.fenetre_sortie.write(msg)
-                    sys.stdout.facultatives[0] = frame.fenetre_sortie
-                if arguments:
-                    try:
-                        for arg in arguments:
-                            frame.onglets.ouvrir(arg) # ouvre le fichier passé en paramètre
-                    except:
-                        print_error() # affiche l'erreur interceptée, à titre informatif
-                        print(arg)
-                elif options.restaurer or ((param.auto_restaurer_session or crash)
-                                            and not options.nouveau):
-                    # On recharge la session précédente.
-                    # (options.restaurer est utilisé quand on redémarre l'application)
-                    try:
-                        if crash:
-                            print(NOMPROG + u" n'a pas été fermé correctement.\n"
-                                  "Tentative de restauration de la session en cours...")
-                            frame.gestion.charger_session(activer_modules=crash)
-                        # En général, ne pas activer automatiquement tous les modules
-                        # de la session précédente, mais seulement ceux demandés.
-                        else:
-                            frame.gestion.charger_session(activer_modules=crash)
-                    except:
-                        print(u"Warning: La session n'a pas pu être restaurée.")
-                        print_error()
-                frame.show()
-                if param.debug:
-                    print('Temps de démarrage: %f s' % (time.time() - t0))
-                app.boucle()
+                        print('Temps de démarrage: %f s' % (time.time() - t0))
+                    app.boucle()
+                sys.stdout = sys.__stdout__
+                sys.stderr = sys.__stderr__
                 sorties.close()
             try:
                 os.remove(path_lock)
             except OSError:
                 print("Warning: impossible de supprimer %s." % repr(path_lock))
             if param._restart:
+                args = [sys.executable, sys.argv[0], '--restaurer']
                 # Nota: execv() a une syntaxe étrange : le nom de la commande lancée
                 # (ie. sys.executable) doit réapparaître au début de la liste des arguments.
-                os.execv(sys.executable, [sys.executable] + sys.argv[:1] + ['--restaurer'])
+                print(u"\n=======================")
+                print(u"Redémarrage en cours...")
+                print(' '.join(args))
+                print(u"=======================\n")
+                os.execv(sys.executable, args)
 
     except Exception: # do *NOT* catch SystemExit ! ("wxgeometrie -h" use it)
         if param.py2exe:
@@ -391,5 +397,7 @@ if getattr(sys, '_launch_geophar', False):
                 details += u"Par ailleurs, impossible de générer le fichier\n'%s'." %log_filename
             msgbox(u"Erreur fatale lors de l'initialisation.", details)
         sys.excepthook(*sys.exc_info())
+        sys.stdout = sys.__stdout__
+        sys.stderr = sys.__stderr__
         sorties.close()
         sys.exit("Erreur fatale lors de l'initialisation.")
