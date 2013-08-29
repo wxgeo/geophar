@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------#######
@@ -47,24 +47,24 @@ from .routines import radian
 ##class Transformation_generique(Objet):
 ##    u"""Une transformation.
 ##
-##    La classe mère de toutes les transformations (usage interne)."""
+##    La classe mÃ¨re de toutes les transformations (usage interne)."""
 ##    def __init__(self, **styles):
 ##        Objet.__init__(self, **styles)
 ##
 ##    def __call__(self, objet):
 ##        if isinstance(objet, Ref):
 ##            if isinstance(objet.__objet__, Point_generique):
-##                # pour garder la référence
+##                # pour garder la rÃ©fÃ©rence
 ##                return self._Point_image(objet, self)
 ##            else:
-##                # dans les autres cas, ce serait assez compliqué de garder la référence...
-##                # TODO: garder (si c'est faisable) la référence dans les autres cas (au moins pour les variables)
-##                # cela éviterait un certain nombre de bugs (par ex., si on modifie le rayon d'un cercle défini par une variable, le rayon du cercle image n'est pas modifié !)
+##                # dans les autres cas, ce serait assez compliquÃ© de garder la rÃ©fÃ©rence...
+##                # TODO: garder (si c'est faisable) la rÃ©fÃ©rence dans les autres cas (au moins pour les variables)
+##                # cela Ã©viterait un certain nombre de bugs (par ex., si on modifie le rayon d'un cercle dÃ©fini par une variable, le rayon du cercle image n'est pas modifiÃ© !)
 ##                return self.__call__(objet.__objet__)
 ##        elif isinstance(objet, Point_generique):
 ##            return self._Point_image(objet, self)
 ##        elif isinstance(objet, Polygone_generique):
-##            # PATCH: problème avec les polygones ayant des sommets déplacables (le sommet image serait déplaçable)
+##            # PATCH: problÃ¨me avec les polygones ayant des sommets dÃ©placables (le sommet image serait dÃ©plaÃ§able)
 ##            return Polygone(*(self(point) for point in objet._Polygone_generique__points))
 ##        elif isinstance(objet, Objet) and not isinstance(objet, (Objet_numerique, Transformation_generique)):
 ##            return objet.__class__(**dict((key,  self(value)) for key, value in objet._iter_arguments))
@@ -77,19 +77,19 @@ from .routines import radian
 class Transformation_generique(Objet):
     u"""Une transformation.
 
-    La classe mère de toutes les transformations (usage interne)."""
+    La classe mÃ¨re de toutes les transformations (usage interne)."""
     def __init__(self, **styles):
         Objet.__init__(self, **styles)
 
     def __call__(self, objet):
         if isinstance(objet, Ref):
             if isinstance(objet.objet, Point_generique):
-                # pour garder la référence
+                # pour garder la rÃ©fÃ©rence
                 return self._Point_image(objet, self)
             else:
-                # dans les autres cas, ce serait assez compliqué de garder la référence...
-                #TODO: Dans l'idéal, il faudrait garder (si c'est faisable) la référence dans les autres cas (au moins pour les variables)
-                # cela éviterait un certain nombre de bugs (par ex., si on modifie le rayon d'un cercle défini par une variable, le rayon du cercle image n'est pas modifié !)
+                # dans les autres cas, ce serait assez compliquÃ© de garder la rÃ©fÃ©rence...
+                #TODO: Dans l'idÃ©al, il faudrait garder (si c'est faisable) la rÃ©fÃ©rence dans les autres cas (au moins pour les variables)
+                # cela Ã©viterait un certain nombre de bugs (par ex., si on modifie le rayon d'un cercle dÃ©fini par une variable, le rayon du cercle image n'est pas modifiÃ© !)
                 return self.__call__(objet.objet)
         elif hasattr(objet, "image_par"):
             return objet.image_par(self)
@@ -100,8 +100,8 @@ class Transformation_generique(Objet):
 class Rotation(Transformation_generique):
     u"""Une rotation.
 
-    Une rotation définie par son centre, et un angle en radian (r), grad (g) ou degré (d).
-    L'unité par défaut est le radian."""
+    Une rotation dÃ©finie par son centre, et un angle en radian (r), grad (g) ou degrÃ© (d).
+    L'unitÃ© par dÃ©faut est le radian."""
 
     _Point_image = Point_rotation
 
@@ -143,7 +143,7 @@ class Rotation(Transformation_generique):
 ##        u"Gestion des alias."
 ##        if unite is None:
 ##            return "r"
-##        if unite == u"°" or unite.startswith("d"):
+##        if unite == u"Â°" or unite.startswith("d"):
 ##            return "d"
 ##        if unite.startswith("g"):
 ##            return "g"
@@ -164,7 +164,7 @@ class Rotation(Transformation_generique):
 class Translation(Transformation_generique):
     u"""Une translation.
 
-    Une translation définie par un vecteur."""
+    Une translation dÃ©finie par un vecteur."""
 
     _Point_image = Point_translation
 
@@ -184,9 +184,9 @@ class Translation(Transformation_generique):
 
 
 class Reflexion(Transformation_generique):
-    u"""Une symétrie axiale.
+    u"""Une symÃ©trie axiale.
 
-    Une symétrie axiale (réflexion) définie par une droite."""
+    Une symÃ©trie axiale (rÃ©flexion) dÃ©finie par une droite."""
 
     _Point_image = Point_reflexion
 
@@ -205,9 +205,9 @@ class Reflexion(Transformation_generique):
 
 
 class Homothetie(Transformation_generique):
-    u"""Une homothétie.
+    u"""Une homothÃ©tie.
 
-    Une homothétie définie par son centre et son rapport."""
+    Une homothÃ©tie dÃ©finie par son centre et son rapport."""
 
     _Point_image = Point_homothetie
 
@@ -229,9 +229,9 @@ class Homothetie(Transformation_generique):
 
 
 class Symetrie_centrale(Homothetie):
-    u"""Une symétrie centrale.
+    u"""Une symÃ©trie centrale.
 
-    Une symétrie centrale définie par un point."""
+    Une symÃ©trie centrale dÃ©finie par un point."""
 
     centre = __centre = Argument("Point_generique", defaut='Point(0, 0)')
 

@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 from __future__ import with_statement
 
@@ -79,20 +79,20 @@ class FlecheGenerique(LigneDecoree):
 
     def _maj(self, lignes):
         self.set_segments(lignes)
-        # Le style de ligne (pointillés, etc.) ne doit pas s'appliquer
-        # aux décorations (pointes de flêches, etc.)
+        # Le style de ligne (pointillÃ©s, etc.) ne doit pas s'appliquer
+        # aux dÃ©corations (pointes de flÃªches, etc.)
         ls = self.get_linestyles()[0]
         self.set_linestyles([ls, '-', '-'])
 
     def _pointe(self, xy, dxdy):
-        a = self.angle*pi/360 # angle/2, puis degrés -> radians
+        a = self.angle*pi/360 # angle/2, puis degrÃ©s -> radians
         taille = self.taille
         #                                    M +
         #                                 C     \
-        # Schéma:         A +--------------+-----+ B    --> direction
+        # SchÃ©ma:         A +--------------+-----+ B    --> direction
         #                                       /
         #                                    N +
-        # On calcule les coordonnées de C, puis par rotation autour de B, celles de M et N.
+        # On calcule les coordonnÃ©es de C, puis par rotation autour de B, celles de M et N.
         xB, yB = self.canvas.coo2pix(*xy)
         dpx, dpy = self.canvas.dcoo2pix(*dxdy)
         alpha = atan2(dpy, dpx)
@@ -110,17 +110,17 @@ class Fleche(FlecheGenerique):
     xy1 = (1, 1)
 
     def __init__(self, canvas, **kw):
-        u"""Une flêche (éventuellement double).
+        u"""Une flÃªche (Ã©ventuellement double).
 
         En plus des styles de matplotlib.collections.LineCollection,
-        les styles suivants sont définis:
+        les styles suivants sont dÃ©finis:
         - taille: la longueur de la pointe (en pixels) ;
-        - double: flêche double ou non ;
-        - position: position (entre 0 et 1) de la pointe sur la flêche.
-          ex: 1 pour l'extrémité finale, 0.5 pour le milieu, 0 pour le début.
-        - angle: l'ouverture de la pointe (en degrés)
-        - xy0: début de la flêche (tuple)
-        - xy1: fin de la flêche (tuple)
+        - double: flÃªche double ou non ;
+        - position: position (entre 0 et 1) de la pointe sur la flÃªche.
+          ex: 1 pour l'extrÃ©mitÃ© finale, 0.5 pour le milieu, 0 pour le dÃ©but.
+        - angle: l'ouverture de la pointe (en degrÃ©s)
+        - xy0: dÃ©but de la flÃªche (tuple)
+        - xy1: fin de la flÃªche (tuple)
         """
         FlecheGenerique.__init__(self, canvas, **kw)
 
@@ -138,16 +138,16 @@ class Fleche(FlecheGenerique):
 
 
 class FlecheCourbe(FlecheGenerique):
-    u"""Une flêche (éventuellement double) en forme d'arc de cercle.
+    u"""Une flÃªche (Ã©ventuellement double) en forme d'arc de cercle.
 
     En plus des styles de matplotlib.collections.LineCollection,
-    les styles suivants sont définis:
+    les styles suivants sont dÃ©finis:
     - taille: la longueur de la pointe (en pixels) ;
-    - double: flêche double ou non ;
-    - position: position (entre 0 et 1) de la pointe sur la flêche.
-      ex: 1 pour l'extrémité finale, 0.5 pour le milieu, 0 pour le début.
-    - angle: l'ouverture de la pointe (en degrés) ;
-    - intervalle: angle de début et de fin de l'arc (radians) ;
+    - double: flÃªche double ou non ;
+    - position: position (entre 0 et 1) de la pointe sur la flÃªche.
+      ex: 1 pour l'extrÃ©mitÃ© finale, 0.5 pour le milieu, 0 pour le dÃ©but.
+    - angle: l'ouverture de la pointe (en degrÃ©s) ;
+    - intervalle: angle de dÃ©but et de fin de l'arc (radians) ;
     - centre: centre du cercle contenant l'arc ;
     - rayon: rayon du cercle contenant l'arc ;
     - sens: orientation de l'arc (1 ou -1).
@@ -193,16 +193,16 @@ class FlecheCourbe(FlecheGenerique):
 
 
 class Codage(LigneDecoree):
-    u'''Objet graphique servant à coder les segments et arcs de même longueur.
+    u'''Objet graphique servant Ã  coder les segments et arcs de mÃªme longueur.
 
-        Paramètres:
+        ParamÃ¨tres:
         * taille: taille du symbole (en pixels).
-        * angle: angle relatif au segment, en degrés, pour les symboles / et X.
-        * position: position du symbole (couple de coordonnées).
+        * angle: angle relatif au segment, en degrÃ©s, pour les symboles / et X.
+        * position: position du symbole (couple de coordonnÃ©es).
         * direction: couple (dx, dy) donnant l'orientation du segment.
-          Ce couple est exprimé en coordonnées (et non en pixels).
-        * marge: si la longueur en pixels correspondant à (dx, dy) est inférieure
-          à la marge + la taille du codage, le codage n'est pas affiché.
+          Ce couple est exprimÃ© en coordonnÃ©es (et non en pixels).
+        * marge: si la longueur en pixels correspondant Ã  (dx, dy) est infÃ©rieure
+          Ã  la marge + la taille du codage, le codage n'est pas affichÃ©.
     '''
     style = '/'
     taille = 10
@@ -232,7 +232,7 @@ class Codage(LigneDecoree):
 
         if style and self.taille:
             if style == 'o':
-                # On vérifie qu'il y a assez de place sur le segment pour afficher le cercle
+                # On vÃ©rifie qu'il y a assez de place sur le segment pour afficher le cercle
                 if self.hyp > self.taille + self.marge:
                     x, y = self.position
                     t = fullrange(0, 2*pi, 2./self.taille)
@@ -250,24 +250,24 @@ class Codage(LigneDecoree):
         return lignes
 
     def _oblique(self, xy, dxdy, n=1, sens=1, angle=None):
-        u'''Retourne les coordonnées de n barres obliques, à la position xy.
+        u'''Retourne les coordonnÃ©es de n barres obliques, Ã  la position xy.
 
-        dxdy définit l'orientation des barres.
-        S'il y a plusieurs barres, elles seront espacées de 1 épaisseur de ligne.
+        dxdy dÃ©finit l'orientation des barres.
+        S'il y a plusieurs barres, elles seront espacÃ©es de 1 Ã©paisseur de ligne.
         '''
-        a = (sens*self.angle*pi/180 if angle is None else angle)# degrés -> radians
+        a = (sens*self.angle*pi/180 if angle is None else angle)# degrÃ©s -> radians
         r = self.taille
         #                              + M
         #                           I /
-        # Schéma:         A +--------+--------+ B    --> direction
+        # SchÃ©ma:         A +--------+--------+ B    --> direction
         #                           /
         #                        N +
-        # On calcule les coordonnées de C, puis par rotation autour de B, celles de M et N.
+        # On calcule les coordonnÃ©es de C, puis par rotation autour de B, celles de M et N.
         dx, dy = dxdy
         lw = self.get_linewidth()[0]
         # S'il n'y a pas assez d'espace sur le segment, on n'affiche pas le codage.
         # TODO: affiner l'algorithme (pour l'instant, on fait comme si les lignes
-        # étaient verticales, et non obliques).
+        # Ã©taient verticales, et non obliques).
         if self.hyp < self.marge + lw*(2*n + 2):
             return []
         alpha = atan2(dy, dx)
@@ -320,17 +320,17 @@ class Angle(Polygon):
             #    |     |
             #    |     |
             #  N +-----+ I     On a donc PM-> + PN-> = PI->
-            #    |             D'où "I = M + N - P"
+            #    |             D'oÃ¹ "I = M + N - P"
             #    |
             M = x0 + .5*r*cos(a), y0 + .5*r*sin(a)
             N = x0 + .5*r*cos(b), y0 + .5*r*sin(b)
             I = M[0] + N[0] - x0, M[1] + N[1] - y0
-            # Pixels -> coordonnées
+            # Pixels -> coordonnÃ©es
             xy.append(self.canvas.pix2coo(*M))
             xy.append(self.canvas.pix2coo(*I))
             xy.append(self.canvas.pix2coo(*N))
         else:
-            # cost et sint sont mis en cache pour être réutilisés par CodageAngle()
+            # cost et sint sont mis en cache pour Ãªtre rÃ©utilisÃ©s par CodageAngle()
             self.cost = ncos(t)
             self.sint = nsin(t)
             xy.extend(self.arc_angle(i=max(0, self.style.count(')') - 1)))
@@ -347,10 +347,10 @@ class Angle(Polygon):
 
 
 class CodageAngle(Codage):
-    u'''Objet graphique servant à coder des angles de même mesure.
+    u'''Objet graphique servant Ã  coder des angles de mÃªme mesure.
 
-    L'objet CodageAngle doit être associé à un objet graphique Angle préexistant.
-    Il en partage les propriétés.
+    L'objet CodageAngle doit Ãªtre associÃ© Ã  un objet graphique Angle prÃ©existant.
+    Il en partage les propriÃ©tÃ©s.
     '''
     def __init__(self, canvas, angle_associe, **kw):
         self.angle_associe = angle_associe
@@ -383,10 +383,10 @@ class CodageAngle(Codage):
 
 
 class DecorationTexte(FancyBboxPatch):
-    u"""Encadrement et fond associé à un texte.
+    u"""Encadrement et fond associÃ© Ã  un texte.
 
     En cas de zoom sur le texte, la taille du texte change,
-    et la taille du cadre est alors automatiquement recalculée
+    et la taille du cadre est alors automatiquement recalculÃ©e
     (ce qui n'est pas le cas pour Polygon ou FancyBboxPatch).
     """
     def __init__(self, canvas, texte_associe=None, **kw):
@@ -423,8 +423,8 @@ class DecorationTexte(FancyBboxPatch):
         box = can.txt_box(txt)
         pw, ph = box.width, box.height
         # Bizarrement, `px, py = box.min` ne fonctionne pas lors du
-        # premier affichage (juste après la création du texte).
-        # On réimplémenter la détection du coin en bas à gauche
+        # premier affichage (juste aprÃ¨s la crÃ©ation du texte).
+        # On rÃ©implÃ©menter la dÃ©tection du coin en bas Ã  gauche
         # selon l'alignement du texte.
         px, py = can.coo2pix(*txt.get_position())
         va = txt.get_va()
@@ -495,13 +495,13 @@ class ZoomArtistes(object):
                             elif isinstance(artiste, LigneDecoree):
                                 taille = self.taille[ID] = artiste.taille
                                 artiste.set(taille=self.zoom_ligne*taille)
-            # Réglages à effectuer après les autres
+            # RÃ©glages Ã  effectuer aprÃ¨s les autres
             for artiste in self.artistes:
                 if artiste._visible:
                     if self.regler_textes:
                         if isinstance(artiste, DecorationTexte):
-                            # L'objet DécorationTexte doit être adapté
-                            # **après** l'objet Text correspondant.
+                            # L'objet DÃ©corationTexte doit Ãªtre adaptÃ©
+                            # **aprÃ¨s** l'objet Text correspondant.
                             artiste.set(scale=self.zoom_texte)
         return self.artistes
 
@@ -527,7 +527,7 @@ class ZoomArtistes(object):
                                 artiste._maj_data()
                             elif isinstance(artiste, LigneDecoree):
                                 artiste.set(taille=self.taille[ID])
-            # Réglages à effectuer après les autres
+            # RÃ©glages Ã  effectuer aprÃ¨s les autres
             for artiste in self.artistes:
                 if artiste._visible:
                     if self.regler_textes:
@@ -541,7 +541,7 @@ class CollecterArtistes(object):
 
     def __enter__(self):
         m = self.moteur_graphique
-        # On reréférence tous les artistes.
+        # On rerÃ©fÃ©rence tous les artistes.
         self.dict_artistes = m._effacer_artistes()
         m.canvas._affiche_module()
         m._dessine_axes()
@@ -550,7 +550,7 @@ class CollecterArtistes(object):
 
     def __exit__(self, type, value, traceback):
         m = self.moteur_graphique
-        # On remet la liste des artistes dans son état d'origine (vide en général)
+        # On remet la liste des artistes dans son Ã©tat d'origine (vide en gÃ©nÃ©ral)
         m._restaurer_artistes(self.dict_artistes)
 
 
@@ -578,7 +578,7 @@ class AjusterEchelle(object):
         else:
             x, y = self.taille
         if self.keep_ratio:
-            # On réduit l'image pour préserver le ratio
+            # On rÃ©duit l'image pour prÃ©server le ratio
             x_, y_ = self.taille_precedente
             assert x_ and y_, "Image de dimensions nulles !"
             xscale = x/x_
@@ -594,7 +594,7 @@ class AjusterEchelle(object):
         y /= 2.54
         m.canvas.figure.set_size_inches(x, y)
         if self.taille is None:
-            # on redessine à cause du changement d'échelle (le ratio a pu être modifié)
+            # on redessine Ã  cause du changement d'Ã©chelle (le ratio a pu Ãªtre modifiÃ©)
             if m.canvas.dimensions is None:
                 m.canvas._dimensions = 850*xe, 850*h/l*ye
             else:
@@ -615,7 +615,7 @@ class AjusterEchelle(object):
         m.canvas._dimensions = None
         m.canvas.feuille_actuelle._rafraichir_figures()
         m.dessiner(rafraichir_axes = True)
-        # On remet la figure dans son état d'origine
+        # On remet la figure dans son Ã©tat d'origine
         m.canvas.figure.set_size_inches(self.taille_precedente)
 
 
@@ -626,7 +626,7 @@ class Moteur_graphique(object):
         self._dernier_objet_deplace = None
         self.axes = self.canvas.axes
         self._effacer_artistes()
-        # Buffer contenant la dernière image.
+        # Buffer contenant la derniÃ¨re image.
         self._dernier_dessin = None
 
 #   +---------------------+
@@ -649,9 +649,9 @@ class Moteur_graphique(object):
 
 
     def ajouter(self, artiste):
-        u"""Ajoute un artiste (objet graphique de matplotlib) à dessiner.
+        u"""Ajoute un artiste (objet graphique de matplotlib) Ã  dessiner.
 
-        NB: 'artiste' peut aussi être une liste d'artistes, ou une liste de listes..."""
+        NB: 'artiste' peut aussi Ãªtre une liste d'artistes, ou une liste de listes..."""
         if isinstance(artiste, (list, tuple)):
             for elt in artiste:
                 self.ajouter(elt)
@@ -659,7 +659,7 @@ class Moteur_graphique(object):
             self._ajouter_objet(artiste)
 
     def _temp_warning_color(self, kw):
-        u"À supprimer après quelques temps (01/05/2011)."
+        u"Ã€ supprimer aprÃ¨s quelques temps (01/05/2011)."
         if 'couleur' in kw:
             kw['color'] = kw.pop('couleur')
             warning("Utiliser desormais 'color' au lieu de 'couleur'.", level=1)
@@ -714,8 +714,8 @@ class Moteur_graphique(object):
     def arc(self, x, y, vecteur, **kw):
         u"""Affiche un petit demi-cercle d'orientation choisie.
 
-        Par ex, pour le vecteur (1,0), ie. ->, l'arc est orienté comme ceci: (
-        Pour le vecteur (-1,0), ie. <-, l'arc est orienté comme ceci: ).
+        Par ex, pour le vecteur (1,0), ie. ->, l'arc est orientÃ© comme ceci: (
+        Pour le vecteur (-1,0), ie. <-, l'arc est orientÃ© comme ceci: ).
         On travaille sur les pixels pour faire de la trigonometrie plus simplement
         (le repere devient ainsi orthonorme)"""
         self._temp_warning_color(kw)
@@ -729,7 +729,7 @@ class Moteur_graphique(object):
             angle = atan(vecteur[1]/vecteur[0])
             if vecteur[0] < 0:
                 angle += pi
-        # donne l'angle d'incidence à l'extrémité
+        # donne l'angle d'incidence Ã  l'extrÃ©mitÃ©
         t = arange(angle - pi/2, angle + pi/2, 0.05)
         R = self.canvas.taille["("]*self.zoom_ligne
 
@@ -755,8 +755,8 @@ class Moteur_graphique(object):
         kw.setdefault('markersize', 2*self.canvas.taille["o"])
         kw.setdefault('marker', 'o')
         return self.ligne([x], [y], **kw)
-        # Le zorder doit être supérieur à celui d'une courbe (2 par défaut),
-        # et la largeur du trait doit être celle d'une courbe (1 par défaut).
+        # Le zorder doit Ãªtre supÃ©rieur Ã  celui d'une courbe (2 par dÃ©faut),
+        # et la largeur du trait doit Ãªtre celle d'une courbe (1 par dÃ©faut).
 
     def ajouter_point(self, x, y, plein=True, **kw):
         return self._ajouter_objet(self.point(x, y, plein, **kw))
@@ -766,10 +766,10 @@ class Moteur_graphique(object):
 #        kw.setdefault(mutation_scale=25)
 #        arrow = FancyArrowPatch((x0, y0), (x1, y1), **kw)
 #        # cf. matplotlib.patches.ArrowStyle.get_styles() pour les
-#        # styles de flêches.
+#        # styles de flÃªches.
 #        # Changer coord. avec FancyArrowPatch.set_position().
-#        # FIXME: il n'y a aucun moyen de changer la position de la flêche
-#        # sur la ligne (au milieu, au début, au bout...)
+#        # FIXME: il n'y a aucun moyen de changer la position de la flÃªche
+#        # sur la ligne (au milieu, au dÃ©but, au bout...)
 #        return arrow
 
     def fleche(self, xy0=(0, 0), xy1=(1, 1), **kw):
@@ -838,20 +838,20 @@ class Moteur_graphique(object):
             dict_artistes = self._effacer_artistes()
             self.canvas._affiche_module()
             self._dessine_axes()
-            # Les axes et légendes de matplotlib ne conviennent pas, on les désactive.
+            # Les axes et lÃ©gendes de matplotlib ne conviennent pas, on les dÃ©sactive.
             self.axes.legend_ = None
             self.axes.axison = False
-            # Synchronisation de la fenêtre de matplotlib avec celle de la feuille
+            # Synchronisation de la fenÃªtre de matplotlib avec celle de la feuille
             self._regler_fenetre()
-            # Attention, la synchronisation de la fenêtre doit avoir lieu :
-            # - APRÈS self.canvas._affiche_module(), qui peut encore modifier la fenêtre
+            # Attention, la synchronisation de la fenÃªtre doit avoir lieu :
+            # - APRÃˆS self.canvas._affiche_module(), qui peut encore modifier la fenÃªtre
             # - avant FigureCanvasAgg.draw(), qui dessine la figure
             with ZoomArtistes(self.axes, self.zoom_texte, self.zoom_ligne):
                 FigureCanvasAgg.draw(self.canvas)
 ##            self.canvas.draw(repaint = False)
 ##            self._dessiner_artistes()
             self._mise_en_cache_axes = self._en_cache()
-            # _artistes_repere sert pour déboguer. Cf. '.infos()'
+            # _artistes_repere sert pour dÃ©boguer. Cf. '.infos()'
             self._artistes_repere = self._restaurer_artistes(dict_artistes)
         else:
             self._restaurer(self._mise_en_cache_axes)
@@ -863,33 +863,33 @@ class Moteur_graphique(object):
 
 
     def dessiner(self, dessin_temporaire = False, rafraichir_axes = False):
-        # Affichage bloqué
+        # Affichage bloquÃ©
         if self.canvas.affichage_gele:
             return
 ##        print 'rafraichissement'
 
-        # Quand un objet est déplacé, on optimise en ne redessinant
-        # que l'objet, et ce qui en dépend.
+        # Quand un objet est dÃ©placÃ©, on optimise en ne redessinant
+        # que l'objet, et ce qui en dÃ©pend.
         objet_deplace = self.canvas.feuille_actuelle._objet_deplace
 
         if dessin_temporaire:
             self._restaurer(self._dernier_dessin)
         else:
             if objet_deplace is None or rafraichir_axes:
-                # Cas par défaut : on dessine tout.
+                # Cas par dÃ©faut : on dessine tout.
                 self._creer_arriere_plan(rafraichir_axes)
                 # Le contenu de `self.canvas.feuille_actuelle.lister_figures()`
-                # peut être mofifié par `self._creer_arriere_plan(rafraichir_axes)`.
+                # peut Ãªtre mofifiÃ© par `self._creer_arriere_plan(rafraichir_axes)`.
             self._objets_fixes, self._objets_mobiles = self.canvas.feuille_actuelle.lister_figures()
             if objet_deplace is None or rafraichir_axes:
-                # Cas par défaut : on dessine tout.
+                # Cas par dÃ©faut : on dessine tout.
                 self._ajouter_objets(self._objets_fixes)
             elif objet_deplace is self._dernier_objet_deplace:
-                # Un cache spécifique existe déjà : on l'utilise.
+                # Un cache spÃ©cifique existe dÃ©jÃ  : on l'utilise.
 ##                print "Optimisation."
                 self._restaurer(self._mise_en_cache_objets_fixes)
             else:
-                # On génère un cache (spécifique à l'objet déplacé).
+                # On gÃ©nÃ¨re un cache (spÃ©cifique Ã  l'objet dÃ©placÃ©).
                 self._creer_arriere_plan(rafraichir_axes)
                 dict_artistes = self._effacer_artistes()
                 self._ajouter_objets(self._objets_fixes)
@@ -897,30 +897,30 @@ class Moteur_graphique(object):
                 self._mise_en_cache_objets_fixes = self._en_cache()
                 self._restaurer_artistes(dict_artistes)
             self._ajouter_objets(self._objets_mobiles)
-            # Résumé du bloc de code précédent :
-            # Les objets fixes ne doivent pas être redessinés,
-            # mais restitués à partir d'un cache.
-            # On génère le cache la première fois que objet_deplace is not None
+            # RÃ©sumÃ© du bloc de code prÃ©cÃ©dent :
+            # Les objets fixes ne doivent pas Ãªtre redessinÃ©s,
+            # mais restituÃ©s Ã  partir d'un cache.
+            # On gÃ©nÃ¨re le cache la premiÃ¨re fois que objet_deplace is not None
             # et on utilise le cache les autres fois si objet_deplace
-            # correspond toujours au même objet.
+            # correspond toujours au mÃªme objet.
 
         # On dessine dans le buffer
         self._dessiner_artistes()
-        # Affichage proprement dit (copie du buffer à l'écran)
+        # Affichage proprement dit (copie du buffer Ã  l'Ã©cran)
         if not self.canvas.affichage_gele_en_apparence:
             self.canvas.blit(self.axes.bbox)
-        # Garde en mémoire l'affichage pour éviter de redessiner la fenêtre
-        # dans certains cas (fenêtre masquée, etc.)
+        # Garde en mÃ©moire l'affichage pour Ã©viter de redessiner la fenÃªtre
+        # dans certains cas (fenÃªtre masquÃ©e, etc.)
         if not dessin_temporaire:
             self._dernier_dessin = self._en_cache()
         self._dernier_objet_deplace = objet_deplace
         self.canvas.feuille_actuelle._objet_deplace = None
-        # _artistes_dessin sert pour le débogage
+        # _artistes_dessin sert pour le dÃ©bogage
         self._artistes_dessin = self._effacer_artistes()
 
 
     def _convertir_zone(self, zone):
-        u"Conversion de la zone: coordonnées -> inches"
+        u"Conversion de la zone: coordonnÃ©es -> inches"
         x0, x1, y0, y1 = zone
         l, h = self.canvas.figure.get_size_inches()
         fenetre = self.canvas.fenetre
@@ -941,9 +941,9 @@ class Moteur_graphique(object):
     def exporter(self, fichier, format=None, dpi=None, zone=None, echelle=None, taille=None, keep_ratio=False):
         u"Exporter la figure."
         with self.canvas.geler_affichage(seulement_en_apparence=True, actualiser=False):
-            # (Nota: le réglage de la fenêtre ne sert en fait qu'en l'absence de GUI.)
+            # (Nota: le rÃ©glage de la fenÃªtre ne sert en fait qu'en l'absence de GUI.)
             self._regler_fenetre()
-            # NB: ajuster l'échelle *avant* de convertir la zone
+            # NB: ajuster l'Ã©chelle *avant* de convertir la zone
             with AjusterEchelle(self, echelle, taille, keep_ratio):
                 if zone:
                     zone = self._convertir_zone(zone)
@@ -957,7 +957,7 @@ class Moteur_graphique(object):
         conv_tikz = ConvertisseurTikz(cs = chiffres_significatifs)
 
         code = '\\begin{tikzpicture}\n'
-        #TODO: régler fenêtre d'affichage
+        #TODO: rÃ©gler fenÃªtre d'affichage
         with CollecterArtistes(self):
             code += '\n'.join(conv_tikz.convertir(artiste) for artiste in self.axes.artists)
         code += '\n\\end{tikzpicture}'
@@ -991,7 +991,7 @@ class Moteur_graphique(object):
 
 
     def _restaurer_artistes(self, dictionnaire):
-        u"Restaure les artistes précédemment supprimés."
+        u"Restaure les artistes prÃ©cÃ©demment supprimÃ©s."
         dico = self._dico_artistes()
         self.axes.__dict__.update(dictionnaire)
         return dico
@@ -1018,7 +1018,7 @@ class Moteur_graphique(object):
 
 
     def _dessine_axe(self, num = 0, nbr_axes = 1):
-        u"Dessine l'axe des abscisses (num = 0) ou des ordonnées (num = 1)."
+        u"Dessine l'axe des abscisses (num = 0) ou des ordonnÃ©es (num = 1)."
 
         #un = nbr_axes == 1              # un seul axe
         #x = num == 0; y = not x         # axe des abscisses / des ordonnees
@@ -1051,7 +1051,7 @@ class Moteur_graphique(object):
 
         ox, oy = self.canvas.origine_axes
         ux, uy = self.canvas.gradu
-        # TODO: à étendre à un repère non orthogonal
+        # TODO: Ã  Ã©tendre Ã  un repÃ¨re non orthogonal
         kx, ky = self.canvas.dpix2coo(1, -1)
 
         x, y = self.canvas.coo2pix(f(ox + ux, ox), f(oy, oy + uy))
@@ -1066,7 +1066,7 @@ class Moteur_graphique(object):
             s = str(val)
             if s.endswith('.0'):
                 s = s[:-2]
-                #TODO: remplacer le point par une virgule (selon les paramètres actifs)
+                #TODO: remplacer le point par une virgule (selon les paramÃ¨tres actifs)
             return s
 
         if nbr_axes == 1:                   # un seul axe
@@ -1126,7 +1126,7 @@ class Moteur_graphique(object):
 
 
     def _quadriller(self, hauteur = 3, pas = (None, None), style = None, epaisseur = 1, couleur = "k"):
-        u"""Crée des graduations ou un quadrillage (si hauteur = None).
+        u"""CrÃ©e des graduations ou un quadrillage (si hauteur = None).
         Si pas[0] = 0 (respectivement, pas[1] = 0), les graduations seront
         uniquement horizontales (respectivement verticales)."""
 
@@ -1206,13 +1206,13 @@ class Moteur_graphique(object):
 
 
 #   +---------------------+
-#   |  Aides au débogage  |
+#   |  Aides au dÃ©bogage  |
 #   +---------------------+
 
 
     def _info_artiste(self, artiste):
-        u"""Retourne des informations permettant éventuellement de
-        repérer visuellement l'artiste."""
+        u"""Retourne des informations permettant Ã©ventuellement de
+        repÃ©rer visuellement l'artiste."""
         infos = {}
         infos['parent'] = getattr(getattr(artiste, '_cree_par', None), 'info', None)
         if isinstance(artiste, Text):
@@ -1236,7 +1236,7 @@ class Moteur_graphique(object):
         return artiste.__class__.__name__ + ' (' + str(id(artiste)) + '):\n' + infos_as_str
 
     def infos(self):
-        u"Informations utiles pour le débogage."
+        u"Informations utiles pour le dÃ©bogage."
         print "---------------"
         print("+ Repere")
         for rubrique in self._artistes_repere:
@@ -1261,8 +1261,8 @@ class Moteur_graphique(object):
                     print '  * ' + self._info_artiste(artiste)
         print "---------------"
 
-    # TESTS pour débogage
-    # TODO: avoir une image de référence pour comparer
+    # TESTS pour dÃ©bogage
+    # TODO: avoir une image de rÃ©fÃ©rence pour comparer
 
     def _test(self):
         u"""Test 1.
@@ -1291,9 +1291,9 @@ class Moteur_graphique(object):
         self.canvas.draw()
 
     def _test3(self):
-        u"""Test les flêches de matplotlib.
+        u"""Test les flÃªches de matplotlib.
 
-        Une flêche verte, et une flêche double rouge, croisées.
+        Une flÃªche verte, et une flÃªche double rouge, croisÃ©es.
         """
         self.canvas.fenetre = 0, 1, 0, 1
         #self.axes.viewLim.set_points(array([[0, 0], [1, 1]]))
@@ -1310,11 +1310,11 @@ class Moteur_graphique(object):
         self.canvas.draw()
 
     def _test4(self):
-        u"""Teste la rapidité du moteur d'affichage.
+        u"""Teste la rapiditÃ© du moteur d'affichage.
 
-        Un point rouge est déposé partout où la souris passe.
+        Un point rouge est dÃ©posÃ© partout oÃ¹ la souris passe.
         Pour que le teste soit fiable, il faut qu'il n'y ait aucun objet
-        (à part éventuellement le quadrillage).
+        (Ã  part Ã©ventuellement le quadrillage).
         """
         def mouseMoveEvent(self, event, m=self, color=[100, 0, 0]):
             m._restaurer(m._dernier_dessin)
@@ -1334,29 +1334,29 @@ class Moteur_graphique(object):
                 color[0] += 1
             m.ajouter_point(x, y, color=tuple(n/100. for n in color))
             m._dessiner_artistes()
-            # Affichage proprement dit (copie du buffer à l'écran)
+            # Affichage proprement dit (copie du buffer Ã  l'Ã©cran)
             self.blit(m.axes.bbox)
-            # Garde en mémoire l'affichage pour éviter de redessiner la fenêtre
-            # dans certains cas (fenêtre masquée, etc.)
+            # Garde en mÃ©moire l'affichage pour Ã©viter de redessiner la fenÃªtre
+            # dans certains cas (fenÃªtre masquÃ©e, etc.)
             m._dernier_dessin = m._en_cache()
             m._effacer_artistes()
         self.canvas.__class__.mouseMoveEvent = mouseMoveEvent
-        print(u"Warning: Redémarrer l'application pour quitter le test.")
+        print(u"Warning: RedÃ©marrer l'application pour quitter le test.")
 
 
 class ConvertisseurBase(object):
-    u"""Classe générique dont dérivent tous les convertisseurs d'objets matplotlib."""
+    u"""Classe gÃ©nÃ©rique dont dÃ©rivent tous les convertisseurs d'objets matplotlib."""
 
 
     def convertir(self, obj, chiffres_significatifs = None):
-        u"Appelle la méthode spécifique à l'objet matplotlib."
+        u"Appelle la mÃ©thode spÃ©cifique Ã  l'objet matplotlib."
         return getattr(self, obj.__class__.__name__)(obj)
 
 
 class ConvertisseurTikz(ConvertisseurBase):
     u"""Convertit un objet matplotlib en instruction Tikz.
 
-    'cs': nombre de chiffres significatifs à afficher."""
+    'cs': nombre de chiffres significatifs Ã  afficher."""
 
     def __init__(self, fenetre, resolution = 1000):
         xmin, xmax, ymin, ymax = fenetre

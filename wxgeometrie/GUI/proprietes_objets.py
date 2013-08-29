@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 from __future__ import with_statement
 
@@ -51,7 +51,7 @@ class ProprietesAffichage(QWidget):
         self.objets = parent.objets
         self.sizer = QVBoxLayout()
 
-        self.changements = {} # ce dictionnaire contiendra tous les styles modifiés
+        self.changements = {} # ce dictionnaire contiendra tous les styles modifiÃ©s
         encadre = QHBoxLayout()
 
         if not self.islabel:
@@ -103,14 +103,14 @@ class ProprietesAffichage(QWidget):
 
         hb = QHBoxLayout()
         styles_possibles = getattr(param, "styles_de_%s" % objets[0].style("categorie"), [])
-        # On ne peut régler les styles simultanément que pour des objets de même catégorie.
+        # On ne peut rÃ©gler les styles simultanÃ©ment que pour des objets de mÃªme catÃ©gorie.
         if self.add_combo_box(hb, 'style', u"Style de l'objet : ", styles_possibles,
                               verifier_categorie=True):
             encadre2.addLayout(hb)
 
         hb = QHBoxLayout()
         types_de_hachures = getattr(param, "types_de_hachures", [])
-        if self.add_combo_box(hb, 'hachures', u"Style des hâchures : ", types_de_hachures):
+        if self.add_combo_box(hb, 'hachures', u"Style des hÃ¢chures : ", types_de_hachures):
             encadre2.addLayout(hb)
 
         hb = QHBoxLayout()
@@ -124,7 +124,7 @@ class ProprietesAffichage(QWidget):
             encadre2.addLayout(hb)
 
         hb = QHBoxLayout()
-        if self.add_spin_box(hb, 'epaisseur', u'Épaisseur : ', .1, 1000, .5, ' px'):
+        if self.add_spin_box(hb, 'epaisseur', u'Ã‰paisseur : ', .1, 1000, .5, ' px'):
             encadre2.addLayout(hb)
 
         hb = QHBoxLayout()
@@ -133,21 +133,21 @@ class ProprietesAffichage(QWidget):
             encadre2.addLayout(hb)
 
         hb = QHBoxLayout()
-        if self.add_spin_box(hb, 'position', u"Position de la flêche : ", 0, 100, 5, coeff=100):
+        if self.add_spin_box(hb, 'position', u"Position de la flÃªche : ", 0, 100, 5, coeff=100):
             #~ hb.addStretch()
             encadre2.addLayout(hb)
 
         hb = QHBoxLayout()
         if self.add_spin_box(hb, 'angle', u"Angle : ", -180, 180,
-                             suffixe=u'°', wrapping=True, special_value='auto'):
+                             suffixe=u'Â°', wrapping=True, special_value='auto'):
             #~ hb.addStretch()
             encadre2.addLayout(hb)
 
-        self.add_checkbox(encadre, 'double_fleche', u"Flêche double")
+        self.add_checkbox(encadre, 'double_fleche', u"FlÃªche double")
 
         hb = QHBoxLayout()
         codages_possibles = getattr(param, "codage_des_%s" % objets[0].style("categorie"), [])
-        # On ne peut régler les codages simultanément que pour des objets de même catégorie.
+        # On ne peut rÃ©gler les codages simultanÃ©ment que pour des objets de mÃªme catÃ©gorie.
         if self.add_combo_box(hb, 'codage', 'Codage : ', codages_possibles,
                               verifier_categorie=True):
             encadre2.addLayout(hb)
@@ -162,16 +162,16 @@ class ProprietesAffichage(QWidget):
             #  FOND
             #  ====
 
-            # Réglage de l'opacité du fond
+            # RÃ©glage de l'opacitÃ© du fond
             # ----------------------------
             hb2 = QHBoxLayout()
-            widgets = self.add_spin_box(hb2, 'alpha_fond', u'Opacité : ', 0, 100, 5, '%', coeff=100)
+            widgets = self.add_spin_box(hb2, 'alpha_fond', u'OpacitÃ© : ', 0, 100, 5, '%', coeff=100)
 
-            # Réglage de la couleur du fond
+            # RÃ©glage de la couleur du fond
             # -----------------------------
             widgets.extend(self.add_color_selecter(hb2, 'couleur_fond', 'Couleur : '))
 
-            # Activation/désactivation du fond
+            # Activation/dÃ©sactivation du fond
             # --------------------------------
             hb1 = QHBoxLayout()
             self.add_checkbox(hb1, 'fond', 'Fond', fils=widgets)
@@ -182,20 +182,20 @@ class ProprietesAffichage(QWidget):
             #  CADRE
             #  =====
 
-            # Réglage de l'épaisseur du cadre
+            # RÃ©glage de l'Ã©paisseur du cadre
             # -------------------------------
             hb2 = QHBoxLayout()
-            widgets = self.add_spin_box(hb2, 'epaisseur_cadre', u'Épaisseur : ', 0, 100, 0.5, ' px')
+            widgets = self.add_spin_box(hb2, 'epaisseur_cadre', u'Ã‰paisseur : ', 0, 100, 0.5, ' px')
 
-            # Réglage de la couleur du cadre
+            # RÃ©glage de la couleur du cadre
             # ------------------------------
             widgets.extend(self.add_color_selecter(hb2, 'couleur_cadre', 'Couleur : '))
 
-            # Réglage du style du cadre
+            # RÃ©glage du style du cadre
             # -------------------------
             widgets.extend(self.add_combo_box(hb2, 'style_cadre', 'Style : ', param.styles_de_lignes))
 
-            # Activation/désactivation du cadre
+            # Activation/dÃ©sactivation du cadre
             # ---------------------------------
             hb1 = QHBoxLayout()
             self.add_checkbox(hb1, 'cadre', 'Cadre', fils=widgets)
@@ -288,7 +288,7 @@ class ProprietesAffichage(QWidget):
                      step=1, suffixe=None, coeff=1, wrapping=False, special_value=None):
         u"""Ajouter un widget QSpinBox.
         """
-        assert special_value != ' ' # Réservé au cas où les objets ont des valeurs différentes.
+        assert special_value != ' ' # RÃ©servÃ© au cas oÃ¹ les objets ont des valeurs diffÃ©rentes.
         objets = [objet for objet in self.objets if objet.style(propriete) is not None]
         if not objets:
             return []
@@ -314,8 +314,8 @@ class ProprietesAffichage(QWidget):
             else:
                 widget.setValue(coeff*val)
         else:
-            # Lorsque tous les objets sélectionnés n'ont pas la même valeur
-            # pour ce paramètre, on affiche ' '.
+            # Lorsque tous les objets sÃ©lectionnÃ©s n'ont pas la mÃªme valeur
+            # pour ce paramÃ¨tre, on affiche ' '.
             widget.setMinimum(min_ - step)
             widget.setSpecialValueText(' ')
             widget.setValue(min_ - step)
@@ -331,10 +331,10 @@ class ProprietesAffichage(QWidget):
             print("pas d'objets... (%s)" % propriete)
             return []
 
-        # On ne peut régler simultanément certains styles que pour des objets de même catégorie.
+        # On ne peut rÃ©gler simultanÃ©ment certains styles que pour des objets de mÃªme catÃ©gorie.
         categorie = objets[0].style('categorie')
         if verifier_categorie and any(objet.style("categorie") != categorie for objet in objets):
-            print(u"Objets hétérogènes: " + propriete)
+            print(u"Objets hÃ©tÃ©rogÃ¨nes: " + propriete)
             return []
 
         label = QLabel(titre)
@@ -346,7 +346,7 @@ class ProprietesAffichage(QWidget):
 
         val = objets[0].style(propriete)
         if val in liste and all(objet.style(propriete) == val for objet in objets):
-            # On sélectionne la valeur actuelle du paramètre.
+            # On sÃ©lectionne la valeur actuelle du paramÃ¨tre.
             widget.setCurrentIndex(liste.index(val))
         layout.addWidget(widget)
         layout.addStretch()
@@ -360,8 +360,8 @@ class ProprietesAffichage(QWidget):
         self.changements["label"] = self.etiquette.text()
 
     def checked(self, state, propriete, fils):
-        # Bug avec Qt 4.8.1 - En cochant la case la première fois, on obtient
-        # Qt.PartiallyChecked, et non Qt.Checked. Si ensuite, on décoche et on
+        # Bug avec Qt 4.8.1 - En cochant la case la premiÃ¨re fois, on obtient
+        # Qt.PartiallyChecked, et non Qt.Checked. Si ensuite, on dÃ©coche et on
         # recoche, on obtient bien Qt.Checked.
         self.changements[propriete] = (state != Qt.Unchecked)
         for widget in fils:
@@ -377,10 +377,10 @@ class ProprietesAffichage(QWidget):
         special_value = widget.specialValueText()
         if value == widget.minimum() and special_value:
             if special_value == ' ':
-                # ' ' est affiché initialement lorsque tous les objets sélectionnés
-                # n'ont pas la même valeur pour ce paramètre.
-                # L'utilisateur peut remettre la valeur à ' ' manuellement
-                # s'il ne souhaite plus modifier ce paramètre.
+                # ' ' est affichÃ© initialement lorsque tous les objets sÃ©lectionnÃ©s
+                # n'ont pas la mÃªme valeur pour ce paramÃ¨tre.
+                # L'utilisateur peut remettre la valeur Ã  ' ' manuellement
+                # s'il ne souhaite plus modifier ce paramÃ¨tre.
                 del self.changements[propriete]
             else:
                 self.changements[propriete] = special_value
@@ -430,10 +430,10 @@ class ProprietesAffichage(QWidget):
 
     def EvtAnnuler(self):
         # Ce qui suit corrige un genre de bug bizarre de wx:
-        # quand une fenêtre de sélection de couleur a été affichée,
-        # la fenêtre principale passe au second plan à la fermeture de la fenêtre de propriétés ?!?
-        # (ce qui est très désagréable dès qu'un dossier est ouvert dans l'explorateur, par exemple !)
-        # -> à supprimer avec Qt ?
+        # quand une fenÃªtre de sÃ©lection de couleur a Ã©tÃ© affichÃ©e,
+        # la fenÃªtre principale passe au second plan Ã  la fermeture de la fenÃªtre de propriÃ©tÃ©s ?!?
+        # (ce qui est trÃ¨s dÃ©sagrÃ©able dÃ¨s qu'un dossier est ouvert dans l'explorateur, par exemple !)
+        # -> Ã  supprimer avec Qt ?
         self.parent.parent.fenetre_principale.raise_()
         self.parent.parent.close() # fermeture de la frame
 
@@ -461,12 +461,12 @@ class UpdatableLineEdit(QLineEdit):
             if isinstance(valeur, (str, unicode)):
                 return  valeur
             elif valeur is None:
-                return u"Valeur non définie."
+                return u"Valeur non dÃ©finie."
             elif hasattr(valeur, '__iter__'):
                 return " ; ".join(self.formater(elt) for elt in valeur)
             return nice_display(valeur)
         else:
-            return u"L'objet n'est pas défini."
+            return u"L'objet n'est pas dÃ©fini."
 
     def actualiser(self):
         self.setText(self.formater(getattr(self.parent.objet, self.attribut)))
@@ -491,10 +491,10 @@ class ProprietesInfos(QWidget):
             try:
                 self.ajouter(infos, propriete)
             except:
-                debug(u"Erreur lors de la lecture de la propriété '%s' de l'objet %s." %(propriete, self.objet.nom))
+                debug(u"Erreur lors de la lecture de la propriÃ©tÃ© '%s' de l'objet %s." %(propriete, self.objet.nom))
                 print_error()
 
-        self.ajouter(infos, "equation_formatee", u"Equation cartésienne")
+        self.ajouter(infos, "equation_formatee", u"Equation cartÃ©sienne")
 
 
         if self.textes:
@@ -506,7 +506,7 @@ class ProprietesInfos(QWidget):
             self.sizer.addStretch()
             self.sizer.addWidget(actualiser)
         else:
-            self.sizer.addWidget(QLabel(str(len(self.objets)) + u" objets sélectionnés."))
+            self.sizer.addWidget(QLabel(str(len(self.objets)) + u" objets sÃ©lectionnÃ©s."))
 
         self.setLayout(self.sizer)
         ##self.parent.parent.dim2 = self.sizer.CalcMin().Get()
@@ -604,7 +604,7 @@ class OngletsProprietes(QTabWidget):
         self.infos = ProprietesInfos(self)
         self.addTab(self.infos, u"Informations")
         self.avance = ProprietesAvance(self)
-        self.addTab(self.avance, u"Avancé")
+        self.addTab(self.avance, u"AvancÃ©")
 
 
 
@@ -613,7 +613,7 @@ class OngletsProprietes(QTabWidget):
 
 class Proprietes(QDialog):
     def __init__(self, parent, objets, islabel = False):
-        u"Le paramètre 'label' indique si l'objet à éditer est un label"
+        u"Le paramÃ¨tre 'label' indique si l'objet Ã  Ã©diter est un label"
         print "OBJETS:"
         print objets
         print unicode(objets[0])
@@ -637,9 +637,9 @@ class Proprietes(QDialog):
                 titre = objets[0].titre_complet("du", False)
             else:
                 titre = u"des objets"
-#        wx.MiniFrame.__init__(self, parent, -1, u"Propriétés " + titre, style=wx.DEFAULT_FRAME_STYLE | wx.TINY_CAPTION_HORIZ)
+#        wx.MiniFrame.__init__(self, parent, -1, u"PropriÃ©tÃ©s " + titre, style=wx.DEFAULT_FRAME_STYLE | wx.TINY_CAPTION_HORIZ)
         QDialog.__init__(self, parent)
-        self.setWindowTitle(u"Propriétés " + titre)
+        self.setWindowTitle(u"PropriÃ©tÃ©s " + titre)
         self.setPalette(white_palette)
         ##self.SetExtraStyle(wx.WS_EX_BLOCK_EVENTS )
         main = QVBoxLayout()

@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 from random import random
@@ -124,7 +124,7 @@ def test_Point_homothetie():
     h = Homothetie(A, -3)
     M = Point(2, 7)
     assertAlmostEqual(Point_homothetie(M, h).coordonnees, (-2, -29))
-#    assert(Point_homothetie(A, h) is A)   -> méthode __new__ ?
+#    assert(Point_homothetie(A, h) is A)   -> mÃ©thode __new__ ?
 
 def test_Point_reflexion():
     d = Droite_equation(1, 6, -2)
@@ -333,7 +333,7 @@ def test_Glisseur_cercle():
     assert(M in c)
     O = c.centre
     M.coordonnees = O.coordonnees
-    # il faudrait compléter un peu
+    # il faudrait complÃ©ter un peu
 
 def test_Glisseur_arc_cercle():
     A = rand_pt()
@@ -344,7 +344,7 @@ def test_Glisseur_arc_cercle():
     assert(M in a)
     O = a.centre
     M.coordonnees = O.coordonnees
-    # il faudrait compléter un peu
+    # il faudrait complÃ©ter un peu
 
 @XFAIL
 def test_Point_interpolation():

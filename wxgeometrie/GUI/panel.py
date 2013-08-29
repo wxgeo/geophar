@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 from __future__ import with_statement
 
@@ -45,16 +45,16 @@ from ..geolib.feuille import Feuille
 
 
 class Panel_simple(QWidget):
-    u"""Remplace la classe la classe QWidget pour les différents modules.
-    Pour les modules ayant besoin des fonctions graphiques evoluées de WxGéométrie, mieux vaut utiliser
-    la classe Panel_API_graphique, plus evoluée que celle-ci."""
+    u"""Remplace la classe la classe QWidget pour les diffÃ©rents modules.
+    Pour les modules ayant besoin des fonctions graphiques evoluÃ©es de WxGÃ©omÃ©trie, mieux vaut utiliser
+    la classe Panel_API_graphique, plus evoluÃ©e que celle-ci."""
 
     feuille_actuelle = None # pas de feuille
     # Indique si des modifications ont eu lieu (et s'il faudra donc sauvegarder la session)
     modifie = False
-    # Nom de fichier utilisé pour la dernière sauvegarde (ou restauration).
+    # Nom de fichier utilisÃ© pour la derniÃ¨re sauvegarde (ou restauration).
     _nom_fichier = ''
-    # Gestion des paramètres (voir wxgeometrie.modules.__init__.py).
+    # Gestion des paramÃ¨tres (voir wxgeometrie.modules.__init__.py).
     _parametres_par_defaut = {}
     _param_ = None
 
@@ -69,7 +69,7 @@ class Panel_simple(QWidget):
         path = path2(param.emplacements['log'] + "/" + self.nom + u"_historique.log")
         self.log = Rapport(path)
         # ._derniere_signature : sert pour les logs (en cas de zoom de souris essentiellement).
-        # (cf. geolib/feuille.py pour plus de détails.)
+        # (cf. geolib/feuille.py pour plus de dÃ©tails.)
         self._derniere_signature = None
 
 
@@ -90,7 +90,7 @@ class Panel_simple(QWidget):
         with BusyCursor():
             if not isinstance(fichier, FichierGEO):
                 if isinstance(fichier, basestring):
-                    # Par défaut, on sauvegardera sous le même nom ensuite.
+                    # Par dÃ©faut, on sauvegardera sous le mÃªme nom ensuite.
                     self._nom_fichier = fichier
                 fichier, message = ouvrir_fichierGEO(fichier)
                 self.message(message)
@@ -100,7 +100,7 @@ class Panel_simple(QWidget):
 
     @property
     def nom_sauvegarde(self):
-        u"Nom de sauvegarde gardé en mémoire."
+        u"Nom de sauvegarde gardÃ© en mÃ©moire."
         return self._nom_fichier
 
     def sauvegarder(self, nom_fichier='', **kw):
@@ -109,10 +109,10 @@ class Panel_simple(QWidget):
             extension = ('.geoz' if nom_fichier.endswith('.geoz') else '.geo')
             # Eviter les doubles extensions ('monfichier.geo.geo' par exemple).
             nom_fichier = removeend(nom_fichier, ".geo", ".geoz") + extension
-            # Par défaut, on sauvegardera sous le même nom ensuite.
+            # Par dÃ©faut, on sauvegardera sous le mÃªme nom ensuite.
             self._nom_fichier = nom_fichier
         elif nom_fichier == '':
-            # Dernier nom utilisé pour sauvegarder.
+            # Dernier nom utilisÃ© pour sauvegarder.
             nom_fichier = self._nom_fichier or "sauvegarde"
         try:
             fgeo = FichierGEO(module = self.nom)
@@ -120,7 +120,7 @@ class Panel_simple(QWidget):
             if nom_fichier is None:
                 return fgeo
             fgeo.ecrire(nom_fichier, zip = nom_fichier.endswith(".geoz"))
-            self.message(u"Sauvegarde effectuée.")
+            self.message(u"Sauvegarde effectuÃ©e.")
         except Exception:
             self.message(u"Echec de la sauvegarde.")
             if param.debug:
@@ -134,27 +134,27 @@ class Panel_simple(QWidget):
     def _ouvrir(self, fgeo):
         u"""Ouverture d'un fichier.
 
-        À surclasser pour chaque module."""
+        Ã€ surclasser pour chaque module."""
 
 
     def _sauvegarder(self, fgeo):
         u"""Sauvegarde dans un fichier.
 
-        À surclasser pour chaque module."""
+        Ã€ surclasser pour chaque module."""
 
 
     def _changement_feuille(self):
-        u"""Après tout changement de feuille.
+        u"""AprÃ¨s tout changement de feuille.
 
-        À surclasser pour chaque module."""
+        Ã€ surclasser pour chaque module."""
 
 
     def param(self, parametre, valeur = no_argument, defaut = False):
-        u"""Renvoie la valeur du paramètre `parametre`.
+        u"""Renvoie la valeur du paramÃ¨tre `parametre`.
 
-        Recherche la valeur d'un paramètre d'abord dans les paramètres du module
-        _(paramètres locaux), puis dans ceux de wxgéométrie.
-        Si defaut vaut True, la valeur par défaut du paramètre est renvoyée."""
+        Recherche la valeur d'un paramÃ¨tre d'abord dans les paramÃ¨tres du module
+        _(paramÃ¨tres locaux), puis dans ceux de wxgÃ©omÃ©trie.
+        Si defaut vaut True, la valeur par dÃ©faut du paramÃ¨tre est renvoyÃ©e."""
         if valeur is not no_argument:
             setattr(self._param_, parametre, valeur)
         if self._param_ is not None and hasattr(self._param_, parametre):
@@ -170,7 +170,7 @@ class Panel_simple(QWidget):
                 return param._parametres_par_defaut[parametre]
             return getattr(param, parametre)
         else:
-            debug(u"Module %s: Paramètre %s introuvable." %(self.titre, parametre))
+            debug(u"Module %s: ParamÃ¨tre %s introuvable." %(self.titre, parametre))
 
 
     def sauver_preferences(self, lieu = None):
@@ -181,7 +181,7 @@ class Panel_simple(QWidget):
                 fgeo = sauvegarder_module(self._param_, self.nom)
                 fgeo.ecrire(lieu)
             except:
-                self.message(u"Impossible de sauvegarder les préférences.")
+                self.message(u"Impossible de sauvegarder les prÃ©fÃ©rences.")
                 print_error()
 
 
@@ -195,21 +195,21 @@ class Panel_simple(QWidget):
 
 
     def activer(self):
-        u"""Actions à effectuer lorsque l'onglet du module est sélectionné.
+        u"""Actions Ã  effectuer lorsque l'onglet du module est sÃ©lectionnÃ©.
 
-        À surclasser éventuellement."""
+        Ã€ surclasser Ã©ventuellement."""
 
 
     def desactiver(self):
-        u"""Actions à effectuer lorsque l'onglet du module est désélectionné.
+        u"""Actions Ã  effectuer lorsque l'onglet du module est dÃ©sÃ©lectionnÃ©.
 
-        À surclasser éventuellement."""
+        Ã€ surclasser Ã©ventuellement."""
 
 
     def reinitialiser(self):
-        u"""Réinitialise le module (ferme les travaux en cours, etc.).
+        u"""RÃ©initialise le module (ferme les travaux en cours, etc.).
 
-        À surclasser."""
+        Ã€ surclasser."""
         pass
 
 
@@ -217,25 +217,25 @@ class Panel_simple(QWidget):
     def vers_presse_papier(texte):
         u"""Copie le texte dans le presse-papier.
 
-        Retourne True si la copie a réussi, False sinon."""
+        Retourne True si la copie a rÃ©ussi, False sinon."""
         return app.vers_presse_papier(texte)
 
 
 
 class Panel_API_graphique(Panel_simple):
-    u"""Pour les modules ayant besoin de TOUTE l'API de WxGéométrie (canvas, historique, gestion des commandes, etc...)
-    et pas seulement des bibliothèques, mieux vaut utiliser cette classe.
-    Cela concerne essentiellement les modules qui ont besoin de tracer des objets géométriques."""
+    u"""Pour les modules ayant besoin de TOUTE l'API de WxGÃ©omÃ©trie (canvas, historique, gestion des commandes, etc...)
+    et pas seulement des bibliothÃ¨ques, mieux vaut utiliser cette classe.
+    Cela concerne essentiellement les modules qui ont besoin de tracer des objets gÃ©omÃ©triques."""
 
     def __init__(self, parent, module, BarreOutils = BarreOutils):
         Panel_simple.__init__(self, parent, module, menu=False)
 
         # IMPORTANT: contruire toujours dans cet ordre.
         self.feuilles = Classeur(self, log = self.log)
-        # En particulier, l'initialisation du canvas nécessite qu'il y ait déjà une feuille ouverte.
+        # En particulier, l'initialisation du canvas nÃ©cessite qu'il y ait dÃ©jÃ  une feuille ouverte.
         self.canvas = QtCanvas(self)
-        # La construction du menu nécessite que self.canvas et self.log
-        # soient définis, ainsi que self.doc_ouverts.
+        # La construction du menu nÃ©cessite que self.canvas et self.log
+        # soient dÃ©finis, ainsi que self.doc_ouverts.
         self.doc_ouverts = RSSMenu(u"Documents ouverts", [], self.charger_feuille, u"Documents ouverts.")
         ##self.menu = self.module._menu_(self)
 
@@ -275,15 +275,15 @@ class Panel_API_graphique(Panel_simple):
 
 
     def sauvegarder(self, nom_fichier='', feuille=None):
-        u"""Sauvegarde la feuille `feuille` à l'emplacement `nom_fichier`.
+        u"""Sauvegarde la feuille `feuille` Ã  l'emplacement `nom_fichier`.
 
-        Par défaut, `feuille` et la feuille courante, et le nom de fichier est
-        celui utilisé précédemment pour sauver la feuille (ou "sauvegarde.geo"
-        si la feuille n'a encore jamais été sauvée).
+        Par dÃ©faut, `feuille` et la feuille courante, et le nom de fichier est
+        celui utilisÃ© prÃ©cÃ©demment pour sauver la feuille (ou "sauvegarde.geo"
+        si la feuille n'a encore jamais Ã©tÃ© sauvÃ©e).
 
         NB: si `nom_fichier` vaut None, aucune sauvegarde n'a lieu sur le
-        disque, mais un objet FichierGEO correspondant à la sauvegarde est
-        retourné à la place.
+        disque, mais un objet FichierGEO correspondant Ã  la sauvegarde est
+        retournÃ© Ã  la place.
         """
         if feuille is None:
             feuille = self.feuille_actuelle
@@ -301,7 +301,7 @@ class Panel_API_graphique(Panel_simple):
 
     @property
     def nom_sauvegarde(self):
-        u"Nom de sauvegarde gardé en mémoire."
+        u"Nom de sauvegarde gardÃ© en mÃ©moire."
         sauvegarde = self.feuille_actuelle.sauvegarde
         nom  = sauvegarde['nom']
         return (os.path.join(sauvegarde["repertoire"], nom) if nom else '')
@@ -310,10 +310,10 @@ class Panel_API_graphique(Panel_simple):
     def _sauvegarder(self, fgeo, feuille = None):
         u"""Sauvegarde le contenu de la feuille actuelle dans le fichier fgeo.
 
-        Le fichier fgeo (de type FichierGEO) est purement virtuel à ce stade,
-        son contenu n'est pas écrit sur le disque dur.
+        Le fichier fgeo (de type FichierGEO) est purement virtuel Ã  ce stade,
+        son contenu n'est pas Ã©crit sur le disque dur.
 
-        Pour réaliser une sauvegarde physique, utiliser la méthode `.sauvegarder()`.
+        Pour rÃ©aliser une sauvegarde physique, utiliser la mÃ©thode `.sauvegarder()`.
         """
         if feuille is None:
             feuille = self.feuille_actuelle
@@ -345,7 +345,7 @@ class Panel_API_graphique(Panel_simple):
                 feuille = self.creer_feuille()
                 feuille.charger(figure, mode_tolerant = True)
 
-        if fgeo.contenu.has_key("Meta"): # obligatoirement APRES la creation du document, donc après "Figure"
+        if fgeo.contenu.has_key("Meta"): # obligatoirement APRES la creation du document, donc aprÃ¨s "Figure"
             infos = fgeo.contenu["Meta"][0]
             for key, value in infos.items():
                 self.feuille_actuelle.infos(key = value[0])
@@ -362,7 +362,7 @@ class Panel_API_graphique(Panel_simple):
                 self.executer_macro(nom = nom, **self.feuille_actuelle.macros[nom])
 
     def _fichiers_ouverts(self):
-        u"Retourne la liste des fichiers ouverts (feuilles vierges exceptées)."
+        u"Retourne la liste des fichiers ouverts (feuilles vierges exceptÃ©es)."
         return [self.sauvegarder(None, feuille) for feuille in self.feuilles if not feuille.vierge]
 
 
@@ -403,10 +403,10 @@ class Panel_API_graphique(Panel_simple):
             self.feuilles.nouvelle_feuille(nom)
             self.update()
         return self.feuille_actuelle
-##        self.canvas.fenetre = self.param("fenetre") # sert en particulier à orthonormaliser le repère au besoin
+##        self.canvas.fenetre = self.param("fenetre") # sert en particulier Ã  orthonormaliser le repÃ¨re au besoin
 
     def charger_feuille(self, feuille):
-        # Utilisé par la classe API.menu.RSSMenu
+        # UtilisÃ© par la classe API.menu.RSSMenu
 #        if isinstance(feuille, wx.Event):
 #            feuille = feuille.numero
         if not isinstance(feuille, Feuille):
@@ -428,15 +428,15 @@ class Panel_API_graphique(Panel_simple):
         self.update()
 
     def rafraichir_titre(self):
-        u"Actualise le titre de la fenêtre, et la liste des feuilles ouvertes dans le menu."
+        u"Actualise le titre de la fenÃªtre, et la liste des feuilles ouvertes dans le menu."
         self.changer_titre()
         self.doc_ouverts.update(self.feuilles.noms)
-        # Évite les conflits lors de l'initialisation:
+        # Ã‰vite les conflits lors de l'initialisation:
         if getattr(self, "barre_outils", None) is not None:
             self.barre_outils.rafraichir()
 
     def update(self):
-        u"Fait les actualisations nécessaires quand la feuille courante change."
+        u"Fait les actualisations nÃ©cessaires quand la feuille courante change."
         self.rafraichir_titre()
 ##        self.canvas.rafraichir_axes = True
         self.affiche()
@@ -447,7 +447,7 @@ class Panel_API_graphique(Panel_simple):
         if kw.get("mode_avance", False):
             code = ":" + code
         else:
-            # On va maintenant rajouter des lignes "pause()" au début de chaque boucle "for" ou "while".
+            # On va maintenant rajouter des lignes "pause()" au dÃ©but de chaque boucle "for" ou "while".
             # l'instruction pause() permet d'interrompre la boucle au besoin.
             lignes = code.splitlines()
             rajouter_pause = False
@@ -485,29 +485,29 @@ class Panel_API_graphique(Panel_simple):
 ##        try:
 ##            self.canvas.actualiser()
 ##        except ZeroDivisionError:
-##            # se produit après avoir réduit la fenêtre, en dessous d'une certaine taille.
-##            print_error(u"Warning: Fenêtrage incorrect.")
-##            # Il semble que WxPython mette du temps à determiner la nouvelle taille
-##            # de la fenêtre, et GetSize() renvoit alors temporairement des valeurs nulles.
+##            # se produit aprÃ¨s avoir rÃ©duit la fenÃªtre, en dessous d'une certaine taille.
+##            print_error(u"Warning: FenÃªtrage incorrect.")
+##            # Il semble que WxPython mette du temps Ã  determiner la nouvelle taille
+##            # de la fenÃªtre, et GetSize() renvoit alors temporairement des valeurs nulles.
 ##        except:
 ##            print_error()
 ##            self.message(u"Erreur d'affichage !")
 
 
     def _affiche(self):
-        u"Méthode à surclasser."
+        u"MÃ©thode Ã  surclasser."
 
 
     def reinitialiser(self):
-        u"""Réinitialise le module (ferme les travaux en cours, etc.).
+        u"""RÃ©initialise le module (ferme les travaux en cours, etc.).
 
-        À surclasser dans la majorité des cas."""
+        Ã€ surclasser dans la majoritÃ© des cas."""
         self.fermer_feuilles()
 
 
     def sauver_preferences(self, lieu = None):
         if self._param_ is not None:
-            for parametre in self.canvas.parametres: # Permet de sauvegarder les paramètres du moteur d'affichage pour chaque module de manière indépendante.
+            for parametre in self.canvas.parametres: # Permet de sauvegarder les paramÃ¨tres du moteur d'affichage pour chaque module de maniÃ¨re indÃ©pendante.
                 setattr(self._param_, parametre, getattr(self.canvas, parametre))
             Panel_simple.sauver_preferences(self, lieu)
 
@@ -540,9 +540,9 @@ class Panel_API_graphique(Panel_simple):
 
 
     def activer(self):
-        u"""Actions à effectuer lorsque l'onglet du module est sélectionné.
+        u"""Actions Ã  effectuer lorsque l'onglet du module est sÃ©lectionnÃ©.
 
-        À surclasser éventuellement."""
+        Ã€ surclasser Ã©ventuellement."""
         self.canvas.activer_affichage()
         if self.param("afficher_console_geolib"):
         #if gettattr(self._param_, "afficher_console_geolib", False):
@@ -550,7 +550,7 @@ class Panel_API_graphique(Panel_simple):
 
 
     def desactiver(self):
-        u"""Actions à effectuer lorsque l'onglet du module est désélectionné.
+        u"""Actions Ã  effectuer lorsque l'onglet du module est dÃ©sÃ©lectionnÃ©.
 
-        À surclasser éventuellement."""
+        Ã€ surclasser Ã©ventuellement."""
         self.canvas.desactiver_affichage()

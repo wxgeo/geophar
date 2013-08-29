@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 from __future__ import with_statement
 
@@ -65,7 +65,7 @@ PatternType = type(re.compile(''))
 
 
 def is_equation(chaine):
-    u"""Teste si une chaîne correspond bien à une équation."""
+    u"""Teste si une chaÃ®ne correspond bien Ã  une Ã©quation."""
     if chaine.count('=') != 1:
         return False
     left, right = chaine.split('=')
@@ -74,25 +74,25 @@ def is_equation(chaine):
         return False
     if not left or left[-1] in '-+':
         # Affectation. Ex: "=Point()"
-        # Opérateurs `+=` et `-=`.
+        # OpÃ©rateurs `+=` et `-=`.
         return False
     if re.match('(%s|[.])+$' % VAR, left):
         # Affectation. Ex: `A = Point()`, `A.x = 3`,...
-        # Deux exceptions cependant: `x =` et `y =` correspondent bien à des débuts d'équation.
+        # Deux exceptions cependant: `x =` et `y =` correspondent bien Ã  des dÃ©buts d'Ã©quation.
         return left in ('x', 'y')
     return True
 
 #assert geo.Objet is Objet
 
 def parse_equation(chaine):
-    u"""Associe à une équation l'objet géométrique correspondant.
+    u"""Associe Ã  une Ã©quation l'objet gÃ©omÃ©trique correspondant.
 
-    Vérifie que la chaîne est une équation, et retourne une chaîne
-    correspondant à l'objet géométrique correspondant le cas échéant.
+    VÃ©rifie que la chaÃ®ne est une Ã©quation, et retourne une chaÃ®ne
+    correspondant Ã  l'objet gÃ©omÃ©trique correspondant le cas Ã©chÃ©ant.
     Sinon, retourne l'objet initial.
     """
-    #XXX: ébauche d'un parser d'équations
-    # La première étape est de vérifier qu'il s'agit bien d'une équation,
+    #XXX: Ã©bauche d'un parser d'Ã©quations
+    # La premiÃ¨re Ã©tape est de vÃ©rifier qu'il s'agit bien d'une Ã©quation,
     # et pas par exemple d'une affectation (par exemple, `A=Point()`)
     if not is_equation(chaine):
         return chaine
@@ -176,8 +176,8 @@ class Liste_objets(object):
 
 
 class ModeTolerant(object):
-    u'''Mode d'exécution tolérant aux erreurs.
-    Cela sert essentiellement à charger un fichier d'une ancienne version de WxGéométrie.'''
+    u'''Mode d'exÃ©cution tolÃ©rant aux erreurs.
+    Cela sert essentiellement Ã  charger un fichier d'une ancienne version de WxGÃ©omÃ©trie.'''
     def __init__(self, feuille, mode = True):
         self.feuille = feuille
         self.mode = mode
@@ -192,23 +192,23 @@ class ModeTolerant(object):
 
 class Dictionnaire_objets(dict):
     u"""Cette classe est un conteneur pour les objets de la feuille, qui sont tous ses attributs,
-    sauf ceux précédés de __ (attributs reserves pour tous les objets de la classe).
+    sauf ceux prÃ©cÃ©dÃ©s de __ (attributs reserves pour tous les objets de la classe).
     Elle contient aussi tous les objets geometriques.
-    Certaines methodes standard (comme __setattr__) sont aussi interceptées ou redefinies.
+    Certaines methodes standard (comme __setattr__) sont aussi interceptÃ©es ou redefinies.
 
-    Attributs spéciaux:
-    `_` fait référence au dernier objet enregistré dans la feuille.
+    Attributs spÃ©ciaux:
+    `_` fait rÃ©fÃ©rence au dernier objet enregistrÃ© dans la feuille.
 
     `_noms_restreints` est un dictionnaire contenant une liste de noms ou de patterns
-    qui ne peuvent être associés qu'à certains types d'objets.
-    `_noms_interdits` est une liste de noms correspondant à des objets en lecture
+    qui ne peuvent Ãªtre associÃ©s qu'Ã  certains types d'objets.
+    `_noms_interdits` est une liste de noms correspondant Ã  des objets en lecture
     seule.
     `_suppression_impossible` est une liste de noms d'objets qui ne peuvent pas
-    être supprimés.
+    Ãªtre supprimÃ©s.
 
-    Nota: lorsqu'une clef du dictionnaire est supprimée, la méthode `.supprimer()` de
-    l'objet est appelée ; les objets qui n'ont pas de méthode `.supprimer()` sont donc
-    de fait protégés (c'est le cas de `pi`, `e`, ...), sans qu'il soit nécessaire de
+    Nota: lorsqu'une clef du dictionnaire est supprimÃ©e, la mÃ©thode `.supprimer()` de
+    l'objet est appelÃ©e ; les objets qui n'ont pas de mÃ©thode `.supprimer()` sont donc
+    de fait protÃ©gÃ©s (c'est le cas de `pi`, `e`, ...), sans qu'il soit nÃ©cessaire de
     les inscrire dans `_noms_interdits`.
     """
 
@@ -219,7 +219,7 @@ class Dictionnaire_objets(dict):
                       'xmax': XMaxVar, 'ymin': YMinVar, 'ymax': YMaxVar, 'dpx': Dpx,
                       'dpy': Dpy, re.compile('Cf[0-9]+$'): Courbe}
 
-    # `kwlist`: noms réservés en python (if, then, else, for, etc.)
+    # `kwlist`: noms rÃ©servÃ©s en python (if, then, else, for, etc.)
     _noms_interdits = kwlist + ['vue', 't', 'x', 'y', 'z']
 
     _suppression_impossible = ['xmin', 'xmax', 'ymin', 'ymax', 'dpx', 'dpy']
@@ -239,9 +239,9 @@ class Dictionnaire_objets(dict):
 
 
     def clear(self):
-        u"""Réinitialise le dictionnaire des objets.
+        u"""RÃ©initialise le dictionnaire des objets.
 
-        Ne pas utiliser directement, mais utiliser plutôt `Feuille.effacer()`
+        Ne pas utiliser directement, mais utiliser plutÃ´t `Feuille.effacer()`
         qui rafraichit correctement l'affichage."""
         _tmp = {}
         for nom in self._suppression_impossible:
@@ -249,15 +249,15 @@ class Dictionnaire_objets(dict):
                 _tmp[nom] = dict.__getitem__(self, nom)
         dict.clear(self)
         dict.update(self, **_tmp)
-        # On ajoute au dictionnaire courant les objets géométriques, et uniquement eux
+        # On ajoute au dictionnaire courant les objets gÃ©omÃ©triques, et uniquement eux
         # (pas toutes les classes de geolib !)
         self.update((key, val) for key, val in G.__dict__.iteritems() \
                     if isinstance(val, type) and issubclass(val, Objet))
-        # Les noms de classe peuvent aussi être tapés en minuscules (c'est plus rapide à taper)
+        # Les noms de classe peuvent aussi Ãªtre tapÃ©s en minuscules (c'est plus rapide Ã  taper)
         self.update((key.lower(), val) for key, val in G.__dict__.iteritems() \
                     if isinstance(val, type) and issubclass(val, Objet))
 
-        # On ajoute au dictionnaire les fonctions mathématiques courantes
+        # On ajoute au dictionnaire les fonctions mathÃ©matiques courantes
         self.update((key, val) for key, val in mathlib.universal_functions.__dict__.iteritems() \
                     if key[0] != "_" and key != "division")
 
@@ -286,11 +286,11 @@ class Dictionnaire_objets(dict):
 
 
     def add(self, valeur, nom_suggere=''):
-        u"""Ajoute l'objet `valeur` à la feuille.
+        u"""Ajoute l'objet `valeur` Ã  la feuille.
 
-        Si `nom_suggere` est donné, et que le nom suggéré n'est pas déjà
-        utilisé, l'objet est référencé sous ce nom.
-        Sinon, un nom lui est automatiquement attribué.
+        Si `nom_suggere` est donnÃ©, et que le nom suggÃ©rÃ© n'est pas dÃ©jÃ 
+        utilisÃ©, l'objet est rÃ©fÃ©rencÃ© sous ce nom.
+        Sinon, un nom lui est automatiquement attribuÃ©.
         """
         if nom_suggere and nom_suggere in self:
             nom_suggere = ''
@@ -301,35 +301,35 @@ class Dictionnaire_objets(dict):
         u"Commande de bas niveau. Ne pas utiliser directement !"
         if objet._nom:
             self.pop(objet._nom)
-            # Important: pour que l'objet soit bien considéré non référencé
-            # il faut qu'il n'ait pas de nom (on ne peut pas référencer 2 fois un objet).
+            # Important: pour que l'objet soit bien considÃ©rÃ© non rÃ©fÃ©rencÃ©
+            # il faut qu'il n'ait pas de nom (on ne peut pas rÃ©fÃ©rencer 2 fois un objet).
             objet._nom = ""
 
 
     def __setitem__(self, nom, valeur):
-        u"""Crée un objet de la feuille nommé `nom`, et ayant pour valeur `valeur`.
+        u"""CrÃ©e un objet de la feuille nommÃ© `nom`, et ayant pour valeur `valeur`.
 
-        Remarque: les syntaxes `objets['a'] = 3` et `objets.a = 3` sont équivalentes.
+        Remarque: les syntaxes `objets['a'] = 3` et `objets.a = 3` sont Ã©quivalentes.
 
         ::note::
 
         Les objets d'une feuille (contrairement aux objets Python par exemple)
-        ne peuvent pas être redéfinis librement...
-        En général, quand on essaie d'attribuer un nom qui existe déjà,
-        ce n'est pas volontaire. Pour éviter les erreurs, on impose de
-        détruire explicitement l'objet avant que le nom puisse être redonné.
+        ne peuvent pas Ãªtre redÃ©finis librement...
+        En gÃ©nÃ©ral, quand on essaie d'attribuer un nom qui existe dÃ©jÃ ,
+        ce n'est pas volontaire. Pour Ã©viter les erreurs, on impose de
+        dÃ©truire explicitement l'objet avant que le nom puisse Ãªtre redonnÃ©.
 
-        Certains noms sont également réservés, et ne peuvent pas être
-        attribués ainsi. Si l'on veut outrepasser la protection, il faut
-        utiliser la méthode `.update()` pour les attribuer (à bon escient !).
+        Certains noms sont Ã©galement rÃ©servÃ©s, et ne peuvent pas Ãªtre
+        attribuÃ©s ainsi. Si l'on veut outrepasser la protection, il faut
+        utiliser la mÃ©thode `.update()` pour les attribuer (Ã  bon escient !).
 
         Enfin, si l'on essaie d'enregistrer dans la feuille un objet qui y est
-        déjà présent, l'objet est simplement renommé, au lieu d'être enregistré
-        sous deux noms différents.
+        dÃ©jÃ  prÃ©sent, l'objet est simplement renommÃ©, au lieu d'Ãªtre enregistrÃ©
+        sous deux noms diffÃ©rents.
         """
         feuille = self.feuille
 
-        # Paramètres du repère -> géré directement par la feuille
+        # ParamÃ¨tres du repÃ¨re -> gÃ©rÃ© directement par la feuille
         if nom in feuille._parametres_repere:
             return setattr(feuille, nom, valeur)
             # Ne pas oublier le 'return' !
@@ -337,23 +337,23 @@ class Dictionnaire_objets(dict):
         nom = self.__convertir_nom(nom) or '_'
 
         # Pour certains types d'objets (points libres, textes, variables...),
-        # le nom peut être déja attribué.
-        # Par exemple, A=Point(1,2) est valide même si A existe déjà.
-        # L'objet A ne sera pas écrasé, mais actualisé.
-        # Dans cet exemple, les coordonnées de A sont actualisées en (1,2)
+        # le nom peut Ãªtre dÃ©ja attribuÃ©.
+        # Par exemple, A=Point(1,2) est valide mÃªme si A existe dÃ©jÃ .
+        # L'objet A ne sera pas Ã©crasÃ©, mais actualisÃ©.
+        # Dans cet exemple, les coordonnÃ©es de A sont actualisÃ©es en (1,2)
         # (Autrement dit, A=(1,2) devient un alias de A(1,2) ou A.coordonnees = 1,2).
-        # Bien sûr, il faut en particulier que la valeur soit un objet de meme type.
+        # Bien sÃ»r, il faut en particulier que la valeur soit un objet de meme type.
         # (A = Variable(3) n'est pas valide si A est un point !)
 
         if self.has_key(nom):
             try:
-                # Ne PAS rattacher la feuille à l'objet tant qu'il n'est pas enregistré
+                # Ne PAS rattacher la feuille Ã  l'objet tant qu'il n'est pas enregistrÃ©
                 # sur la feuille. En particulier, pour un polygone, rattacher la feuille
-                # provoque déjà l'enregistrement des sommets sur la feuille, alors que rien
-                # ne garantisse que le polygone lui-même soit enregistré avec succès.
+                # provoque dÃ©jÃ  l'enregistrement des sommets sur la feuille, alors que rien
+                # ne garantisse que le polygone lui-mÃªme soit enregistrÃ© avec succÃ¨s.
                 self[nom]._update(valeur)
-                # On quitte, car le nom fait toujours référence au même objet, qui est
-                # déjà enregistré sur la feuille.
+                # On quitte, car le nom fait toujours rÃ©fÃ©rence au mÃªme objet, qui est
+                # dÃ©jÃ  enregistrÃ© sur la feuille.
                 return
             except Exception:
                 if param.debug:
@@ -361,7 +361,7 @@ class Dictionnaire_objets(dict):
                 if self.__renommer_au_besoin:
                     new = feuille.nom_aleatoire(valeur, prefixe=nom)
                     if param.debug:
-                        print("Warning: '%s' renommé en '%s'." %(nom, new))
+                        print("Warning: '%s' renommÃ© en '%s'." %(nom, new))
                     nom = self.__tmp_dict[nom] = new
                 else:
                     self.erreur(u"Ce nom est d\xe9ja utilis\xe9 : " + nom, NameError)
@@ -370,8 +370,8 @@ class Dictionnaire_objets(dict):
         if not isinstance(valeur, Objet):
             # On tente de convertir valeur en un objet Geolib.
 
-            # La conversion des générateurs permet de construire des points
-            # à la volée : '=((i,sqrt(i)) for i in (3,4,5,6))'
+            # La conversion des gÃ©nÃ©rateurs permet de construire des points
+            # Ã  la volÃ©e : '=((i,sqrt(i)) for i in (3,4,5,6))'
             if isinstance(valeur, GeneratorType) and nom == "_":
                 for item in valeur:
                     self.__setitem__('', item)
@@ -381,7 +381,7 @@ class Dictionnaire_objets(dict):
             elif isinstance(valeur, TypeType) and issubclass(valeur, Objet):
                 valeur = valeur()
 
-            # Par convénience, certains types sont automatiquement convertis :
+            # Par convÃ©nience, certains types sont automatiquement convertis :
             # - Variable
             elif isinstance(valeur, (int, long, float, str, unicode)): # u=3 cree une variable
                 valeur = Variable(valeur)
@@ -395,30 +395,30 @@ class Dictionnaire_objets(dict):
                 # - Texte
                 if len(valeur) in (1, 3) and isinstance(tuple(valeur)[0], basestring):
                     # t=["Bonjour!"] cree un texte
-                    # t=('Bonjour!', 2, 3) également
+                    # t=('Bonjour!', 2, 3) Ã©galement
                     valeur = Texte(*valeur)
                 elif len(valeur) == 2:
                     # - Vecteur_libre
                     if nom.islower():
-                        # u=(1,2) crée un vecteur
+                        # u=(1,2) crÃ©e un vecteur
                         valeur = Vecteur_libre(*valeur)
                     # - Point
                     else:
                         # A=(1,2) cree un point.
                         valeur = Point(*valeur)
         else:
-            # On vérifie que l'objet n'est pas déjà enregistré dans la feuille
+            # On vÃ©rifie que l'objet n'est pas dÃ©jÃ  enregistrÃ© dans la feuille
             # sous un autre nom. Si c'est le cas, on le renomme (pour ne pas
-            # l'enregistrer deux fois dans la feuille sous deux noms différents).
+            # l'enregistrer deux fois dans la feuille sous deux noms diffÃ©rents).
             if valeur._nom:
-                # L'objet est déjà référencé dans une feuille ssi il a un nom.
+                # L'objet est dÃ©jÃ  rÃ©fÃ©rencÃ© dans une feuille ssi il a un nom.
                 assert (valeur.feuille is feuille), \
                         "L'objet %s (%s) est deja enregistre dans une autre feuille (%s)." \
                         % (valeur.nom, valeur, valeur.feuille)
                 valeur.renommer(nom)
                 return
 
-        # On n'a pas réussi à convertir `valeur` en un objet Geolib.
+        # On n'a pas rÃ©ussi Ã  convertir `valeur` en un objet Geolib.
         if not isinstance(valeur, Objet):
             self.erreur("type d'objet incorrect :(%s,%s)"%(nom, valeur), TypeError)
 
@@ -427,13 +427,13 @@ class Dictionnaire_objets(dict):
         valeur.feuille = feuille
 
         if nom == "_":
-            # Attention, la feuille doit être déjà definie !
+            # Attention, la feuille doit Ãªtre dÃ©jÃ  definie !
             nom = valeur._nom_alea()
-            # Pour les objets nommés automatiquement, le nom n'est pas affiché par défaut.
+            # Pour les objets nommÃ©s automatiquement, le nom n'est pas affichÃ© par dÃ©faut.
             if valeur.mode_affichage == NOM:
                 valeur.label(mode = RIEN)
 
-        # Les objets dont le nom commence par "_" ne sont pas affichés par défaut (pure convention) :
+        # Les objets dont le nom commence par "_" ne sont pas affichÃ©s par dÃ©faut (pure convention) :
         if nom[0] == "_":
             valeur.style(visible = False)
 
@@ -442,22 +442,22 @@ class Dictionnaire_objets(dict):
         valeur._nom = nom
         valeur.on_register()
 
-        # L'attribut `_timestamp` permet de classer les objets par date de création.
-        # (Il sert essentiellement à pouvoir supprimer le dernier objet créé.)
+        # L'attribut `_timestamp` permet de classer les objets par date de crÃ©ation.
+        # (Il sert essentiellement Ã  pouvoir supprimer le dernier objet crÃ©Ã©.)
         valeur._timestamp = self.__timestamp
         object.__setattr__(self, "_Dictionnaire_objets__timestamp", self.__timestamp + 1)
 
-        # Indiquer que la feuille doit être rafraichie (l'affichage notamment).
+        # Indiquer que la feuille doit Ãªtre rafraichie (l'affichage notamment).
         self.feuille._actualiser_liste_objets = True
         self.feuille.affichage_perime()
 
 
 
     def __getitem(self, nom):
-        u"""Usage interne: code commun aux méthodes `.__getitem__()` et `.get()`."""
+        u"""Usage interne: code commun aux mÃ©thodes `.__getitem__()` et `.get()`."""
         # renommage temporaire :
         nom = self.__tmp_dict.get(nom, nom)
-        # (utilisé en cas de chargement d'un fichier ancien lors d'un conflit de nom).
+        # (utilisÃ© en cas de chargement d'un fichier ancien lors d'un conflit de nom).
         if nom in self.feuille._parametres_repere:
             return getattr(self.feuille, nom)
         elif nom == "objets":
@@ -474,7 +474,7 @@ class Dictionnaire_objets(dict):
             return self.__getitem(nom)
         except KeyError:
             if nom == 'bogu5_123_aTTri8ute' and contexte['afficher_messages']:
-                # PyShell détecté, désactivation des messages d'erreur...
+                # PyShell dÃ©tectÃ©, dÃ©sactivation des messages d'erreur...
                 contexte['afficher_messages'] = False
             else:
                 assert 'erreur' in self
@@ -513,19 +513,19 @@ class Dictionnaire_objets(dict):
 
 
     def lister(self, objets_caches=True, etiquettes=False, **kw):
-        u"""Retourne la liste des objets géométriques.
+        u"""Retourne la liste des objets gÃ©omÃ©triques.
 
-        Le paramètre `objets_caches` indique s'il faut inclure les objets cachés.
+        Le paramÃ¨tre `objets_caches` indique s'il faut inclure les objets cachÃ©s.
 
-        Le paramètre `etiquettes` indique s'il faut inclure les étiquettes
-        des objets retournés.
+        Le paramÃ¨tre `etiquettes` indique s'il faut inclure les Ã©tiquettes
+        des objets retournÃ©s.
 
         kw:
-        * `type` : types à inclure
-        * `sauf` : types à exclure
+        * `type` : types Ã  inclure
+        * `sauf` : types Ã  exclure
 
-        note:: Utiliser plutôt `Feuille.liste_objets()`, qui bénéficie d'une mise
-               en cache des résultats.
+        note:: Utiliser plutÃ´t `Feuille.liste_objets()`, qui bÃ©nÃ©ficie d'une mise
+               en cache des rÃ©sultats.
         """
         sauf = kw.get("sauf", ())
         type = kw.get("type", Objet)
@@ -552,13 +552,13 @@ class Dictionnaire_objets(dict):
     def supprimer(self, *objets):
         u"""Supprime plusieurs objets dans le bon ordre.
 
-        Supprime successivement plusieurs objets après les avoir classé
-        hiérarchiquement. Cela évite d'avoir des erreurs avec certains
-        objets déjà supprimés avec les précédents du fait des dépendances.
+        Supprime successivement plusieurs objets aprÃ¨s les avoir classÃ©
+        hiÃ©rarchiquement. Cela Ã©vite d'avoir des erreurs avec certains
+        objets dÃ©jÃ  supprimÃ©s avec les prÃ©cÃ©dents du fait des dÃ©pendances.
 
         Par exemple, `del feuille.objets.A, feuille.objets.B` renvoie une
-        erreur si l'objet `B` dépend de l'objet `A`, car l'objet `B`
-        n'existe déjà plus au moment où on cherche à le supprimer.
+        erreur si l'objet `B` dÃ©pend de l'objet `A`, car l'objet `B`
+        n'existe dÃ©jÃ  plus au moment oÃ¹ on cherche Ã  le supprimer.
 
         Nota: La suppression d'un objet qui n'est pas sur la feuille
         provoque bien toujours une erreur, par contre."""
@@ -567,7 +567,7 @@ class Dictionnaire_objets(dict):
 
     @property
     def noms(self):
-        u"""Retourne les noms de tous les objets géométriques."""
+        u"""Retourne les noms de tous les objets gÃ©omÃ©triques."""
         return set(nom for nom, obj in self.items() if isinstance(obj, Objet))
 
 
@@ -584,14 +584,14 @@ class Dictionnaire_objets(dict):
             return nom == pattern
 
     def __verifier_syntaxe_nom(self, objet, nom, **kw):
-        u"Vérifie que le nom est correct (ie. bien formé) et le modifie le cas échéant."
+        u"VÃ©rifie que le nom est correct (ie. bien formÃ©) et le modifie le cas Ã©chÃ©ant."
 
         def err(msg):
             if kw.get('skip_err'):
                 return
             if self.__renommer_au_besoin:
                 new = self.feuille.nom_aleatoire(objet)
-                print(u"Warning: '%s' renommé en '%s'." %(nom, new))
+                print(u"Warning: '%s' renommÃ© en '%s'." %(nom, new))
                 return new
             else:
                 self.erreur(msg, NameError)
@@ -603,21 +603,21 @@ class Dictionnaire_objets(dict):
         if nom in self.__class__.__dict__.keys() \
                           or any(self.__match(pattern, nom) for pattern in self._noms_interdits):
             return err(u"Nom r\xe9serv\xe9 : " + nom) # Pas d'accent dans le code ici a cause de Pyshell !
-        # Les noms contenant '__' sont des noms réservés pour un usage futur éventuel (convention).
+        # Les noms contenant '__' sont des noms rÃ©servÃ©s pour un usage futur Ã©ventuel (convention).
         if "__" in nom:
             return err(u'Un nom ne peut pas contenir "__".')
         if not re.match("""[A-Za-z_][A-Za-z0-9_'"`]*$""", nom):
             return err(u"'%s' n'est pas un nom d'objet valide." %nom)
 
-        # Certains noms sont réservés à des usages spécifiques.
-        # Par ex., les noms f1, f2... sont réservés aux fonctions (cf. module Traceur).
+        # Certains noms sont rÃ©servÃ©s Ã  des usages spÃ©cifiques.
+        # Par ex., les noms f1, f2... sont rÃ©servÃ©s aux fonctions (cf. module Traceur).
         for pattern, types in self._noms_restreints.iteritems():
             if self.__match(pattern, nom):
                 if isinstance(objet, types):
                     break
-                return err(u"Le nom %s est r\xe9serv\xe9 à certains types d'objets." %nom)
+                return err(u"Le nom %s est r\xe9serv\xe9 Ã  certains types d'objets." %nom)
 
-        # Gestion des ' (qui servent pour les dérivées)
+        # Gestion des ' (qui servent pour les dÃ©rivÃ©es)
         if nom.endswith('_prime'):
             if isinstance(objet, Fonction):
                 return err(u'Nom interdit : %s est r\xe9serv\xe9 pour la d\xe9riv\xe9e.' %nom)
@@ -626,7 +626,7 @@ class Dictionnaire_objets(dict):
                 if isinstance(self.get(base, None), Fonction):
                     return err(u'Nom interdit : %s d\xe9signe d\xe9j\xe0 la d\xe9riv\xe9e de %s.' %(nom, base))
         elif isinstance(objet, Fonction):
-            # Si la fonction doit s'appeller f, on vérifie que f', f'', f''', etc. ne correspondent pas déjà à des objets.
+            # Si la fonction doit s'appeller f, on vÃ©rifie que f', f'', f''', etc. ne correspondent pas dÃ©jÃ  Ã  des objets.
             for existant in self:
                 if existant.startswith(nom) and rstrip_(existant, '_prime') == nom:
                     return err(u'Ambiguit\xe9 : un objet %s existe d\xe9j\xe0.' %existant)
@@ -635,10 +635,10 @@ class Dictionnaire_objets(dict):
 
 
     def _objet_renommable(self, objet, nom):
-        u"Vérifie que le nom peut-être attribué (c-à-d. qu'il est bien formé, et non utilisé)."
+        u"VÃ©rifie que le nom peut-Ãªtre attribuÃ© (c-Ã -d. qu'il est bien formÃ©, et non utilisÃ©)."
         nom = self.__verifier_syntaxe_nom(objet, nom)
         if self.has_key(nom):
-            self.erreur(u"Ce nom est déjà utilisé.", NameError)
+            self.erreur(u"Ce nom est dÃ©jÃ  utilisÃ©.", NameError)
         return nom
 
 
@@ -651,7 +651,7 @@ class Dictionnaire_objets(dict):
                     + "': " + repr(self.noms)
 
     def __derniere_valeur(self):
-        u"Dernier objet créé."
+        u"Dernier objet crÃ©Ã©."
         return max(self.feuille.liste_objets(True), key = lambda obj:obj._timestamp)
 
 
@@ -660,20 +660,20 @@ class Dictionnaire_objets(dict):
 
 
 class Interprete_feuille(object):
-    u"""Exécute des commandes dans la feuille.
+    u"""ExÃ©cute des commandes dans la feuille.
 
-    Reformule également les commandes avant de les exécuter."""
+    Reformule Ã©galement les commandes avant de les exÃ©cuter."""
 
     def __init__(self, feuille):
         self.feuille = feuille
 
     def executer(self, commande, parser=True, signature=None):
-        u"""Exécute la commande dans la feuille.
+        u"""ExÃ©cute la commande dans la feuille.
 
-        Si `parser=False`, les facilités de syntaxe (abréviations, etc.)
-        sont désactivées pour plus de rapidité.
+        Si `parser=False`, les facilitÃ©s de syntaxe (abrÃ©viations, etc.)
+        sont dÃ©sactivÃ©es pour plus de rapiditÃ©.
 
-        Si `signature != None`, elle est utilisée pour la gestion de l'historique.
+        Si `signature != None`, elle est utilisÃ©e pour la gestion de l'historique.
 
         Voir aussi `commande_executee()`.
         """
@@ -683,7 +683,7 @@ class Interprete_feuille(object):
         if param.debug:
             self.feuille.save_log("REQUETE FEUILLE: " + commande)
 
-        # À mettre en toute fin, pour des raisons de sécurité.
+        # Ã€ mettre en toute fin, pour des raisons de sÃ©curitÃ©.
         if keywords_interdits_presents(commande):
             self.erreur("Mots-clefs interdits : " + ", ".join(sorted(keywords_interdits)))
         try:
@@ -695,8 +695,8 @@ class Interprete_feuille(object):
                 else:
                     retour = '"' + val.contenu + '" : ' + unicode(val.val)
             elif isinstance(val, (list, tuple, set)):
-                # Améliore la lisibilité de l'affichage pour une liste d'objets
-                # en affichant le nom des objets au lieu des objets eux-mêmes
+                # AmÃ©liore la lisibilitÃ© de l'affichage pour une liste d'objets
+                # en affichant le nom des objets au lieu des objets eux-mÃªmes
                 # (pour ceux qui ont un nom).
                 if isinstance(val, list):
                     retour = '['
@@ -723,17 +723,17 @@ class Interprete_feuille(object):
         except SyntaxError:
             exec(commande + '\n', self.feuille.objets)
             # Le + '\n' final contourne un bug de Python 2.5 avec with_statement
-            retour = u'Commande exécutée.'
+            retour = u'Commande exÃ©cutÃ©e.'
         finally:
             self.commande_executee(signature = signature)
         return retour
 
     def commande_executee(self, signature = None):
-        u"""Méthode appelée automatiquement après avoir exécuté une commande dans la feuille.
-        Si l'on n'a pas utilisé la méthode executer(), il faut alors l'appeler manuellement."""
+        u"""MÃ©thode appelÃ©e automatiquement aprÃ¨s avoir exÃ©cutÃ© une commande dans la feuille.
+        Si l'on n'a pas utilisÃ© la mÃ©thode executer(), il faut alors l'appeler manuellement."""
         self.feuille.historique.archiver(signature = signature)
-        # TODO: A déplacer dans la console graphique d'exécution ?
-        # Redétection des objets à proximité du pointeur
+        # TODO: A dÃ©placer dans la console graphique d'exÃ©cution ?
+        # RedÃ©tection des objets Ã  proximitÃ© du pointeur
         self.feuille.canvas.redetecter = True
         if self.feuille.classeur is not None and self.feuille.classeur.parent is not None:
             self.feuille.classeur.parent.rafraichir_titre()
@@ -764,18 +764,18 @@ class Interprete_feuille(object):
             commande += " _"
 
         # Gestion des '
-        # NB: attention, \' a déjà un sens en LaTeX
+        # NB: attention, \' a dÃ©jÃ  un sens en LaTeX
         commande = commande.replace("'", "_prime").replace("\\_prime", "\\'")
 
 
-        # Exception à la conversion décimale :
-        # (1,2) est compris comme (1, 2) et non (1.2), qui est très peu probable.
-        # Par contre, f(1,5) ne doit pas être converti en f(1, 5), mais en f(1.5) !
+        # Exception Ã  la conversion dÃ©cimale :
+        # (1,2) est compris comme (1, 2) et non (1.2), qui est trÃ¨s peu probable.
+        # Par contre, f(1,5) ne doit pas Ãªtre converti en f(1, 5), mais en f(1.5) !
         def _virg(m):
             return m.group().replace(',', ', ')
         commande = re.sub(r'(?<!\w)[(]%s,%s[)]' % (NBR_SIGNE, NBR_SIGNE),
                                                                 _virg, commande)
-        # Conversion décimale : 1,2 -> 1.2
+        # Conversion dÃ©cimale : 1,2 -> 1.2
         commande = _convertir_separateur_decimal(commande)
 
         # (A B) -> Droite(A, B)
@@ -809,12 +809,12 @@ class Interprete_feuille(object):
             commande = "Point(%(x)s,%(y)s)" % m.groupdict()
 
         # `Bonjour !` -> Texte("Bonjour !")
-        # NB: attention, \` a déjà un sens en LaTeX
+        # NB: attention, \` a dÃ©jÃ  un sens en LaTeX
         def _txt(m):
             return "Texte(\"%s\")" % m.groups()[0]
         commande = re.sub(r"(?<!\\)`(([^`]|\\`)*[^`\\]|)`", _txt, commande)
 
-        # Détection des équations
+        # DÃ©tection des Ã©quations
         if '=' in commande:
             commande = parse_equation(commande)
 
@@ -827,7 +827,7 @@ class Interprete_feuille(object):
 class Historique_feuille(object):
     u"""Historique de la feuille.
 
-    Permet d'enregistrer l'état de la feuille à un instant donné,
+    Permet d'enregistrer l'Ã©tat de la feuille Ã  un instant donnÃ©,
     et de le restaurer ensuite."""
 
     def __init__(self, feuille):
@@ -838,32 +838,32 @@ class Historique_feuille(object):
         self.archiver()
         # pour comparer rapidement
         self.last_hash = None
-        # à placer après self.archiver() !
+        # Ã  placer aprÃ¨s self.archiver() !
         self.feuille.vierge = True
 
 
     def archiver(self, signature=None):
-        u"""Sauvegarde l'état actuel de la feuille.
+        u"""Sauvegarde l'Ã©tat actuel de la feuille.
 
-        Notes concernant l'implémentation::
+        Notes concernant l'implÃ©mentation::
 
-            * si l'état de la feuille n'a pas changé depuis la dernière sauvegarde,
+            * si l'Ã©tat de la feuille n'a pas changÃ© depuis la derniÃ¨re sauvegarde,
               la nouvelle demande de sauvegarde n'est pas prise en compte.
-            * si `signature` est différente de `None`, une demande effectuée
-              avec la même signature que la précédente écrase la précédente.
+            * si `signature` est diffÃ©rente de `None`, une demande effectuÃ©e
+              avec la mÃªme signature que la prÃ©cÃ©dente Ã©crase la prÃ©cÃ©dente.
               Ceci sert essentiellement pour les zooms avec la molette de la souris,
-              afin d'éviter de saturer l'historique.
+              afin d'Ã©viter de saturer l'historique.
         """
         sauvegarde = self.feuille.sauvegarder()
-        # On évite de stocker deux fois de suite la même chose dans l'historique.
+        # On Ã©vite de stocker deux fois de suite la mÃªme chose dans l'historique.
         if self.etats and hash(sauvegarde) == self.last_hash and sauvegarde == self.etats[-1]:
             return
 
         # Avec la molette de la souris, on effectue une succession rapide de zooms.
-        # Pour éviter que ça ne remplisse l'historique, on archive alors l'état actuel
-        # à la place du précedent. Ceci s'effectue grâce à la signature.
-        # De manière générale, si signature != None, lorsque deux demandes d'archivages
-        # successives parviennent avec la même signature, la seconde écrase la première.
+        # Pour Ã©viter que Ã§a ne remplisse l'historique, on archive alors l'Ã©tat actuel
+        # Ã  la place du prÃ©cedent. Ceci s'effectue grÃ¢ce Ã  la signature.
+        # De maniÃ¨re gÃ©nÃ©rale, si signature != None, lorsque deux demandes d'archivages
+        # successives parviennent avec la mÃªme signature, la seconde Ã©crase la premiÃ¨re.
         if signature is not None and self._derniere_signature == signature:
             self.etats[-1] = sauvegarde
         else:
@@ -883,7 +883,7 @@ class Historique_feuille(object):
             if len(self.etats_annules) > self.n:
                 self.etats_annules.pop(0) # plus rapide que "self.etats_annules = self.etats_annules[-self.n:]"
             self.restaurer(self.etats[-1])
-            self.feuille.message(u"Action annulée.")
+            self.feuille.message(u"Action annulÃ©e.")
             self.feuille.modifiee = True
         else:
             self.feuille.message(u"Impossible d'annuler.")
@@ -896,7 +896,7 @@ class Historique_feuille(object):
             if len(self.etats) > self.n:
                 self.etats.pop(0) # plus rapide que "self.etats = self.etats[-self.n:]"
             self.restaurer(etat)
-            self.feuille.message(u"Action restaurée.")
+            self.feuille.message(u"Action restaurÃ©e.")
             self.feuille.modifiee = True
         else:
             self.feuille.message(u"Impossible de restaurer.")
@@ -918,10 +918,10 @@ class Historique_feuille(object):
 class Feuille(object):
     u"""Feuille de travail.
 
-    L'objet 'log' doit être une liste destinée à contenir tous les messages.
+    L'objet 'log' doit Ãªtre une liste destinÃ©e Ã  contenir tous les messages.
     """
-    # Pour limiter les erreurs, on indique le(s) type(s) autorisé
-    # pour chaque paramètre.
+    # Pour limiter les erreurs, on indique le(s) type(s) autorisÃ©
+    # pour chaque paramÃ¨tre.
     _parametres_repere = {"quadrillages": tuple,
                         "afficher_quadrillage": bool,
                         "afficher_axes": bool,
@@ -946,7 +946,7 @@ class Feuille(object):
         self.__canvas = canvas
 ##        self._fenetre =  self.param("fenetre")
 
-        # Gestion des paramètres graphiques (repère essentiellement)
+        # Gestion des paramÃ¨tres graphiques (repÃ¨re essentiellement)
         self.__dict_repere = {}
         if parametres is None:
             parametres = {}
@@ -961,22 +961,22 @@ class Feuille(object):
         self._repere_modifie = True
         self._objets_temporaires = []
         self.__point_temporaire__ = None
-        # Permet une optimsation de l'affichage en cas d'objet déplacé
+        # Permet une optimsation de l'affichage en cas d'objet dÃ©placÃ©
         self._objet_deplace = None
-        # On met ._stop à True pour stopper toutes les animations en cours.
+        # On met ._stop Ã  True pour stopper toutes les animations en cours.
         self._stop = False
 ##        self._afficher_objets_caches = False
-##        # Indique que l'arrière-plan doit être redessiné
+##        # Indique que l'arriÃ¨re-plan doit Ãªtre redessinÃ©
 ##        self._repere_modifie = True
 
         # Parametres permettant de gerer l'enregistrement:
         self.sauvegarde = {
-                    "_modifie": True,            # modifications depuis dernière sauvegarde
-                    "repertoire": None,         # répertoire de sauvegarde
+                    "_modifie": True,            # modifications depuis derniÃ¨re sauvegarde
+                    "repertoire": None,         # rÃ©pertoire de sauvegarde
                     "nom": None,          # nom de sauvegarde
-                    "export": None,        # nom complet utilisé pour l'export
+                    "export": None,        # nom complet utilisÃ© pour l'export
                     }
-        # (À créer *avant* l'historique de la feuille)
+        # (Ã€ crÃ©er *avant* l'historique de la feuille)
 
         self.objets = Dictionnaire_objets(self)
         self.historique = Historique_feuille(self)
@@ -994,14 +994,14 @@ class Feuille(object):
             "notes": "",
             }
 
-        # Actions à effectuer après qu'une commande ait été exécutée.
+        # Actions Ã  effectuer aprÃ¨s qu'une commande ait Ã©tÃ© exÃ©cutÃ©e.
         self._actions = []
 
 
 #        Objet.__feuille__ = self # les objets sont crees dans cette feuille par defaut
 
 # ---------------------------------------
-#    Gestion des paramètres du repère
+#    Gestion des paramÃ¨tres du repÃ¨re
 # ---------------------------------------
 
     def lier(self, action):
@@ -1009,11 +1009,11 @@ class Feuille(object):
             self._actions.append(action)
 
     def affichage_perime(self):
-        u"""Indique que l'affichage doit être actualisé.
+        u"""Indique que l'affichage doit Ãªtre actualisÃ©.
 
-        Très rapide (inutile d'optimiser les appels), car aucune actualisation
-        n'a lieu, mais la feuille est juste marquée comme étant à actualiser."""
-        # NB: Utiliser une méthode au lieu d'un attribut permet de générer
+        TrÃ¨s rapide (inutile d'optimiser les appels), car aucune actualisation
+        n'a lieu, mais la feuille est juste marquÃ©e comme Ã©tant Ã  actualiser."""
+        # NB: Utiliser une mÃ©thode au lieu d'un attribut permet de gÃ©nÃ©rer
         # une erreur en cas de faute de frappe.
         self._affichage_a_actualiser = True
 
@@ -1035,24 +1035,24 @@ class Feuille(object):
             return self._infos[_key_]
 
     def _rafraichir_figures(self, tous_les_objets = False):
-        u"""Recrée les figures des objets sensibles à la fenêtre d'affichage.
+        u"""RecrÃ©e les figures des objets sensibles Ã  la fenÃªtre d'affichage.
 
         Si tous_les_objets = True, les figure des objets non sensibles sont
-        aussi récréées.
-        Par ailleurs, le rafraichissement n'a pas lieu immédiatement, mais
-        les figures sont simplement marquées comme périmées, et seront
-        rafraichies à la prochaine utilisation.
+        aussi rÃ©crÃ©Ã©es.
+        Par ailleurs, le rafraichissement n'a pas lieu immÃ©diatement, mais
+        les figures sont simplement marquÃ©es comme pÃ©rimÃ©es, et seront
+        rafraichies Ã  la prochaine utilisation.
 
-        En principe, cette méthode n'a pas à être appelée directement.
+        En principe, cette mÃ©thode n'a pas Ã  Ãªtre appelÃ©e directement.
         """
         for objet in self.liste_objets():
-            # Il faut recalculer la position de toutes les étiquettes
-            # quand la fenêtre d'affichage change.
+            # Il faut recalculer la position de toutes les Ã©tiquettes
+            # quand la fenÃªtre d'affichage change.
             if objet._affichage_depend_de_la_fenetre:
                 objet.figure_perimee()
             elif objet.etiquette:
-                # Même si tous les objets n'ont pas besoin d'être rafraichis,
-                # leurs étiquettes doivent l'être
+                # MÃªme si tous les objets n'ont pas besoin d'Ãªtre rafraichis,
+                # leurs Ã©tiquettes doivent l'Ãªtre
                 objet.etiquette.figure_perimee()
 
 
@@ -1092,9 +1092,9 @@ class Feuille(object):
 
     def __setattr__(self, nom, valeur):
         if nom in self._parametres_repere:
-            # TODO: améliorer la détection des valeurs incorrectes
+            # TODO: amÃ©liorer la dÃ©tection des valeurs incorrectes
             assert isinstance(valeur, self._parametres_repere[nom])
-            # tests personnalisés pour certains paramètres
+            # tests personnalisÃ©s pour certains paramÃ¨tres
             nom_test = '_test_valeur_' + nom
             if hasattr(self, nom_test):
                 valeur = getattr(self, nom_test)(valeur)
@@ -1116,12 +1116,12 @@ class Feuille(object):
         ymax = ymax if ymax is not None else self.fenetre[3]
         epsilon = 100*contexte['tolerance']
         if abs(xmax - xmin) < epsilon:
-            self.erreur(u"Le réglage de la fenêtre est incorrect (xmin et xmax sont trop proches).\n"
-                        u"(Les paramètres doivent être dans cet ordre: xmin, xmax, ymin, ymax.)", ValueError)
+            self.erreur(u"Le rÃ©glage de la fenÃªtre est incorrect (xmin et xmax sont trop proches).\n"
+                        u"(Les paramÃ¨tres doivent Ãªtre dans cet ordre: xmin, xmax, ymin, ymax.)", ValueError)
         elif abs(ymax - ymin) < epsilon:
-            self.erreur(u"Le réglage de la fenêtre est incorrect (ymin et ymax sont trop proches).\n"
-                        u"(Les paramètres doivent être dans cet ordre: xmin, xmax, ymin, ymax.)", ValueError)
-        # Les 'float()' servent à contourner un bug de numpy 1.1.x et numpy 1.2.x (repr de float64)
+            self.erreur(u"Le rÃ©glage de la fenÃªtre est incorrect (ymin et ymax sont trop proches).\n"
+                        u"(Les paramÃ¨tres doivent Ãªtre dans cet ordre: xmin, xmax, ymin, ymax.)", ValueError)
+        # Les 'float()' servent Ã  contourner un bug de numpy 1.1.x et numpy 1.2.x (repr de float64)
         return float(min(xmin, xmax)), float(max(xmin, xmax)), float(min(ymin, ymax)), float(max(ymin, ymax))
 
     @property2
@@ -1156,7 +1156,7 @@ class Feuille(object):
         self.objets.ymax.perime()
         self.objets.dpx.perime()
         self.objets.dpy.perime()
-        # XXX: il ne devrait pas y avoir besoin d'appeler la méthode suivante :
+        # XXX: il ne devrait pas y avoir besoin d'appeler la mÃ©thode suivante :
         self._rafraichir_figures()
 
 
@@ -1164,9 +1164,9 @@ class Feuille(object):
 
 
     def liste_objets(self, objets_caches=None, tri=False, etiquettes=False):
-        u"""Liste des objets, triés éventuellement selon le style 'niveau'.
+        u"""Liste des objets, triÃ©s Ã©ventuellement selon le style 'niveau'.
 
-        NB: un système de mise en cache est utilisé si possible, contrairement à .objets.lister().
+        NB: un systÃ¨me de mise en cache est utilisÃ© si possible, contrairement Ã  .objets.lister().
         """
         if self._actualiser_liste_objets:
             for key in self._cache_listes_objets:
@@ -1207,8 +1207,8 @@ class Feuille(object):
 
         self.__canvas = val
 
-    # TODO: à réécrire
-    # les paramètres par défaut de geolib doivent être contenus dans geolib lui-même.
+    # TODO: Ã  rÃ©Ã©crire
+    # les paramÃ¨tres par dÃ©faut de geolib doivent Ãªtre contenus dans geolib lui-mÃªme.
     def parametres_par_defaut(self, nom):
         if getattr(self.classeur, "parent", None) is not None:
             return self.classeur.parent.param(nom)
@@ -1221,7 +1221,7 @@ class Feuille(object):
 
     @property
     def nom(self):
-        u"Destiné à être affiché."
+        u"DestinÃ© Ã  Ãªtre affichÃ©."
         nom = self.infos("titre")
         if self.sauvegarde["nom"]:
            nom += ' - ' + self.sauvegarde["nom"]
@@ -1230,7 +1230,7 @@ class Feuille(object):
 
     @property
     def nom_complet(self):
-        u"Destiné à être affiché en haut de la fenêtre."
+        u"DestinÃ© Ã  Ãªtre affichÃ© en haut de la fenÃªtre."
         nom = self.modifiee and "* " or ""
         liste = self.sauvegarde["nom"], self.infos("titre")
         nom += " - ".join(s for s in liste if s)
@@ -1248,7 +1248,7 @@ class Feuille(object):
 # Methodes se rapportant a la feuille elle-meme
 
     ##def sauvegarder(self):
-        ##u"Renvoie l'ensemble des commandes python qui permettra de recréer la figure avec tous ses objets."
+        ##u"Renvoie l'ensemble des commandes python qui permettra de recrÃ©er la figure avec tous ses objets."
 ##
         ##objets = self.liste_objets(True)
         ### on doit enregistrer les objets dans le bon ordre (suivant la _hierarchie) :
@@ -1265,13 +1265,13 @@ class Feuille(object):
                 ##continue
             ##elif isinstance(objet, Texte) and objet.style("legende") == FORMULE:
                 ### on fait un cas particulier pour les objets Texte, car ils peuvent contenir une formule
-                ### qui dépend d'autres objets. Leur style n'est alors appliqué qu'après.
+                ### qui dÃ©pend d'autres objets. Leur style n'est alors appliquÃ© qu'aprÃ¨s.
                 ##texte += objet.nom + " = " + objet.__repr__(False) + "\n"
                 ##a_rajouter_a_la_fin += objet.nom + ".style(**" + repr(objet.style()) + ")\n"
             ##else:
                 ##texte += objet.nom + " = " + repr(objet) + "\n"
 ##
-        ### Les étiquettes peuvent contenir des formules qui dépendent d'autres objets.
+        ### Les Ã©tiquettes peuvent contenir des formules qui dÃ©pendent d'autres objets.
         ##for objet in objets:
             ##if objet.etiquette is not None:
                 ##texte += objet.nom + ".etiquette.style(**" + repr(objet.etiquette.style()) + ")\n"
@@ -1280,15 +1280,15 @@ class Feuille(object):
 
 
     def sauvegarder(self):
-        u"""Renvoie l'ensemble des commandes python qui permettra de recréer
+        u"""Renvoie l'ensemble des commandes python qui permettra de recrÃ©er
         la figure avec tous ses objets.
 
-        La figure pourra ensuite être restaurée à l'aide la commande `charger()`.
+        La figure pourra ensuite Ãªtre restaurÃ©e Ã  l'aide la commande `charger()`.
 
         :rtype: string
         """
 
-        # On sauvegarde les paramètres de la feuille.
+        # On sauvegarde les paramÃ¨tres de la feuille.
         texte = '\n'.join(nom + ' = ' + repr(getattr(self, nom))
                          for nom in self._parametres_repere
                          ) + '\n\n'
@@ -1307,7 +1307,7 @@ class Feuille(object):
 
     def charger(self, commandes, rafraichir = True, archiver = True,
                                  mode_tolerant = False):
-        u"""Exécute un ensemble de commandes dans la feuille.
+        u"""ExÃ©cute un ensemble de commandes dans la feuille.
 
         Usage:
         f = Feuille()
@@ -1343,18 +1343,18 @@ class Feuille(object):
 
     def redefinir(self, objet, valeur):
         nom = objet.nom
-        # on récupère la liste des arguments, et on la formate...
+        # on rÃ©cupÃ¨re la liste des arguments, et on la formate...
         args = valeur.strip()[valeur.find("("):-1] + ",)"
-        # ...de manière à obtenir un objet 'tuple' en l'évaluant.
-        args = eval(args, self.objets) # utiliser evalsafe à la place ?
+        # ...de maniÃ¨re Ã  obtenir un objet 'tuple' en l'Ã©valuant.
+        args = eval(args, self.objets) # utiliser evalsafe Ã  la place ?
         heritiers = objet._heritiers()
         heritiers.add(objet)
         for arg in args:
             if isinstance(arg, Objet):
                 for heritier in heritiers:
                     if arg is heritier:
-                        self.erreur(u"Définition circulaire dans %s : \
-                                   l'objet %s se retrouve dépendre de lui-même."
+                        self.erreur(u"DÃ©finition circulaire dans %s : \
+                                   l'objet %s se retrouve dÃ©pendre de lui-mÃªme."
                                    %(valeur, nom))
                         #raise RuntimeError, "Definition circulaire dans %s : l'objet %s se retrouve dependre de lui-meme." %(valeur, nom)
         actuel = self.sauvegarder()
@@ -1372,7 +1372,7 @@ class Feuille(object):
         except Exception:
             print_error()
             self.historique.restaurer(actuel)
-            self.erreur(u"Erreur lors de la redéfinition de %s." %nom)
+            self.erreur(u"Erreur lors de la redÃ©finition de %s." %nom)
 
 
 
@@ -1386,10 +1386,10 @@ class Feuille(object):
         return liste
 
     def nettoyer(self):
-        u"""Supprime les objets cachés inutiles.
+        u"""Supprime les objets cachÃ©s inutiles.
 
-        Un objet caché est inutile si aucun objet visible ne dépend de lui.
-        Les textes vides sont également supprimés."""
+        Un objet cachÃ© est inutile si aucun objet visible ne dÃ©pend de lui.
+        Les textes vides sont Ã©galement supprimÃ©s."""
         objets = [obj for obj in self.liste_objets(True) if not obj.visible
                   or isinstance(obj, Texte_generique) and not obj.texte]
         objets.sort(key=attrgetter("_hierarchie"), reverse=True)
@@ -1407,7 +1407,7 @@ class Feuille(object):
 ##        self.affichage_perime()
 
     def coder(self):
-        u"Codage automatique de la figure (longueurs égales, angles égaux, et angles droits)."
+        u"Codage automatique de la figure (longueurs Ã©gales, angles Ã©gaux, et angles droits)."
         def test(groupe, liste, i):
             if len(groupe) is 1:
                 groupe[0]["objet"].style(codage = "")
@@ -1426,7 +1426,7 @@ class Feuille(object):
         objets = self.objets.lister(False, type = (Segment, Arc_generique))
         lignes = [{"longueur": obj._longueur(), "objet": obj} for obj in objets]
         if lignes:
-            lignes.sort() # attention, le classement d'un dictionnaire se fait selon l'ordre alphabétique des clefs
+            lignes.sort() # attention, le classement d'un dictionnaire se fait selon l'ordre alphabÃ©tique des clefs
             groupe = [lignes[0]]
             i = 1
             for ligne in lignes[1:]:
@@ -1445,7 +1445,7 @@ class Feuille(object):
         objets = self.objets.lister(False, type = Secteur_angulaire)
         angles = [{"angle": obj.val, "objet": obj} for obj in objets]
         if angles:
-            angles.sort() # attention, le classement d'un dictionnaire se fait selon l'ordre alphabétique des clefs
+            angles.sort() # attention, le classement d'un dictionnaire se fait selon l'ordre alphabÃ©tique des clefs
             groupe = [angles[0]]
             i = 2
             for angle in angles[1:]:
@@ -1490,7 +1490,7 @@ class Feuille(object):
     def contient_objet(self, objet):
         """contient_objet(self, objet) -> bool
 
-        Teste rapidement si l'objet est répertorié dans la feuille.
+        Teste rapidement si l'objet est rÃ©pertoriÃ© dans la feuille.
         (Ne cherche pas parmi les objets temporaires.)"""
 
         return is_in(objet, self.objets.values())
@@ -1499,7 +1499,7 @@ class Feuille(object):
     def contient_objet_temporaire(self, objet):
         """contient_objet_temporaire(self, objet) -> bool
 
-        Teste rapidement si l'objet est répertorié comme objet temporaire dans la feuille."""
+        Teste rapidement si l'objet est rÃ©pertoriÃ© comme objet temporaire dans la feuille."""
 
         for obj in self._objets_temporaires:
             if obj is objet:
@@ -1518,19 +1518,19 @@ class Feuille(object):
         self._stop = False
 
     def stop(self):
-        u"Arrête toutes les animations en cours."
+        u"ArrÃªte toutes les animations en cours."
         self._stop = True
 
     def animer(self, nom, debut = 0, fin = 1, pas = 0.02, periode = 0.03):
-        u"""Anime la variable nommée `nom`.
+        u"""Anime la variable nommÃ©e `nom`.
 
         :param nom: nom de la variable dont on souhaite faire varier la valeur.
         :param debut: valeur initiale de la variable.
         :param fin: valeur finale de la variable.
-        :param pas: de combien on incrémente la variable à chaque étape.
-        :param periode: durée (en secondes) entre 2 incrémentations.
+        :param pas: de combien on incrÃ©mente la variable Ã  chaque Ã©tape.
+        :param periode: durÃ©e (en secondes) entre 2 incrÃ©mentations.
 
-        `nom` peut aussi être une expression correspondant à une variable::
+        `nom` peut aussi Ãªtre une expression correspondant Ã  une variable::
 
             >>> from wxgeometrie.geolib import Point, Feuille
             >>> f = Feuille()
@@ -1558,7 +1558,7 @@ class Feuille(object):
 
 
     def save_log(self, log):
-        # Impérativement utiliser 'is not None' car le log peut être vide.
+        # ImpÃ©rativement utiliser 'is not None' car le log peut Ãªtre vide.
         if self.log is not None:
             self.log.append(log)
 
@@ -1573,15 +1573,15 @@ class Feuille(object):
     def lister_figures(self):
         u"""Renvoie deux listes de figures (artistes matplotlib).
 
-        La seconde est celle des figures qui vont bouger avec l'objet deplacé ;
-        et la première, des autres qui vont rester immobiles.
+        La seconde est celle des figures qui vont bouger avec l'objet deplacÃ© ;
+        et la premiÃ¨re, des autres qui vont rester immobiles.
 
-        S'il n'y a pas d'objet en cours de déplacement, la deuxième liste est vide.
+        S'il n'y a pas d'objet en cours de dÃ©placement, la deuxiÃ¨me liste est vide.
         """
         objet_deplace = self._objet_deplace
         ##if isinstance(objet_deplace, Label_generique):
             ##objet_deplace = objet_deplace.parent
-            # TODO: pouvoir rafraichir uniquement l'étiquette ?
+            # TODO: pouvoir rafraichir uniquement l'Ã©tiquette ?
 ##        # Rafraichit les figures s'il y a besoin:
 ##        if self._mettre_a_jour_figures:
 ##            self._rafraichir_figures()
@@ -1592,9 +1592,9 @@ class Feuille(object):
         else:
             heritiers = objet_deplace._heritiers()
             heritiers.add(objet_deplace)
-        # objets non susceptibles d'être modifiés (sauf changement de fenêtre, etc.)
+        # objets non susceptibles d'Ãªtre modifiÃ©s (sauf changement de fenÃªtre, etc.)
         liste1 = []
-        # objets susceptibles d'être modifiés
+        # objets susceptibles d'Ãªtre modifiÃ©s
         liste2 = []
         for objet in self.liste_objets(etiquettes=True):
             liste = liste2 if is_in(objet, heritiers) else liste1
@@ -1620,7 +1620,7 @@ class Feuille(object):
         self.affichage_perime()
 
     def objets_en_gras(self, *objets):
-        u"""Met en gras les objets indiqués, et remet les autres objets en état "normal" le cas échéant."""
+        u"""Met en gras les objets indiquÃ©s, et remet les autres objets en Ã©tat "normal" le cas Ã©chÃ©ant."""
 
         changements = False
         for objet in self.liste_objets(True):
@@ -1657,10 +1657,10 @@ class Feuille(object):
 
 
     def nom_aleatoire(self, objet, prefixe=None):
-        u"""Génère un nom d'objet non encore utilisé.
+        u"""GÃ©nÃ¨re un nom d'objet non encore utilisÃ©.
 
         Si possible, le nom sera de la forme 'prefixe' + chiffres.
-        Sinon, un préfixe aléatoire est généré."""
+        Sinon, un prÃ©fixe alÃ©atoire est gÃ©nÃ©rÃ©."""
         prefixe = (prefixe if prefixe else objet._prefixe_nom)
         existants = self.objets.noms
         for i in xrange(1000):

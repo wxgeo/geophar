@@ -1,11 +1,11 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 from __future__ import with_statement
 
 #    .----------------------------------------.
-#    |    Exercices : Équations de droites    |
+#    |    Exercices : Ã‰quations de droites    |
 #    '----------------------------------------'
-#    Géophar
+#    GÃ©ophar
 #    Dynamic geometry, graph plotter, and more for french mathematic teachers.
 #    Copyright (C) 2005-2012  Nicolas Pourcelot
 #
@@ -41,10 +41,10 @@ from .. import param
 
 
 # TODO:
-# - ajouter un bonus substantiel si les résultats sont donnés
-#   sous forme de fraction simplifiée.
-# - possibilité de définir facilement les niveaux (fichier texte externe ?)
-# - gestion des carrés, des nombres seuls
+# - ajouter un bonus substantiel si les rÃ©sultats sont donnÃ©s
+#   sous forme de fraction simplifiÃ©e.
+# - possibilitÃ© de dÃ©finir facilement les niveaux (fichier texte externe ?)
+# - gestion des carrÃ©s, des nombres seuls
 
 
 
@@ -67,7 +67,7 @@ class ExerciceMenuBar(MenuBar):
 
 class Exercice(Panel_API_graphique):
 
-    titre = u"Exercice" # À adapter pour chaque module
+    titre = u"Exercice" # Ã€ adapter pour chaque module
 
     def __init__(self, *args, **kw):
         Panel_API_graphique.__init__(self, *args, **kw)
@@ -97,31 +97,31 @@ class Exercice(Panel_API_graphique):
 
 
     def reinitialiser(self):
-        u"""Revient au 1er niveau, et remet tous les réglages par défaut.
+        u"""Revient au 1er niveau, et remet tous les rÃ©glages par dÃ©faut.
 
-        Chaque niveau peut bien sûr modifier ces réglages.
+        Chaque niveau peut bien sÃ»r modifier ces rÃ©glages.
 
         Quelques remarques:
-        * le clic droit est désactivé, car il permet d'obtenir la réponse
-          en éditant les propriétés du champ de texte.
-        * l'édition des champs/textes avec [Entrée] est désactivée
-          (car cela s'est avéré perturber les élèves).
+        * le clic droit est dÃ©sactivÃ©, car il permet d'obtenir la rÃ©ponse
+          en Ã©ditant les propriÃ©tÃ©s du champ de texte.
+        * l'Ã©dition des champs/textes avec [EntrÃ©e] est dÃ©sactivÃ©e
+          (car cela s'est avÃ©rÃ© perturber les Ã©lÃ¨ves).
         """
-        # Ne pas éditer les champs/textes avec [Entrée]
+        # Ne pas Ã©diter les champs/textes avec [EntrÃ©e]
         self.canvas.editeur.active = False
-        # Ne pas éditer les objets par un clic droit
+        # Ne pas Ã©diter les objets par un clic droit
         self.canvas.edition_par_clic_droit = False
 
-        # Réglages par défaut
+        # RÃ©glages par dÃ©faut
         self.canvas.fixe = True
         self.canvas.afficher_axes = False
         self.canvas.afficher_quadrillage = False
         self.afficher_barre_outils(False)
         self.canvas.ratio = None
 
-        # Réinitialisation du score et retour au niveau 1
+        # RÃ©initialisation du score et retour au niveau 1
         if param.debug:
-            print(u'Module %s: réinitialisation...' % self.nom)
+            print(u'Module %s: rÃ©initialisation...' % self.nom)
         self.score = 0
         self.niveau = 0
         self.erreurs = 0
@@ -135,7 +135,7 @@ class Exercice(Panel_API_graphique):
         self.fermer_feuilles()
         # Et on change de niveau...
         if niveau in (None, False):
-            # None ou False (False est renvoyé par Qt via QAbstractBouton.clicked)
+            # None ou False (False est renvoyÃ© par Qt via QAbstractBouton.clicked)
             self.niveau += 1
         else:
             self.niveau = niveau
@@ -166,7 +166,7 @@ class Exercice(Panel_API_graphique):
             if hasattr(self, 'niveau' + str(self.niveau + 1)):
                 self.btn_niveau.setEnabled(True)
                 self.btn_niveau.setFocus(True)
-                self.felicitations.setText(u'<p><b>Félicitations !</b></p>' +
+                self.felicitations.setText(u'<p><b>FÃ©licitations !</b></p>' +
                                            u'<p>Passer au niveau %s</p>' %(self.niveau + 1))
                 self.felicitations.setStyleSheet(
                     """QLabel {background-color: %s; padding: 5px;
@@ -174,8 +174,8 @@ class Exercice(Panel_API_graphique):
                        color:white;}""" %QColor(255, 153, 0).name())
 
             else:
-                self.felicitations.setText(u'<p><b>Félicitations !</b></p>' +
-                                           u'<p>Dernier niveau terminé !</p>')
+                self.felicitations.setText(u'<p><b>FÃ©licitations !</b></p>' +
+                                           u'<p>Dernier niveau terminÃ© !</p>')
                 self.felicitations.setStyleSheet(
                     """QLabel {background-color: %s; padding: 5px; border-radius: 5px;
                     color:white;}""" %QColor(102, 205, 0).name())
@@ -189,8 +189,8 @@ class Exercice(Panel_API_graphique):
 ##
     def _ouvrir(self, fgeo):
         pass
-        ### Il ne doit y avoir qu'une seule feuille ouverte à la fois.
-        ### XXX: intégrer cette fonctionnalité directement au Panel.
+        ### Il ne doit y avoir qu'une seule feuille ouverte Ã  la fois.
+        ### XXX: intÃ©grer cette fonctionnalitÃ© directement au Panel.
         ##self.fermer_feuilles()
         ##Panel_API_graphique._ouvrir(self, fgeo)
         ##if fgeo.contenu.has_key(u"expression"):
@@ -209,7 +209,7 @@ class Exercice(Panel_API_graphique):
 
 
     # --------------------------------
-    # Génération de nombres aléatoires
+    # GÃ©nÃ©ration de nombres alÃ©atoires
     # --------------------------------
 
     @staticmethod
@@ -226,7 +226,7 @@ class Exercice(Panel_API_graphique):
         return self.signe()*self.naturel(n)
 
     def decimal(self, chiffres=2):
-        u'''Retourne un nombre décimal, `chiffres` est le nombre de chiffres.'''
+        u'''Retourne un nombre dÃ©cimal, `chiffres` est le nombre de chiffres.'''
         return  S('%s.%s' % (self.relatif(), self.naturel()))
 
     def rationnel(self, n=7):
@@ -243,9 +243,9 @@ class Exercice(Panel_API_graphique):
         return self.relatif(m), self.relatif(n)
 
     def autocompleter(self):
-        u"""Compléter automatiquement avec les bonnes réponses
+        u"""ComplÃ©ter automatiquement avec les bonnes rÃ©ponses
         pour pouvoir passer au niveau suivant.
-        Essentiellement pour déboguer."""
+        Essentiellement pour dÃ©boguer."""
         ##if self.btn_niveau.isEnabled():
             ##self.niveau_suivant()
         self.btn_niveau.click()
@@ -257,9 +257,9 @@ class Exercice(Panel_API_graphique):
     a = property(autocompleter)
 
     def bonus(self, expr):
-        u"""À surclasser pour accorder un bonus si l'expression vérifie
+        u"""Ã€ surclasser pour accorder un bonus si l'expression vÃ©rifie
         certaines conditions.
-        Par exemple, on peut tester que le résultat est bien simplifié."""
+        Par exemple, on peut tester que le rÃ©sultat est bien simplifiÃ©."""
         return False
 
     def compter_points(self, **kw):
@@ -268,9 +268,9 @@ class Exercice(Panel_API_graphique):
             if kw['correct']:
                 if not kw['correct_old']:
                     if not champ.style('choix'):
-                        # C'est plus dur s'il n'y a pas de choix proposé.
-                        # On accorde une bonification si le résultat est
-                        # un minimum simplifié.
+                        # C'est plus dur s'il n'y a pas de choix proposÃ©.
+                        # On accorde une bonification si le rÃ©sultat est
+                        # un minimum simplifiÃ©.
                         if self.bonus(champ.label()):
                             self.score += 3
                         self.score += 1

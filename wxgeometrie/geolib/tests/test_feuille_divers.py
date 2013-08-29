@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 from __future__ import with_statement
 
@@ -95,12 +95,12 @@ def test_formules():
     o.M = Point()
     o.M.label(u'{1/ln(A.x) + A.y}', mode=FORMULE)
 
-    # Détails d'implémentation (peut être modifié par la suite)
+    # DÃ©tails d'implÃ©mentation (peut Ãªtre modifiÃ© par la suite)
     assert o.M.mode_affichage == FORMULE
     assertEqual(o.M.etiquette.texte, u'{1/ln(A.x)+A.y}')
     assert isinstance(o.M.etiquette.formule, Formule)
 
-    # Par contre, ceci doit rester valable quelle que soit l'implémentation !
+    # Par contre, ceci doit rester valable quelle que soit l'implÃ©mentation !
     assertAlmostEqual(float(o.M.label()), 4.)
     o.A.x = e**2
     with contexte(separateur_decimal='.'):
@@ -132,17 +132,17 @@ def test_fenetre():
     assert f.objets.xmax == 8
     assert f.objets.ymin == -2
     assert f.objets.ymax == 10
-    # Bornes inversées
+    # Bornes inversÃ©es
     f.fenetre = 7, -8, 3, -1
     assert f.objets.xmin == -8
     assert f.objets.xmax == 7
     assert f.objets.ymin == -1
     assert f.objets.ymax == 3
-    # Accès isolé à une borne
+    # AccÃ¨s isolÃ© Ã  une borne
     f.objets.xmin += 2
     assert f.objets.xmin == -6
     assert f.fenetre == (-6, 7, -1, 3)
-    # Objet dépendant d'une borne
+    # Objet dÃ©pendant d'une borne
     f.objets.A = Point("xmin - 1", "ymax + 1")
     assert f.objets.A.xy == (-7, 4)
     f.objets.xmin = 3

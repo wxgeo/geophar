@@ -1,13 +1,13 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 
-# Informations utilisée par l'installeur sous Windows.
+# Informations utilisÃ©e par l'installeur sous Windows.
 # titre : description sommaire du module
-# description : description détaillée
-# defaut : par défaut, le module est-il installé ou non ?
+# description : description dÃ©taillÃ©e
+# defaut : par dÃ©faut, le module est-il installÃ© ou non ?
 
 description = {
-"titre":                    u"Géométrie dynamique",
-"description":              u"Création et manipulation de figures géométriques dans le plan.",
+"titre":                    u"GÃ©omÃ©trie dynamique",
+"description":              u"CrÃ©ation et manipulation de figures gÃ©omÃ©triques dans le plan.",
 "groupe":                   u"Modules",
 "defaut":  True,
 }

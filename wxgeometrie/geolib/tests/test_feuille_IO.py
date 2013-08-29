@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 from __future__ import with_statement
 
@@ -132,7 +132,7 @@ def test_nettoyer():
     noms -= set(("B", "I"))
     assertEqual(o.noms, noms)
 
-    # Les textes vides sont supprimés.
+    # Les textes vides sont supprimÃ©s.
     ex('txt = Texte()')
     noms.add('txt')
     assertEqual(o.noms, noms)
@@ -174,7 +174,7 @@ def test_sauvegarde_label():
     f1.objets.A = (1, 2)
     A = f1.objets.A
     A.etiquette.style(couleur="b")
-    legende = u"Pour qui sont ces serpents qui sifflent sur nos têtes."
+    legende = u"Pour qui sont ces serpents qui sifflent sur nos tÃªtes."
     A.label(legende)
     assertEqual(A.etiquette.style("couleur"), "b")
     assertEqual(A.label(), legende)

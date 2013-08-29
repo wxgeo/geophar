@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 from __future__ import with_statement
 
@@ -174,7 +174,7 @@ class Surfaces(Panel_API_graphique):
 
         self.entrees.addWidget(box)
 
-        box = QGroupBox(u"Ordonnée")
+        box = QGroupBox(u"OrdonnÃ©e")
         liste = QVBoxLayout()
         box.setLayout(liste)
 
@@ -217,7 +217,7 @@ class Surfaces(Panel_API_graphique):
         self.seuils.returnPressed.connect(self.affiche)
         ligne.addWidget(self.seuils)
         liste.addLayout(ligne)
-#        liste.Add(wx.StaticText(self, -1, u"Exemple : 0.2 (évitez des valeurs trop faibles)."), 0, wx.ALL, 5)
+#        liste.Add(wx.StaticText(self, -1, u"Exemple : 0.2 (Ã©vitez des valeurs trop faibles)."), 0, wx.ALL, 5)
 
         self.entrees.addWidget(box)
 
@@ -241,14 +241,14 @@ class Surfaces(Panel_API_graphique):
 
     def _sauvegarder(self, fgeo, feuille=None):
         Panel_API_graphique._sauvegarder(self, fgeo, feuille)
-        # TODO: implémenter sauvegarde
+        # TODO: implÃ©menter sauvegarde
         return
         fgeo.contenu[u"Courbe"] = [{"Y" : [self.equations[i].text()], u"intervalle" : [self.intervalles[i].text()], u"active" : [str(self.boites[i].text())]} for i in range(self.nombre_courbes)]
 
 
     def _ouvrir(self, fgeo):
         Panel_API_graphique._ouvrir(self, fgeo)
-        # TODO: implémenter sauvegarde
+        # TODO: implÃ©menter sauvegarde
         return
         if fgeo.contenu.has_key(u"Courbe"):
             for i in range(min(len(fgeo.contenu[u"Courbe"]), self.nombre_courbes)):
@@ -297,7 +297,7 @@ class Surfaces(Panel_API_graphique):
 
             seuils_txt = self.seuils.text().strip()
             if seuils_txt:
-                # On récupère et on classe les valeurs
+                # On rÃ©cupÃ¨re et on classe les valeurs
                 seuils = sorted(float(seuil) for seuil in seuils_txt.split(' '))
                 cmap = self._creer_cmap(seuils)
             else:
@@ -318,7 +318,7 @@ class Surfaces(Panel_API_graphique):
         zmax = nmax(self._Z)
         zmin = nmin(self._Z)
         delta = zmax - zmin
-        # On les ramène entre 0 et 1 par transformation affine
+        # On les ramÃ¨ne entre 0 et 1 par transformation affine
         if delta:
             a = 1/delta
             b = -zmin/delta
@@ -340,7 +340,7 @@ class Surfaces(Panel_API_graphique):
 
 
 def _colors_from_cmap(cmap, n):
-    "Retourne 'n' couleurs régulièrement espacées de cmap."
+    "Retourne 'n' couleurs rÃ©guliÃ¨rement espacÃ©es de cmap."
     cdict = cmap._segmentdata
     vals = fullrange(0, 1, 1/(n - 1))
     l = []
@@ -361,5 +361,5 @@ def _colors_from_cmap(cmap, n):
                 l[-1].append(gradient[-1][1])
     return l
 
-# code pour générer la liste de couleur de la méthode __init__
+# code pour gÃ©nÃ©rer la liste de couleur de la mÃ©thode __init__
 # print '\n'.join(repr(i) + ',' for i in _colors_from_cmap(cm.jet,25))

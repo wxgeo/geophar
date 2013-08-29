@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------#######
@@ -54,7 +54,7 @@ class ProprietesDescription(QWidget):
         version.setMinimumWidth(300)
         gbs.addWidget(version, 3, 2)
 
-        gbs.addWidget(QLabel(u"Resumé : "), 4, 1)
+        gbs.addWidget(QLabel(u"ResumÃ© : "), 4, 1)
         self.resume = resume = QTextEdit(self)
         resume.setPlainText(self.feuille.infos("resume"))
         resume.setMinimumSize(300, 50)
@@ -112,8 +112,8 @@ class ProprietesStatistiques(QWidget):
         encadre_box = QGroupBox(u"Informations sur " + uu(self.feuille.nom) + " :")
         encadre_box.setLayout(encadre)
         sizer.addWidget(encadre_box)
-        encadre.addWidget(QLabel(u"Date de création :  " + uu(self.feuille.infos("creation"))))
-        encadre.addWidget(QLabel(u"Dernière modification :  " + uu(self.feuille.infos("modification"))))
+        encadre.addWidget(QLabel(u"Date de crÃ©ation :  " + uu(self.feuille.infos("creation"))))
+        encadre.addWidget(QLabel(u"DerniÃ¨re modification :  " + uu(self.feuille.infos("modification"))))
         encadre.addWidget(QLabel(u"Nombre d'objets :  " + str(len(self.feuille.liste_objets(True)))))
         sizer.addStretch()
         self.setLayout(sizer)
@@ -136,7 +136,7 @@ class OngletsProprietesFeuille(QTabWidget):
 class ProprietesFeuille(QDialog):
     def __init__(self, parent, feuille):
         QDialog.__init__(self, parent)
-        self.setWindowTitle(u"Propriétés de " + uu(feuille.nom))
+        self.setWindowTitle(u"PropriÃ©tÃ©s de " + uu(feuille.nom))
         self.parent = parent
         self.feuille = feuille
         self.fenetre_principale = self.parent.window()

@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 from __future__ import with_statement
 
@@ -47,9 +47,9 @@ from .. import param
 
 
 class Point_generique(Objet_avec_coordonnees):
-    u"""Un point générique.
+    u"""Un point gÃ©nÃ©rique.
 
-    Usage interne : la classe mère pour tous les types de points (libres, barycentres, intersection...)."""
+    Usage interne : la classe mÃ¨re pour tous les types de points (libres, barycentres, intersection...)."""
 
     _style_defaut = param.points
     _prefixe_nom = "M"
@@ -216,12 +216,12 @@ class Point(Objet_avec_coordonnees_modifiables, Point_generique):
     def __new__(cls, *args, **kw):
         if len(args) in (1, 2) and not hasattr(args[0], '__float__'):
             from .. import geolib
-            # On regarde si le point peut être construit sur l'objet sélectionné.
-            # Par exemple, si l'objet sélectionné est une droite, on construit
+            # On regarde si le point peut Ãªtre construit sur l'objet sÃ©lectionnÃ©.
+            # Par exemple, si l'objet sÃ©lectionnÃ© est une droite, on construit
             # un glisseur sur la droite, au lieu d'un point 'normal'.
-            # Par contre, si l'objet sélectionné est un texte, il n'y a pas de
+            # Par contre, si l'objet sÃ©lectionnÃ© est un texte, il n'y a pas de
             # glisseur correspondant, donc on ne tient pas compte de l'objet
-            # sélectionné, et on construit simplement un point 'normal'.
+            # sÃ©lectionnÃ©, et on construit simplement un point 'normal'.
             for type_objet, type_glisseur in cls._glisseurs.iteritems():
                 if isinstance(args[0], getattr(geolib, type_objet)):
                     return getattr(geolib, type_glisseur)(*args, **kw)
@@ -256,7 +256,7 @@ class Point(Objet_avec_coordonnees_modifiables, Point_generique):
             # Ne PAS utiliser `.coordonnees` ici, car `objet.coordonnees`
             # peut renvoyer `None` dans certains cas particuliers.
             # (Par exemple, si `objet.x` ou `objet.y` contient une formule,
-            # et qu'aucune feuille n'est définie pour cette variable).
+            # et qu'aucune feuille n'est dÃ©finie pour cette variable).
             self.x = objet.x
             self.y = objet.y
         else:
@@ -265,9 +265,9 @@ class Point(Objet_avec_coordonnees_modifiables, Point_generique):
 
 
 class Point_pondere(Objet):
-    u"""Un point pondéré.
+    u"""Un point pondÃ©rÃ©.
 
-    Usage interne : les points pondérés sont utilisés dans la définition des barycentres."""
+    Usage interne : les points pondÃ©rÃ©s sont utilisÃ©s dans la dÃ©finition des barycentres."""
 
     point = __point = Argument("Point_generique", defaut = Point)
     coefficient = __coefficient = Argument("Variable_generique", defaut = 1)
@@ -307,7 +307,7 @@ class Barycentre(Point_generique):
 
 
     def _get_coordonnees(self):
-        u"Coordonnées du barycentre en fonction de celles des points."
+        u"CoordonnÃ©es du barycentre en fonction de celles des points."
         total = self._cache.get('somme_coeff', self.__somme_coeffs)
         return sum(coeff*point.x for point, coeff in self.__points_ponderes)/total, \
                     sum(coeff*point.y for point, coeff in self.__points_ponderes)/total
@@ -348,9 +348,9 @@ class Milieu(Barycentre):
 
 
 class Point_final(Point_generique):
-    u"""Un point défini par une relation vectorielle.
+    u"""Un point dÃ©fini par une relation vectorielle.
 
-    Point défini par une relation vectorielle.
+    Point dÃ©fini par une relation vectorielle.
                               ->      ->     ->
     Exemple : point N tel que AN = -3 AB + 2 BC
     N = Point_final(A, [A>B, B>C], [-3,2])"""
@@ -413,7 +413,7 @@ class Point_translation(Point_generique):
 class Point_rotation(Point_generique):
     u"""Une image d'un point par rotation.
 
-    Point construit à partir d'un autre via une rotation d'angle et de centre donné."""
+    Point construit Ã  partir d'un autre via une rotation d'angle et de centre donnÃ©."""
 
     point = __point = Argument("Point_generique")
     rotation = __rotation = Argument("Rotation")
@@ -447,9 +447,9 @@ class Point_rotation(Point_generique):
 
 
 class Point_homothetie(Point_generique):
-    u"""Une image d'un point par homothétie.
+    u"""Une image d'un point par homothÃ©tie.
 
-    Point construit à partir d'un autre via une homothétie de rapport et de centre donné."""
+    Point construit Ã  partir d'un autre via une homothÃ©tie de rapport et de centre donnÃ©."""
 
     point = __point = Argument("Point_generique")
     homothetie = __homothetie = Argument("Homothetie")
@@ -471,9 +471,9 @@ class Point_homothetie(Point_generique):
 
 
 class Point_reflexion(Point_generique):
-    u"""Une image d'un point par réflexion.
+    u"""Une image d'un point par rÃ©flexion.
 
-    Point construit à partir d'un autre via une symétrie d'axe donné."""
+    Point construit Ã  partir d'un autre via une symÃ©trie d'axe donnÃ©."""
 
     point = __point = Argument("Point_generique")
     reflexion = __reflexion = Argument("Reflexion")
@@ -504,9 +504,9 @@ class Point_reflexion(Point_generique):
 
 
 class Projete_generique(Point_generique):
-    u"""Un projeté générique.
+    u"""Un projetÃ© gÃ©nÃ©rique.
 
-    Classe mère des différents types de projetés orthogonaux (sur droite, sur cercle ou sur segment)."""
+    Classe mÃ¨re des diffÃ©rents types de projetÃ©s orthogonaux (sur droite, sur cercle ou sur segment)."""
 
     def __init__(self, point, objet, **styles):
         #~ self._initialiser(point = Point_generique, objet = Objet)
@@ -524,9 +524,9 @@ class Projete_generique(Point_generique):
 
 
 class Projete_droite(Projete_generique):
-    u"""Un projeté orthogonal sur une droite.
+    u"""Un projetÃ© orthogonal sur une droite.
 
-    Projeté orthogonal d'un point sur une droite."""
+    ProjetÃ© orthogonal d'un point sur une droite."""
 
     point = __point = Argument("Point_generique")
     droite = __droite = Argument("Droite_generique")
@@ -556,9 +556,9 @@ class Projete_droite(Projete_generique):
 
 
 class Projete_cercle(Projete_generique):
-    u"""Un projeté orthogonal sur un cercle.
+    u"""Un projetÃ© orthogonal sur un cercle.
 
-    Projeté orthogonal d'un point sur un cercle."""
+    ProjetÃ© orthogonal d'un point sur un cercle."""
 
     point = __point = Argument("Point_generique")
     cercle = __cercle = Argument("Cercle_generique")
@@ -590,9 +590,9 @@ class Projete_cercle(Projete_generique):
 
 
 class Projete_arc_cercle(Projete_generique):
-    u"""Un projeté orthogonal sur un arc de cercle.
+    u"""Un projetÃ© orthogonal sur un arc de cercle.
 
-    Projeté orthogonal d'un point sur un arc de cercle."""
+    ProjetÃ© orthogonal d'un point sur un arc de cercle."""
 
     point = __point = Argument("Point_generique")
     arc = __arc = Argument("Arc_generique")
@@ -616,7 +616,7 @@ class Projete_arc_cercle(Projete_generique):
         while c < a:
             c += 2*pi
         # La mesure d'angle c est donc dans l'intervalle [a; a+2*pi[
-        if c > b: # c n'appartient pas à [a;b] (donc M est en dehors de l'arc de cercle)
+        if c > b: # c n'appartient pas Ã  [a;b] (donc M est en dehors de l'arc de cercle)
             if c - b > 2*pi + a - c: # c est plus proche de a+2*pi
                 c = a
             else:   # c est plus proche de b
@@ -640,9 +640,9 @@ class Projete_arc_cercle(Projete_generique):
 
 
 class Projete_segment(Projete_generique):
-    u"""Un projeté orthogonal sur un segment.
+    u"""Un projetÃ© orthogonal sur un segment.
 
-    Projeté orthogonal d'un point sur un segment."""
+    ProjetÃ© orthogonal d'un point sur un segment."""
 
     point = __point = Argument("Point_generique")
     segment = __segment = Argument("Segment")
@@ -673,9 +673,9 @@ class Projete_segment(Projete_generique):
 
 
 class Projete_demidroite(Projete_generique):
-    u"""Un projeté orthogonal sur une demi-droite.
+    u"""Un projetÃ© orthogonal sur une demi-droite.
 
-    Projeté orthogonal d'un point sur une demi-droite."""
+    ProjetÃ© orthogonal d'un point sur une demi-droite."""
 
     point = __point = Argument("Point_generique")
     demidroite = __demidroite = Argument("Demidroite")
@@ -693,7 +693,7 @@ class Projete_demidroite(Projete_generique):
         AB2 = carre_distance(A, B)
         if AB2 > contexte['tolerance']:
             k = produit_scalaire(vect((x,y), A), vect(B, A))/AB2
-            k = max(k, 0) # on se restreint à la demi-droite
+            k = max(k, 0) # on se restreint Ã  la demi-droite
             return (1-k)*xA+k*xB, (1-k)*yA+k*yB
         else: # A et B sont confondus
             return xA, yA
@@ -706,7 +706,7 @@ class Projete_demidroite(Projete_generique):
 class Centre_polygone_generique(Point_generique):
     u"""Un centre d'un triangle.
 
-    Classe mère des différents centres d'un triangle."""
+    Classe mÃ¨re des diffÃ©rents centres d'un triangle."""
 
 
     def __init__(self, polygone, **styles):
@@ -719,9 +719,9 @@ class Centre_polygone_generique(Point_generique):
 
 
 class Centre_gravite(Centre_polygone_generique):
-    u"""Un centre de gravité.
+    u"""Un centre de gravitÃ©.
 
-    Centre de gravité d'un polygone (l'intersection des médianes dans le cas d'un triangle)."""
+    Centre de gravitÃ© d'un polygone (l'intersection des mÃ©dianes dans le cas d'un triangle)."""
 
     _prefixe_nom = "G"
 
@@ -768,7 +768,7 @@ class Orthocentre(Centre_polygone_generique):
 class Centre_cercle_circonscrit(Centre_polygone_generique):
     u"""Un centre du cercle circonscrit.
 
-    Centre du cercle circonscrit d'un triangle (intersection des médiatrices)."""
+    Centre du cercle circonscrit d'un triangle (intersection des mÃ©diatrices)."""
 
     _prefixe_nom = "O"
 
@@ -834,9 +834,9 @@ class Centre(Point_generique):
 
 
 class Point_equidistant(Point_generique):
-    u"""Point équidistant de 3 points.
+    u"""Point Ã©quidistant de 3 points.
 
-    Utilisé surtout pour un usage interne, le calcul des coordonnées est plus rapide qu'en passant par les médiatrices."""
+    UtilisÃ© surtout pour un usage interne, le calcul des coordonnÃ©es est plus rapide qu'en passant par les mÃ©diatrices."""
 
     point1 = __point1 = Argument("Point_generique")
     point2 = __point2 = Argument("Point_generique")
@@ -892,9 +892,9 @@ class Point_equidistant(Point_generique):
 
 
 class Glisseur_generique(Point_generique):
-    u"""Un glisseur générique.
+    u"""Un glisseur gÃ©nÃ©rique.
 
-    Classe mère des différents types de glisseurs"""
+    Classe mÃ¨re des diffÃ©rents types de glisseurs"""
 
     _style_defaut = param.points_deplacables
 
@@ -942,9 +942,9 @@ class Glisseur_vecteur(Glisseur_generique):
 
 
 class Glisseur_ligne_generique(Glisseur_generique):
-    u"""Un glisseur générique sur ligne.
+    u"""Un glisseur gÃ©nÃ©rique sur ligne.
 
-    Classe mère des différents types de glisseurs sur ligne (ie. droite, segment, demi-droite)"""
+    Classe mÃ¨re des diffÃ©rents types de glisseurs sur ligne (ie. droite, segment, demi-droite)"""
 
     ligne = __ligne = Argument("Ligne_generique")
     k = __k = Argument("Variable_generique")
@@ -968,8 +968,8 @@ class Glisseur_droite(Glisseur_ligne_generique):
     u"""Un point sur une droite.
 
     Point pouvant 'glisser' sur une droite. k est un coefficient barycentrique.
-    Si A et B sont les deux points de référence de la droite, k le coefficient,
-    les coordonnées du glisseur M seront determinées par la formule M = kA + (1-k)B."""
+    Si A et B sont les deux points de rÃ©fÃ©rence de la droite, k le coefficient,
+    les coordonnÃ©es du glisseur M seront determinÃ©es par la formule M = kA + (1-k)B."""
 
     droite = __droite = Argument("Droite_generique")
     parametre = k = __k = Argument("Variable_generique")
@@ -993,8 +993,8 @@ class Glisseur_segment(Glisseur_ligne_generique):
     u"""Un point sur un segment.
 
     Point pouvant 'glisser' sur un segment. k est un coefficient barycentrique.
-    Si A et B sont les deux points de référence de la droite, k le coefficient,
-    les coordonnées du glisseur M seront determinées par la formule M = kA + (1-k)B."""
+    Si A et B sont les deux points de rÃ©fÃ©rence de la droite, k le coefficient,
+    les coordonnÃ©es du glisseur M seront determinÃ©es par la formule M = kA + (1-k)B."""
 
     segment = __segment = Argument("Segment")
     parametre = k = __k = Argument("Variable_generique", None, lambda obj, value: max(min(value, 1), 0))
@@ -1018,8 +1018,8 @@ class Glisseur_demidroite(Glisseur_ligne_generique):
     u"""Un point sur une demi-droite.
 
     Point pouvant 'glisser' sur un segment. k est un coefficient barycentrique.
-    Si A et B sont les deux points de référence de la droite, k le coefficient,
-    les coordonnées du glisseur M seront determinées par la formule M = kA + (1-k)B."""
+    Si A et B sont les deux points de rÃ©fÃ©rence de la droite, k le coefficient,
+    les coordonnÃ©es du glisseur M seront determinÃ©es par la formule M = kA + (1-k)B."""
 
     demidroite = __demidroite = Argument("Demidroite")
     parametre = k = __k = Argument("Variable_generique", None, lambda obj, value: max(value, 0))
@@ -1044,7 +1044,7 @@ class Glisseur_cercle(Glisseur_generique):
 
     Point pouvant 'glisser' sur un cercle. k est un angle.
     Si O et r sont les centres et rayons du cercle, k l'angle,
-    les coordonnées du glisseur M seront déterminées par la formule M = O + r*(cos(k), sin(k))."""
+    les coordonnÃ©es du glisseur M seront dÃ©terminÃ©es par la formule M = O + r*(cos(k), sin(k))."""
 
     cercle = __cercle = Argument("Cercle_generique")
     parametre = k = __k = Argument("Variable_generique")
@@ -1084,8 +1084,8 @@ class Glisseur_arc_cercle(Glisseur_generique):
 
     Point pouvant 'glisser' sur un cercle. k est un angle.
     Si O et r sont les centres et rayons de l'arc, k un coefficient compris entre 0 et 1,
-    et a et b les mesures d'angle marquant le début et la fin de l'arc,
-    les coordonnées du glisseur M seront déterminées par la formule M = O + r*(cos(ka+(1-k)b), sin(ka+(1-k)b)),
+    et a et b les mesures d'angle marquant le dÃ©but et la fin de l'arc,
+    les coordonnÃ©es du glisseur M seront dÃ©terminÃ©es par la formule M = O + r*(cos(ka+(1-k)b), sin(ka+(1-k)b)),
     si l'arc est de sens direct, et M = O + r*(cos(kb+(1-k)a), sin(kb+(1-k)a)) sinon."""
 
     arc = __arc = Argument("Arc_generique")
@@ -1123,7 +1123,7 @@ class Glisseur_arc_cercle(Glisseur_generique):
             while c < a:
                 c += 2*pi
             # La mesure d'angle c est donc dans l'intervalle [a; a+2*pi[
-            if c > b: # c n'appartient pas à [a;b] (donc M est en dehors de l'arc de cercle)
+            if c > b: # c n'appartient pas Ã  [a;b] (donc M est en dehors de l'arc de cercle)
                 if c - b > 2*pi + a - c: # c est plus proche de a+2*pi
                     c = a
                 else:   # c est plus proche de b
@@ -1157,7 +1157,7 @@ class Glisseur_courbe(Glisseur_generique):
     """
 
     def _set_x(self, val):
-        u"L'abscisse du glisseur est entre les abscisses extrêmes de la courbe."
+        u"L'abscisse du glisseur est entre les abscisses extrÃªmes de la courbe."
         return max(min(val, self.courbe.xmax), self.courbe.xmin)
 
     courbe = __courbe = Argument("Interpolation_polynomiale_par_morceaux, Courbe")
@@ -1180,9 +1180,9 @@ class Glisseur_courbe(Glisseur_generique):
 
 
 class Point_interpolation(Point_generique):
-    u"""Un point avec une pente associée.
+    u"""Un point avec une pente associÃ©e.
 
-    Usage interne : les points d'interpolation sont utilisés pour la construction
+    Usage interne : les points d'interpolation sont utilisÃ©s pour la construction
     des courbes d'interpolation."""
 
     point = __point = Argument("Point_generique", defaut=Point)
@@ -1211,7 +1211,7 @@ class Point_interpolation(Point_generique):
 class Nuage_generique(Objet):
     u"""Un nuage de points generique.
 
-    Usage interne : la classe mère de tous les nuages de points."""
+    Usage interne : la classe mÃ¨re de tous les nuages de points."""
 
     _prefixe_nom = "n"
 
@@ -1237,13 +1237,13 @@ class Nuage_generique(Objet):
 class Nuage(Nuage_generique):
     u"""Un nuage de points.
 
-    Le nuage est défini par la donnée de ses points.
+    Le nuage est dÃ©fini par la donnÃ©e de ses points.
     """
 
     __points = points = Arguments('Point_generique')
 
     #TODO: il n'est pas possible actuellement de modifier la taille du nuage de points
-    # après création. C'est une limitation de la classe Arguments().
+    # aprÃ¨s crÃ©ation. C'est une limitation de la classe Arguments().
 
     def __new__(cls, *args, **kw):
         from .fonctions import Fonction
@@ -1260,9 +1260,9 @@ class Nuage(Nuage_generique):
 
 
 class NuageFonction(Nuage_generique):
-    u"""Un nuage de points de coordonnées (x; f(x)).
+    u"""Un nuage de points de coordonnÃ©es (x; f(x)).
 
-    Le nuage est défini par la donnée de la fonction f,
+    Le nuage est dÃ©fini par la donnÃ©e de la fonction f,
     et d'une liste d'abscisses.
     """
 
@@ -1276,7 +1276,7 @@ class NuageFonction(Nuage_generique):
         self.__abscisses = abscisses = tuple(Ref(x) for x in abscisses)
         Nuage_generique.__init__(self, **styles)
 
-    # TODO: générer les points du nuage, comme on génère les sommets d'un polygone.
+    # TODO: gÃ©nÃ©rer les points du nuage, comme on gÃ©nÃ¨re les sommets d'un polygone.
 
 
     @property

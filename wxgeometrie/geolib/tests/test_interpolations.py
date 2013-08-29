@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 from pytest import XFAIL
@@ -11,7 +11,7 @@ from wxgeometrie.geolib import (Point, Interpolation_polynomiale_par_morceaux,
 
 
 def test_Interpolation_lineaire():
-    # cas général : polygone à 11 côtés :
+    # cas gÃ©nÃ©ral : polygone Ã  11 cÃ´tÃ©s :
     A = rand_pt()
     B = rand_pt()
     C = rand_pt()

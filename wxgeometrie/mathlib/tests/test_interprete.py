@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 from pytest import XFAIL
@@ -64,7 +64,7 @@ def test_exemples_de_base():
     assert_resultat('cos x>>taylor', \
                                     '1 - x^2/2 + x^4/24 + O(x^5)', \
                                     '1 - \\frac{1}{2} x^{2} + \\frac{1}{24} x^{4} + \\mathcal{O}\\left(x^{5}\\right)')
-    # Algèbre
+    # AlgÃ¨bre
     assert_resultat('developpe((x-3)(x+7)(2y+x+5))', \
                                     'x^3 + 2 x^2 y + 9 x^2 + 8 x y - x - 42 y - 105', \
                                     'x^{3} + 2 x^{2} y + 9 x^{2} + 8 x y - x - 42 y - 105')
@@ -117,15 +117,15 @@ def test_ecriture_decimale_periodique():
 
 @XFAIL
 def test_issue_270():
-    u"""Bug 270: les décimaux s'affichent parfois en écriture scientifique.
+    u"""Bug 270: les dÃ©cimaux s'affichent parfois en Ã©criture scientifique.
 
     Exemple avec 3 chiffres significatifs:
 
-        Calcul n°59 : 160000000000700,4
-        Résultat : 160000000000700
+        Calcul nÂ°59 : 160000000000700,4
+        RÃ©sultat : 160000000000700
 
-        Calcul n°60 : 16000000000700,4
-        Résultat : 1,6*10^13
+        Calcul nÂ°60 : 16000000000700,4
+        RÃ©sultat : 1,6*10^13
     """
     i = Interprete(precision_affichage=3)
     r, l = i.evaluer("160000000000700,4")
@@ -170,7 +170,7 @@ def test_resoudre():
 #TODO: @SLOW wrapper should be defined, and the test only run in some circonstances
 # (for ex, a 'slow' keyword in tools/tests.py arguments)
 def test_longs():
-    # NB: Test très long (15-20 secondes) !
+    # NB: Test trÃ¨s long (15-20 secondes) !
     pass
 
 def test_approches():
@@ -200,7 +200,7 @@ def test_session():
     i.evaluer("f'(x)")
     assertDernier(i, "2*x - 7")
 
-    # Noms réservés
+    # Noms rÃ©servÃ©s
     assertRaises(NameError, i.evaluer, "e=3")
     assertRaises(NameError, i.evaluer, "pi=3")
     assertRaises(NameError, i.evaluer, "i=3")
@@ -208,7 +208,7 @@ def test_session():
     assertRaises(NameError, i.evaluer, "factorise=3")
     # Etc.
 
-    # Test des générateurs
+    # Test des gÃ©nÃ©rateurs
     i.evaluer('f(x)=x+3')
     i.evaluer('[f(j) for j in range(1, 11)]')
     assertDernier(i, '[4, 5, 6, 7, 8, 9, 10, 11, 12, 13]')
@@ -230,11 +230,11 @@ def test_session():
     i.evaluer('______') # ans(-6)
     assertDernier(i, '(0, 1, 2, 3, 4, 5, 6)')
 
-    # Affichage des chaînes en mode text (et non math)
+    # Affichage des chaÃ®nes en mode text (et non math)
     i.evaluer('"Bonjour !"')
     assert i.latex_dernier_resultat == u'\u201CBonjour !\u201D'
 
-    # Virgule comme séparateur décimal
+    # Virgule comme sÃ©parateur dÃ©cimal
     resultat, latex = i.evaluer('1,2')
     assert resultat == '1,2'
     assertAlmostEqual(i.derniers_resultats[-1], 1.2)
@@ -254,15 +254,15 @@ def test_session():
     latex = i.evaluer("gamma(x)")[1]
     assertEqual(latex, r'$\Gamma\left(x\right)$')
 
-    # Vérifier qu'on ait bien ln(x) et non log(x) qui s'affiche
+    # VÃ©rifier qu'on ait bien ln(x) et non log(x) qui s'affiche
     resultat, latex = i.evaluer('f(x)=(ln(x)+5)**2')
     assertEqual(resultat, 'x -> (ln(x) + 5)^2')
     assertEqual(latex, r'$x\mapsto \left(\ln(x) + 5\right)^{2}$')
 
 
 def test_issue_sialle1():
-    # Problème : Si on tape 1/(1-sqrt(2)), on obtient le résultat 1/-sqrt(2)+1,
-    # qui est faux (il manque les parenthèses...).
+    # ProblÃ¨me : Si on tape 1/(1-sqrt(2)), on obtient le rÃ©sultat 1/-sqrt(2)+1,
+    # qui est faux (il manque les parenthÃ¨ses...).
     assert_resultat("1/(1-sqrt(2))", "1/(-sqrt(2) + 1)")
 
 def test_1_pas_en_facteur():
@@ -336,10 +336,10 @@ def test_systeme():
 
 
 def test_ecriture_fraction_decimaux():
-    # En interne, les décimaux sont remplacés par des fractions.
-    # Cela évite la perte de précision inhérente aux calculs avec flottants.
-    # Ce remplacement doit être autant que possible transparent pour l'utilisateur,
-    # qui, s'il rentre des décimaux, doit voir des décimaux s'afficher.
+    # En interne, les dÃ©cimaux sont remplacÃ©s par des fractions.
+    # Cela Ã©vite la perte de prÃ©cision inhÃ©rente aux calculs avec flottants.
+    # Ce remplacement doit Ãªtre autant que possible transparent pour l'utilisateur,
+    # qui, s'il rentre des dÃ©cimaux, doit voir des dÃ©cimaux s'afficher.
     i = Interprete(verbose=VERBOSE)
     r, l = i.evaluer('0,3+0,8')
     assertEqual(r, '1,1')
@@ -348,7 +348,7 @@ def test_ecriture_fraction_decimaux():
     r, l = i.evaluer("f(x)=0,3x+0,7")
     assertEqual(r, 'x -> 0,3 x + 0,7')
     # Le calcul suivant ne fonctionne pas en utilisant en interne des flottants
-    # (le coefficient devant le x^2 n'est pas tout à fait nul lorsqu'on développe).
+    # (le coefficient devant le x^2 n'est pas tout Ã  fait nul lorsqu'on dÃ©veloppe).
     # En utilisant en interne des fractions, par contre, le calcul est exact.
     i.evaluer("C(x)=0,003 x^2 + 60 x + 48000")
     r, l = i.evaluer("expand(C(x+1)-C(x))")
@@ -362,7 +362,7 @@ def test_ecriture_fraction_decimaux():
 
 
 def test_issue_258():
-    # Issue: "Le mode approché ne fonctionne pas pour une liste."
+    # Issue: "Le mode approchÃ© ne fonctionne pas pour une liste."
     i = Interprete(verbose=VERBOSE)
     i.evaluer("v(p,n) = (p-1.96*sqrt(p*(1-p))/sqrt(n), p+1.96*sqrt(p*(1-p))/sqrt(n))")
     r, l = i.evaluer("v(0.28, 50)", calcul_exact=False)

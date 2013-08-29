@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------#######
@@ -34,9 +34,9 @@ from .. import param
 
 
 class Variable_generique(Objet_numerique):
-    u"""Une variable générique.
+    u"""Une variable gÃ©nÃ©rique.
 
-    Usage interne : la classe mère pour tous les types de variables."""
+    Usage interne : la classe mÃ¨re pour tous les types de variables."""
 
     _prefixe_nom = "k"
     _style_defaut = param.variables
@@ -55,18 +55,18 @@ class Variable_generique(Objet_numerique):
 class Variable(Variable_generique):
     u"""Une variable libre.
 
-    Une variable numérique ; l'argument peut être un nombre, ou une expression sous forme de chaine de caractères.
+    Une variable numÃ©rique ; l'argument peut Ãªtre un nombre, ou une expression sous forme de chaine de caractÃ¨res.
     Exemple: Variable(17.5), Variable('AB.longeur+1').
-    Dans ce dernier cas, il est nécessaire qu'une feuille de travail soit définie.
+    Dans ce dernier cas, il est nÃ©cessaire qu'une feuille de travail soit dÃ©finie.
 
-    Note : ne pas définir directement l'attribut __contenu !"""
+    Note : ne pas dÃ©finir directement l'attribut __contenu !"""
 
     # Mise en cache de la valeur
     __val_cache = __val_cache_approche = None
-    # Utilisé par la classe `Formule`:
+    # UtilisÃ© par la classe `Formule`:
     _cache_formule = None
 
-    # RE correspondant à un nom de variable (mais pas d'attribut)
+    # RE correspondant Ã  un nom de variable (mais pas d'attribut)
     __re = re.compile('(' + VAR_NOT_ATTR + ')')
 
     def _set_contenu(self, value):
@@ -103,11 +103,11 @@ class Variable(Variable_generique):
         self.__contenu = contenu = Ref(contenu)
 
     def _test_dependance_circulaire(self, valeur):
-        u"""Provoque une erreur si l'objet se retrouve dépendre de lui-même avec la nouvelle valeur.
+        u"""Provoque une erreur si l'objet se retrouve dÃ©pendre de lui-mÃªme avec la nouvelle valeur.
 
-        Retourne une liste composée alternativement d'instructions et d'objets de la feuille,
-        et un ensemble constitué des objets de la feuille mis en jeu dans le code.
-        (... à documenter ...)"""
+        Retourne une liste composÃ©e alternativement d'instructions et d'objets de la feuille,
+        et un ensemble constituÃ© des objets de la feuille mis en jeu dans le code.
+        (... Ã  documenter ...)"""
         if isinstance(valeur, Variable):
             valeur = valeur.contenu
         if isinstance(valeur, basestring) and self.feuille is not None:
@@ -126,16 +126,16 @@ class Variable(Variable_generique):
 
 
     def _compile(self,  liste, ensemble):
-        u"""Compile l'expression stockée dans la variable ; les arguments sont les valeurs retournées par '_test_dependance_circulaire'.
+        u"""Compile l'expression stockÃ©e dans la variable ; les arguments sont les valeurs retournÃ©es par '_test_dependance_circulaire'.
 
-        La compilation doit toujours avoir lieu à la fin de la procédure de redéfinition de la variable,
-        car elle ne doit être exécutée que si la redéfinition de la variable va effectivement avoir lieu,
-        c'est-à-dire si tout le processus précédent s'est exécuté sans erreur."""
+        La compilation doit toujours avoir lieu Ã  la fin de la procÃ©dure de redÃ©finition de la variable,
+        car elle ne doit Ãªtre exÃ©cutÃ©e que si la redÃ©finition de la variable va effectivement avoir lieu,
+        c'est-Ã -dire si tout le processus prÃ©cÃ©dent s'est exÃ©cutÃ© sans erreur."""
         if self._type == "compose" and self.feuille is not None:
 ##            re.findall(self.__re,  self.valeur)
             self.__liste = liste
             self.__fonction = eval("lambda:" + self.__contenu, self.feuille.objets)
-            # on supprime la variable de la liste des vassaux pour les objets dont elle ne dépendra plus desormais:
+            # on supprime la variable de la liste des vassaux pour les objets dont elle ne dÃ©pendra plus desormais:
             for objet in self._parents:
                 objet.enfants.remove(self)
             self._parents = ensemble
@@ -154,9 +154,9 @@ class Variable(Variable_generique):
     @property2
     def contenu(self, value = None):
         if value is None:
-            if self.__liste: # variable contenant une expression compilée
-                # On regénère l'expression à partir de l'expression compilée.
-                # C'est important, car certains objets de la feuille peuvent avoir changé de nom entre temps.
+            if self.__liste: # variable contenant une expression compilÃ©e
+                # On regÃ©nÃ¨re l'expression Ã  partir de l'expression compilÃ©e.
+                # C'est important, car certains objets de la feuille peuvent avoir changÃ© de nom entre temps.
                 valeur = ""
                 for elt in self.__liste:
                     if isinstance(elt, Objet):
@@ -201,7 +201,7 @@ class Variable(Variable_generique):
                     self.__val_cache = self.__val_cache.val
             except Exception:
                 if param.verbose:
-                    print_error(u"Impossible de déterminer la valeur de la variable " + self.nom + repr(self))
+                    print_error(u"Impossible de dÃ©terminer la valeur de la variable " + self.nom + repr(self))
                 return False
         else:
             self.__val_cache = self.contenu
@@ -257,13 +257,13 @@ class Variable(Variable_generique):
                     break
 
 
-### Addition et multiplication liées
+### Addition et multiplication liÃ©es
 ### ------------------------------------------------
 
 ### Est-ce encore bien utile ?
 
 ##    def add(self, y):
-##        u"Addition liée (le résultat est une variable qui reste toujours égale à la somme des 2 valeurs)."
+##        u"Addition liÃ©e (le rÃ©sultat est une variable qui reste toujours Ã©gale Ã  la somme des 2 valeurs)."
 ##        if self._type == "simple":
 ##            if isinstance(y, TYPES_NUMERIQUES) or (isinstance(y, Variable) and y._type == "simple"):
 ##                return Variable(self + y)
@@ -272,7 +272,7 @@ class Variable(Variable_generique):
 ##        return var
 
 ##    def mul(self, y):
-##        u"Multiplication liée (le résultat est une variable qui reste toujours égale au produit des 2 valeurs)."
+##        u"Multiplication liÃ©e (le rÃ©sultat est une variable qui reste toujours Ã©gale au produit des 2 valeurs)."
 ##        if self._type == "simple":
 ##           if isinstance(y, TYPES_NUMERIQUES) or (isinstance(y, Variable) and y._type == "simple"):
 ##                return Variable(self * y)
@@ -338,23 +338,23 @@ class Add(Variable_generique):
 
 
 class Variable_affichage(Variable_generique):
-    u"""La classe mère des paramètres d'affichage (xmin, xmax, ...)"""
+    u"""La classe mÃ¨re des paramÃ¨tres d'affichage (xmin, xmax, ...)"""
     parametre = NotImplemented
 
     # Inutile de les enregistrer sur la feuille, puisqu'elles ne font que
-    # pointer vers la fenêtre d'affichage qui est déjà enregistrée dans la
+    # pointer vers la fenÃªtre d'affichage qui est dÃ©jÃ  enregistrÃ©e dans la
     # feuille.
     _enregistrer_sur_la_feuille = False
 
     def _get_valeur(self):
-        u"""Retourne la valeur du paramètre d'affichage (xmin ou xmax ou ...)
+        u"""Retourne la valeur du paramÃ¨tre d'affichage (xmin ou xmax ou ...)
 
-        Si un canvas est défini, la valeur retournée est prise sur le canvas,
-        sinon, elle est récupérée depuis la feuille.
-        Les deux valeurs ne coïncident pas forcément si une contrainte est
-        imposée à l'affichage (par exemple, un repère orthonormé).
-        Dans ce cas, il se peut que l'affichage à l'écran (canvas) dépasse
-        la taille de la fenêtre de la feuille."""
+        Si un canvas est dÃ©fini, la valeur retournÃ©e est prise sur le canvas,
+        sinon, elle est rÃ©cupÃ©rÃ©e depuis la feuille.
+        Les deux valeurs ne coÃ¯ncident pas forcÃ©ment si une contrainte est
+        imposÃ©e Ã  l'affichage (par exemple, un repÃ¨re orthonormÃ©).
+        Dans ce cas, il se peut que l'affichage Ã  l'Ã©cran (canvas) dÃ©passe
+        la taille de la fenÃªtre de la feuille."""
         if self.feuille.canvas:
             return getattr(self.feuille.canvas, self.parametre)
         return getattr(self.feuille, self.parametre)
@@ -372,27 +372,27 @@ class Variable_affichage(Variable_generique):
 
 
 class XMinVar(Variable_affichage):
-    u"""Le minimum de la fenêtre en abscisse."""
+    u"""Le minimum de la fenÃªtre en abscisse."""
     parametre = 'xmin'
 
 
 class XMaxVar(Variable_affichage):
-    u"""Le maximum de la fenêtre en abscisse."""
+    u"""Le maximum de la fenÃªtre en abscisse."""
     parametre = 'xmax'
 
 
 class YMinVar(Variable_affichage):
-    u"""Le minimum de la fenêtre en ordonnée."""
+    u"""Le minimum de la fenÃªtre en ordonnÃ©e."""
     parametre = 'ymin'
 
 
 class YMaxVar(Variable_affichage):
-    u"""Le maximum de la fenêtre en ordonnée."""
+    u"""Le maximum de la fenÃªtre en ordonnÃ©e."""
     parametre = 'ymax'
 
 
 class Pixel_unite(Variable_generique):
-    u"""Correspond à un pixel."""
+    u"""Correspond Ã  un pixel."""
 
     # Inutile d'enregistrer ces variables sur la feuille, puisqu'elles ne font que
     # pointer vers le canvas.
@@ -409,7 +409,7 @@ class Pixel_unite(Variable_generique):
 
 
 class Dpx(Pixel_unite):
-    u"""Un pixel unité en abscisse."""
+    u"""Un pixel unitÃ© en abscisse."""
 
     def _get_valeur(self):
         if self.feuille.canvas:
@@ -417,7 +417,7 @@ class Dpx(Pixel_unite):
 
 
 class Dpy(Pixel_unite):
-    u"""Un pixel unité en ordonnée."""
+    u"""Un pixel unitÃ© en ordonnÃ©e."""
 
     def _get_valeur(self):
         if self.feuille.canvas:

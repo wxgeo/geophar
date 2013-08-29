@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------##
@@ -77,8 +77,8 @@ def mode_script(input = None, output = None):
             canvas.exporter(output, echelle = param.echelle_cm)
         except IOError:
             print_error()
-            return _err(u"Impossible d'exporter dans '%s'. Vérifiez les permissions ou l'espace disque." % output)
+            return _err(u"Impossible d'exporter dans '%s'. VÃ©rifiez les permissions ou l'espace disque." % output)
 
     except Exception:
         print_error()
-        return _err(u"Erreur d'exécution du mode script.")
+        return _err(u"Erreur d'exÃ©cution du mode script.")

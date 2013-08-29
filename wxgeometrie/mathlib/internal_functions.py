@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------#######
@@ -23,7 +23,7 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-## Cette librairie contient des fonctions mathématiques à usage interne
+## Cette librairie contient des fonctions mathÃ©matiques Ã  usage interne
 
 from numpy import roots as nroots
 
@@ -46,14 +46,14 @@ def is_var(expression, variable):
 
 
 def poly_factor(polynome, variable, corps = None, approchee = None):
-    u"""Factorise un polynome à une variable.
+    u"""Factorise un polynome Ã  une variable.
 
-    Le corps peut être R ou C.
-    Par défaut, le corps de factorisation est celui des coefficients."""
+    Le corps peut Ãªtre R ou C.
+    Par dÃ©faut, le corps de factorisation est celui des coefficients."""
     from .sympy_functions import simplifier_racines
     if approchee is None:
-        # Paramètre utilisé en interne par 'l'interpreteur' de commandes
-        # (cf. méth. evaluer() de la classe Interprete(), dans custom_objects.py)
+        # ParamÃ¨tre utilisÃ© en interne par 'l'interpreteur' de commandes
+        # (cf. mÃ©th. evaluer() de la classe Interprete(), dans custom_objects.py)
         approchee = getattr(param, 'calcul_approche', False)
 
     if polynome.is_Mul:
@@ -81,13 +81,13 @@ def poly_factor(polynome, variable, corps = None, approchee = None):
         if nbr_racines < sym_poly.degree():
             # On cherche une approximation des racines manquantes
             sol_approchees = list(nroots(coeffs))
-            # On associe à chaque racine l'approximation qui lui correspond
+            # On associe Ã  chaque racine l'approximation qui lui correspond
             for racine, multiplicite in racines:
                 distances = [(sol, abs(complex(racine) - sol)) for sol in sol_approchees]
                 distances.sort(key = lambda x:x[1])
                 for i in range(multiplicite):
                     distances.pop(0)
-                # Les racines approchées qui restent ne correspondent à aucune racine exacte
+                # Les racines approchÃ©es qui restent ne correspondent Ã  aucune racine exacte
                 sol_approchees = [sol for sol, distance in distances]
             racines.extend((sympify(sol), sol_approchees.count(sol)) for sol in set(sol_approchees))
 
@@ -107,9 +107,9 @@ def poly_factor(polynome, variable, corps = None, approchee = None):
                 reel = im.is_zero or im.evalf(80).epsilon_eq(0,'10e-80')
                 if reel:
                     racine = re
-                # Approximation utile (?) pour la factorisation de certains polynômes de degrés 3 et 4
-                # De toute manière, une vérification de la factorisation par division euclidienne
-                # a lieu à la fin de l'algorithme.
+                # Approximation utile (?) pour la factorisation de certains polynÃ´mes de degrÃ©s 3 et 4
+                # De toute maniÃ¨re, une vÃ©rification de la factorisation par division euclidienne
+                # a lieu Ã  la fin de l'algorithme.
             if reel:
                 produit *= (variable - racine)**multiplicite
             else:
@@ -123,7 +123,7 @@ def poly_factor(polynome, variable, corps = None, approchee = None):
                     racines_en_stock.append(racine)
                     multiplicites_en_stock.append(multiplicite)
         if racines_en_stock:
-            # Il reste des racines qu'on n'a pas réussi à appareiller.
+            # Il reste des racines qu'on n'a pas rÃ©ussi Ã  appareiller.
             P = 1
             for racine, multiplicite in zip(racines_en_stock, multiplicites_en_stock):
                 P *= (variable - racine)**multiplicite
@@ -143,11 +143,11 @@ def poly_factor(polynome, variable, corps = None, approchee = None):
     return poly_factorise
 
 def syms(expression):
-    u"""Retourne la liste des symboles utilisés par l'expression."""
+    u"""Retourne la liste des symboles utilisÃ©s par l'expression."""
     return tuple(expression.atoms(Symbol))
 
 def extract_var(expression):
-    u"""Retourne la variable de l'expression (renvoie un avertissement s'il y en a plusieurs, et 'x' par défaut s'il n'y en a pas)."""
+    u"""Retourne la variable de l'expression (renvoie un avertissement s'il y en a plusieurs, et 'x' par dÃ©faut s'il n'y en a pas)."""
     if hasattr(expression, "atoms"):
         symboles = expression.atoms(Symbol)
         if len(symboles) == 0:

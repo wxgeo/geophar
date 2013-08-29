@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 #from tools.testlib import assertAlmostEqual
@@ -57,7 +57,7 @@ def test_Intersection_cercles():
     assert(Droite(A, C) == Mediatrice(B, D))
 
 def test_intersection_et_feuille():
-    u"""On teste que par défaut, le deuxième d'intersection soit différent du premier."""
+    u"""On teste que par dÃ©faut, le deuxiÃ¨me d'intersection soit diffÃ©rent du premier."""
     f = Feuille()
     f.objets._ = Point(-5.11060948081, 0.144469525959)
     f.objets._ = Point(-3.97291196388, 0.794582392777)
@@ -67,5 +67,5 @@ def test_intersection_et_feuille():
     f.objets._ = Droite(f.objets.M3, f.objets.M4)
     f.objets._ = Intersection_droite_cercle(f.objets.d1, f.objets.c1, True)
     f.objets._ = Intersection_droite_cercle(f.objets.d1, f.objets.c1)
-    # On vérifie qu'on a bien obtenu le 2e point d'intersection (et non deux fois de suite le même)
+    # On vÃ©rifie qu'on a bien obtenu le 2e point d'intersection (et non deux fois de suite le mÃªme)
     assert(f.objets.M6.premier_point == False)

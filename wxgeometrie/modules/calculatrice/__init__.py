@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------#######
@@ -49,8 +49,8 @@ from ... import param
 class CalculatriceMenuBar(MenuBar):
     def __init__(self, panel):
         MenuBar.__init__(self, panel)
-        self.ajouter(u"Fichier", [u"Réinitialiser",
-                                    u"Réinitialiser la calculatrice.", "Ctrl+N",
+        self.ajouter(u"Fichier", [u"RÃ©initialiser",
+                                    u"RÃ©initialiser la calculatrice.", "Ctrl+N",
                                     self.panel.initialiser],
                                 [u"ouvrir"], [u"enregistrer"],
                                 [u"enregistrer_sous"], ['session'], None, ["quitter"])
@@ -59,14 +59,14 @@ class CalculatriceMenuBar(MenuBar):
             self.ajouter(rubrique, *(self.formater(contenu, rubrique != "Symboles") for contenu in __classement__[rubrique]))
             # pas de parenthese apres un symbole
         self.ajouter(u"Outils",
-                        [u"Mémoriser le résultat", u"Copie le resultat du calcul dans le presse-papier, afin de pouvoir l'utiliser ailleurs.", "Ctrl+M", self.panel.vers_presse_papier],
+                        [u"MÃ©moriser le rÃ©sultat", u"Copie le resultat du calcul dans le presse-papier, afin de pouvoir l'utiliser ailleurs.", "Ctrl+M", self.panel.vers_presse_papier],
 #                        [u"LaTeX",
 #                            [u"Inverser les sommes", "Inverser l'ordre d'affichage des termes des sommes.", None, self.panel.inverser_sommes_LaTeX, self.panel.inverser_sommes_LaTeX]
 #                            ],
                         [u"options"],
                         )
-        self.ajouter(u"Avancé",
-                        [u"État interne de l'interprète", u"État de l'interprète de commandes.", u"Ctrl+H", self.panel.EtatInterne],
+        self.ajouter(u"AvancÃ©",
+                        [u"Ã‰tat interne de l'interprÃ¨te", u"Ã‰tat de l'interprÃ¨te de commandes.", u"Ctrl+H", self.panel.EtatInterne],
                         [u"ligne_commande"],
                         ["debug"],
                         )
@@ -83,8 +83,8 @@ class CalculatriceMenuBar(MenuBar):
 
 class BoutonValider(QToolButton):
 
-    modes = [('exact', u'résultats exacts'), ('approche', u'résultats approchés'),
-             ('scientifique', u'résultats en écriture scientifique')]
+    modes = [('exact', u'rÃ©sultats exacts'), ('approche', u'rÃ©sultats approchÃ©s'),
+             ('scientifique', u'rÃ©sultats en Ã©criture scientifique')]
 
     def __init__(self, parent):
         QToolButton.__init__(self)
@@ -140,8 +140,8 @@ class PaveNumerique(QWidget):
         QWidget.__init__(self, parent)
         self.parent = parent
         ### Pave numerique de la calculatrice ###
-        # On construit le pavé de la calculatrice.
-        # Chaque bouton du pavé doit provoquer l'insertion de la commande correspondante.
+        # On construit le pavÃ© de la calculatrice.
+        # Chaque bouton du pavÃ© doit provoquer l'insertion de la commande correspondante.
 
         self.pave = pave = QVBoxLayout()
 #        pave.setSpacing(1)
@@ -153,13 +153,13 @@ class PaveNumerique(QWidget):
         self.actions = [self.touche_2nde]
 
         for i, nom_bouton in enumerate(boutons):
-            # On aligne les boutons de la calculatrice par rangées de 5.
+            # On aligne les boutons de la calculatrice par rangÃ©es de 5.
             if i%5 == 0:
                 self.rangee = rangee = QHBoxLayout()
                 rangee.addStretch(1)
                 pave.addLayout(rangee)
 
-            # Ensuite, on construit une liste de fonctions, parallèlement à la liste des boutons.
+            # Ensuite, on construit une liste de fonctions, parallÃ¨lement Ã  la liste des boutons.
             if i > 0:
                 self.actions.append(partial(self.action, commande=inserer[i]))
 
@@ -182,7 +182,7 @@ class PaveNumerique(QWidget):
     def touche_2nde(self, event=None):
         self.seconde = not self.seconde
         if self.seconde:
-            self.message(u"Touche [2nde] activée.")
+            self.message(u"Touche [2nde] activÃ©e.")
         else:
             self.message("")
 
@@ -212,7 +212,7 @@ class Options(QWidget):
         self.pave = QVBoxLayout()
 
         # Chiffres significatifs
-        box = QGroupBox(u"Mode calcul approché")
+        box = QGroupBox(u"Mode calcul approchÃ©")
         box_layout = QVBoxLayout()
         box.setLayout(box_layout)
 
@@ -220,7 +220,7 @@ class Options(QWidget):
         box_layout.addLayout(ligne)
         ligne.addWidget(QLabel(u"Afficher "))
         self.sc_precision_affichage = sc = QSpinBox(self)
-        # param.precision_calcul = 60 par défaut
+        # param.precision_calcul = 60 par dÃ©faut
         sc.setRange(1, 50)
         sc.setValue(prm("precision_affichage"))
         sc.valueChanged.connect(self.EvtPrecisionAffichage)
@@ -230,20 +230,20 @@ class Options(QWidget):
 
         self.pave.addWidget(box)
 
-        # Nombre de décimales
-        box = QGroupBox(u"Mode écriture scientifique")
+        # Nombre de dÃ©cimales
+        box = QGroupBox(u"Mode Ã©criture scientifique")
         box_layout = QVBoxLayout()
         box.setLayout(box_layout)
 
         ligne = QHBoxLayout()
         box_layout.addLayout(ligne)
-        ligne.addWidget(QLabel(u"Arrondir les résultats à "))
+        ligne.addWidget(QLabel(u"Arrondir les rÃ©sultats Ã  "))
         self.sc_decimales = sc = QSpinBox(self)
         sc.setRange(0, 11)
         sc.setValue(prm("ecriture_scientifique_decimales"))
         sc.valueChanged.connect(self.EvtDecimales)
         ligne.addWidget(sc)
-        ligne.addWidget(QLabel(u" décimale(s)."))
+        ligne.addWidget(QLabel(u" dÃ©cimale(s)."))
         ligne.addStretch()
 
         self.pave.addWidget(box)
@@ -251,14 +251,14 @@ class Options(QWidget):
         box = QGroupBox(u"Copie Automatique")
         box_layout = QVBoxLayout()
         box.setLayout(box_layout)
-        # Copie du résultat dans le presse-papier
+        # Copie du rÃ©sultat dans le presse-papier
         ligne = QHBoxLayout()
         box_layout.addLayout(ligne)
         self.cb_copie_automatique = cb = QCheckBox(self)
         cb.setChecked(prm("copie_automatique"))
         cb.stateChanged.connect(self.EvtCopieAutomatique)
         ligne.addWidget(cb)
-        ligne.addWidget(QLabel(u"Copie du résultat dans le presse-papier."))
+        ligne.addWidget(QLabel(u"Copie du rÃ©sultat dans le presse-papier."))
         ligne.addStretch()
 
         # En mode LaTeX
@@ -275,22 +275,22 @@ class Options(QWidget):
         self.pave.addWidget(box)
         #~ self.pave.addStretch()
 
-        box = QGroupBox(u"Ensemble de résolution")
+        box = QGroupBox(u"Ensemble de rÃ©solution")
         box_layout = QVBoxLayout()
         box.setLayout(box_layout)
         ligne = QHBoxLayout()
         box_layout.addLayout(ligne)
-        ligne.addWidget(QLabel(u'Résoudre et factoriser dans '))
+        ligne.addWidget(QLabel(u'RÃ©soudre et factoriser dans '))
         self.cb_ensemble = cb = QComboBox()
         ligne.addWidget(cb)
-        cb.addItems((u'R (réels)', u'C (complexes)'))
+        cb.addItems((u'R (rÃ©els)', u'C (complexes)'))
         cb.setCurrentIndex(self.ensembles.index(prm('ensemble')))
         cb.currentIndexChanged.connect(self.EvtEnsemble)
         self.pave.addWidget(box)
         self.pave.addStretch()
 
         self.setLayout(self.pave)
-        # Pour (dés)activer la ligne "Copie au format LaTeX" au besoin.
+        # Pour (dÃ©s)activer la ligne "Copie au format LaTeX" au besoin.
         self.EvtCopieAutomatique()
 
     def EvtPrecisionAffichage(self, event=None):
@@ -329,7 +329,7 @@ class OngletsCalc(QTabWidget):
     def __init__(self, parent):
         ##self.parent = parent
         QTabWidget.__init__(self, parent)
-        self.addTab(PaveNumerique(parent), u' Pavé numérique ')
+        self.addTab(PaveNumerique(parent), u' PavÃ© numÃ©rique ')
         self.addTab(Options(parent), u'Options')
         self.setTabPosition(QTabWidget.South)
         self.setStyleSheet("""
@@ -377,10 +377,10 @@ class Calculatrice(Panel_simple):
                                 )
 
         bouton = BoutonValider(self)
-        bouton.setToolTip(u"Laissez appuyé pour changer de mode.")
+        bouton.setToolTip(u"Laissez appuyÃ© pour changer de mode.")
         self.entree = entree = LigneCommande(self, longueur=550,
                                 action=self.affichage_resultat, bouton=bouton)
-        entree.setToolTip(u"[Maj]+[Entrée] pour une valeur approchée.")
+        entree.setToolTip(u"[Maj]+[EntrÃ©e] pour une valeur approchÃ©e.")
         self.entree.texte.setContextMenuPolicy(Qt.CustomContextMenu)
         self.entree.texte.customContextMenuRequested.connect(self.EvtMenu)
 
@@ -414,7 +414,7 @@ class Calculatrice(Panel_simple):
 
     def activer(self):
         Panel_simple.activer(self)
-        # Actions à effectuer lorsque l'onglet devient actif
+        # Actions Ã  effectuer lorsque l'onglet devient actif
         self.entree.setFocus()
 
 
@@ -460,13 +460,13 @@ class Calculatrice(Panel_simple):
 
 
     def modifier_pp_texte(self, chaine):
-        u"""Modifier le résultat affiché en LaTeX (pretty print)."""
+        u"""Modifier le rÃ©sultat affichÃ© en LaTeX (pretty print)."""
         if self.param("latex"):
             # On utilise directement LaTeX pour le rendu
             chaine = "$" + chaine + "$"
         else:
             # On utilise le parser matplotlib.mathtext, moins complet mais bien
-            # plus rapide. Certaines adaptations doivent être faites.
+            # plus rapide. Certaines adaptations doivent Ãªtre faites.
             chaine = latex2mathtext(chaine)
         self.pp_texte.set_text(chaine)
         self.visualisation.draw()
@@ -486,10 +486,10 @@ class Calculatrice(Panel_simple):
         self.resultats.clear()
 
     def affichage_resultat(self, commande, **kw):
-        # Commandes spéciales:
+        # Commandes spÃ©ciales:
         if commande in ('clear', 'clear()', 'efface', 'efface()'):
             self.initialiser()
-            self.modifier_pp_texte(u"Calculatrice réinitialisée.")
+            self.modifier_pp_texte(u"Calculatrice rÃ©initialisÃ©e.")
             return
 
         self.modifie = True
@@ -500,7 +500,7 @@ class Calculatrice(Panel_simple):
                     self.interprete.calcul_exact = False
                 resultat, latex = self.interprete.evaluer(commande)
                 if latex == "$?$": # provoque une erreur (matplotlib 0.99.1.1)
-                    latex = u"Désolé, je ne sais pas faire..."
+                    latex = u"DÃ©solÃ©, je ne sais pas faire..."
             finally:
                 self.interprete.calcul_exact = self.param('calcul_exact')
                 self.entree.bouton.mode_normal()
@@ -518,12 +518,12 @@ class Calculatrice(Panel_simple):
                 except Exception:
                     print_error()
                     # Sinon, affichage en texte simple.
-                    #  `matplotlib.mathtext` est encore loin d'être
+                    #  `matplotlib.mathtext` est encore loin d'Ãªtre
                     # pleinement compatible avec LaTeX !
                     self.modifier_pp_texte(resultat)
             except Exception:
                 print_error()
-                # Si tout a raté... mais ça ne devrait jamais arrivé.
+                # Si tout a ratÃ©... mais Ã§a ne devrait jamais arrivÃ©.
                 self.modifier_pp_texte("<Affichage impossible>")
             #Presse-papier
             self.dernier_resultat = resultat
@@ -534,16 +534,16 @@ class Calculatrice(Panel_simple):
                     self.vers_presse_papier()
             # TextCtrl
             numero = str(len(self.interprete.derniers_resultats))
-            # Évite le décalage entre la première ligne et les suivantes (matrices)
+            # Ã‰vite le dÃ©calage entre la premiÃ¨re ligne et les suivantes (matrices)
             if "\n" in resultat and not aide:
                 resultat = "\n" + "\n".join(20*" " + ligne for ligne in resultat.split("\n"))
             self.resultats.moveCursor(QTextCursor.End)
             self.resultats.insertPlainText(u" Calcul n\xb0" + numero + " :   "
-                                                        + uu(commande) + u"\n Résultat :"
+                                                        + uu(commande) + u"\n RÃ©sultat :"
                                                         + " "*(4+len(numero))
                                                         + resultat + "\n__________________\n\n")
             self.resultats.moveCursor(QTextCursor.End)
-            self.message(u"Calcul effectué." + self.interprete.warning)
+            self.message(u"Calcul effectuÃ©." + self.interprete.warning)
             self.entree.clear()
 #            self.resultats.setCursorPosition(len(self.resultats.plainText()))
 #            self.resultats.setFocus()
@@ -582,7 +582,7 @@ class Calculatrice(Panel_simple):
 #            return
 #            entree.setSelection(final, final)
         menu = QMenu()
-        menu.setWindowTitle(u"Fonctions mathématiques")
+        menu.setWindowTitle(u"Fonctions mathÃ©matiques")
         debut = True
         for rubrique in __classement__:
             if not debut:
@@ -590,7 +590,7 @@ class Calculatrice(Panel_simple):
             debut = False
             for titre, nom, doc in filter(None, __classement__[rubrique]):
                 action = menu.addAction(titre, partial(self.insere, nom=nom, parentheses=(rubrique != "Symboles")))
-                # Pas de parenthèses après un symbole.
+                # Pas de parenthÃ¨ses aprÃ¨s un symbole.
                 action.setToolTip(doc)
         menu.exec_(QCursor.pos())
 
@@ -613,5 +613,5 @@ class Calculatrice(Panel_simple):
 
     def EtatInterne(self, event):
         contenu = self.interprete.save_state()
-        h = FenCode(self, u"État interne de l'inteprète", contenu, self.interprete.load_state)
+        h = FenCode(self, u"Ã‰tat interne de l'inteprÃ¨te", contenu, self.interprete.load_state)
         h.show()

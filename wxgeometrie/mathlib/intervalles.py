@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------#######
@@ -45,20 +45,20 @@ class Ensemble(object):
 
 
 class Union(Ensemble):
-    u"""Une union finie d'intervalles rÈels. Les valeurs numÈriques isolÈes sont converties en singletons.
-    Lors de l'initialisation, elle est reecrite sous forme d'union disjointe et ordonnÈe.
+    u"""Une union finie d'intervalles r√©els. Les valeurs num√©riques isol√©es sont converties en singletons.
+    Lors de l'initialisation, elle est reecrite sous forme d'union disjointe et ordonn√©e.
 
-    Les opÈration sur les unions d'intervalles sont :
+    Les op√©ration sur les unions d'intervalles sont :
     - l'union : symbole "A+B" ou "A|B'
     - l'intersection : symbole "A*B" ou "A&B"
-    - la diffÈrence : symbole "A-B"
-    - le complÈmentaire : symbole -A
+    - la diff√©rence : symbole "A-B"
+    - le compl√©mentaire : symbole -A
 
-    Note: l'inclusion et l'appartenance sont notÈes de maniËre identique:
+    Note: l'inclusion et l'appartenance sont not√©es de mani√®re identique:
     "y in A"
     "A in B".
 
-    Note: pour des raisons pratiques, l'ensemble vide est considÈrÈ comme un intervalle (sic).
+    Note: pour des raisons pratiques, l'ensemble vide est consid√©r√© comme un intervalle (sic).
     """
 
     def _initialiser(self, *intervalles):
@@ -78,7 +78,7 @@ class Union(Ensemble):
                 self.sup = self.intervalles[0].sup
                 self._inf_inclus = self.intervalles[0]._inf_inclus
                 self._sup_inclus = self.intervalles[0]._sup_inclus
-                # /!\ faire le changement de classe en dernier (‡ cause de 'self.intervalles')
+                # /!\ faire le changement de classe en dernier (√† cause de 'self.intervalles')
                 self.__class__ = Intervalle
 
         else: # ensemble vide
@@ -167,7 +167,7 @@ class Union(Ensemble):
         return not self.vide
 
     def __neg__(self):
-        u"complÈmentaire"
+        u"compl√©mentaire"
         return reduce(lambda x, y: x*y, [-intervalle for intervalle in self.intervalles], Intervalle())
 
     def __pos__(self):
@@ -205,10 +205,10 @@ class Union(Ensemble):
 
 
     def extremites(self, _min, _max):
-        u"""Retourne les extrÈmitÈs de chaque intervalle.
+        u"""Retourne les extr√©mit√©s de chaque intervalle.
 
-        Chaque extrÈmitÈ est donnÈe sous la forme de couples (_float, _str),
-        o˘ _str peut prendre les valeurs ".", ")", "(" ou "o".
+        Chaque extr√©mit√© est donn√©e sous la forme de couples (_float, _str),
+        o√π _str peut prendre les valeurs ".", ")", "(" ou "o".
         Exemple :
         >>> from wxgeometrie.mathlib.intervalles import conversion_chaine_ensemble
         >>> E = conversion_chaine_ensemble("]-oo;3[U]3;4]U]5;+oo[")
@@ -229,14 +229,14 @@ class Union(Ensemble):
 
     @property
     def adherence(self):
-        u"L'adhÈrence de l'ensemble (ie. le plus petit ensemble fermÈ qui le contienne)."
+        u"L'adh√©rence de l'ensemble (ie. le plus petit ensemble ferm√© qui le contienne)."
         return Union(Intervalle(intervalle.inf, intervalle.sup, True, True)
                                 for intervalle in self.intervalles)
 
     def asarray(self, _min, _max, pas):
-        u"""GÈnËre une liste d'objets 'array', correspondant ‡ chaque intervalle.
+        u"""G√©n√®re une liste d'objets 'array', correspondant √† chaque intervalle.
 
-        On se limite ‡ des valeurs comprises entre '_min' et '_max', avec le pas 'pas'."""
+        On se limite √† des valeurs comprises entre '_min' et '_max', avec le pas 'pas'."""
         arrays = []
         for intervalle in self.intervalles:
             inf = max(intervalle.inf, _min)
@@ -273,12 +273,12 @@ class Union(Ensemble):
 
 
 class Intervalle(Union):
-    u"""Un intervalle rÈel non vide.
-    Les opÈration sur les intervalles sont :
+    u"""Un intervalle r√©el non vide.
+    Les op√©ration sur les intervalles sont :
     - l'union : symbole "A+B"
     - l'intersection : symbole "A*B"
-    - la diffÈrence : symbole "A-B"
-    - le complÈmentaire : symbole -A
+    - la diff√©rence : symbole "A-B"
+    - le compl√©mentaire : symbole -A
     """
 
     def _initialiser(self, inf = -oo, sup = oo, inf_inclus = True, sup_inclus = True):
@@ -306,7 +306,7 @@ class Intervalle(Union):
 
     @property
     def intervalles(self):
-        # La conversion en 'float' est due ‡ un bug de sympy 0.6.3
+        # La conversion en 'float' est due √† un bug de sympy 0.6.3
         if float(self.sup) < float(self.inf) or (self.sup == self.inf and not (self.inf_inclus and self.sup_inclus)):
             return []
         else:
@@ -375,7 +375,7 @@ class Intervalle(Union):
 
     def __unicode__(self):
         if self.vide:
-            return u"\u00D8" # "ÿ" ; u"\u2205" ne fonctionne pas sous Windows XP
+            return u"\u00D8" # "√ò" ; u"\u2205" ne fonctionne pas sous Windows XP
         else:
             return unicode(str(self))
 
@@ -398,30 +398,30 @@ class Intervalle(Union):
 def _remplacer_virgule(chaine):
     u"""Remplacement intelligent de la virgule par un point ou un point-virgule.
 
-    Dans la mesure du possible, essaie de deviner si la virgule est utilisÈe
-    comme sÈparateur dÈcimal, ou entre deux valeurs.
-    Dans la majoritÈ des cas, cela permet de corriger une utilisation
-    incorrecte de la virgule comme sÈparateur dÈcimal."""
+    Dans la mesure du possible, essaie de deviner si la virgule est utilis√©e
+    comme s√©parateur d√©cimal, ou entre deux valeurs.
+    Dans la majorit√© des cas, cela permet de corriger une utilisation
+    incorrecte de la virgule comme s√©parateur d√©cimal."""
     if ',' not in chaine:
         return chaine
     elif ';' in chaine and '.' not in chaine:
         if param.debug:
             print(u"Warning (autocorrection): '" + chaine + "'\n"
                 "Utilisation incorrecte d'une virgule.\n"
-                u"Utilisez le point comme sÈparateur dÈcimal, ou modifiez les options.\n"
-                u"Enfin, ne mÈlangez pas les virgules et les points virgules.")
+                u"Utilisez le point comme s√©parateur d√©cimal, ou modifiez les options.\n"
+                u"Enfin, ne m√©langez pas les virgules et les points virgules.")
         return chaine.replace(',', '.')
     else:
         return chaine.replace(',', ';')
 
 
 def preformatage_ensemble(chaine):
-    u"""Formatage lÈger (qui reste humainement lisible)."""
+    u"""Formatage l√©ger (qui reste humainement lisible)."""
     chaine = chaine.replace(" ", "")
     chaine = _remplacer_virgule(chaine)
 
     # Traduction du LaTeX
-    # On enlËve le \ devant les commandes latex mathÈmatiques usuelles
+    # On enl√®ve le \ devant les commandes latex math√©matiques usuelles
     chaine = re.sub(r"\\(infty|e|pi|sin|cos|tan|ln|exp)", lambda m:m.group()[1:], chaine)
     # conversion de \frac, \dfrac et \tfrac
     chaine = _convertir_latex_frac(chaine)
@@ -446,14 +446,14 @@ def preformatage_ensemble(chaine):
 
 
 def preformatage_geolib_ensemble(chaine):
-    u"""Cette fonction est destinÈe ‡ un usage trËs spÈcifique dans geolib.
+    u"""Cette fonction est destin√©e √† un usage tr√®s sp√©cifique dans geolib.
 
-    Elle accepte une syntaxe beaucoup plus souple que la prÈcÈdente,
-    et indique si les extrÈmitÈs des intervalles doivent Ítre affichÈs ou non.
+    Elle accepte une syntaxe beaucoup plus souple que la pr√©c√©dente,
+    et indique si les extr√©mit√©s des intervalles doivent √™tre affich√©s ou non.
     Par exemple:
-    ]1;2] -> afficher les extrÈmitÈs de la courbe en 1 (arc) et en 2 (point).
-    1;2] -> afficher l'extrÈmitÈ en 2 (point), mais pas en 1.
-    ]1;2 -> afficher l'extrÈmitÈ en 1 (arc), mais pas en 2.
+    ]1;2] -> afficher les extr√©mit√©s de la courbe en 1 (arc) et en 2 (point).
+    1;2] -> afficher l'extr√©mit√© en 2 (point), mais pas en 1.
+    ]1;2 -> afficher l'extr√©mit√© en 1 (arc), mais pas en 2.
     """
     chaine = re.sub('[ ]+', ' ', chaine)
     chaine = _remplacer_virgule(chaine)
@@ -484,7 +484,7 @@ def preformatage_geolib_ensemble(chaine):
                 if k != -1:
                     appendice = intervalle[k:]
                     intervalle = intervalle[:k]
-                    # ]-oo;+oo[-{1;2} est dÈcoupÈ en ]-oo;+oo[ (intervalle) et -{1;2} (appendice)
+                    # ]-oo;+oo[-{1;2} est d√©coup√© en ]-oo;+oo[ (intervalle) et -{1;2} (appendice)
                 if ';' in intervalle:
                     deb, fin = intervalle.split(';')
                     if deb and deb[0] not in '[]':
@@ -502,9 +502,9 @@ def preformatage_geolib_ensemble(chaine):
 
 
 def formatage_ensemble(chaine, preformatage = True, utiliser_sympy = False):
-    u"""Les symboles ‡ utiliser sont 'U' pour l'union, '^' pour l'intersection,
+    u"""Les symboles √† utiliser sont 'U' pour l'union, '^' pour l'intersection,
     '-' ou '\\' pour la soustraction.
-    R, R+, R*+, R-, R*- sont aussi acceptÈs."""
+    R, R+, R*+, R-, R*- sont aussi accept√©s."""
 
     if preformatage:
         chaine = preformatage_ensemble(chaine)
@@ -537,7 +537,7 @@ def conversion_chaine_ensemble(chaine, utiliser_sympy = False):
             return S(1)
         else:
             return Symbol(nom)
-    # ¿ faire en dernier (remplace sympy.Union par intervalles.Union).
+    # √Ä faire en dernier (remplace sympy.Union par intervalles.Union).
     dico.update({"__builtins__": None,
             "Intervalle": Intervalle,
             "Union": Union,

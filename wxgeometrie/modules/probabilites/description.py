@@ -1,13 +1,13 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 
-# Informations utilisée par l'installeur sous Windows.
+# Informations utilisÃ©e par l'installeur sous Windows.
 # titre : description sommaire du module
-# description : description détaillée
-# defaut : par défaut, le module est-il installé ou non ?
+# description : description dÃ©taillÃ©e
+# defaut : par dÃ©faut, le module est-il installÃ© ou non ?
 
 description = {
-"titre":                    u"Arbres de probabilités",
-"description":              u"Générateur d'arbres de probabilités.",
+"titre":                    u"Arbres de probabilitÃ©s",
+"description":              u"GÃ©nÃ©rateur d'arbres de probabilitÃ©s.",
 "groupe":                   u"Modules",
 "defaut":  True,
 }

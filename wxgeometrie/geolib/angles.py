@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------#######
@@ -41,9 +41,9 @@ from ..pylib import warning
 
 
 class Angle_generique(Objet_numerique):
-    u"""Un angle générique (en radian).
+    u"""Un angle gÃ©nÃ©rique (en radian).
 
-    Classe mère des angles orientés ou non."""
+    Classe mÃ¨re des angles orientÃ©s ou non."""
 
     _prefixe_nom = "a"
 
@@ -92,7 +92,7 @@ class Angle_generique(Objet_numerique):
 
 
 class Secteur_angulaire(Angle_generique):
-    u"Classe mère de tous les angles 'affichables'."
+    u"Classe mÃ¨re de tous les angles 'affichables'."
 
     _style_defaut = param.angles
     _affichage_depend_de_la_fenetre = True
@@ -207,9 +207,9 @@ class Secteur_angulaire(Angle_generique):
 
 
 class Angle_oriente(Secteur_angulaire):
-    u"""Un angle orienté.
+    u"""Un angle orientÃ©.
 
-    Un angle orienté défini par 3 points A, B, C -> angle (BA>, BC>)."""
+    Un angle orientÃ© dÃ©fini par 3 points A, B, C -> angle (BA>, BC>)."""
 
     point1 = __point1 = Argument("Point_generique", defaut = Point)
     point2 = __point2 = Argument("Point_generique", defaut = Point)
@@ -231,7 +231,7 @@ class Angle_oriente(Secteur_angulaire):
 class Angle(Secteur_angulaire):
     u"""Un angle.
 
-    Un angle non orienté, défini par 3 points A, B, C -> angle /ABC\."""
+    Un angle non orientÃ©, dÃ©fini par 3 points A, B, C -> angle /ABC\."""
 
     point1 = __point1 = Argument("Point_generique", defaut = Point)
     point2 = __point2 = Argument("Point_generique", defaut = Point)
@@ -249,7 +249,7 @@ class Angle(Secteur_angulaire):
 
     @property
     def sens(self):
-        return u"non défini" # attention en cas de modification : cette valeur est utilisée dans la classe Label_angle
+        return u"non dÃ©fini" # attention en cas de modification : cette valeur est utilisÃ©e dans la classe Label_angle
 
     def image_par(self, transformation):
         return Angle(self.__point1.image_par(transformation), self.__point2.image_par(transformation), self.__point3.image_par(transformation))
@@ -261,12 +261,12 @@ class Angle(Secteur_angulaire):
 class Angle_libre(Angle_generique):
     u"""Un angle libre.
 
-    Un angle défini par sa valeur numérique (en radian)."""
+    Un angle dÃ©fini par sa valeur numÃ©rique (en radian)."""
 
     variable = __variable = Argument("Variable_generique", defaut = lambda: uniform(0, 2*pi))
 
     def __init__(self, variable = None, unite = None, **styles):
-        # Gestion des unités d'angle (degré et grad)
+        # Gestion des unitÃ©s d'angle (degrÃ© et grad)
         if unite is None:
             unite = contexte['unite_angle']
         else:
@@ -281,7 +281,7 @@ class Angle_libre(Angle_generique):
                 unite = 'd'
                 variable = variable[:-1]
                 if variable[-1] == u'\u00c2':
-                    # Problème fréquent d'encodage (utf8 interprété comme latin1)
+                    # ProblÃ¨me frÃ©quent d'encodage (utf8 interprÃ©tÃ© comme latin1)
                     if param.debug:
                         warning('Angle: encodage incorrect (utf8/latin1).')
                     variable = variable[:-1]
@@ -304,16 +304,16 @@ class Angle_libre(Angle_generique):
                 variable *= pi/coeff
 
         self.__variable = variable = Ref(variable)
-        # Quel que soit le contexte (radian ou degré), les angles sont
-        # stockés en interne en radian. Pour que `repr(angle)` puisse
-        # être correctement évalué si le contexte est en degré, il faut
-        # qu'apparaisse dans les paramètres `unite='r'`.
+        # Quel que soit le contexte (radian ou degrÃ©), les angles sont
+        # stockÃ©s en interne en radian. Pour que `repr(angle)` puisse
+        # Ãªtre correctement Ã©valuÃ© si le contexte est en degrÃ©, il faut
+        # qu'apparaisse dans les paramÃ¨tres `unite='r'`.
         # Le plus simple, c'est de le faire via le dictionnaire `styles`.
         styles['unite'] = 'r'
         Angle_generique.__init__(self, **styles)
 
     def _creer_figure(self):
-        pass  # les angles libres ne sont pas affichés.
+        pass  # les angles libres ne sont pas affichÃ©s.
 
     def _set_valeur(self, val = None):
        self.__variable = val
@@ -325,9 +325,9 @@ class Angle_libre(Angle_generique):
 
 
 class Angle_vectoriel(Angle_generique):
-    u"""Un angle défini par des vecteurs.
+    u"""Un angle dÃ©fini par des vecteurs.
 
-    Un angle orienté défini par deux vecteurs (non affiché)."""
+    Un angle orientÃ© dÃ©fini par deux vecteurs (non affichÃ©)."""
     vecteur1 = __vecteur1 = Argument("Vecteur_generique", defaut = Vecteur_libre)
     vecteur2 = __vecteur2 = Argument("Vecteur_generique", defaut = Vecteur_libre)
 

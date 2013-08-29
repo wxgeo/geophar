@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##------------------------------------------#######
@@ -35,8 +35,8 @@ from ...pylib import msplit
 ent = int
 
 def alea(n = None):
-    u"""Nombre entier aléatoire compris entre 0 et n-1.
-    Si n = None, nombre décimal entre 0 et 1."""
+    u"""Nombre entier alÃ©atoire compris entre 0 et n-1.
+    Si n = None, nombre dÃ©cimal entre 0 et 1."""
     if n == None:
         return rand()
     return int(n*rand())
@@ -58,7 +58,7 @@ DIC.update(math.__dict__)
 class ExperienceFrame(MyMiniFrame):
     def __init__(self, parent):
 
-        MyMiniFrame.__init__(self, parent, u"Simulation d'une expérience")
+        MyMiniFrame.__init__(self, parent, u"Simulation d'une expÃ©rience")
         self.parent = parent
 
         sizer = QVBoxLayout()
@@ -71,7 +71,7 @@ class ExperienceFrame(MyMiniFrame):
         sizer.addLayout(exp)
 
         nbr = QHBoxLayout()
-        nbr.addWidget(QLabel(u"Nombre d'expériences:"))
+        nbr.addWidget(QLabel(u"Nombre d'expÃ©riences:"))
         sc = self.sc = QSpinBox()
         sc.setRange(1, 100000)
         sc.setValue(5)
@@ -118,14 +118,14 @@ class ExperienceFrame(MyMiniFrame):
 class LancerDes(MyMiniFrame):
     def __init__(self, parent):
 
-        MyMiniFrame.__init__(self, parent, u"Simulation de lancers de dés")
+        MyMiniFrame.__init__(self, parent, u"Simulation de lancers de dÃ©s")
         self.parent = parent
 
         sizer = QVBoxLayout()
-        sizer.addWidget(QLabel(u"On simule le lancer d'un ou plusieurs dés"))
-        sizer.addWidget(QLabel(u"à 6 faces, et on étudie la somme des points."))
+        sizer.addWidget(QLabel(u"On simule le lancer d'un ou plusieurs dÃ©s"))
+        sizer.addWidget(QLabel(u"Ã  6 faces, et on Ã©tudie la somme des points."))
         exp = QHBoxLayout()
-        exp.addWidget(QLabel(u"Nombre de dés:"))
+        exp.addWidget(QLabel(u"Nombre de dÃ©s:"))
         ex = self.experience = QSpinBox()
         ex.setRange(1, 100000)
         ex.setValue(1)
@@ -149,7 +149,7 @@ class LancerDes(MyMiniFrame):
         boutons = QHBoxLayout()
         fermer = QPushButton(u"Fermer")
         boutons.addWidget(fermer)
-        lancer = QPushButton(u"Lancer l'expérience")
+        lancer = QPushButton(u"Lancer l'expÃ©rience")
         boutons.addWidget(lancer)
         fermer.clicked.connect(self.close)
         lancer.clicked.connect(self.actualiser)
@@ -183,10 +183,10 @@ class Sondage(MyMiniFrame):
         self.parent = parent
 
         sizer = QVBoxLayout()
-        sizer.addWidget(QLabel(u"On simule un sondage simple (réponse par oui ou non)."))
-        sizer.addWidget(QLabel(u"Exemple: \"préférez-vous le candidat A au candidat B ?\""))
+        sizer.addWidget(QLabel(u"On simule un sondage simple (rÃ©ponse par oui ou non)."))
+        sizer.addWidget(QLabel(u"Exemple: \"prÃ©fÃ©rez-vous le candidat A au candidat B ?\""))
         exp = QHBoxLayout()
-        exp.addWidget(QLabel(u"Pourcentage de réponses affirmatives sur l'ensemble de la population:"))
+        exp.addWidget(QLabel(u"Pourcentage de rÃ©ponses affirmatives sur l'ensemble de la population:"))
         ex = self.experience = QSpinBox()
         ex.setRange(0, 100)
         ex.setValue(50)
@@ -240,7 +240,7 @@ class Sondage(MyMiniFrame):
         esperance = self.experience.value()
         self.parent.ajouter_valeurs(*[sondage(esperance, echantillon) for i in xrange(n)])
         self.parent.calculer()
-        self.parent.legende_x = u"résultat des sondages (en %)"
+        self.parent.legende_x = u"rÃ©sultat des sondages (en %)"
         self.parent.legende_y = u"nombre de sondages"
         self.parent.affiche()
 

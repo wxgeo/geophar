@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 from __future__ import with_statement
 
@@ -36,9 +36,9 @@ class PseudoContexte(object):
 
 
 class PseudoCanvas(object):
-    u"""Faux canvas utilisé par défaut par la feuille de travail.
+    u"""Faux canvas utilisÃ© par dÃ©faut par la feuille de travail.
 
-    Permet de faire appel à l'objet canvas et à ses méthodes sans générer d'erreur
+    Permet de faire appel Ã  l'objet canvas et Ã  ses mÃ©thodes sans gÃ©nÃ©rer d'erreur
     lorsqu'il n'y a pas de canvas."""
 
     def __getattr__(self, nom):

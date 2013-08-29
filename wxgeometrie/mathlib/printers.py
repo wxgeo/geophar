@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------#######
@@ -36,7 +36,7 @@ from .custom_objects import Decim
 
 
 class DecimGenericPrinter(object):
-    u"Classe implÈmentant des mÈthodes gÈnÈriques pour gÈrer les objets Decim."
+    u"Classe impl√©mentant des m√©thodes g√©n√©riques pour g√©rer les objets Decim."
     def _convert_Decim(self, expr):
         conv = self._convert_Decim
         if hasattr(expr, 'atoms') and hasattr(expr, 'subs'):
@@ -52,15 +52,15 @@ class DecimGenericPrinter(object):
         return expr
 
     def _float_evalf(self, expr):
-        u"…value le flottant en respectant le rÈglage du printer (nombre de dÈcimales)."
+        u"√âvalue le flottant en respectant le r√©glage du printer (nombre de d√©cimales)."
         if self._settings['mode_scientifique']:
             decimales = self._settings['decimales_sci'] + 1
         else:
             decimales = self._settings['decimales']
-        # Le nombre de dÈcimales ne doit pas dÈpasser la prÈcision interne
-        # du flottant, au risque d'ajouter des dÈcimales fausses.
-        # Cette prÈcision interne est notÈe en bits, qu'il faut convertir en
-        # nombre de dÈcimales.
+        # Le nombre de d√©cimales ne doit pas d√©passer la pr√©cision interne
+        # du flottant, au risque d'ajouter des d√©cimales fausses.
+        # Cette pr√©cision interne est not√©e en bits, qu'il faut convertir en
+        # nombre de d√©cimales.
         # Nota: log(2)/log(10) = 0.3010299956639812
         precision_interne = round(expr._prec*0.3010299956639812) - 1
         decimales = max(min(decimales, precision_interne), 1)
@@ -103,7 +103,7 @@ class CustomStrPrinter(StrPrinter, DecimGenericPrinter):
     def _print_Float(self, expr):
         exposant = None
         if self._settings['mode_scientifique']:
-            # Conversion en Ècriture scientifique.
+            # Conversion en √©criture scientifique.
             puissance = int(floor(log(expr, 10)))
             flottant = self._float_evalf(expr*10**-puissance)
             mantisse = StrPrinter._print_Float(self, flottant)
@@ -111,7 +111,7 @@ class CustomStrPrinter(StrPrinter, DecimGenericPrinter):
         else:
             chaine = StrPrinter._print_Float(self, self._float_evalf(expr))
             if 'e' in chaine:
-                # DÈj‡ en mode scientifique (ex: 1.3e-15)
+                # D√©j√† en mode scientifique (ex: 1.3e-15)
                 mantisse, exposant = chaine.split('e')
 
         if exposant is not None:
@@ -119,16 +119,16 @@ class CustomStrPrinter(StrPrinter, DecimGenericPrinter):
             mantisse = mantisse.rstrip('0')
             # On laisse la mantisse sous forme de flottant.
             # Ainsi, '2,00000*10^-8' devient '2,0*10^-8', et non '2*10^-8'.
-            # Lorsqu'on sauvegarde l'Ètat de l'interprËte de la calculatrice,
-            # les dÈcimaux du type 0,00000002 sont ainsi sauvegardÈs sous
-            # forme dÈcimale, et non sous forme fractionnaire.
+            # Lorsqu'on sauvegarde l'√©tat de l'interpr√®te de la calculatrice,
+            # les d√©cimaux du type 0,00000002 sont ainsi sauvegard√©s sous
+            # forme d√©cimale, et non sous forme fractionnaire.
             if mantisse.endswith('.'):
                 mantisse += '0'
             exposant = exposant.lstrip('+')
             return '%s*10^%s' % (mantisse, exposant)
         else:
-            # Par contre, lorsque les dÈcimaux sont des entiers, inutile de les
-            # sauvegarder sous forme dÈcimale.
+            # Par contre, lorsque les d√©cimaux sont des entiers, inutile de les
+            # sauvegarder sous forme d√©cimale.
             return chaine.rstrip('0').rstrip('.')
 
     def _print_Union(self, expr):
@@ -142,7 +142,7 @@ class CustomStrPrinter(StrPrinter, DecimGenericPrinter):
                         self._print(self._convert_Decim(expr.expression)))
 
     def doprint(self, expr):
-        # Mieux vaut faire la substitution une seule fois dËs le dÈpart.
+        # Mieux vaut faire la substitution une seule fois d√®s le d√©part.
         expr = self._convert_Decim(expr)
         return StrPrinter.doprint(self, expr) if not isinstance(expr, unicode) else expr
 
@@ -213,7 +213,7 @@ class CustomLatexPrinter(LatexPrinter, DecimGenericPrinter):
 
     def _print_Float(self, expr):
         if self._settings['mode_scientifique']:
-            # Gestion de l'Ècriture scientifique.
+            # Gestion de l'√©criture scientifique.
             n = int(floor(log(expr, 10)))
             s = LatexPrinter._print_Float(self, self._float_evalf(expr*10**-n))
             return r"%s \times 10^{%s}" % (s, n)
@@ -221,7 +221,7 @@ class CustomLatexPrinter(LatexPrinter, DecimGenericPrinter):
         if s.startswith(r'1.0 \times '):
             return s[11:]
         elif r'\times' not in s:
-            # Ne pas supprimer un zÈro de la puissance !
+            # Ne pas supprimer un z√©ro de la puissance !
             s = s.rstrip('0').rstrip('.')
         return s
 

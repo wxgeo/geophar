@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 
@@ -12,9 +12,9 @@ ecriture_scientifique_decimales = 2
 precision_calcul = 60
 precision_affichage = 18
 forme_affichage_complexe = ("algebrique", "exponentielle")[0]
-# Fonction à appliquer à tout résultat avant de le renvoyer :
+# Fonction Ã  appliquer Ã  tout rÃ©sultat avant de le renvoyer :
 appliquer_au_resultat = None
-# Domaine de résolution des équations ('R' ou 'C')
+# Domaine de rÃ©solution des Ã©quations ('R' ou 'C')
 ensemble = 'R'
-# Index de l'onglet affiché au démarrage
+# Index de l'onglet affichÃ© au dÃ©marrage
 onglet = 0

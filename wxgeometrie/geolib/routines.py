@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------#######
@@ -23,7 +23,7 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-## Cette librairie contient des fonctions mathÈmatiques ‡ usage interne
+## Cette librairie contient des fonctions math√©matiques √† usage interne
 
 from math import cos, sin, hypot, ceil, floor, sqrt, pi, log10, copysign
 import re
@@ -48,34 +48,34 @@ def radian(val):
     return val
 
 
-## Fonctions rapides destinÈes essentiellement ‡ gÈolib
+## Fonctions rapides destin√©es essentiellement √† g√©olib
 
 def produit_scalaire(u, v):
     u"""Calcule le produit scalaire des vecteurs u et v.
-    u et v doivent Ítre de type list, tuple, array, ou geolib.Vecteur."""
+    u et v doivent √™tre de type list, tuple, array, ou geolib.Vecteur."""
     return sum(i*j for i, j in zip(u ,v))
 
 
 
 #def angle_vectoriel(u, v):
-#    u"""Renvoie une mesure sur ]-pi;pi] de l'angle formÈ par les vecteurs u et v.
-#    u et v doivent Ítre de type list, tuple, array, ou geolib.Vecteur, et de dimension 2."""
+#    u"""Renvoie une mesure sur ]-pi;pi] de l'angle form√© par les vecteurs u et v.
+#    u et v doivent √™tre de type list, tuple, array, ou geolib.Vecteur, et de dimension 2."""
 #    return clog(complex(*v)/complex(*u)).imag
 
 def angle_vectoriel(u, v):
-    u"""Renvoie une mesure sur ]-pi;pi] de l'angle formÈ par les vecteurs u et v.
-    u et v doivent Ítre de type list, tuple, array, ou geolib.Vecteur, et de dimension 2.
+    u"""Renvoie une mesure sur ]-pi;pi] de l'angle form√© par les vecteurs u et v.
+    u et v doivent √™tre de type list, tuple, array, ou geolib.Vecteur, et de dimension 2.
 
     Version compatible avec sympy."""
     return u_arg((v[0] + v[1]*1j)/(u[0] + u[1]*1j))
 
 #~ def _angle_vectoriel_bis_(u, v):
-    #~ u"Autre implÈmentation du produit vectoriel (un peu plus lente)."
+    #~ u"Autre impl√©mentation du produit vectoriel (un peu plus lente)."
     #~ return (cmp(u[0]*v[1]-v[0]*u[1], 0) or 1)*acos(produit_scalaire(u, v)/(hypot(*u)*hypot(*v)))
 
 
 def norme(x, y):
-    u"ImplÈmentation rapide de la norme d'un vecteur."
+    u"Impl√©mentation rapide de la norme d'un vecteur."
     if isinstance(x, (int, float, long)) or isinstance(y, (int, float, long)):
         return hypot(x, y)
     return u_sqrt(x**2 + y**2)
@@ -89,19 +89,19 @@ def distance(A, B):
     return norme(xA - xB, yA - yB)
 
 def carre_distance(A, B):
-    u"CarrÈ de la distance entre les points A et B."
+    u"Carr√© de la distance entre les points A et B."
     xA, yA = A
     xB, yB = B
     return (xB - xA)**2+(yB - yA)**2
 
 def vect(A, B):
-    u"CoordonnÈes du vecteur A>B."
+    u"Coordonn√©es du vecteur A>B."
     xA, yA = A
     xB, yB = B
     return xB - xA, yB - yA
 
 def det(vec1, vec2):
-    u"DÈterminant de deux vecteurs du plan."
+    u"D√©terminant de deux vecteurs du plan."
     x1, y1 = vec1
     x2, y2 = vec2
     return x1*y2 - x2*y1
@@ -137,8 +137,8 @@ def racines(a, b, c, exact=False):
 
 
 def point_dans_polygone(couple, polygone):
-    u"""DÈtermine si un point est ‡ l'intÈrieur d'un polygone.
-    D'aprËs un algorithme de Paul Bourke."""
+    u"""D√©termine si un point est √† l'int√©rieur d'un polygone.
+    D'apr√®s un algorithme de Paul Bourke."""
     x, y = couple
     dedans = False
     n = len(polygone)
@@ -157,7 +157,7 @@ def point_dans_polygone(couple, polygone):
 
 def enveloppe_convexe(*points):
     u"""Donne l'enveloppe convexe d'un ensemble de points.
-    D'aprËs Dinu C. Gherman (Andrew's Monotone Chain Algorithm)."""
+    D'apr√®s Dinu C. Gherman (Andrew's Monotone Chain Algorithm)."""
     def det(p, q, r):
         return (q[0]*r[1] + p[0]*q[1] + r[0]*p[1]) - (q[0]*p[1] + r[0]*q[1] + p[0]*r[1])
 
@@ -167,7 +167,7 @@ def enveloppe_convexe(*points):
     upper = [points[0], points[1]]
     for p in points[2:]:
         upper.append(p)
-        # Le dÈterminant est positif ssi l'on tourne ‡ gauche
+        # Le d√©terminant est positif ssi l'on tourne √† gauche
         while len(upper) > 2 and det(*upper[-3:]) >= 0:
             del upper[-2]
     # Build lower half of the hull.
@@ -184,7 +184,7 @@ def enveloppe_convexe(*points):
 
 
 def point_dans_enveloppe_convexe(point, polygone):
-    u"""DÈtermine si un point est ‡ l'intÈrieur de l'enveloppe convexe d'un polygone."""
+    u"""D√©termine si un point est √† l'int√©rieur de l'enveloppe convexe d'un polygone."""
     def det(p, q, r):
         return (q[0]*r[1] + p[0]*q[1] + r[0]*p[1]) - (q[0]*p[1] + r[0]*q[1] + p[0]*r[1])
 
@@ -200,7 +200,7 @@ def point_dans_enveloppe_convexe(point, polygone):
     upper = [points[0], points[1]]
     for p in points[2:]:
         upper.append(p)
-        # Le dÈterminant est positif ssi l'on tourne ‡ gauche
+        # Le d√©terminant est positif ssi l'on tourne √† gauche
         while len(upper) > 2 and det(*upper[-3:]) >= 0:
             del upper[-2]
     if point in upper:
@@ -216,29 +216,29 @@ def point_dans_enveloppe_convexe(point, polygone):
 
 '''
 def distance_point_ellipse(centre, rx, ry, point):
-    u"""Distance approchÈe entre un point et une ellipse orientÈe selon les axes.
+    u"""Distance approch√©e entre un point et une ellipse orient√©e selon les axes.
 
-    D'aprËs http://www.spaceroots.org/documents/distance/node9.html"""
+    D'apr√®s http://www.spaceroots.org/documents/distance/node9.html"""
     a,  b = centre
     x, y = point
-    # L'ellipse est dÈj‡ orientÈe selon les axes, on prend le centre de l'ellipse comme origine
+    # L'ellipse est d√©j√† orient√©e selon les axes, on prend le centre de l'ellipse comme origine
     x -= a
     y -= b
-    # On se ramËne au premier cadran, (Ox) et (Oy) Ètant des axes de symÈtrie de l'ellipse
+    # On se ram√®ne au premier cadran, (Ox) et (Oy) √©tant des axes de sym√©trie de l'ellipse
     x = abs(x)
     y = abs(y)
     # On s'arrange pour que rx soit le semi-grand axe
     if rx < ry:
         rx, ry = ry, rx
         x, y = y, x
-    # Cas particulier : ellipse rÈduite ‡ un point
+    # Cas particulier : ellipse r√©duite √† un point
     if rx < param.tolerance:
         return x**2 + y**2
     f = (rx - ry)/rx
     # Cas particulier : le point est confondu avec le centre de l'ellipse
     if x**2 + y**2 < param.tolerance**2:
         return ry
-    # Cas gÈnÈral : http://www.spaceroots.org/documents/distance/node9.html
+    # Cas g√©n√©ral : http://www.spaceroots.org/documents/distance/node9.html
     s = sqrt(x**2 + y**2)
     cos0 = x/s
     sin0 = y/s
@@ -255,17 +255,17 @@ def distance_point_ellipse(centre, rx, ry, point):
 
 
 def carre_distance_point_ellipse(centre, rx, ry, point, epsilon = None):
-    u"""Distance approchÈe entre un point et une ellipse orientÈe selon les axes.
+    u"""Distance approch√©e entre un point et une ellipse orient√©e selon les axes.
 
-    Algorithme naÔf, d'aprËs moi-mÍme. ;-)"""
+    Algorithme na√Øf, d'apr√®s moi-m√™me. ;-)"""
     if epsilon is None:
         epsilon = contexte["tolerance"]
     xO, yO = centre
     x, y = point
-    # L'ellipse est dÈj‡ orientÈe selon les axes, on prend le centre de l'ellipse comme origine
+    # L'ellipse est d√©j√† orient√©e selon les axes, on prend le centre de l'ellipse comme origine
     x -= xO
     y -= yO
-    # On se ramËne au premier cadran, (Ox) et (Oy) Ètant des axes de symÈtrie de l'ellipse
+    # On se ram√®ne au premier cadran, (Ox) et (Oy) √©tant des axes de sym√©trie de l'ellipse
     x = abs(x)
     y = abs(y)
     rx = abs(rx)
@@ -305,14 +305,14 @@ def direction_droite(pi, pj, pk):
 
 
 def trigshift(t, a = 0):
-    u"Retourne le reprÈsentant de t[2pi] situÈ dans l'intervalle [a; a+2pi[."
+    u"Retourne le repr√©sentant de t[2pi] situ√© dans l'intervalle [a; a+2pi[."
     return t + 2*pi*ceil((a - t)/(2*pi))
 
 
 def distance_segment(M, A, B, d):
-    u"""Teste si la distance entre le point M et le segment [AB] est infÈrieure ‡ d.
+    u"""Teste si la distance entre le point M et le segment [AB] est inf√©rieure √† d.
 
-    M, A et B sont des couples de rÈels, et d un rÈel.
+    M, A et B sont des couples de r√©els, et d un r√©el.
     Cf. "distance_point_segment.odt" dans "developpeurs/maths/".
     """
     x, y = M
@@ -328,7 +328,7 @@ def distance_segment(M, A, B, d):
         norme2 = ((xB - xA)**2 + (yB - yA)**2)
         if norme2 > contexte['tolerance']:
             return ((yA - yB)*(x - xA) + (xB - xA)*(y - yA))**2/norme2 < d**2
-        else:   # les extrÈmitÈs du segment sont confondues
+        else:   # les extr√©mit√©s du segment sont confondues
             return (x - xA)**2 + (y - yA)**2 < d**2
     else:
         return False
@@ -388,7 +388,7 @@ def arrondir(x):
 
 
 def arrondir_1_2_5(x):
-    u"""Arrondit x ‡ un nombre de la forme k*10^p, avec k dans {1, 2, 5},
+    u"""Arrondit x √† un nombre de la forme k*10^p, avec k dans {1, 2, 5},
     et p entier relatif.
 
     >>> from wxgeometrie.geolib.routines import arrondir_1_2_5
@@ -417,7 +417,7 @@ def arrondir_1_2_5(x):
 
 
 def arrondir_1_25_5(x):
-    u"""Arrondit x ‡ un nombre de la forme k*10^p, avec k dans {1, 2.5, 5},
+    u"""Arrondit x √† un nombre de la forme k*10^p, avec k dans {1, 2.5, 5},
     et p entier relatif.
 
     >>> from wxgeometrie.geolib.routines import arrondir_1_25_5
@@ -447,7 +447,7 @@ def arrondir_1_25_5(x):
 
 
 def formatage(eqn):
-    u"""AmÈliore l'affichage des Èquations.
+    u"""Am√©liore l'affichage des √©quations.
 
     >>> from wxgeometrie.geolib.routines import formatage
     >>> formatage('1 x + -1/3 y + 1 = 0')
@@ -459,8 +459,8 @@ def formatage(eqn):
     >>> formatage(u'x\xb2 + y\xb2 + -1 x + -4/3 y + -47/36 = 0') == u'x\xb2 + y\xb2 - x - 4/3 y - 47/36 = 0'
     True
     """
-    #FIXME: pour l'instant, Áa ne marche qu'avec x et y (il ne faut
-    # pas qu'il y ait de xy dans l'Èquation, ni de t, etc.)
+    #FIXME: pour l'instant, √ßa ne marche qu'avec x et y (il ne faut
+    # pas qu'il y ait de xy dans l'√©quation, ni de t, etc.)
     if eqn.startswith('1 '):
         eqn = eqn[2:]
     return eqn.replace("+ -1", "- 1").replace('-1 x', '-x').replace('-1 y', '-y')\
@@ -470,22 +470,22 @@ def formatage(eqn):
 
 
 def nice_str(x):
-    u"""Convertit en chaÓne de caractËres les objets mathÈmatiques.
+    u"""Convertit en cha√Æne de caract√®res les objets math√©matiques.
 
-    AmÈliore le formatage de ces objets:
+    Am√©liore le formatage de ces objets:
       * Supprime les 0 inutiles.
 
         >>> from wxgeometrie.geolib.routines import nice_str
         >>> nice_str(8.0)
         '8'
 
-      * Remplace le point par une virgule pour les dÈcimaux.
+      * Remplace le point par une virgule pour les d√©cimaux.
 
         >>> nice_str(8.2)
         '8,2'
 
       * Personnalise un peu l'affichage de certains objets sympy,
-        pour correspndre aux notations franÁaise.
+        pour correspndre aux notations fran√ßaise.
 
         >>> from sympy import oo, log
         >>> nice_str(oo)

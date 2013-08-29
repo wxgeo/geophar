@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 
@@ -95,9 +95,9 @@ class APropos(QWidget):
 
         date = "/".join(str(n) for n in reversed(param.date_version))
         textes = [u"<b>%s version %s</b>" % (NOMPROG, param.version)]
-        textes.append(u"<i>Version publiée le " + date + "</i>")
+        textes.append(u"<i>Version publiÃ©e le " + date + "</i>")
         textes.append('')
-        textes.append(u"« Le couteau suisse du prof de maths »")
+        textes.append(u"Â« Le couteau suisse du prof de maths Â»")
         textes.append('')
         textes.append("<img src='%s'> <b>%s est un \
                     <a href='http://fr.wikipedia.org/wiki/Logiciel_libre'> \
@@ -147,7 +147,7 @@ class Notes(QWidget):
         texte = QTextEdit(self)
         with open(path2("%/wxgeometrie/doc/changelog.txt"), "r") as f:
             msg = f.read().decode("utf8").replace('\n', '<br>')
-        titre = u"<b>Changements apportés par la version courante (%s) :</b>" % param.version
+        titre = u"<b>Changements apportÃ©s par la version courante (%s) :</b>" % param.version
         msg = '<br>'.join((titre, '', msg))
         texte.setHtml(msg)
         texte.setMinimumHeight(500)
@@ -169,7 +169,7 @@ class Credits(QWidget):
         sizer = QVBoxLayout()
         texte = \
         u"""<h3>Contributeurs :</h3>
-        <p><i>Les personnes suivantes ont contribuées au code de %(NOMPROG)s</i></p>
+        <p><i>Les personnes suivantes ont contribuÃ©es au code de %(NOMPROG)s</i></p>
         <ul>
         <li><i>Boris Mauricette</i> : statistiques, interpolation (2011-2012)</li>
         <li><i>Christophe Gragnic</i> : gestion de la documentation (2012)</li>
@@ -178,31 +178,31 @@ class Credits(QWidget):
         <h3>Remerciements :</h3>
         <p>
         <a href="http://wxgeo.free.fr/doc/html/help.html#remerciements">
-        De nombreuses personnes</a> ont aidé ce projet, par leur retours d'expérience,<br>
-        ou par leur aide à l'installation sur certaines plateformes.<br>
-        Qu'elles en soient remerciées.</p>
+        De nombreuses personnes</a> ont aidÃ© ce projet, par leur retours d'expÃ©rience,<br>
+        ou par leur aide Ã  l'installation sur certaines plateformes.<br>
+        Qu'elles en soient remerciÃ©es.</p>
         <p>
-        Remerciements tous particuliers à <i>Jean-Pierre Garcia</i> et à <i>Georges Khaznadar</i>.</p>
+        Remerciements tous particuliers Ã  <i>Jean-Pierre Garcia</i> et Ã  <i>Georges Khaznadar</i>.</p>
         <br>
-        <h3>Librairies utilisées :</h3>
+        <h3>Librairies utilisÃ©es :</h3>
         <ul>
-        <li>%(NOMPROG)s inclut désormais <a href='http://www.sympy.org'> SymPy</a>
+        <li>%(NOMPROG)s inclut dÃ©sormais <a href='http://www.sympy.org'> SymPy</a>
             (Python library for symbolic mathematics)<br>
-            © 2006-%(ANNEE)s <i>The Sympy Team</i></li>
-        <li>%(NOMPROG)s est codé en <a href="http://www.python.org">Python</a></li>
-        <li><a href="http://www.numpy.org">Numpy</a> est une bibliothèque de calcul numérique</li>
+            Â© 2006-%(ANNEE)s <i>The Sympy Team</i></li>
+        <li>%(NOMPROG)s est codÃ© en <a href="http://www.python.org">Python</a></li>
+        <li><a href="http://www.numpy.org">Numpy</a> est une bibliothÃ¨que de calcul numÃ©rique</li>
         <li><a href="http://www.matplotlib.org">Matplotlib</a> est une librairie graphique scientifique</li>
         <li><a href="http://www.riverbankcomputing.co.uk/software/pyqt">PyQt</a>
-        est utilisé pour l'interface graphique</li>
+        est utilisÃ© pour l'interface graphique</li>
         </ul>
 
         <p>
-        Plus généralement, je remercie tous les acteurs de la communauté du logiciel libre,<br>
+        Plus gÃ©nÃ©ralement, je remercie tous les acteurs de la communautÃ© du logiciel libre,<br>
         tous ceux qui prennent la peine de partager leur savoir et leur travail.</p>
-        <p>Nous ne sommes jamais que <i>« des nains juchés sur des épaules de géants » (Bernard de Chartres)</i>.
+        <p>Nous ne sommes jamais que <i>Â« des nains juchÃ©s sur des Ã©paules de gÃ©ants Â» (Bernard de Chartres)</i>.
         <br>
-        <p><i>À Sophie, Clémence, Timothée.</i></p>
-        <p><i>« Il y a des yeux qui reçoivent la lumière, et il y a des yeux qui la donnent. » (Paul Claudel)</i>
+        <p><i>Ã€ Sophie, ClÃ©mence, TimothÃ©e.</i></p>
+        <p><i>Â« Il y a des yeux qui reÃ§oivent la lumiÃ¨re, et il y a des yeux qui la donnent. Â» (Paul Claudel)</i>
         </p>
         """ % globals()
         label = QLabel(texte)
@@ -216,10 +216,10 @@ class Credits(QWidget):
 class OngletsAbout(QTabWidget):
     def __init__(self, parent):
         QTabWidget.__init__(self, parent)
-        self.addTab(APropos(parent), u'À propos')
+        self.addTab(APropos(parent), u'Ã€ propos')
         self.addTab(Licence(parent), u'Licence')
         self.addTab(Notes(parent), u'Notes de version')
-        self.addTab(Credits(parent), u'Crédits')
+        self.addTab(Credits(parent), u'CrÃ©dits')
         self.setTabPosition(QTabWidget.South)
         self.setStyleSheet("""
         QTabBar::tab:selected {

@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------##
@@ -36,47 +36,47 @@ from ...mathlib.interprete import Interprete
 from ... import param
 
 def _auto_tabsign(chaine, cellspace = False):
-    u"""Génère le code du tableau de signe à partir d'une expression à variable réelle.
+    u"""GÃ©nÃ¨re le code du tableau de signe Ã  partir d'une expression Ã  variable rÃ©elle.
 
     On suppose que l'expression est continue sur tout intervalle de son
-    ensemble de définition.
-    Par ailleurs, ses zéros doivent être calculables pour la librairie sympy.
+    ensemble de dÃ©finition.
+    Par ailleurs, ses zÃ©ros doivent Ãªtre calculables pour la librairie sympy.
     """
 
     chaine_initiale = chaine
 
-    # Ensemble de définition
+    # Ensemble de dÃ©finition
     if ' sur ' in chaine:
         chaine, ens_def = chaine.split(' sur ')
         ens_def = conversion_chaine_ensemble(ens_def, utiliser_sympy = True)
     else:
         ens_def = R
 
-    # Légende de la dernière ligne
+    # LÃ©gende de la derniÃ¨re ligne
     if '=' in chaine:
         legende, chaine = chaine.split('=', 1)
     else:
         legende = chaine
 
-    # Décomposition en produit
+    # DÃ©composition en produit
     facteurs = extraire_facteurs(chaine)#.replace('/', '*'))
     # Conversion en expression sympy
     interprete = Interprete()
     interprete.evaluer(chaine)
     expr = interprete.ans()
-    # Récupération de la variable
+    # RÃ©cupÃ©ration de la variable
     variables = expr.atoms(Symbol)
     if len(variables) > 1:
         raise ValueError, "Il y a plusieurs variables dans l'expression !"
     elif not variables:
         raise ValueError, "Il n'y a pas de variable dans l'expression !"
     var = variables.pop()
-    # Récupération de l'ensemble de définition
+    # RÃ©cupÃ©ration de l'ensemble de dÃ©finition
     ens_def *= ensemble_definition(expr, var)
     if param.debug and param.verbose:
         print '-> Ensemble de definition:', ens_def
 
-    code = str(var) # chaîne retournée, respectant la syntaxe de tabsign()
+    code = str(var) # chaÃ®ne retournÃ©e, respectant la syntaxe de tabsign()
     valeurs_interdites = []
     xmin = ens_def.intervalles[0].inf
     if not ens_def.intervalles[0].inf_inclus:
@@ -85,7 +85,7 @@ def _auto_tabsign(chaine, cellspace = False):
     for intervalle in ens_def.intervalles:
         inf = intervalle.inf
         if sup != inf:
-            # Il y a un 'trou' dans l'ensemble de définition (ex: ]-oo;0[U]2;+oo[)
+            # Il y a un 'trou' dans l'ensemble de dÃ©finition (ex: ]-oo;0[U]2;+oo[)
             raise NotImplementedError
         sup = intervalle.sup
         if not intervalle.sup_inclus:
@@ -95,7 +95,7 @@ def _auto_tabsign(chaine, cellspace = False):
     xmax = sup
 
 
-    # Étude du signe de chaque facteur
+    # Ã‰tude du signe de chaque facteur
     for facteur in facteurs:
         interprete.evaluer(facteur)
         f_expr = interprete.ans()
@@ -109,7 +109,7 @@ def _auto_tabsign(chaine, cellspace = False):
             if val not in f_ens_def and val not in (-oo, oo):
                 valeurs[val] = nan
         liste_valeurs = sorted(valeurs)
-        # On génère le code de la ligne
+        # On gÃ©nÃ¨re le code de la ligne
         code += '// '
         #print solutions, valeurs_interdites
         if solutions and all(sol in valeurs_interdites for sol in solutions):
@@ -132,7 +132,7 @@ def _auto_tabsign(chaine, cellspace = False):
                     val_intermediaire = valeur + 1
                 else:
                     val_intermediaire = (valeur + valeur_suivante)/2
-                # On suppose la fonction continue sur tout intervalle de son ensemble de définition.
+                # On suppose la fonction continue sur tout intervalle de son ensemble de dÃ©finition.
                 if f_expr.subs(var, val_intermediaire) > 0:
                     code += ' ++ '
                 else:
@@ -147,13 +147,13 @@ def _auto_tabsign(chaine, cellspace = False):
 
 def tabsign(chaine = '', cellspace = False):
     u"""Indiquer ligne par ligne le signe de chaque facteur.
-La dernière ligne (produit ou quotient) est générée automatiquement.
+La derniÃ¨re ligne (produit ou quotient) est gÃ©nÃ©rÃ©e automatiquement.
 
 Exemples:
 x:-pi;pi //  sin(x):-pi -- 0 ++ pi //  !cos(x):-- -pi/2 ++ pi/2 -- // tan(x)
 x:-2;2 // x+1:-- -1 ++ // !x-1:-- 1 ++
 
-Le point d'exclamation avant une expression signifie qu'elle correspond à un dénominateur."""
+Le point d'exclamation avant une expression signifie qu'elle correspond Ã  un dÃ©nominateur."""
 
     chaine_originale = chaine = chaine.strip()
     chaine = chaine.replace('//', '\n').replace(r'\\', '\n').replace("-oo", r"-\infty").replace("+oo", r"+\infty")
@@ -166,8 +166,8 @@ Le point d'exclamation avant une expression signifie qu'elle correspond à un dén
         else:
             return _auto_tabsign(lignes[0], cellspace = cellspace)
 
-    # 'resultat' est la dernière ligne, sauf si elle contient ':'
-    # (Dans ce cas, 'resultat' sera généré automatiquement plus tard, à partir des autres lignes).
+    # 'resultat' est la derniÃ¨re ligne, sauf si elle contient ':'
+    # (Dans ce cas, 'resultat' sera gÃ©nÃ©rÃ© automatiquement plus tard, Ã  partir des autres lignes).
     resultat = (lignes.pop() if ':' not in lignes[-1] else '')
 
     ligne_variable = lignes.pop(0)
@@ -197,7 +197,7 @@ Le point d'exclamation avant une expression signifie qu'elle correspond à un dén
 
     intervalles = [_inter2tuple(inter) for inter in donnees_variable.split(':')]
 
-    # Séparation de la légende et des autres données pour chaque ligne
+    # SÃ©paration de la lÃ©gende et des autres donnÃ©es pour chaque ligne
     expressions = []
     donnees_expressions = []
     for ligne in lignes:
@@ -205,7 +205,7 @@ Le point d'exclamation avant une expression signifie qu'elle correspond à un dén
         expressions.append(expression.strip())
         donnees_expressions.append(signe_expression.strip())
 
-    # Au besoin, on génère la légende de la dernière ligne (c.à-d. le résultat - produit ou quotient)
+    # Au besoin, on gÃ©nÃ¨re la lÃ©gende de la derniÃ¨re ligne (c.Ã -d. le rÃ©sultat - produit ou quotient)
     if resultat == "":
         numerateur = []
         denominateur = []
@@ -235,26 +235,26 @@ Le point d'exclamation avant une expression signifie qu'elle correspond à un dén
     else:
         resultat_genere_automatiquement = False
 
-    # Cas particulier : 'produit' de 1 seul élément -> inutile d'afficher une ligne résultat
+    # Cas particulier : 'produit' de 1 seul Ã©lÃ©ment -> inutile d'afficher une ligne rÃ©sultat
     if len(expressions) == 1 and not expressions[0].startswith("!"):
         afficher_resultat = False
     else:
         afficher_resultat = True
 
-    # Au besoin, on génère la légende de la première ligne (c.à-d. la variable)
+    # Au besoin, on gÃ©nÃ¨re la lÃ©gende de la premiÃ¨re ligne (c.Ã -d. la variable)
     if not variable:
-        # On cherche les lettres isolées (sauf 'e', qui représente exp(1))
+        # On cherche les lettres isolÃ©es (sauf 'e', qui reprÃ©sente exp(1))
         m = re.search('(?<![A-Za-z])[A-DF-Za-df-z](?![A-Za-z])', resultat)
         # Si on n'en trouve pas, la variable sera 'x'
         variable = m.group() if m else 'x'
 
-    # On récupère la liste de toutes les valeurs de x
+    # On rÃ©cupÃ¨re la liste de toutes les valeurs de x
     valeurs = set() # va contenir toutes les valeurs numeriques
-    correspondances = {} # servira à retrouver le code (LaTeX notamment) à partir de la valeur numérique.
+    correspondances = {} # servira Ã  retrouver le code (LaTeX notamment) Ã  partir de la valeur numÃ©rique.
 
     valeurs_interdites = set()
 
-    # On convertit les bornes du domaine en valeurs numériques
+    # On convertit les bornes du domaine en valeurs numÃ©riques
     for intervalle in intervalles:
         for borne in intervalle:
             exclue = (borne[0] == '!')
@@ -272,7 +272,7 @@ Le point d'exclamation avant une expression signifie qu'elle correspond à un dén
         for j, valeur in enumerate(donnees):
             valeur = valeur.strip()
             if valeur not in ('++', '--', '00', ''):
-                # On préformate les donnees en vue d'un traitement ulterieur.
+                # On prÃ©formate les donnees en vue d'un traitement ulterieur.
                 # Ex: '-5 ++ (1;|) -- 4' devient [(-5, "0"), "+", (1, "|"), "-", (4, "0")].
                 if valeur[0] == '(' and valeur[-1] == ')' and test_parentheses(valeur[1:-1]):
                     valeur = valeur[1:-1]
@@ -297,7 +297,7 @@ Le point d'exclamation avant une expression signifie qu'elle correspond à un dén
         #print donnees
         donnees_expressions[i] = donnees
 
-    # 'donnees_expressions' est désormais une liste de liste.
+    # 'donnees_expressions' est dÃ©sormais une liste de liste.
     # Pour chaque ligne du tableau, 'donnees_expressions' contient une liste
     # du genre [(-5, "0"), "+", (1, "|"), "-", (4, "0")].
 
@@ -306,7 +306,7 @@ Le point d'exclamation avant une expression signifie qu'elle correspond à un dén
     indices_denominateurs = []
     # indique que les lignes correspondantes se trouvent au denominateur
 
-    # On initialise le code LaTeX de chaque ligne avec sa légende.
+    # On initialise le code LaTeX de chaque ligne avec sa lÃ©gende.
     # NB: la liste 'lignes' contiendra le code LaTeX pour chaque ligne.
     n = max(len(chaine) for chaine in expressions + [variable, resultat])
     lignes = [convertir_en_latex(variable)]
@@ -319,13 +319,13 @@ Le point d'exclamation avant une expression signifie qu'elle correspond à un dén
         i += 1
     lignes.append(convertir_en_latex(resultat))
 
-    # On justifie le texte de la première colonne pour que le code LaTeX généré soit plus lisible.
+    # On justifie le texte de la premiÃ¨re colonne pour que le code LaTeX gÃ©nÃ©rÃ© soit plus lisible.
     n = max(len(texte) for texte in lignes) + 1
     for i, ligne in enumerate(lignes):
         lignes[i] = ligne.ljust(n)
 
     def latex_signe(val, co):
-        u"Retourne le signe à afficher dans le tableau, selon la valeur (et la colonne)."
+        u"Retourne le signe Ã  afficher dans le tableau, selon la valeur (et la colonne)."
         if val == nan:
             return '||'
         elif val > 0:
@@ -338,22 +338,22 @@ Le point d'exclamation avant une expression signifie qu'elle correspond à un dén
     dict_signes = {'++': 1, '--': -1, '00': 0}
 
 
-    # On génère maintenant le code LaTeX correspondant au tableau proprement dit.
-    # On procède colonne par colonne.
+    # On gÃ©nÃ¨re maintenant le code LaTeX correspondant au tableau proprement dit.
+    # On procÃ¨de colonne par colonne.
     nbr_colonnes = 2*len(valeurs)
     for co in xrange(1, nbr_colonnes):
         colonne = ['' for i in xrange(len(donnees_expressions) + 2)]
 
         signe = 1
-        # (1 pour positif, -1 pour négatif, nan pour valeur interdite -> cf. latex_signe())
+        # (1 pour positif, -1 pour nÃ©gatif, nan pour valeur interdite -> cf. latex_signe())
 
-        # Première ligne (valeurs de la variable)
+        # PremiÃ¨re ligne (valeurs de la variable)
         if co%2:
             # Il s'agit d'une valeur (et non d'un signe + ou -)
             valeur_num = valeurs[(co - 1)//2]
             valeur = correspondances[valeur_num]
 
-            # On applique un formatage LaTeX à certaines expressions :
+            # On applique un formatage LaTeX Ã  certaines expressions :
             colonne[0] = convertir_en_latex(valeur)
 
             if valeur_num in valeurs_interdites:
@@ -362,10 +362,10 @@ Le point d'exclamation avant une expression signifie qu'elle correspond à un dén
 
         # Autres lignes
         for li, donnees in enumerate(donnees_expressions):
-            # À quel endroit de la ligne sommes-nous ? (3 cas)
+            # Ã€ quel endroit de la ligne sommes-nous ? (3 cas)
             valeurs_precedentes = [k for k, val in enumerate(donnees) if not isinstance(val, basestring) and val[0]<=valeur_num]
             if valeurs_precedentes:
-                # position de la dernière valeur de la ligne
+                # position de la derniÃ¨re valeur de la ligne
                 position = valeurs_precedentes[-1]
                 if co%2: # 1er cas: on est au niveau d'une valeur
                     if donnees[position][0] == valeur_num:
@@ -382,30 +382,30 @@ Le point d'exclamation avant une expression signifie qu'elle correspond à un dén
                     signe_ = dict_signes[donnees[position + 1]]
                     colonne[li + 1] += latex_signe(signe_, co) # le signe qui est juste apres la derniere valeur
                     signe *= signe_
-            else: # 3e cas: on est en début de ligne
+            else: # 3e cas: on est en dÃ©but de ligne
                 if co%2 == 0: # on est entre deux valeurs
                     signe_ = dict_signes[donnees[1]]
                     colonne[li + 1] += latex_signe(signe_, co)
                     signe *= signe_
 
-        # Dernière ligne : signe du produit ou du quotient
+        # DerniÃ¨re ligne : signe du produit ou du quotient
         colonne[-1] += latex_signe(signe, co)
 
-        # On centre le texte dans la colonne pour que le code LaTeX généré soit plus lisible.
+        # On centre le texte dans la colonne pour que le code LaTeX gÃ©nÃ©rÃ© soit plus lisible.
         n = max(len(texte) for texte in colonne) + 2
         for i, ligne in enumerate(colonne):
             colonne[i] = ligne.center(n)
 
-        # Une fois la colonne entièrement générée, le texte de la colonne est rajouté à chaque ligne
+        # Une fois la colonne entiÃ¨rement gÃ©nÃ©rÃ©e, le texte de la colonne est rajoutÃ© Ã  chaque ligne
         for num, text in enumerate(colonne):
             lignes[num] += '&' + text
 
 
-    # Cas particulier : 'produit' de 1 seul élément
+    # Cas particulier : 'produit' de 1 seul Ã©lÃ©ment
     if not afficher_resultat:
         lignes.pop(-1 if resultat_genere_automatiquement else -2)
-        # NB: si le resultat n'a pas été généré automatiquement, on garde la dernière ligne,
-        # et on supprime l'avant dernière, pour garder le nom éventuel de la fonction
+        # NB: si le resultat n'a pas Ã©tÃ© gÃ©nÃ©rÃ© automatiquement, on garde la derniÃ¨re ligne,
+        # et on supprime l'avant derniÃ¨re, pour garder le nom Ã©ventuel de la fonction
         # par exemple, si f(x)=x-1
         # cela permet d'avoir   f(x) | -  1  +   dans le tableau,
         # au lieu de            x-1  | -  1  +

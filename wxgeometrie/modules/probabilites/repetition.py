@@ -1,9 +1,9 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 from __future__ import with_statement
 
 ##--------------------------------------#######
-#                Probabilités                 #
+#                ProbabilitÃ©s                 #
 ##--------------------------------------#######
 #    WxGeometrie
 #    Dynamic geometry, graph plotter, and more for french mathematic teachers.
@@ -33,9 +33,9 @@ from ...geolib.routines import nice_str
 
 
 def repetition_experiences(_profondeur=3, _numeroter=True, **evenements):
-    u"""Génère le code d'un arbre de probabilités correspondant à la répétition
-    d'expériences aléatoires identiques et indépendantes.
-    Typiquement, un schéma de Bernoulli.
+    u"""GÃ©nÃ¨re le code d'un arbre de probabilitÃ©s correspondant Ã  la rÃ©pÃ©tition
+    d'expÃ©riences alÃ©atoires identiques et indÃ©pendantes.
+    Typiquement, un schÃ©ma de Bernoulli.
 
     >>> from wxgeometrie.modules.probabilites import repetition_experiences
     >>> print(repetition_experiences())
@@ -68,7 +68,7 @@ def repetition_experiences(_profondeur=3, _numeroter=True, **evenements):
     if not evenements:
         evenements = {'A': S('1/2'), '&A': S('1/2')}
     elif len(evenements) == 1:
-        # On rajoute l'évènement complémentaire
+        # On rajoute l'Ã©vÃ¨nement complÃ©mentaire
         nom, proba = evenements.items()[0]
         contraire = (nom[1:] if nom.startswith('&') else '&' + nom)
         try:
@@ -80,28 +80,28 @@ def repetition_experiences(_profondeur=3, _numeroter=True, **evenements):
         ##if abs(reste) > 0.0000000001:  # param.tolerance
             ##if reste > 0:
                 ##if param.debug:
-                    ##print(u'Warning: la somme des probabilités ne fait pas 1.')
+                    ##print(u'Warning: la somme des probabilitÃ©s ne fait pas 1.')
             ##else:
                 ##raise ValueError, "La somme des probabilites depasse 1."
-        # S'il manque une seule probabilité, on peut la compléter automatiquement
+        # S'il manque une seule probabilitÃ©, on peut la complÃ©ter automatiquement
         completer = None
         for key, val in evenements.iteritems():
             if val == '':
                 if completer is None:
                     completer = key
                 else:
-                    # il manque deux probabilités, impossible de compléter
+                    # il manque deux probabilitÃ©s, impossible de complÃ©ter
                     break
         else:
-            # On complète
+            # On complÃ¨te
             if completer:
                 total_probas = sum(val for val in evenements.itervalues() if val)
                 reste = 1 - total_probas
                 evenements[completer] = reste
 
     def key(nom):
-        u"""Classe les évènements par ordre alphabétique, mais en plaçant les
-        évènements contraires en dernier."""
+        u"""Classe les Ã©vÃ¨nements par ordre alphabÃ©tique, mais en plaÃ§ant les
+        Ã©vÃ¨nements contraires en dernier."""
         return nom.replace('&', '_')
     evenements_tries = sorted(evenements, reverse=True, key=key)
     lines = ['']

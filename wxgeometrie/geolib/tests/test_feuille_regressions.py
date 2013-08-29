@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 from __future__ import with_statement
 
@@ -69,7 +69,7 @@ def test_issue_227_bis():
 
 def test_issue_252():
     # Test de la conversion intelligente des virgules en points
-    # dans l'interpréteur de commandes de geolib.
+    # dans l'interprÃ©teur de commandes de geolib.
 
     # 1er cas : conserver les virgules
     # Par exemple, 'A=(1,2)' signifie 'A=(1, 2)'
@@ -79,7 +79,7 @@ def test_issue_252():
     assert f.objets.A.xy == (1, 5)
     assert f.objets.B.xy == (-2, 3)
 
-    # 2e cas : transformer les virgules en point (séparateur décimal)
+    # 2e cas : transformer les virgules en point (sÃ©parateur dÃ©cimal)
     # Par exemple, 'g(1,3)' signifie 'g(1.3)'
     f.executer('g = Fonction("2x+3")')
     f.executer("a = g(5,3)")
@@ -94,7 +94,7 @@ def test_issue_252():
     assertAlmostEqual(f.objets.M2.xy, (-1.5, -3.5))
 
 def test_issue_250():
-    # «'» transformé en «_prime»
+    # Â«'Â» transformÃ© en Â«_primeÂ»
     f = Feuille()
     f.executer("txt=`prix unitaire en milliers d'euros`")
     assert f.objets.txt.texte == "prix unitaire en milliers d'euros"

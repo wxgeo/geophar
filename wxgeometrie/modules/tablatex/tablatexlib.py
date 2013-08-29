@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------##
@@ -43,7 +43,7 @@ maths.e = math.e
 
 
 
-#TODO: déplacer autant que possibles ces fonctions vers le parser de mathlib.
+#TODO: dÃ©placer autant que possibles ces fonctions vers le parser de mathlib.
 
 def traduire_latex(expression):
     return traduire_formule(expression, fonctions=maths.__dict__, OOo=False,
@@ -51,7 +51,7 @@ def traduire_latex(expression):
 
 
 def test_parentheses(chaine):
-    u"""Retourne True si le parenthésage est correct, False sinon.
+    u"""Retourne True si le parenthÃ©sage est correct, False sinon.
 
     Note: il s'agit d'un test rapide (on ne tient pas compte des guillemets, crochets...)"""
     count = 0
@@ -79,22 +79,22 @@ def test_parentheses(chaine):
 
 
 def _extraire_facteurs(chaine):
-    # 1. On enlève les parenthèses superflues
+    # 1. On enlÃ¨ve les parenthÃ¨ses superflues
     while chaine[0] == '(' and chaine[-1] == ')' and test_parentheses(chaine[1:-1]):
         chaine = chaine[1:-1]
     # Premier test rapide
     if '*' not in chaine and '/' not in chaine:
         return [chaine]
 
-    # 2. On regarde s'il s'agit d'une somme/différence
-    # On commence par enlever les '+' ou '-' en début de chaîne (-2x n'est pas une différence)
+    # 2. On regarde s'il s'agit d'une somme/diffÃ©rence
+    # On commence par enlever les '+' ou '-' en dÃ©but de chaÃ®ne (-2x n'est pas une diffÃ©rence)
     _chaine = chaine.lstrip('+-')
     for symbole in ('+', '-'):
         if len(advanced_split(_chaine, symbole)) > 1:
             return [chaine]
-            # c'est une somme/différence, pas de décomposition en facteurs
+            # c'est une somme/diffÃ©rence, pas de dÃ©composition en facteurs
 
-    # 3. On découpe autour des '*' (en tenant compte des parenthèses)
+    # 3. On dÃ©coupe autour des '*' (en tenant compte des parenthÃ¨ses)
     facteurs = advanced_split(chaine, '*')
     if len(facteurs) == 1:
         facteurs = advanced_split(chaine, '/')
@@ -102,7 +102,7 @@ def _extraire_facteurs(chaine):
             # Ce n'est ni un produit ni un quotient
             return facteurs
 
-    # 4. On redécoupe récursivement chacun des facteurs
+    # 4. On redÃ©coupe rÃ©cursivement chacun des facteurs
     decomposition = []
     for facteur in facteurs:
         decomposition.extend(extraire_facteurs(facteur))
@@ -111,6 +111,6 @@ def _extraire_facteurs(chaine):
 def extraire_facteurs(chaine):
 ##    chaine = _ajouter_mult_manquants(chaine, fonctions = maths.__dict__)
     chaine = traduire_formule(chaine, fonctions = maths.__dict__).replace('**', '^')
-    # Pour faciliter la décomposition en produit,
-    # il est important que la puissance ne soit pas notée '**'.
+    # Pour faciliter la dÃ©composition en produit,
+    # il est important que la puissance ne soit pas notÃ©e '**'.
     return [simplifier_ecriture(facteur) for facteur in _extraire_facteurs(chaine)]

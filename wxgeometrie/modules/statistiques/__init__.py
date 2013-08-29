@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 from __future__ import with_statement
 
@@ -39,8 +39,8 @@ from ...pylib import property2, uu, regsub, advanced_split, print_error, eval_re
 
 __doc__ = u"""
 Module Statistiques:
-Calculs de moyenne, variance, quantiles sur des séries de données avec modèle
- linéaire si besoin.
+Calculs de moyenne, variance, quantiles sur des sÃ©ries de donnÃ©es avec modÃ¨le
+ linÃ©aire si besoin.
 """
 
 def tst(result):
@@ -114,9 +114,9 @@ class StatMenuBar(MenuBar):
         self.ajouter("Affichage", ["onglet"], ["plein_ecran"], None, ["barre_outils"],
                      ["console_geolib"], None, ["zoom_texte"], ["zoom_ligne"],
                      ["zoom_general"])
-        self.ajouter("Outils", [u"Expérience", u"Simuler une expérience.",
+        self.ajouter("Outils", [u"ExpÃ©rience", u"Simuler une expÃ©rience.",
                                 "Alt+Ctrl+E", self.panel.creer_experience],
-                [u"Lancers de dés", u"Simuler des lancers d'un ou de plusieurs dés.",
+                [u"Lancers de dÃ©s", u"Simuler des lancers d'un ou de plusieurs dÃ©s.",
                  "Ctrl+Shift+D", self.panel.creer_lancer_des],
                 [u"Sondage", u"Simuler un sondage simple.", "Ctrl+Shift+S",
                  self.panel.creer_sondage], None, ["options"])
@@ -134,8 +134,8 @@ class Statistiques(Panel_API_graphique):
                         'cumul_decroissant', 'bandes', 'circulaire',
                         'semi-circulaire', 'boite')
     noms_diagrammes = [u"diagramme en barres", u"diagramme en batons",
-                       u"histogramme", u"effectifs cumulés croissants",
-                       u"effectifs cumulés décroissants", u"diagramme en bandes",
+                       u"histogramme", u"effectifs cumulÃ©s croissants",
+                       u"effectifs cumulÃ©s dÃ©croissants", u"diagramme en bandes",
                        u"diagramme circulaire", u"diagramme semi-circulaire",
                        u"diagramme en boite"]
     _graph = None
@@ -172,7 +172,7 @@ class Statistiques(Panel_API_graphique):
 
         self.choix = QComboBox()
         self.choix.addItems(self.noms_diagrammes)
-        self.graph = 'barres' # *APRES* que self.choix soit défini.
+        self.graph = 'barres' # *APRES* que self.choix soit dÃ©fini.
 
         self.choix.currentIndexChanged.connect(self.EvtChoice)
         self.entrees.addWidget(self.choix)
@@ -217,7 +217,7 @@ class Statistiques(Panel_API_graphique):
         bsizer.addWidget(self._etendue)
         bsizer.addWidget(self._variance)
         bsizer.addWidget(self._ecart_type)
-        # Initialise le contenu des différents labels.
+        # Initialise le contenu des diffÃ©rents labels.
         self.calculer()
 
         haut = QHBoxLayout()
@@ -282,14 +282,14 @@ class Statistiques(Panel_API_graphique):
             self.choix_quantiles["quartiles"][0] = onglets.tab_quantiles.quartiles.isChecked()
             self.choix_quantiles["deciles"][0] = onglets.tab_quantiles.deciles.isChecked()
 
-            # On récupère les données de la série statistique
+            # On rÃ©cupÃ¨re les donnÃ©es de la sÃ©rie statistique
             self.classes = []
             self._valeurs = {}
 
-            # La chaine va être découpée au niveau des espaces ; on supprime donc les espaces inutiles
+            # La chaine va Ãªtre dÃ©coupÃ©e au niveau des espaces ; on supprime donc les espaces inutiles
             # on supprime les espaces autour des '*'
             valeurs = regsub("[ ]*[*][ ]*", onglets.tab_donnees.valeurs.text(), "*")
-            # une expression du style "[i for i in range(7)]" ne doit pas être découpée au niveau des espaces.
+            # une expression du style "[i for i in range(7)]" ne doit pas Ãªtre dÃ©coupÃ©e au niveau des espaces.
             valeurs = regsub("[[][^]]*for[^]]*in[^]]*[]]", valeurs, lambda s:s.replace(' ','|'))
             classes = onglets.tab_donnees.classes.text()
 
@@ -307,7 +307,7 @@ class Statistiques(Panel_API_graphique):
                     val = eval_restricted(val.replace('|',' '))
                     for v in val:
                         if type(v) in (list, tuple):
-                            # syntaxe style "[(3,i) for i in range(7)]" où 3 est l'effectif
+                            # syntaxe style "[(3,i) for i in range(7)]" oÃ¹ 3 est l'effectif
                             self.ajouter_valeur(v[1], v[0])
                         else:
                             # syntaxe style "[i for i in range(7)]"
@@ -317,8 +317,8 @@ class Statistiques(Panel_API_graphique):
                     val.reverse()
                     self.ajouter_valeur(*val)
 
-            # par défaut, si toutes les valeurs entrées sont des classes,
-            # le découpage en classes suit les classes entrées.
+            # par dÃ©faut, si toutes les valeurs entrÃ©es sont des classes,
+            # le dÃ©coupage en classes suit les classes entrÃ©es.
             if not self.classes and not [x for x in self._valeurs.keys() if not isinstance(x, Classe)]:
                 self.classes = self._valeurs.keys()
 
@@ -338,7 +338,7 @@ class Statistiques(Panel_API_graphique):
             e = int(e)
         self._effectif_total.setText(u"<i>Effectif total: %s</i>" % e)
         self._moyenne.setText(u"Moyenne: %s" % self.moyenne())
-        self._mediane.setText(u"Médiane: %s" % self.mediane())
+        self._mediane.setText(u"MÃ©diane: %s" % self.mediane())
         self._mode.setText(u"Mode: %s" % self.mode())
         self._decile1.setText(u"D<sub>1</sub>: %s" % self.tile(10, 1))
         Q1 = self.quartile(1)
@@ -348,9 +348,9 @@ class Statistiques(Panel_API_graphique):
         self._decile9.setText(u"D<sub>9</sub>: %s" % self.tile(10, 9))
         ecart = ('Calcul impossible.' if isinstance(Q1, basestring) else Q3 - Q1)
         self._interquartile.setText(u"Q<sub>3</sub> - Q<sub>1</sub>: %s" % ecart)
-        self._etendue.setText(u"Étendue: %s" % self.etendue())
+        self._etendue.setText(u"Ã‰tendue: %s" % self.etendue())
         self._variance.setText(u"Variance: %s" % self.variance())
-        self._ecart_type.setText(u"Écart-type: %s" % self.ecart_type())
+        self._ecart_type.setText(u"Ã‰cart-type: %s" % self.ecart_type())
 
     def ajouter_valeurs(self, *valeurs):
         for val in valeurs:
@@ -370,7 +370,7 @@ class Statistiques(Panel_API_graphique):
         mode = self.param('mode_effectifs')
         valeurs = self._valeurs
         # mode = 0: valeurs
-        # mode = 1: fréquences
+        # mode = 1: frÃ©quences
         # mode = 2: pourcentages
         if mode:
             k = (100 if mode == 1 else 1)
@@ -423,8 +423,8 @@ class Statistiques(Panel_API_graphique):
 
 
     def experience(self, formule, n, val_possibles = ()):
-        u"""Réalise 'n' fois l'expérience décrite par 'formule'.
-        Exemple: self.experience('int(6*rand())+1', 100) simule 100 lancers de dés."""
+        u"""RÃ©alise 'n' fois l'expÃ©rience dÃ©crite par 'formule'.
+        Exemple: self.experience('int(6*rand())+1', 100) simule 100 lancers de dÃ©s."""
 
         self.actualiser(False)
         self.ajouter_valeurs(*[eval(formule, DIC) for i in xrange(n)])
@@ -519,7 +519,7 @@ class Statistiques(Panel_API_graphique):
 
 
     def afficher_message(self, msg):
-        u"Affichage un message précisant pourquoi le graphique ne s'affiche pas."
+        u"Affichage un message prÃ©cisant pourquoi le graphique ne s'affiche pas."
         self.axes(x=False, y=False)
         self.canvas.dessiner_texte(0, 0, msg, va='center', ha='center', size=16)
         self.fenetre(-1, 1, -1, 1)
@@ -532,16 +532,16 @@ class Statistiques(Panel_API_graphique):
 
 
     def histogramme(self):
-        u"Construit un histogramme (à ne pas confondre avec le diagramme en barres !)"
+        u"Construit un histogramme (Ã  ne pas confondre avec le diagramme en barres !)"
 
         if self.axes(x=True, a=True, classes=True):
-            return u"Définissez des classes.\nExemple : [0;10[ [10;20["
+            return u"DÃ©finissez des classes.\nExemple : [0;10[ [10;20["
 
         m, M = self.intervalle_classes()
         l = min([classe[1] - classe[0] for classe in self.classes])
         hmax = max([classe.densite() for classe in self.classes])
 
-        # Réglage de la fenêtre d'affichage
+        # RÃ©glage de la fenÃªtre d'affichage
         self.fenetre(m - 0.1*(M-m), M + 0.4*(M-m), -0.1*hmax, 1.1*hmax)
         self.origine(m, 0)
         self.graduations(l, 0)
@@ -586,7 +586,7 @@ class Statistiques(Panel_API_graphique):
         if eff.endswith(',0'):
             eff = eff[:-2]
 
-        legende = eff + " " + (self.legende_a or u"unité")
+        legende = eff + " " + (self.legende_a or u"unitÃ©")
 
         if effectif > 1 and not self.legende_a:
             legende += "s"
@@ -596,10 +596,10 @@ class Statistiques(Panel_API_graphique):
 
     def courbe_effectifs(self, mode=1):
         u"""
-        Courbe des effectifs cumulés croissants si mode = 1, décroissants si mode = -1.
+        Courbe des effectifs cumulÃ©s croissants si mode = 1, dÃ©croissants si mode = -1.
         """
         if self.axes(x=True, y=True, classes=True):
-            return u"Définissez des classes.\nExemple : [0;10[ [10;20["
+            return u"DÃ©finissez des classes.\nExemple : [0;10[ [10;20["
 
         valeurs = self.liste_valeurs()
 
@@ -623,7 +623,7 @@ class Statistiques(Panel_API_graphique):
         dx, dy = self.canvas.dpix2coo(15, -5)
         # Ajout des quantiles
         for q in ["mediane", "quartiles", "deciles"]:
-            # tracer si les quantiles sont activés
+            # tracer si les quantiles sont activÃ©s
             if self.choix_quantiles[q][0]:
                 freq = self.choix_quantiles[q][1]
                 for a in freq:
@@ -632,7 +632,7 @@ class Statistiques(Panel_API_graphique):
                         self.quantile_plot(c, y, a, couleur=self.choix_quantiles[q][2],
                                 style=self.choix_quantiles[q][3])
                     except TypeError:
-                        # c peut être vide si les classes commencent à une
+                        # c peut Ãªtre vide si les classes commencent Ã  une
                         # fcc trop grande.
                         pass
         # Legende
@@ -640,11 +640,11 @@ class Statistiques(Panel_API_graphique):
         if not legende_y:
             mode = self.param('mode_effectifs')
             if mode == 0:
-                legende_y = u"Effectifs cumulés"
+                legende_y = u"Effectifs cumulÃ©s"
             elif mode == 1:
-                legende_y = u"Pourcentages cumulés"
+                legende_y = u"Pourcentages cumulÃ©s"
             else:
-                legende_y = u"Fréquences cumulées"
+                legende_y = u"FrÃ©quences cumulÃ©es"
         self.canvas.dessiner_texte(m + dx, 1.1*hmax + dy, legende_y, va='top')
 
 
@@ -655,18 +655,18 @@ class Statistiques(Panel_API_graphique):
         @type classe: classe
         @param classe: la classe dans laquelle tombe le a-quantile.
         @type y: list
-        @param y: bornes des eff ou freq cumulés de classe.
+        @param y: bornes des eff ou freq cumulÃ©s de classe.
         @type couleur: char
-        @param couleur: couleur du tracé, rouge par défaut
+        @param couleur: couleur du tracÃ©, rouge par dÃ©faut
         @type style: char
-        @param style: style de ligne réglé en cas de N&B
+        @param style: style de ligne rÃ©glÃ© en cas de N&B
 
         @rtype: None
         """
         a_reel = a*self.total()
         m = (y[1] - y[0])/(classe[1] - classe[0])
         x_reg = (a_reel - y[0])/m + classe[0]
-        # coordonnées de l'origine
+        # coordonnÃ©es de l'origine
         x0, y0 = self.canvas.origine_axes
         dx, dy = self.canvas.dpix2coo(-5, 18)
         # tenir compte du mode N&B
@@ -683,15 +683,15 @@ class Statistiques(Panel_API_graphique):
 
         @type a: real
 
-        @param a: le paramètre dans [0.1[. Ne pas mettre a=1.0 pour éviter un
-        dépassement
+        @param a: le paramÃ¨tre dans [0.1[. Ne pas mettre a=1.0 pour Ã©viter un
+        dÃ©passement
         @type liste: list of 2-uple classe, list
-        @param liste: contient les classes couplées à leurs effectifs cumulés.
+        @param liste: contient les classes couplÃ©es Ã  leurs effectifs cumulÃ©s.
         @type mode: int
         @param mode: 1 or -1 for increasing or decreasing cumulative eff/freq
 
         @rtype: 2-uple
-        renvoie un 2-uple:  classe, [y_0, y_1] ou **None** si la recherche échoue.
+        renvoie un 2-uple:  classe, [y_0, y_1] ou **None** si la recherche Ã©choue.
         """
         eff_total = self.total()
         if mode == 1:
@@ -710,9 +710,9 @@ class Statistiques(Panel_API_graphique):
     def diagramme_barre(self, ratio=.7):
         u"""Diagramme en barres.
 
-        Essentiellement pertinent pour des séries qualitatives.
+        Essentiellement pertinent pour des sÃ©ries qualitatives.
 
-        `ratio` est un nombre décimal entre 0 et 1.
+        `ratio` est un nombre dÃ©cimal entre 0 et 1.
         Il mesure le quotient (largeur d'une barre)/(largeur maximale possible).
         """
 
@@ -753,7 +753,7 @@ class Statistiques(Panel_API_graphique):
             elif mode == 1:
                 legende_y = u"Pourcentages"
             else:
-                legende_y = u"Fréquences"
+                legende_y = u"FrÃ©quences"
         self.canvas.dessiner_texte(15*self.canvas.coeff(0), 1.15*hmax - 5*self.canvas.coeff(1), legende_y, va = "top")
 
         # les donnees sont affichees entre 0 et 100 en abscisse
@@ -761,14 +761,14 @@ class Statistiques(Panel_API_graphique):
 
 
     def diagramme_baton(self, largeur=1):
-        u"""Diagramme en batons (séries quantitatives discrètes).
+        u"""Diagramme en batons (sÃ©ries quantitatives discrÃ¨tes).
 
-        `largeur` est la demi-largeur d'un bâton, en pixels."""
+        `largeur` est la demi-largeur d'un bÃ¢ton, en pixels."""
 
         valeurs = self.liste_valeurs()
 
         if not all(hasattr(val, '__float__') for val in valeurs):
-            return u"La série doit être à valeurs numériques."
+            return u"La sÃ©rie doit Ãªtre Ã  valeurs numÃ©riques."
 
         if self.axes(x=True, y=True):
             return
@@ -813,7 +813,7 @@ class Statistiques(Panel_API_graphique):
             elif mode == 1:
                 legende_y = u"Pourcentages"
             else:
-                legende_y = u"Fréquences"
+                legende_y = u"FrÃ©quences"
         self.canvas.dessiner_texte(m + 15*self.canvas.coeff(0), 1.1*hmax - 5*self.canvas.coeff(1),
                                     legende_y, va = "top")
 
@@ -881,12 +881,12 @@ class Statistiques(Panel_API_graphique):
 
 
     def diagramme_boite(self, afficher_extrema = True):
-        u"Appelé aussi diagramme à moustache."
+        u"AppelÃ© aussi diagramme Ã  moustache."
 
         vals = self.liste_valeurs()
 
         if not all(hasattr(val, '__float__') for val in vals):
-            return u"La série doit être à valeurs numériques."
+            return u"La sÃ©rie doit Ãªtre Ã  valeurs numÃ©riques."
 
         if self.axes(x=True):
             return
@@ -924,12 +924,12 @@ class Statistiques(Panel_API_graphique):
         # Quartiles
         self.canvas.dessiner_ligne([q1, q1], [.2, .8], linewidth = w, color = col('b'))
         self.canvas.dessiner_ligne([q3, q3], [.2, .8], linewidth = w, color = col('b'))
-        # Médiane
+        # MÃ©diane
         if self.choix_quantiles['mediane'][0]:
             self.canvas.dessiner_ligne([med, med], [.2, .8], linewidth = w, color = col('r'))
         # "Moustaches"
         if self.choix_quantiles['deciles'][0]:
-            # Les "moustaches" du diagramme correspondent au 1er et 9e décile
+            # Les "moustaches" du diagramme correspondent au 1er et 9e dÃ©cile
             self.canvas.dessiner_ligne([m, M], [.5, .5], linestyle="None", marker="o", color="k", markerfacecolor="w")
             self.canvas.dessiner_ligne([d1, q1], [.5, .5], color="k")
             self.canvas.dessiner_ligne([q3, d9], [.5, .5], color="k")
@@ -941,7 +941,7 @@ class Statistiques(Panel_API_graphique):
             self.canvas.dessiner_ligne([q3, M], [.5, .5], color="k")
             self.canvas.dessiner_ligne([m, m], [.4, .6], linewidth=w, color='k')
             self.canvas.dessiner_ligne([M, M], [.4, .6], linewidth=w, color='k')
-        # Boîte
+        # BoÃ®te
         self.canvas.dessiner_ligne([q3, q1], [.2, .2], color="k")
         self.canvas.dessiner_ligne([q3, q1], [.8, .8], color="k")
 
@@ -956,11 +956,11 @@ class Statistiques(Panel_API_graphique):
 
 
     def effectif_total(self):
-        # self._valeurs : effectifs bruts (non convertis en fréquences)
+        # self._valeurs : effectifs bruts (non convertis en frÃ©quences)
         return sum(self._valeurs.itervalues())
 
     def total(self):
-        u"Retourne soit l'effectif total, soit 100, soit 1, selon les paramètres en cours."
+        u"Retourne soit l'effectif total, soit 100, soit 1, selon les paramÃ¨tres en cours."
         return sum(self.valeurs.itervalues())
 
     def mode(self):
@@ -973,10 +973,10 @@ class Statistiques(Panel_API_graphique):
         return " ; ".join(v)
 
     def moyenne(self):
-        u"""Moyenne de la série.
+        u"""Moyenne de la sÃ©rie.
 
-        Si les données de la série sont regroupées par classes, chaque classe
-        est remplacée par son centre de classe, pour calculer une approximation
+        Si les donnÃ©es de la sÃ©rie sont regroupÃ©es par classes, chaque classe
+        est remplacÃ©e par son centre de classe, pour calculer une approximation
         de la moyenne.
         """
         try:
@@ -1007,14 +1007,14 @@ class Statistiques(Panel_API_graphique):
         return tst(sqrt(v))
 
     def mediane(self):
-        u"""Correspond à la 'valeur du milieu' quand on ordonne les données.
+        u"""Correspond Ã  la 'valeur du milieu' quand on ordonne les donnÃ©es.
 
-        Précisement, la définition retenue ici est la suivante :
-        * si l'effectif total est impair, la médiane est la valeur centrale ;
-        * sinon (effectif total pair), la médiane est la demi-somme des deux
+        PrÃ©cisement, la dÃ©finition retenue ici est la suivante :
+        * si l'effectif total est impair, la mÃ©diane est la valeur centrale ;
+        * sinon (effectif total pair), la mÃ©diane est la demi-somme des deux
         valeurs centrales.
 
-        Une bonne manière de visualiser la médiane pour des effectifs non entiers
+        Une bonne maniÃ¨re de visualiser la mÃ©diane pour des effectifs non entiers
         est de tracer un diagramme en bande."""
         somme = 0
         old_val = None
@@ -1023,7 +1023,7 @@ class Statistiques(Panel_API_graphique):
             somme += effectif
             if somme > objectif:
                 if isinstance(val, Classe):
-                    # On estime la valeur de la médiane au sein de la classe,
+                    # On estime la valeur de la mÃ©diane au sein de la classe,
                     # en l'assimilant au 2e quartile, et en estimant sa
                     # valeur au prorata de sa position dans la classe.
                     a, b = val
@@ -1031,7 +1031,7 @@ class Statistiques(Panel_API_graphique):
                     return x*a + (1 - x)*b
                 else:
                     if somme - effectif == objectif:
-                        # la mediane est à cheval sur 2 valeurs
+                        # la mediane est Ã  cheval sur 2 valeurs
                         try:
                             return (old_val + val)/2
                         except TypeError:
@@ -1045,16 +1045,16 @@ class Statistiques(Panel_API_graphique):
 
     def tile(self, k = 4, i = 1):
         u"""
-        Renvoie la valeur x de la série telle que au moins i/k des données de la série
-        soient inférieures ou égales à x.
+        Renvoie la valeur x de la sÃ©rie telle que au moins i/k des donnÃ©es de la sÃ©rie
+        soient infÃ©rieures ou Ã©gales Ã  x.
 
         Exemple :   tile(4,1) -> premier quartile.
-                    tile(10,2) -> deuxième décile.
+                    tile(10,2) -> deuxiÃ¨me dÃ©cile.
         """
 
         somme = 0
         objectif = i/k*self.effectif_total()
-        # objectif : position du quartile au sein de la série.
+        # objectif : position du quartile au sein de la sÃ©rie.
         for val, effectif in self.liste_valeurs_effectifs():
             somme += effectif
             if somme >= objectif:
@@ -1074,24 +1074,24 @@ class Statistiques(Panel_API_graphique):
 
     def quartile(self, i = 1):
         u"""
-        Donne Qi, le ième quartile.
+        Donne Qi, le iÃ¨me quartile.
         Qi est le plus petit element de la serie statistique tel qu'au moins
-        i*25% des données soient inférieures ou égales à Qi.
+        i*25% des donnÃ©es soient infÃ©rieures ou Ã©gales Ã  Qi.
 
-        Note: si l'effectif de la série est pair,
-        le 2ème quartile ne correspond pas toujours à la médiane."""
+        Note: si l'effectif de la sÃ©rie est pair,
+        le 2Ã¨me quartile ne correspond pas toujours Ã  la mÃ©diane."""
 
         return self.tile(4, i)
 
 
     def decile(self, i = 1):
         u"""
-        Donne Di, le ième décile.
+        Donne Di, le iÃ¨me dÃ©cile.
         Di est le plus petit element de la serie statistique tel qu'au moins
-        i*10% des données soient inférieures ou égales à Di.
+        i*10% des donnÃ©es soient infÃ©rieures ou Ã©gales Ã  Di.
 
-        Note: si l'effectif de la série est pair,
-        le 5ème décile ne correspond pas toujours à la médiane."""
+        Note: si l'effectif de la sÃ©rie est pair,
+        le 5Ã¨me dÃ©cile ne correspond pas toujours Ã  la mÃ©diane."""
 
         return self.tile(10, i)
 
@@ -1099,12 +1099,12 @@ class Statistiques(Panel_API_graphique):
 
     def centile(self, i = 1):
         u"""
-        Donne Ci, le ième centile.
+        Donne Ci, le iÃ¨me centile.
         Ci est le plus petit element de la serie statistique tel qu'au moins
-        i% des données soient inférieures ou égales à Ci.
+        i% des donnÃ©es soient infÃ©rieures ou Ã©gales Ã  Ci.
 
-        Note: si l'effectif de la série est pair,
-        le 50ème centile ne correspond pas toujours à la médiane."""
+        Note: si l'effectif de la sÃ©rie est pair,
+        le 50Ã¨me centile ne correspond pas toujours Ã  la mÃ©diane."""
 
         return self.tile(100, i)
 

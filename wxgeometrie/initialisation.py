@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 #    WxGeometrie
@@ -24,7 +24,7 @@ t0 = time.time()
 import sys, os, itertools, traceback, imp, subprocess
 from os.path import dirname, realpath, normpath
 
-# Emplacement du module python nommé wxgeometrie
+# Emplacement du module python nommÃ© wxgeometrie
 EMPLACEMENT = dirname(dirname(realpath(sys._getframe().f_code.co_filename)))
 
 if getattr(sys, '_launch_geophar', False):
@@ -33,40 +33,40 @@ if getattr(sys, '_launch_geophar', False):
     options, arguments = lire_arguments()
 
 
-    # Le splash screen doit être affiché le plus tôt possible.
-    # Par contre, il ne doit pas être affiché si le fichier est importé simplement
+    # Le splash screen doit Ãªtre affichÃ© le plus tÃ´t possible.
+    # Par contre, il ne doit pas Ãªtre affichÃ© si le fichier est importÃ© simplement
     # comme module.
     if not (options.script or options.lister_modules):
         from .GUI.app import app, splash
 
         splash_screen = splash(normpath(EMPLACEMENT + '/wxgeometrie/images/logo6-1.png'))
-        # .showMessage() doit être appelé pour que le splash screen apparaisse.
+        # .showMessage() doit Ãªtre appelÃ© pour que le splash screen apparaisse.
         # cf. https://bugreports.qt-project.org/browse/QTBUG-24910
         splash_screen.showMessage(u'Chargement en cours...')
-        print(u"Démarrage GUI...")
+        print(u"DÃ©marrage GUI...")
 
     parametres_additionnels, arguments, options = traiter_arguments(options, arguments)
 
     from . import param
-    # Attention, les paramètres importés explicitement ici dans l'espace des noms
-    # du module `initialisation` ne pourront pas être modifié en ligne de commande :
-    # en effet, pour modifier les paramètres via la ligne de commande,
-    # on met à jour l'espace des noms du module param.
-    # En particulier, il ne faut *PAS* écrire ``from .param import debug``,
+    # Attention, les paramÃ¨tres importÃ©s explicitement ici dans l'espace des noms
+    # du module `initialisation` ne pourront pas Ãªtre modifiÃ© en ligne de commande :
+    # en effet, pour modifier les paramÃ¨tres via la ligne de commande,
+    # on met Ã  jour l'espace des noms du module param.
+    # En particulier, il ne faut *PAS* Ã©crire ``from .param import debug``,
     # car alors, ``$ geophar -b`` ne prendrait pas en compte le ``-b``
     # lors de l'initialisation.
     from .param import dependances, NOMPROG, NOMPROG2, LOGO, plateforme, GUIlib
     from .pylib.fonctions import path2, uu, str3
 
     param.EMPLACEMENT = EMPLACEMENT
-    # Un identifiant unique pour chaque instance de wxgeometrie lancée.
-    # Doit permettre notamment de gérer les accès simultannés aux ressources
+    # Un identifiant unique pour chaque instance de wxgeometrie lancÃ©e.
+    # Doit permettre notamment de gÃ©rer les accÃ¨s simultannÃ©s aux ressources
     # (sauvegardes automatiques).
-    # Chaque session est sauvée automatiquement sous le nom :
+    # Chaque session est sauvÃ©e automatiquement sous le nom :
     # 'config/session/session-%s.geos' % ID
-    # Les ID successifs sont strictement incrémentaux, ce qui fait qu'en cas de crash
+    # Les ID successifs sont strictement incrÃ©mentaux, ce qui fait qu'en cas de crash
     # il est facile de retrouver le dernier fichier de session (pour le recharger),
-    # c'est celui qui a l'ID le plus élevé.
+    # c'est celui qui a l'ID le plus Ã©levÃ©.
     param.ID = ID = repr(t0).replace('.','-')
 
     if not options.script:
@@ -79,22 +79,22 @@ if getattr(sys, '_launch_geophar', False):
         # Ce qui suit concerne seulement py2exe, et non py2app.
         if param.plateforme != 'Darwin':
             # cf. py2exe/boot_common.py
-            # Par défaut dans py2exe, sys.stdout redirige nul part,
-            # et sys.stderr redirige vers un fichier .log via un mécanisme assez élaboré
+            # Par dÃ©faut dans py2exe, sys.stdout redirige nul part,
+            # et sys.stderr redirige vers un fichier .log via un mÃ©canisme assez Ã©laborÃ©
             sys._py2exe_stderr = sys.stderr
             sys._py2exe_stdout = sys.stdout
             def msgbox(titre='Message', texte='', MB=sys._py2exe_stderr.write.func_defaults[0]):
                 MB(0, texte.encode(param.encodage), titre.encode(param.encodage))
-            # Outil de débogage avec py2exe
+            # Outil de dÃ©bogage avec py2exe
             def _test(condition = True):
                 msgbox('** Test **', ('Success !' if condition else 'Failure.'))
     else:
-        # Ne pas faire ces tests avec py2exe (non seulement inutiles, mais en plus ils échouent).
+        # Ne pas faire ces tests avec py2exe (non seulement inutiles, mais en plus ils Ã©chouent).
         # Make sure I have the right Python version.
         if sys.version_info[:2] < param.python_min:
             print(u" ** Erreur fatale **")
-            print(NOMPROG + u" nécessite Python %d.%d au minimum.")
-            print(u"Python %d.%d détecté." % (param.python_min + sys.version_info[:2]))
+            print(NOMPROG + u" nÃ©cessite Python %d.%d au minimum.")
+            print(u"Python %d.%d dÃ©tectÃ©." % (param.python_min + sys.version_info[:2]))
             sys.exit(-1)
 
         # Test for dependencies:
@@ -164,15 +164,15 @@ if getattr(sys, '_launch_geophar', False):
             uni = uu(chaine)
             chaine = uni.encode(param.encodage)
     #        default_out = (sys.__stdout__ if not param.py2exe else sys.py2exe_stderr)
-            # Sous Windows, l'encodage se fait en cp1252, sauf dans console où cp850 est utilisé !
+            # Sous Windows, l'encodage se fait en cp1252, sauf dans console oÃ¹ cp850 est utilisÃ© !
     #        default_out.write(chaine if plateforme != 'Windows' else uni.encode('cp850'))
-            # Sous Windows, l'encodage se fait en cp1252, sauf dans console où cp850 est utilisé !
+            # Sous Windows, l'encodage se fait en cp1252, sauf dans console oÃ¹ cp850 est utilisÃ© !
             if not param.py2exe:
                 sys.__stdout__.write(chaine if plateforme != 'Windows' else uni.encode('cp850'))
 
             self.total += len(chaine)
             if self.total - len(chaine) < param.taille_max_log <= self.total:
-                chaine = u"Sortie saturée !".encode(param.encodage)
+                chaine = u"Sortie saturÃ©e !".encode(param.encodage)
             for sortie in self.obligatoires:
                 sortie.write(chaine)
             if param.debug:
@@ -202,22 +202,22 @@ if getattr(sys, '_launch_geophar', False):
         try:
             if not os.path.isdir(emplacement):
                 os.makedirs(emplacement)
-                print(u'Création du répertoire : ' + emplacement)
+                print(u'CrÃ©ation du rÃ©pertoire : ' + emplacement)
         except IOError:
-            print(u"Impossible de créer le répertoire %s !" %emplacement)
+            print(u"Impossible de crÃ©er le rÃ©pertoire %s !" %emplacement)
             print_error()
         except Exception:
-            print(u'Erreur inattendue lors de la création du répertoire %s.' %emplacement)
+            print(u'Erreur inattendue lors de la crÃ©ation du rÃ©pertoire %s.' %emplacement)
             print_error()
 
 
     # PARTIE CRITIQUE (redirection des messages d'erreur)
-    # Attention avant de modifier, c'est très difficile à déboguer ensuite (et pour cause !)
-    # Réduire la taille de cette partie au minimum possible.
+    # Attention avant de modifier, c'est trÃ¨s difficile Ã  dÃ©boguer ensuite (et pour cause !)
+    # RÃ©duire la taille de cette partie au minimum possible.
 
     try:
         sorties = sys.stdout = sys.stderr = SortiesMultiples()
-        # Tester sys.stdout/stderr (les plantages de sys.stderr sont très pénibles à tracer !)
+        # Tester sys.stdout/stderr (les plantages de sys.stderr sont trÃ¨s pÃ©nibles Ã  tracer !)
         sorties.write('')
     except:
         if param.py2exe:
@@ -251,16 +251,16 @@ if getattr(sys, '_launch_geophar', False):
     # FIN DE PARTIE CRITIQUE
 
 
-    # On enclôt tout dans un try/except.
-    # En effet, le sys.stderr personnalisé se comporte mal en cas d'erreur non interceptée
-    # (il semble qu'une partie de l'espace des noms ne soit déjà plus accessible au moment où l'erreur
-    # est traitée...??)
+    # On enclÃ´t tout dans un try/except.
+    # En effet, le sys.stderr personnalisÃ© se comporte mal en cas d'erreur non interceptÃ©e
+    # (il semble qu'une partie de l'espace des noms ne soit dÃ©jÃ  plus accessible au moment oÃ¹ l'erreur
+    # est traitÃ©e...??)
     try:
-        # à faire avant d'importer API
+        # Ã  faire avant d'importer API
         if param.verbose:
             print u'Arguments de la ligne de commande :', parametres_additionnels, arguments
             if options.script:
-                print u"--- Mode script activé. ---"
+                print u"--- Mode script activÃ©. ---"
 
         if param.py2exe:
             print sys.path
@@ -282,7 +282,7 @@ if getattr(sys, '_launch_geophar', False):
             from .API.parametres import actualiser_module
             from .pylib import print_error
             from .geolib import contexte
-            # Récupération d'un crash éventuel
+            # RÃ©cupÃ©ration d'un crash Ã©ventuel
             path_lock = path2(param.emplacements['session'] + "/lock")
             crash = os.path.isfile(path_lock)
 
@@ -290,31 +290,31 @@ if getattr(sys, '_launch_geophar', False):
                 open(path_lock, 'w').close()
                 param.ecriture_possible = True
             except IOError:
-                print(u"Warning: impossible de créer le fichier '%s'." %path_lock)
+                print(u"Warning: impossible de crÃ©er le fichier '%s'." %path_lock)
                 param.ecriture_possible = False
 
-            # On sauvegarde la valeur des paramètres par défaut.
+            # On sauvegarde la valeur des paramÃ¨tres par dÃ©faut.
             copie = param.__dict__.copy()
             copie.pop("__builtins__", None)
             setattr(param, "_parametres_par_defaut", copie)
 
-            # Mise à jour des paramètres en fonction des préférences de l'utilisateur.
-            # (NB: à faire avant d'importer modules.py, qui lui-même utilise param.modules_actifs)
+            # Mise Ã  jour des paramÃ¨tres en fonction des prÃ©fÃ©rences de l'utilisateur.
+            # (NB: Ã  faire avant d'importer modules.py, qui lui-mÃªme utilise param.modules_actifs)
             path = path2(param.emplacements['preferences'] + "/parametres.xml")
             try:
                 if os.path.exists(path) and param.charger_preferences:
                     if param.verbose:
-                        print(u"Chargement des préférences...")
-                    # On charge les préférences de l'utilisateur depuis parametres.xml.
+                        print(u"Chargement des prÃ©fÃ©rences...")
+                    # On charge les prÃ©fÃ©rences de l'utilisateur depuis parametres.xml.
                     a_verifier = dict((dicname, getattr(param, dicname)) for dicname in param.a_mettre_a_jour)
                     actualiser_module(param, path)
-                    # Certains paramètres peuvent avoir besoin d'une mise à jour
+                    # Certains paramÃ¨tres peuvent avoir besoin d'une mise Ã  jour
                     # (en cas de changement de version du programme par exemple).
-                    # Cela concerne en particulier les dictionnaires, qui peuvent gagner de nouvelles clés.
+                    # Cela concerne en particulier les dictionnaires, qui peuvent gagner de nouvelles clÃ©s.
                     for dicname in param.a_mettre_a_jour:
                         for key, val in a_verifier[dicname].iteritems():
                             getattr(param, dicname).setdefault(key, val)
-                    # Mise à jour du contexte de geolib:
+                    # Mise Ã  jour du contexte de geolib:
                     for parametre in ('decimales', 'unite_angle', 'tolerance'):
                         contexte[parametre] = getattr(param,  parametre)
             except:
@@ -329,7 +329,7 @@ if getattr(sys, '_launch_geophar', False):
                     print msg
 
             else:
-                # param._restart est mis à True si l'application doit être redémarrée.
+                # param._restart est mis Ã  True si l'application doit Ãªtre redÃ©marrÃ©e.
                 param._restart = False
 
                 from .GUI.fenetre_principale import FenetrePrincipale
@@ -346,27 +346,27 @@ if getattr(sys, '_launch_geophar', False):
                     if arguments:
                         try:
                             for arg in arguments:
-                                frame.onglets.ouvrir(arg) # ouvre le fichier passé en paramètre
+                                frame.onglets.ouvrir(arg) # ouvre le fichier passÃ© en paramÃ¨tre
                         except:
-                            print_error() # affiche l'erreur interceptée, à titre informatif
+                            print_error() # affiche l'erreur interceptÃ©e, Ã  titre informatif
                             print(arg)
                     elif options.restaurer or ((param.auto_restaurer_session or crash)
                                                 and not options.nouveau):
-                        # On recharge la session précédente.
-                        # (options.restaurer est utilisé quand on redémarre l'application)
+                        # On recharge la session prÃ©cÃ©dente.
+                        # (options.restaurer est utilisÃ© quand on redÃ©marre l'application)
                         try:
                             if crash:
-                                print(NOMPROG + u" n'a pas été fermé correctement.\n"
+                                print(NOMPROG + u" n'a pas Ã©tÃ© fermÃ© correctement.\n"
                                       "Tentative de restauration de la session en cours...")
-                            # En général, ne pas activer automatiquement tous les modules
-                            # de la session précédente, mais seulement ceux demandés.
+                            # En gÃ©nÃ©ral, ne pas activer automatiquement tous les modules
+                            # de la session prÃ©cÃ©dente, mais seulement ceux demandÃ©s.
                             frame.gestion.charger_session(activer_modules=crash)
                         except:
-                            print(u"Warning: La session n'a pas pu être restaurée.")
+                            print(u"Warning: La session n'a pas pu Ãªtre restaurÃ©e.")
                             print_error()
                     frame.show()
                     if param.debug:
-                        print('Temps de démarrage: %f s' % (time.time() - t0))
+                        print('Temps de dÃ©marrage: %f s' % (time.time() - t0))
                     app.boucle()
                 sys.stdout = sys.__stdout__
                 sys.stderr = sys.__stderr__
@@ -377,24 +377,24 @@ if getattr(sys, '_launch_geophar', False):
                 print("Warning: impossible de supprimer %s." % repr(path_lock))
             if param._restart:
                 args = [sys.executable, sys.argv[0], '--restaurer']
-                # Nota: execv() a une syntaxe étrange : le nom de la commande lancée
-                # (ie. sys.executable) doit réapparaître au début de la liste des arguments.
+                # Nota: execv() a une syntaxe Ã©trange : le nom de la commande lancÃ©e
+                # (ie. sys.executable) doit rÃ©apparaÃ®tre au dÃ©but de la liste des arguments.
                 print(u"\n=======================")
-                print(u"Redémarrage en cours...")
+                print(u"RedÃ©marrage en cours...")
                 print(' '.join(args))
                 print(u"=======================\n")
                 os.execv(sys.executable, args)
 
     except Exception: # do *NOT* catch SystemExit ! ("wxgeometrie -h" use it)
         if param.py2exe:
-            details = u"Détails de l'erreur :\n"
+            details = u"DÃ©tails de l'erreur :\n"
             # 25 lignes maxi dans la fenetre
             l = uu(traceback.format_exc(sys.exc_info())).split('\n')[-25:]
             details += '\n'.join(l) + '\n\n'
             if param.enregistrer_messages:
-                details += u"Pour plus de détails, voir \n'%s'." %log_filename
+                details += u"Pour plus de dÃ©tails, voir \n'%s'." %log_filename
             else:
-                details += u"Par ailleurs, impossible de générer le fichier\n'%s'." %log_filename
+                details += u"Par ailleurs, impossible de gÃ©nÃ©rer le fichier\n'%s'." %log_filename
             msgbox(u"Erreur fatale lors de l'initialisation.", details)
         sys.excepthook(*sys.exc_info())
         sys.stdout = sys.__stdout__

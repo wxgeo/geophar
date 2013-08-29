@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 from __future__ import with_statement
 
@@ -33,7 +33,7 @@ from ..pylib import uu
 from .app import app
 
 #class PseudoEvent(object):
-#    u"Cette classe est destinée à maintenir en vie un évènement périmé."
+#    u"Cette classe est destinÃ©e Ã  maintenir en vie un Ã©vÃ¨nement pÃ©rimÃ©."
 
 #    _methodes = ("AltDown", "ControlDown", "ShiftDown", "GetPositionTuple",
 #                "RightIsDown", "RightIsUp", "LeftIsDown", "LeftIsUp", "GetWheelRotation")
@@ -48,7 +48,7 @@ from .app import app
 #        try:
 #            return lambda:self._dict[name]
 #        except KeyError:
-#            print(u"La méthode " + name + " n'est actuellement pas définie pour les pseudo-évènements.")
+#            print(u"La mÃ©thode " + name + " n'est actuellement pas dÃ©finie pour les pseudo-Ã©vÃ¨nements.")
 #            raise
 
 #    def Skip(self):
@@ -73,16 +73,16 @@ class MyMiniFrame(QDialog):
         self.setWindowTitle(titre)
 
 def png_pth(nom):
-    u"""Adresse complète de l'image `nom`.png du repertoire 'images/'.
+    u"""Adresse complÃ¨te de l'image `nom`.png du repertoire 'images/'.
 
-    Le nom doit être indiqué sans l'extension '.png'."""
+    Le nom doit Ãªtre indiquÃ© sans l'extension '.png'."""
     return os.path.normpath(os.path.join(uu(param.EMPLACEMENT), 'wxgeometrie/images', nom + ".png"))
 
 
 def png(nom):
     u"""Charge l'image <nom>.png depuis le repertoire 'images/'.
 
-    L'image doit être au format png, et son nom doit indiqué sans l'extension '.png'."""
+    L'image doit Ãªtre au format png, et son nom doit indiquÃ© sans l'extension '.png'."""
     pixmap = QPixmap()
     pixmap.load(png_pth(nom), 'PNG')
     return pixmap
@@ -103,7 +103,7 @@ class GenericThread(QThread):
 
 
 #class MyFont(wx.Font):
-#    u"""Créé une nouvelle police, héritant par défaut ses attributs de 'widget'."""
+#    u"""CrÃ©Ã© une nouvelle police, hÃ©ritant par dÃ©faut ses attributs de 'widget'."""
 #    def __init__(self, widget, size=None, family=None, style=None, weight=None, underline=None):
 #        font = widget.GetFont()
 #        if size is None:
@@ -164,7 +164,7 @@ class ColorSelecter(QPushButton):
         if color is None:
             color = self.parent.palette().color(QPalette.Active, QPalette.Window)
         if color.isValid():
-            # Couleur invalide -> l'utilisateur a cliqué sur "Annuler"
+            # Couleur invalide -> l'utilisateur a cliquÃ© sur "Annuler"
             self.color = color
             if color is not None:
                 self.setStyleSheet("ColorSelecter { border-radius: 4px; \

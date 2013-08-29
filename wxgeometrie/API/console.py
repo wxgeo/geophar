@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 from __future__ import with_statement
 
@@ -50,7 +50,7 @@ class Console:
                   'param': param}
 
     def executer(self, commande):
-        u"La commande est exécutée dans l'espace de nom du panel."
+        u"La commande est exÃ©cutÃ©e dans l'espace de nom du panel."
         commande = commande.strip()
 
         # & est un raccourci pour print
@@ -62,12 +62,12 @@ class Console:
         commande = commande.replace(u"!p.", u"panel.")
         # Canvas actuel :
         commande = commande.replace(u"!c.", u"canvas.")
-        # Feuille utilisée actuellement :
+        # Feuille utilisÃ©e actuellement :
         commande = commande.replace(u"!f.", u"feuille.")
         # Objets de la feuille :
         commande = commande.replace(u"!o.", u"objets.")
         commande = commande.replace(u"!g.", u"moteur_graphique.")
-        # Fenêtre principale :
+        # FenÃªtre principale :
         commande = commande.replace(u"!m.", u"main.")
         # Threads :
         commande = commande.replace(u"!t", u"print(threads)")

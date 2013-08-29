@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 from __future__ import with_statement
 
@@ -126,8 +126,8 @@ class Onglets(QTabWidget):
         # Ajoute les differentes composantes :
         self.actualiser_liste_onglets()
 
-        # Usage interne : le signal `.currentChanged` ne transmet pas le numÈro de l'onglet
-        # prÈcÈdemment actif, il faut donc garder manuellement en mÈmoire l'onglet actif.
+        # Usage interne : le signal `.currentChanged` ne transmet pas le num√©ro de l'onglet
+        # pr√©c√©demment actif, il faut donc garder manuellement en m√©moire l'onglet actif.
         self._ancien_onglet = None
         # adaptation du titre de l'application et du menu.
         self.currentChanged.connect(self.evt_changer)
@@ -150,7 +150,7 @@ class Onglets(QTabWidget):
 
     def popup_activer_module(self):
         u"""Affiche un menu permettant d'activer des modules."""
-        menu = PopUpMenu(u"Module ‡ activer", self, 'crayon')
+        menu = PopUpMenu(u"Module √† activer", self, 'crayon')
         deja_charges = [onglet.__module__.split('.')[-1] for onglet in self]
         exercices = None
         for nom in param.modules:
@@ -164,7 +164,7 @@ class Onglets(QTabWidget):
                     action = menu.addAction(titre)
                 action.triggered.connect(partial(self.activer_module, nom, selectionner=True))
         menu.addSeparator()
-        action = menu.addAction(QIcon(png_pth('reload')), u"Restaurer la session prÈcÈdente")
+        action = menu.addAction(QIcon(png_pth('reload')), u"Restaurer la session pr√©c√©dente")
         action.setIconVisibleInMenu(True)
         action.triggered.connect(self.ChargerSessionPrecedente)
         font = QFont()
@@ -176,13 +176,13 @@ class Onglets(QTabWidget):
     def activer_module(self, nom, selectionner=True):
         u"""Active le module `nom`.
 
-        Retourne `True` si le module a bien ÈtÈ activÈ (ou est dÈj‡ actif),
+        Retourne `True` si le module a bien √©t√© activ√© (ou est d√©j√† actif),
         `False` sinon."""
         if nom not in param.modules_actifs:
-            print(u"Warning: Le module %s n'a pas ÈtÈ trouvÈ." %repr(nom))
+            print(u"Warning: Le module %s n'a pas √©t√© trouv√©." %repr(nom))
             return False
         elif param.modules_actifs[nom]:
-            print(u'Le module %s est dÈj‡ activÈ.' %repr(nom))
+            print(u'Le module %s est d√©j√† activ√©.' %repr(nom))
         else:
             param.modules_actifs[nom] = True
             module = modules.importer_module(nom)
@@ -196,7 +196,7 @@ class Onglets(QTabWidget):
         return True
 
     def nouvel_onglet(self, panel, i=None):
-        u"Ajouter un nouvel onglet ‡ la position 'i'."
+        u"Ajouter un nouvel onglet √† la position 'i'."
         if i is None:
             self._liste.append(panel)
             self.addTab(panel, panel.titre)
@@ -208,12 +208,12 @@ class Onglets(QTabWidget):
             self.closeTabButton.setEnabled(True)
 
     def deplacer_onglet(self, i, j):
-        u"DÈplace l'onglet situÈ en position `i` ‡ la position `j`."
+        u"D√©place l'onglet situ√© en position `i` √† la position `j`."
         if i != j:
             self.tabBar.moveTab(i, j)
 
     def fermer_onglet(self, i=None):
-        u"Ferme l'onglet situÈ en position `i`."
+        u"Ferme l'onglet situ√© en position `i`."
         if self.count() > 1:
             if i is None:
                 i = self.currentIndex()
@@ -225,23 +225,23 @@ class Onglets(QTabWidget):
             self.closeTabButton.setEnabled(False)
 
     def deleteTab(self, i):
-        u"""Supprime le iËme onglet.
+        u"""Supprime le i√®me onglet.
 
-        Ne pas utiliser directement ; utiliser `fermer_onglet()` ‡ la place."""
+        Ne pas utiliser directement ; utiliser `fermer_onglet()` √† la place."""
         tab = self.widget(i)
         self.removeTab(i)
         tab.close()
         tab.deleteLater()
 
     def evt_changer(self, index):
-        u"""Actions effectuÈes lorsqu'on change d'onglet."""
+        u"""Actions effectu√©es lorsqu'on change d'onglet."""
         if self._ancien_onglet is not None:
             self._ancien_onglet.desactiver()
         if index != -1:
             onglet = self._liste[index]
             self.actualise_onglet(onglet)
-            # Le module nouvellement sÈlectionnÈ peut exÈcuter
-            # des actions personnalisÈes ‡ cette occasion.
+            # Le module nouvellement s√©lectionn√© peut ex√©cuter
+            # des actions personnalis√©es √† cette occasion.
             onglet.activer()
             self._ancien_onglet = onglet
         else:
@@ -249,8 +249,8 @@ class Onglets(QTabWidget):
 
 
     def evt_deplacer_onglet(self, new_index, old_index):
-        # Mise ‡ jour de self._liste
-        # XXX: self._liste est-il toujours utile depuis le passage ‡ Qt ?
+        # Mise √† jour de self._liste
+        # XXX: self._liste est-il toujours utile depuis le passage √† Qt ?
         self._liste.insert(new_index, self._liste.pop(old_index))
 
 
@@ -260,7 +260,7 @@ class Onglets(QTabWidget):
 
 
     def onglet(self, nom):
-        u"nom : nom ou numÈro de l'onglet."
+        u"nom : nom ou num√©ro de l'onglet."
         if type(nom) == int:
             return self._liste[nom]
         return getattr(self, nom, None)
@@ -283,7 +283,7 @@ class Onglets(QTabWidget):
     def changer_onglet(self, onglet):
         u"""Changer d'onglet actif.
 
-        `onglet` : l'onglet proprement dit, ou son nom, ou son numÈro."""
+        `onglet` : l'onglet proprement dit, ou son nom, ou son num√©ro."""
         if type(onglet) in (str, unicode):
             onglet = self._liste.index(getattr(self, onglet.lower()))
         elif type(onglet) not in (int, long):
@@ -293,7 +293,7 @@ class Onglets(QTabWidget):
 
     def actualiser_liste_onglets(self):
         # `pos` indique la progression du classement:
-        # tous les onglets situÈs avant `pos` sont dÈj‡ classÈs.
+        # tous les onglets situ√©s avant `pos` sont d√©j√† class√©s.
         pos = 0
         for nom in param.modules:
             try:
@@ -301,32 +301,32 @@ class Onglets(QTabWidget):
                 if module is not None:
                     for i, panel in enumerate(self._liste[pos:]):
                         if panel.module is module:
-                            # DÈplacer le panel en position pos
+                            # D√©placer le panel en position pos
                             self.deplacer_onglet(pos + i, pos)
-                            # Mettre ‡ jour la position
+                            # Mettre √† jour la position
                             pos += 1
                             break
                     else:
-                        # CrÈer un onglet en position pos
+                        # Cr√©er un onglet en position pos
                         self.nouvel_onglet(module._panel_(self, module), pos)
-                        # Mettre ‡ jour la position
+                        # Mettre √† jour la position
                         pos += 1
             except Exception:
                 param.modules_actifs[nom] = False
                 print("\n** MODULE '%s' : ERREUR FATALE **\n" % nom)
                 print_error()
-                msg = ("Le programme va redÈmarrer sans le module '%s'." % nom)
+                msg = ("Le programme va red√©marrer sans le module '%s'." % nom)
                 print('\n' + len(msg)*'-')
                 print(msg)
                 print("Veuillez patienter...")
                 print(len(msg)*'-' + '\n')
-                # Ne pas redÈmarrer pendant l'initialisation... (appeler la
-                # mÈthode .close() ‡ l'intÈrieur de la mÈthode .__init__()
+                # Ne pas red√©marrer pendant l'initialisation... (appeler la
+                # m√©thode .close() √† l'int√©rieur de la m√©thode .__init__()
                 # ne fonctionne pas).
                 param._restart = True
 
 
-        # Supprimer tous les onglets qui sont situÈs aprËs pos
+        # Supprimer tous les onglets qui sont situ√©s apr√®s pos
         while pos < self.count():
             self.fermer_onglet(pos)
 
@@ -336,10 +336,10 @@ class Onglets(QTabWidget):
     # -------------------
 
     filtres_save = (u"Fichiers " + NOMPROG + u" (*.geo);;"
-                    u"Fichiers " + NOMPROG + u" compressÈs (*.geoz);;"
+                    u"Fichiers " + NOMPROG + u" compress√©s (*.geoz);;"
                     u"Tous les fichiers (*.*)")
 
-    filtre_session = u"Session GÈophar (*.geos)"
+    filtre_session = u"Session G√©ophar (*.geos)"
 
     def NewFile(self):
         self.onglet_actuel.creer_feuille()
@@ -349,14 +349,14 @@ class Onglets(QTabWidget):
         if self.onglet_actuel.nom_sauvegarde:
             self.onglet_actuel.sauvegarder()
         else:
-            # Pas de nom par dÈfaut.
+            # Pas de nom par d√©faut.
             self.SaveFileAs()
 
 
     def SaveFileAs(self):
         actuelle = self.onglet_actuel.feuille_actuelle # feuille de travail courante
         if actuelle and actuelle.sauvegarde["nom"]:
-            fichier = actuelle.sauvegarde["nom"] # le nom par defaut est le nom prÈcÈdent
+            fichier = actuelle.sauvegarde["nom"] # le nom par defaut est le nom pr√©c√©dent
             dir = actuelle.sauvegarde["repertoire"]
         else:
             fichier = ""
@@ -364,12 +364,12 @@ class Onglets(QTabWidget):
                 dir = param.repertoire
             else:
                 dir = param.rep_save
-        filtre = (u"Fichiers %s compressÈs (*.geoz)" if param.compresser_geo else u'')
+        filtre = (u"Fichiers %s compress√©s (*.geoz)" if param.compresser_geo else u'')
         path, filtre = QFileDialog.getSaveFileNameAndFilter(self, u"Enregistrer sous ...",
                                    os.path.join(dir, fichier), self.filtres_save, filtre)
 
         if path:
-            # Sauvegarde le rÈpertoire pour la prochaine fois
+            # Sauvegarde le r√©pertoire pour la prochaine fois
             param.rep_save = os.path.dirname(path)
             if param.rep_open is None:
                 param.rep_open = param.rep_save
@@ -380,19 +380,19 @@ class Onglets(QTabWidget):
 
 
     def OpenFile(self, _event=None, detecter_module=True):
-        # `_event=None` est un argument factice, qui est sert ‡ consommer le boolÈen
-        # renvoyÈ en argument lorsque OpenFile est liÈ au signal QAction.triggered.
+        # `_event=None` est un argument factice, qui est sert √† consommer le bool√©en
+        # renvoy√© en argument lorsque OpenFile est li√© au signal QAction.triggered.
         # Cf. doc Qt :
         # void QAction::triggered ( bool checked = false )   [signal]
         if param.rep_open is None:
             dir = param.repertoire
         else:
             dir = param.rep_open
-        filtre = (u"Fichiers %s compressÈs (*.geoz)" if param.compresser_geo else u'')
+        filtre = (u"Fichiers %s compress√©s (*.geoz)" if param.compresser_geo else u'')
         paths, filtre = QFileDialog.getOpenFileNamesAndFilter(self, u"Choisissez un fichier", dir,
                                              self.filtres_save, filtre)
         if paths:
-            # Sauvegarde le rÈpertoire pour la prochaine fois
+            # Sauvegarde le r√©pertoire pour la prochaine fois
             param.rep_open = os.path.dirname(paths[0])
             if param.rep_save is None:
                 param.rep_save = param.rep_open
@@ -410,12 +410,12 @@ class Onglets(QTabWidget):
     def OpenFileHere(self):
         u"""Ouvrir le fichier dans le module courant.
 
-        Par dÈfaut, sinon, le fichier est ouvert dans le module qui l'a crÈe."""
+        Par d√©faut, sinon, le fichier est ouvert dans le module qui l'a cr√©e."""
         self.OpenFile(detecter_module=False)
 
 
     def ouvrir(self, fichier, en_arriere_plan = False):
-        u"""Ouvre un fichier dans l'onglet adÈquat.
+        u"""Ouvre un fichier dans l'onglet ad√©quat.
 
         'fichier' est soit l'adresse d'un fichier .geo, soit une instance de FichierGEO.
         """
@@ -427,7 +427,7 @@ class Onglets(QTabWidget):
             if self.activer_module(fichier.module, selectionner=(not en_arriere_plan)):
                 module = self.onglet(fichier.module)
             else:
-                self.parent.message(u"Le module '%s' n'a pas ÈtÈ trouvÈ." % fichier.module)
+                self.parent.message(u"Le module '%s' n'a pas √©t√© trouv√©." % fichier.module)
                 return
         if not en_arriere_plan:
             self.changer_onglet(module) # affiche cet onglet
@@ -435,13 +435,13 @@ class Onglets(QTabWidget):
 
 
     def ExportFile(self, lieu = None, sauvegarde = False, exporter = True):
-        u"""Le paramËtre sauvegarde indique qu'il faut faire une sauvegarde simultanÈe.
-        (attention, on ne vÈrifie pas que le fichier .geo n'existe pas !).
+        u"""Le param√®tre sauvegarde indique qu'il faut faire une sauvegarde simultan√©e.
+        (attention, on ne v√©rifie pas que le fichier .geo n'existe pas !).
         """
 
         actuelle = self.onglet_actuel.feuille_actuelle # feuille de travail courante
         if actuelle and actuelle.sauvegarde["export"]:
-            dir, fichier = os.path.split(actuelle.sauvegarde["export"]) # on exporte sous le mÍme nom qu'avant par dÈfaut
+            dir, fichier = os.path.split(actuelle.sauvegarde["export"]) # on exporte sous le m√™me nom qu'avant par d√©faut
         elif actuelle and actuelle.sauvegarde["nom"]:
             fichier = actuelle.sauvegarde["nom"] # le nom par defaut est le nom de sauvegarde
             dir = actuelle.sauvegarde["repertoire"]
@@ -465,7 +465,7 @@ class Onglets(QTabWidget):
 
         format = ''
         if '.' in fichier and fichier[-1] != '.':
-            # On rÈcupËre l'extension du nom de fichier
+            # On r√©cup√®re l'extension du nom de fichier
             format = fichier.rsplit('.', 1)[1]
 
         if format not in formats_supportes:
@@ -485,7 +485,7 @@ class Onglets(QTabWidget):
         if not path:
             return # Quitte sans sauvegarder.
 
-        # VÈrifie si le nom de fichier possËde une extension
+        # V√©rifie si le nom de fichier poss√®de une extension
         for format in formats_supportes:
             if path.lower().endswith(format):
                 break
@@ -495,7 +495,7 @@ class Onglets(QTabWidget):
             format = filtre[i + 1:-1]
             path += '.' + format
 
-        # Sauvegarde le rÈpertoire pour la prochaine fois
+        # Sauvegarde le r√©pertoire pour la prochaine fois
         param.rep_export = os.path.dirname(path)
         if param.rep_save is None:
             param.rep_save = param.rep_export
@@ -528,7 +528,7 @@ class Onglets(QTabWidget):
 
     def NouvelleSession(self):
         reponse = QMessageBox.question(self, u'Ouvrir une session vierge ?',
-                                       u'Voulez-vous dÈmarrer une nouvelle session ?\n'
+                                       u'Voulez-vous d√©marrer une nouvelle session ?\n'
                                        u'Attention, la session actuelle sera perdue.',
                                        QMessageBox.Yes | QMessageBox.No,
                                        QMessageBox.Yes)
@@ -543,7 +543,7 @@ class Onglets(QTabWidget):
         if not path.endswith('.geos'):
             path += '.geos'
         if path:
-            # MÈmorise l'emplacement pour la prochaine fois
+            # M√©morise l'emplacement pour la prochaine fois
             self._nom_fichier_session = path
             # Enregistrement de la session
             self.parent.gestion.sauver_session(lieu=path, seulement_si_necessaire=False)
@@ -558,14 +558,14 @@ class Onglets(QTabWidget):
         if path:
             if not path.endswith('.geos'):
                 path += '.geos'
-            # MÈmorise l'emplacement pour la prochaine fois
+            # M√©morise l'emplacement pour la prochaine fois
             self._nom_fichier_session = path
             # Charge la session
             self.parent.gestion.charger_session(lieu=path)
 
     def ChargerSessionPrecedente(self):
-        reponse = QMessageBox.question(self, u'Recharger la session prÈcÈdente ?',
-                                       u'Voulez-vous recharger la session prÈcÈdente ?\n'
+        reponse = QMessageBox.question(self, u'Recharger la session pr√©c√©dente ?',
+                                       u'Voulez-vous recharger la session pr√©c√©dente ?\n'
                                        u'Attention, la session actuelle sera perdue.',
                                        QMessageBox.Yes | QMessageBox.No,
                                        QMessageBox.Yes)
@@ -583,7 +583,7 @@ class Onglets(QTabWidget):
         # Version utilisant QSvg
         # Fixme: l'alpha n'est pas bien rendu
         # (le fond des polygones est absent)
-        # Le fond est bien prÈsent aprËs export avec matplotlib pourtant.
+        # Le fond est bien pr√©sent apr√®s export avec matplotlib pourtant.
         printer = QPrinter(QPrinter.HighResolution)
         dialog = QPrintDialog(printer, self)
         dialog.setOption(QPrintDialog.PrintPageRange, False)
@@ -629,11 +629,11 @@ class Onglets(QTabWidget):
             ##painter.end()
 
     def a_venir(self):
-        QMessageBox.information(self, u"A venir !", u"FonctionnalitÈ non prÈsente pour l'instant !")
+        QMessageBox.information(self, u"A venir !", u"Fonctionnalit√© non pr√©sente pour l'instant !")
 
 
     # ---------------------------------------------
-    # BoÓtes de dialogue liÈes ‡ la feuille ouverte
+    # Bo√Ætes de dialogue li√©es √† la feuille ouverte
     # ---------------------------------------------
 
     def supprimer(self):
@@ -643,8 +643,8 @@ class Onglets(QTabWidget):
             with canvas.geler_affichage(actualiser=True, sablier=True):
                 for selection in dlg.selectedItems():
                     try:
-                        # Il est normal que des erreurs soient renvoyÈes
-                        # si un objet dÈpendant d'un autre est dÈj‡ supprimÈ.
+                        # Il est normal que des erreurs soient renvoy√©es
+                        # si un objet d√©pendant d'un autre est d√©j√† supprim√©.
                         objet = selection.text().split()[1]
                         canvas.feuille_actuelle.objets[objet].supprimer()
                     except Exception:
@@ -674,10 +674,10 @@ class Onglets(QTabWidget):
                 break
             except NameError:
                 print_error()
-                canvas.message(u'Erreur : nom dÈj‡ utilisÈ ou nom rÈservÈ.')
+                canvas.message(u'Erreur : nom d√©j√† utilis√© ou nom r√©serv√©.')
             except:
                 print_error()
-                canvas.message(u'Erreur : paramËtres incorrects.')
+                canvas.message(u'Erreur : param√®tres incorrects.')
 
 
     def Animer(self):
@@ -699,7 +699,7 @@ class Onglets(QTabWidget):
 
 
     # -------------------------
-    # Autres boÓtes de dialogue
+    # Autres bo√Ætes de dialogue
     # -------------------------
 
     def Options(self):

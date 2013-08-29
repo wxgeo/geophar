@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------#######
@@ -38,7 +38,7 @@ from .. import param
 
 _mathtext_raw_parser = MathTextParser("PS").parse
 
-# Commandes LaTeX à caractères uniquement alphabétiques (sans le \ préliminaire)
+# Commandes LaTeX Ã  caractÃ¨res uniquement alphabÃ©tiques (sans le \ prÃ©liminaire)
 dictionnaire_latex_commandes = {
                                 "nombre" : "",
                                 "nb": "",
@@ -70,7 +70,7 @@ dictionnaire_latex_commandes = {
                                 }
 
 
-# Commandes LaTeX à caractères NON uniquement alphabétiques
+# Commandes LaTeX Ã  caractÃ¨res NON uniquement alphabÃ©tiques
 dictionnaire_latex_special = {
                                 "~": " ",
                                 "\\,": " ",
@@ -86,18 +86,18 @@ VAR = "(?:[_A-Za-z][_A-Za-z0-9]*)"
 VAR_NOT_ATTR = "(?:(?<![.A-Za-z0-9_])[A-Za-z_][A-Za-z0-9_]*)"
 ##VAR_NOT_ATTR_compile = re.compile(VAR_NOT_ATTR)
 ##NBR = "([+-]?[ ]?(([0-9]+[.]?)|([0-9]*[.][0-9]+)))"
-# Nombre avec un signe éventuel devant
+# Nombre avec un signe Ã©ventuel devant
 NBR_SIGNE = "(?:(?<![.A-Za-z0-9_])(?:(((?<=[*/^()])|^)[+-])?[ ]?(?:[0-9]*[.][0-9]+|[0-9]+[.]?)))"
 # Nombre sans signe
 NBR = "(?:(?<![.A-Za-z0-9_])(?:[0-9]*[.][0-9]+|[0-9]+[.]?))"
-# Nombre à virgule écrit au format anglais (le séparateur décimal est le point)
+# Nombre Ã  virgule Ã©crit au format anglais (le sÃ©parateur dÃ©cimal est le point)
 NBR_FLOTTANT = "(?:(?<![.A-Za-z0-9_])(?:[0-9]+[.][0-9]+))"
-# Nombre à virgule écrit au format français (le séparateur décimal est la virgule, et non le point)
+# Nombre Ã  virgule Ã©crit au format franÃ§ais (le sÃ©parateur dÃ©cimal est la virgule, et non le point)
 NBR_VIRGULE = "(?:(?<![.A-Za-z0-9_])(?:[0-9]+[,][0-9]+))"
 # Nombre sans signe ou variable
 NBR_OR_VAR = "(?:" + NBR + "|" + VAR + ")"
 NBR_SIGNE_OR_VAR = "(?:" + NBR_SIGNE + "|" + VAR + ")"
-# Liste simple (non imbriquée)
+# Liste simple (non imbriquÃ©e)
 LISTE_SIMPLE = "\[[^][]+\]"
 # Matrice
 MATRICE = r"\[ ?(%s ?, ?)*(%s) ?\]" % (LISTE_SIMPLE, LISTE_SIMPLE)
@@ -106,15 +106,15 @@ MATRICE = r"\[ ?(%s ?, ?)*(%s) ?\]" % (LISTE_SIMPLE, LISTE_SIMPLE)
 def _simplifier(formule):
     u"""Suppressions d'espaces inutiles."""
 #    formule = formule.strip()
-    # - un seul caractère d'espacement
+    # - un seul caractÃ¨re d'espacement
 #    formule = regsub("[ ]+", formule, " ")
-    # - espaces supprimés autour de la plupart des caractères.
+    # - espaces supprimÃ©s autour de la plupart des caractÃ¨res.
     formule = regsub("(?<![A-Za-z0-9_.])[ ]", formule, "")
     formule = regsub("[ ](?![A-Za-z0-9_.])", formule, "")
     return formule
 
 def _arguments_latex(chaine, nbr_arguments = 2):
-    u"""Renvoie les arguments d'une commande LaTeX (ainsi que le reste de la chaîne).
+    u"""Renvoie les arguments d'une commande LaTeX (ainsi que le reste de la chaÃ®ne).
 
     >>> from wxgeometrie.mathlib.parsers import _arguments_latex
     >>> _arguments_latex('2{x+1}+4', 2)
@@ -162,7 +162,7 @@ def _convertir_latex_frac(chaine):
 
 def _ajouter_mult_manquants(formule, fonctions = (), verbose = None, mots_cles = ()):
     if isinstance(fonctions, dict):
-        # On récupère les fonctions de l'espace des noms
+        # On rÃ©cupÃ¨re les fonctions de l'espace des noms
         # (tout objet 'callable' sauf certains objets Sympy).
         fonctions = [key for key, val in fonctions.items() if hasattr(val, "__call__") and not isinstance(val, Expr)]
 
@@ -171,7 +171,7 @@ def _ajouter_mult_manquants(formule, fonctions = (), verbose = None, mots_cles =
 
     # Le code qui suit remplace les expressions style 3x ou 2.5cos(x) par 3*x et 2.5*cos(x).
     formule = regsub(NBR + "[ ]?(?=[a-zA-Z_])", formule, lambda s: s.rstrip() + '*')
-    # TODO: traiter le cas des mots-clés
+    # TODO: traiter le cas des mots-clÃ©s
 
     # De meme, on rajoute les * entre deux parentheses...
     formule = formule.replace(")(",")*(")
@@ -185,8 +185,8 @@ def _ajouter_mult_manquants(formule, fonctions = (), verbose = None, mots_cles =
         if s in fonctions:# or s in mots_cles:
             return s
         elif s[0] == '.' and not s[1:].isdigit():
-            # Probablement une méthode
-            # TODO: améliorer détection en remontant avant le point
+            # Probablement une mÃ©thode
+            # TODO: amÃ©liorer dÃ©tection en remontant avant le point
             # (pour distinguer entre 2.x(1+x) et a2.x(1+x))
             return s
         else:
@@ -197,8 +197,8 @@ def _ajouter_mult_manquants(formule, fonctions = (), verbose = None, mots_cles =
         print '3', formule
 
     # "f x" devient "f(x)" si f est une fonction, "f*x" sinon ;
-    # de même, "f 2.5" devient "f(2.5)" si f est une fonction, et "f*2.5" sinon.
-    # (Si f est un mot-clé (if, then, else, for...), on n'y touche pas.)
+    # de mÃªme, "f 2.5" devient "f(2.5)" si f est une fonction, et "f*2.5" sinon.
+    # (Si f est un mot-clÃ© (if, then, else, for...), on n'y touche pas.)
     def f2(s):
         l = s.split()
         if l[0] in mots_cles:
@@ -208,7 +208,7 @@ def _ajouter_mult_manquants(formule, fonctions = (), verbose = None, mots_cles =
         else:
             return l[0] + "*" + l[1]
     formule_initiale = ""
-    i = 0 # sécurité sans doute inutile...
+    i = 0 # sÃ©curitÃ© sans doute inutile...
     while formule != formule_initiale and i < 1000:
         formule_initiale = formule
         formule = regsub(VAR + "[ ]" + NBR + "?[*/]?" + NBR_OR_VAR , formule, f2)
@@ -219,9 +219,9 @@ def _ajouter_mult_manquants(formule, fonctions = (), verbose = None, mots_cles =
 
     # On remplace ")x" par ")*x"
     formule = regsub("[)][ ]?\w", formule, lambda s: s[0] + '*' + s[-1])
-    # TODO: traiter le cas des mots-clés
+    # TODO: traiter le cas des mots-clÃ©s
 
-    # Cas des mots-clés: on supprime les '*' introduits à tort.
+    # Cas des mots-clÃ©s: on supprime les '*' introduits Ã  tort.
     mc = '|'.join(mots_cles)
     formule = regsub("(?<![A-Za-z0-9_])(%s)[*]" %mc, formule, lambda s:s[:-1] + ' ')
     formule = regsub("[*](%s)(?![A-Za-z0-9_])" %mc, formule, lambda s:' ' + s[1:])
@@ -235,11 +235,11 @@ def _convertir_separateur_decimal(s):
 
 
 def extraire_chaines(chaine):
-    u"""Extrait les chaînes de caractères trouvées dans `chaine`.
+    u"""Extrait les chaÃ®nes de caractÃ¨res trouvÃ©es dans `chaine`.
 
-    Chaque chaîne interne est remplacée par <@> (et le symbole @ lui-même
-    est remplacé par @@).
-    La fonction renvoie la chaîne ainsi modifiée, et une liste des chaînes
+    Chaque chaÃ®ne interne est remplacÃ©e par <@> (et le symbole @ lui-mÃªme
+    est remplacÃ© par @@).
+    La fonction renvoie la chaÃ®ne ainsi modifiÃ©e, et une liste des chaÃ®nes
     internes extraites.
 
     Exemple::
@@ -252,11 +252,11 @@ def extraire_chaines(chaine):
     >>> sous_chaines
     ["'Bonjour '", '"l\\'ami !"']
     """
-    # Fin d'une chaîne interne.
+    # Fin d'une chaÃ®ne interne.
     fin = 0
     # position pour la recherche
     position = 0
-    # La chaîne s'étend de debut inclus à fin exclu.
+    # La chaÃ®ne s'Ã©tend de debut inclus Ã  fin exclu.
     mode = None
     reste = []
     chaines = []
@@ -265,7 +265,7 @@ def extraire_chaines(chaine):
 
     for i in xrange(10000):
         if mode is None:
-            # On recherche le début de la chaîne interne.
+            # On recherche le dÃ©but de la chaÃ®ne interne.
             debut1 = chaine.find("'", position)
             debut2 = chaine.find('"', position)
             if debut1 == -1:
@@ -278,14 +278,14 @@ def extraire_chaines(chaine):
                 reste.append(chaine[fin:])
                 break
             caractere = chaine[debut]
-            # Dans certains cas, les caractères ' et " n'indiquent pas un début de chaîne.
+            # Dans certains cas, les caractÃ¨res ' et " n'indiquent pas un dÃ©but de chaÃ®ne.
             if debut:
                 caractere_precedent = chaine[debut - 1]
                 if caractere == "'" and (caractere_precedent.isalnum() or caractere_precedent in "_'"):
-                    # f' n'indique pas un début de chaine, mais la dérivée de f
+                    # f' n'indique pas un dÃ©but de chaine, mais la dÃ©rivÃ©e de f
                     position += 1
                     continue
-            # Détection de ''' ou """
+            # DÃ©tection de ''' ou """
             if chaine[debut:].startswith(3*caractere):
                 mode = 3*caractere
             else:
@@ -294,13 +294,13 @@ def extraire_chaines(chaine):
             position = debut + len(mode)
 
         else:
-            # On recherche la fin de la chaîne interne.
+            # On recherche la fin de la chaÃ®ne interne.
             fin = chaine.find(mode, position)
             caractere_precedent = chaine[fin - 1]
-            # Dans certains cas, les caractères ' et " n'indiquent pas une fin de chaîne.
+            # Dans certains cas, les caractÃ¨res ' et " n'indiquent pas une fin de chaÃ®ne.
             if caractere_precedent == '\\':
-                # On parcourt la chaîne à l'envers, pour déterminer si le "\"
-                # s'applique au guillemet ou non (au cas où la chaîne se
+                # On parcourt la chaÃ®ne Ã  l'envers, pour dÃ©terminer si le "\"
+                # s'applique au guillemet ou non (au cas oÃ¹ la chaÃ®ne se
                 # termine par "\"). On compte les "\" et on regarde s'ils
                 # sont en nombre pair.
                 count = 0
@@ -310,11 +310,11 @@ def extraire_chaines(chaine):
                     count += 1
                 if count%2:
                     # Le dernier "\" se rapporte au guillemet, qui ne doit
-                    # pas être pris en compte.
+                    # pas Ãªtre pris en compte.
                     position += 1
                     continue
             if fin == -1:
-                # Erreur: la chaîne ne se ferme pas.
+                # Erreur: la chaÃ®ne ne se ferme pas.
                 print("Warning: guillemets manquants dans %s" % repr(chaine))
                 reste[-1] += chaine[debut:]
                 break
@@ -336,19 +336,19 @@ def injecter_chaines(chaine, sous_chaines):
 def traduire_formule(formule='', fonctions=(), OOo=True, LaTeX=True,
             simpify=False, verbose=None, mots_cles=tuple(keyword.kwlist)):
 
-    # Les chaînes internes ne doivent pas être modifiées
+    # Les chaÃ®nes internes ne doivent pas Ãªtre modifiÃ©es
     # http://wxgeo.free.fr/tracker/index.php?do=details&task_id=129&project=1
     # Algorithme pour le parser de mathlib:
     # - remplacer @ par @@
-    # - détection des chaînes de textes, remplacées par <@>
-    # -> génération d'une liste de chaînes (ex: ["texte 1", """texte 2""", "texte 3", "texte 4"])
+    # - dÃ©tection des chaÃ®nes de textes, remplacÃ©es par <@>
+    # -> gÃ©nÃ©ration d'une liste de chaÃ®nes (ex: ["texte 1", """texte 2""", "texte 3", "texte 4"])
     # On applique le parser...
-    #- remplacer <@> par les chaînes prélablement enregistrées
+    #- remplacer <@> par les chaÃ®nes prÃ©lablement enregistrÃ©es
     #-remplacer @@ par @
 
     formule, chaines = extraire_chaines(formule)
 
-    # En français, le séparateur décimal est la virgule.
+    # En franÃ§ais, le sÃ©parateur dÃ©cimal est la virgule.
     formule = _convertir_separateur_decimal(formule)
 
     formule = _simplifier(formule)
@@ -357,19 +357,19 @@ def traduire_formule(formule='', fonctions=(), OOo=True, LaTeX=True,
     if verbose:
         print '0', formule
 
-    # Différentes façons de rentrer les puissances :
-    formule = formule.replace("^", "**").replace(u'²',"**2").replace(u'³',"**3")
+    # DiffÃ©rentes faÃ§ons de rentrer les puissances :
+    formule = formule.replace("^", "**").replace(u'Â²',"**2").replace(u'Â³',"**3")
     formule = formule.replace(u'\u2074',"**4").replace(u'\u2075',"**5").replace(u'\u2076',"**6")
     formule = formule.replace(u'\u2077',"**7").replace(u'\u2078',"**8").replace(u'\u2079',"**9")
 
-    # Caractères unicode.
+    # CaractÃ¨res unicode.
     # Soustraction: remplace le tiret long en '-'.
     formule = formule.replace(u'\u2013', "-").replace(u'\u2212', "-")
     # Division et multiplication
     formule = formule.replace(u"\u00D7", "*").replace(u"\u00F7", "/")
 
 
-    # Conversion écriture décimale infinie périodique -> fraction
+    # Conversion Ã©criture dÃ©cimale infinie pÃ©riodique -> fraction
     def to_frac(reg):
         p_entiere, p_decimale, periode = reg.groups()
         chaine = '((' + p_entiere.lstrip('0') + p_decimale
@@ -378,7 +378,7 @@ def traduire_formule(formule='', fonctions=(), OOo=True, LaTeX=True,
         return chaine
     formule = re.sub(r"(\d+)[.,](\d*)\[(\d+)\]", to_frac, formule)
     # exemple: 17.03[45] -> ((1703+45/99)/100)
-    # Après calcul, on on obtiendra bien 17.03454545... = 9369/550
+    # AprÃ¨s calcul, on on obtiendra bien 17.03454545... = 9369/550
 
 
     # il est plus intuitif d'utiliser le symbole % pour les pourcentages, et mod pour le modulo.
@@ -390,15 +390,15 @@ def traduire_formule(formule='', fonctions=(), OOo=True, LaTeX=True,
     formule = formule.replace(")mod ", ")%").replace(")modulo ", ")%")
     formule = formule.replace("}mod ", "}%").replace("}modulo ", "}%")
 
-    # interprétation de 0+ et de 0- (entre autres)
+    # interprÃ©tation de 0+ et de 0- (entre autres)
     formule = formule.replace("+)", ",'+')").replace("-)", ",'-')")
 
-    # conversion degrés -> radians
-    formule = formule.replace(u'°', '*pi/180')
+    # conversion degrÃ©s -> radians
+    formule = formule.replace(u'Â°', '*pi/180')
 
     if OOo:
         # Gestion des matrices.
-        # NB: à faire en premier, en tout cas avant de remplacer '{}' par '()'.
+        # NB: Ã  faire en premier, en tout cas avant de remplacer '{}' par '()'.
         deb = formule.find("matrix{")
         while deb != -1:
             matrice, reste = _arguments_latex(formule[deb + 6:], 1)
@@ -407,10 +407,10 @@ def traduire_formule(formule='', fonctions=(), OOo=True, LaTeX=True,
             deb = formule.find("matrix{", deb)
 
 
-    #Conversion de quelques formules latex ultra-fréquentes (comme \frac, \dfrac, \tfrac, \sqrt, suppression de \nombre, etc.).
+    #Conversion de quelques formules latex ultra-frÃ©quentes (comme \frac, \dfrac, \tfrac, \sqrt, suppression de \nombre, etc.).
     if LaTeX:
         # Gestion des matrices.
-        # NB: à faire en premier, en tout cas avant de remplacer '\\'.
+        # NB: Ã  faire en premier, en tout cas avant de remplacer '\\'.
         for substr in (r"matrix",
                         r"pmatrix",
                         r"bmatrix",
@@ -440,7 +440,7 @@ def traduire_formule(formule='', fonctions=(), OOo=True, LaTeX=True,
 
         formule = formule.replace("{", "(").replace("}", ")")
 
-    # Détection des matrices:
+    # DÃ©tection des matrices:
     # [[1, 2], [3, 4]] -> mat([[1, 2], [3, 4]])
     formule = regsub(r'(?<!mat\()' + MATRICE, formule, (lambda s: 'mat(%s)' % s))
 
@@ -448,15 +448,15 @@ def traduire_formule(formule='', fonctions=(), OOo=True, LaTeX=True,
         # transforme les accolades en parentheses (utile par exemple pour les fonctions issues d'OpenOffice.org).
         formule = formule.replace("{", "(").replace("}", ")")
         formule = regsub("[ ]?(left|right)[])([]", formule, lambda s: s[-1])
-        # De même, les notations "times", "over" et "sup" d'OpenOffice.org sont converties.
+        # De mÃªme, les notations "times", "over" et "sup" d'OpenOffice.org sont converties.
         formule = regsub("\Wtimes\W", formule, lambda s: (s[0] + '*' + s[-1]).strip())
         formule = regsub("\Wover\W", formule, lambda s: (s[0] + '/' + s[-1]).strip())
         formule = regsub("\Wsup\W", formule, lambda s: (s[0] + '**' + s[-1]).strip())
         formule = formule.replace('infinity', 'oo')
 
-    # Conversion des | | **nom imbriqués** en abs().
-    # NB: il est impossible de convertir des | | imbriqués, car certaines
-    # expressions sont ambigues, par exemple |x|y|z| peut être compris comme
+    # Conversion des | | **nom imbriquÃ©s** en abs().
+    # NB: il est impossible de convertir des | | imbriquÃ©s, car certaines
+    # expressions sont ambigues, par exemple |x|y|z| peut Ãªtre compris comme
     # abs(x)*y*abs(z) ou abs(x*abs(y)*z).
     formule = regsub('[|][^|]+[|]', formule, (lambda s: 'abs(%s)' % s[1:-1]))
 
@@ -513,16 +513,16 @@ def simplifier_ecriture(formule):
 
 
 ##def simplifier_ecriture(formule):
-##    # Simplification de l'écriture des puissances
+##    # Simplification de l'Ã©criture des puissances
 ##    formule = formule.replace('**', '^')
 ##
-##    # Simplification de l'écriture des racines
+##    # Simplification de l'Ã©criture des racines
 ##    def simp_sqrt(m):
 ##        return 'sqrt(' + m.group(1) + ')'
 ##    formule = re.sub(r'\(([^()]+)\)\^\(1/2\)', simp_sqrt, formule)
 ##    formule = re.sub(r'([A-Za-z_][A-Za-z_0-9]*|[0-9]+)\^\(1/2\)', simp_sqrt, formule)
 
-##    # Simplification de l'écriture des produits
+##    # Simplification de l'Ã©criture des produits
 ##    formule = formule.replace(')*(', ')(')
 ##    def simp_mul(m):
 ##        return m.group(0).replace('*', ' ')
@@ -531,34 +531,34 @@ def simplifier_ecriture(formule):
 
 
 def _fast_closing_bracket_search(string, start=0):
-    u"""Recherche rudimentaire de la parenthèse fermante correspondante.
+    u"""Recherche rudimentaire de la parenthÃ¨se fermante correspondante.
 
-    Les parenthèses imbriquées sont gérées, mais pas la détection des chaînes de
-    caractères qui peuvent fausser les résultats.
-    Tant que cette fonction est appliquée à des expressions mathématiques,
-    cela ne pose pas problème.
+    Les parenthÃ¨ses imbriquÃ©es sont gÃ©rÃ©es, mais pas la dÃ©tection des chaÃ®nes de
+    caractÃ¨res qui peuvent fausser les rÃ©sultats.
+    Tant que cette fonction est appliquÃ©e Ã  des expressions mathÃ©matiques,
+    cela ne pose pas problÃ¨me.
 
-    La recherche commence à partir de la position `start`, qui doit correspondre
-    à une parenthèse ouvrante dans la chaîne.
+    La recherche commence Ã  partir de la position `start`, qui doit correspondre
+    Ã  une parenthÃ¨se ouvrante dans la chaÃ®ne.
 
-    Retourne la position de la parenthèse fermante.
+    Retourne la position de la parenthÃ¨se fermante.
     """
-    # k : position de la 1ère parenthèse rencontrée
+    # k : position de la 1Ã¨re parenthÃ¨se rencontrÃ©e
     k = start + 1
-    # level : profondeur des parenthèses imbriquées.
+    # level : profondeur des parenthÃ¨ses imbriquÃ©es.
     level = 1
     while True:
         i = string.find('(', k)
         j = string.find(')', k)
         if i == j == -1:
-            # Plus aucune parenthèse.
+            # Plus aucune parenthÃ¨se.
             raise ValueError, "No matching parenthesis, or string doesn't start with `(`."
         elif i < j and i != -1:
-            # La 1ère parenthèse rencontrée est ouvrante `(`.
+            # La 1Ã¨re parenthÃ¨se rencontrÃ©e est ouvrante `(`.
             level += 1
             k = i + 1
         else:
-            # La 1ère parenthèse rencontrée est fermante `)`.
+            # La 1Ã¨re parenthÃ¨se rencontrÃ©e est fermante `)`.
             level -= 1
             k = j + 1
         if level == 0:
@@ -566,36 +566,36 @@ def _fast_closing_bracket_search(string, start=0):
 
 
 def _fast_opening_bracket_search(string):
-    u"""Recherche rudimentaire de la parenthèse ouvrante correspondante.
+    u"""Recherche rudimentaire de la parenthÃ¨se ouvrante correspondante.
 
-    Puisqu'on cherche la parenthèse ouvrante, la recherche s'effectue donc
-    de droite à gauche.
+    Puisqu'on cherche la parenthÃ¨se ouvrante, la recherche s'effectue donc
+    de droite Ã  gauche.
 
-    Les parenthèses imbriquées sont gérées, mais pas la détection des chaînes de
-    caractères qui peuvent fausser les résultats.
-    Tant que cette fonction est appliquée à des expressions mathématiques,
-    cela ne pose pas problème.
+    Les parenthÃ¨ses imbriquÃ©es sont gÃ©rÃ©es, mais pas la dÃ©tection des chaÃ®nes de
+    caractÃ¨res qui peuvent fausser les rÃ©sultats.
+    Tant que cette fonction est appliquÃ©e Ã  des expressions mathÃ©matiques,
+    cela ne pose pas problÃ¨me.
 
-    La chaîne doit se terminer par une parenthèse fermante.
+    La chaÃ®ne doit se terminer par une parenthÃ¨se fermante.
 
-    Retourne la position de la parenthèse ouvrante.
+    Retourne la position de la parenthÃ¨se ouvrante.
     """
-    # k : position de la 1ère parenthèse rencontrée
+    # k : position de la 1Ã¨re parenthÃ¨se rencontrÃ©e
     k = -1
-    # level : profondeur des parenthèses imbriquées.
+    # level : profondeur des parenthÃ¨ses imbriquÃ©es.
     level = 1
     while True:
         i = string.rfind('(', None, k)
         j = string.rfind(')', None, k)
         if i == j == -1:
-            # Plus aucune parenthèse.
+            # Plus aucune parenthÃ¨se.
             raise ValueError, "No matching parenthesis, or string doesn't end with `)`."
         elif i > j:
-            # La 1ère parenthèse rencontrée est ouvrante `(`.
+            # La 1Ã¨re parenthÃ¨se rencontrÃ©e est ouvrante `(`.
             level -= 1
             k = i
         else:
-            # La 1ère parenthèse rencontrée est fermante `)`.
+            # La 1Ã¨re parenthÃ¨se rencontrÃ©e est fermante `)`.
             level += 1
             k = j
         if level == 0:
@@ -603,7 +603,7 @@ def _fast_opening_bracket_search(string):
 
 
 def _strip_parenthesis(string):
-    u"""Supprime les parenthèses autour de l'expression, si elles correspondent."""
+    u"""Supprime les parenthÃ¨ses autour de l'expression, si elles correspondent."""
     while string and string[0] == '(':
         if _fast_closing_bracket_search(string) == len(string):
             string = string[1:-1]
@@ -613,14 +613,14 @@ def _strip_parenthesis(string):
 
 
 def _rechercher_numerateur(chaine):
-    u"""Part de la fin de la chaîne, et remonte la chaîne pour chercher
-    le plus grand groupe possible pouvant correspondre à un numérateur.
+    u"""Part de la fin de la chaÃ®ne, et remonte la chaÃ®ne pour chercher
+    le plus grand groupe possible pouvant correspondre Ã  un numÃ©rateur.
 
-    Retourne la position du début du numérateur dans la chaîne.
+    Retourne la position du dÃ©but du numÃ©rateur dans la chaÃ®ne.
 
-    La chaîne doit être préparée au préalable. En particulier, l'opérateur utilisé
-    pour les puissances est  `^`, et non `**`, et les espaces autour des opérateurs
-    / et ^ sont supprimés.
+    La chaÃ®ne doit Ãªtre prÃ©parÃ©e au prÃ©alable. En particulier, l'opÃ©rateur utilisÃ©
+    pour les puissances est  `^`, et non `**`, et les espaces autour des opÃ©rateurs
+    / et ^ sont supprimÃ©s.
     """
     if not chaine:
         return
@@ -628,25 +628,25 @@ def _rechercher_numerateur(chaine):
     if chaine[-1] == ')':
         try:
             deb = _fast_opening_bracket_search(chaine)
-            # Si les parenthèses sont précédées par une fonction, la fonction
-            # fait aussi partie du numérateur. Par exemple, dans `cos(x)/2`,
-            # le numérateur est `cos(x)`, et pas seulement `(x)`.
+            # Si les parenthÃ¨ses sont prÃ©cÃ©dÃ©es par une fonction, la fonction
+            # fait aussi partie du numÃ©rateur. Par exemple, dans `cos(x)/2`,
+            # le numÃ©rateur est `cos(x)`, et pas seulement `(x)`.
             for fonction in fonctions:
                 if chaine.endswith(fonction, 0, deb):
                     deb -= len(fonction)
         except ValueError:
-            # Parenthésage incorrect.
+            # ParenthÃ©sage incorrect.
             return
     else:
-        # Le caractère @ est utilisé par `_convertir_en_latex` pour remplacer les
-        # fractions déjà détectées.
+        # Le caractÃ¨re @ est utilisÃ© par `_convertir_en_latex` pour remplacer les
+        # fractions dÃ©jÃ  dÃ©tectÃ©es.
         m = re.search('(%s|@)$' % NBR_OR_VAR, chaine)
         if m is None:
-            # Rien qui ressemble à un numérateur
+            # Rien qui ressemble Ã  un numÃ©rateur
             return
         deb = m.start()
     # La puissance est prioritaire sur la division.
-    # Dans une expression du genre `2^x/3`, le numérateur est `2^x`, et non `x`.
+    # Dans une expression du genre `2^x/3`, le numÃ©rateur est `2^x`, et non `x`.
     if deb != 0 and chaine[deb - 1] == '^':
         deb = _rechercher_numerateur(chaine[:deb - 1])
     elif deb > 1 and chaine[deb - 2:deb] == '^-':
@@ -655,20 +655,20 @@ def _rechercher_numerateur(chaine):
 
 
 def _rechercher_denominateur(chaine):
-    u"""Part de la fin de la chaîne, et remonte la chaîne pour chercher
-    le plus grand groupe possible pouvant correspondre à un numérateur.
+    u"""Part de la fin de la chaÃ®ne, et remonte la chaÃ®ne pour chercher
+    le plus grand groupe possible pouvant correspondre Ã  un numÃ©rateur.
 
-    Retourne la position du début du numérateur dans la chaîne.
+    Retourne la position du dÃ©but du numÃ©rateur dans la chaÃ®ne.
 
-    La chaîne doit être préparée au préalable. En particulier, l'opérateur utilisé
-    pour les puissances est  `^`, et non `**`, et les espaces autour des opérateurs
-    / et ^ sont supprimés.
+    La chaÃ®ne doit Ãªtre prÃ©parÃ©e au prÃ©alable. En particulier, l'opÃ©rateur utilisÃ©
+    pour les puissances est  `^`, et non `**`, et les espaces autour des opÃ©rateurs
+    / et ^ sont supprimÃ©s.
     """
     if not chaine:
         return
     fonctions = ('cos', 'sin', 'tan', 'ln', 'log', 'exp', 'sqrt')
-    # Si le dénominateur commence par un nom de fonction, on continue à chercher
-    # après ce nom...
+    # Si le dÃ©nominateur commence par un nom de fonction, on continue Ã  chercher
+    # aprÃ¨s ce nom...
     fin = 0
     for fonction in fonctions:
         if chaine.startswith(fonction):
@@ -677,16 +677,16 @@ def _rechercher_denominateur(chaine):
         try:
             fin += _fast_closing_bracket_search(chaine[fin:])
         except ValueError:
-            # Parenthésage incorrect.
+            # ParenthÃ©sage incorrect.
             return
     else:
         m = re.search('(%s)' % NBR_SIGNE_OR_VAR, chaine[fin:])
         if m is None:
-            # Rien qui ressemble à un numérateur
+            # Rien qui ressemble Ã  un numÃ©rateur
             return
         fin += m.end()
     # La puissance est prioritaire sur la division.
-    # Dans une expression du genre `2^x/3`, le numérateur est `2^x`, et non `x`.
+    # Dans une expression du genre `2^x/3`, le numÃ©rateur est `2^x`, et non `x`.
     if fin < len(chaine) and chaine[fin] == '^':
         fin += _rechercher_denominateur(chaine[fin + 1:]) + 1
     elif chaine[fin:fin + 2] == '^-':
@@ -712,26 +712,26 @@ def _convertir_en_latex(chaine):
     # --------------------------------
     # Suppression des espaces inutiles
     # --------------------------------
-    # Les espaces inutiles ne sont pas gênants en LaTeX, mais leur suppresion
-    # simplifie le traitement ultérieur de la chaîne de caractères.
+    # Les espaces inutiles ne sont pas gÃªnants en LaTeX, mais leur suppresion
+    # simplifie le traitement ultÃ©rieur de la chaÃ®ne de caractÃ¨res.
     chaine = re.sub(r'[ ]+', ' ', chaine)
     chaine = re.sub(r'[ ]?([/^()+*-])[ ]?', (lambda m: m.group(1)), chaine)
 
     # ------------------------
     # Conversion des fractions
     # ------------------------
-    # On traite maintenant le (délicat) cas des fractions,
+    # On traite maintenant le (dÃ©licat) cas des fractions,
     # ie. 2/3, mais aussi (pi+3)/(5-e)^2, ou cos(2)/3
     securite = 1000
     while '/' in chaine:
-        # Voir plus bas l'explication pour les 2 `while` imbriqués.
+        # Voir plus bas l'explication pour les 2 `while` imbriquÃ©s.
         fractions = []
         while '/' in chaine:
             securite -= 1
             if securite < 0:
                 raise RuntimeError, "Boucle probablement infinie."
             i = chaine.find("/")
-            # Début de la fraction
+            # DÃ©but de la fraction
             deb = _rechercher_numerateur(chaine[:i])
             if deb is None:
                 if param.debug:
@@ -745,32 +745,32 @@ def _convertir_en_latex(chaine):
                 return chaine
             fin = i + 1 + _fin
 
-            # Suppression des parenthèses inutiles.
+            # Suppression des parenthÃ¨ses inutiles.
             numerateur = _strip_parenthesis(chaine[deb:i])
             denominateur = _strip_parenthesis(chaine[i + 1:fin])
             fractions.append(r'\frac{%s}{%s}' % (numerateur, denominateur))
-            # On marque la position de la fraction en la remplaçant par `@`,
+            # On marque la position de la fraction en la remplaÃ§ant par `@`,
             # au lieu de la remplacer directement par le code LaTeX.
             # En effet, un mixte de code LaTeX et de code Python serait trop
-            # délicat à traiter.
-            # Ce n'est qu'une fois qu'on aura identifié toutes les fractions
+            # dÃ©licat Ã  traiter.
+            # Ce n'est qu'une fois qu'on aura identifiÃ© toutes les fractions
             # qu'on remplacera tous les `@` par les fractions correspondantes.
             chaine = chaine[:deb] + '@' + chaine[fin:]
 
-            # Il se peut qu'après avoir effectué ce remplacement, il reste des `/`
-            # en fin de chaîne, à l'intérieur du dénominateur d'une grande fraction.
-            # Dans ce cas, on recommence le processus (d'où les 2 `while` imbriqués).
-            # La chaîne contient alors un mixte de fractions LaTeX et de fractions
+            # Il se peut qu'aprÃ¨s avoir effectuÃ© ce remplacement, il reste des `/`
+            # en fin de chaÃ®ne, Ã  l'intÃ©rieur du dÃ©nominateur d'une grande fraction.
+            # Dans ce cas, on recommence le processus (d'oÃ¹ les 2 `while` imbriquÃ©s).
+            # La chaÃ®ne contient alors un mixte de fractions LaTeX et de fractions
             # Python.
-            # Cependant, dans ce cas précis, ce n'est pas gênant : ce qui importe
+            # Cependant, dans ce cas prÃ©cis, ce n'est pas gÃªnant : ce qui importe
             # en effet, pour que `_rechercher_numerateur` et `_rechercher_denominateur`
-            # détectent bien le numérateur et le dénominateur d'une fraction Python,
-            # c'est qu'il n'y ait pas de fraction LaTeX imbriquée dedans.
-            # Et c'est bien le cas : comme le parser fonctionne de gauche à droite,
-            # et remplace chaque fraction trouvée par `@`, les fractions Python
-            # qui restent sont forcément contenues dans un dénominateur
-            # d'une fraction LaTeX, qui a été remplacée par `@` avant que son
-            # dénominateur ait pu être parsé.
+            # dÃ©tectent bien le numÃ©rateur et le dÃ©nominateur d'une fraction Python,
+            # c'est qu'il n'y ait pas de fraction LaTeX imbriquÃ©e dedans.
+            # Et c'est bien le cas : comme le parser fonctionne de gauche Ã  droite,
+            # et remplace chaque fraction trouvÃ©e par `@`, les fractions Python
+            # qui restent sont forcÃ©ment contenues dans un dÃ©nominateur
+            # d'une fraction LaTeX, qui a Ã©tÃ© remplacÃ©e par `@` avant que son
+            # dÃ©nominateur ait pu Ãªtre parsÃ©.
 
         for fraction in reversed(fractions):
             chaine = rreplace(chaine, '@', fraction, 1)
@@ -808,12 +808,12 @@ def _convertir_en_latex(chaine):
 
 
 def convertir_en_latex(chaine, mode='$'):
-    u"""Convertit une chaine représentant un calcul en Python, en du code LaTeX.
+    u"""Convertit une chaine reprÃ©sentant un calcul en Python, en du code LaTeX.
 
     modes actuels: '$', None
 
-    L'intérêt de ne pas passer par sympy, c'est que le code n'a pas besoin
-    d'être évalué. Si le code était évalué par sympy, cela pourrait modifier
+    L'intÃ©rÃªt de ne pas passer par sympy, c'est que le code n'a pas besoin
+    d'Ãªtre Ã©valuÃ©. Si le code Ã©tait Ã©valuÃ© par sympy, cela pourrait modifier
     l'ordre des termes (par exemple, transformer `2-x` en `-x+2`).
     """
     chaine = _convertir_en_latex(chaine)
@@ -823,18 +823,18 @@ def convertir_en_latex(chaine, mode='$'):
 
 
 def latex2mathtext(chaine):
-    u"""Convertit la chaîne pour qu'elle puisse être affichée par mathtext.
+    u"""Convertit la chaÃ®ne pour qu'elle puisse Ãªtre affichÃ©e par mathtext.
 
-    Matplotlib offre 2 possibilités pour l'affichage de chaînes LaTeX :
+    Matplotlib offre 2 possibilitÃ©s pour l'affichage de chaÃ®nes LaTeX :
 
         * soit utiliser une installation LaTeX existante,
         * soit utiliser son propre moteur de rendu, mathtext.
 
-    Le rendu de matplotlib.mathtext est loin d'avoir la qualité du vrai LaTeX,
-    mais il ne nécessite pas d'avoir LaTeX installé, il est bien plus rapide,
+    Le rendu de matplotlib.mathtext est loin d'avoir la qualitÃ© du vrai LaTeX,
+    mais il ne nÃ©cessite pas d'avoir LaTeX installÃ©, il est bien plus rapide,
     et il permet l'export au format vectoriel (matplotlib utilise dvi2png sinon).
 
-    C'est donc le format utilisé par défaut.
+    C'est donc le format utilisÃ© par dÃ©faut.
     """
     if '$' in chaine:
         if chaine.startswith(r"$\begin{bmatrix}"):
@@ -846,8 +846,8 @@ def latex2mathtext(chaine):
             chaine = chaine.replace(r'\right\}', r'\right}')
             # Test des crochets (intervalles).
             # mathtext n'accepte pas (matplotlib version 1.2) `\left]` ni `\right[`.
-            # Pour des questions d'équilibrage, si l'on détecte
-            # l'un ou l'autre, on enlève tous les \left et \right devant les crochets.
+            # Pour des questions d'Ã©quilibrage, si l'on dÃ©tecte
+            # l'un ou l'autre, on enlÃ¨ve tous les \left et \right devant les crochets.
             # (Patch provisoire en attendant de modifier matplotlib.)
             if r'\left]' in chaine or r'\right[' in chaine:
                 chaine = chaine.replace(r'\left]', ']').replace(r'\left[', '[').replace(r'\right]', ']').replace(r'\right[', '[')
@@ -869,8 +869,8 @@ def tex_dollars(txt):
 
 
 # HACK pour contourner un bug de matplotlib mathtext (v 1.1.1)
-# Les délimiteurs \left et \right ne sont pas gérés correctement
-# (à supprimer probablement quand matplotlib 1.2 sera dans les dépôts Ubuntu)
+# Les dÃ©limiteurs \left et \right ne sont pas gÃ©rÃ©s correctement
+# (Ã  supprimer probablement quand matplotlib 1.2 sera dans les dÃ©pÃ´ts Ubuntu)
 def _hacked_auto_sized_delimiter(self, s, loc, toks):
     #~ print "auto_sized_delimiter", toks
     front, middle, back = toks
@@ -889,7 +889,7 @@ def _hacked_auto_sized_delimiter(self, s, loc, toks):
 
 
 # HACK pour contourner un bug de matplotlib mathtext (v 1.1.1)
-# L'unicode est mal géré: 'str' utilisé à la place de 'basestring'.
+# L'unicode est mal gÃ©rÃ©: 'str' utilisÃ© Ã  la place de 'basestring'.
 def _hacked_subsuperscript(self, s, loc, toks):
     assert(len(toks)==1)
     # print 'subsuperscript', toks

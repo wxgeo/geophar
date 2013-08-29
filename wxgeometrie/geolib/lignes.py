@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------#######
@@ -53,9 +53,9 @@ from sympy import Rational
 
 
 class Ligne_generique(Objet_avec_equation):
-    u"""Une ligne générique.
+    u"""Une ligne gÃ©nÃ©rique.
 
-    Usage interne : la classe mère pour les droites, segments, demi-droites."""
+    Usage interne : la classe mÃ¨re pour les droites, segments, demi-droites."""
 
     _affichage_depend_de_la_fenetre = True
     _marqueurs = "()"
@@ -81,7 +81,7 @@ class Ligne_generique(Objet_avec_equation):
 
 
     def _get_equation(self):
-        u"Retourne un triplet (a, b, c), tel que ax + by + c = 0 soit une équation de droite de la ligne."
+        u"Retourne un triplet (a, b, c), tel que ax + by + c = 0 soit une Ã©quation de droite de la ligne."
         xA, yA = self.__point1.coordonnees
         xB, yB = self.__point2.coordonnees
         a, b, c = yA - yB, xB - xA, xA*yB - yA*xB
@@ -93,9 +93,9 @@ class Ligne_generique(Objet_avec_equation):
 
     @property
     def equation_reduite(self):
-        u"""Retourne (a, b) si la droite a une équation de la forme y=ax+b ; et (c,) si la droite a une équation de la forme x=c.
+        u"""Retourne (a, b) si la droite a une Ã©quation de la forme y=ax+b ; et (c,) si la droite a une Ã©quation de la forme x=c.
 
-        Ceci permet de comparer facilement deux droites, ce qui n'est pas le cas avec la propriété .équation (puisqu'une droite a une infinité d'équations) : si d1._equation_reduite() ~ d2._equation_reduite, d1 et d2 sont (à peu près) confondues.
+        Ceci permet de comparer facilement deux droites, ce qui n'est pas le cas avec la propriÃ©tÃ© .Ã©quation (puisqu'une droite a une infinitÃ© d'Ã©quations) : si d1._equation_reduite() ~ d2._equation_reduite, d1 et d2 sont (Ã  peu prÃ¨s) confondues.
         """
         eq = self.equation
         if eq is None:
@@ -107,7 +107,7 @@ class Ligne_generique(Objet_avec_equation):
             return (-c/a, )
 
     def _parallele(self, ligne):
-        u"Indique si la ligne est parallèle à une autre ligne."
+        u"Indique si la ligne est parallÃ¨le Ã  une autre ligne."
         if not isinstance(ligne, Ligne_generique):
             raise TypeError, "L'objet doit etre une ligne."
         a, b, c = self.equation
@@ -115,7 +115,7 @@ class Ligne_generique(Objet_avec_equation):
         return abs(a*b0 - b*a0) < contexte['tolerance']
 
     def _perpendiculaire(self, ligne):
-        u"Indique si la ligne est perpendiculaire à une autre ligne."
+        u"Indique si la ligne est perpendiculaire Ã  une autre ligne."
         if not isinstance(ligne, Ligne_generique):
             raise TypeError, "L'objet doit etre une ligne."
         a, b, c = self.equation
@@ -127,7 +127,7 @@ class Ligne_generique(Objet_avec_equation):
 
 
     def _creer_nom_latex(self):
-        u"""Crée le nom formaté en LaTeX. Ex: M1 -> $M_1$."""
+        u"""CrÃ©e le nom formatÃ© en LaTeX. Ex: M1 -> $M_1$."""
         Objet._creer_nom_latex(self)
         nom = self.nom_latex[1:-1]
         if re.match("(" + RE_NOM_DE_POINT + "){2}",  nom):
@@ -137,14 +137,14 @@ class Ligne_generique(Objet_avec_equation):
             self.nom_latex = "$" + nom + "$"
 
     def xy(self, x = None, y = None):
-        u"""Retourne les coordonnées du point de la droite d'abscisse ou d'ordonnée donnée.
+        u"""Retourne les coordonnÃ©es du point de la droite d'abscisse ou d'ordonnÃ©e donnÃ©e.
 
-        x ou y doivent être définis, mais bien sûr pas les deux.
+        x ou y doivent Ãªtre dÃ©finis, mais bien sÃ»r pas les deux.
 
         Nota:
-        Si x est donné pour une droite verticale, un point d'abscisse infinie
-        est retourné. À l'inverse, si y est donné pour une droite horizontale,
-        un point d'ordonnée infinie est retourné.
+        Si x est donnÃ© pour une droite verticale, un point d'abscisse infinie
+        est retournÃ©. Ã€ l'inverse, si y est donnÃ© pour une droite horizontale,
+        un point d'ordonnÃ©e infinie est retournÃ©.
         """
         x1, y1 = self.__point1.coordonnees
         x2, y2 = self.__point2.coordonnees
@@ -170,17 +170,17 @@ class Ligne_generique(Objet_avec_equation):
         return (x2 - x1)/(y2 - y1) if (y2 - y1) else inf
 
     def _points_extremes(self):
-        u"""Donne les points d'intersection de la droite avec les bords de la fenêtre.
+        u"""Donne les points d'intersection de la droite avec les bords de la fenÃªtre.
 
         Retourne une liste de deux points au maximum.
         """
-        # Attention, il faut impérativement récupérer la fenêtre **sur le canevas**,
-        # dans le cas d'un repère orthonormé.
+        # Attention, il faut impÃ©rativement rÃ©cupÃ©rer la fenÃªtre **sur le canevas**,
+        # dans le cas d'un repÃ¨re orthonormÃ©.
         xmin, xmax, ymin, ymax = self.canvas.fenetre
         eps = contexte['tolerance']
         dx = eps*(xmax - xmin)
         dy = eps*(ymax - ymin)
-        # points contient les intersections de la droite avec les bords de la fenêtre.
+        # points contient les intersections de la droite avec les bords de la fenÃªtre.
         points = []
         Mxmin = self.xy(x=xmin)
         if ymin - dy <= Mxmin[1] <= ymax + dy:
@@ -194,23 +194,23 @@ class Ligne_generique(Objet_avec_equation):
         Mymax = self.xy(y=ymax)
         if xmin - dx <= Mymax[0] <= xmax + dx:
             points.append(Mymax)
-        # En principe, points ne contient que deux éléments.
-        # Il peut éventuellement en contenir 3 ou 4, dans le cas limite où la droite
-        # coupe la fenêtre dans un coin. Dans ce cas, on peut trouver
+        # En principe, points ne contient que deux Ã©lÃ©ments.
+        # Il peut Ã©ventuellement en contenir 3 ou 4, dans le cas limite oÃ¹ la droite
+        # coupe la fenÃªtre dans un coin. Dans ce cas, on peut trouver
         # deux points d'intersection (quasi) confondus.
         # Il faut alors bien s'assurer de ne pas retourner 2 points confondus.
         if len(points) == 4:
-            return points[:2] # Mxmin et Mxmax ne peuvent être confondus.
+            return points[:2] # Mxmin et Mxmax ne peuvent Ãªtre confondus.
         elif len(points) == 3:
             if points[0] == Mxmin and points[1] == Mxmax:
-                return points[:2] # Mxmin et Mxmax ne peuvent être confondus.
+                return points[:2] # Mxmin et Mxmax ne peuvent Ãªtre confondus.
             return points[1:] # Mymin et Mymax non plus.
         else:
             assert len(points) <= 2
             return points
 
     def angle_affichage(self):
-        u"Angle, à l'écran, de la ligne par rapport l'horizontale, en radians."
+        u"Angle, Ã  l'Ã©cran, de la ligne par rapport l'horizontale, en radians."
         x1, y1 = self.__point1.coordonnees
         x2, y2 = self.__point2.coordonnees
         dx, dy = self.canvas.dcoo2pix(x2 - x1, y2 - y1)
@@ -221,9 +221,9 @@ class Ligne_generique(Objet_avec_equation):
 class Segment(Ligne_generique):
     u"""Un segment.
 
-    Un segment défini par deux points"""
+    Un segment dÃ©fini par deux points"""
 
-    _affichage_depend_de_la_fenetre = True # à cause du codage //, X, etc.
+    _affichage_depend_de_la_fenetre = True # Ã  cause du codage //, X, etc.
     _style_defaut = param.segments
     _prefixe_nom = "s"
     _marqueurs = "[]"
@@ -256,7 +256,7 @@ class Segment(Ligne_generique):
         plot.set(color=couleur, linestyle=style, linewidth=epaisseur)
         plot.zorder = niveau
 
-        # Codages utilisés pour indiquer les segments de même longueur
+        # Codages utilisÃ©s pour indiquer les segments de mÃªme longueur
         if not self.style("codage"):
             codage.set_visible(False)
         else:
@@ -299,7 +299,7 @@ class Segment(Ligne_generique):
         u"""Longueur du segment.
 
         Alias de _longueur, disponible pour indiquer que l'objet a vraiment une longueur
-        au sens mathématique du terme (pas comme une droite !)"""
+        au sens mathÃ©matique du terme (pas comme une droite !)"""
         return self._longueur()
 
     @property
@@ -321,7 +321,7 @@ class Segment(Ligne_generique):
 class Demidroite(Ligne_generique):
     u"""Une demi-droite.
 
-    Une demi-droite définie par son origine et un deuxième point"""
+    Une demi-droite dÃ©finie par son origine et un deuxiÃ¨me point"""
 
     _style_defaut = param.droites
     _prefixe_nom = "d"
@@ -341,7 +341,7 @@ class Demidroite(Ligne_generique):
 
     def _conditions_existence(self):
         return carre_distance(self.__origine, self.__point) > contexte['tolerance']**2
-        # EDIT: les conditions d'existence en amont sont désormais bien définies (ou devraient l'être !!)
+        # EDIT: les conditions d'existence en amont sont dÃ©sormais bien dÃ©finies (ou devraient l'Ãªtre !!)
         # return [self.point1.coo is not None and self.point2.coo is not None and sum(abs(self.point1.coo - self.point2.coo)) > contexte['tolerance']]
         # si les conditions d'existence en amont sont mal definies, il se peut que les coordonnees d'un point valent None
 
@@ -357,7 +357,7 @@ class Demidroite(Ligne_generique):
         x0, y0 = self.__point.coordonnees
         points = self._points_extremes()
         if len(points) < 2:
-            # La droite sous-jacente ne coupe pas la fenêtre (ou seulement en un point)
+            # La droite sous-jacente ne coupe pas la fenÃªtre (ou seulement en un point)
             return
         (x1, y1), (x2, y2) = points
         plot = self._representation[0]
@@ -392,9 +392,9 @@ class Demidroite(Ligne_generique):
         xv, yv = vect(A, M)
         if abs(xu*yv - xv*yu) > contexte['tolerance']:
             return False
-        if abs(xu) > abs(yu): # (AB) est plutôt horizontale
+        if abs(xu) > abs(yu): # (AB) est plutÃ´t horizontale
             k = xv/xu
-        elif yu: # (AB) est plutôt verticale
+        elif yu: # (AB) est plutÃ´t verticale
             k = yv/yu
         else:  # A == B
             return M == A
@@ -406,24 +406,24 @@ class Demidroite(Ligne_generique):
         u"Equation sous forme lisible par l'utilisateur."
         eq = self.equation
         if eq is None:
-            return u"L'objet n'est pas défini."
-        # on ne garde que quelques chiffres après la virgule
+            return u"L'objet n'est pas dÃ©fini."
+        # on ne garde que quelques chiffres aprÃ¨s la virgule
         a, b, c = (nice_display(coeff) for coeff in eq)
         eps = contexte['tolerance']
-        if abs(a) < abs(b): # droite plutôt horizontale
+        if abs(a) < abs(b): # droite plutÃ´t horizontale
             if (self.__point.ordonnee - self.__origine.ordonnee) > eps:
                 ajout = "y > " + nice_display(self.__origine.ordonnee)
             elif (self.__point.ordonnee - self.__origine.ordonnee) < eps:
                 ajout = "y < " + nice_display(self.__origine.ordonnee)
             else:
-                return u"Précision insuffisante."
-        else: # droite plutôt verticale
+                return u"PrÃ©cision insuffisante."
+        else: # droite plutÃ´t verticale
             if (self.__point.abscisse - self.__origine.abscisse) > eps:
                 ajout = "x > " + nice_display(self.__origine.abscisse)
             elif (self.__point.abscisse - self.__origine.abscisse) < eps:
                 ajout = "x < " + nice_display(self.__origine.abscisse)
             else:
-                return u"Précision insuffisante."
+                return u"PrÃ©cision insuffisante."
         return formatage("%s x + %s y + %s = 0 et %s" %(a, b, c, ajout))
 
 
@@ -435,9 +435,9 @@ class Demidroite(Ligne_generique):
 
 
 class Droite_generique(Ligne_generique):
-    u"""Une droite générique.
+    u"""Une droite gÃ©nÃ©rique.
 
-    Usage interne : la classe mère pour toutes les droites."""
+    Usage interne : la classe mÃ¨re pour toutes les droites."""
 
     _style_defaut = param.droites
     _prefixe_nom = "d"
@@ -466,7 +466,7 @@ class Droite_generique(Ligne_generique):
             self._representation = [self.rendu.ligne()]
         points = self._points_extremes()
         if len(points) < 2:
-            # La droite ne coupe pas la fenêtre (ou seulement en un point)
+            # La droite ne coupe pas la fenÃªtre (ou seulement en un point)
             return
         (x1, y1), (x2, y2) = points
         plot = self._representation[0]
@@ -497,14 +497,14 @@ class Droite_generique(Ligne_generique):
         u"Equation sous forme lisible par l'utilisateur."
         eq = self.equation
         if eq is None:
-            return u"L'objet n'est pas défini."
-        # On ne garde que quelques chiffres après la virgule pour l'affichage.
+            return u"L'objet n'est pas dÃ©fini."
+        # On ne garde que quelques chiffres aprÃ¨s la virgule pour l'affichage.
         a, b, c = (nice_display(coeff) for coeff in eq)
         return formatage("%s x + %s y + %s = 0" %(a, b, c))
 
     @property
     def info(self):
-        return self.nom_complet + u" d'équation " + self.equation_formatee
+        return self.nom_complet + u" d'Ã©quation " + self.equation_formatee
 
     def __eq__(self,  y):
         if self.existe and isinstance(y, Droite_generique) and y.existe:
@@ -531,7 +531,7 @@ class Droite_generique(Ligne_generique):
 class Droite(Droite_generique):
     u"""Une droite.
 
-    Une droite définie par deux points"""
+    Une droite dÃ©finie par deux points"""
 
 
     point1 = __point1 = Argument("Point_generique", defaut = Point)
@@ -556,12 +556,12 @@ class Droite(Droite_generique):
 
 
 class Point_droite(Point_generique):
-    u"""Un des deux points servant à construire une droite d'équation donnée.
+    u"""Un des deux points servant Ã  construire une droite d'Ã©quation donnÃ©e.
 
     Usage interne.
-    Ceci sert pour les droites qui ne sont pas définies à l'aide de points, mais directement à l'aide d'une équation.
-    Comme l'implémentation actuelle des droites exige que la droite soit définie par 2 points,
-    on génère deux points de la droite à partir de son équation."""
+    Ceci sert pour les droites qui ne sont pas dÃ©finies Ã  l'aide de points, mais directement Ã  l'aide d'une Ã©quation.
+    Comme l'implÃ©mentation actuelle des droites exige que la droite soit dÃ©finie par 2 points,
+    on gÃ©nÃ¨re deux points de la droite Ã  partir de son Ã©quation."""
 
     droite = __droite = Argument("Droite_generique")
     premier = __premier = ArgumentNonModifiable("bool")
@@ -587,9 +587,9 @@ class Point_droite(Point_generique):
 
 
 class Droite_vectorielle(Droite_generique):
-    u"""Une droite dirigée par un vecteur.
+    u"""Une droite dirigÃ©e par un vecteur.
 
-    Une droite définie par un point et un vecteur directeur."""
+    Une droite dÃ©finie par un point et un vecteur directeur."""
 
     point = __point = Argument("Point_generique", defaut=Point)
     vecteur = __vecteur = Argument("Vecteur_generique", defaut=Vecteur_libre)
@@ -597,7 +597,7 @@ class Droite_vectorielle(Droite_generique):
     def __init__(self, point = None, vecteur = None, **styles):
         self.__point = point = Ref(point)
         self.__vecteur = vecteur = Ref(vecteur)
-        Objet.__init__(self) # pour pouvoir utiliser 'Point_droite(self, True)', l'objet doit déjà être initialisé
+        Objet.__init__(self) # pour pouvoir utiliser 'Point_droite(self, True)', l'objet doit dÃ©jÃ  Ãªtre initialisÃ©
         Droite_generique.__init__(self, Point_droite(self, True), Point_droite(self, False), **styles)
 
     def _get_equation(self):
@@ -612,9 +612,9 @@ class Droite_vectorielle(Droite_generique):
 
 
 class Parallele(Droite_generique):
-    u"""Une parallèle.
+    u"""Une parallÃ¨le.
 
-    La parallèle à une droite passant par un point."""
+    La parallÃ¨le Ã  une droite passant par un point."""
 
     droite = __droite = Argument("Droite_generique")
     point = __point = Argument("Point_generique", defaut = Point)
@@ -622,7 +622,7 @@ class Parallele(Droite_generique):
     def __init__(self, droite, point = None, **styles):
         self.__droite = droite = Ref(droite)
         self.__point = point = Ref(point)
-        Objet.__init__(self) # pour pouvoir utiliser 'Point_droite(self, True)', l'objet doit déjà être initialisé
+        Objet.__init__(self) # pour pouvoir utiliser 'Point_droite(self, True)', l'objet doit dÃ©jÃ  Ãªtre initialisÃ©
         Droite_generique.__init__(self, Point_droite(self, True), Point_droite(self, False), **styles)
 
     def _get_equation(self):
@@ -636,7 +636,7 @@ class Parallele(Droite_generique):
 
 
 
-##class Droite_rotation(Droite): # À REDÉFINIR
+##class Droite_rotation(Droite): # Ã€ REDÃ‰FINIR
 ##    u"""Une image d'une droite par rotation.
 ##
 ##    Une droite obtenue par rotation d'une autre droite, ou d'un bipoint, ou..."""
@@ -649,7 +649,7 @@ class Parallele(Droite_generique):
 ##        self.__rotation = rotation = Ref(rotation)
 ##        warning("A redefinir, voir commentaires dans le code.")
 ##        Droite.__init__(self, point1 = Point_rotation(droite._Droite__point1, rotation), point2 = Point_rotation(droite._Droite__point2, rotation), **styles)
-##    # BUG : droite._Droite__point1 ne va pas, car si l'argument droite est modifié, la modification ne va pas se répercuter sur les arguments de Point_rotation
+##    # BUG : droite._Droite__point1 ne va pas, car si l'argument droite est modifiÃ©, la modification ne va pas se rÃ©percuter sur les arguments de Point_rotation
 ##
 ##    def  _get_coordonnees(self):
 ##         raise NotImplementedError
@@ -659,7 +659,7 @@ class Parallele(Droite_generique):
 class Perpendiculaire(Droite_generique):
     u"""Une perpendiculaire.
 
-    Une droite perpendiculaire à une autre passant par un point."""
+    Une droite perpendiculaire Ã  une autre passant par un point."""
 
     droite = __droite = Argument("Ligne_generique")
     point = __point = Argument("Point_generique", defaut = Point)
@@ -667,7 +667,7 @@ class Perpendiculaire(Droite_generique):
     def __init__(self, droite, point = None, **styles):
         self.__droite = droite = Ref(droite)
         self.__point = point = Ref(point)
-        Objet.__init__(self) # pour pouvoir utiliser 'Point_droite(self, True)', l'objet doit déjà être initialisé
+        Objet.__init__(self) # pour pouvoir utiliser 'Point_droite(self, True)', l'objet doit dÃ©jÃ  Ãªtre initialisÃ©
         Droite_generique.__init__(self, Point_droite(self, True), Point_droite(self, False), **styles)
 
     def _get_equation(self):
@@ -680,9 +680,9 @@ class Perpendiculaire(Droite_generique):
 
 
 class Mediatrice(Perpendiculaire):
-    u"""Une médiatrice.
+    u"""Une mÃ©diatrice.
 
-    La médiatrice d'un segment (ou d'un bipoint, ...)
+    La mÃ©diatrice d'un segment (ou d'un bipoint, ...)
 
     >>> from wxgeometrie.geolib import Point, Mediatrice, Segment
     >>> A=Point(1,2); B=Point(3,4)
@@ -714,9 +714,9 @@ class Mediatrice(Perpendiculaire):
 
 
 class Droite_equation(Droite_generique):
-    u"""Une droite définie par une équation.
+    u"""Une droite dÃ©finie par une Ã©quation.
 
-    Une droite d'équation donnée sous forme d'un triplet (a, b, c). (ax + by + c = 0)"""
+    Une droite d'Ã©quation donnÃ©e sous forme d'un triplet (a, b, c). (ax + by + c = 0)"""
 
     a = __a = Argument("Variable_generique")
     b = __b = Argument("Variable_generique")
@@ -753,7 +753,7 @@ class Droite_equation(Droite_generique):
         self.__a = a = Ref(a)
         self.__b = b = Ref(b)
         self.__c = c = Ref(c)
-        Objet.__init__(self) # pour pouvoir utiliser 'Point_droite(self, True)', l'objet doit déjà être initialisé
+        Objet.__init__(self) # pour pouvoir utiliser 'Point_droite(self, True)', l'objet doit dÃ©jÃ  Ãªtre initialisÃ©
         Droite_generique.__init__(self, point1 = Point_droite(self, True),
                                   point2 = Point_droite(self, False), **styles)
 #        self.equation = self.__a,  self.__b, self.__c
@@ -805,7 +805,7 @@ class Droite_equation(Droite_generique):
 class Bissectrice(Droite_vectorielle):
     u"""Une bissectrice.
 
-    La bissectrice d'un angle défini par 3 points.
+    La bissectrice d'un angle dÃ©fini par 3 points.
     On peut, au choix, entrer un angle ou 3 points comme argument."""
 
     point1 = __point1 = Argument("Point_generique", defaut = Point)
@@ -834,7 +834,7 @@ class Bissectrice(Droite_vectorielle):
 class Point_tangence(Point_generique):
     u"""Un point de tangence.
 
-    Le point de tangence d'un cercle et d'une droite tangente au cercle passant par un point donné.
+    Le point de tangence d'un cercle et d'une droite tangente au cercle passant par un point donnÃ©.
     Usage interne."""
 
     cercle = __cercle = Argument("Cercle_generique")
@@ -860,11 +860,11 @@ class Point_tangence(Point_generique):
 
 
 
-class Tangente(Perpendiculaire):    # À REDÉFINIR ?
+class Tangente(Perpendiculaire):    # Ã€ REDÃ‰FINIR ?
     u"""Une tangente.
 
-    Une des deux tangentes à un cercle passant par un point extérieur au cercle.
-    Le dernier paramètre (True/False) sert à distinguer les deux tangentes.
+    Une des deux tangentes Ã  un cercle passant par un point extÃ©rieur au cercle.
+    Le dernier paramÃ¨tre (True/False) sert Ã  distinguer les deux tangentes.
     (Voir la classe Intersection_cercles pour plus d'infos)."""
 
     cercle = __cercle = Argument("Cercle_generique", defaut='Cercle')
@@ -884,12 +884,12 @@ class Tangente(Perpendiculaire):    # À REDÉFINIR ?
 
 
     def _set_feuille(self):
-        # si l'on crée 2 fois de suite un tangente de mêmes cercle et point,
-        # alors on doit obtenir les deux tangentes différentes possibles.
+        # si l'on crÃ©e 2 fois de suite un tangente de mÃªmes cercle et point,
+        # alors on doit obtenir les deux tangentes diffÃ©rentes possibles.
         if "_Tangente__angle_positif" in self._valeurs_par_defaut:
             for objet in self.feuille.objets.lister(type = Tangente):
                 if objet._Tangente__cercle is self.__cercle and objet._Tangente__point is self.__point:
-                    # on crée l'autre tangente
+                    # on crÃ©e l'autre tangente
                     self.__angle_positif = not objet._Tangente__angle_positif
                     break
         if "_Tangente__point" in self._valeurs_par_defaut:
@@ -909,7 +909,7 @@ class Tangente(Perpendiculaire):    # À REDÉFINIR ?
 class Demiplan(Objet_avec_equation):
     u"""Un demi-plan.
 
-    Le demi-plan délimité par la droite d et contenant le point M."""
+    Le demi-plan dÃ©limitÃ© par la droite d et contenant le point M."""
 
     _affichage_depend_de_la_fenetre = True
     _marqueurs = "()"
@@ -936,16 +936,16 @@ class Demiplan(Objet_avec_equation):
         u"Equation sous forme lisible par l'utilisateur."
         eq = self.equation
         if eq is None:
-            return u"Le demi-plan n'est pas défini."
+            return u"Le demi-plan n'est pas dÃ©fini."
         test = self._signe()
         if test < 0:
             symbole = '<'
         elif test > 0:
             symbole = '>'
         else:
-            return u"Le demi-plan n'est pas défini."
+            return u"Le demi-plan n'est pas dÃ©fini."
         a, b, c = (nice_display(coeff) for coeff in eq)
-        # on ne garde que quelques chiffres après la virgule pour l'affichage
+        # on ne garde que quelques chiffres aprÃ¨s la virgule pour l'affichage
         if self.__droite_incluse:
             symbole += '='
         return formatage("%s x + %s y + %s %s 0" %(a, b, c, symbole))
@@ -967,16 +967,16 @@ class Demiplan(Objet_avec_equation):
         if not self._representation:
             self._representation = [self.rendu.ligne(), self.rendu.polygone()]
         plot, fill = self._representation
-        # Intersection de la droite frontière avec le cadre de la fenêtre :
+        # Intersection de la droite frontiÃ¨re avec le cadre de la fenÃªtre :
         points = self.__droite._points_extremes()
         couleur, niveau = self.style(('couleur', 'niveau'))
         xmin, xmax, ymin, ymax = self.canvas.fenetre
-        # Liste des coins de la fenêtre en tournant dans le sens direct.
+        # Liste des coins de la fenÃªtre en tournant dans le sens direct.
         coins = [(xmin, ymin), (xmax, ymin), (xmax, ymax), (xmin, ymax)]
         sommets = [coin for coin in coins if (coin in self)]
 
         if len(points) == 2:
-            # La droite frontière partage la fenêtre en 2
+            # La droite frontiÃ¨re partage la fenÃªtre en 2
             (x1, y1), (x2, y2) = points
             plot.set_data((x1, x2), (y1, y2))
             plot.set(color = couleur, linestyle = self.style("style"),
@@ -986,7 +986,7 @@ class Demiplan(Objet_avec_equation):
             sommets.sort(key = lambda xy: atan2(xy[0] - x0, xy[1] - y0))
 
         elif len(sommets) > 1:
-            # La droite délimitant le demi-plan ne coupe pas la fenêtre (ou seulement en un coin).
+            # La droite dÃ©limitant le demi-plan ne coupe pas la fenÃªtre (ou seulement en un coin).
             # Dans ce cas, si au moins 2 sommets sont dans le 1/2 plan, tous y sont.
             assert len(sommets) == 4
 
@@ -1005,27 +1005,27 @@ class Demiplan(Objet_avec_equation):
 
 
 class Axe(Droite):
-    u"""Un axe orienté.
+    u"""Un axe orientÃ©.
 
-    Un axe orienté servant au repérage.
-    Cette classe sert essentiellement à construire les axes (Ox) et (Oy).
+    Un axe orientÃ© servant au repÃ©rage.
+    Cette classe sert essentiellement Ã  construire les axes (Ox) et (Oy).
 
-    Styles spécifiques:
+    Styles spÃ©cifiques:
     - `graduations` (bool): afficher ou non les graduations
     - `pas` (int|None):
-        * entier `n` (non nul): `n` fois l'écart entre les deux points repères
+        * entier `n` (non nul): `n` fois l'Ã©cart entre les deux points repÃ¨res
           de l'axe.
         * `None` ou `0`: adapte automatiquement la taille
-          de la graduation à la fenêtre (défaut)
+          de la graduation Ã  la fenÃªtre (dÃ©faut)
     - `pas_num` (int): entier `n`:
         * si `n` est nul, n'affiche aucun nombre sur l'axe ;
         * sinon, affiche un nombre toutes les `n` graduations
           (en partant de l'origine de l'axe).
           En particulier, si `pas_num=1`, toutes les graduations
           auront un nombre.
-    - `repeter` (bool): répéter ou non la numérotation sur les axes.
+    - `repeter` (bool): rÃ©pÃ©ter ou non la numÃ©rotation sur les axes.
     - `hauteur` (int): hauteur d'une graduation (en pixels).
-    - `placement_num` (-1|1): position de la numérotation par rapport à l'axe.
+    - `placement_num` (-1|1): position de la numÃ©rotation par rapport Ã  l'axe.
     """
 
     _style_defaut = param.axes
@@ -1043,17 +1043,17 @@ class Axe(Droite):
         if not self._representation:
             self._representation = [self.rendu.fleche(), self.rendu.lignes()]
 
-        #  L'axe lui-même
+        #  L'axe lui-mÃªme
         #  ==============
         fleche = self._representation[0]
         linewidth = self.style('epaisseur')
         color = self.style('couleur')
         zorder = self.style("niveau")
 
-        # Points d'intersection avec le bord de la fenêtre
+        # Points d'intersection avec le bord de la fenÃªtre
         points = self._points_extremes()
         if len(points) < 2:
-            # L'axe ne coupe pas la fenêtre (ou seulement en un point)
+            # L'axe ne coupe pas la fenÃªtre (ou seulement en un point)
             return
         (x1, y1), (x2, y2) = points
 
@@ -1062,7 +1062,7 @@ class Axe(Droite):
         xO, yO = O.xy
         xI, yI = I.xy
 
-        # On s'assure que l'axe soit bien orienté
+        # On s'assure que l'axe soit bien orientÃ©
         if abs(xI - xO) > contexte['tolerance']:
             if (x2 - x1)*(xI - xO) < 0:
                 x2, x1, y2, y1 = x1, x2, y1, y2
@@ -1086,16 +1086,16 @@ class Axe(Droite):
 
         pas = self.style("pas")
         if not pas:
-            # On détermine automatiquement le pas
+            # On dÃ©termine automatiquement le pas
             pxO, pyO = self.__point1._pixel()
             pxI, pyI = self.__point2._pixel()
             norme = hypot(pxI - pxO, pyI - pyO)
-            # Le pas est déterminé automatiquement
-            # L'écart entre deux graduations doit être d'environ 20 pixels.
-            # Notons OI la longueur entre les deux points du repère, et
-            # k le coefficient appliqué à OI pour obtenir l'écart entre deux
+            # Le pas est dÃ©terminÃ© automatiquement
+            # L'Ã©cart entre deux graduations doit Ãªtre d'environ 20 pixels.
+            # Notons OI la longueur entre les deux points du repÃ¨re, et
+            # k le coefficient appliquÃ© Ã  OI pour obtenir l'Ã©cart entre deux
             # graduations.
-            # Pour que la lecture reste simple, k doit être de la forme p*10^n,
+            # Pour que la lecture reste simple, k doit Ãªtre de la forme p*10^n,
             # avec p dans {1, 2, 5}
             if norme < contexte['tolerance']:
                 # OI est quasiment nul, pas de graduation.
@@ -1108,62 +1108,62 @@ class Axe(Droite):
         xu *= pas
         yu *= pas
 
-        # Il faut commencer par trouver une graduation qui soit située
-        # dans la fenêtre d'affichage (s'il y en a).
-        # On récupère les points visibles extremes de l'axe.
+        # Il faut commencer par trouver une graduation qui soit situÃ©e
+        # dans la fenÃªtre d'affichage (s'il y en a).
+        # On rÃ©cupÃ¨re les points visibles extremes de l'axe.
         xmin, xmax = sorted((x1, x2))
         ymin, ymax = sorted((y1, y2))
 
-        # On distingue le cas des droites plutôt verticale, et celui des droites
-        # plutôt horizontales (pour éviter des divisions par zéro ou presque zéro).
+        # On distingue le cas des droites plutÃ´t verticale, et celui des droites
+        # plutÃ´t horizontales (pour Ã©viter des divisions par zÃ©ro ou presque zÃ©ro).
         if abs(yu) < abs(xu):
-            # Droite plutôt horizontale
+            # Droite plutÃ´t horizontale
             assert xu
-            # On va graduer **de droite à gauche**.
+            # On va graduer **de droite Ã  gauche**.
             n = (xmax - xO)/xu
-            # On récupère la graduation située juste en dessous de xmax.
+            # On rÃ©cupÃ¨re la graduation situÃ©e juste en dessous de xmax.
             n = (floor(n) if (xO + floor(n)*xu) < xmax else ceil(n))
             # Et on gradue tant qu'on reste dans la fenetre.
             x = xO + n*xu
             y = yO + n*yu
             assert x < xmax
             # Il faut graduer dans le bon sens (on part de xmax, donc x doit
-            # diminuer à chaque étape).
+            # diminuer Ã  chaque Ã©tape).
             sens = sign(xu)
 
         else:
-            # Droite plutôt verticale
+            # Droite plutÃ´t verticale
             assert yu
             # On va graduer **de haut en bas**.
             n = (ymax - yO)/yu
-            # Même chose que précédemment, en inversant les rôles de x et de y.
+            # MÃªme chose que prÃ©cÃ©demment, en inversant les rÃ´les de x et de y.
             n = (floor(n) if (yO + floor(n)*yu) < ymax else ceil(n))
             x = xO + n*xu
             y = yO + n*yu
             assert y < ymax
             sens = sign(yu)
 
-        # On calcule le vecteur servant à générer les graduations.
-        # Ce vecteur doit être normal au vecteur directeur... pour l'affichage !
-        # Autrement dit, le repère n'étant pas forcément orthonormé, il faut
+        # On calcule le vecteur servant Ã  gÃ©nÃ©rer les graduations.
+        # Ce vecteur doit Ãªtre normal au vecteur directeur... pour l'affichage !
+        # Autrement dit, le repÃ¨re n'Ã©tant pas forcÃ©ment orthonormÃ©, il faut
         # travailler **en pixels**.
-        # La norme (en pixels également) est fixée par le style `hauteur`.
+        # La norme (en pixels Ã©galement) est fixÃ©e par le style `hauteur`.
         pxu, pyu = self.canvas.dcoo2pix(xu, yu)
         pnorm = hypot(pxu, pyu)
         k = .5*self.style('hauteur')/pnorm
-        # Vecteur normal à (pxu, pyu) :
+        # Vecteur normal Ã  (pxu, pyu) :
         pxv, pyv = k*pyu, -k*pxu
-        # On retourne au système de coordonnées.
+        # On retourne au systÃ¨me de coordonnÃ©es.
         xv, yv = self.canvas.dpix2coo(pxv, pyv)
 
         segments = []
         ##print ':::', xO, n, xu, xO+n*xu
         ##print '(1) debug::axes::(n, xu, yu, x, y, xO, yO)', n, xu, yu, x, y, xO, yO
 
-        # Et on génère les graduations !
+        # Et on gÃ©nÃ¨re les graduations !
         while xmin < x < xmax:
             if hypot(*self.canvas.dcoo2pix(x2 - x, y2 - y)) > 1.5*taille:
-                # Ne pas superposer une graduation à la pointe de la flêche
+                # Ne pas superposer une graduation Ã  la pointe de la flÃªche
                 segments.append([(x - xv, y - yv), (x + xv, y + yv)])
             x -= sens*xu
             y -= sens*yu
@@ -1171,7 +1171,7 @@ class Axe(Droite):
         lignes.set_segments(segments)
         lignes.set(visible=True, color=color, lw=linewidth, zorder=zorder)
 
-        # La légende en dessous des graduations
+        # La lÃ©gende en dessous des graduations
         # =====================================
 
         self._representation = self._representation[:2]
@@ -1180,9 +1180,9 @@ class Axe(Droite):
         if not pas_num:
             return
 
-        # Si `pas_num != 1`, on ne met pas de nombre à chaque graduation.
-        # Il faut donc recalculer la graduation de départ.
-        # `n` (numéro de la graduation de départ) doit être un multiple
+        # Si `pas_num != 1`, on ne met pas de nombre Ã  chaque graduation.
+        # Il faut donc recalculer la graduation de dÃ©part.
+        # `n` (numÃ©ro de la graduation de dÃ©part) doit Ãªtre un multiple
         # de l'entier `pas_num` (qui indique combien il y a de graduations entre
         # 2 nombres successifs).
         ##print 'debug::axes::(n, pas_num, xu, yu)', n, pas_num, xu, yu
@@ -1194,16 +1194,16 @@ class Axe(Droite):
 
         pvnorm = hypot(pxv, pyv)
         taille = self.etiquette.style('taille')
-        # On s'écarte de 2 pixels par rapport à l'extrémité de la graduation,
-        # ainsi que de la moitié de la hauteur du texte.
-        # On choisit également le placement avec `self.style('placement_num')`
+        # On s'Ã©carte de 2 pixels par rapport Ã  l'extrÃ©mitÃ© de la graduation,
+        # ainsi que de la moitiÃ© de la hauteur du texte.
+        # On choisit Ã©galement le placement avec `self.style('placement_num')`
         # (qui vaut -1 ou 1).
         coeff = self.style('placement_num')*(pvnorm + 2 + .5*taille)/pvnorm
         xw, yw = self.canvas.dpix2coo(coeff*pxv, coeff*pyv)
 
         while xmin < x < xmax:
             if hypot(*self.canvas.dcoo2pix(x2 - x, y2 - y)) > 1.5*taille:
-                # Ne pas superposer une graduation à la pointe de la flêche
+                # Ne pas superposer une graduation Ã  la pointe de la flÃªche
                 s = nice_display(n*pas)
                 if s[0] == '-':
                     s = '$%s$' % s
@@ -1222,9 +1222,9 @@ class Axe(Droite):
 
 
 class Repere(Objet):
-    u"""Un repère du plan.
+    u"""Un repÃ¨re du plan.
 
-    Un repère du plan défini par deux axes de même origine."""
+    Un repÃ¨re du plan dÃ©fini par deux axes de mÃªme origine."""
 
     _style_defaut = param.axes
     _prefixe_nom = "rep"
@@ -1247,8 +1247,8 @@ class Repere(Objet):
 ##class Graduations(Objet):
     ##u"""Un ensemble de graduations sur un axe.
 ##
-    ##Gère l'ensemble des graduations d'un axe.
-    ##En principe, il n'y a pas besoin de le créer manuellement."""
+    ##GÃ¨re l'ensemble des graduations d'un axe.
+    ##En principe, il n'y a pas besoin de le crÃ©er manuellement."""
 ##
     ##_style_defaut = param.graduations
     ##_prefixe_nom = "grad"
@@ -1263,15 +1263,15 @@ class Repere(Objet):
 ##
 ##
 ##class Tangente_courbe_interpolation(Droite_equation):
-    ##u"""Une tangente à une courbe de type interpolation polynomiale par morceau.
+    ##u"""Une tangente Ã  une courbe de type interpolation polynomiale par morceau.
 ##
-    ##Le coefficient directeur est estimé par approximation numérique avec taux de variation
+    ##Le coefficient directeur est estimÃ© par approximation numÃ©rique avec taux de variation
     ##sur un pas  self.__canvas__.pas().
 ##
     ##:type courbe: Interpolation_polynomiale_par_morceaux
     ##:param courbe: la courbe sur laquelle va se placer la tangente
     ##:type x: float
-    ##:param x: position du point de tangence en abscisse; doit être entre xmin et xmax.
+    ##:param x: position du point de tangence en abscisse; doit Ãªtre entre xmin et xmax.
 ##
     ##exemple::
 ##
@@ -1300,9 +1300,9 @@ class Repere(Objet):
 
 
 class Tangente_glisseur_interpolation(Droite_equation):
-    u"""Une tangente à une courbe de type interpolation polynomiale par morceau, et qui glisse.
+    u"""Une tangente Ã  une courbe de type interpolation polynomiale par morceau, et qui glisse.
 
-    Le coefficient directeur est estimé par approximation numérique avec taux de variation
+    Le coefficient directeur est estimÃ© par approximation numÃ©rique avec taux de variation
     sur un pas  self.__canvas__.pas().
 
     :type courbe: Interpolation_polynomiale_par_morceaux

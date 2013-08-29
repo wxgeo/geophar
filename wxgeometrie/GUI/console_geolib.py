@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------##
@@ -35,7 +35,7 @@ class ConsoleGeolib(QWidget):
         self.parent = parent
         self.setPalette(white_palette)
         vsizer = QVBoxLayout()
-        txt = u"<i>Tapez une commande ci-dessus, puis appuyez sur </i>[<i>Entrée</i>]<i>.</i>"
+        txt = u"<i>Tapez une commande ci-dessus, puis appuyez sur </i>[<i>EntrÃ©e</i>]<i>.</i>"
         self.resultats = QLabel(txt)
         self.resultats.setMinimumWidth(500)
         self.ligne_commande = LigneCommande(self, longueur=500, action=self.action)

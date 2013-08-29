@@ -1,9 +1,9 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 from __future__ import with_statement
 
 ##--------------------------------------#######
-#                Probabilités                 #
+#                ProbabilitÃ©s                 #
 ##--------------------------------------#######
 #    WxGeometrie
 #    Dynamic geometry, graph plotter, and more for french mathematic teachers.
@@ -53,18 +53,18 @@ class ProbaMenuBar(MenuBar):
                                    ["fenetre"], ["zoomer"], ["dezoomer"],
                                    ["orthonormaliser"], [u"zoom_auto"])
         self.ajouter(u"Autres actions", [u"detecter"],
-                                   [u"Répétition d'expériences indépendantes",
-                                    u"Construire un arbre correspondant à la répétition d'expériences aléatoires indépendantes.",
+                                   [u"RÃ©pÃ©tition d'expÃ©riences indÃ©pendantes",
+                                    u"Construire un arbre correspondant Ã  la rÃ©pÃ©tition d'expÃ©riences alÃ©atoires indÃ©pendantes.",
                                     None, self.panel.repeter_experiences_independantes])
         self.ajouter(u"Outils", [u"Style des sommets", u"Modifier le style des sommets de l'arbre.",
                                  None, self.panel.proprietes_sommets],
-                                [u"Style des arêtes", u"Modifier le style des arêtes de l'arbre.",
+                                [u"Style des arÃªtes", u"Modifier le style des arÃªtes de l'arbre.",
                                  None, self.panel.proprietes_aretes],
-                                [u"Style de la légende", u"Modifier le style des titres de chaque niveau.",
+                                [u"Style de la lÃ©gende", u"Modifier le style des titres de chaque niveau.",
                                  None, self.panel.proprietes_titres],
                                 None,
                                 [u"options"])
-##        self.ajouter(u"Avancé", [u"historique"], [u"securise"], [u"ligne_commande"], [u"debug"])
+##        self.ajouter(u"AvancÃ©", [u"historique"], [u"securise"], [u"ligne_commande"], [u"debug"])
         self.ajouter(u"avance1")
         self.ajouter(u"?")
 
@@ -73,7 +73,7 @@ class ProbaMenuBar(MenuBar):
 
 class Probabilites(Panel_API_graphique):
 
-    titre = u"Arbre de probabilités" # Donner un titre a chaque module
+    titre = u"Arbre de probabilitÃ©s" # Donner un titre a chaque module
 
     def __init__(self, *args, **kw):
         Panel_API_graphique.__init__(self, *args, **kw)
@@ -96,7 +96,7 @@ omega
 >>>H
 >>&E:0,9""")
         self.entrees.addWidget(self.instructions)
-        self.appliquer = QPushButton(u"Générer l'arbre", self)
+        self.appliquer = QPushButton(u"GÃ©nÃ©rer l'arbre", self)
         self.appliquer.clicked.connect(self.Appliquer)
         self.entrees.addWidget(self.appliquer)
 
@@ -130,13 +130,13 @@ omega
                 legende = None
                 self.canvas.fenetre = -.1, 1.1, -.1, 1.1
 
-            # Répétition d'expériences aléatoires indépendantes
+            # RÃ©pÃ©tition d'expÃ©riences alÃ©atoires indÃ©pendantes
             #
             # Ex:
             # >> A:  1/3
             # >> &A: 2/3
             #
-            # équivaut à:
+            # Ã©quivaut Ã :
             #
             # > A_1:   1/3
             # >> A_2:  1/3
@@ -165,7 +165,7 @@ omega
 
             #intersection, union : \cap \cup
 
-            # Interprétation des instructions sous forme de listes de listes
+            # InterprÃ©tation des instructions sous forme de listes de listes
             # >A
             # >>B
             # >>C
@@ -179,11 +179,11 @@ omega
             # [{'liste': [{'liste': [{'liste': [], 'texte': u'B'}, {'liste': [], 'texte': u'C'}], 'texte': u'A'}, {'liste': [{'liste': [{'liste': [], 'texte': u'F'}, {'liste': [], 'texte': u'G'}], 'texte': u'E'}, {'liste': [], 'texte': u'H'}], 'texte': u'D'}, {'liste': [], 'texte': u'E'}], 'texte': ''}]
 
             arbre = []
-            ligne_precedente = [-1 for i in xrange(nbr_colonnes)] # numéro de ligne atteint pour chaque colonne
+            ligne_precedente = [-1 for i in xrange(nbr_colonnes)] # numÃ©ro de ligne atteint pour chaque colonne
             for instruction in instructions:
                 colonne = len(instruction) - len(instruction.lstrip(">"))
                 branche = arbre
-                for i in xrange(colonne): # on se déplace de branche en branche ;)
+                for i in xrange(colonne): # on se dÃ©place de branche en branche ;)
                     branche = branche[ligne_precedente[i]]["liste"]
                 branche.append({"texte": instruction.lstrip(">"), "liste": []})
                 ligne_precedente[colonne] += 1
@@ -300,7 +300,7 @@ omega
             self.feuille_actuelle.interprete.commande_executee()
 
     def info_proprietes(self, titre):
-        QMessageBox.warning(self, titre, u"Créez l'arbre au préalable.")
+        QMessageBox.warning(self, titre, u"CrÃ©ez l'arbre au prÃ©alable.")
 
     def proprietes_sommets(self, event = None):
         objets = self.feuille_actuelle.objets.lister(type=Point)
@@ -315,7 +315,7 @@ omega
     def proprietes_aretes(self, event = None):
         objets = self.feuille_actuelle.objets.lister(type=Segment)
         if not objets:
-            self.info_proprietes(u'Aucune arête.')
+            self.info_proprietes(u'Aucune arÃªte.')
             return
         win = Proprietes(self, objets)
         win.show()
@@ -338,12 +338,12 @@ omega
         pass
 
     def assistant(self, event = None, liste = None):
-        """Crée un arbre en supposant les évènements de la liste tous indépendants entre eux.
+        """CrÃ©e un arbre en supposant les Ã©vÃ¨nements de la liste tous indÃ©pendants entre eux.
 
         Exemple:
         self.assistant(liste = ["A:0.4", "B:0.7"])
 
-        On peut spécifier explicitement les évènements contraires:
+        On peut spÃ©cifier explicitement les Ã©vÃ¨nements contraires:
         self.assistant(liste = [("G_1:0.4", "P_1:0.6"), ("G_2:0.5", "P_2:0.5")])"""
 
 

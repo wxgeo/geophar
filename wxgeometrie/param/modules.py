@@ -1,9 +1,9 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ######################################
 #
-#    Détection des modules
+#    DÃ©tection des modules
 #
 ######################################
 #
@@ -51,7 +51,7 @@ def _detecter_modules():
                         d = {}
                         execfile(description_file, d)
                         if d['description']['groupe'] != "Modules":
-                            # Sert à désactiver les modules en construction.
+                            # Sert Ã  dÃ©sactiver les modules en construction.
                             continue
                         descriptions[nom] = d['description']
                         modules.append(nom)
@@ -66,7 +66,7 @@ def _detecter_modules():
 try:
     modules, descriptions_modules = _detecter_modules()
 except OSError:
-    print(u"Warning: impossible de détecter les modules (répertoire '%s') !" % _modules_dir)
+    print(u"Warning: impossible de dÃ©tecter les modules (rÃ©pertoire '%s') !" % _modules_dir)
     modules = []
     descriptions_modules = {}
 
@@ -78,8 +78,8 @@ for nom in modules_par_defaut:
 
 
 def _key(nom):
-    # les modules activés par défaut apparaissent en premier,
-    # les autres sont classés par ordre alphabétique.
+    # les modules activÃ©s par dÃ©faut apparaissent en premier,
+    # les autres sont classÃ©s par ordre alphabÃ©tique.
     key = [1000000,  nom]
     if nom in modules_par_defaut:
         key[0] = modules_par_defaut.index(nom)

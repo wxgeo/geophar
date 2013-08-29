@@ -1,8 +1,8 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------##
-#               Barre d'outils pour la géométrie               #
+#               Barre d'outils pour la gÃ©omÃ©trie               #
 ##--------------------------------------##
 #    WxGeometrie
 #    Dynamic geometry, graph plotter, and more for french mathematic teachers.
@@ -44,7 +44,7 @@ class BarreOutilsExEqDte(BarreOutils):
         self.sizer.addStretch()
 
         self.sizer.addWidget(QLabel(u"Utilisez cette barre d'outils pour construire les droites (dans le bon ordre).<br>"
-                       u"<i>Remarque :</i> pour créer une droite, il vous faudra deux points à coordonnées <i>entières</i>."))
+                       u"<i>Remarque :</i> pour crÃ©er une droite, il vous faudra deux points Ã  coordonnÃ©es <i>entiÃ¨res</i>."))
 
         self.sizer.addStretch()
         self.setLayout(self.sizer)
@@ -52,8 +52,8 @@ class BarreOutilsExEqDte(BarreOutils):
 
 
     def creer_boutons(self):
-        self.add("F1", (u"Pointeur", u"fleche4", u"Déplacer ou modifier un objet.", self.curseur)).select()
-        self.add("F3", (u"Droite", u"droite2", u"Créer une droite.", self.droite))
+        self.add("F1", (u"Pointeur", u"fleche4", u"DÃ©placer ou modifier un objet.", self.curseur)).select()
+        self.add("F3", (u"Droite", u"droite2", u"CrÃ©er une droite.", self.droite))
         self.add("F4", (u"Gommer", u"gomme", u"Supprimer des objets.", self.gomme))
 
 

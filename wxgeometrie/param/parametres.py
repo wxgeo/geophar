@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ######################################
@@ -40,22 +40,22 @@ python_min = (2, 6) # version minimale requise
 
 # debuguage (affichage des erreurs + diverses infos)
 debug = True
-# Le logiciel est-il installé ?
-# Cela change les répertoires par défaut (session, etc.)
+# Le logiciel est-il installÃ© ?
+# Cela change les rÃ©pertoires par dÃ©faut (session, etc.)
 install = False
 # affichage ou non des avertissements
 warning = debug
 verbose = 1 # 0, 1, 2 ou 3
-# À terme, verbose=0 doit couper *tous* les messages (pour ne pas parasiter les tests).
-# => créer une fonction print() personnalisée.
-# Indique si geolib doit afficher les différents messages.
-# Dans certaines consoles (ex: pyshell), cela provoque des comportements indésirables.
+# Ã€ terme, verbose=0 doit couper *tous* les messages (pour ne pas parasiter les tests).
+# => crÃ©er une fonction print() personnalisÃ©e.
+# Indique si geolib doit afficher les diffÃ©rents messages.
+# Dans certaines consoles (ex: pyshell), cela provoque des comportements indÃ©sirables.
 afficher_messages = True
-#TODO: retravailler ces différents paramètres.
+#TODO: retravailler ces diffÃ©rents paramÃ¨tres.
 
-fermeture_instantanee = False # Utile en mode développement
+fermeture_instantanee = False # Utile en mode dÃ©veloppement
 
-# affichage de la ligne de commande (utile pour le développement)
+# affichage de la ligne de commande (utile pour le dÃ©veloppement)
 ligne_commande = False
 
 GUIlib = 'Qt'
@@ -67,9 +67,9 @@ version_wxpython = "2.8-unicode"
 dependances = {'PyQt4': 'python-qt4', 'matplotlib': 'python-matplotlib', 'numpy': 'python-numpy'}
 
 latex = False
-latex_unicode = True # (sera éventuellement désactivé ultérieurement, après l'import de wx)
+latex_unicode = True # (sera Ã©ventuellement dÃ©sactivÃ© ultÃ©rieurement, aprÃ¨s l'import de wx)
 
-moteur_de_rendu = 'QTAgg' # ou 'QT' pour supprimer l'anti-crénêlage
+moteur_de_rendu = 'QTAgg' # ou 'QT' pour supprimer l'anti-crÃ©nÃªlage
 
 # Permet de tester les styles sous d'autres plateformes.
 # Styles possibles: 'Windows', 'Motif', 'CDE', 'Plastique', 'GTK+',
@@ -79,16 +79,16 @@ style_Qt = None
 
 
 
-# jeu de caractère à utiliser
+# jeu de caractÃ¨re Ã  utiliser
 encodage = getdefaultlocale()[1] or "utf8"
 
-# Utiliser pysco si disponible (JIT compiler qui accélère le code python)
+# Utiliser pysco si disponible (JIT compiler qui accÃ©lÃ¨re le code python)
 # True -> tout compiler : psyco.full()
-# None -> compilation optimisée : psyco.profile()
+# None -> compilation optimisÃ©e : psyco.profile()
 # False -> ne pas essayer d'importer psyco
 charger_psyco = False
 
-# Modules activés par défaut
+# Modules activÃ©s par dÃ©faut
 modules_par_defaut = (
     "bienvenue",
     ##"geometre",
@@ -105,52 +105,52 @@ modules_par_defaut = (
 multi_threading = False
 
 # C'est assez instable...
-# En particulier, en l'état, ça ne marche pas avec le serveur X (sous Linux par ex.)
+# En particulier, en l'Ã©tat, Ã§a ne marche pas avec le serveur X (sous Linux par ex.)
 
 
-# Paramètres généraux
+# ParamÃ¨tres gÃ©nÃ©raux
 # --------------------
 
-utilisateur = "" # nom de l'utilisateur, pour inclure dans les documents créés
+utilisateur = "" # nom de l'utilisateur, pour inclure dans les documents crÃ©Ã©s
 
 dimensions_fenetre = (890, 630)
 confirmer_quitter = True
 nbr_annulations = 50
-# Nombre de sessions sauvées
+# Nombre de sessions sauvÃ©es
 nbr_sessions = 20
-# Créer un fichier .log (conseillé)
+# CrÃ©er un fichier .log (conseillÃ©)
 historique_log = True
-# Modifier ce fichier en temps réel (peu utile)
+# Modifier ce fichier en temps rÃ©el (peu utile)
 historique_log_continu = False
 # Enregistrer les messages (notamment d'erreur) dans messages.log
 enregistrer_messages = True
-# Sauver les préférences à la fermeture du programme, pour les restaurer au prochain démarrage
+# Sauver les prÃ©fÃ©rences Ã  la fermeture du programme, pour les restaurer au prochain dÃ©marrage
 sauver_preferences = True
-# Sauver la session en cours à la fermeture du programme, pour la restaurer au prochain démarrage
-# (Remarque: la session est sauvegardée dans tous les cas, mais n'est restaurée
+# Sauver la session en cours Ã  la fermeture du programme, pour la restaurer au prochain dÃ©marrage
+# (Remarque: la session est sauvegardÃ©e dans tous les cas, mais n'est restaurÃ©e
 #  que si `auto_restaurer_session` vaut `True`.)
 auto_restaurer_session = False
-# Paramètre utilisé essentiellement en interne (quand on lance WxGéometrie avec l'option --defaut)
+# ParamÃ¨tre utilisÃ© essentiellement en interne (quand on lance WxGÃ©ometrie avec l'option --defaut)
 charger_preferences = True
 
 # Intervalle de temps (en dizaines de secondes) entre 2 sauvegardes automatiques
 sauvegarde_automatique = 2
-# (Mettre 0 pour la désactiver)
+# (Mettre 0 pour la dÃ©sactiver)
 
-tolerance = 1e-8 # seuil de tolérance, utilisé en particulier par geolib pour savoir si 2 points sont confondus
-# ce paramètre permet un compromis acceptable entre les faux negatifs
-# (2 points confondus considérés à tort comme distincts, du fait d'imprécisions de calculs qui se cumulent)
-# et les faux positifs (deux points proches considerés à tort comme confondus).
+tolerance = 1e-8 # seuil de tolÃ©rance, utilisÃ© en particulier par geolib pour savoir si 2 points sont confondus
+# ce paramÃ¨tre permet un compromis acceptable entre les faux negatifs
+# (2 points confondus considÃ©rÃ©s Ã  tort comme distincts, du fait d'imprÃ©cisions de calculs qui se cumulent)
+# et les faux positifs (deux points proches considerÃ©s Ã  tort comme confondus).
 
 # Parametres d'affichage
 # ----------------------
 
 orthonorme = False
-grille_aimantee = False # force les points à se placer sur le quadrillage
+grille_aimantee = False # force les points Ã  se placer sur le quadrillage
 
 afficher_barre_outils = False
 afficher_console_geolib = False
-afficher_boutons = True  # Possibilité de ne pas afficher les boutons, pour obliger à une construction pas à pas.
+afficher_boutons = True  # PossibilitÃ© de ne pas afficher les boutons, pour obliger Ã  une construction pas Ã  pas.
 
 zoom_texte = 1
 zoom_ligne = 1
@@ -164,9 +164,9 @@ MATH = 4
 DEBUT = 0
 MILIEU = 0.5
 FIN = 1
-#TODO: supprimer cette section une fois qu'une partie de param sera directement intégrée à geolib.
+#TODO: supprimer cette section une fois qu'une partie de param sera directement intÃ©grÃ©e Ã  geolib.
 
-# Styles liés à la catégorie:
+# Styles liÃ©s Ã  la catÃ©gorie:
 styles_de_lignes = ['-', '--', '-.', ':', 'None']
 styles_de_points = ['+', 'x', 'o', '.', ',', '1', '2', '3', '4', '<', '>', '^',
                     'v', 'D', 'H', '_', '|', 'd', 'h', 'p', 's']
@@ -177,22 +177,22 @@ codage_des_lignes = ['', '/', '//', '///', 'x', 'o']
 codage_des_angles = ['', '^', ')', '))', ')))', '|', '||', 'x', 'o']
 strategies_interpolation = ['pente_moyenne', 'pente_minimale', 'moyenne_gauche_droite']
 
-# Enumère les styles 'variables' :
-# - soit parce qu'ils ont des significations assez différentes selon les objets
-# - soit parce qu'ils ne peuvent pas prendre les mêmes valeurs suivant les objets
-# Ces styles ne seront copiés d'un objet à l'autre que s'ils appartiennent à la même catégorie
+# EnumÃ¨re les styles 'variables' :
+# - soit parce qu'ils ont des significations assez diffÃ©rentes selon les objets
+# - soit parce qu'ils ne peuvent pas prendre les mÃªmes valeurs suivant les objets
+# Ces styles ne seront copiÃ©s d'un objet Ã  l'autre que s'ils appartiennent Ã  la mÃªme catÃ©gorie
 styles_a_signification_variable = ("style", "codage", "famille", "taille",
                                    "angle", "epaisseur", "alpha")
-# (alpha) a toujours la même singification, mais ne doit pas être copié d'une ligne
+# (alpha) a toujours la mÃªme singification, mais ne doit pas Ãªtre copiÃ© d'une ligne
 # vers un polygone par exemple.
 
-# Ces styles ne seront pas copiés, quelque soit la catégorie de la cible
+# Ces styles ne seront pas copiÃ©s, quelque soit la catÃ©gorie de la cible
 styles_a_ne_pas_copier = ("sous-categorie", "categorie", "niveau", "trace",
                           "fixe", "_rayon_", "_k_", "_angle_", "_noms_", "mode")
 
 
 types_de_hachures = [' ', '/', '//', '\\', '\\\\', '|', '-', '+', 'x', 'o', 'O', '.', '..', '*']
-# en réalité, on peut aussi les panacher...
+# en rÃ©alitÃ©, on peut aussi les panacher...
 
 
 defaut_objets = {
@@ -221,7 +221,7 @@ points_deplacables = {
     "couleur": "r",
     "niveau": 10,
     "fixe": False,
-    "sous-categorie": u"points déplaçables",
+    "sous-categorie": u"points dÃ©plaÃ§ables",
     }
 segments = {
     "couleur": "g",
@@ -360,7 +360,7 @@ polyedres = {
     "niveau": 0,
     "hachures": types_de_hachures[0],
     "categorie": "surfaces",
-    "sous-categorie": u"polyèdres",
+    "sous-categorie": u"polyÃ¨dres",
     }
 aretes = {
     "couleur": "y",
@@ -431,15 +431,15 @@ labels = {
     "mode": RIEN,
     "fixe": False,
     "categorie": "textes",
-    "sous-categorie": u"étiquettes",
+    "sous-categorie": u"Ã©tiquettes",
     "niveau": 7,
     "alignement_vertical": "bottom",
     "alignement_horizontal": "left",
-    # Les noms de style suivants sont à usage interne (position de l'étiquette
-    # par rapport à l'objet), et sont entre « _ », pour éviter des conflits avec
+    # Les noms de style suivants sont Ã  usage interne (position de l'Ã©tiquette
+    # par rapport Ã  l'objet), et sont entre Â« _ Â», pour Ã©viter des conflits avec
     # les noms de styles de Texte.
     '_angle_': pi/4,
-    # `_rayon_` est la distance (en pixels) entre l'étiquette et l'objet.
+    # `_rayon_` est la distance (en pixels) entre l'Ã©tiquette et l'objet.
     '_rayon_': 7,
     '_k_': 0.5
     }
@@ -455,14 +455,14 @@ angles = {
     "alpha": .2,
 }
 
-# le parametre niveau est utilisé pour détecter l'objet sur la feuille :
-# en cas de conflit entre deux objets proches, il permet de savoir l'objet à sélectionner.
-# les petits objets (points, ...) doivent être au dessus des plus gros, et avoir un niveau supérieur.
-# Rq: les objets modifiables devraient etre "au dessus" des autres, indépendamment de leur taille.
+# le parametre niveau est utilisÃ© pour dÃ©tecter l'objet sur la feuille :
+# en cas de conflit entre deux objets proches, il permet de savoir l'objet Ã  sÃ©lectionner.
+# les petits objets (points, ...) doivent Ãªtre au dessus des plus gros, et avoir un niveau supÃ©rieur.
+# Rq: les objets modifiables devraient etre "au dessus" des autres, indÃ©pendamment de leur taille.
 # Attention, ce parametre n'influe pas sur l'affichage des objets (pour cela, c'est le parametre "zorder" de matplotlib)
 
-# le parametre "categorie" indique quelle liste de styles est à appliquer.
-# par défaut, on applique souvent 'styles_de_lignes'.
+# le parametre "categorie" indique quelle liste de styles est Ã  appliquer.
+# par dÃ©faut, on applique souvent 'styles_de_lignes'.
 
 del NOM, FORMULE, TEXTE, RIEN, DEBUT, MILIEU, FIN
 
@@ -490,22 +490,22 @@ codage_automatique_angle_droits = True
 taille = {"o" : 2, "(" : 4, ">" : 10, "|" : 8}
 
 
-# Distance maximale entre une etiquette et son objet associé :
+# Distance maximale entre une etiquette et son objet associÃ© :
 distance_max_etiquette = 50
 
-# DÉSUET :
-##chiffres_significatifs = 4 # intervient dans l'affichage des propriétés des objets essentiellement.
+# DÃ‰SUET :
+##chiffres_significatifs = 4 # intervient dans l'affichage des propriÃ©tÃ©s des objets essentiellement.
 
 decimales = 2
 
-# Unité utilisée pour l'affichage des mesures d'angles.
-# Note: en interne, ce sont toujours les radians qui sont utilisés.
-unite_angle = ("r", "d", "g")[0] # radian, degré ou grad
+# UnitÃ© utilisÃ©e pour l'affichage des mesures d'angles.
+# Note: en interne, ce sont toujours les radians qui sont utilisÃ©s.
+unite_angle = ("r", "d", "g")[0] # radian, degrÃ© ou grad
 
-# Séparateur décimal utilisé pour l'affichage des résultats.
-# Note 1: en interne, le séparateur décimal est le '.' (Python floats)
-# Note 2: en *entrée*, point et virgule sont acceptés.
-# Le paramètre `separateur_decimal` détermine le format de *sortie*.
+# SÃ©parateur dÃ©cimal utilisÃ© pour l'affichage des rÃ©sultats.
+# Note 1: en interne, le sÃ©parateur dÃ©cimal est le '.' (Python floats)
+# Note 2: en *entrÃ©e*, point et virgule sont acceptÃ©s.
+# Le paramÃ¨tre `separateur_decimal` dÃ©termine le format de *sortie*.
 separateur_decimal = (',', '.')[0] # virgule (2,3) ou point (2.3)
 
 
@@ -522,8 +522,8 @@ repere = ("O", "I", "J") # en majuscule, ce sont des points ; en minuscule, des 
 origine_axes = (0, 0)
 # Pour choisir le mode :
 utiliser_repere = True
-# -> utiliser ou non un repère (même origine sur chaque axe...)
-# -> si on n'utilise pas le repère, on affiche deux valeurs distinctes à l'intersection des axes
+# -> utiliser ou non un repÃ¨re (mÃªme origine sur chaque axe...)
+# -> si on n'utilise pas le repÃ¨re, on affiche deux valeurs distinctes Ã  l'intersection des axes
 
 gradu = (1, 1) # espacement entre deux graduations pour chaque axe. (0 => pas de graduations).
 saturation =  0.3 # valeur de saturation pour le coefficient pas()/gradu
@@ -533,7 +533,7 @@ saturation =  0.3 # valeur de saturation pour le coefficient pas()/gradu
 # Taille approximative (en pixels) d'une graduation
 graduation = 50
 
-# Nombre de cm pour une unité en export
+# Nombre de cm pour une unitÃ© en export
 echelle_cm = (1, 1)
 
 # Couleur de fond des figures.
@@ -555,7 +555,7 @@ quadrillages = (((None, None), ":", .5, "k"),)
 # quadrillages = (((1, 1), "-", 0.25, "k"), ((0.25, 0.25), ":", .25, "k"),)
 # ou encore :
 # quadrillages = (((1, 1), ":", 1, "k"), ((0.2, 0.2), ":", .125, "k"),)
-couleur_papier_millimetre = '#aa7733' # couleur à utiliser pour le papier millimétré entre autres
+couleur_papier_millimetre = '#aa7733' # couleur Ã  utiliser pour le papier millimÃ©trÃ© entre autres
 
 resolution = 1000 # resolution utilisee pour le tracage des courbes (plus la valeur est importante, plus la courbe est lisse)
 fenetre = (origine_axes[0] - 8, origine_axes[0] + 8,
@@ -571,31 +571,31 @@ zoom_ligne_in = 1.07
 zoom_ligne_out = 0.93
 
 dpi_ecran = 80
-# Tableau récapitulatif des résolutions les plus courantes :
+# Tableau rÃ©capitulatif des rÃ©solutions les plus courantes :
 # http://forum.notebookreview.com/notebook-dummy-guide-articles/124093-guide-screen-sizes-dots-per-inch-dpi.html
 
 
 # Export / Sauvegarde
 dpi_export = 200 # resolution utilisee lors de l'exportation des images
-compresser_geo = False # compresser les fichiers .geo par défaut
+compresser_geo = False # compresser les fichiers .geo par dÃ©faut
 format_par_defaut = 'png'
 
 afficher_coordonnees = True # affiche en permanence les coordonnees
-afficher_pixels = False # pour débogage (mettre afficher_coordonnes à False précédemment)
+afficher_pixels = False # pour dÃ©bogage (mettre afficher_coordonnes Ã  False prÃ©cÃ©demment)
 
-afficher_objets_caches = False # affiche en grisé les objets masqués
+afficher_objets_caches = False # affiche en grisÃ© les objets masquÃ©s
 
 precision_selection = 10 # plus la precision est importante, plus il faut etre pres d'un objet pour pouvoir le saisir
 # Si le chiffre est trop petit, ca devient fastidieux de selectionner un objet
 # A l'inverse, s'il est trop grand, il devient difficile de selectionner celui qu'on veut entre deux objets proches
 
 
-nom_multiple = False # autorise à 'nommer' plusieurs objets avec le même nom
-# (en fait, un seul objet aura le nom 'A' par exemple, les autres auront 'A' comme étiquette).
+nom_multiple = False # autorise Ã  'nommer' plusieurs objets avec le mÃªme nom
+# (en fait, un seul objet aura le nom 'A' par exemple, les autres auront 'A' comme Ã©tiquette).
 
 # ------------------------------
-# Code à réécrire
-# Tranformation linéaire appliquée au graphique : (EXPERIMENTAL !)
+# Code Ã  rÃ©Ã©crire
+# Tranformation linÃ©aire appliquÃ©e au graphique : (EXPERIMENTAL !)
 transformation = None
 # Couple de la forme (a, b, c, d) tel que :
 # |x'|     |a b| |x|
@@ -608,16 +608,16 @@ afficher_barre_outils = False
 afficher_console_geolib = False
 
 
-# Répertoires par défaut
+# RÃ©pertoires par dÃ©faut
 # ----------------------
 
-# Répertoire où on sauve les fichiers par défaut
+# RÃ©pertoire oÃ¹ on sauve les fichiers par dÃ©faut
 rep_save = None
 # rep_save = repertoire
-# Répertoire où on ouvre les fichiers par défaut
+# RÃ©pertoire oÃ¹ on ouvre les fichiers par dÃ©faut
 rep_open = None
 # rep_open = repertoire
-# Répertoire où on exporte les fichiers par défaut
+# RÃ©pertoire oÃ¹ on exporte les fichiers par dÃ©faut
 rep_export = None
 # rep_export = repertoire
 
@@ -630,7 +630,7 @@ taille_max_log *= 1024
 
 
 try:
-    from .personnaliser import * # permet de générer un fichier personnaliser.py lors de l'installation, ou de la première utilisation, et dont les parametres remplaceront ceux-ci.
+    from .personnaliser import * # permet de gÃ©nÃ©rer un fichier personnaliser.py lors de l'installation, ou de la premiÃ¨re utilisation, et dont les parametres remplaceront ceux-ci.
 except ImportError:
     try:
         from .personnaliser_ import *
@@ -638,18 +638,18 @@ except ImportError:
         pass
 
 if install:
-    # Les préférences, fichiers log, etc... sont stockés dans le dossier de l'utilisateur.
-    # ~ se réfère au répertoire de l'utilisateur (ex: /home/BillG/ sous Linux, ou C:\Documents and Settings\LTorvald\ sous Windows)
+    # Les prÃ©fÃ©rences, fichiers log, etc... sont stockÃ©s dans le dossier de l'utilisateur.
+    # ~ se rÃ©fÃ¨re au rÃ©pertoire de l'utilisateur (ex: /home/BillG/ sous Linux, ou C:\Documents and Settings\LTorvald\ sous Windows)
     emplacements.setdefault("log", "~/.wxgeometrie/log")
     emplacements.setdefault("preferences", "~/.wxgeometrie/preferences")
     emplacements.setdefault("macros", "~/.wxgeometrie/macros")
     emplacements.setdefault("session", "~/.wxgeometrie/session")
 else:
-    # Utilisation sans installation. Tout est stocké directement dans le dossier wxgeometrie/.
-    # % se réfère au dossier contenant WxGeometrie (indiqué par param.EMPLACEMENT)
-    emplacements.setdefault("log", "%/config/log") # dans config/log/ par défaut
-    emplacements.setdefault("preferences", "%/config/preferences") # dans config/preferences/ par défaut
-    emplacements.setdefault("macros", "%/config/macros") # dans config/macros/ par défaut
-    emplacements.setdefault("session", "%/config/session") # dans config/session/ par défaut
+    # Utilisation sans installation. Tout est stockÃ© directement dans le dossier wxgeometrie/.
+    # % se rÃ©fÃ¨re au dossier contenant WxGeometrie (indiquÃ© par param.EMPLACEMENT)
+    emplacements.setdefault("log", "%/config/log") # dans config/log/ par dÃ©faut
+    emplacements.setdefault("preferences", "%/config/preferences") # dans config/preferences/ par dÃ©faut
+    emplacements.setdefault("macros", "%/config/macros") # dans config/macros/ par dÃ©faut
+    emplacements.setdefault("session", "%/config/session") # dans config/session/ par dÃ©faut
 
-##print(u'Import des paramètres terminé.')
+##print(u'Import des paramÃ¨tres terminÃ©.')

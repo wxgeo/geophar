@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------#######
@@ -49,9 +49,9 @@ def Intersection(objet1, objet2, **styles):
 
 
 class Intersection_generique(Point_generique):
-    u"""Une intersection gÈnÈrique.
+    u"""Une intersection g√©n√©rique.
 
-    La classe mËre des diffÈrents types d'intersections"""
+    La classe m√®re des diff√©rents types d'intersections"""
 
     objet1 = __objet1 = Argument("Objet")
     objet2 = __objet2 = Argument("Objet")
@@ -69,12 +69,12 @@ class Intersection_generique(Point_generique):
 
     @property
     def intersections(self):
-        u"""Liste de coordonnÈes correspondant aux points d'intersections possibles.
+        u"""Liste de coordonn√©es correspondant aux points d'intersections possibles.
 
-        Le premier couple correspond aux coordonnÈes du point lui-mÍme.
-        Attention, tous ces points ne sont pas forcÈment des points d'intersection.
-        En effet, pour calculer ces intersections, on assimile les segments ‡ des
-        droites, et les arcs ‡ des cercles.
+        Le premier couple correspond aux coordonn√©es du point lui-m√™me.
+        Attention, tous ces points ne sont pas forc√©ment des points d'intersection.
+        En effet, pour calculer ces intersections, on assimile les segments √† des
+        droites, et les arcs √† des cercles.
         Il faut ensuite tester les solutions potentielles avec ._tester_solution().
         """
         return self._cache.get('intersections', self._intersections)
@@ -83,21 +83,21 @@ class Intersection_generique(Point_generique):
     def _tester_solution(solution, *ensembles):
         u"""Effectue des tests pour valider une solution potentielle.
 
-        Plus prÈcisÈment, on vÈrifie que la solution appartient aux ensembles
-        indiquÈs, mais seulement pour certains types d'ensemble:
+        Plus pr√©cis√©ment, on v√©rifie que la solution appartient aux ensembles
+        indiqu√©s, mais seulement pour certains types d'ensemble:
         - segments et demi-droites,
         - arcs de cercle.
-        Ils ne sont pas pratiquÈs pour les droites et les cercles.
+        Ils ne sont pas pratiqu√©s pour les droites et les cercles.
 
-        L'idÈe est la suivante :
+        L'id√©e est la suivante :
         pour chercher l'intersection d'un segment et d'un arc de cercle,
         on cherche l'intersection entre la droite et le cercle qui les contiennent,
-        et on teste les solutions trouvÈes pour voir si elles appartiennent bien
-        au segment et ‡ l'arc de cercle, ‡ l'aide de cette mÈthode.
+        et on teste les solutions trouv√©es pour voir si elles appartiennent bien
+        au segment et √† l'arc de cercle, √† l'aide de cette m√©thode.
         """
         def appartient(sol, ens):
             if isinstance(sol, (Cercle_generique, Droite_generique)):
-                # aucun test n'est pratiquÈ
+                # aucun test n'est pratiqu√©
                 return True
             return sol in ens
         return all(appartient(solution, ensemble) for ensemble in ensembles)
@@ -131,12 +131,12 @@ class Intersection_droites(Intersection_generique):
         Intersection_generique.__init__(self, objet1 = droite1, objet2 = droite2, **styles)
 
     def _intersections_possibles(self):
-        u"""Liste de coordonnÈes correspondant aux points d'intersections possibles.
+        u"""Liste de coordonn√©es correspondant aux points d'intersections possibles.
 
-        Le premier couple correspond aux coordonnÈes du point lui-mÍme.
-        Attention, tous ces points ne sont pas forcÈment des points d'intersection.
-        En effet, pour calculer ces intersections, on assimile les segments ‡ des
-        droites, et les arcs ‡ des cercles.
+        Le premier couple correspond aux coordonn√©es du point lui-m√™me.
+        Attention, tous ces points ne sont pas forc√©ment des points d'intersection.
+        En effet, pour calculer ces intersections, on assimile les segments √† des
+        droites, et les arcs √† des cercles.
         Il faut ensuite tester les solutions potentielles avec ._tester_solution().
         """
         a, b, c = self.__droite1.equation
@@ -154,14 +154,14 @@ class Intersection_droites(Intersection_generique):
 
 
 
-class Intersection_droite_cercle(Intersection_generique): # ATTENTION, il y a des modifications ‡ faire avant de surclasser !
+class Intersection_droite_cercle(Intersection_generique): # ATTENTION, il y a des modifications √† faire avant de surclasser !
     u"""Une intersection d'une droite et d'un cercle.
 
     Un des deux points M et N d'intersection d'une droite et d'un cercle.
     Supposons qu'on le note M, et que la droite soit (AB).
-    L'argument premier_point (optionnel) sert ‡ diffÈrencier les deux points d'intersection.
-    Il sert ‡ indiquer si M se trouve "prËs" de A (1er point de (AB)) ou de B (2Ëme point).
-    (Plus prÈcisÈment, si premier_point == True, MA + NB est minimal).
+    L'argument premier_point (optionnel) sert √† diff√©rencier les deux points d'intersection.
+    Il sert √† indiquer si M se trouve "pr√®s" de A (1er point de (AB)) ou de B (2√®me point).
+    (Plus pr√©cis√©ment, si premier_point == True, MA + NB est minimal).
     """
 
     droite = __droite = Argument("Ligne_generique")
@@ -169,8 +169,8 @@ class Intersection_droite_cercle(Intersection_generique): # ATTENTION, il y a de
     premier_point = __premier_point = Argument("bool", defaut = True)
 
     def __init__(self, droite, cercle, premier_point = None, **styles):
-        # l'intersection de la droite et du cercle (si elle existe) est deux points (Èventuellement confondus).
-        # lorsque l'utilisateur crÈÈ deux fois deux suite un point d'intersection, ce ne doit pas Ítre le mÍme.
+        # l'intersection de la droite et du cercle (si elle existe) est deux points (√©ventuellement confondus).
+        # lorsque l'utilisateur cr√©√© deux fois deux suite un point d'intersection, ce ne doit pas √™tre le m√™me.
         if isinstance(cercle, Ligne_generique):
             droite, cercle = cercle, droite
         self.__droite = droite = Ref(droite)
@@ -182,25 +182,25 @@ class Intersection_droite_cercle(Intersection_generique): # ATTENTION, il y a de
         if "_Intersection_droite_cercle__premier_point" in self._valeurs_par_defaut:
             for objet in self.feuille.objets.lister(type = Intersection_droite_cercle):
                 if objet._Intersection_droite_cercle__droite is self.__droite and objet._Intersection_droite_cercle__cercle is self.__cercle:
-                    # une intersection existe dÈj‡, on va construire l'autre
+                    # une intersection existe d√©j√†, on va construire l'autre
                     self.__premier_point = not objet._Intersection_droite_cercle__premier_point
                     return
         Objet._set_feuille(self)
 
 
     def _intersections_possibles(self):
-        u"""Liste de coordonnÈes correspondant aux points d'intersections possibles.
+        u"""Liste de coordonn√©es correspondant aux points d'intersections possibles.
 
-        Le premier couple correspond aux coordonnÈes du point lui-mÍme.
-        Attention, tous ces points ne sont pas forcÈment des points d'intersection.
-        En effet, pour calculer ces intersections, on assimile les segments ‡ des
-        droites, et les arcs ‡ des cercles.
+        Le premier couple correspond aux coordonn√©es du point lui-m√™me.
+        Attention, tous ces points ne sont pas forc√©ment des points d'intersection.
+        En effet, pour calculer ces intersections, on assimile les segments √† des
+        droites, et les arcs √† des cercles.
         Il faut ensuite tester les solutions potentielles avec ._tester_solution().
         """
         points_intersection = []
 
-        # Cas de l'intersection d'une tangente ‡ un cercle avec "son" cercle :
-        # TODO: dÈtecter la tangence de maniËre gÈnÈrale
+        # Cas de l'intersection d'une tangente √† un cercle avec "son" cercle :
+        # TODO: d√©tecter la tangence de mani√®re g√©n√©rale
         if isinstance(self.__droite, Tangente) and self.__droite.cercle is self.__cercle:
             points_intersection = [self.__droite.point_tangence.coordonnees]
         else:
@@ -217,13 +217,13 @@ class Intersection_droite_cercle(Intersection_generique): # ATTENTION, il y a de
                 sols = racines(1, e, x**2 + d*x + f, exact=contexte['exact'])
                 points_intersection = [(x, y) for y in sols]
 
-            # Le dernier cas correspond ‡ une droite d'Èquation ayant
-            # des coefficients presque nuls => prÈcision insuffisante.
+            # Le dernier cas correspond √† une droite d'√©quation ayant
+            # des coefficients presque nuls => pr√©cision insuffisante.
 
         if len(points_intersection) == 2:
-            # La partie la plus complexe consiste ‡ distinguer
-            # les deux points d'intersection ‡ l'aide du "point proche".
-            # Pour comprendre ce qui s'y passe, il est conseillÈ de faire un dessin !
+            # La partie la plus complexe consiste √† distinguer
+            # les deux points d'intersection √† l'aide du "point proche".
+            # Pour comprendre ce qui s'y passe, il est conseill√© de faire un dessin !
             if self.__premier_point:
                 A = self.__droite.point1
                 B = self.__droite.point2
@@ -242,12 +242,12 @@ class Intersection_droite_cercle(Intersection_generique): # ATTENTION, il y a de
 
 
 
-class Intersection_cercles(Intersection_generique): # ATTENTION, il y a des modifications ‡ faire avant de surclasser !
+class Intersection_cercles(Intersection_generique): # ATTENTION, il y a des modifications √† faire avant de surclasser !
     u"""Une intersection de cercles.
 
     Un des deux points M et N d'intersection des deux cercles.
     L'argument angle_positif permet de distinguer les deux points.
-    Si on note A et B les centres respectifs des 2 cercles, l'angle orientÈ (AB>, AM>) doit Ítre de signe constant.
+    Si on note A et B les centres respectifs des 2 cercles, l'angle orient√© (AB>, AM>) doit √™tre de signe constant.
     """
 
     cercle1 = __cercle1 = Argument("Cercle_generique, Arc_generique")
@@ -263,24 +263,24 @@ class Intersection_cercles(Intersection_generique): # ATTENTION, il y a des modi
 
     def _set_feuille_(self):
         # L'intersection de deux cercles (si elle existe) est deux points
-        # (Èventuellement confondus).
-        # Lorsque l'utilisateur crÈe deux fois de suite un point d'intersection,
-        # ce ne doit pas Ítre le mÍme qui est crÈÈ deux fois de suite.
+        # (√©ventuellement confondus).
+        # Lorsque l'utilisateur cr√©e deux fois de suite un point d'intersection,
+        # ce ne doit pas √™tre le m√™me qui est cr√©√© deux fois de suite.
         if "_Intersection_cercles__angle_positif" in self._valeurs_par_defaut:
             for objet in self.feuille.objets.lister(type = Intersection_cercles):
                 if objet._Intersection_cercles__cercle1 is self.__cercle1 and objet._Intersection_cercles__cercle2 is self.__cercle2:
-                    # pour ne pas crÈer le mÍme point.
+                    # pour ne pas cr√©er le m√™me point.
                     self.__angle_positif = not objet._Intersection_cercles__angle_positif
         Objet._set_feuille(self)
 
 
     def _intersections_possibles(self):
-        u"""Liste de coordonnÈes correspondant aux points d'intersections possibles.
+        u"""Liste de coordonn√©es correspondant aux points d'intersections possibles.
 
-        Le premier couple correspond aux coordonnÈes du point lui-mÍme.
-        Attention, tous ces points ne sont pas forcÈment des points d'intersection.
-        En effet, pour calculer ces intersections, on assimile les segments ‡ des
-        droites, et les arcs ‡ des cercles.
+        Le premier couple correspond aux coordonn√©es du point lui-m√™me.
+        Attention, tous ces points ne sont pas forc√©ment des points d'intersection.
+        En effet, pour calculer ces intersections, on assimile les segments √† des
+        droites, et les arcs √† des cercles.
         Il faut ensuite tester les solutions potentielles avec ._tester_solution().
         """
         points_intersection = []
@@ -288,10 +288,10 @@ class Intersection_cercles(Intersection_generique): # ATTENTION, il y a des modi
         d, e, f = self.cercle2.equation
 
         if (a, b, c) != (d, e, f):
-            # On soustrait membre ‡ membre les 2 Èquations de cercle ;
-            # on obtient ainsi une Èquation de droite :
+            # On soustrait membre √† membre les 2 √©quations de cercle ;
+            # on obtient ainsi une √©quation de droite :
             # (a-d)x + (b-e)y + (c-f) = 0
-            # On se ramËne donc au cas de l'intersection d'un cercle et d'une droite
+            # On se ram√®ne donc au cas de l'intersection d'un cercle et d'une droite
             a, b, c = a - d, b - e, c - f
 
             if abs(b) > contexte['tolerance']: # La droite n'est pas verticale
@@ -305,12 +305,12 @@ class Intersection_cercles(Intersection_generique): # ATTENTION, il y a des modi
                 points_intersection = [(x, y) for y in sols]
 
             # Dernier cas possible : la droite n'existe pas (cercles concentriques).
-            # Pas d'intersection (ou alors, c'est tout le cercle -> non gÈrÈ).
+            # Pas d'intersection (ou alors, c'est tout le cercle -> non g√©r√©).
 
         if len(points_intersection) == 2:
-            # L‡ encore, la partie la plus complexe consiste ‡ distinguer
-            # les deux points d'intersection, ‡ l'aide cette fois du signe de l'angle.
-            # Pour comprendre ce qui s'y passe, il est conseillÈ de faire un dessin !
+            # L√† encore, la partie la plus complexe consiste √† distinguer
+            # les deux points d'intersection, √† l'aide cette fois du signe de l'angle.
+            # Pour comprendre ce qui s'y passe, il est conseill√© de faire un dessin !
             A = self.__cercle1.centre.coordonnees
             B = self.__cercle2.centre.coordonnees
             M, N = points_intersection

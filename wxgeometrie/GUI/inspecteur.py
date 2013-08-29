@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------#######
@@ -45,9 +45,9 @@ class EditeurPython(PythonSTC):
 
 
 class FenCode(QDialog):
-    u"""Permet d'éditer du code Python.
+    u"""Permet d'Ã©diter du code Python.
 
-    En particulier, permet d'éditer le code de la feuille actuelle."""
+    En particulier, permet d'Ã©diter le code de la feuille actuelle."""
     def __init__(self, parent, titre, contenu, fonction_modif):
         QDialog.__init__(self, parent)
         self.setWindowTitle(titre)
@@ -79,6 +79,6 @@ class FenCode(QDialog):
 
 
     def executer(self, event = None):
-        # On exécute le code (de la feuille par ex.) éventuellement modifié
+        # On exÃ©cute le code (de la feuille par ex.) Ã©ventuellement modifiÃ©
         self.fonction_modif(self.texte.text())
         self.close()

@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------#######
@@ -26,7 +26,7 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 # version unicode
 
 ## Cette librairie est une interface pour sympy :
-## Elle modifie si nécessaire le comportement de fonctions sympy.
+## Elle modifie si nÃ©cessaire le comportement de fonctions sympy.
 
 from types import FunctionType
 
@@ -46,7 +46,7 @@ from .. import param
 def expand(expression, variable = None):
     expression = expand_(expression)
     if isinstance(expression, Basic) and expression.is_rational_function():
-        # Éviter d'appeler `apart()` pour rien, d'autant que FloatFrac() n'est
+        # Ã‰viter d'appeler `apart()` pour rien, d'autant que FloatFrac() n'est
         # pas compatible avec apart() (sympy v0.7.2).
         num, den = expression.as_numer_denom()
         if den.free_symbols:
@@ -59,7 +59,7 @@ def expand(expression, variable = None):
 def evalf(expression, precision=60):
     u"""Evalue l'expression en respectant sa structure.
 
-    Par exemple, un polynôme factorisé reste factorisé après évaluation.
+    Par exemple, un polynÃ´me factorisÃ© reste factorisÃ© aprÃ¨s Ã©valuation.
 
     >>> from wxgeometrie.mathlib.sympy_functions import evalf
     >>> from sympy import var, pi
@@ -100,7 +100,7 @@ def factor(expression, variable = None, ensemble = None, decomposer_entiers = Tr
         if variable is None:
             variable = extract_var(expression)
         if variable is None:
-            # polynôme à plusieurs variables
+            # polynÃ´me Ã  plusieurs variables
             return factor_(expression)
         else:
             try:
@@ -276,9 +276,9 @@ def simplifier_racines(expression):
         return expression
 
 def mat(*args):
-    u"""Crée une matrice.
+    u"""CrÃ©e une matrice.
 
-    * Si une liste est donné en argument, la liste est convertie en matrice::
+    * Si une liste est donnÃ© en argument, la liste est convertie en matrice::
 
         >>> from wxgeometrie.mathlib.sympy_functions import mat
         >>> mat([[1, 2], [3, 4]])
@@ -292,23 +292,23 @@ def mat(*args):
         [3]
         [4]
 
-    * Si un entier `n` est donné en argument, une matrice identité carrée de taille `n`
-      est renvoyée::
+    * Si un entier `n` est donnÃ© en argument, une matrice identitÃ© carrÃ©e de taille `n`
+      est renvoyÃ©e::
 
         >>> mat(3)
         [1, 0, 0]
         [0, 1, 0]
         [0, 0, 1]
 
-    * Si deux entiers `n` et `p` sont donnés en arguments, une matrice zéro de taille `n*p`
-      est renvoyée::
+    * Si deux entiers `n` et `p` sont donnÃ©s en arguments, une matrice zÃ©ro de taille `n*p`
+      est renvoyÃ©e::
 
         >>> mat(1, 2)
         [0, 0]
 
-    * On peut construire une matrice personnalisée en précisant ses dimensions
-      `n` et `p`, et l'expression générale de ses coefficients.
-      On utilise les symboles `li` et `co` pour le numéro de ligne et le numéro de colonne::
+    * On peut construire une matrice personnalisÃ©e en prÃ©cisant ses dimensions
+      `n` et `p`, et l'expression gÃ©nÃ©rale de ses coefficients.
+      On utilise les symboles `li` et `co` pour le numÃ©ro de ligne et le numÃ©ro de colonne::
 
       >>> from sympy import var
       >>> var('li,co')
@@ -318,8 +318,8 @@ def mat(*args):
       [0, 1, 2]
       [0, 2, 4]
 
-    * Enfin, on peut obtenir le même résultat en donnant comme 3e argument une
-      fonction f, qui prend comme arguments le numéro de ligne et le numéro de
+    * Enfin, on peut obtenir le mÃªme rÃ©sultat en donnant comme 3e argument une
+      fonction f, qui prend comme arguments le numÃ©ro de ligne et le numÃ©ro de
       colonne::
 
       >>> f = lambda x, y: x*y

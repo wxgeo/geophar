@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------##
@@ -55,7 +55,7 @@ class GestionnaireSession(QObject):
                 sleep(max(10*param.sauvegarde_automatique, 2))
         except AttributeError:
             print('Warning: closing thread...')
-            # Si le programme est en train d'être fermé, param peut ne
+            # Si le programme est en train d'Ãªtre fermÃ©, param peut ne
             # plus exister.
 
     def _session_path(self, name):
@@ -86,7 +86,7 @@ class GestionnaireSession(QObject):
             for onglet in self.onglets:
                 onglet.modifie = False
         session.ecrire(lieu, compresser = True)
-        print(u"Session sauvée : (%s)" % lieu)
+        print(u"Session sauvÃ©e : (%s)" % lieu)
 
 
     def charger_session(self, lieu=None, reinitialiser=True, activer_modules=True):
@@ -97,10 +97,10 @@ class GestionnaireSession(QObject):
             try:
                 name = names[-1]
                 if name == 'session-%s.geos' % param.ID:
-                    # Le dernier fichier correspond à la session courante.
+                    # Le dernier fichier correspond Ã  la session courante.
                     name = names[-2]
             except IndexError:
-                print(u"Warning: impossible de trouver la session précédente !")
+                print(u"Warning: impossible de trouver la session prÃ©cÃ©dente !")
                 return
             lieu = self._session_path(name)
         session = FichierSession().ouvrir(lieu)
@@ -121,11 +121,11 @@ class GestionnaireSession(QObject):
     def fermer(self):
         u"""Ferme proprement le gestionnaire de session.
 
-        * La session en cours et les préférences sont sauvegardées.
-        * Les anciens fichiers de sessions sont supprimés s'ils deviennent trop
+        * La session en cours et les prÃ©fÃ©rences sont sauvegardÃ©es.
+        * Les anciens fichiers de sessions sont supprimÃ©s s'ils deviennent trop
           nombreux.
-          Le nombre maximal de fichiers de session automatiquement sauvegardés
-          est déterminé par ``param.nbr_sessions``.
+          Le nombre maximal de fichiers de session automatiquement sauvegardÃ©s
+          est dÃ©terminÃ© par ``param.nbr_sessions``.
         """
         self.__run = False
         self.sauver_preferences()
@@ -145,7 +145,7 @@ class GestionnaireSession(QObject):
                     debug(u"Fermeture incorrecte de l'onglet : ", uu(str(onglet)))
                     raise
         else:
-            # La préférence 'sauver_preferences' doit être sauvée dans tous les cas,
-            # sinon il ne serait jamais possible de désactiver les préférences depuis WxGéométrie !
+            # La prÃ©fÃ©rence 'sauver_preferences' doit Ãªtre sauvÃ©e dans tous les cas,
+            # sinon il ne serait jamais possible de dÃ©sactiver les prÃ©fÃ©rences depuis WxGÃ©omÃ©trie !
             fgeo = sauvegarder_module({'sauver_preferences': False})
             fgeo.ecrire(self._fichier_preferences())

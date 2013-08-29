@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------#######
@@ -37,7 +37,7 @@ from .variables import Variable
 class Fonction(Objet_numerique):
     u"""Une fonction.
 
-    Une fonction numérique à une variable; l'argument est une expression sous forme de chaine de caractères.
+    Une fonction numÃ©rique Ã  une variable; l'argument est une expression sous forme de chaine de caractÃ¨res.
     Exemple: Fonction('2*x+1', variable = 'x', ensemble = 'R')."""
 
     _prefixe_nom = "f"
@@ -54,8 +54,8 @@ class Fonction(Objet_numerique):
     def expression(self, expression = None):
         if expression is None:
             if self.__liste_expression:
-                # On regénère l'expression à partir de l'expression compilée.
-                # C'est important, car certains objets de la feuille peuvent avoir changé de nom entre temps.
+                # On regÃ©nÃ¨re l'expression Ã  partir de l'expression compilÃ©e.
+                # C'est important, car certains objets de la feuille peuvent avoir changÃ© de nom entre temps.
                 expr = ""
                 for elt in self.__liste_expression:
                     if isinstance(elt, Objet):
@@ -73,8 +73,8 @@ class Fonction(Objet_numerique):
     def ensemble(self, ensemble = None):
         if ensemble is None:
             if self.__liste_ensemble:
-                # On regénère l'ensemble à partir de l'ensemble compilée.
-                # C'est important, car certains objets de la feuille peuvent avoir changé de nom entre temps.
+                # On regÃ©nÃ¨re l'ensemble Ã  partir de l'ensemble compilÃ©e.
+                # C'est important, car certains objets de la feuille peuvent avoir changÃ© de nom entre temps.
                 ens = ""
                 for elt in self.__liste_ensemble:
                     if isinstance(elt, Objet):
@@ -89,8 +89,8 @@ class Fonction(Objet_numerique):
 
 
     def modifier_expression_et_ensemble(self, expression = None, ensemble = None):
-        u"""Si l'on modifie à la fois l'expression et l'ensemble,
-        il est beaucoup plus rapide d'utiliser cette méthode."""
+        u"""Si l'on modifie Ã  la fois l'expression et l'ensemble,
+        il est beaucoup plus rapide d'utiliser cette mÃ©thode."""
 #        print "modification!"
         if expression is None:
             expression = self.__expression
@@ -113,7 +113,7 @@ class Fonction(Objet_numerique):
         Objet.__init__(self,  **styles)
         if variable not in 'xt':
             raise NotImplementedError
-        # *Pré*formatage
+        # *PrÃ©*formatage
         ensemble, extremites_cachees = preformatage_geolib_ensemble(ensemble)
         if self.style("extremites_cachees"):
             extremites_cachees = self.style("extremites_cachees")
@@ -121,12 +121,12 @@ class Fonction(Objet_numerique):
             extremites_cachees = tuple([Variable(x) for x in partie] for partie in extremites_cachees)
         self.__liste_expression = []
         self.__liste_ensemble = []
-        # Une fonction peut être définie par morceaux
-        # Liste des fonctions correspondant à chaque morceau
+        # Une fonction peut Ãªtre dÃ©finie par morceaux
+        # Liste des fonctions correspondant Ã  chaque morceau
         self.__fonctions = None
-        # Liste des (unions d'intervalles correspondant à chaque morceau
+        # Liste des (unions d'intervalles correspondant Ã  chaque morceau
         self.__unions = None
-        # Les arguments non modifiables ne sont pas encapsulés dans des références (classe Ref)
+        # Les arguments non modifiables ne sont pas encapsulÃ©s dans des rÃ©fÃ©rences (classe Ref)
         self.__expression = expression = Ref(expression)
         self.__ensemble = ensemble = Ref(ensemble)
         self.__variable = variable
@@ -134,11 +134,11 @@ class Fonction(Objet_numerique):
 
 
     def _test_dependance_circulaire(self, expression, ensemble, deuxieme_essai = False):
-        u"""Provoque une erreur si l'objet se retrouve dépendre de lui-même avec la nouvelle valeur.
+        u"""Provoque une erreur si l'objet se retrouve dÃ©pendre de lui-mÃªme avec la nouvelle valeur.
 
-        Retourne deux listes (list) composées alternativement d'instructions et d'objets de la feuille,
-        et un ensemble (set) constitué des objets de la feuille mis en jeu dans le code.
-        (... à documenter ...)"""
+        Retourne deux listes (list) composÃ©es alternativement d'instructions et d'objets de la feuille,
+        et un ensemble (set) constituÃ© des objets de la feuille mis en jeu dans le code.
+        (... Ã  documenter ...)"""
         if self.feuille is not None:
             try:
                 with contexte(afficher_messages = False):
@@ -165,19 +165,19 @@ class Fonction(Objet_numerique):
             except KeyError:
                 if deuxieme_essai:
                     raise
-                # L'erreur peut-être due à la présence de code LaTeX dans la fonction ;
-                # on tente un 2e essai après traduction du code LaTeX éventuel.
+                # L'erreur peut-Ãªtre due Ã  la prÃ©sence de code LaTeX dans la fonction ;
+                # on tente un 2e essai aprÃ¨s traduction du code LaTeX Ã©ventuel.
                 expression = traduire_formule(expression, fonctions = self.feuille.objets)
                 return self._test_dependance_circulaire(expression, ensemble, deuxieme_essai = True)
         return None, None, None
 
 
     def _compile(self,  liste_expression, liste_ensemble, objets):
-        u"""Compile l'expression stockée dans la variable ; les arguments sont les valeurs retournées par '_test_dependance_circulaire'.
+        u"""Compile l'expression stockÃ©e dans la variable ; les arguments sont les valeurs retournÃ©es par '_test_dependance_circulaire'.
 
-        La compilation doit toujours avoir lieu à la fin de la procédure de redéfinition de la variable,
-        car elle ne doit être exécutée que si la redéfinition de la variable va effectivement avoir lieu,
-        c'est-à-dire si tout le processus précédent s'est exécuté sans erreur."""
+        La compilation doit toujours avoir lieu Ã  la fin de la procÃ©dure de redÃ©finition de la variable,
+        car elle ne doit Ãªtre exÃ©cutÃ©e que si la redÃ©finition de la variable va effectivement avoir lieu,
+        c'est-Ã -dire si tout le processus prÃ©cÃ©dent s'est exÃ©cutÃ© sans erreur."""
         #print "compilation !"
         if self.feuille is not None:
             self.__liste_expression = liste_expression
@@ -186,20 +186,20 @@ class Fonction(Objet_numerique):
             self.__unions = []
             expressions = self.__expression.split("|")
             ensembles = self.__ensemble.split("|")
-            # TODO: Prévoir le cas où les deux listes ne sont pas de même longueur
+            # TODO: PrÃ©voir le cas oÃ¹ les deux listes ne sont pas de mÃªme longueur
             n = min(len(expressions), len(ensembles))
             for i in xrange(n):
                 express = traduire_formule(expressions[i], fonctions = self.feuille.objets)
-                # On force ensuite la variable à apparaitre dans l'expression de la formule.
+                # On force ensuite la variable Ã  apparaitre dans l'expression de la formule.
                 # C'est important quand la fonction est constante :
-                # l'image d'un tableau par la fonction doit être un tableau, et non la constante.
+                # l'image d'un tableau par la fonction doit Ãªtre un tableau, et non la constante.
                 if self.__variable not in express:
                     express += "+0.*" + self.__variable
                 self.__fonctions.append(eval("lambda " + self.__variable + ":" + express, self.feuille.objets))
                 ensemb = formatage_ensemble(ensembles[i], preformatage = False)
                 self.__unions.append(eval(ensemb, self.feuille.objets))
 
-            # on supprime la variable de la liste des vassaux pour les objets dont elle ne dépendra plus desormais:
+            # on supprime la variable de la liste des vassaux pour les objets dont elle ne dÃ©pendra plus desormais:
             for objet in self._parents:
                 objet.enfants.remove(self)
             self._parents = objets

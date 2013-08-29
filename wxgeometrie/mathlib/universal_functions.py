@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------#######
@@ -25,25 +25,25 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 
 __doc__ = """
-Cette librairie contient des versions modifiées des fonctions courantes,
-pour qu'elles puissent être appliquées aussi bien à des nombres
-qu'à des variables formelles ou encore des listes...
+Cette librairie contient des versions modifiÃ©es des fonctions courantes,
+pour qu'elles puissent Ãªtre appliquÃ©es aussi bien Ã  des nombres
+qu'Ã  des variables formelles ou encore des listes...
 
 Le dictionnaire fonctions_mathematiques contient les infos suivantes :
 {<nom de la fonction>: [<nom dans math>, <nom dans numpy>, <nom dans sympy>]}
 
-Il est générée via le code suivant::
+Il est gÃ©nÃ©rÃ©e via le code suivant::
 
     import math
     liste = math.__dict__.items()
     dico = {}
     ignore_liste = ("ldexp", "frexp", "pow", "degrees", "radians", "atan2", "hypot", "modf", "fmod", "fabs")
     dico.update([(nom,[nom,nom,nom]) for nom, objet in liste if not nom.startswith("_") and hasattr(objet, "__call__") and not nom in ignore_liste])
-    # fonctions ayant un nom différent dans numpy :
+    # fonctions ayant un nom diffÃ©rent dans numpy :
     dico["asin"][1] = "arcsin"; dico["acos"][1] = "arccos"; dico["atan"][1] = "arctan"
-    # fonctions ayant un nom différent dans sympy :
+    # fonctions ayant un nom diffÃ©rent dans sympy :
     dico["ceil"][2] = "ceiling"
-    # fonctions à renommer :
+    # fonctions Ã  renommer :
     dico["ln"] = dico.pop("log")
     dico["log"] = dico.pop("log10")
     liste = dico.items()
@@ -52,7 +52,7 @@ Il est générée via le code suivant::
     print s
     exec(s)
 
-    # Vérification du contenu du dictionnaire :
+    # VÃ©rification du contenu du dictionnaire :
     import math, sympy, numpy
     sympy.log10 = lambda x: sympy.log(x, 10)
     for elt in _fonctions_mathematiques.items():
@@ -61,7 +61,7 @@ Il est générée via le code suivant::
     getattr(numpy, n)
     getattr(sympy, s)
 
-    # Génération du code :
+    # GÃ©nÃ©ration du code :
 
     # Nom de la fonction dans les modules math, numpy et sympy respectivement.
     _fonctions_mathematiques = {
@@ -119,11 +119,11 @@ _fonctions_mathematiques = {
 import numpy as _numpy, sympy as _sympy, math as _math, cmath as _cmath
 _sympy.log10 = lambda x: _sympy.log(x, 10)
 
-_cmath.floor = _math.floor # afin de renvoyer une erreur si floor est appelé avec un complexe
+_cmath.floor = _math.floor # afin de renvoyer une erreur si floor est appelÃ© avec un complexe
 
 _math.abs = _cmath.abs = _sympy.abs = abs
 
-# Le code suivant est généré automatiquement (voir plus haut)
+# Le code suivant est gÃ©nÃ©rÃ© automatiquement (voir plus haut)
 
 
 def sinh(*args, **kw):
@@ -318,7 +318,7 @@ def abs(*args, **kw):
         return _numpy.abs(*args,**kw)
 
 
-# Code écrit à la main (ne pas effacer donc !)
+# Code Ã©crit Ã  la main (ne pas effacer donc !)
 
 def arg(complexe):
     if isinstance(complexe, (int, complex, long, float)):

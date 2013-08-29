@@ -1,8 +1,8 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 # o-----------------------------------------------------------o
-# |              Barre d'outils pour la géométrie             |
+# |              Barre d'outils pour la gÃ©omÃ©trie             |
 # o-----------------------------------------------------------o
 #    WxGeometrie
 #    Dynamic geometry, graph plotter, and more for french mathematic teachers.
@@ -52,7 +52,7 @@ from .. import geolib
 
 
 class MultiButton(QToolButton):
-    u"""Un bouton possédant plusieurs fonctionnalités, que l'utilisateur
+    u"""Un bouton possÃ©dant plusieurs fonctionnalitÃ©s, que l'utilisateur
     peut choisir avec un clic de la souris."""
 
     def __init__(self, parent, raccourci, selectionnable, *fonctionnalites):
@@ -62,7 +62,7 @@ class MultiButton(QToolButton):
         self.parent = parent
         self.selectionnable = selectionnable
 
-        # Raccourci clavier pour sélectionner le bouton:
+        # Raccourci clavier pour sÃ©lectionner le bouton:
         self.raccourci = raccourci
         if self.raccourci:
             sh = self.shortcut = QShortcut(self)
@@ -71,11 +71,11 @@ class MultiButton(QToolButton):
             # NB: `selected=True` est obligatoire ici (mais je ne sais pas pourquoi...)
             sh.activated.connect(partial(self.select, selected=True))
 
-        # Liste des différentes fonctionnalités possibles:
+        # Liste des diffÃ©rentes fonctionnalitÃ©s possibles:
         self.liste = list(fonctionnalites)
-        # Menu à afficher pour changer de fonctionnalité:
+        # Menu Ã  afficher pour changer de fonctionnalitÃ©:
         self.menu = None
-        # Index de la fonctionnalité choisie dans la liste:
+        # Index de la fonctionnalitÃ© choisie dans la liste:
         self.index = 0
 
         ##self.SetBackgroundColour(self.parent.GetBackgroundColour())
@@ -100,7 +100,7 @@ class MultiButton(QToolButton):
                 action = menu.addAction(self.img2icon(image), titre)
                 action.setIconVisibleInMenu(True)
                 # NB: `selected=True` est obligatoire ici (sinon, c'est l'argument du
-                # signal `.triggered` qui est passé comme argument ?)
+                # signal `.triggered` qui est passÃ© comme argument ?)
                 action.triggered.connect(partial(self.select, selected=True, i=i))
 
     @staticmethod
@@ -112,12 +112,12 @@ class MultiButton(QToolButton):
         return self.parent._selected_button is self
 
     def select(self, selected=True, i=None):
-        u"""(Dé)sélectionne le bouton.
+        u"""(DÃ©)sÃ©lectionne le bouton.
 
-        Si `i` est différent de `None`, la i-ème fonctionnalité associée
-        au bouton est activée.
+        Si `i` est diffÃ©rent de `None`, la i-Ã¨me fonctionnalitÃ© associÃ©e
+        au bouton est activÃ©e.
 
-        L'icône est automatiquement mise à jour.
+        L'icÃ´ne est automatiquement mise Ã  jour.
         """
         if i is not None:
             self.index = i
@@ -135,7 +135,7 @@ class MultiButton(QToolButton):
                 action = self.liste[self.index][3]
                 action(True)
             elif self.selected:
-                # NB: ne pas déselectionner un autre bouton.
+                # NB: ne pas dÃ©selectionner un autre bouton.
                 self.parent._selected_button = None
             if len(self.liste) > 1:
                 self.update_menu()
@@ -144,11 +144,11 @@ class MultiButton(QToolButton):
         self.update_display()
 
     def update_display(self, as_selected=None):
-        u"""Change l'icône du bouton, selon la fonction sélectionnée, et le fait
-            que le bouton soit activé ou non.
+        u"""Change l'icÃ´ne du bouton, selon la fonction sÃ©lectionnÃ©e, et le fait
+            que le bouton soit activÃ© ou non.
 
-            Il est possible de forcer l'affichage du bouton comme s'il était
-            sélectionné, en passant l'option `as_selected=True`.
+            Il est possible de forcer l'affichage du bouton comme s'il Ã©tait
+            sÃ©lectionnÃ©, en passant l'option `as_selected=True`.
             Cela sert pour le bouton sauvegarde par exemple.
             """
         image = self.liste[self.index][1]
@@ -174,8 +174,8 @@ class BarreOutils(QWidget):
         self.add2(u"ouvrir", u"Ouvrir un fichier .geo.", self.parent.parent.OpenFile)
         self.btn_sauver = self.add2(u"sauvegarde", u"Enregistrer le document.", self.parent.parent.SaveFile)
         self.add2(u"image", u"Exporter comme image.", self.parent.parent.ExportFile)
-        self.add2(u"annuler3", u"Annuler l'action précédente.", self.parent.annuler)
-        self.add2(u"retablir3", u"Rétablir une action annulée.", self.parent.retablir)
+        self.add2(u"annuler3", u"Annuler l'action prÃ©cÃ©dente.", self.parent.annuler)
+        self.add2(u"retablir3", u"RÃ©tablir une action annulÃ©e.", self.parent.retablir)
 
         if self.parent.param('afficher_boutons'):
             self.creer_boutons()
@@ -186,12 +186,12 @@ class BarreOutils(QWidget):
 
 
     def add(self, racc, *liste):
-        u"""Ajoute des boutons multiples, sélectionnables.
+        u"""Ajoute des boutons multiples, sÃ©lectionnables.
 
         `racc` est un raccourci. Ex: "Control+F1", "Shift+F2", "Meta+F3", "Alt+F12".
         `liste` est une liste de tuples, ayant le format suivant:
         (titre, nom de l'image, aide, action)
-        `liste` peut également contenir `None`, qui sert de séparateur.
+        `liste` peut Ã©galement contenir `None`, qui sert de sÃ©parateur.
         """
         button = MultiButton(self, racc, True, *liste)
         self.sizer.addWidget(button)
@@ -199,10 +199,10 @@ class BarreOutils(QWidget):
 
 
     def add2(self, *args):
-        u"""Ajoute des boutons simples, non sélectionnables.
+        u"""Ajoute des boutons simples, non sÃ©lectionnables.
 
 
-        `args` possède le format suivant:
+        `args` possÃ¨de le format suivant:
         nom de l'image, aide, action
         """
         button = MultiButton(self, None, False, ("",) + args)
@@ -211,82 +211,82 @@ class BarreOutils(QWidget):
 
 
     def creer_boutons(self):
-        self.add("F1", (u"Pointeur", u"fleche4", u"Déplacer ou modifier un objet.", self.curseur),
+        self.add("F1", (u"Pointeur", u"fleche4", u"DÃ©placer ou modifier un objet.", self.curseur),
                   (u"Zoomer", u"zoombox2", u"Recentrer la zone d'affichage.", self.zoombox),
-                  (u"Sélectionner", u"selection", u"Sélectionner une partie de la feuille.",
+                  (u"SÃ©lectionner", u"selection", u"SÃ©lectionner une partie de la feuille.",
                   self.selectionner)).select()
-        self.add("F2", (u"Point", u"point2",u"Créer un point.", self.point))
-        self.add("F3", (u"Milieu", u"milieu2", u"Créer un milieu ou un centre.", self.milieu))
-        self.add("F4", (u"Segment", u"segment2", u"Créer un segment.", self.segment),
+        self.add("F2", (u"Point", u"point2",u"CrÃ©er un point.", self.point))
+        self.add("F3", (u"Milieu", u"milieu2", u"CrÃ©er un milieu ou un centre.", self.milieu))
+        self.add("F4", (u"Segment", u"segment2", u"CrÃ©er un segment.", self.segment),
                     None,
-                    (u"Vecteur", u"vecteur", u"Créer un vecteur.", self.vecteur),
-                    (u"Représentant d'un vecteur", u"representant",
-                    u"Créer un représentant d'un vecteur.", self.representant),
+                    (u"Vecteur", u"vecteur", u"CrÃ©er un vecteur.", self.vecteur),
+                    (u"ReprÃ©sentant d'un vecteur", u"representant",
+                    u"CrÃ©er un reprÃ©sentant d'un vecteur.", self.representant),
                     )
-        self.add("F5", (u"Droite", u"droite2", u"Créer une droite.", self.droite),
-                    (u"Demi-droite", u"demidroite", u"Créer une demi-droite.", self.demidroite),
+        self.add("F5", (u"Droite", u"droite2", u"CrÃ©er une droite.", self.droite),
+                    (u"Demi-droite", u"demidroite", u"CrÃ©er une demi-droite.", self.demidroite),
                     None,
-                    (u"Parallèle", u"parallele", u"Créer une parallèle.", self.parallele),
+                    (u"ParallÃ¨le", u"parallele", u"CrÃ©er une parallÃ¨le.", self.parallele),
                     (u"Perpendiculaire", u"perpendiculaire",
-                    u"Créer une perpendiculaire.", self.perpendiculaire),
-                    (u"Tangente", u"tangente", u"Créer une tangente.", self.tangente),
+                    u"CrÃ©er une perpendiculaire.", self.perpendiculaire),
+                    (u"Tangente", u"tangente", u"CrÃ©er une tangente.", self.tangente),
                     None,
-                    (u"Médiatrice", u"mediatrice", u"Créer une médiatrice.", self.mediatrice),
-                    (u"Bissectrice", u"bissectrice", u"Créer une bissectrice.", self.bissectrice),
+                    (u"MÃ©diatrice", u"mediatrice", u"CrÃ©er une mÃ©diatrice.", self.mediatrice),
+                    (u"Bissectrice", u"bissectrice", u"CrÃ©er une bissectrice.", self.bissectrice),
                     None,
-                    (u"Demi-plan", 'demiplan', u"Créer un demi-plan", self.demiplan),
+                    (u"Demi-plan", 'demiplan', u"CrÃ©er un demi-plan", self.demiplan),
                     )
-        self.add("F6", (u"Cercle", u"cercle", u"Créer un cercle.", self.cercle),
-                    (u"Cercle défini par son diamètre", u"cerclediametre",
-                    u"Créer un cercle défini par son diamètre.", self.cercle_diametre),
+        self.add("F6", (u"Cercle", u"cercle", u"CrÃ©er un cercle.", self.cercle),
+                    (u"Cercle dÃ©fini par son diamÃ¨tre", u"cerclediametre",
+                    u"CrÃ©er un cercle dÃ©fini par son diamÃ¨tre.", self.cercle_diametre),
                     (u"Cercle passant par 3 points", u"cercle3points",
-                    u"Créer un cercle passant par 3 points.", self.cercle_points),
+                    u"CrÃ©er un cercle passant par 3 points.", self.cercle_points),
                     None,
-                    (u"Arc de cercle", u"arc", u"Créer un arc de cercle de centre donné.", self.arc),
+                    (u"Arc de cercle", u"arc", u"CrÃ©er un arc de cercle de centre donnÃ©.", self.arc),
                     (u"Arc passant par 3 points", u"arc_points",
-                    u"Créer un arc de cercle passant par 3 points.", self.arc_points),
-                    (u"Arc de cercle orienté", u"arc_oriente",
-                    u"Créer un arc de cercle orienté.", self.arc_oriente),
-                    (u"Demi-cercle", u"demicercle", u"Créer un demi-cercle.", self.demicercle),
+                    u"CrÃ©er un arc de cercle passant par 3 points.", self.arc_points),
+                    (u"Arc de cercle orientÃ©", u"arc_oriente",
+                    u"CrÃ©er un arc de cercle orientÃ©.", self.arc_oriente),
+                    (u"Demi-cercle", u"demicercle", u"CrÃ©er un demi-cercle.", self.demicercle),
                     None,
-                    (u"Disque", u"disque", u"Créer un disque.", self.disque),
+                    (u"Disque", u"disque", u"CrÃ©er un disque.", self.disque),
                     )
-        self.add("F7", (u"Polygone", u"polygone", u"Créer un polygone.", self.polygone),
+        self.add("F7", (u"Polygone", u"polygone", u"CrÃ©er un polygone.", self.polygone),
                     None,
-                    (u"Triangle", u"triangle", u"Créer un triangle.", self.triangle),
+                    (u"Triangle", u"triangle", u"CrÃ©er un triangle.", self.triangle),
                     (u"Triangle rectangle", u"triangle_rectangle",
-                    u"Créer un triangle rectangle d'hypothénuse donnée.", self.triangle_rectangle),
-                    (u"Triangle isocèle", u"triangle_isocele",
-                    u"Créer un triangle isocèle.", self.triangle_isocele),
-                    (u"Triangle isocèle rectangle", u"triangle_rectangle_isocele",
-                    u"Créer un triangle isocèle rectangle d'hypothénuse donnée.",
+                    u"CrÃ©er un triangle rectangle d'hypothÃ©nuse donnÃ©e.", self.triangle_rectangle),
+                    (u"Triangle isocÃ¨le", u"triangle_isocele",
+                    u"CrÃ©er un triangle isocÃ¨le.", self.triangle_isocele),
+                    (u"Triangle isocÃ¨le rectangle", u"triangle_rectangle_isocele",
+                    u"CrÃ©er un triangle isocÃ¨le rectangle d'hypothÃ©nuse donnÃ©e.",
                     self.triangle_isocele_rectangle),
-                    (u"Triangle équilatéral", u"triangle_equilateral",
-                    u"Créer un triangle équilatéral.", self.triangle_equilateral),
+                    (u"Triangle Ã©quilatÃ©ral", u"triangle_equilateral",
+                    u"CrÃ©er un triangle Ã©quilatÃ©ral.", self.triangle_equilateral),
                     None,
-                    (u"Parallélogramme", u"parallelogramme", u"Créer un parallélogramme.",
+                    (u"ParallÃ©logramme", u"parallelogramme", u"CrÃ©er un parallÃ©logramme.",
                     self.parallelogramme),
-                    (u"Rectangle", u"rectangle", u"Créer un rectangle.", self.rectangle),
-                    (u"Losange", u"losange", u"Créer un losange.", self.losange),
-                    (u"Carré", u"carre", u"Créer un carré.", self.carre),
+                    (u"Rectangle", u"rectangle", u"CrÃ©er un rectangle.", self.rectangle),
+                    (u"Losange", u"losange", u"CrÃ©er un losange.", self.losange),
+                    (u"CarrÃ©", u"carre", u"CrÃ©er un carrÃ©.", self.carre),
                     )
-        self.add("F8", (u"Intersection", u"intersection", u"Créer une intersection.", self.intersection))
-        self.add("F9", (u"Angle", u"angle", u"Créer un angle non orienté.", self.angle),
-                    (u"Angle orienté", u"angle_oriente", u"Créer un angle orienté.",
+        self.add("F8", (u"Intersection", u"intersection", u"CrÃ©er une intersection.", self.intersection))
+        self.add("F9", (u"Angle", u"angle", u"CrÃ©er un angle non orientÃ©.", self.angle),
+                    (u"Angle orientÃ©", u"angle_oriente", u"CrÃ©er un angle orientÃ©.",
                     self.angle_oriente),
                     )
-        self.add("Shift+F1", (u"Symétrie centrale", u"symetrie_centrale",
-                    u"Créer l'image d'un objet par symétrie par rapport à un point.", self.symetrie),
-                    (u"Réflexion", u"reflexion",
-                    u"Créer l'image d'un objet par symétrie axiale.", self.reflexion),
+        self.add("Shift+F1", (u"SymÃ©trie centrale", u"symetrie_centrale",
+                    u"CrÃ©er l'image d'un objet par symÃ©trie par rapport Ã  un point.", self.symetrie),
+                    (u"RÃ©flexion", u"reflexion",
+                    u"CrÃ©er l'image d'un objet par symÃ©trie axiale.", self.reflexion),
                     (u"Translation", u"translation",
-                    u"Créer l'image d'un objet par translation.", self.translation),
+                    u"CrÃ©er l'image d'un objet par translation.", self.translation),
                     (u"Rotation", u"rotation",
-                    u"Créer l'image d'un objet par rotation autour d'un point.", self.rotation),
-                    (u"Homothétie", u"homothetie",
-                    u"Créer l'image d'un objet par homothétie.", self.homothetie),
+                    u"CrÃ©er l'image d'un objet par rotation autour d'un point.", self.rotation),
+                    (u"HomothÃ©tie", u"homothetie",
+                    u"CrÃ©er l'image d'un objet par homothÃ©tie.", self.homothetie),
                     )
-        self.add("Shift+F2", (u"Texte", u"texte", u"Créer un texte.", self.texte))
+        self.add("Shift+F2", (u"Texte", u"texte", u"CrÃ©er un texte.", self.texte))
         self.add("Shift+F3", (u"Masquer", u"masquer", u"Masquer des objets.", self.masque))
         self.add("Shift+F4", (u"Gommer", u"gomme", u"Supprimer des objets.", self.gomme))
         self.add("Shift+F5", (u"Copier", u"pinceau", u"Copier le style d'un objet.", self.pinceau))
@@ -305,35 +305,35 @@ class BarreOutils(QWidget):
 ##        return self.parent.commande
 
     def rafraichir(self):
-        u"Appelé par le parent pour rafraichir la barre d'outils."
+        u"AppelÃ© par le parent pour rafraichir la barre d'outils."
         self.btn_sauver.update_display(as_selected=(not self.feuille_actuelle.modifiee))
 
 
     def initialiser(self):
         self.cache = [] # objets en memoire
-        # S'il n'y a pas de feuille, on la crée.
+        # S'il n'y a pas de feuille, on la crÃ©e.
         self.feuille_actuelle.objet_temporaire(None)
         self.canvas.liste_objets_en_gras.clear()
         self.canvas.selection_en_gras()
         if self.debut_zoombox is not None or self.debut_selection is not None:
             self.debut_zoombox = None
             self.debut_selection = None
-            # on rafraichit l'affichage pour effacer le rectangle de sélection ou de zoom
+            # on rafraichit l'affichage pour effacer le rectangle de sÃ©lection ou de zoom
             self.canvas.rafraichir_affichage(dessin_temporaire = True) # pour ne pas tout rafraichir
 
 
 
     def dialogue(self, titre, question, defaut=""):
-        u"""Certaines constructions ont besoin d'une valeur numérique (rotations, homothéties...)
-        Cette boîte de dialogue permet à l'utilisateur de saisir cette valeur.
-        Retourne 'None' si l'utilisateur a annulé."""
+        u"""Certaines constructions ont besoin d'une valeur numÃ©rique (rotations, homothÃ©ties...)
+        Cette boÃ®te de dialogue permet Ã  l'utilisateur de saisir cette valeur.
+        Retourne 'None' si l'utilisateur a annulÃ©."""
         valeur, ok = QInputDialog.getText(self, titre, question, QLineEdit.Normal, defaut)
         return valeur if ok else None
 
 
     def executer(self, instruction, editer = "defaut", init = True):
-        u"""Exécute une instruction dans la console.
-        Si editer != None, le nom de l'objet est édité (par défaut, seulement les points, droites et textes),
+        u"""ExÃ©cute une instruction dans la console.
+        Si editer != None, le nom de l'objet est Ã©ditÃ© (par dÃ©faut, seulement les points, droites et textes),
         afin de permettre de le renommer dans la foulee.
         Si init = True, le cache des selections est initialise."""
         with contexte(unite_angle='r'):
@@ -352,14 +352,14 @@ class BarreOutils(QWidget):
 
 
     def interagir(self, *args, **kw):
-        u"Marque le bouton n comme sélectionné (et initialise le cache des sélections)."
+        u"Marque le bouton n comme sÃ©lectionnÃ© (et initialise le cache des sÃ©lections)."
         self.initialiser()
         self.canvas.interagir(*args, **kw)
 
 
     def test(self, doublons_interdits = True, **kw):
-        u"""On vérifie qu'il y ait encore une feuille, et que le cache ne contienne que des objets
-        de la feuille (la feuille a pu changer, ou un objet être supprimé)."""
+        u"""On vÃ©rifie qu'il y ait encore une feuille, et que le cache ne contienne que des objets
+        de la feuille (la feuille a pu changer, ou un objet Ãªtre supprimÃ©)."""
         if kw.get("special", None) == "ESC":
             self.initialiser()
             return False
@@ -372,7 +372,7 @@ class BarreOutils(QWidget):
                     self.cache.remove(obj)
             # Utiliser l'objet set pour faire l'intersection entre self.cache et self.feuille_actuelle.objets.__dict__.values() ??
             if doublons_interdits and self.cache and kw.get("selection", None) is self.cache[-1]:
-                # on évite de rentrer 2 fois de suite le même objet dans le cache (évite de se retrouver avec qqch du style Segment(A,A) par ex.)
+                # on Ã©vite de rentrer 2 fois de suite le mÃªme objet dans le cache (Ã©vite de se retrouver avec qqch du style Segment(A,A) par ex.)
                 # depuis la version 0.101.3, recliquer sur un objet le supprime du cache.
                 self.cache.pop()
                 return False
@@ -380,7 +380,7 @@ class BarreOutils(QWidget):
 
 
     def style(self, type_objet):
-        u"Retourne le style d'objet défini éventuellement dans les paramètres du module."
+        u"Retourne le style d'objet dÃ©fini Ã©ventuellement dans les paramÃ¨tres du module."
         print 'coucou', type_objet
         if not type_objet:
             return {}
@@ -396,7 +396,7 @@ class BarreOutils(QWidget):
 
 
     def curseur(self, event = None):
-        u"Revenir en mode standard (flêche simple)."
+        u"Revenir en mode standard (flÃªche simple)."
         self.interagir(None)
 
 
@@ -404,18 +404,18 @@ class BarreOutils(QWidget):
         u"Mode zoom."
         if event is not False:
             self.debut_zoombox = None
-            self.interagir(self.zoombox, u"Cliquez pour délimiter le début de la zone à afficher.", self.zoombox_onmotion)
+            self.interagir(self.zoombox, u"Cliquez pour dÃ©limiter le dÃ©but de la zone Ã  afficher.", self.zoombox_onmotion)
         elif not self.canvas.fixe:
             if kw.get("special", None) == "ESC":
                 self.initialiser()
-                self.canvas.message(u"Cliquez pour délimiter le début de la zone à afficher.")
+                self.canvas.message(u"Cliquez pour dÃ©limiter le dÃ©but de la zone Ã  afficher.")
             elif self.debut_zoombox is None:
-                self.canvas.message(u"Cliquez pour délimiter la fin de la zone à afficher.")
+                self.canvas.message(u"Cliquez pour dÃ©limiter la fin de la zone Ã  afficher.")
                 self.debut_zoombox = kw["position"]
             else:
                 (x0, y0), (x1, y1) = self.debut_zoombox, self.canvas.fin_zoom
                 self.canvas.executer("fenetre = " + str((x0, x1, y0, y1)))
-                self.canvas.message(u"Cliquez pour délimiter le début de la zone à afficher.")
+                self.canvas.message(u"Cliquez pour dÃ©limiter le dÃ©but de la zone Ã  afficher.")
                 self.debut_zoombox = None
 
 
@@ -427,21 +427,21 @@ class BarreOutils(QWidget):
 
 
     def selectionner(self, event = False, **kw):
-        u"Sélectionner une zone."
+        u"SÃ©lectionner une zone."
         if event is not False:
             self.debut_selection = None
-            self.interagir(self.selectionner, u"Cliquez pour délimiter le début de la zone à sélectionner.", self.selectionner_onmotion)
+            self.interagir(self.selectionner, u"Cliquez pour dÃ©limiter le dÃ©but de la zone Ã  sÃ©lectionner.", self.selectionner_onmotion)
         else:
             if kw.get("special", None) == "ESC":
                 self.initialiser()
-                self.canvas.message(u"Cliquez pour délimiter le début de la zone à sélectionner.")
+                self.canvas.message(u"Cliquez pour dÃ©limiter le dÃ©but de la zone Ã  sÃ©lectionner.")
             elif self.debut_selection is None:
-                self.canvas.message(u"Cliquez pour délimiter la fin de la zone à sélectionner.")
+                self.canvas.message(u"Cliquez pour dÃ©limiter la fin de la zone Ã  sÃ©lectionner.")
                 self.debut_selection = kw["position"]
             else:
                 (x0, y0), (x1, y1) = self.debut_selection, self.canvas.fin_select
                 self.canvas.OnSelect(x0, x1, y0, y1)
-                self.canvas.message(u"Cliquez pour délimiter le début de la zone à sélectionner.")
+                self.canvas.message(u"Cliquez pour dÃ©limiter le dÃ©but de la zone Ã  sÃ©lectionner.")
                 self.debut_selection = None
 
 
@@ -466,21 +466,21 @@ class BarreOutils(QWidget):
                     self.executer(u"Point(*%s, **%s)" % (position, self.style(nom_style)), editer=editer, init = False)
                 else:
                     snom = selection.nom
-                    # On regarde si le point peut être construit sur l'objet sélectionné.
-                    # Par exemple, si l'objet sélectionné est une droite, on construit
+                    # On regarde si le point peut Ãªtre construit sur l'objet sÃ©lectionnÃ©.
+                    # Par exemple, si l'objet sÃ©lectionnÃ© est une droite, on construit
                     # un glisseur sur la droite, au lieu d'un point 'normal'.
-                    # Par contre, si l'objet sélectionné est un texte, il n'y a pas de
+                    # Par contre, si l'objet sÃ©lectionnÃ© est un texte, il n'y a pas de
                     # glisseur correspondant, donc on ne tient pas compte de l'objet
-                    # sélectionné, et on construit simplement un point 'normal'.
+                    # sÃ©lectionnÃ©, et on construit simplement un point 'normal'.
                     for type_objet, type_glisseur in Point._glisseurs.iteritems():
                         if isinstance(selection, getattr(geolib, type_objet)):
                             self.executer(u"%s(%s, %s)" %(type_glisseur, snom, position), editer=editer, init = False)
                             break
                     else:
                         self.executer(u"Point(%s, %s)" % position, editer=editer, init = False)
-                # On retourne le nom de l'objet créé
-                # ('_' fait référence au dernier objet créé de la feuille),
-                # afin de pouvoir utiliser cette méthode 'point()' comme routine ailleurs.
+                # On retourne le nom de l'objet crÃ©Ã©
+                # ('_' fait rÃ©fÃ©rence au dernier objet crÃ©Ã© de la feuille),
+                # afin de pouvoir utiliser cette mÃ©thode 'point()' comme routine ailleurs.
                 return self.feuille_actuelle.objets["_"]
 
 
@@ -519,7 +519,7 @@ class BarreOutils(QWidget):
 
 
     # NB: event doit recevoir par defaut False et non None,
-    # car event vaut déjà None par défaut dans MultiButton.action().
+    # car event vaut dÃ©jÃ  None par dÃ©faut dans MultiButton.action().
 
     def segment(self, event=False, **kw):
         if event is False:
@@ -600,7 +600,7 @@ class BarreOutils(QWidget):
 
     def perpendiculaire(self, event = False, **kw):
         if event is not False:
-            self.interagir(self.perpendiculaire, u"Choisissez ou créez un point et une droite.")
+            self.interagir(self.perpendiculaire, u"Choisissez ou crÃ©ez un point et une droite.")
         elif self.test(**kw):
             selection = kw["selection"]
             if len(self.cache) == 0:
@@ -633,7 +633,7 @@ class BarreOutils(QWidget):
 
     def parallele(self, event = False, **kw):
         if event is not False:
-            self.interagir(self.parallele, u"Choisissez ou créez un point et une droite.")
+            self.interagir(self.parallele, u"Choisissez ou crÃ©ez un point et une droite.")
         elif self.test(**kw):
             selection = kw["selection"]
             if len(self.cache) == 0:
@@ -666,7 +666,7 @@ class BarreOutils(QWidget):
 
     def demiplan(self, event = False, **kw):
         if event is not False:
-            self.interagir(self.demiplan, u"Choisissez ou créez un point et une droite.")
+            self.interagir(self.demiplan, u"Choisissez ou crÃ©ez un point et une droite.")
         elif self.test(**kw):
             selection = kw["selection"]
             if len(self.cache) == 0:
@@ -730,20 +730,20 @@ class BarreOutils(QWidget):
                     self.cache.reverse()
                 else:
                     position = self.memoire_position
-                x1, y1 = self.cache[0].centre   # on choisit la tangente qui passe le plus près du point du cercle sélectionné
+                x1, y1 = self.cache[0].centre   # on choisit la tangente qui passe le plus prÃ¨s du point du cercle sÃ©lectionnÃ©
                 x, y = position
                 x2, y2 = self.cache[1]
                 det = (x1 - x)*(y2 - y) - (x2 - x)*(y1 - y)
 
                 self.executer(u"Tangente(%s, %s, %s)" %(self.cache[0].nom, self.cache[1].nom, det>0))
 
-            if len(self.cache) > 2: # ne se produit que si l'exécution a plantée...
+            if len(self.cache) > 2: # ne se produit que si l'exÃ©cution a plantÃ©e...
                 self.initialiser()
 
 
     def representant(self, event = False, **kw):
         if event is not False:
-            self.interagir(self.representant, u"Choisissez ou créez un point et un vecteur.")
+            self.interagir(self.representant, u"Choisissez ou crÃ©ez un point et un vecteur.")
         elif self.test(**kw):
             selection = kw["selection"]
             if len(self.cache) == 0:
@@ -779,7 +779,7 @@ class BarreOutils(QWidget):
 
     def translation(self, event = False, **kw):
         if event is not False:
-            self.interagir(self.translation, u"Choisissez ou créez un objet, puis indiquez le vecteur de la translation.")
+            self.interagir(self.translation, u"Choisissez ou crÃ©ez un objet, puis indiquez le vecteur de la translation.")
         elif self.test(**kw):
             selection = kw["selection"]
             if len(self.cache) == 0:
@@ -800,7 +800,7 @@ class BarreOutils(QWidget):
 
     def symetrie(self, event = False, **kw):
         if event is not False:
-            self.interagir(self.symetrie, u"Choisissez ou créez un objet, puis indiquez ou créez le centre de symétrie.")
+            self.interagir(self.symetrie, u"Choisissez ou crÃ©ez un objet, puis indiquez ou crÃ©ez le centre de symÃ©trie.")
         elif self.test(**kw):
             selection = kw["selection"]
             if len(self.cache) == 0:
@@ -823,7 +823,7 @@ class BarreOutils(QWidget):
 
     def reflexion(self, event = False, **kw):
         if event is not False:
-            self.interagir(self.reflexion, u"Choisissez ou créez un objet, puis indiquez l'axe de la réflexion.")
+            self.interagir(self.reflexion, u"Choisissez ou crÃ©ez un objet, puis indiquez l'axe de la rÃ©flexion.")
         elif self.test(**kw):
             selection = kw["selection"]
             if len(self.cache) == 0:
@@ -844,7 +844,7 @@ class BarreOutils(QWidget):
 
     def rotation(self, event = False, **kw):
         if event is not False:
-            self.interagir(self.rotation, u"Choisissez ou créez un objet, puis indiquez le centre de la rotation, et l'angle.")
+            self.interagir(self.rotation, u"Choisissez ou crÃ©ez un objet, puis indiquez le centre de la rotation, et l'angle.")
         elif self.test(**kw):
             selection = kw["selection"]
             if len(self.cache) == 0:
@@ -858,7 +858,7 @@ class BarreOutils(QWidget):
                 else:
                     self.cache.append(self.point(**kw))
                 if not isinstance(selection, Angle_generique):
-                    angle = self.dialogue(u"Angle", u"Indiquez l'angle de la rotation.", u"45°")
+                    angle = self.dialogue(u"Angle", u"Indiquez l'angle de la rotation.", u"45Â°")
                     if angle is None:
                         self.initialiser()
                     else:
@@ -877,7 +877,7 @@ class BarreOutils(QWidget):
 
     def homothetie(self, event = False, **kw):
         if event is not False:
-            self.interagir(self.homothetie, u"Choisissez ou créez un objet, puis indiquez le centre de l'homothétie, et son rapport.")
+            self.interagir(self.homothetie, u"Choisissez ou crÃ©ez un objet, puis indiquez le centre de l'homothÃ©tie, et son rapport.")
         elif self.test(**kw):
             selection = kw["selection"]
             if len(self.cache) == 0:
@@ -891,7 +891,7 @@ class BarreOutils(QWidget):
                 else:
                     self.cache.append(self.point(**kw))
 
-                k = self.dialogue(u"Rapport", u"Indiquez le rapport de l'homothétie.", u"2")
+                k = self.dialogue(u"Rapport", u"Indiquez le rapport de l'homothÃ©tie.", u"2")
                 if k is None:
                     self.initialiser()
                 else:
@@ -905,43 +905,43 @@ class BarreOutils(QWidget):
         if event is False:
             self.npoints(Cercle, **kw)
         else:
-            self.interagir(self.cercle, u"Choisissez ou créez deux points.")
+            self.interagir(self.cercle, u"Choisissez ou crÃ©ez deux points.")
 
     def cercle_diametre(self, event = False, **kw):
         if event is False:
             self.npoints(Cercle_diametre, **kw)
         else:
-            self.interagir(self.cercle_diametre, u"Choisissez ou créez deux points.")
+            self.interagir(self.cercle_diametre, u"Choisissez ou crÃ©ez deux points.")
 
     def cercle_points(self, event = False, **kw):
         if event is False:
             self.npoints(Cercle_points, 3, **kw)
         else:
-            self.interagir(self.cercle_points, u"Choisissez ou créez 3 points.")
+            self.interagir(self.cercle_points, u"Choisissez ou crÃ©ez 3 points.")
 
     def arc(self, event = False, **kw):
         if event is False:
             self.npoints(Arc_cercle, 3, **kw)
         else:
-            self.interagir(self.arc, u"Choisissez ou créez 3 points.")
+            self.interagir(self.arc, u"Choisissez ou crÃ©ez 3 points.")
 
     def demicercle(self, event = False, **kw):
         if event is False:
             self.npoints(Demicercle, **kw)
         else:
-            self.interagir(self.demicercle, u"Choisissez ou créez deux points.")
+            self.interagir(self.demicercle, u"Choisissez ou crÃ©ez deux points.")
 
     def arc_points(self, event = False, **kw):
         if event is False:
             self.npoints(Arc_points, 3, **kw)
         else:
-            self.interagir(self.arc_points, u"Choisissez ou créez 3 points.")
+            self.interagir(self.arc_points, u"Choisissez ou crÃ©ez 3 points.")
 
     def arc_oriente(self, event = False, **kw):
         if event is False:
             self.npoints(Arc_oriente, 3, nom_style="arcs_orientes", **kw)
         else:
-            self.interagir(self.arc_oriente, u"Choisissez ou créez 3 points.")
+            self.interagir(self.arc_oriente, u"Choisissez ou crÃ©ez 3 points.")
 
     def disque(self, event = False, **kw):
         if event is not False:
@@ -956,20 +956,20 @@ class BarreOutils(QWidget):
         if event is False:
             self.npoints(Angle, 3, **kw)
         else:
-            self.interagir(self.angle, u"Choisissez ou créez trois points.")
+            self.interagir(self.angle, u"Choisissez ou crÃ©ez trois points.")
 
 
     def angle_oriente(self, event = False, **kw):
         if event is False:
             self.npoints(Angle_oriente, 3, **kw)
         else:
-            self.interagir(self.angle_oriente, u"Choisissez ou créez trois points.")
+            self.interagir(self.angle_oriente, u"Choisissez ou crÃ©ez trois points.")
 
 
 
     def triangle_rectangle(self, event = False, **kw):
         if event is not False:
-            self.interagir(self.triangle_rectangle, u"Choisissez ou créez deux points.")
+            self.interagir(self.triangle_rectangle, u"Choisissez ou crÃ©ez deux points.")
         elif self.test(True, **kw):
             selection = kw["selection"]
 
@@ -993,7 +993,7 @@ class BarreOutils(QWidget):
 
     def triangle_isocele(self, event = False, **kw):
         if event is not False:
-            self.interagir(self.triangle_isocele, u"Choisissez ou créez deux points.")
+            self.interagir(self.triangle_isocele, u"Choisissez ou crÃ©ez deux points.")
         elif self.test(True, **kw):
             selection = kw["selection"]
 
@@ -1016,7 +1016,7 @@ class BarreOutils(QWidget):
 
     def triangle_isocele_rectangle(self, event = False, **kw):
         if event is not False:
-            self.interagir(self.triangle_isocele_rectangle, u"Choisissez ou créez deux points.")
+            self.interagir(self.triangle_isocele_rectangle, u"Choisissez ou crÃ©ez deux points.")
         elif self.test(True, **kw):
             selection = kw["selection"]
 
@@ -1040,7 +1040,7 @@ class BarreOutils(QWidget):
 
     def triangle_equilateral(self, event = False, **kw):
         if event is not False:
-            self.interagir(self.triangle_equilateral, u"Choisissez ou créez deux points.")
+            self.interagir(self.triangle_equilateral, u"Choisissez ou crÃ©ez deux points.")
         elif self.test(True, **kw):
             selection = kw["selection"]
 
@@ -1063,7 +1063,7 @@ class BarreOutils(QWidget):
 
     def rectangle(self, event = False, **kw):
         if event is not False:
-            self.interagir(self.rectangle, u"Choisissez ou créez deux points.")
+            self.interagir(self.rectangle, u"Choisissez ou crÃ©ez deux points.")
         elif self.test(True, **kw):
             selection = kw["selection"]
 
@@ -1087,7 +1087,7 @@ class BarreOutils(QWidget):
 
     def losange(self, event = False, **kw):
         if event is not False:
-            self.interagir(self.losange, u"Choisissez ou créez deux points.")
+            self.interagir(self.losange, u"Choisissez ou crÃ©ez deux points.")
         elif self.test(True, **kw):
             selection = kw["selection"]
 
@@ -1111,7 +1111,7 @@ class BarreOutils(QWidget):
 
     def carre(self, event = False, **kw):
         if event is not False:
-            self.interagir(self.carre, u"Choisissez ou créez deux points.")
+            self.interagir(self.carre, u"Choisissez ou crÃ©ez deux points.")
         elif self.test(True, **kw):
             selection = kw["selection"]
 
@@ -1135,7 +1135,7 @@ class BarreOutils(QWidget):
 
     def triangle(self, event = False, **kw):
         if event is not False:
-            self.interagir(self.triangle, u"Choisissez ou créez trois points.")
+            self.interagir(self.triangle, u"Choisissez ou crÃ©ez trois points.")
         elif self.test(True, **kw):
             selection = kw["selection"]
 
@@ -1159,7 +1159,7 @@ class BarreOutils(QWidget):
 
     def parallelogramme(self, event = False, **kw):
         if event is not False:
-            self.interagir(self.parallelogramme, u"Choisissez ou créez trois points.")
+            self.interagir(self.parallelogramme, u"Choisissez ou crÃ©ez trois points.")
         elif self.test(True, **kw):
             selection = kw["selection"]
 
@@ -1195,7 +1195,7 @@ class BarreOutils(QWidget):
 ##                self.cache[0].affiche_en_gras(True)
 
             if len(self.cache) > 2 and self.cache[0] is self.cache[-1]:
-                # On crée le polygone
+                # On crÃ©e le polygone
                 self.feuille_actuelle.objet_temporaire(None)
 #                cache = self.cache
 #                self.initialiser()
@@ -1203,7 +1203,7 @@ class BarreOutils(QWidget):
             elif len(self.cache) >= 1:
                 # Le polygone n'est pas encore complet
                 tmp = self.feuille_actuelle.objet_temporaire() # liste des objets temporaires
-                if tmp and isinstance(tmp[-1], PrevisualisationPolygone): # on ne recrée pas la prévisualisation, on se contente d'ajouter un sommet
+                if tmp and isinstance(tmp[-1], PrevisualisationPolygone): # on ne recrÃ©e pas la prÃ©visualisation, on se contente d'ajouter un sommet
                     tmp = tmp[-1]
                     tmp.points = tmp.points[:-1] + (self.cache[-1], self.feuille_actuelle.point_temporaire())
                 else:
@@ -1223,7 +1223,7 @@ class BarreOutils(QWidget):
 
     def intersection(self, event = False, **kw):
         def inter_dte_cer(dte, cer, position):
-            u"Sert à detecter l'intersection la plus proche du pointeur."
+            u"Sert Ã  detecter l'intersection la plus proche du pointeur."
             intersections = Intersection_droite_cercle(dte, cer, True).intersections
             if len(intersections) == 2:
                 # 2 points d'intersection -> on regarde le plus proche du pointeur
@@ -1287,7 +1287,7 @@ class BarreOutils(QWidget):
 
     def texte(self, event = False, **kw):
         if event is not False:
-            self.interagir(self.texte, u"Cliquez à l'emplacement souhaité.")
+            self.interagir(self.texte, u"Cliquez Ã  l'emplacement souhaitÃ©.")
         elif self.test(**kw):
             position = kw["position"]
             self.executer(u"Texte('', %s, %s)" % position, init = False)
@@ -1314,7 +1314,7 @@ class BarreOutils(QWidget):
 
     def pinceau(self, event = False, **kw):
         if event is not False:
-            self.interagir(self.pinceau, u"Sélectionnez un objet pour en copier le style.")
+            self.interagir(self.pinceau, u"SÃ©lectionnez un objet pour en copier le style.")
         elif self.test(**kw):
             selection = kw["selection"]
             if selection is not None:
@@ -1330,7 +1330,7 @@ class BarreOutils(QWidget):
 
 
     def npoints(self, classe, n=2, nom_style='', **kw):
-        u"Création d'un objet de classe 'classe' ayant 'n' points comme arguments. Le nom de l'objet sera composé de 'prefixe' + 1 numéro."
+        u"CrÃ©ation d'un objet de classe 'classe' ayant 'n' points comme arguments. Le nom de l'objet sera composÃ© de 'prefixe' + 1 numÃ©ro."
         if self.test(True, **kw):
             self.cache = [obj for obj in self.cache if obj.nom and obj.feuille is self.feuille_actuelle]
             selection = kw["selection"]

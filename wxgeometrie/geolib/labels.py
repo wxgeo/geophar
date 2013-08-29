@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 from __future__ import with_statement
 
@@ -37,13 +37,13 @@ from ..pylib import property2
 
 
 class Label_generique(Texte_editable_generique):
-    u"""Un label (étiquette accolée à l'objet)
+    u"""Un label (Ã©tiquette accolÃ©e Ã  l'objet)
 
-    Le label est crée automatiquement lors de la création de l'objet.
-    Le label n'est pas un 'vrai' objet, il n'est pas enregistré sur la feuille."""
+    Le label est crÃ©e automatiquement lors de la crÃ©ation de l'objet.
+    Le label n'est pas un 'vrai' objet, il n'est pas enregistrÃ© sur la feuille."""
 
     _style_defaut = param.labels
-    # Les coordonnées exactes n'ont aucun intérêt pour une étiquette.
+    # Les coordonnÃ©es exactes n'ont aucun intÃ©rÃªt pour une Ã©tiquette.
     _utiliser_coordonnees_approchees = True
 
     __parent = parent = Argument(Objet)
@@ -85,21 +85,21 @@ class Label_generique(Texte_editable_generique):
         raise NotImplementedError    # sera implemente differemment pour chaque type de label
 
     def _creer_trace(self):
-        u"Pas de trace pour les étiquettes."
+        u"Pas de trace pour les Ã©tiquettes."
         pass
 
     def figure_perimee(self):
         # IMPORTANT:
-        # il faut effacer manuellement le cache, car les coordonnées ne sont pas fonction
-        # des arguments de l'étiquette.
-        # (Pour les autres objets, les arguments sont encapsulés dans des objets Ref
-        # qui vident eux-même le cache en cas de modification).
+        # il faut effacer manuellement le cache, car les coordonnÃ©es ne sont pas fonction
+        # des arguments de l'Ã©tiquette.
+        # (Pour les autres objets, les arguments sont encapsulÃ©s dans des objets Ref
+        # qui vident eux-mÃªme le cache en cas de modification).
         self._cache.clear()
         Objet.figure_perimee(self)
 
     @property
     def existe(self):
-        # C'est l'existence de l'objet qui détermine celle de son étiquette.
+        # C'est l'existence de l'objet qui dÃ©termine celle de son Ã©tiquette.
         return self.__parent.existe
 
     ##def _set_rayon(self, rayon, x, y):
@@ -108,8 +108,8 @@ class Label_generique(Texte_editable_generique):
         ##self.style(_rayon_ = min(rayon, rayon_max))
         # TODO: nouvel algorithme:
         # 1. Chercher le point le plus proche parmi les 4 coins du texte.
-        # 2. Adapter les coordonnées de ce point pour que la distance ne dépasse pas le maximum autorisé.
-        # 3. En déduire les nouvelles coordonnées du point d'ancrage
+        # 2. Adapter les coordonnÃ©es de ce point pour que la distance ne dÃ©passe pas le maximum autorisÃ©.
+        # 3. En dÃ©duire les nouvelles coordonnÃ©es du point d'ancrage
         # 4. Conclure avec les nouvelles valeur de _rayon_ et _angle_
 
 ##    def _distance_boite(self, x, y):
@@ -136,15 +136,15 @@ class Label_generique(Texte_editable_generique):
         u"""L'angle d'affichage du texte.
 
         Pour les objets qui ont une pente (droites, segments), si
-        style('angle') == 'auto', alors l'angle retourné est celui correspondant
-        à la pente de l'objet, de sorte que le texte ait la même inclinaison
+        style('angle') == 'auto', alors l'angle retournÃ© est celui correspondant
+        Ã  la pente de l'objet, de sorte que le texte ait la mÃªme inclinaison
         que l'objet.
         """
         angle = self.style('angle')
         if angle == 'auto' and hasattr(self.parent, 'angle_affichage'):
             angle = 180*self.parent.angle_affichage()/pi
-            # L'angle doit resté compris entre -90° et 90°, pour que le texte
-            # ne soit pas "à l'envers".
+            # L'angle doit restÃ© compris entre -90Â° et 90Â°, pour que le texte
+            # ne soit pas "Ã  l'envers".
             if angle < -90:
                 angle += 180
             elif angle > 90:
@@ -155,10 +155,10 @@ class Label_generique(Texte_editable_generique):
         u"""L'alignement vertical du texte ('top', 'bottom' ou 'center').
 
         Pour les objets qui ont une pente (droites, segments), si
-        style('alignement_vertical') == 'auto', alors l'alignement retourné est
+        style('alignement_vertical') == 'auto', alors l'alignement retournÃ© est
         'bottom' si la droite 'monte', et 'top' si elle descend.
 
-        Ceci est utilisé essentiellement pour les arbres de probabilité.
+        Ceci est utilisÃ© essentiellement pour les arbres de probabilitÃ©.
         """
         av = self.style('alignement_vertical')
         if av == 'auto' and hasattr(self.parent, 'angle_affichage'):
@@ -167,7 +167,7 @@ class Label_generique(Texte_editable_generique):
 
 
 class Label_point(Label_generique):
-    u"L'étiquette d'un point."
+    u"L'Ã©tiquette d'un point."
 
     _style_defaut = {'mode': NOM}
 
@@ -195,20 +195,20 @@ class Label_point(Label_generique):
             rayon = hypot(rx, ry)
             if rayon:
                 self.style(_angle_ = acos(rx/rayon)*sign(ry))
-            # Distance maximale entre le point et son étiquette : 50 pixels.
+            # Distance maximale entre le point et son Ã©tiquette : 50 pixels.
             self.style(_rayon_ = min(rayon, 50))
 
 
 
 
 ###########################
-# Les classes suivantes sont basées sur les classes Glisseur de geolib.
+# Les classes suivantes sont basÃ©es sur les classes Glisseur de geolib.
 
 
 class Label_glisseur(Label_generique):
-    u"""Classe mère de tous les labels utilisant un objet glisseur.
+    u"""Classe mÃ¨re de tous les labels utilisant un objet glisseur.
 
-    `classe` doit contenir le type de glisseur utilisé.
+    `classe` doit contenir le type de glisseur utilisÃ©.
     """
 
     glisseur = NotImplemented
@@ -236,7 +236,7 @@ class Label_glisseur(Label_generique):
             self._M = self.glisseur(self.__parent, k=self.style("_k_"))
         if x is not None:
             self._M.coordonnees = (x, y)
-            x0, y0 = self._M.coordonnees # comme _M est un glisseur, ce n'est pas x0 et y0 en général
+            x0, y0 = self._M.coordonnees # comme _M est un glisseur, ce n'est pas x0 et y0 en gÃ©nÃ©ral
             self.style(_k_ = self._M.parametre)
             rx, ry = self.canvas.dcoo2pix(x - x0, y - y0)
             rayon = hypot(rx, ry)
@@ -247,7 +247,7 @@ class Label_glisseur(Label_generique):
 
 
 class Label_segment(Label_glisseur):
-    u"""L'étiquette d'un segment."""
+    u"""L'Ã©tiquette d'un segment."""
 
     glisseur = Glisseur_segment
 
@@ -261,7 +261,7 @@ class Label_segment(Label_glisseur):
 
 
 class Label_vecteur(Label_glisseur):
-    u"""L'étiquette d'un vecteur."""
+    u"""L'Ã©tiquette d'un vecteur."""
 
     glisseur = Glisseur_vecteur
 
@@ -275,7 +275,7 @@ class Label_vecteur(Label_glisseur):
 
 
 class Label_droite(Label_glisseur):
-    u"""L'étiquette d'une droite."""
+    u"""L'Ã©tiquette d'une droite."""
 
     glisseur = Glisseur_droite
 
@@ -289,7 +289,7 @@ class Label_droite(Label_glisseur):
 
 
 class Label_demidroite(Label_glisseur):
-    """L'étiquette d'une demi-droite."""
+    """L'Ã©tiquette d'une demi-droite."""
 
     glisseur = Glisseur_demidroite
 
@@ -303,7 +303,7 @@ class Label_demidroite(Label_glisseur):
 
 
 class Label_cercle(Label_glisseur):
-    """L'étiquette d'un cercle."""
+    """L'Ã©tiquette d'un cercle."""
 
     _style_defaut = {'_k_': 0}
     glisseur = Glisseur_cercle
@@ -318,7 +318,7 @@ class Label_cercle(Label_glisseur):
 
 
 class Label_arc_cercle(Label_glisseur):
-    """L'étiquette d'un arc de cercle."""
+    """L'Ã©tiquette d'un arc de cercle."""
 
     glisseur = Glisseur_arc_cercle
 
@@ -338,7 +338,7 @@ class Label_arc_cercle(Label_glisseur):
 
 
 class Label_polygone(Label_generique):
-    u"L'étiquette d'un polygone."
+    u"L'Ã©tiquette d'un polygone."
 
     __parent = parent = Argument('Polygone_generique')
 
@@ -359,7 +359,7 @@ class Label_polygone(Label_generique):
             rayon = hypot(rx, ry)
             if rayon:
                 self.style(_angle_ = acos(rx/rayon)*sign(-ry))
-            self.style(_rayon_ = rayon) # distance maximale entre le point et son étiquette : 25 pixels
+            self.style(_rayon_ = rayon) # distance maximale entre le point et son Ã©tiquette : 25 pixels
 
     def _get_coordonnees(self):
         parent = self.__parent
@@ -372,7 +372,7 @@ class Label_polygone(Label_generique):
 
 
 class Label_angle(Label_generique):
-    u"L'étiquette d'un angle."
+    u"L'Ã©tiquette d'un angle."
 
     _style_defaut = {'_rayon_': param.codage["rayon"] + 10}
 
@@ -393,7 +393,7 @@ class Label_angle(Label_generique):
         i = (1, 0)
         a = angle_vectoriel(i, u)
         b = angle_vectoriel(i, v)
-        if parent.sens == u"non défini" and parent._sens() < 0:
+        if parent.sens == u"non dÃ©fini" and parent._sens() < 0:
             a, b = b, a
         if b < a:
             b += 2*pi
@@ -415,7 +415,7 @@ class Label_angle(Label_generique):
                 i = (1, 0)
                 a = angle_vectoriel(i, u)
                 b = angle_vectoriel(i, v)
-                if parent.sens == u"non défini" and parent._sens() < 0:
+                if parent.sens == u"non dÃ©fini" and parent._sens() < 0:
                     a, b = b, a
                 c = angle_vectoriel(i, (rx, -ry))
                 if a != b:

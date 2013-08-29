@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 import os, math
@@ -11,7 +11,7 @@ from sympy import (Symbol, exp, solve, limit, S, E, Matrix, Integer, oo,
 
 from tools.testlib import assertAlmostEqual
 
-# Teste que certains bugs de sympy sont bien ou résolus, ou temporairement patchés
+# Teste que certains bugs de sympy sont bien ou rÃ©solus, ou temporairement patchÃ©s
 
 
 

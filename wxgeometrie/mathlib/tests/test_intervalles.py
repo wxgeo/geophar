@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 from sympy import sqrt, pi
@@ -43,9 +43,9 @@ def test_intervalle():
     assert(str(Intervalle(8) + Intervalle(9)) == '[8;+oo[')
     assert(str(Intervalle("{0}")) == '{0}')
     # Remplacement automatique de la virgule par un point si possible
-    # FIXME: supprimer les décimales inutiles (zéros)
+    # FIXME: supprimer les dÃ©cimales inutiles (zÃ©ros)
     assert(str(Intervalle("[2,5;3,5]")) == '[2.5;3.5]')
-    # En cas d'ambiguité, la virgule reste un séparateur entre deux nombres
+    # En cas d'ambiguitÃ©, la virgule reste un sÃ©parateur entre deux nombres
     assert(str(Intervalle("R-{2,3}")) == ']-oo;2[U]2;3[U]3;+oo[')
 
 def test_evalf():

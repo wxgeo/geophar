@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##########################################################################
@@ -32,7 +32,7 @@ from ..pylib import advanced_split
 from .. import param
 
 
-def _avertissement(*arg, **kw): print u"Instruction interdite en mode securisé."
+def _avertissement(*arg, **kw): print u"Instruction interdite en mode securisÃ©."
 #fonctions_interdites = ["eval", "compile", "execfile", "file", "open", "write", "getattr", "setattr"]
 
 liste_blanche = set(('False', 'None', 'True', 'abs', 'all', 'any', 'basestring', 'bool',  'callable', 'chr', 'close', \
@@ -66,26 +66,26 @@ for key, obj in module_random.__dict__.items():
 
 ##keywords = ('and', 'as', 'assert', 'break', 'class', 'continue', 'def', 'del', 'elif', 'else', 'except', 'exec', 'finally', 'for', 'from', 'global', 'if', 'import', 'in', 'is', 'lambda', 'not', 'or', 'pass', 'print', 'raise', 'return', 'try', 'while', 'with', 'yield')
 
-### mots clés qui peuvent être utilisés
+### mots clÃ©s qui peuvent Ãªtre utilisÃ©s
 ##keywords_autorises = set('and', 'assert', 'break', 'class', 'continue', 'def', 'del', 'elif', 'else', 'except', 'finally', 'for', 'if', 'in', 'is', 'lambda', 'not', 'or', 'pass', 'print', 'raise', 'return', 'try', 'while', 'with', 'yield')
 
 keywords = set(keyword.kwlist)
 
-# mots clés dont il faut s'assurer qu'ils ne puissent PAS être utilisés
-keywords_interdits = set(('exec', 'global', 'import')) # attention à global !
+# mots clÃ©s dont il faut s'assurer qu'ils ne puissent PAS Ãªtre utilisÃ©s
+keywords_interdits = set(('exec', 'global', 'import')) # attention Ã  global !
 
-# mots clés qui peuvent être utilisés
+# mots clÃ©s qui peuvent Ãªtre utilisÃ©s
 keywords_autorises = keywords.difference(keywords_interdits)
 
-### ici, il s'agit de mots clés qui doivent rester en début de ligne
-### (plus précisément, il est impossible de rajouter devant une affectation, style 'variable = ').
+### ici, il s'agit de mots clÃ©s qui doivent rester en dÃ©but de ligne
+### (plus prÃ©cisÃ©ment, il est impossible de rajouter devant une affectation, style 'variable = ').
 ##keywords_debut_ligne = ('break', 'class', 'continue', 'def', 'del', 'elif', 'else', 'except', 'exec', 'finally', 'pass', 'for', 'if', 'print', 'raise', 'return', 'try', 'while', 'with', 'yield')
 
-# Mots clés devant lesquels il est possible de rajouter une affectation, style 'variable = ...'.
+# Mots clÃ©s devant lesquels il est possible de rajouter une affectation, style 'variable = ...'.
 keywords_affectables = set(('lambda', 'not'))
-# Mots clés qui ne sont jamais en début de ligne.
+# Mots clÃ©s qui ne sont jamais en dÃ©but de ligne.
 keywords_milieu = set(('or', 'and', 'as', 'in'))
-# Les autres, qui doivent rester en tête de ligne.
+# Les autres, qui doivent rester en tÃªte de ligne.
 keywords_non_affectables = keywords.difference(keywords_affectables).difference(keywords_milieu)
 
 def keywords_interdits_presents(chaine):
@@ -101,14 +101,14 @@ def expression_affectable(chaine):
 # exec(string, dico)
 
 def eval_restricted(s, dico_perso = None):
-    u"""eval_restricted(s) évalue s dans un contexte vierge et sécurisé.
+    u"""eval_restricted(s) Ã©value s dans un contexte vierge et sÃ©curisÃ©.
 
-    Toutes les fonctions disponibles par défaut sont filtrées.
-    L'évalution de chaînes unicodes se fait en utilisant l'encodage système, et non l'utf8.
+    Toutes les fonctions disponibles par dÃ©faut sont filtrÃ©es.
+    L'Ã©valution de chaÃ®nes unicodes se fait en utilisant l'encodage systÃ¨me, et non l'utf8.
 
-    Note: eval_restricted est le plus securisée possible, mais contrairement
-    à eval_safe, il utilise la fonction eval ; il peut donc y avoir des failles
-    de sécurité. Merci de m'en informer.
+    Note: eval_restricted est le plus securisÃ©e possible, mais contrairement
+    Ã  eval_safe, il utilise la fonction eval ; il peut donc y avoir des failles
+    de sÃ©curitÃ©. Merci de m'en informer.
     """
     dico = {"rand": module_random.random}
     dico.update(dictionnaire_builtins) # supprime certaines fonctions par defaut (en les redefinissant)
@@ -125,19 +125,19 @@ def eval_restricted(s, dico_perso = None):
 def eval_safe(s):
     u"""eval_safe(repr(x)) retourne x pour les types les plus usuels
     (int, long, str, unicode, float, bool, None, list, tuple, dict.)
-    Mais aucune évaluation n'est faite, ce qui évite d'éxécuter un code dangereux.
-    Le type de s est detecté, et la transformation appropriée appliquée.
+    Mais aucune Ã©valuation n'est faite, ce qui Ã©vite d'Ã©xÃ©cuter un code dangereux.
+    Le type de s est detectÃ©, et la transformation appropriÃ©e appliquÃ©e.
 
-    NB1: eval_safe n'est pas destiné à remplacer eval :
+    NB1: eval_safe n'est pas destinÃ© Ã  remplacer eval :
     - il est relativement lent,
-    - le nombre de types supportés est volontairement réduit,
+    - le nombre de types supportÃ©s est volontairement rÃ©duit,
     - il n'est pas souple (eval_safe("2-3") renvoie une erreur).
-    La fonction eval_safe est orientée uniquement securité.
+    La fonction eval_safe est orientÃ©e uniquement securitÃ©.
 
-    NB2: eval_safe est récursif (il peut lire des listes de tuples de ...).
+    NB2: eval_safe est rÃ©cursif (il peut lire des listes de tuples de ...).
 
-    NB3: eval_safe est parfaitement securisé, car il ne fait (presque) jamais appel à une instruction eval.
-    Contrairement à la fonction eval_restricted, qui est 'probablement' securisée."""
+    NB3: eval_safe est parfaitement securisÃ©, car il ne fait (presque) jamais appel Ã  une instruction eval.
+    Contrairement Ã  la fonction eval_restricted, qui est 'probablement' securisÃ©e."""
 
     s = s.strip()
 
@@ -153,7 +153,7 @@ def eval_safe(s):
         return float(s)
 
     if len(s) > 1 and s[0] == s[-1] and s[0] in ("'", '"'):    # chaine
-        # s est évalué dans un contexte parfaitement vierge.
+        # s est Ã©valuÃ© dans un contexte parfaitement vierge.
         return eval(s, {"__builtins__": None}, {"__builtins__": None})
 
     if len(s) > 2 and s[0] == "u" and s[1] == s[-1] and s[1] in ("'", '"'): #unicode

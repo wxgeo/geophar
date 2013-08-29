@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 from wxgeometrie.modules.tablatex.tests.tabtestlib import assert_tableau
@@ -227,7 +227,7 @@ x                                    &-\infty      &        &3  &      &+\infty\
 
 
 def test_issue_189():
-    # Tableaux de signes et de variation avec des décimaux
+    # Tableaux de signes et de variation avec des dÃ©cimaux
     s = 'f(x) = (x -4)\e^{-0,25x+5} sur [4;20]'
     options = {'derivee': False, 'decimales': 3}
     tab = \

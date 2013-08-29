@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 #    WxGeometrie
@@ -78,7 +78,7 @@ class FenetreOptions(QDialog):
             ok = QPushButton(u'OK', clicked=self.ok)
             boutons.addWidget(ok)
 
-            defaut = QPushButton(u"Défaut", clicked=self.defaut)
+            defaut = QPushButton(u"DÃ©faut", clicked=self.defaut)
             boutons.addWidget(defaut)
 
             annuler = QPushButton(u"Annuler", clicked=self.close)
@@ -166,6 +166,6 @@ class FenetreOptions(QDialog):
         self.close()
 
     def parcourir(self, widget):
-        widget.setText(QFileDialog.getExistingDirectory(self, u"Choisissez un répertoire :",
+        widget.setText(QFileDialog.getExistingDirectory(self, u"Choisissez un rÃ©pertoire :",
                                                  widget.text(),
                                                  QFileDialog.ShowDirsOnly))

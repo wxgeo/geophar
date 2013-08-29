@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------#######
@@ -25,15 +25,15 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 # version unicode
 
-## Les fonctions qui doivent être accessibles par l'utilisateur final
-## "from end_user_functions import *" doit donner un résultat propre.
+## Les fonctions qui doivent Ãªtre accessibles par l'utilisateur final
+## "from end_user_functions import *" doit donner un rÃ©sultat propre.
 from ..pylib import OrderedDict
 
 __classement__ = OrderedDict((
-    (u"Algèbre", []),
+    (u"AlgÃ¨bre", []),
     (u"Analyse", []),
     (u"Symboles", []),
-    (u"Arithmétique", []),
+    (u"ArithmÃ©tique", []),
     (u"Statistiques", []),
     (u"Divers", []),
 ##    (u"LaTeX", []),
@@ -57,132 +57,132 @@ from .custom_functions import derivee, moyenne, variance, ecart_type, \
                                inv_normal, fluctu, confiance
 
 
-__classement__[u"Statistiques"].append((u"Moyenne", "moyenne", u"Moyenne de la série, éventuellement coefficientée."
+__classement__[u"Statistiques"].append((u"Moyenne", "moyenne", u"Moyenne de la sÃ©rie, Ã©ventuellement coefficientÃ©e."
                                      u" Ex: moyenne((12, 13, 15), (1, 1, 2))"))
-__classement__[u"Statistiques"].append((u"Variance", "variance", u"Variance de la série, éventuellement coefficientée."
+__classement__[u"Statistiques"].append((u"Variance", "variance", u"Variance de la sÃ©rie, Ã©ventuellement coefficientÃ©e."
                                      u" Ex: variance((12, 13, 15), (1, 1, 2))"))
-__classement__[u"Statistiques"].append((u"Écart-type", "ecart_type",
-                        u"Écart-type de la série, éventuellement coefficientée."
+__classement__[u"Statistiques"].append((u"Ã‰cart-type", "ecart_type",
+                        u"Ã‰cart-type de la sÃ©rie, Ã©ventuellement coefficientÃ©e."
                                      u" Ex: ecart_type((12, 13, 15), (1, 1, 2))"))
-__classement__[u"Statistiques"].append((u"Covariance", "covariance", u"Covariance de deux séries."
+__classement__[u"Statistiques"].append((u"Covariance", "covariance", u"Covariance de deux sÃ©ries."
                                      u" Ex: covariance((1,2,3),(2,5,7))"))
-__classement__[u"Statistiques"].append((u"Droite de régression", "linreg",
-                u"Retourne (a, b) pour une droite d'ajustement d'équation y=ax+b"
-                                     u" (moindres carrés). Ex: linreg((1,2,3),(2,5,7))"))
+__classement__[u"Statistiques"].append((u"Droite de rÃ©gression", "linreg",
+                u"Retourne (a, b) pour une droite d'ajustement d'Ã©quation y=ax+b"
+                                     u" (moindres carrÃ©s). Ex: linreg((1,2,3),(2,5,7))"))
 __classement__[u"Statistiques"].append((u"Loi normale", "normal",
-                u"Usage: normal(a, b, mu, sigma). Retourne P(a \u2264 X \u2264 b), où "
-                u"X suit une loi normale d'espérance mu et de variance sigma²."))
+                u"Usage: normal(a, b, mu, sigma). Retourne P(a \u2264 X \u2264 b), oÃ¹ "
+                u"X suit une loi normale d'espÃ©rance mu et de variance sigmaÂ²."))
 __classement__[u"Statistiques"].append((u"Loi binomiale", "binomial",
-                u"Usage: normal(a, b, n, p). Retourne P(a \u2264 X \u2264 b), où "
-                u"X suit une loi binomiale de paramètres n et p."))
+                u"Usage: normal(a, b, n, p). Retourne P(a \u2264 X \u2264 b), oÃ¹ "
+                u"X suit une loi binomiale de paramÃ¨tres n et p."))
 __classement__[u"Statistiques"].append((u"Inverser la loi normale", "inv_normal",
-                u"Usage: inv_normal(p). Retourne a tel que P(X \u2264 a)=p, où "
-                u"X suit une loi normale centrée réduite."))
+                u"Usage: inv_normal(p). Retourne a tel que P(X \u2264 a)=p, oÃ¹ "
+                u"X suit une loi normale centrÃ©e rÃ©duite."))
 __classement__[u"Statistiques"].append((u"Intervalle de fluctuation", "fluctu",
                 u"Usage: fluctu(p, n, seuil). Retourne l'intervalle de fluctuation "
-                u"pour un échantillon de taille n, et une proportion p."))
+                u"pour un Ã©chantillon de taille n, et une proportion p."))
 __classement__[u"Statistiques"].append((u"Intervalle de confiance", "confiance",
                 u"Usage: estim95(f, n). Retourne l'intervalle de confiance "
-                u"pour un échantillon de taille n, et une fréquence f."))
+                u"pour un Ã©chantillon de taille n, et une frÃ©quence f."))
 
 from .sympy_functions import expand
 developper = developpe = expand
-__classement__[u"Algèbre"].append((u"Développe", "developpe", u"Développer une expression."))
+__classement__[u"AlgÃ¨bre"].append((u"DÃ©veloppe", "developpe", u"DÃ©velopper une expression."))
 
 from .sympy_functions import factor
 factoriser = factorise = factor
-__classement__[u"Algèbre"].append((u"Factorise", "factorise", u"Factoriser une expression."))
+__classement__[u"AlgÃ¨bre"].append((u"Factorise", "factorise", u"Factoriser une expression."))
 
 from .sympy_functions import together
 rassembler = rassemble = together
-__classement__[u"Algèbre"].append((u"Une seule fraction", "rassemble", u"Mettre sur le même dénominateur."))
+__classement__[u"AlgÃ¨bre"].append((u"Une seule fraction", "rassemble", u"Mettre sur le mÃªme dÃ©nominateur."))
 
 from .sympy_functions import evalf
 evaluer = evalue = evalf
-__classement__[u"Algèbre"].append((u"Évalue", "evalue", u"Calculer une valeur approchée."))
+__classement__[u"AlgÃ¨bre"].append((u"Ã‰value", "evalue", u"Calculer une valeur approchÃ©e."))
 
 from .solvers import resoudre
 solve = resous = resoudre
-__classement__[u"Algèbre"].append((u"Résous", "resous", u"Résoudre une (in)équation ou un système dans R. ex: resous(2x-3>0 et 3x+1<=0"))
+__classement__[u"AlgÃ¨bre"].append((u"RÃ©sous", "resous", u"RÃ©soudre une (in)Ã©quation ou un systÃ¨me dans R. ex: resous(2x-3>0 et 3x+1<=0"))
 
-__classement__[u"Algèbre"].append(None)
+__classement__[u"AlgÃ¨bre"].append(None)
 
 from .sympy_functions import cfactor
 cfactoriser = cfactorise = cfactor
-__classement__[u"Algèbre"].append((u"Factorise dans C", "cfactorise", u"Factoriser une expression dans le corps des complexes."))
+__classement__[u"AlgÃ¨bre"].append((u"Factorise dans C", "cfactorise", u"Factoriser une expression dans le corps des complexes."))
 
 from sympy import conjugate
 conjug = conjugue = conjuguer = conjugate
-__classement__[u"Algèbre"].append((u"Conjuguer", "conjug", u"Calculer le conjugué d'un nombre complexe."))
+__classement__[u"AlgÃ¨bre"].append((u"Conjuguer", "conjug", u"Calculer le conjuguÃ© d'un nombre complexe."))
 
-__classement__[u"Algèbre"].append(None)
+__classement__[u"AlgÃ¨bre"].append(None)
 
 from .sympy_functions import sum
 somme = sum
-__classement__[u"Algèbre"].append((u"Somme", "somme", u"Calculer une somme."))
+__classement__[u"AlgÃ¨bre"].append((u"Somme", "somme", u"Calculer une somme."))
 
 from .sympy_functions import product
 produit = product
-__classement__[u"Algèbre"].append((u"Produit", "produit", u"Calculer un produit."))
+__classement__[u"AlgÃ¨bre"].append((u"Produit", "produit", u"Calculer un produit."))
 
-__classement__[u"Algèbre"].append(None)
+__classement__[u"AlgÃ¨bre"].append(None)
 
 from .sympy_functions import mat
 Matrice = Matrix = Mat = matrix = matrice = mat
-__classement__[u"Algèbre"].append((u"Matrice", "mat", u"Génère une matrice. ex: mat([[1;2];[3;4]]); mat(4;4;0); mat(4;4;2*li+3*co)"))
+__classement__[u"AlgÃ¨bre"].append((u"Matrice", "mat", u"GÃ©nÃ¨re une matrice. ex: mat([[1;2];[3;4]]); mat(4;4;0); mat(4;4;2*li+3*co)"))
 
 
 from sympy import isprime
 premier = isprime
-__classement__[u"Arithmétique"].append((u"Premier ?", "premier", u"Tester si un nombre est premier."))
+__classement__[u"ArithmÃ©tique"].append((u"Premier ?", "premier", u"Tester si un nombre est premier."))
 
 from .sympy_functions import divisors
 diviseurs = divisors
-__classement__[u"Arithmétique"].append((u"Diviseurs", "diviseurs", u"Chercher les diviseurs d'un nombre."))
+__classement__[u"ArithmÃ©tique"].append((u"Diviseurs", "diviseurs", u"Chercher les diviseurs d'un nombre."))
 
 # Alias
 facteurs = factors = factor
-__classement__[u"Arithmétique"].append((u"Facteurs premiers", "facteurs", u"Décomposer un nombre en facteurs premiers."))
+__classement__[u"ArithmÃ©tique"].append((u"Facteurs premiers", "facteurs", u"DÃ©composer un nombre en facteurs premiers."))
 
 from .custom_functions import pgcd
 gcd = pgcd
-__classement__[u"Arithmétique"].append((u"PGCD", "pgcd", u"Calculer le PGCD de plusieurs entiers."))
+__classement__[u"ArithmÃ©tique"].append((u"PGCD", "pgcd", u"Calculer le PGCD de plusieurs entiers."))
 
 from .custom_functions import ppcm
 lcm = ppcm
-__classement__[u"Arithmétique"].append((u"PPCM", "ppcm", u"Calculer le PPCM de plusieurs entiers."))
+__classement__[u"ArithmÃ©tique"].append((u"PPCM", "ppcm", u"Calculer le PPCM de plusieurs entiers."))
 
-__classement__[u"Arithmétique"].append(None)
+__classement__[u"ArithmÃ©tique"].append(None)
 
 from .custom_functions import jhms
 hms = jhms
 __classement__[u"Divers"].append((u"Conversion j-h-min-s", "jhms", u"Convertir un temps en secondes en jours, heures, minutes et secondes."))
 
 from .custom_functions import deg
-__classement__[u"Divers"].append((u"Conversion en degrés", "deg", u"Convertir un angle de radians en degrés. (Ex: deg(pi/3), ou pi/3>>deg)."))
+__classement__[u"Divers"].append((u"Conversion en degrÃ©s", "deg", u"Convertir un angle de radians en degrÃ©s. (Ex: deg(pi/3), ou pi/3>>deg)."))
 
 from .custom_functions import frac
-__classement__[u"Divers"].append((u"Convertir en fraction", "frac", u"Convertir un nombre décimal en fraction."))
+__classement__[u"Divers"].append((u"Convertir en fraction", "frac", u"Convertir un nombre dÃ©cimal en fraction."))
 
 ent = floor
-__classement__[u"Divers"].append((u"Partie entière", "ent", u"Partie entière d'un nombre (ex: -2,4 -> -3)."))
+__classement__[u"Divers"].append((u"Partie entiÃ¨re", "ent", u"Partie entiÃ¨re d'un nombre (ex: -2,4 -> -3)."))
 
 from .custom_functions import arrondir
 round = arrondi = arrondis = arrondir
-__classement__[u"Divers"].append((u"Arrondi", "arrondi", u"Arrondit à n chiffres après la virgule-3)."))
+__classement__[u"Divers"].append((u"Arrondi", "arrondi", u"Arrondit Ã  n chiffres aprÃ¨s la virgule-3)."))
 
 
 from sympy import factorial
 factoriel = factorial
-__classement__[u"Arithmétique"].append((u"Factoriel", "factoriel", u"factoriel(n) vaut 1*2*3*4*5*...*n."))
+__classement__[u"ArithmÃ©tique"].append((u"Factoriel", "factoriel", u"factoriel(n) vaut 1*2*3*4*5*...*n."))
 
 from sympy import ff
 arrangements = nAr = nA = ff
-__classement__[u"Arithmétique"].append((u"Arrangements", "nAr", u"Nombre d'arrangements."))
+__classement__[u"ArithmÃ©tique"].append((u"Arrangements", "nAr", u"Nombre d'arrangements."))
 
 from sympy import binomial as binome
 combinaisons = combi = nCr = nC = binome
-__classement__[u"Arithmétique"].append((u"Combinaisons", "nCr", u"Nombre de combinaisons."))
+__classement__[u"ArithmÃ©tique"].append((u"Combinaisons", "nCr", u"Nombre de combinaisons."))
 
 from .sympy_functions import limit
 lim = limite = limit
@@ -190,15 +190,15 @@ __classement__[u"Analyse"].append((u"Limite", "limite", u"Calculer une limite. E
 
 from .sympy_functions import diff
 derive = diff
-__classement__[u"Analyse"].append((u"Dérive", "derive", u"Dériver une expression. Ex: 'derive(2x+7,x)' et 'derive(2x+7,x,2)' (dérivée seconde)"))
+__classement__[u"Analyse"].append((u"DÃ©rive", "derive", u"DÃ©river une expression. Ex: 'derive(2x+7,x)' et 'derive(2x+7,x,2)' (dÃ©rivÃ©e seconde)"))
 
 from .sympy_functions import integrate
 integrale = integral = integre = integrate
-__classement__[u"Analyse"].append((u"Intègre", "integre", u"Intégrer une expression. Ex: 'integre(x+1,x)' et 'integre(x+1,(x,-1,1))"))
+__classement__[u"Analyse"].append((u"IntÃ¨gre", "integre", u"IntÃ©grer une expression. Ex: 'integre(x+1,x)' et 'integre(x+1,(x,-1,1))"))
 
 from .sympy_functions import series
 taylor = series
-__classement__[u"Analyse"].append((u"Taylor", "taylor", u"Développement limité. Ex: 'series(cos(x),x,0,5)'"))
+__classement__[u"Analyse"].append((u"Taylor", "taylor", u"DÃ©veloppement limitÃ©. Ex: 'series(cos(x),x,0,5)'"))
 
 from sympy import pi
 __classement__[u"Symboles"].append((u"pi", "pi", u"Le nombre pi (3,14...)."))
@@ -225,7 +225,7 @@ __classement__[u"Divers"].append((u"Import d'une fonction \\psplot", "pstfunc", 
 
 __classement__[u"Divers"].append(None)
 
-__classement__[u"Divers"].append((u"Aide", "aide", u"Fournit un complément d'aide sur certaines fonctions. Ex: aide(linreg)"))
+__classement__[u"Divers"].append((u"Aide", "aide", u"Fournit un complÃ©ment d'aide sur certaines fonctions. Ex: aide(linreg)"))
 help = aide
 
 

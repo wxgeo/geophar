@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------#######
@@ -42,18 +42,18 @@ from .. import param
 
 
 def nul(expression, variable=None, intervalle=True, ensemble='R'):
-    u"""Retourne l'ensemble sur lequel une expression à variable réelle est nulle.
+    u"""Retourne l'ensemble sur lequel une expression Ã  variable rÃ©elle est nulle.
 
-    :param expression: une expression mathématique
+    :param expression: une expression mathÃ©matique
     :type expression: string
     :param variable: un nom de variable
     :type variable: string
-    :param intervalle: returne le résultat sous forme d'intervalle
+    :param intervalle: returne le rÃ©sultat sous forme d'intervalle
     :type intervalle: bool
-    :param ensemble: dans quel ensemble l'équation doit être résolue ('R' ou 'C')
+    :param ensemble: dans quel ensemble l'Ã©quation doit Ãªtre rÃ©solue ('R' ou 'C')
     :type ensemble: string
 
-    .. note:: Si la variable n'est pas précisée, elle est déduite de l'expression.
+    .. note:: Si la variable n'est pas prÃ©cisÃ©e, elle est dÃ©duite de l'expression.
               (S'il y a plusieurs variables, une des variables est choisie au hasard.)
 
     """
@@ -135,9 +135,9 @@ def ensemble_definition(expression, variable = None):
 
 
 def positif(expression, variable = None, strict = False):
-    u"""Retourne l'ensemble sur lequel une expression à variable réelle est positive (resp. strictement positive)."""
+    u"""Retourne l'ensemble sur lequel une expression Ã  variable rÃ©elle est positive (resp. strictement positive)."""
     from .sympy_functions import factor
-    # L'étude du signe se fait dans R, on indique donc à sympy que la variable est réelle.
+    # L'Ã©tude du signe se fait dans R, on indique donc Ã  sympy que la variable est rÃ©elle.
     if variable is None:
         variable = extract_var(expression)
     if hasattr(expression, "subs"):
@@ -153,7 +153,7 @@ def positif(expression, variable = None, strict = False):
 ##    print "T455451", expression, variable
     if hasattr(expression, "is_Pow") and expression.is_Pow and expression.as_base_exp()[1].is_rational:
         base, p = expression.as_base_exp()
-        # Le dénominateur ne doit pas s'annuler :
+        # Le dÃ©nominateur ne doit pas s'annuler :
         if p < 0:
             strict = True
         if p.is_integer and p.is_even:
@@ -171,14 +171,14 @@ def positif(expression, variable = None, strict = False):
             # pos_nul : ensemble des valeurs pour lequelles l'expression est positive ou nulle
             pos = positif(facteur, variable, strict = True)
             pos_nul = positif(facteur, variable, strict = False)
-            # posit : les deux sont strictements positifs, ou les deux sont strictements négatifs
-            # posit_nul : les deux sont positifs ou nuls, ou les deux sont négatifs ou nuls
+            # posit : les deux sont strictements positifs, ou les deux sont strictements nÃ©gatifs
+            # posit_nul : les deux sont positifs ou nuls, ou les deux sont nÃ©gatifs ou nuls
             posit, posit_nul = (posit*pos + (-posit_nul)*(-pos_nul))*ens_def, (posit_nul*pos_nul + (-posit)*(-pos))*ens_def
 
 ##            print "resultat", facteur, res
 ####            if res is NotImplemented:
 ####                return NotImplemented
-##            # le résultat est positif si les deux facteurs sont positifs, ou si les deux facteurs sont négatifs:
+##            # le rÃ©sultat est positif si les deux facteurs sont positifs, ou si les deux facteurs sont nÃ©gatifs:
 ##            resultat = resultat*res + (-resultat)*(-res)
         if strict:
             return posit
@@ -199,7 +199,7 @@ def positif(expression, variable = None, strict = False):
             return ens_def
         else:
             return vide
-    # pas besoin de l'ensemble de définition pour les fonctions polynomiales
+    # pas besoin de l'ensemble de dÃ©finition pour les fonctions polynomiales
     if hasattr(expression, "is_polynomial") and expression.is_polynomial():
         P = expression.as_poly(variable)
         if P.degree() == 1:
@@ -265,7 +265,7 @@ def positif(expression, variable = None, strict = False):
     # Logarithme :
     if isinstance(expression, ln):
         return positif(expression.args[0] - 1, variable, strict = strict)
-    # Résolution de ln(X1) + ln(X2) + ... + b > 0, où X1=f1(x), X2 = f2(x) ...
+    # RÃ©solution de ln(X1) + ln(X2) + ... + b > 0, oÃ¹ X1=f1(x), X2 = f2(x) ...
     if getattr(expression, "is_Add", False):
         args = expression.args
         liste_constantes = []
@@ -284,7 +284,7 @@ def positif(expression, variable = None, strict = False):
                 if len(liste_constantes) == len(arg.args) - 1 and len(liste_ln) == 1:
                     expression += ln(liste_ln[0].args[0]**Add(*liste_constantes)) - arg
 ##        print "Resultat 1er passage:", expression
-        # Deuxième passage : ln(X1)+ln(X2)+b>0 <=> X1*X2-exp(-b)>0
+        # DeuxiÃ¨me passage : ln(X1)+ln(X2)+b>0 <=> X1*X2-exp(-b)>0
         for arg in args:
             if isinstance(arg, ln) and hasattr(arg, "has_any_symbols") and arg.has(variable):
                 liste_ln.append(arg)
@@ -300,7 +300,7 @@ def positif(expression, variable = None, strict = False):
 
 
     # Exponentielle
-    # Résolution de a*exp(f(x)) + b > 0
+    # RÃ©solution de a*exp(f(x)) + b > 0
     if getattr(expression, "is_Add", False):
         a_ = Wild('a')
         b_ = Wild('b')
@@ -308,7 +308,7 @@ def positif(expression, variable = None, strict = False):
         match = expression.match(a_*exp(X_) + b_)
         if match is not None and X_ in match:
             # Il faut tester si X_ est dans match, car on peut avoir a_=0, et
-            # X_ non défini.
+            # X_ non dÃ©fini.
             a = match[a_]
             b = match[b_]
             X = match[X_]
@@ -317,7 +317,7 @@ def positif(expression, variable = None, strict = False):
                     if is_pos(a):
                         return ens_def
                     elif is_neg(a):
-                        # l'ensemble de définition ne change pas
+                        # l'ensemble de dÃ©finition ne change pas
                         return positif(- X + ln(-b/a), variable, strict = strict)
                 elif is_neg(b):
                     if is_pos(a):
@@ -325,7 +325,7 @@ def positif(expression, variable = None, strict = False):
                     elif is_neg(a):
                         return vide
 
-    # Cas très particulier : on utilise le fait que exp(x)>=x+1 sur R
+    # Cas trÃ¨s particulier : on utilise le fait que exp(x)>=x+1 sur R
     if getattr(expression, "is_Add", False):
         expr = expression
         changements = False
@@ -338,7 +338,7 @@ def positif(expression, variable = None, strict = False):
 
     # Sommes contenant des logarithmes :
     if getattr(expression, "is_Add", False):
-        # Cas très particulier : on utilise le fait que ln(x)<=x-1 sur ]0;+oo[
+        # Cas trÃ¨s particulier : on utilise le fait que ln(x)<=x-1 sur ]0;+oo[
         expr = expression
         changements = False
         for arg in expr.args:
@@ -355,7 +355,7 @@ def positif(expression, variable = None, strict = False):
             except NotImplementedError:
                 pass
 
-            # Somme contenant des logarithmes : si aucune autre méthode n'a fonctionné, on tente ln(a)+ln(b)>0 <=> a*b>1 (pour a>0 et b>0)
+            # Somme contenant des logarithmes : si aucune autre mÃ©thode n'a fonctionnÃ©, on tente ln(a)+ln(b)>0 <=> a*b>1 (pour a>0 et b>0)
             expr = Mul(*(exp(arg) for arg in expression.args)) - 1
             try:
                 return ens_def*positif(expr, variable, strict = strict)
@@ -366,11 +366,11 @@ def positif(expression, variable = None, strict = False):
 ##    print "Changement de variable."
     # En dernier recours, on tente un changement de variable :
     tmp2 = Symbol("_tmp2", real=True)
-    # changements de variables courants : x², exp(x), ln(x), sqrt(x), x³ :
+    # changements de variables courants : xÂ², exp(x), ln(x), sqrt(x), xÂ³ :
     for X in (variable**2, variable**3, exp(variable), ln(variable), sqrt(variable)):
         expr = expression.subs(X, tmp2)
         # Si la nouvelle variable apparait une seule fois,
-        # le changement de variable produirait une récurrence infinie !
+        # le changement de variable produirait une rÃ©currence infinie !
         if variable not in expr.atoms() and count_syms(expr, X) > 1:
 ##            print "nouvelle variable:", X
             solution_temp = positif(expr, tmp2, strict = strict)
@@ -389,32 +389,32 @@ def positif(expression, variable = None, strict = False):
 
 
 def resoudre(chaine, variables=(), local_dict=None, ensemble='R'):
-    u"""Résout une équation ou inéquation, rentrée sous forme de chaîne.
+    u"""RÃ©sout une Ã©quation ou inÃ©quation, rentrÃ©e sous forme de chaÃ®ne.
 
 
     """
     def evaluer(expression, local_dict=local_dict):
         if local_dict is None:
-            # sympy se débrouille bien mieux avec des rationnels
+            # sympy se dÃ©brouille bien mieux avec des rationnels
             expression = sympify(expression, rational=True)
         else:
             expression = eval(expression, local_dict.globals, local_dict)
-            # sympy se débrouille bien mieux avec des rationnels
+            # sympy se dÃ©brouille bien mieux avec des rationnels
             expression = floats2rationals(expression)
         return expression
 
-    # Préformatage:
+    # PrÃ©formatage:
     chaine = chaine.replace(')et', ') et').replace(')ou', ') ou').replace('et(', 'et (').replace('ou(', 'ou (')
     chaine = chaine.replace("==", "=").replace("<>", "!=").replace("=>", ">=").replace("=<", "<=")
 
     if not variables:
-        # Détection des variables dans l'expression
+        # DÃ©tection des variables dans l'expression
         arguments = chaine.split(',')
         variables = [Symbol(s.strip()) for s in arguments[1:]]
 
         if not variables:
-            # Les variables ne sont pas explicitement indiquées.
-            # On tente de les détecter.
+            # Les variables ne sont pas explicitement indiquÃ©es.
+            # On tente de les dÃ©tecter.
             variables = set()
             chaine2tuple = arguments[0]
             for s in (' et ', ' ou ', '>=', '<=', '==', '!=', '=', '<', '>'):

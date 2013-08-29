@@ -1,13 +1,13 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 
-# Informations utilisée par l'installeur sous Windows.
+# Informations utilisÃ©e par l'installeur sous Windows.
 # titre : description sommaire du module
-# description : description détaillée
-# defaut : par défaut, le module est-il installé ou non ?
+# description : description dÃ©taillÃ©e
+# defaut : par dÃ©faut, le module est-il installÃ© ou non ?
 
 description = {
-"titre":                    u"Exercices - Inéquations produits et quotients",
-"description":              u"Résolution d'inéquations à l'aide de tableaux de signes.",
+"titre":                    u"Exercices - InÃ©quations produits et quotients",
+"description":              u"RÃ©solution d'inÃ©quations Ã  l'aide de tableaux de signes.",
 "groupe":                   u"Modules en construction",
 "defaut":  True,
 }

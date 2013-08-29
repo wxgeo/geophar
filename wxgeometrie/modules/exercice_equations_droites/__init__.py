@@ -1,11 +1,11 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 from __future__ import with_statement
 
 #    .----------------------------------------.
-#    |    Exercices : Équations de droites    |
+#    |    Exercices : Ã‰quations de droites    |
 #    '----------------------------------------'
-#    Géophar
+#    GÃ©ophar
 #    Dynamic geometry, graph plotter, and more for french mathematic teachers.
 #    Copyright (C) 2005-2012  Nicolas Pourcelot
 #
@@ -55,14 +55,14 @@ class EqMenuBar(ExerciceMenuBar):
 
 class ExercicesEquationsDroites(Exercice):
 
-    titre = u"Équations de droites" # Donner un titre a chaque module
+    titre = u"Ã‰quations de droites" # Donner un titre a chaque module
 
     def __init__(self, *args, **kw):
         Exercice.__init__(self, BarreOutils = BarreOutilsExEqDte, *args, **kw)
 
 
     def reinitialiser(self):
-        u"""Paramètres par défaut."""
+        u"""ParamÃ¨tres par dÃ©faut."""
         Exercice.reinitialiser(self)
         self.canvas.afficher_axes = True
         self.canvas.quadrillage_defaut()
@@ -71,13 +71,13 @@ class ExercicesEquationsDroites(Exercice):
 
 
     # ------------------------------------------------------
-    # Niveaux 1 à 7 : lecture graphique d'équation de droite
+    # Niveaux 1 Ã  7 : lecture graphique d'Ã©quation de droite
     # ------------------------------------------------------
 
     def exercice_lire_equation_AB(self, pointA, pointB):
-        u"""Lire graphiquement l'équation de la droite (AB).
+        u"""Lire graphiquement l'Ã©quation de la droite (AB).
 
-        C'est l'exercice à la base des niveaux 1 à 7.
+        C'est l'exercice Ã  la base des niveaux 1 Ã  7.
         """
         self.canvas.fenetre = -8, 8, -10, 8
         xA, yA = pointA
@@ -86,7 +86,7 @@ class ExercicesEquationsDroites(Exercice):
         B = Point(*pointB, fixe=True)
         self.feuille_actuelle.objets['A'] = A
         self.feuille_actuelle.objets['B'] = B
-        # Ne pas afficher l'équation !
+        # Ne pas afficher l'Ã©quation !
         d = Droite(A, B, afficher_info=False)
         self.feuille_actuelle.objets['d'] = d
         if xA == xB:
@@ -97,8 +97,8 @@ class ExercicesEquationsDroites(Exercice):
         xmin, xmax, ymin, ymax = self.canvas.fenetre
         print 'Fenetre::', self.canvas.fenetre, '--', xmin, ymin
         champ = Champ('', xmin, ymin, couleur_fond='#ffffb5',
-                    prefixe=(ur"Dans le repère $(O;\,\vec\imath,\,\vec\jmath)$, "
-                             u"la droite $(AB)$ a pour équation "),
+                    prefixe=(ur"Dans le repÃ¨re $(O;\,\vec\imath,\,\vec\jmath)$, "
+                             u"la droite $(AB)$ a pour Ã©quation "),
                     alignement_horizontal='left', alignement_vertical='bottom',
                     attendu=reponse)
         print 'xy::', champ.xy
@@ -161,9 +161,9 @@ class ExercicesEquationsDroites(Exercice):
 
 
     def niveau6(self, n=7):
-        """Droite oblique ne coupant pas l'axe des ordonnées sur une
-        graduation ; il faut donc calculer (ou deviner) l'ordonnée
-        à l'origine."""
+        """Droite oblique ne coupant pas l'axe des ordonnÃ©es sur une
+        graduation ; il faut donc calculer (ou deviner) l'ordonnÃ©e
+        Ã  l'origine."""
         for i in xrange(1000):
             while True:
                 xA = self.relatif(n)
@@ -175,11 +175,11 @@ class ExercicesEquationsDroites(Exercice):
                 yB = self.relatif(7)
                 if abs(yB - yA) > 5:
                     break
-            # On calcule l'ordonnée à l'origine (sous forme de fraction sympy).
+            # On calcule l'ordonnÃ©e Ã  l'origine (sous forme de fraction sympy).
             a, b = self.eq_reduite((xA, yA), (xB, yB))
             print b
             if b.q not in (1, 2):
-                # Le dénominateur de l'ordonnée à l'origine ne doit pas être 1 ou 2.
+                # Le dÃ©nominateur de l'ordonnÃ©e Ã  l'origine ne doit pas Ãªtre 1 ou 2.
                 break
         self.exercice_lire_equation_AB((xA, yA), (xB, yB))
 
@@ -206,7 +206,7 @@ class ExercicesEquationsDroites(Exercice):
         reponse = reponse.replace(',', '.')
         quotient = '(%s)/(%s)' % (reponse, attendu)
         try:
-            # Les deux équations doivent être « proportionelles ».
+            # Les deux Ã©quations doivent Ãªtre Â« proportionelles Â».
             return not simplify(S(quotient)).free_symbols
         except (SympifyError, ValueError):
             pass
@@ -216,9 +216,9 @@ class ExercicesEquationsDroites(Exercice):
 
 
     def eq_reduite(self, A, B):
-        u"""Équation réduite exacte de la droite (AB).
+        u"""Ã‰quation rÃ©duite exacte de la droite (AB).
 
-        La droite ne doit pas être verticale."""
+        La droite ne doit pas Ãªtre verticale."""
         xA, yA = A
         xB, yB = B
         assert xA != xB, "Droite verticale !"
@@ -228,14 +228,14 @@ class ExercicesEquationsDroites(Exercice):
 
 
     # --------------------------------------------
-    # Niveau 8 : Résoudre graphiquement un système
+    # Niveau 8 : RÃ©soudre graphiquement un systÃ¨me
     # --------------------------------------------
 
     def niveau8(self):
-        u"""Résolution graphique de système.
+        u"""RÃ©solution graphique de systÃ¨me.
 
-        Construire deux droites d'équations données.
-        Lire les coordonnées du point d'intersection."""
+        Construire deux droites d'Ã©quations donnÃ©es.
+        Lire les coordonnÃ©es du point d'intersection."""
         self.canvas.fenetre = -8, 8, -10, 11
         self.canvas.afficher_axes = True
         self.canvas.quadrillage_defaut()
@@ -246,16 +246,16 @@ class ExercicesEquationsDroites(Exercice):
 
         # Point d'intersection
         C = self.couple()
-        # On génère deux points A, et B, appartenant respectivement
+        # On gÃ©nÃ¨re deux points A, et B, appartenant respectivement
         # aux droites d1 et d2.
         # Contraintes :
-        # - les points A, B, C ne doivent pas être alignés ;
-        # - les droites (AC) et (BC) ne doivent être ni horizontales,
+        # - les points A, B, C ne doivent pas Ãªtre alignÃ©s ;
+        # - les droites (AC) et (BC) ne doivent Ãªtre ni horizontales,
         #   ni verticales.
         while True:
             A = self.couple()
             B = self.couple()
-            # A, B, C non alignés
+            # A, B, C non alignÃ©s
             if det(vect(A, C), vect(B, C)) == 0:
                 continue
             # (AC) et (BC) ni verticales, ni horizontales
@@ -263,7 +263,7 @@ class ExercicesEquationsDroites(Exercice):
                 break
         if param.debug:
             print 'A,B,C:', A, B, C
-        # on génère les deux équations de droite
+        # on gÃ©nÃ¨re les deux Ã©quations de droite
         x = S('x')
         ##def eq_latex(pt1, pt2):
             ##a, b = self.eq_reduite(pt1, pt2)
@@ -283,15 +283,15 @@ class ExercicesEquationsDroites(Exercice):
 
         xmin, xmax, ymin, ymax = self.canvas.fenetre
 
-        txt = Texte((u"On note $d_1$ la droite d'équation %s, "
-                  u"et $d_2$ la droite d'équation %s.\n"
-                  u"Construire les droites $d_1$ puis $d_2$ dans le repère ci-dessous.")
+        txt = Texte((u"On note $d_1$ la droite d'Ã©quation %s, "
+                  u"et $d_2$ la droite d'Ã©quation %s.\n"
+                  u"Construire les droites $d_1$ puis $d_2$ dans le repÃ¨re ci-dessous.")
                   % (eq1, eq2), "xmin", "ymax", couleur_fond='#ffffb5', fixe=True,
                   alignement_horizontal='left', alignement_vertical='top')
         self.feuille_actuelle.objets['txt1'] = txt
         systeme = r'$\left\{\stackrel{%s}{%s}\right.$' % (eq1.strip('$'), eq2.strip('$'))
         champ = Champ('', "xmin", "ymin",
-                 prefixe=(u"Le couple solution du système %s est (" % systeme),
+                 prefixe=(u"Le couple solution du systÃ¨me %s est (" % systeme),
                  alignement_vertical='bottom', alignement_horizontal='left',
                  attendu=str(C), couleur_fond='#ffffb5', suffixe=')')
         self.feuille_actuelle.objets['champ1'] = champ
@@ -325,9 +325,9 @@ class ExercicesEquationsDroites(Exercice):
                 else:
                     print self.eq_reduite(*d), eq
                     d.style(couleur='r')
-                    # On peut mettre n'importe quoi différent de ok dans
-                    # champ, l'idée étant que si la droite est fausse mais
-                    # n'a pas changé, on ne perde pas de point, et par
+                    # On peut mettre n'importe quoi diffÃ©rent de ok dans
+                    # champ, l'idÃ©e Ã©tant que si la droite est fausse mais
+                    # n'a pas changÃ©, on ne perde pas de point, et par
                     # contre on perde des points en cas de changement si
                     # c'est toujours faux.
                     champ.texte = str(d.equation)
@@ -347,7 +347,7 @@ class ExercicesEquationsDroites(Exercice):
 
 
     def ax_b(self):
-        u"Générer une expression sympy de la forme ax+b, avec a, b dans Z."
+        u"GÃ©nÃ©rer une expression sympy de la forme ax+b, avec a, b dans Z."
         return self.relatif()*S('x') + self.relatif()
 
 
@@ -360,8 +360,8 @@ class ExercicesEquationsDroites(Exercice):
 ##
     def _ouvrir(self, fgeo):
         pass
-        ### Il ne doit y avoir qu'une seule feuille ouverte à la fois.
-        ### XXX: intégrer cette fonctionnalité directement au Panel.
+        ### Il ne doit y avoir qu'une seule feuille ouverte Ã  la fois.
+        ### XXX: intÃ©grer cette fonctionnalitÃ© directement au Panel.
         ##self.fermer_feuilles()
         ##Panel_API_graphique._ouvrir(self, fgeo)
         ##if fgeo.contenu.has_key(u"expression"):

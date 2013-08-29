@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 #    WxGeometrie
@@ -109,19 +109,19 @@ for _obj in vars().values():
         _noms_arguments = []
         for key, value in vars(_obj).iteritems():
             if isinstance(value, BaseArgument) and key.startswith(prefixe):
-                # Chaque argument récupère son nom...
+                # Chaque argument rÃ©cupÃ¨re son nom...
                 value.nom = key
                 # ...et sa classe de rattachement :
                 value.rattachement = _obj
-                # Chaque classe recupère la liste de ses arguments...
-                # (en évitant d'utiliser 'inspect', qui n'est pas compatible avec psycho)
-                # On cherche les entrées de la classe 'MaClasse' qui soient de type 'Argument' ou 'Arguments',
+                # Chaque classe recupÃ¨re la liste de ses arguments...
+                # (en Ã©vitant d'utiliser 'inspect', qui n'est pas compatible avec psycho)
+                # On cherche les entrÃ©es de la classe 'MaClasse' qui soient de type 'Argument' ou 'Arguments',
                 # et qui commencent par '_MaClasse__'.
-                # Exemple : '_MaClasse__monargument' qui est stocké comme 'monargument' (on enlève le préfixe).
+                # Exemple : '_MaClasse__monargument' qui est stockÃ© comme 'monargument' (on enlÃ¨ve le prÃ©fixe).
                 _noms_arguments.append((value._compteur, key[len(prefixe):]))
-        # on trie les arguments par ordre de déclaration dans la classe
+        # on trie les arguments par ordre de dÃ©claration dans la classe
         _noms_arguments.sort()
-        # tuple pour éviter des bugs (partage d'1 même liste entre plusieurs classes par ex.)
+        # tuple pour Ã©viter des bugs (partage d'1 mÃªme liste entre plusieurs classes par ex.)
         _obj._noms_arguments = tuple(key for compteur, key in _noms_arguments)
 
 del _obj

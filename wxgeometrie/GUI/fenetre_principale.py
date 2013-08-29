@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------##
@@ -68,12 +68,12 @@ class FenetrePrincipale(QMainWindow):
 #        self.setPalette(palette)
 
         self.application = app # pour acceder a l'application en interne
-        # Pour que toutes les fenêtres puissent simplement retrouver la
-        # fenêtre principale:
+        # Pour que toutes les fenÃªtres puissent simplement retrouver la
+        # fenÃªtre principale:
         app.fenetre_principale = self
 
 
-        # À créer avant les onglets
+        # Ã€ crÃ©er avant les onglets
         self.fenetre_sortie = PyOnDemandOutputWindow(title=u"%s - messages."
                                                              % NOMPROG)
         self.fenetre_sortie.setWindowIcon(
@@ -91,7 +91,7 @@ class FenetrePrincipale(QMainWindow):
         self.message(u"  Bienvenue !", 1)
         self.message(NOMPROG + u" version " + param.version)
 
-        #Ligne de commande de débogage
+        #Ligne de commande de dÃ©bogage
         self.ligne_commande = LigneCommande(self, 300, action=self.executer_commande,
                         afficher_bouton=False, legende='Ligne de commande :')
         self.ligne_commande.setVisible(param.ligne_commande)
@@ -114,7 +114,7 @@ class FenetrePrincipale(QMainWindow):
         self.setAcceptDrops(True)
         self.setFocus()
 
-        # closing == True si l'application est en train d'être fermée
+        # closing == True si l'application est en train d'Ãªtre fermÃ©e
         self.closing = False
 
         self.gestion = GestionnaireSession(self.onglets)
@@ -150,7 +150,7 @@ class FenetrePrincipale(QMainWindow):
 
 
     def mode_debug(self, debug=None):
-        u"Passer en mode déboguage."
+        u"Passer en mode dÃ©boguage."
         if debug is not None:
             if isinstance(debug, bool):
                 param.debug = debug
@@ -179,7 +179,7 @@ class FenetrePrincipale(QMainWindow):
     def executer_commande(self, commande, **kw):
         try:
             self.console.executer(commande)
-            self.message(u"Commande interne exécutée.")
+            self.message(u"Commande interne exÃ©cutÃ©e.")
             self.ligne_commande.clear()
         except Exception:
             self.message(u"Commande incorrecte.")
@@ -187,7 +187,7 @@ class FenetrePrincipale(QMainWindow):
                 raise
 
     def plein_ecran(self):
-        u"Bascule en mode plein écran <-> mode normal."
+        u"Bascule en mode plein Ã©cran <-> mode normal."
         self.setWindowState(self.windowState()^Qt.WindowFullScreen)
 
     def closeEvent(self, event):

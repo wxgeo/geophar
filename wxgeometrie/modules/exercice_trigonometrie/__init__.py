@@ -1,9 +1,9 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 from __future__ import with_statement
 
 ##--------------------------------------########
-#                Exercice : Trigonométrie      #
+#                Exercice : TrigonomÃ©trie      #
 ##--------------------------------------########
 #    WxGeometrie
 #    Dynamic geometry, graph plotter, and more for french mathematic teachers.
@@ -67,7 +67,7 @@ class TabMenuBar(MenuBar):
 
 class ExercicesTrigonometrie(Panel_API_graphique):
 
-    titre = u"Trigonométrie" # Donner un titre a chaque module
+    titre = u"TrigonomÃ©trie" # Donner un titre a chaque module
 
     def __init__(self, *args, **kw):
         Panel_API_graphique.__init__(self, *args, **kw)
@@ -99,7 +99,7 @@ class ExercicesTrigonometrie(Panel_API_graphique):
 
     def reinitialiser(self):
         if param.debug:
-            print(u'Module %s: réinitialisation...' % self.nom)
+            print(u'Module %s: rÃ©initialisation...' % self.nom)
         self.score = 0
         self.niveau = 0
         self.erreurs = 0
@@ -110,20 +110,20 @@ class ExercicesTrigonometrie(Panel_API_graphique):
         # On ferme toutes les feuilles ouvertes (inutile en principe),
         # et on en ouvre une nouvelle.
         self.fermer_feuilles()
-        # Paramètres par défaut:
+        # ParamÃ¨tres par dÃ©faut:
         self.canvas.fenetre = -8, 8, -10, 8
         self.canvas.afficher_axes = True
         self.canvas.quadrillage_defaut()
         self.canvas.ratio = None
         self.canvas.repere = ('O', 'i', 'j')
         self.afficher_barre_outils(False)
-        # Ne pas éditer les champs/textes avec [Entrée]
+        # Ne pas Ã©diter les champs/textes avec [EntrÃ©e]
         self.canvas.editeur.actif = False
-        # Ne pas éditer les objets par un clic droit
+        # Ne pas Ã©diter les objets par un clic droit
         self.canvas.edition_par_clic_droit = False
         # Et on change de niveau...
         if niveau in (None, False):
-            # None ou False (False est renvoyé par Qt via QAbstractBouton.clicked)
+            # None ou False (False est renvoyÃ© par Qt via QAbstractBouton.clicked)
             self.niveau += 1
         else:
             self.niveau = niveau
@@ -140,11 +140,11 @@ class ExercicesTrigonometrie(Panel_API_graphique):
     n = niveau_suivant
 
     # ------------------------------------------------------
-    # Niveaux 1 à 7 : lecture graphique d'équation de droite
+    # Niveaux 1 Ã  7 : lecture graphique d'Ã©quation de droite
     # ------------------------------------------------------
 
     def cercle_trigo(self):
-        u"""Construction d'un cercle trigonométrique.
+        u"""Construction d'un cercle trigonomÃ©trique.
         """
         obj = self.feuille_actuelle.objets
         obj['O'] = O = Point(0, 0, fixe=True)
@@ -158,7 +158,7 @@ class ExercicesTrigonometrie(Panel_API_graphique):
                 a = i*pi/6
                 M = Point(cos(a), sin(a), fixe=True)
         self.feuille_actuelle.objets['B'] = B
-        # Ne pas afficher l'équation !
+        # Ne pas afficher l'Ã©quation !
         d = Droite(A, B, afficher_info=False)
         self.feuille_actuelle.objets['d'] = d
         if xA == xB:
@@ -168,8 +168,8 @@ class ExercicesTrigonometrie(Panel_API_graphique):
         xmin, xmax, ymin, ymax = self.canvas.fenetre
         print 'Fenetre::', self.canvas.fenetre, '--', xmin, ymin
         champ = Champ('', xmin, ymin, fond=True, couleur_fond='#ffffb5',
-                    prefixe=(ur"Dans le repère $(O;\,\vec\imath,\,\vec\jmath)$, "
-                             u"la droite $(AB)$ a pour équation "),
+                    prefixe=(ur"Dans le repÃ¨re $(O;\,\vec\imath,\,\vec\jmath)$, "
+                             u"la droite $(AB)$ a pour Ã©quation "),
                     alignement_horizontal='left', alignement_vertical='bottom',
                     attendu=reponse)
         print 'xy::', champ.xy
@@ -232,9 +232,9 @@ class ExercicesTrigonometrie(Panel_API_graphique):
 
 
     def niveau6(self, n=7):
-        """Droite oblique ne coupant pas l'axe des ordonnées sur une
-        graduation ; il faut donc calculer (ou deviner) l'ordonnée
-        à l'origine."""
+        """Droite oblique ne coupant pas l'axe des ordonnÃ©es sur une
+        graduation ; il faut donc calculer (ou deviner) l'ordonnÃ©e
+        Ã  l'origine."""
         for i in xrange(1000):
             while True:
                 xA = self.relatif(n)
@@ -246,11 +246,11 @@ class ExercicesTrigonometrie(Panel_API_graphique):
                 yB = self.relatif(7)
                 if abs(yB - yA) > 5:
                     break
-            # On calcule l'ordonnée à l'origine (sous forme de fraction sympy).
+            # On calcule l'ordonnÃ©e Ã  l'origine (sous forme de fraction sympy).
             a, b = self.eq_reduite((xA, yA), (xB, yB))
             print b
             if b.q not in (1, 2):
-                # Le dénominateur de l'ordonnée à l'origine ne doit pas être 1 ou 2.
+                # Le dÃ©nominateur de l'ordonnÃ©e Ã  l'origine ne doit pas Ãªtre 1 ou 2.
                 break
         self.exercice_lire_equation_AB((xA, yA), (xB, yB))
 
@@ -276,7 +276,7 @@ class ExercicesTrigonometrie(Panel_API_graphique):
         reponse = reponse.replace(',', '.')
         quotient = '(%s)/(%s)' % (reponse, attendu)
         try:
-            # Les deux équations doivent être « proportionelles ».
+            # Les deux Ã©quations doivent Ãªtre Â« proportionelles Â».
             return not simplify(S(quotient)).free_symbols
         except (SympifyError, ValueError):
             pass
@@ -286,9 +286,9 @@ class ExercicesTrigonometrie(Panel_API_graphique):
 
 
     def eq_reduite(self, A, B):
-        u"""Équation réduite exacte de la droite (AB).
+        u"""Ã‰quation rÃ©duite exacte de la droite (AB).
 
-        La droite ne doit pas être verticale."""
+        La droite ne doit pas Ãªtre verticale."""
         xA, yA = A
         xB, yB = B
         assert xA != xB, "Droite verticale !"
@@ -298,14 +298,14 @@ class ExercicesTrigonometrie(Panel_API_graphique):
 
 
     # --------------------------------------------
-    # Niveau 8 : Résoudre graphiquement un système
+    # Niveau 8 : RÃ©soudre graphiquement un systÃ¨me
     # --------------------------------------------
 
     def niveau8(self):
-        u"""Résolution graphique de système.
+        u"""RÃ©solution graphique de systÃ¨me.
 
-        Construire deux droites d'équations données.
-        Lire les coordonnées du point d'intersection."""
+        Construire deux droites d'Ã©quations donnÃ©es.
+        Lire les coordonnÃ©es du point d'intersection."""
         self.canvas.fenetre = -8, 8, -10, 11
         self.canvas.afficher_axes = True
         self.canvas.quadrillage_defaut()
@@ -316,16 +316,16 @@ class ExercicesTrigonometrie(Panel_API_graphique):
 
         # Point d'intersection
         C = self.couple()
-        # On génère deux points A, et B, appartenant respectivement
+        # On gÃ©nÃ¨re deux points A, et B, appartenant respectivement
         # aux droites d1 et d2.
         # Contraintes :
-        # - les points A, B, C ne doivent pas être alignés ;
-        # - les droites (AC) et (BC) ne doivent être ni horizontales,
+        # - les points A, B, C ne doivent pas Ãªtre alignÃ©s ;
+        # - les droites (AC) et (BC) ne doivent Ãªtre ni horizontales,
         #   ni verticales.
         while True:
             A = self.couple()
             B = self.couple()
-            # A, B, C non alignés
+            # A, B, C non alignÃ©s
             if det(vect(A, C), vect(B, C)) == 0:
                 continue
             # (AC) et (BC) ni verticales, ni horizontales
@@ -333,7 +333,7 @@ class ExercicesTrigonometrie(Panel_API_graphique):
                 break
         if param.debug:
             print 'A,B,C:', A, B, C
-        # on génère les deux équations de droite
+        # on gÃ©nÃ¨re les deux Ã©quations de droite
         x = S('x')
         ##def eq_latex(pt1, pt2):
             ##a, b = self.eq_reduite(pt1, pt2)
@@ -353,13 +353,13 @@ class ExercicesTrigonometrie(Panel_API_graphique):
 
         xmin, xmax, ymin, ymax = self.canvas.fenetre
 
-        txt = Texte((u"On note $d_1$ la droite d'équation %s, "
-                  u"et $d_2$ la droite d'équation %s.\n"
-                  u"Construire les droites $d_1$ puis $d_2$ dans le repère ci-dessous.")
+        txt = Texte((u"On note $d_1$ la droite d'Ã©quation %s, "
+                  u"et $d_2$ la droite d'Ã©quation %s.\n"
+                  u"Construire les droites $d_1$ puis $d_2$ dans le repÃ¨re ci-dessous.")
                   % (eq1, eq2), xmin, ymax, fond=True, couleur_fond='#ffffb5', fixe=True,
                   alignement_horizontal='left', alignement_vertical='top')
         self.feuille_actuelle.objets['txt1'] = txt
-        champ = Champ('', xmin, ymin, prefixe=u"Le couple solution du système est (",
+        champ = Champ('', xmin, ymin, prefixe=u"Le couple solution du systÃ¨me est (",
                  alignement_vertical='bottom', alignement_horizontal='left',
                  attendu=str(C), fond=True, couleur_fond='#ffffb5', suffixe=')',
                  )
@@ -394,9 +394,9 @@ class ExercicesTrigonometrie(Panel_API_graphique):
                 else:
                     print self.eq_reduite(*d), eq
                     d.style(couleur='r')
-                    # On peut mettre n'importe quoi différent de ok dans
-                    # champ, l'idée étant que si la droite est fausse mais
-                    # n'a pas changé, on ne perde pas de point, et par
+                    # On peut mettre n'importe quoi diffÃ©rent de ok dans
+                    # champ, l'idÃ©e Ã©tant que si la droite est fausse mais
+                    # n'a pas changÃ©, on ne perde pas de point, et par
                     # contre on perde des points en cas de changement si
                     # c'est toujours faux.
                     champ.texte = str(d.equation)
@@ -416,7 +416,7 @@ class ExercicesTrigonometrie(Panel_API_graphique):
 
 
     def ax_b(self):
-        u"Générer une expression sympy de la forme ax+b, avec a, b dans Z."
+        u"GÃ©nÃ©rer une expression sympy de la forme ax+b, avec a, b dans Z."
         return self.relatif()*S('x') + self.relatif()
 
 
@@ -434,7 +434,7 @@ class ExercicesTrigonometrie(Panel_API_graphique):
             if hasattr(self, 'niveau' + str(self.niveau + 1)):
                 self.btn_niveau.setEnabled(True)
                 self.btn_niveau.setFocus(True)
-                self.felicitations.setText(u'<p><b>Félicitations !</b></p>' +
+                self.felicitations.setText(u'<p><b>FÃ©licitations !</b></p>' +
                                            u'<p>Passer au niveau %s</p>' %(self.niveau + 1))
                 self.felicitations.setStyleSheet(
                     """QLabel {background-color: %s; padding: 5px;
@@ -442,8 +442,8 @@ class ExercicesTrigonometrie(Panel_API_graphique):
                        color:white;}""" %QColor(255, 153, 0).name())
 
             else:
-                self.felicitations.setText(u'<p><b>Félicitations !</b></p>' +
-                                           u'<p>Dernier niveau terminé !</p>')
+                self.felicitations.setText(u'<p><b>FÃ©licitations !</b></p>' +
+                                           u'<p>Dernier niveau terminÃ© !</p>')
                 self.felicitations.setStyleSheet(
                     """QLabel {background-color: %s; padding: 5px; border-radius: 5px;
                     color:white;}""" %QColor(102, 205, 0).name())
@@ -457,8 +457,8 @@ class ExercicesTrigonometrie(Panel_API_graphique):
 ##
     def _ouvrir(self, fgeo):
         pass
-        ### Il ne doit y avoir qu'une seule feuille ouverte à la fois.
-        ### XXX: intégrer cette fonctionnalité directement au Panel.
+        ### Il ne doit y avoir qu'une seule feuille ouverte Ã  la fois.
+        ### XXX: intÃ©grer cette fonctionnalitÃ© directement au Panel.
         ##self.fermer_feuilles()
         ##Panel_API_graphique._ouvrir(self, fgeo)
         ##if fgeo.contenu.has_key(u"expression"):
@@ -477,7 +477,7 @@ class ExercicesTrigonometrie(Panel_API_graphique):
 
 
     # --------------------------------
-    # Génération de nombres aléatoires
+    # GÃ©nÃ©ration de nombres alÃ©atoires
     # --------------------------------
 
     @staticmethod
@@ -522,7 +522,7 @@ class ExercicesTrigonometrie(Panel_API_graphique):
             if kw['correct']:
                 if not kw['correct_old']:
                     if not kw['champ'].style('choix'):
-                        # C'est plus dur s'il n'y a pas de choix proposé
+                        # C'est plus dur s'il n'y a pas de choix proposÃ©
                         self.score += 1
                     self.score += 1
             else:

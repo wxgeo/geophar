@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------#######
@@ -278,7 +278,7 @@ class Graph(dict):
         for nodes, color in zip(self.coloring(*ordered_nodes), colors()):
             for node in nodes:
                 dico[node] = color
-        # Génération du code LaTeX
+        # GÃ©nÃ©ration du code LaTeX
         nodes_line =  r'Sommets '
         degrees_line =   r'Degr\'es'
         colors_line = r'Couleurs'

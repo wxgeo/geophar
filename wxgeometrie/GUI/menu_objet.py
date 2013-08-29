@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 from __future__ import with_statement
 
@@ -42,8 +42,8 @@ class MenuActionsObjet(PopUpMenu):
 
         for obj in canvas.selections:
             if obj is not select:
-                # Permet de sélectionner les autres objets à proximité
-                action = self.addAction(u"Sélectionner " + obj.nom_complet)
+                # Permet de sÃ©lectionner les autres objets Ã  proximitÃ©
+                action = self.addAction(u"SÃ©lectionner " + obj.nom_complet)
                 action.triggered.connect(partial(self.select, obj))
         if len(canvas.selections) > 1:
             self.addSeparator()
@@ -61,32 +61,32 @@ class MenuActionsObjet(PopUpMenu):
         action.triggered.connect(self.renommer)
 
         if isinstance(select, Texte_generique):
-            action = self.addAction(u"Éditer le texte")
+            action = self.addAction(u"Ã‰diter le texte")
             action.triggered.connect(self.etiquette)
-            action = self.addAction(u"Formatage mathématique" if select.style('formatage') == RIEN
-                                            else u"Formatage par défaut")
+            action = self.addAction(u"Formatage mathÃ©matique" if select.style('formatage') == RIEN
+                                            else u"Formatage par dÃ©faut")
             action.triggered.connect(self.mode_formatage)
             
         elif select.etiquette is not None:
-            action = self.addAction(u"Texte associé")
+            action = self.addAction(u"Texte associÃ©")
             action.triggered.connect(self.etiquette)
             action = self.addAction((u"Masquer" if select.label() else u"Afficher") + u" nom/texte")
             action.triggered.connect(self.masquer_nom)
 
         self.addSeparator()
 
-        action = self.addAction(u"Redéfinir")
+        action = self.addAction(u"RedÃ©finir")
         action.triggered.connect(self.redefinir)
 
         self.addSeparator()
 
         app_style = self.addMenu(u"Appliquer ce style")
         if isinstance(select, Polygone_generique):
-            action = app_style.addAction(u"aux côtés de ce polygone")
+            action = app_style.addAction(u"aux cÃ´tÃ©s de ce polygone")
             action.triggered.connect(self.copier_style_cotes)
         action = app_style.addAction(u"aux autres " + select.style('sous-categorie'))
         action.triggered.connect(partial(self.copier_style, critere='sous-categorie'))
-        action = app_style.addAction(u"à tous les objets compatibles (%s)"
+        action = app_style.addAction(u"Ã  tous les objets compatibles (%s)"
                                                 % select.style('categorie'))
         action.triggered.connect(partial(self.copier_style, critere='categorie'))
 
@@ -99,17 +99,17 @@ class MenuActionsObjet(PopUpMenu):
             commande = u"%s.relier_axes()" %select.nom
             action.triggered.connect(partial(self.executer, commande))
 
-            action = relier.addAction(u"à l'axe des abscisses")
+            action = relier.addAction(u"Ã  l'axe des abscisses")
             commande = u"%s.relier_axe_x()" %select.nom
             action.triggered.connect(partial(self.executer, commande))
 
-            action = relier.addAction(u"à l'axe des ordonnées")
+            action = relier.addAction(u"Ã  l'axe des ordonnÃ©es")
             commande = u"%s.relier_axe_y()" %select.nom
             action.triggered.connect(partial(self.executer, commande))
 
             self.addSeparator()
 
-        action = self.addAction(u"Propriétés")
+        action = self.addAction(u"PropriÃ©tÃ©s")
         action.triggered.connect(self.proprietes)
 
     def executer(self, commande):
@@ -120,17 +120,17 @@ class MenuActionsObjet(PopUpMenu):
         self.canvas.selection_en_gras()
 
     def renommer(self):
-        u"Renomme l'objet, et met l'affichage de la légende en mode 'Nom'."
+        u"Renomme l'objet, et met l'affichage de la lÃ©gende en mode 'Nom'."
         select = self.canvas.select
         txt = select.nom_corrige
         label = u"Note: pour personnaliser davantage le texte de l'objet,\n" \
-                u"choisissez \"Texte associé\" dans le menu de l'objet."
+                u"choisissez \"Texte associÃ©\" dans le menu de l'objet."
 
         while True:
             txt, ok = QInputDialog.getText(self.canvas, u"Renommer l'objet", label, QLineEdit.Normal, txt)
             if ok:
                 try:
-                    # On renomme, et on met l'affichage de la légende en mode "Nom".
+                    # On renomme, et on met l'affichage de la lÃ©gende en mode "Nom".
                     self.executer(u"%s.renommer(%s, afficher_nom=True)" %(select.nom, repr(txt)))
                 except:
                     print_error()
@@ -155,20 +155,20 @@ class MenuActionsObjet(PopUpMenu):
                 except ValueError:
                     index = 0
                 text, ok = QInputDialog.getItem(self.canvas, u"Choisir une valeur",
-                                u"Réponse :", choix, index, False)
+                                u"RÃ©ponse :", choix, index, False)
             else:
-                text, ok = QInputDialog.getText(self.canvas, u"Éditer le champ",
-                            u"Réponse :", QLineEdit.Normal, select.texte)
+                text, ok = QInputDialog.getText(self.canvas, u"Ã‰diter le champ",
+                            u"RÃ©ponse :", QLineEdit.Normal, select.texte)
             if ok:
                 select.label(text)
             return
 
         # -----------
-        # Cas général
+        # Cas gÃ©nÃ©ral
         # -----------
 
         dlg = QDialog(self.canvas)
-        dlg.setWindowTitle("Changer la légende de l'objet (texte quelconque)")
+        dlg.setWindowTitle("Changer la lÃ©gende de l'objet (texte quelconque)")
 
         sizer = QVBoxLayout()
         sizer.addWidget(QLabel(u"Note: le code LATEX doit etre entre $$. Ex: $\\alpha$"))
@@ -178,7 +178,7 @@ class MenuActionsObjet(PopUpMenu):
         dlg.setMinimumSize(300, 50)
         sizer.addWidget(dlg.text)
 
-        dlg.cb = QCheckBox(u"Interpréter la formule", dlg)
+        dlg.cb = QCheckBox(u"InterprÃ©ter la formule", dlg)
         dlg.cb.setChecked(select.mode_affichage == FORMULE)
         sizer.addWidget(dlg.cb)
 
@@ -208,7 +208,7 @@ class MenuActionsObjet(PopUpMenu):
                     mode = (FORMULE if dlg.cb.isChecked() else TEXTE)
                     self.executer(u"%s.label(%s, %s)" %(nom, txt, mode))
                 except:
-					# Au cas où une formule incorrecte fasse buguer l'affichage (?)
+					# Au cas oÃ¹ une formule incorrecte fasse buguer l'affichage (?)
                     etiquette.texte = old['texte']
                     etiquette.style(mode=old['mode'])
                     print_error()
@@ -219,10 +219,10 @@ class MenuActionsObjet(PopUpMenu):
             break
 
     def copier_style(self, critere='categorie'):
-        u"""Applique le style de l'objets à tous les objets de même catégorie.
+        u"""Applique le style de l'objets Ã  tous les objets de mÃªme catÃ©gorie.
 
-        Si `critere='sous-categorie'`, le style est seulement appliqué aux objets
-        de même sous-catégorie (ex. 'vecteurs'), et non à la catégorie entière
+        Si `critere='sous-categorie'`, le style est seulement appliquÃ© aux objets
+        de mÃªme sous-catÃ©gorie (ex. 'vecteurs'), et non Ã  la catÃ©gorie entiÃ¨re
         (ex. 'lignes').
         """
         select = self.canvas.select
@@ -235,7 +235,7 @@ class MenuActionsObjet(PopUpMenu):
             feuille.interprete.commande_executee()
 
     def copier_style_cotes(self):
-        u"Applique le style du polygone à ses côtés."
+        u"Applique le style du polygone Ã  ses cÃ´tÃ©s."
         select = self.canvas.select
         with self.canvas.geler_affichage(actualiser=True, sablier=True):
             for cote in select.cotes:
@@ -259,7 +259,7 @@ class MenuActionsObjet(PopUpMenu):
         select.style(formatage=(MATH if actuel == RIEN else RIEN))
 
     def redefinir(self):
-        u"""Redéfinit l'objet (si possible).
+        u"""RedÃ©finit l'objet (si possible).
 
         Par exemple, on peut remplacer `Droite(A, B)` par `Segment(A, B)`."""
         select = self.canvas.select
@@ -267,10 +267,10 @@ class MenuActionsObjet(PopUpMenu):
         label = u"Exemple: transformez une droite en segment."
 
         while True:
-            txt, ok = QInputDialog.getText(self.canvas, u"Redéfinir l'objet", label, QLineEdit.Normal, txt)
+            txt, ok = QInputDialog.getText(self.canvas, u"RedÃ©finir l'objet", label, QLineEdit.Normal, txt)
             if ok:
                 try:
-                    # On renomme, et on met l'affichage de la légende en mode "Nom".
+                    # On renomme, et on met l'affichage de la lÃ©gende en mode "Nom".
                     self.executer(u"%s.redefinir(%s)" %(select.nom, repr(txt)))
                 except:
                     print_error()

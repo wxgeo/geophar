@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 from __future__ import with_statement
 
@@ -30,13 +30,13 @@ class Rapport(list):
         self.fichier_log = fichier_log
         self.frequence_archivage = frequence_archivage
         try:
-            # CrÈer un fichier vierge.
+            # Cr√©er un fichier vierge.
             f = None
             f = open(self.fichier_log, 'w')
             f.write(time.strftime("%d/%m/%Y - %H:%M:%S") + '\n')
             f.close()
         except:
-            # Impossible de crÈer le fichier (problËme de permissions, etc.)
+            # Impossible de cr√©er le fichier (probl√®me de permissions, etc.)
             self.fichier_log = None
             print_error()
         finally:
@@ -59,7 +59,7 @@ class Rapport(list):
             self.archiver()
 
     def _contenu(self):
-        u"RÈcupËre le contenu rÈcent (c-‡-d. non archivÈ)."
+        u"R√©cup√®re le contenu r√©cent (c-√†-d. non archiv√©)."
         return '\n'.join(self) + '\n'
 
     def archiver(self):
@@ -70,7 +70,7 @@ class Rapport(list):
                 self[:] = []
 
     def contenu(self):
-        u"RÈcupËre le contenu complet, y compris ce qui a dÈj‡ ÈtÈ archivÈ."
+        u"R√©cup√®re le contenu complet, y compris ce qui a d√©j√† √©t√© archiv√©."
         if self.fichier_log is None:
             return self._contenu()
         else:

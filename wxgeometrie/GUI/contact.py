@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------#######
@@ -38,7 +38,7 @@ from ..pylib.infos import informations_configuration
 
 
 class Contact(QDialog):
-    u"Formulaire utilisé pour contacter l'auteur et rapporter les bogues."
+    u"Formulaire utilisÃ© pour contacter l'auteur et rapporter les bogues."
 
     sent = pyqtSignal(bool, unicode)
 
@@ -53,8 +53,8 @@ class Contact(QDialog):
 
         panelSizer = QVBoxLayout()
 
-        avant_propos = QLabel(u"""<i>Afin d'améliorer le fonctionnement de WxGéométrie,
-vous êtes invités à signaler tout problème rencontré.</i>""", panel)
+        avant_propos = QLabel(u"""<i>Afin d'amÃ©liorer le fonctionnement de WxGÃ©omÃ©trie,
+vous Ãªtes invitÃ©s Ã  signaler tout problÃ¨me rencontrÃ©.</i>""", panel)
         panelSizer.addWidget(avant_propos)
         panelSizer.addSpacing(5)
 
@@ -63,7 +63,7 @@ vous êtes invités à signaler tout problème rencontré.</i>""", panel)
         rapport_box.setLayout(rapport)
         self.titre = titre = QLineEdit(panel)
         titre.setMinimumWidth(200)
-        titre.setText(u"Résumé")
+        titre.setText(u"RÃ©sumÃ©")
         titre.selectAll()
         rapport.addWidget(titre)
 
@@ -71,11 +71,11 @@ vous êtes invités à signaler tout problème rencontré.</i>""", panel)
         self.modules = modules = QComboBox(panel)
         modules.addItems([parent.onglet(md).titre for md in param.modules if hasattr(self.parent.onglet(md), "titre")])
         modules.setCurrentIndex(self.parent.currentIndex())
-        sizer.addWidget(QLabel(u"Module concerné :", panel))
+        sizer.addWidget(QLabel(u"Module concernÃ© :", panel))
         sizer.addWidget(modules)
         rapport.addLayout(sizer)
 
-        rapport.addWidget(QLabel(u"Description du problème :", panel))
+        rapport.addWidget(QLabel(u"Description du problÃ¨me :", panel))
         self.commentaire = commentaire = QTextEdit(panel)
         commentaire.setMinimumSize(200, 150)
         rapport.addWidget(commentaire)
@@ -83,7 +83,7 @@ vous êtes invités à signaler tout problème rencontré.</i>""", panel)
         panelSizer.addWidget(rapport_box)
 
         sizer = QHBoxLayout()
-        coordonnees_box = QGroupBox(u"Vos coordonnées (recommandées)", panel)
+        coordonnees_box = QGroupBox(u"Vos coordonnÃ©es (recommandÃ©es)", panel)
         coordonnees_box.setLayout(sizer)
         sizer.addWidget(QLabel(u"Nom :", panel))
         self.nom = nom = QLineEdit(panel)
@@ -166,10 +166,10 @@ vous êtes invités à signaler tout problème rencontré.</i>""", panel)
         if param.debug:
             print(' ** Remote site report **\n' + msg)
         if 'mail()' in msg:
-            # Fonction mail() de PHP très probablement bloquée par Free.
+            # Fonction mail() de PHP trÃ¨s probablement bloquÃ©e par Free.
             success = False
         if success:
-            QMessageBox.information(self, u"Message envoyé", u"Le message a été envoyé avec succès. Merci !")
+            QMessageBox.information(self, u"Message envoyÃ©", u"Le message a Ã©tÃ© envoyÃ© avec succÃ¨s. Merci !")
             self.close()
         else:
             QMessageBox.warning(self, u"Connexion impossible.", u"Impossible d'envoyer le message !")

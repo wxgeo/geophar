@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------#######
@@ -29,7 +29,7 @@ from .feuille import Feuille
 class Classeur(list):
     u"Gestionnaire de feuilles."
 
-    # Indique si le contenu du classeur a été modifié depuis la dernière sauvegarde de *session*
+    # Indique si le contenu du classeur a Ã©tÃ© modifiÃ© depuis la derniÃ¨re sauvegarde de *session*
     modifie = False
 
     def __init__(self, parent = None, liste = [], log = None):
@@ -68,7 +68,7 @@ class Classeur(list):
 
 
     def nouvelle_feuille(self, nom = None, parametres = None):
-        # Par défaut, les paramètres sont ceux de la feuille précédente
+        # Par dÃ©faut, les paramÃ¨tres sont ceux de la feuille prÃ©cÃ©dente
         if parametres is None and self:
             parametres = self[-1].parametres
         if nom is None:

@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------#######
@@ -40,16 +40,16 @@ from .. import param
 
 
 class Vecteur_generique(Objet_avec_coordonnees):
-    u"""Un vecteur générique.
+    u"""Un vecteur gÃ©nÃ©rique.
 
-    Usage interne : la classe mère pour les différents vecteurs"""
+    Usage interne : la classe mÃ¨re pour les diffÃ©rents vecteurs"""
 
     _prefixe_nom = "v"
 
     def __init__(self, **styles):
         #        self.__args = GestionnaireArguments()
         Objet.__init__(self,  **styles)
-        # pas besoin de gérer les styles (objet non affiché), mais il vaut mieux que le code soit standardisé...
+        # pas besoin de gÃ©rer les styles (objet non affichÃ©), mais il vaut mieux que le code soit standardisÃ©...
 
 
     @property
@@ -135,7 +135,7 @@ class Vecteur_generique(Objet_avec_coordonnees):
 class Vecteur(Vecteur_generique):
     u"""Un vecteur.
 
-    Un vecteur défini par deux points."""
+    Un vecteur dÃ©fini par deux points."""
 
     _style_defaut = param.vecteurs
     _affichage_depend_de_la_fenetre = True
@@ -196,7 +196,7 @@ class Vecteur(Vecteur_generique):
             norme2 = ((xB-xA)**2+(yB-yA)**2)
             if norme2 > contexte['tolerance']:
                 return ((yA-yB)*(x-xA)+(xB-xA)*(y-yA))**2/norme2 < d**2
-            else:   # les extrémités du segment sont confondues
+            else:   # les extrÃ©mitÃ©s du segment sont confondues
                 return (x - xA)**2 + (y - yA)**2 < d**2
         else:
             return False
@@ -229,14 +229,14 @@ class Vecteur(Vecteur_generique):
 
 
     def _creer_nom_latex(self):
-        u"""Crée le nom formaté en LaTeX. Ex: M1 -> $M_1$."""
+        u"""CrÃ©e le nom formatÃ© en LaTeX. Ex: M1 -> $M_1$."""
         Objet._creer_nom_latex(self)
         latex = self.nom_latex[1:-1]
         if len(latex) == 1:
-            # petite flêche
+            # petite flÃªche
             nom = "\\vec " + self.nom_latex[1:-1]
         else:
-            # grande flêche
+            # grande flÃªche
             nom = "\\overrightarrow{" + self.nom_latex[1:-1] + "}"
         self.nom_latex = "$" + nom + "$"
 
@@ -245,7 +245,7 @@ class Vecteur(Vecteur_generique):
 class Vecteur_libre(Objet_avec_coordonnees_modifiables, Vecteur_generique):
     u"""Un vecteur libre.
 
-    Un vecteur défini par ses coordonnées."""
+    Un vecteur dÃ©fini par ses coordonnÃ©es."""
 
     abscisse = x = __x = Argument("Variable_generique", defaut = lambda: normalvariate(0,10))
     ordonnee = y = __y = Argument("Variable_generique", defaut = lambda: normalvariate(0,10))
@@ -288,8 +288,8 @@ class Vecteur_libre(Objet_avec_coordonnees_modifiables, Vecteur_generique):
 class Vecteur_unitaire(Vecteur_generique):
     u"""Un vecteur unitaire.
 
-    Un vecteur défini en normalisant un autre vecteur.
-    Il aura donc même sens et même direction, mais sera de norme 1."""
+    Un vecteur dÃ©fini en normalisant un autre vecteur.
+    Il aura donc mÃªme sens et mÃªme direction, mais sera de norme 1."""
 
     vecteur = __vecteur = Argument("Vecteur_generique", defaut = Vecteur_libre)
 
@@ -348,22 +348,22 @@ class Somme_vecteurs(Vecteur_generique):
 
 
 class Extremite(Point_generique):
-    u"""L'extrémité d'un représentant de vecteur.abscisse
+    u"""L'extrÃ©mitÃ© d'un reprÃ©sentant de vecteur.abscisse
 
-    L'objet est créé automatiquement lors de la création du représentant."""
+    L'objet est crÃ©Ã© automatiquement lors de la crÃ©ation du reprÃ©sentant."""
 
     representant = __representant = Argument("Representant")
 
     def __new__(cls, representant, **styles):
         try:
-            # Si l'extrémité existe déjà, on la retourne simplement.
-            # Ceci évite de la créer en double, lorsque la feuille
-            # est sauvegardée puis rechargée. En effet, lors du chargement de la
-            # feuille, des extrémités vont être créés automatiquement à la création
-            # du réprésentant, puis de nouveau lorsque `M1 = Extremite(v, ...)` va
-            # être exécuté.
+            # Si l'extrÃ©mitÃ© existe dÃ©jÃ , on la retourne simplement.
+            # Ceci Ã©vite de la crÃ©er en double, lorsque la feuille
+            # est sauvegardÃ©e puis rechargÃ©e. En effet, lors du chargement de la
+            # feuille, des extrÃ©mitÃ©s vont Ãªtre crÃ©Ã©s automatiquement Ã  la crÃ©ation
+            # du rÃ©prÃ©sentant, puis de nouveau lorsque `M1 = Extremite(v, ...)` va
+            # Ãªtre exÃ©cutÃ©.
             return representant.extremite
-            # Attention, Extremite.__init__() va être appelé de nouveau !
+            # Attention, Extremite.__init__() va Ãªtre appelÃ© de nouveau !
         except AttributeError:
             extremite = object.__new__(cls)
             return extremite
@@ -383,9 +383,9 @@ class Extremite(Point_generique):
         Objet._modifier_hierarchie(self, self.__representant._hierarchie + .5)
 
     def _update(self, objet):
-        u"""Pseudo mise à jour: seul un objet identique est accepté.
+        u"""Pseudo mise Ã  jour: seul un objet identique est acceptÃ©.
 
-        Cela sert pour les objets créés automatiquement, qui peuvent être enregistrés deux fois dans la feuille."""
+        Cela sert pour les objets crÃ©Ã©s automatiquement, qui peuvent Ãªtre enregistrÃ©s deux fois dans la feuille."""
         if isinstance(objet, Extremite) and self.__representant is objet._Extremite__representant:
             self.style(**objet.style())
         else:
@@ -393,9 +393,9 @@ class Extremite(Point_generique):
 
 
 class Representant(Vecteur):
-    u"""Un représentant d'un vecteur.
+    u"""Un reprÃ©sentant d'un vecteur.
 
-    Un représentant d'un vecteur, ayant pour origine un point donné."""
+    Un reprÃ©sentant d'un vecteur, ayant pour origine un point donnÃ©."""
     vecteur = __vecteur = Argument("Vecteur_generique")
     origine = __origine = Argument("Point_generique", defaut = Point)
 
@@ -411,21 +411,21 @@ class Representant(Vecteur):
 
 
     def on_register(self):
-        u"""Lorsque le vecteur est enregistré dans la feuille, on enregistre
-        également son extrémité, et son origine si elle ne l'est pas déjà.
+        u"""Lorsque le vecteur est enregistrÃ© dans la feuille, on enregistre
+        Ã©galement son extrÃ©mitÃ©, et son origine si elle ne l'est pas dÃ©jÃ .
         """
-        # On tente de nommer l'origine et l'extrémité du représentant de vecteur intelligemment.
-        # Si le représentant s'appelle AB, l'origine, si elle n'a pas de nom,
-        # va s'appeler A, et l'extrémité B.
+        # On tente de nommer l'origine et l'extrÃ©mitÃ© du reprÃ©sentant de vecteur intelligemment.
+        # Si le reprÃ©sentant s'appelle AB, l'origine, si elle n'a pas de nom,
+        # va s'appeler A, et l'extrÃ©mitÃ© B.
         nom_origine = nom_extremite = ''
         noms = re.findall(RE_NOM_OBJET, self._nom)
         if '_Representant__origine' in self._valeurs_par_defaut:
-            # L'origine a été générée automatiquement, il faut donc l'enregistrer
+            # L'origine a Ã©tÃ© gÃ©nÃ©rÃ©e automatiquement, il faut donc l'enregistrer
             # dans la feuille.
             if len(noms) == 2:
                 nom_origine, nom_extremite = noms
             self.feuille.objets.add(self.__origine, nom_suggere=nom_origine)
-        # On enregistre l'extrémité dans la feuille.
+        # On enregistre l'extrÃ©mitÃ© dans la feuille.
         if self.__origine._nom == noms[0]:
             nom_extremite = noms[1]
         self.feuille.objets.add(self.__extremite, nom_suggere=nom_extremite)

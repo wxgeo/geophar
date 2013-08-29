@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------#######
@@ -52,7 +52,7 @@ class GraphesMenuBar(MenuBar):
         self.ajouter("affichage")
         self.ajouter("autres")
         self.ajouter(u"Outils",
-#                        [u"Créer le graphe", u"(Entrée à supprimer).", "Ctrl+E", self.panel.creer_graphe],
+#                        [u"CrÃ©er le graphe", u"(EntrÃ©e Ã  supprimer).", "Ctrl+E", self.panel.creer_graphe],
                         [u"Colorier le graphe", u"Coloriage par l'algorithme de Welsh & Powell.", None, self.panel.colorier],
                         [u"Latex -> Presse-papier",
                             [u"Dijkstra", u"Recherche d'un trajet minimal entre deux points.", None, self.panel.latex_Dijkstra],
@@ -61,7 +61,7 @@ class GraphesMenuBar(MenuBar):
                             ],
                         [u"options"],
                         )
-##        self.ajouter(u"Avancé", [u"historique"], [u"securise"], [u"ligne_commande"], [u"debug"])
+##        self.ajouter(u"AvancÃ©", [u"historique"], [u"securise"], [u"ligne_commande"], [u"debug"])
         self.ajouter(u"avance1")
         self.ajouter(u"?")
 
@@ -70,7 +70,7 @@ class GraphesMenuBar(MenuBar):
 
 class Graphes(Panel_API_graphique):
 
-    titre = u"Graphes" # Donner un titre à chaque module
+    titre = u"Graphes" # Donner un titre Ã  chaque module
     #_param_ = _param_
 
     def __init__(self, *args, **kw):
@@ -150,8 +150,8 @@ class Graphes(Panel_API_graphique):
             end = max(self.graph.nodes)
         if ask:
             while True:
-                txt, ok = QInputDialog.getText(self, "Précisez le départ et l'arrivée.",
-                        "Entrez le sommet départ et le sommet d'arrivée (séparés par un espace).",
+                txt, ok = QInputDialog.getText(self, "PrÃ©cisez le dÃ©part et l'arrivÃ©e.",
+                        "Entrez le sommet dÃ©part et le sommet d'arrivÃ©e (sÃ©parÃ©s par un espace).",
                         QLineEdit.Normal, '%s %s' % (start, end))
                 if not ok:
                     return
@@ -177,4 +177,4 @@ class Graphes(Panel_API_graphique):
         self.code_copie()
 
     def code_copie(self):
-        self.canvas.message(u"Code LaTeX copié dans le presse-papier.")
+        self.canvas.message(u"Code LaTeX copiÃ© dans le presse-papier.")

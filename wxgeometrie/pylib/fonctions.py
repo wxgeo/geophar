@@ -1,10 +1,10 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##########################################################################
 #
 #       Fonctions couramment utilisees, et non implementees en Python
-#                     (...du moins, à ma connaissance !)
+#                     (...du moins, Ã  ma connaissance !)
 #
 ##########################################################################
 #    WxGeometrie
@@ -34,12 +34,12 @@ import warnings, traceback, linecache
 
 from .decorator import decorator
 
-from .. import param # paramètres du programme
+from .. import param # paramÃ¨tres du programme
 from sympy import sympify
 
 
 def is_in(element, _list):
-    u"""Teste si l'élement est dans la liste, en effectuant un test d'identité (is) et non d'égalité (==)."""
+    u"""Teste si l'Ã©lement est dans la liste, en effectuant un test d'identitÃ© (is) et non d'Ã©galitÃ© (==)."""
     for elt in _list:
         if elt is element:
             return True
@@ -47,12 +47,12 @@ def is_in(element, _list):
 
 # This is 'a lot' slower (2.4 times about) :
 ##def isin2(element, _list):
-##    u"""Teste si l'élement est dans la liste, en effectuant un test d'identité (is) et non d'égalité (==)."""
+##    u"""Teste si l'Ã©lement est dans la liste, en effectuant un test d'identitÃ© (is) et non d'Ã©galitÃ© (==)."""
 ##    return id(element) in (id(elt) for elt in _list)
 
 # And this too... (2 times about on python 2.5)
 ##def isin3(element, _list):
-##    u"""Teste si l'élement est dans la liste, en effectuant un test d'identité (is) et non d'égalité (==)."""
+##    u"""Teste si l'Ã©lement est dans la liste, en effectuant un test d'identitÃ© (is) et non d'Ã©galitÃ© (==)."""
 ##    return any(elt is element for elt in _list)
 
 def mreplace(main_string, list_of_strings, new_string = ""):
@@ -62,20 +62,20 @@ def mreplace(main_string, list_of_strings, new_string = ""):
     return main_string
 
 def recursive_replace(main_string, old_string, new_string = "", max_loops = 10000, max_len = 1000000):
-    u"""Remplace, dans "main_string", la sous-chaîne "old_string" par "new_string", au besoin en plusieurs passes.
+    u"""Remplace, dans "main_string", la sous-chaÃ®ne "old_string" par "new_string", au besoin en plusieurs passes.
 
-    En fin de processus, la sous-chaîne old_string ne subsiste plus dans la chaîne.
+    En fin de processus, la sous-chaÃ®ne old_string ne subsiste plus dans la chaÃ®ne.
     Renvoie une erreur si le processus ne semble pas converger.
     (C'est en particulier le cas si old_string est strictement inclus dans new_string)
 
-    La différence avec replace est claire sur cette exemple :
+    La diffÃ©rence avec replace est claire sur cette exemple :
     >>> from wxgeometrie.pylib.fonctions import recursive_replace
     >>> "Hi HelloHello world world !".replace("Hello world", "")
     'Hi Hello world !'
     >>> recursive_replace("Hi HelloHello world world !", "Hello world", "")
     'Hi  !'
 
-    Il y a un cas particulier ou la sous-chaîne reste présente :
+    Il y a un cas particulier ou la sous-chaÃ®ne reste prÃ©sente :
     >>> recursive_replace("Hi HelloHello world world !", "Hello world", "Hello world")
     'Hi HelloHello world world !'
     """
@@ -96,12 +96,12 @@ def recursive_replace(main_string, old_string, new_string = "", max_loops = 1000
 def recursive_mreplace(main_string, list_of_strings, new_string = "", max_loops = 10000, max_len = 1000000):
     u"""Remplace, dans "main_string", toutes les sous-chaines de "list_of_strings" par "new_string", au besoin en plusieurs passes.
 
-    En fin de processus, la sous-chaîne old_string ne subsiste plus dans la chaîne.
+    En fin de processus, la sous-chaÃ®ne old_string ne subsiste plus dans la chaÃ®ne.
     Renvoie une erreur si le processus ne semble pas converger.
 
-    Voir également recursive_replace() et mreplace().
+    Voir Ã©galement recursive_replace() et mreplace().
 
-    Remarque: recursive_mreplace n'est pas équivalent des appels successifs de recursive_replace().
+    Remarque: recursive_mreplace n'est pas Ã©quivalent des appels successifs de recursive_replace().
     >>> from wxgeometrie.pylib.fonctions import recursive_replace, recursive_mreplace
     >>> s = "tbtbaoao"
     >>> s = recursive_mreplace(s, ("to", "ba"))
@@ -140,14 +140,14 @@ def mfind(chaine, car):
 
 
 def msplit(main_string, list_of_separators):
-    u"""Découpe la chaine "main_string", selon les séparateurs définis dans "list_of_separators"."""
+    u"""DÃ©coupe la chaine "main_string", selon les sÃ©parateurs dÃ©finis dans "list_of_separators"."""
     return mreplace(main_string, list_of_separators[1:], list_of_separators[0]).split(list_of_separators[0])
 
 
 
 def removeend(main_string, *substrings):
-    u"Enlève les éventuelles occurences de substring en fin de chaine."
-    if substrings and True not in (sub == "" for sub in substrings): # pour éviter une éventuelle boucle infinie.
+    u"EnlÃ¨ve les Ã©ventuelles occurences de substring en fin de chaine."
+    if substrings and True not in (sub == "" for sub in substrings): # pour Ã©viter une Ã©ventuelle boucle infinie.
         test = True
         while test:
             for sub in substrings:
@@ -162,8 +162,8 @@ def removeend(main_string, *substrings):
 
 
 def removestart(main_string, *substrings):
-    u"Enlève les éventuelles occurences de substring en début de chaine."
-    if substrings and True not in (sub == "" for sub in substrings): # pour éviter une éventuelle boucle infinie.
+    u"EnlÃ¨ve les Ã©ventuelles occurences de substring en dÃ©but de chaine."
+    if substrings and True not in (sub == "" for sub in substrings): # pour Ã©viter une Ã©ventuelle boucle infinie.
         test = True
         while test:
             for sub in substrings:
@@ -179,22 +179,22 @@ def removestart(main_string, *substrings):
 
 def no_twin(liste):
     u"""Elimine les doublons dans une liste.
-    Si tous les élements de la liste sont 'hashables', mieux vaut utiliser la fonction set."""
+    Si tous les Ã©lements de la liste sont 'hashables', mieux vaut utiliser la fonction set."""
     dico = {}
     for elt in liste:
         dico[id(elt)] = elt
     return dico.values()
 
-#def ntwin(l): return dict((id(elt), elt) for elt in l).values() # plus élégant, mais 50% plus lent ?!?
+#def ntwin(l): return dict((id(elt), elt) for elt in l).values() # plus Ã©lÃ©gant, mais 50% plus lent ?!?
 
 
 
 
 def advanced_split(main_string, separator, keep_empty_str = False, symbols = "([{}])"):
-    u"""Découpe la chaine "main_string" de manière intelligente,
-    en ignorant les séparateurs compris dans un groupe entre parenthèses, crochets, accolades, guillemets.
-    Attention, separateur ne peut donc pas être une parenthèse, un crochet, une accolade ou un guillemet !
-    Par défaut, supprime également les chaines vides."""
+    u"""DÃ©coupe la chaine "main_string" de maniÃ¨re intelligente,
+    en ignorant les sÃ©parateurs compris dans un groupe entre parenthÃ¨ses, crochets, accolades, guillemets.
+    Attention, separateur ne peut donc pas Ãªtre une parenthÃ¨se, un crochet, une accolade ou un guillemet !
+    Par dÃ©faut, supprime Ã©galement les chaines vides."""
     in_string = False # est-on dans une chaine ?
     in_string_sep = "'" # caractere encadrant la chaine (" ou ')
     parentheses = 0 # tient le compte des parentheses ouvertes non fermees
@@ -233,7 +233,7 @@ def advanced_split(main_string, separator, keep_empty_str = False, symbols = "([
 
 def regsub(regular_exp, main_string, action = ""):
     u"""Transforme la chaine "main_string" :
-    Il applique aux parties vérifiant "regular_exp" le traitement "action".
+    Il applique aux parties vÃ©rifiant "regular_exp" le traitement "action".
 
     >>> from wxgeometrie.pylib.fonctions import regsub
     >>> regsub("[a-z]", "salut les amis !", "?")
@@ -248,17 +248,17 @@ def regsub(regular_exp, main_string, action = ""):
 
 
 class WeakList(weakref.WeakValueDictionary):
-    u"""Une 'liste' de réferences faibles.
+    u"""Une 'liste' de rÃ©ferences faibles.
 
-    Le terme 'liste' est trompeur, la syntaxe des listes de python n'est pas implémentée,
-    exceptée les méthodes append(), et remove(), et la conversion en liste.
+    Le terme 'liste' est trompeur, la syntaxe des listes de python n'est pas implÃ©mentÃ©e,
+    exceptÃ©e les mÃ©thodes append(), et remove(), et la conversion en liste.
 
-    En outre, le contenu s'obtient par la méthode values().
+    En outre, le contenu s'obtient par la mÃ©thode values().
 
     Note:
-    L'implémentation de remove est un peu différente :
+    L'implÃ©mentation de remove est un peu diffÃ©rente :
     'remove' utilise le comparateur 'is', et non "==", ce qui fait que remove([]) ne fera jamais rien, par exemple.
-    (Il faut qu'il s'agisse du meme objet, et non d'un objet égal).
+    (Il faut qu'il s'agisse du meme objet, et non d'un objet Ã©gal).
     Sinon, il faut utiliser compare_and_remove."""
 
     def __init__(self):
@@ -271,46 +271,46 @@ class WeakList(weakref.WeakValueDictionary):
     def remove(self, valeur):
         u"""Supprime la valeur de la liste.
 
-        Un test d'identité (et non d'égalité) est effectué ('is' et non '==').
-        Si la valeur est présente plusieurs fois, elle n'est supprimée qu'une seule fois.
-        Si la valeur n'est pas présente, une erreur de type ValueError est émise.
+        Un test d'identitÃ© (et non d'Ã©galitÃ©) est effectuÃ© ('is' et non '==').
+        Si la valeur est prÃ©sente plusieurs fois, elle n'est supprimÃ©e qu'une seule fois.
+        Si la valeur n'est pas prÃ©sente, une erreur de type ValueError est Ã©mise.
         """
         for key, value in self.items():
             if value is valeur:
-                del self[key] # il faut qu'il s'agisse du même objet
+                del self[key] # il faut qu'il s'agisse du mÃªme objet
                 return
         raise ValueError,  repr(valeur) + " is not in WeakList"
 
     def compare_and_remove(self, valeur):
         u"""Supprime la valeur de la liste.
 
-        Un test d'égalité est effectué ('==' et non 'is').
-        Si la valeur est présente plusieurs fois, elle n'est supprimée qu'une seule fois.
-        Si la valeur n'est pas présente, une erreur de type ValueError est émise.
+        Un test d'Ã©galitÃ© est effectuÃ© ('==' et non 'is').
+        Si la valeur est prÃ©sente plusieurs fois, elle n'est supprimÃ©e qu'une seule fois.
+        Si la valeur n'est pas prÃ©sente, une erreur de type ValueError est Ã©mise.
         """
         for key, value in self.items():
             if value == valeur:
-                del self[key] # un objet égal suffit
+                del self[key] # un objet Ã©gal suffit
                 return
         raise ValueError,  repr(valeur) + " not in WeakList"
 
     def remove_all(self, valeur):
         u"""Supprime la valeur de la liste.
 
-        Un test d'identité (et non d'égalité) est effectué ('is' et non '==').
-        Toutes les occurences de la valeur sont supprimées.
-        Si la valeur n'est pas présente, aucune erreur n'est émise."""
+        Un test d'identitÃ© (et non d'Ã©galitÃ©) est effectuÃ© ('is' et non '==').
+        Toutes les occurences de la valeur sont supprimÃ©es.
+        Si la valeur n'est pas prÃ©sente, aucune erreur n'est Ã©mise."""
         for key, value in self.items():
-            if value is valeur: del self[key] # il faut qu'il s'agisse du même objet
+            if value is valeur: del self[key] # il faut qu'il s'agisse du mÃªme objet
 
     def compare_and_remove_all(self, valeur):
         u"""Supprime la valeur de la liste.
 
-        Un test d'égalité est effectué ('==' et non 'is').
-        Toutes les occurences de la valeur sont supprimées.
-        Si la valeur n'est pas présente, aucune erreur n'est émise."""
+        Un test d'Ã©galitÃ© est effectuÃ© ('==' et non 'is').
+        Toutes les occurences de la valeur sont supprimÃ©es.
+        Si la valeur n'est pas prÃ©sente, aucune erreur n'est Ã©mise."""
         for key, value in self.items():
-            if value == valeur: del self[key] # un objet égal suffit
+            if value == valeur: del self[key] # un objet Ã©gal suffit
 
     def __str__(self):
         return str(self.values()) + " (WeakList)"
@@ -351,7 +351,7 @@ def print_error(chaine=''):
 
 
 def rstrip_(s, end):
-    u"""Supprime récursivement 'end' de la fin de la chaîne 's'.
+    u"""Supprime rÃ©cursivement 'end' de la fin de la chaÃ®ne 's'.
 
     >>> from wxgeometrie.pylib.fonctions import rstrip_
     >>> rstrip_('blabla_suffixe_fixe_suffixe_suffixe', '_suffixe')
@@ -362,7 +362,7 @@ def rstrip_(s, end):
         >>> 'blabla_suffixe_fixe_suffixe_suffixe'.rstrip('_suffixe')
         'blabla'
 
-        * si end == '', la chaîne de départ est retournée :
+        * si end == '', la chaÃ®ne de dÃ©part est retournÃ©e :
         >>> rstrip_('bonjour', '')
         'bonjour'
     """
@@ -385,7 +385,7 @@ def rreplace(s, old, new, count):
 
 
 def split_geoname(name):
-    u"""Tente de décomposer un nom d'objet géométrique en plusieurs noms.
+    u"""Tente de dÃ©composer un nom d'objet gÃ©omÃ©trique en plusieurs noms.
 
     Ex:
     1) "AB" -> ("A","B")
@@ -399,11 +399,11 @@ def split_geoname(name):
 
 
 def convert_geoname(name, level = 0):
-    u"""Convertit le nom entré par l'utilisateur en un nom réellement interprétable.
+    u"""Convertit le nom entrÃ© par l'utilisateur en un nom rÃ©ellement interprÃ©table.
 
-    Une conversion de niveau 1 est appliquée dans les boîtes de dialogue.
+    Une conversion de niveau 1 est appliquÃ©e dans les boÃ®tes de dialogue.
 
-    Une conversion de niveau 0 est appliquée dans la console."""
+    Une conversion de niveau 0 est appliquÃ©e dans la console."""
 
     if level > 0:
         if level > 1:
@@ -421,10 +421,10 @@ def convert_geoname(name, level = 0):
 
 
 def split_around_parenthesis(main_string, position = 0, leftbracket = "("):
-    u"""Coupe le premier groupe entre parentheses rencontré, en tenant compte des guillemets.
+    u"""Coupe le premier groupe entre parentheses rencontrÃ©, en tenant compte des guillemets.
 
     'leftbracket' peut prendre les valeurs "(", "[" ou "{"
-    La parenthese ouvrante du groupe sera la première trouvée à droite de 'position'
+    La parenthese ouvrante du groupe sera la premiÃ¨re trouvÃ©e Ã  droite de 'position'
     Exemple: '1+4*(5+3*(2+7)+2-")")*7+(2-3)+4' -> ['1+4*', '(5+3*(2+7)+2-")")', '*7+(2-3)+4']
     """
     in_string = False # est-on dans une chaine ?
@@ -452,7 +452,7 @@ def split_around_parenthesis(main_string, position = 0, leftbracket = "("):
             if parentheses is 0:
                 chaine = chaine
                 return (prefixe, leftbracket + chaine[:i + 1], chaine[i + 1:])
-    return (main_string,) # aucune parenthese fermante n'a été trouvée pour ce groupe.
+    return (main_string,) # aucune parenthese fermante n'a Ã©tÃ© trouvÃ©e pour ce groupe.
 
 
 def find_closing_bracket(expr, start = 0, brackets = '{}'):
@@ -517,7 +517,7 @@ def deprecation(message, level=0):
     warnings.warn(message, DeprecationWarning, stacklevel = (level + 3))
 
 #def unicode2(string_or_unicode, encodage = None):
-#    u"Convertit en unicode si besoin est, avec l'encodage de 'param.encodage' par défaut."
+#    u"Convertit en unicode si besoin est, avec l'encodage de 'param.encodage' par dÃ©faut."
 #    if isinstance(string_or_unicode, str):
 #        try:
 #            return unicode(string_or_unicode, encodage or param.encodage)
@@ -540,7 +540,7 @@ def deprecation(message, level=0):
 
 
 def str2(string_or_unicode, encodage = None):
-    u"Convertit en string si besoin est, avec l'encodage de 'param.encodage' par défaut."
+    u"Convertit en string si besoin est, avec l'encodage de 'param.encodage' par dÃ©faut."
     if isinstance(string_or_unicode, str):
         return string_or_unicode
     elif isinstance(string_or_unicode, unicode):
@@ -550,18 +550,18 @@ def str2(string_or_unicode, encodage = None):
 
 def str3(unicode):
     dict = {
-                'a': (u'à', u'â', u'ä', ),
-                'e': (u'é', u'è', u'ê', u'ë', ),
-                'i': (u'î', u'ï', ),
-                'o': (u'ô', u'ö', ),
-                'u': (u'ù', u'û', u'ü',  ),
-                'c': (u'ç', ),
-                'A': (u'À', u'Â', u'Ä', ),
-                'E': (u'É', u'È', u'Ê', u'Ë', ),
-                'I': (u'Î', u'Ï', ),
-                'O': (u'Ô', u'Ö', ),
-                'U': (u'Ù', u'Û', u'Ü',  ),
-                'C': (u'Ç', ),
+                'a': (u'Ã ', u'Ã¢', u'Ã¤', ),
+                'e': (u'Ã©', u'Ã¨', u'Ãª', u'Ã«', ),
+                'i': (u'Ã®', u'Ã¯', ),
+                'o': (u'Ã´', u'Ã¶', ),
+                'u': (u'Ã¹', u'Ã»', u'Ã¼',  ),
+                'c': (u'Ã§', ),
+                'A': (u'Ã€', u'Ã‚', u'Ã„', ),
+                'E': (u'Ã‰', u'Ãˆ', u'ÃŠ', u'Ã‹', ),
+                'I': (u'ÃŽ', u'Ã', ),
+                'O': (u'Ã”', u'Ã–', ),
+                'U': (u'Ã™', u'Ã›', u'Ãœ',  ),
+                'C': (u'Ã‡', ),
                 }
     for key, liste in dict.items():
         for item in liste:
@@ -573,12 +573,12 @@ def str3(unicode):
 def universal_unicode(chaine):
     u"""Convertit en unicode, sans renvoyer d'erreur.
 
-    Tente de détecter l'encodage, en essayant successivement :
+    Tente de dÃ©tecter l'encodage, en essayant successivement :
         * la valeur de `param.encodage`
         * utf-8
         * latin-1
 
-    Si des erreurs persistent, les caractères intraduisibles sont remplacés
+    Si des erreurs persistent, les caractÃ¨res intraduisibles sont remplacÃ©s
     par des `?`.
     """
     if not isinstance(chaine, basestring):
@@ -601,22 +601,22 @@ uu = universal_unicode
 
 
 def path2(chemin):
-    u"""Transforme le chemin en remplaçant les / et \\ selon le séparateur utilisé par le système.
+    u"""Transforme le chemin en remplaÃ§ant les / et \\ selon le sÃ©parateur utilisÃ© par le systÃ¨me.
 
-    % est remplacé par l'emplacement du programme (contenu dans param.EMPLACEMENT).
+    % est remplacÃ© par l'emplacement du programme (contenu dans param.EMPLACEMENT).
     Exemple : path2("%/wxgeometrie/images/archives/old.png").
-    ~ fait référence au répertoire personnel de l'utilisateur (ex: /home/SteveB/ sous Linux.
+    ~ fait rÃ©fÃ©rence au rÃ©pertoire personnel de l'utilisateur (ex: /home/SteveB/ sous Linux.
     """
     return os.path.normpath(os.path.expanduser(uu(chemin).replace("%", uu(param.EMPLACEMENT))))
 
 
 
-# L'idée de compiler en une fois pour toute les expressions regulières n'est pas avantageuse :
-# le temps gagné ainsi est perdu à rechercher les entrées dans le dictionnaire.
+# L'idÃ©e de compiler en une fois pour toute les expressions reguliÃ¨res n'est pas avantageuse :
+# le temps gagnÃ© ainsi est perdu Ã  rechercher les entrÃ©es dans le dictionnaire.
 
 #~ def regsub(regular_exp, main_string, action = ""):
     #~ u"""Transforme la chaine "main_string" :
-    #~ Il applique aux parties vérifiant "regular_exp" le traitement "action".
+    #~ Il applique aux parties vÃ©rifiant "regular_exp" le traitement "action".
 
     #~ >>> regsub("[a-z]", "salut les amis !", "?")
     #~ '????? ??? ???? !'
@@ -636,7 +636,7 @@ def path2(chemin):
 
 
 #~ class REStorageDict(dict):
-    #~ u"""Un dictionnaire qui stocke les RE sous forme compilée.
+    #~ u"""Un dictionnaire qui stocke les RE sous forme compilÃ©e.
 
     #~ """
     #~ def __getitem__(self, name):
@@ -649,10 +649,10 @@ def path2(chemin):
 
 
 class WeakRef(weakref.ref):
-    u"""WeakRef surclasse weakref.ref en modifiant sa méthode '__eq__'.
+    u"""WeakRef surclasse weakref.ref en modifiant sa mÃ©thode '__eq__'.
 
     a == b <=> type(a) == type(b) == WeakRef and a() is b().
-    Le but est de ne pas appeler les méthodes __eq__ des objets référencés."""
+    Le but est de ne pas appeler les mÃ©thodes __eq__ des objets rÃ©fÃ©rencÃ©s."""
 
     def __eq__(self, y):
         if not (isinstance(self, WeakRef) and isinstance(y, WeakRef)):
@@ -734,7 +734,7 @@ class CustomWeakKeyDictionary(weakref.WeakKeyDictionary):
 
 
 def debug(*messages):
-    u"""Affiche un (ou plusieurs) message(s) si le déboguage est actif."""
+    u"""Affiche un (ou plusieurs) message(s) si le dÃ©boguage est actif."""
     if param.debug:
         for message in messages:
             print(message)
@@ -805,7 +805,7 @@ def tracer_(booleen = True):
 def property2(fonction):
     return property(fonction, fonction)
 
-# Permet de contourner un bug de exec() sous Python 2.5 lorsque with_statement est activé
+# Permet de contourner un bug de exec() sous Python 2.5 lorsque with_statement est activÃ©
 assert "with_statement" not in locals()
 assert "with_statement" not in globals()
 def exec_(s, globals, locals):
@@ -861,8 +861,8 @@ def pstfunc(chaine):
 
 
 class NoArgument(object):
-    u'''Utilisé comme valeur par défaut, pour savoir si un argument optionnel
-    a été passé. Une seule instance peut-être crée.'''
+    u'''UtilisÃ© comme valeur par dÃ©faut, pour savoir si un argument optionnel
+    a Ã©tÃ© passÃ©. Une seule instance peut-Ãªtre crÃ©e.'''
     __instance = None
 
     def __new__(cls):

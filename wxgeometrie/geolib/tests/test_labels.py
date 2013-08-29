@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 from pytest import XFAIL
@@ -12,9 +12,9 @@ def test_Label_point():
     A = rand_pt()
     B = rand_pt()
     A.label("Position de l'hirondelle d'Afrique.")
-    B.label(u"Position de l'hirondelle européenne.")
+    B.label(u"Position de l'hirondelle europÃ©enne.")
     assert(A.label() == "Position de l'hirondelle d'Afrique.")
-    assert(B.label() == u"Position de l'hirondelle européenne.")
+    assert(B.label() == u"Position de l'hirondelle europÃ©enne.")
     A.label(mode=NOM)
     assert A.mode_affichage == NOM
     assert(A.label() == '')
@@ -91,8 +91,8 @@ def test_changement_mode():
     A.label('A.x', 3)
     assertEqual(A.legende, '{A.x}')
     assertEqual(A.label(), '-7')
-    # Il ne doit pas y avoir d'erreur : le changement de mode doit être
-    # effectué **avant** le changement de texte.
+    # Il ne doit pas y avoir d'erreur : le changement de mode doit Ãªtre
+    # effectuÃ© **avant** le changement de texte.
     A.label('-----', 2)
     assertEqual(A.legende, '-----')
     assertEqual(A.label(), '-----')

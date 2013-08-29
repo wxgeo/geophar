@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------##
@@ -27,10 +27,10 @@ from PyQt4.QtGui import QWidget, QHBoxLayout, QLineEdit, QLabel, QPushButton
 
 
 class LigneCommande(QWidget):
-    u"""Un TextCtrl muni d'un historique et associÈ ‡ un bouton pour valider.
+    u"""Un TextCtrl muni d'un historique et associ√© √† un bouton pour valider.
 
     On peut personnaliser le texte du bouton (via `texte="Mon texte"`),
-    ou mÍme directement le bouton, en utilisant `bouton=...`.
+    ou m√™me directement le bouton, en utilisant `bouton=...`.
     """
     def __init__(self, parent, longueur = 500, texte = None, bouton = None,
                 action = (lambda *args, **kw: True), afficher_bouton = True,
@@ -106,7 +106,7 @@ class LigneCommande(QWidget):
         if commande:
             self.historique.append(commande)
         elif self.historique:
-            # Appuyer une deuxiËme fois sur [EntrÈe] permet de rÈpÈter l'action prÈcÈdente.
+            # Appuyer une deuxi√®me fois sur [Entr√©e] permet de r√©p√©ter l'action pr√©c√©dente.
             commande = self.historique[-1]
         self.action(commande, **kw)
 
@@ -116,9 +116,9 @@ class LigneCommande(QWidget):
         commande = self.text()
 
         if key == Qt.Key_Up:
-            # On remonte dans l'historique (-> entrÈes plus anciennes)
+            # On remonte dans l'historique (-> entr√©es plus anciennes)
             if self.position is None:
-                # cas d'une commande en cours d'Èdition :
+                # cas d'une commande en cours d'√©dition :
                 if commande:
                     if commande != self.historique[-1]:
                         # on enregistre la commande en cours
@@ -131,7 +131,7 @@ class LigneCommande(QWidget):
                 self.texte.setText(self.historique[self.position])
 
         elif key == Qt.Key_Down:
-            # On redescend dans l'historique (-> entrÈes plus rÈcentes)
+            # On redescend dans l'historique (-> entr√©es plus r√©centes)
             if self.position is None or self.position == len(self.historique) - 1:
                 if commande and commande != self.historique[-1]:
                     self.historique.append(commande)

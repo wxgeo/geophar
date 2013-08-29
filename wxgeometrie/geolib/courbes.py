@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------#######
@@ -40,7 +40,7 @@ def inf_or_nan(x):
 
 
 class Courbe_generique(Objet):
-    u"""Classe mère de toutes les courbes."""
+    u"""Classe mÃ¨re de toutes les courbes."""
 
     _affichage_depend_de_la_fenetre = True
     _style_defaut = param.courbes
@@ -77,7 +77,7 @@ class Courbe_generique(Objet):
 class Courbe(Courbe_generique):
     u"""Courbe d'une fonction.
 
-    L'expression doit être donnée en fonction de 'x'.
+    L'expression doit Ãªtre donnÃ©e en fonction de 'x'.
     Exemple : '2x^2-1/x+1'
     """
     _prefixe_nom = "C"
@@ -114,7 +114,7 @@ class Courbe(Courbe_generique):
             for intervalle in union.intervalles:
                 x = intervalle.asarray(fenetre[0], fenetre[1], pas)[0]
                 if len(x):
-#TODO: cas où len(x) == 1 (et donc, x[1] n'existe pas)
+#TODO: cas oÃ¹ len(x) == 1 (et donc, x[1] n'existe pas)
                     y = fonction(x)
 
                     x0 = x[0]
@@ -131,7 +131,7 @@ class Courbe(Courbe_generique):
                         linewidth = self.style("epaisseur"),
                         zorder = self.style("niveau"),
                         ))
-                    # _xarray et _yarray ne servent pas pour la représentation graphique,
+                    # _xarray et _yarray ne servent pas pour la reprÃ©sentation graphique,
                     # mais pour ._distance_inf() uniquement
                     self._xarray = append(self._xarray,  x)
                     self._yarray = append(self._yarray,  y)
@@ -147,7 +147,7 @@ class Courbe(Courbe_generique):
                                 #Fusion
                                 print 'Fusion', y0
                                 if isnan(y0):
-                                    print u'Fusion avancée'
+                                    print u'Fusion avancÃ©e'
                                     for i in xrange(10, 70, 10):
                                         try:
                                             val1 = ancienne_fonction(ancien_xN - 8**(-i))
@@ -193,7 +193,7 @@ class Courbe(Courbe_generique):
             else:
                 vec = x[1] - x[0],  y[1] - y[0]
                 self._append_arc(x[0], y[0], vec)
-# TODO: cas où len(y) < 3
+# TODO: cas oÃ¹ len(y) < 3
         elif isnan(y[0]) and not (isnan(y[1]) or isnan(y[2])) :
               if not intervalle.inf_inclus:
                     vec = x[2] - x[1],  y[2] - y[1]
@@ -210,7 +210,7 @@ class Courbe(Courbe_generique):
             else:
                 vec = x[-2] - x[-1],  y[-2] - y[-1]
                 self._append_arc(x[-1], y[-1], vec)
-# TODO: cas où len(y) < 3
+# TODO: cas oÃ¹ len(y) < 3
         elif isnan(y[-1]) and not (isnan(y[-2]) or isnan(y[-3])) :
               if not intervalle.inf_inclus:
                     vec = x[-3] - x[-2],  y[-3] - y[-2]
@@ -227,27 +227,27 @@ class Courbe(Courbe_generique):
 
 
     def _supprimer_valeurs_extremes(self, x, y, fonction, i, j):
-        u"""Lorsque les valeurs aux bornes sont indéterminées (NaN), infinies (+/-Inf)
-        ou très éloignées de zéro (2e200), on cherche à les convertir en une valeur
-        raisonnable pour la fenêtre d'affichage.
+        u"""Lorsque les valeurs aux bornes sont indÃ©terminÃ©es (NaN), infinies (+/-Inf)
+        ou trÃ¨s Ã©loignÃ©es de zÃ©ro (2e200), on cherche Ã  les convertir en une valeur
+        raisonnable pour la fenÃªtre d'affichage.
 
-        La principale difficulté est de déterminer **numériquement** la limite probable.
+        La principale difficultÃ© est de dÃ©terminer **numÃ©riquement** la limite probable.
 
-        On commence par regarder la valeur calculée par numpy à la borne considérée :
+        On commence par regarder la valeur calculÃ©e par numpy Ã  la borne considÃ©rÃ©e :
 
-        * Si la valeur est +/-Inf, il faut étudier son signe.
-          En effet, numpy ne peut généralement par faire la différence entre des calculs
+        * Si la valeur est +/-Inf, il faut Ã©tudier son signe.
+          En effet, numpy ne peut gÃ©nÃ©ralement par faire la diffÃ©rence entre des calculs
           du type 1/0+ et 1/0- (ex: 1/(x-3) en 3+ et 3-).
-          L'idée est la suivante : si les valeurs diminuent en se rapprochant de la borne,
-          alors la limite est -Inf. De même, si elles augmentent, la limite est +Inf.
-          On retourne alors une valeur en dehors de la fenêtre d'affichage, qui simule l'infini.
+          L'idÃ©e est la suivante : si les valeurs diminuent en se rapprochant de la borne,
+          alors la limite est -Inf. De mÃªme, si elles augmentent, la limite est +Inf.
+          On retourne alors une valeur en dehors de la fenÃªtre d'affichage, qui simule l'infini.
 
-        * Si le résultat est un nombre très éloigné de zéro, on le tronque tout en restant
-          en dehors de la fenêtre d'affichage, de manière à simuler l'infini.
-          En effet, le traceur de matplotlib réagit mal aux valeurs "extrêmes".
+        * Si le rÃ©sultat est un nombre trÃ¨s Ã©loignÃ© de zÃ©ro, on le tronque tout en restant
+          en dehors de la fenÃªtre d'affichage, de maniÃ¨re Ã  simuler l'infini.
+          En effet, le traceur de matplotlib rÃ©agit mal aux valeurs "extrÃªmes".
 
-        * Enfin si le résultat est de type NaN, on s'éloigne légèrement (puis de plus en plus vite)
-          de la borne, et on reitère, dans une limite de 20 itérations.
+        * Enfin si le rÃ©sultat est de type NaN, on s'Ã©loigne lÃ©gÃ¨rement (puis de plus en plus vite)
+          de la borne, et on reitÃ¨re, dans une limite de 20 itÃ©rations.
         """
         x0 = x[i]; y0 = y[i]
         x1 = x[j]; y1 = y[j]
@@ -255,7 +255,7 @@ class Courbe(Courbe_generique):
         entre = k*(x1 - x0) + x0 # (1 - k)*x0 + k*x1
         xk = chain([x0], entre, [x1])
         yk = chain([y0], fonction(entre), [y1])
-        y_finis = [] # dernières valeurs finies
+        y_finis = [] # derniÃ¨res valeurs finies
         infini = False
         xi_infini = None
 
@@ -281,7 +281,7 @@ class Courbe(Courbe_generique):
 
 
     def _rogner_valeur(self, y0):
-        u"Remplace -inf et +inf par des valeurs numériques dépassant la fenêtre."
+        u"Remplace -inf et +inf par des valeurs numÃ©riques dÃ©passant la fenÃªtre."
         if isnan(y0):
             return y0
         xmin, xmax, ymin, ymax = self.feuille.fenetre

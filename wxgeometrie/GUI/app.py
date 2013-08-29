@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------##
@@ -29,7 +29,7 @@ from PyQt4.QtCore import QLocale, QTranslator, QLibraryInfo, Qt, pyqtSignal
 
 class App(QApplication):
 
-    # La fenètre principale s'enregistre au lancement,
+    # La fenÃ¨tre principale s'enregistre au lancement,
     # afin qu'on puisse facilement la retrouver.
     fenetre_principale = None
 
@@ -63,17 +63,17 @@ class App(QApplication):
     def safe_print(self, texte):
         u"""Thread-safe print().
 
-        En dehors de la thread principale, il faut impérativement utiliser
-        cette méthode au lieu de `print()` (notamment parce que print()
-        peut provoquer des accès concurrents au fichier de log en écriture).
+        En dehors de la thread principale, il faut impÃ©rativement utiliser
+        cette mÃ©thode au lieu de `print()` (notamment parce que print()
+        peut provoquer des accÃ¨s concurrents au fichier de log en Ã©criture).
         """
         self._print_signal.emit(texte)
 
     def safe_print_error(self):
         u"""Thread-safe print_error().
 
-        En dehors de la thread principale, il faut impérativement utiliser
-        cette méthode au lieu de `print_error()`.
+        En dehors de la thread principale, il faut impÃ©rativement utiliser
+        cette mÃ©thode au lieu de `print_error()`.
         """
         from ..pylib.fonctions import extract_error
         self._print_signal.emit(extract_error())

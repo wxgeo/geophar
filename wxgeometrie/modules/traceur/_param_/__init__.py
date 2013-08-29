@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 
 
 nombre_courbes = 9
@@ -6,9 +6,9 @@ nombre_courbes = 9
 afficher_barre_outils = False
 afficher_console_geolib = False
 
-# Paramètres concernant les suites
+# ParamÃ¨tres concernant les suites
 ##################################
-# Style et épaisseur des traits (suite récurrente)
+# Style et Ã©paisseur des traits (suite rÃ©currente)
 style_suites_recurrentes = ("-", .5)
 afficher_points_de_construction = False
 

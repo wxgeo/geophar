@@ -1,9 +1,9 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##########################################################################
 #
-#                       Sauvegarde et chargement des paramètres
+#                       Sauvegarde et chargement des paramÃ¨tres
 #
 ##########################################################################
 #    WxGeometrie
@@ -35,15 +35,15 @@ types_supportes = (int, long, str, unicode, float, bool, NoneType, list, tuple, 
 
 # TO DO (?) :
 # - rajouter le support des types array et complex dans securite.eval_safe
-# - gérer correctement l'encodage dans save.py
+# - gÃ©rer correctement l'encodage dans save.py
 #   (tout convertir en unicode, puis en utf-8)
 
 
 def sauvegarder_module(module, nom = "main"):
     u"""Renvoie le contenu d'un module sous forme d'un fichier XML.
 
-    Au lieu du module lui-même, 'module' peut être un dictionnaire
-    correspondant au dictionnaire du module (éventuellement modifié).
+    Au lieu du module lui-mÃªme, 'module' peut Ãªtre un dictionnaire
+    correspondant au dictionnaire du module (Ã©ventuellement modifiÃ©).
     """
     dico = module.__dict__.copy() if not isinstance(module, dict) else module
     for key in param.valeurs_a_ne_pas_sauver:
@@ -59,7 +59,7 @@ def sauvegarder_module(module, nom = "main"):
 
 
 def actualiser_module(module, fichier):
-    u"Rafraichit le contenu d'un module à partir d'un fichier XML."
+    u"Rafraichit le contenu d'un module Ã  partir d'un fichier XML."
     fgeo, msg = sauvegarde.ouvrir_fichierGEO(fichier)
     if fgeo is not None:
         parametres = fgeo.contenu["Parametres"][-1]

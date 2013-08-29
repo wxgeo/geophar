@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------#######
@@ -23,7 +23,7 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #along with this program; if not, write to the Free Software
 #Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-## Objets complémentaires à ceux de sympy
+## Objets complÃ©mentaires Ã  ceux de sympy
 
 from sympy import Symbol, Rational, Expr, Integer, Basic
 from sympy.core.cache import cacheit
@@ -47,10 +47,10 @@ def convert2decim(expr, prec=None):
 
 class Decim(Rational):
     """
-    Fonctionne comme un rationnel sympy, mais s'affiche comme un décimal.
+    Fonctionne comme un rationnel sympy, mais s'affiche comme un dÃ©cimal.
 
-    Ceci permet, dans la calculatrice, de faire des calculs avec des décimaux,
-    tout en ayant en interne des résultats exacts, et donc d'éviter les cumuls
+    Ceci permet, dans la calculatrice, de faire des calculs avec des dÃ©cimaux,
+    tout en ayant en interne des rÃ©sultats exacts, et donc d'Ã©viter les cumuls
     d'erreurs d'arrondis.
     """
 
@@ -76,13 +76,13 @@ class Decim(Rational):
     def __abs__(self):
         return Decim(abs(self.p), self.q, prec=self.prec)
 
-# On modifie les méthodes __add__, __sub__, etc. de Rational()
-# pour renvoyer un objet Decim() si l'un des objets de l'opération
+# On modifie les mÃ©thodes __add__, __sub__, etc. de Rational()
+# pour renvoyer un objet Decim() si l'un des objets de l'opÃ©ration
 # est de type Decim.
 
 def _compatible(meth):
-    u"Modifie la méthode `meth` pour qu'elle prenne en compte le type Decim()."
-    # La méthode doit avoir exactement 2 arguments.
+    u"Modifie la mÃ©thode `meth` pour qu'elle prenne en compte le type Decim()."
+    # La mÃ©thode doit avoir exactement 2 arguments.
     # Exemple type : .__add__(self, other).
     assert meth.func_code.co_argcount == 2
     def new_meth(self, other):
@@ -175,7 +175,7 @@ class Fonction(ObjetMathematique):
 
 
 class ProduitEntiers(long):
-    u"""Usage interne : destiné à être utilisé avec sympy.factorint."""
+    u"""Usage interne : destinÃ© Ã  Ãªtre utilisÃ© avec sympy.factorint."""
 
     def __new__(cls, *couples):
         val = 1
@@ -200,22 +200,22 @@ class ProduitEntiers(long):
 
 
 
-#TODO: créer une classe Wrapper, dont MesureDegres doit hériter,
+#TODO: crÃ©er une classe Wrapper, dont MesureDegres doit hÃ©riter,
 # Note: this must wrap all special methods
 # http://docs.python.org/reference/datamodel.html#more-attribute-access-for-new-style-classes
 class MesureDegres(GenericWrapper):
-    u"""Usage interne : destiné à être utilisé avec deg."""
+    u"""Usage interne : destinÃ© Ã  Ãªtre utilisÃ© avec deg."""
 
     __slots__ = ('__val',)
 
     def __str__(self):
-        return str(self.__val) + '°'
+        return str(self.__val) + 'Â°'
 
     def __repr__(self):
-        return repr(self.__val) + '°'
+        return repr(self.__val) + 'Â°'
 
     def __unicode__(self):
-        return unicode(self.__val) + u'°'
+        return unicode(self.__val) + u'Â°'
 
 
 

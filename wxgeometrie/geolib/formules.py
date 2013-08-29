@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------#######
@@ -32,7 +32,7 @@ from .. import param
 
 class Formule(object):
 
-    # Le caractère d'erreur doit être accepté par le parser de matplotlib en mode normal *ET* en mode math.
+    # Le caractÃ¨re d'erreur doit Ãªtre acceptÃ© par le parser de matplotlib en mode normal *ET* en mode math.
     _caractere_erreur = "<.>"
 
     def _get_feuille(self):
@@ -54,7 +54,7 @@ class Formule(object):
         self._parent = ref(parent)
         # self._parent est une fonction qui renvoie parent s'il existe encore.
         # Cela permet de ne pas le maintenir en vie artificiellement
-        # (pas de référence circulaire).
+        # (pas de rÃ©fÃ©rence circulaire).
         #~ self._cache_repr = chaine
         #~ self._cache_str = "<?>".join()
         if "{" not in chaine:
@@ -69,15 +69,15 @@ class Formule(object):
 
             var.enfants.append(parent if parent.etiquette is None
                                       else parent.etiquette)
-##            # on va maintenant redéfinir la méthode affiche de toutes les variables de la formule :
-              # au lieu d'être inactive, la méthode affiche va actualiser l'affichage de l'objet contenant la formule.
+##            # on va maintenant redÃ©finir la mÃ©thode affiche de toutes les variables de la formule :
+              # au lieu d'Ãªtre inactive, la mÃ©thode affiche va actualiser l'affichage de l'objet contenant la formule.
 ##            def affiche(self, actualiser = False, formule = self):
 ##                formule.parent.creer_figure()
 ##            var.affiche = new.instancemethod(affiche, var, var.__class__)
         self._contenu = liste
 
-        # il faut faire un système de cache pour chaque variable :
-        # - si la variable est calculable, on renvoie la valeur de la variable (et on met à jour son cache)
+        # il faut faire un systÃ¨me de cache pour chaque variable :
+        # - si la variable est calculable, on renvoie la valeur de la variable (et on met Ã  jour son cache)
         # - sinon, on renvoie le cache s'il s'agit de repr, et <?> s'il s'agit de str.
 
         self.feuille = self.parent.feuille

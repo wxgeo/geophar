@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------#######
@@ -32,7 +32,7 @@ from .sauvegarde import FichierGEO
 class Macro_construction(object):
     u"""Lecteur de macros.
 
-    Lit et interprète le fichier de macro de construction.
+    Lit et interprÃ¨te le fichier de macro de construction.
     """
 
     def __init__(self, nom = None):
@@ -44,7 +44,7 @@ class Macro_construction(object):
     def ouvrir(self, path):
         self.fichier.ouvrir(path)
         if self.fichier.has_key("Figure"):
-            self.figure = self.fichier.contenu["Figure"][0] # code python correspondant à la figure
+            self.figure = self.fichier.contenu["Figure"][0] # code python correspondant Ã  la figure
         else:
             self.figure = ""
 
@@ -52,9 +52,9 @@ class Macro_construction(object):
             self.parametres = self.fichier.contenu["Parametres_macro"][0]
 #            self.nom = self.parametres["nom"][0].strip()
             self.arguments = self.parametres["arguments"][0].strip().split(",") # arguments de la macro (ex: 3 points pour un triangle)
-#            self.decoration = self.parametres["decoration"][0].strip().split(",") # éléments ne devant pas être construits (texte de commentaire par exemple).
+#            self.decoration = self.parametres["decoration"][0].strip().split(",") # Ã©lÃ©ments ne devant pas Ãªtre construits (texte de commentaire par exemple).
 
-        else: # par défaut, les arguments sont tous les points libres
+        else: # par dÃ©faut, les arguments sont tous les points libres
             self.arguments = []
             for ligne in self.figure.split("\n"):
                 re_match = re.match("[A-Za-z_][A-Za-z0-9_]*[ ]*=[ ]*Point(", ligne)

@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 from __future__ import with_statement
 
@@ -55,7 +55,7 @@ class GelAffichage(object):
             self.canvas._curseur(sablier=False)
 
 
-# Garde une trace dans les logs de chaque appel de la méthode pour débogage.
+# Garde une trace dans les logs de chaque appel de la mÃ©thode pour dÃ©bogage.
 @decorator
 def track(meth, self, *args, **kw):
     if param.debug:
@@ -63,9 +63,9 @@ def track(meth, self, *args, **kw):
         self.parent.action_effectuee(s)
     return meth(self, *args, **kw)
 
-# Garde une trace dans les logs de chaque appel *isolé* de la méthode pour débogage.
+# Garde une trace dans les logs de chaque appel *isolÃ©* de la mÃ©thode pour dÃ©bogage.
 # Par exemple, en cas de zoom avec la roulette de souris, seul le dernier zoom
-# sera enregistré, pour ne pas saturer le fichier .log
+# sera enregistrÃ©, pour ne pas saturer le fichier .log
 @decorator
 def partial_track(meth, self, *args, **kw):
     if param.debug:
@@ -80,7 +80,7 @@ def partial_track(meth, self, *args, **kw):
 
 
 class Canvas(FigureCanvasAgg):
-    u'Partie du canvas indépendante de la librairie graphique (Wx actuellement).'
+    u'Partie du canvas indÃ©pendante de la librairie graphique (Wx actuellement).'
 
     def __init__(self, couleur_fond = 'w', dimensions = None, feuille = None):
         self.figure = Figure(dpi = param.dpi_ecran, frameon=True, facecolor = couleur_fond)
@@ -91,9 +91,9 @@ class Canvas(FigureCanvasAgg):
         self.axes.set_xticks([])
         self.axes.set_yticks([])
 
-        # Ces paramètres ne sont utiles que pour les sur-classes s'intégrant dans un GUI.
+        # Ces paramÃ¨tres ne sont utiles que pour les sur-classes s'intÃ©grant dans un GUI.
         self.editeur = None
-        self.select = None             # objet couramment sélectionné
+        self.select = None             # objet couramment sÃ©lectionnÃ©
 
         #if self.param("transformation_affine") is not None:
         #    self.transformation = matplotlib.transforms.Affine(*self.param("transformation_affine"))
@@ -103,7 +103,7 @@ class Canvas(FigureCanvasAgg):
         #    self.transformation = None
         if self.param("transformation") is not None:
             a, b, c, d = self.param("transformation")
-            # CODE À RÉÉCRIRE et À ADAPTER
+            # CODE Ã€ RÃ‰Ã‰CRIRE et Ã€ ADAPTER
             self.transformation = numpy.matrix([[a, b], [c, d]])
         else:
             self.transformation = None
@@ -112,15 +112,15 @@ class Canvas(FigureCanvasAgg):
         # Ne pas utiliser directement.
         # Si on met la valeur a True, self.rafraichir_affichage() ne fait plus rien.
         # Cela permet d'effectuer un certain nombre d'actions rapidement,
-        # et de n'actualiser qu'à la fin.
+        # et de n'actualiser qu'Ã  la fin.
         # En particulier, cela sert pour charger une figure depuis un fichier .geo
         self._affichage_gele_en_apparence = False
         # Ne pas utiliser directement.
         # Si on met la valeur a True, self.rafraichir_affichage() fonctionne toujours,
-        # mais les changements ne s'affichent pas à l'écran.
+        # mais les changements ne s'affichent pas Ã  l'Ã©cran.
         # Cela permet d'effectuer un certain nombre d'actions sans que l'utilisateur s'en apercoive
         # (pas de clignotement de l'affichage).
-        # Par contre, le gain de temps est négligeable par rapport à un vrai gel de l'affichage.
+        # Par contre, le gain de temps est nÃ©gligeable par rapport Ã  un vrai gel de l'affichage.
         # En particulier, cela sert pour exporter une figure.
 
 
@@ -140,7 +140,7 @@ class Canvas(FigureCanvasAgg):
         self.__feuille_actuelle = val
 
     def initialiser(self):
-        # actions a effectuer avant de rééxecuter l'historique
+        # actions a effectuer avant de rÃ©Ã©xecuter l'historique
         for parametre in self.parametres:
             setattr(self, parametre, self.param(parametre))
 
@@ -148,26 +148,26 @@ class Canvas(FigureCanvasAgg):
     def exporter(self, fichier, format=None, dpi=None, zone=None, echelle=None, taille=None, keep_ratio=False):
         u"""Export de la feuille sous forme d'un fichier (png, eps, ...).
 
-        :param string,unicode,file fichier: le fichier lui-même, ou son emplacement.
+        :param string,unicode,file fichier: le fichier lui-mÃªme, ou son emplacement.
         :param format: le format de l'image (PNG, SVG, ...).
-                       Inutile si le nom du fichier est donné avec une extension connue.
-        :param int,float dpi: résolution souhaitée (en dot par inch)
+                       Inutile si le nom du fichier est donnÃ© avec une extension connue.
+        :param int,float dpi: rÃ©solution souhaitÃ©e (en dot par inch)
         :param tuple zone: (xmin, xmax, ymin, ymax) : pour n'exporter qu'une partie de la feuille (png seulement).
-        :param tuple echelle: (x, y) : nombre de cm pour une unité en abscisse ; en ordonnée
+        :param tuple echelle: (x, y) : nombre de cm pour une unitÃ© en abscisse ; en ordonnÃ©e
         :param tuple taille: (largeur, hauteur) : taille de l'image en cm.
-        :param bool keep_ratio: indique si le ratio doit être préservé en cas de redimensionnement.
+        :param bool keep_ratio: indique si le ratio doit Ãªtre prÃ©servÃ© en cas de redimensionnement.
 
-        Les paramètres `echelle` et `taille` ne peuvent être fournis simultanément.
+        Les paramÃ¨tres `echelle` et `taille` ne peuvent Ãªtre fournis simultanÃ©ment.
         """
 
         if isinstance(fichier, unicode):
-            fichier = str2(fichier) # la méthode savefig ne gère pas l'unicode
+            fichier = str2(fichier) # la mÃ©thode savefig ne gÃ¨re pas l'unicode
         dpi = dpi or param.dpi_export
 
         if self.editeur is not None:
-            # Evite d'exporter la feuille avec un nom d'objet en cours d'édition
+            # Evite d'exporter la feuille avec un nom d'objet en cours d'Ã©dition
             self.editeur.close()
-        # De même, aucun objet ne doit être en gras
+        # De mÃªme, aucun objet ne doit Ãªtre en gras
         self.feuille_actuelle.objets_en_gras()
         # Les objets invisibles ne doivent pas apparaitre
         afficher_objets_caches = self.afficher_objets_caches
@@ -273,9 +273,9 @@ class Canvas(FigureCanvasAgg):
     def coeff(self, i): # DESUET
 #        warning("Desuet. Utiliser dpix2coo (*coeff) et dcoo2pix (/coeff)")
         return (self.fenetre[1+2*i] - self.fenetre[2*i])/self.dimensions[i]
-        # Rq: une ZeroDivisionError se produit juste après avoir beaucoup réduit une fenêtre,
+        # Rq: une ZeroDivisionError se produit juste aprÃ¨s avoir beaucoup rÃ©duit une fenÃªtre,
         # wxpython renvoit parfois (0,0) pour la taille.
-        # le plus simple serait de laisser l'erreur, mais ça innonde le débugueur de messages... :-/
+        # le plus simple serait de laisser l'erreur, mais Ã§a innonde le dÃ©bugueur de messages... :-/
 
     def coeffs(self): # DESUET
 #        warning("Desuet. Utiliser dpix2coo et dcoo2pix")
@@ -283,14 +283,14 @@ class Canvas(FigureCanvasAgg):
     ## </DESUET> ##
 
     def txt_box(self, matplotlib_text):
-        u"""Retourne l'espace (rectangulaire) occupé par le texte.
+        u"""Retourne l'espace (rectangulaire) occupÃ© par le texte.
 
-        Retourne un objet Bbox, possédant des attributs xmin, xmax, ymin,
+        Retourne un objet Bbox, possÃ©dant des attributs xmin, xmax, ymin,
         ymax, height et width. (En pixels)."""
         return matplotlib_text.get_window_extent(self.get_renderer())
 
     def coo2pix(self, x, y):
-        u"""Convertit des coordonnées en pixel."""
+        u"""Convertit des coordonnÃ©es en pixel."""
         if isinstance(x, (list, tuple)):
             x = numpy.array(x)
         if isinstance(y, (list, tuple)):
@@ -301,7 +301,7 @@ class Canvas(FigureCanvasAgg):
         return px, py
 
     def pix2coo(self, px, py):
-        u"""Convertit un pixel en coordonnées."""
+        u"""Convertit un pixel en coordonnÃ©es."""
         if isinstance(px, (list, tuple)):
             px = numpy.array(px)
         if isinstance(py, (list, tuple)):
@@ -313,14 +313,14 @@ class Canvas(FigureCanvasAgg):
         return x, y
 
     def dcoo2pix(self, dx, dy):
-        u"""Convertit un déplacement exprimé en coordonnées en un déplacement en pixels."""
+        u"""Convertit un dÃ©placement exprimÃ© en coordonnÃ©es en un dÃ©placement en pixels."""
         l, h = self.dimensions
         dpx = l*dx/(self.fenetre[1] - self.fenetre[0])
         dpy = h*dy/(self.fenetre[2] - self.fenetre[3])
         return dpx, dpy
 
     def dpix2coo(self, dpx, dpy):
-        u"""Convertit un déplacement exprimé en pixels en un déplacement exprimé en coordonnées."""
+        u"""Convertit un dÃ©placement exprimÃ© en pixels en un dÃ©placement exprimÃ© en coordonnÃ©es."""
         l, h = self.dimensions
         dx = dpx*(self.fenetre[1] - self.fenetre[0])/l
         dy = dpy*(self.fenetre[2] - self.fenetre[3])/h
@@ -328,30 +328,30 @@ class Canvas(FigureCanvasAgg):
 
 
     def _affiche_module(self):
-        u"Affichage spécifique au module en cours. (À surclasser.)"
+        u"Affichage spÃ©cifique au module en cours. (Ã€ surclasser.)"
         pass
 
     def geler_affichage(self, geler=True, actualiser=False, seulement_en_apparence=False, sablier=False):
-        u"""À utiliser au sein d'un contexte 'with':
+        u"""Ã€ utiliser au sein d'un contexte 'with':
 
             .. sourcecode:: python
 
             with self.geler_affichage():
                 # some action
 
-        Si actualiser = True, l'affichage est rafraichi au dégel.
-        Si seulement_en_apparence = True, l'affichage n'est pas gelé en interne, mais les modifications
-        ne s'affichent pas à l'écran (le gain de vitesse est alors négligeable, mais esthétiquement ça évite
-        que des modifications successives apparaissent à l'écran).
+        Si actualiser = True, l'affichage est rafraichi au dÃ©gel.
+        Si seulement_en_apparence = True, l'affichage n'est pas gelÃ© en interne, mais les modifications
+        ne s'affichent pas Ã  l'Ã©cran (le gain de vitesse est alors nÃ©gligeable, mais esthÃ©tiquement Ã§a Ã©vite
+        que des modifications successives apparaissent Ã  l'Ã©cran).
 
-        Si sablier = True, le pointeur de la souris est remplacé temporairement par un sablier.
+        Si sablier = True, le pointeur de la souris est remplacÃ© temporairement par un sablier.
         """
         return GelAffichage(self, geler=geler, actualiser=actualiser, sablier=sablier)
 
     def _curseur(self, sablier):
         u"""Changer le curseur en sablier.
 
-        À surclasser."""
+        Ã€ surclasser."""
         raise NotImplementedError
 
     @property
@@ -368,7 +368,7 @@ class Canvas(FigureCanvasAgg):
 
 #    Reglage des parametres d'affichage
 ##########################################
-# Gestion des variables d'environnement liées à l'affichage.
+# Gestion des variables d'environnement liÃ©es Ã  l'affichage.
 # A standardiser.
 
 
@@ -378,12 +378,12 @@ class Canvas(FigureCanvasAgg):
 ##                                    )
 
 
-    # Parametres booléens gérés par une entrée du menu
+    # Parametres boolÃ©ens gÃ©rÃ©s par une entrÃ©e du menu
     for _nom_, _doc_ in (
     ('afficher_axes', u"Afficher ou non les axes."),
     ('afficher_quadrillage', u"Afficher ou non le(s) quadrillage(s)."),
-    ('orthonorme', u"Afficher la figure dans un repère toujours orthonormé."),
-    ('afficher_objets_caches', u"Indique si les objets cachés sont affichés ou non."),
+    ('orthonorme', u"Afficher la figure dans un repÃ¨re toujours orthonormÃ©."),
+    ('afficher_objets_caches', u"Indique si les objets cachÃ©s sont affichÃ©s ou non."),
     ('grille_aimantee', u"Indique si les points doivent se placer sur le quadrillage."),
     ):
         exec('''@track
@@ -398,7 +398,7 @@ def gerer_parametre_%(_nom_)s(self, afficher = None):
     assert isinstance(self.%(_nom_)s, bool), '%(_nom_)s: ' + repr(self.%(_nom_)s)
     return self.%(_nom_)s''' %locals(), globals(), locals())
 
-    # Paramètres gérés directement par la feuille
+    # ParamÃ¨tres gÃ©rÃ©s directement par la feuille
     for _nom_ in Feuille._parametres_repere:
         exec('''assert "%(_nom_)s" not in locals(), "Erreur: %(_nom_)s est deja defini !"
 @property2
@@ -422,7 +422,7 @@ def %(_nom_)s(self, valeur = no_argument):
                 rat = 1
             else:
                 rat = self.ratio # x:y -> x/y
-                # ratio est le rapport "unité en abscisse/unité en ordonnée"
+                # ratio est le rapport "unitÃ© en abscisse/unitÃ© en ordonnÃ©e"
             w, h = self.dimensions
             fenetre = self.feuille_actuelle.fenetre
             coeff0 = rat*(fenetre[1] - fenetre[0])/w
@@ -462,9 +462,9 @@ def %(_nom_)s(self, valeur = no_argument):
         return xmax - xmin, ymax - ymin
 
     def synchroniser_fenetre(self):
-        u"""Détecte la fenêtre d'affichage et l'enregistre.
-        Ce peut être utile si l'on utilise une commande de haut niveau de matplolib,
-        qui calcule automatiquement la meilleure fenêtre d'affichage."""
+        u"""DÃ©tecte la fenÃªtre d'affichage et l'enregistre.
+        Ce peut Ãªtre utile si l'on utilise une commande de haut niveau de matplolib,
+        qui calcule automatiquement la meilleure fenÃªtre d'affichage."""
         xmin, xmax = self.axes.viewLim.intervalx
         ymin, ymax = self.axes.viewLim.intervaly
         self.fenetre = xmin, xmax, ymin, ymax
@@ -493,16 +493,16 @@ def %(_nom_)s(self, valeur = no_argument):
             self.graph._regler_fenetre()
             compteur += 1
             self._zoom_auto()
-            # à cause du texte dont la taille est indépendante de l'échelle, les calculs sont faussés.
-            # Mais en réitérant le procédé, l'affichage converge rapidement (A OPTIMISER ?).
+            # Ã  cause du texte dont la taille est indÃ©pendante de l'Ã©chelle, les calculs sont faussÃ©s.
+            # Mais en rÃ©itÃ©rant le procÃ©dÃ©, l'affichage converge rapidement (A OPTIMISER ?).
             b = a
             a = self.fenetre
             erreur_x = abs(a[0] - b[0]) + abs(a[1] - b[1])
             erreur_y = abs(a[2] - b[2]) + abs(a[3] - b[3])
-            # l'erreur doit être inférieure à 1 pixel:
+            # l'erreur doit Ãªtre infÃ©rieure Ã  1 pixel:
             condition = erreur_x/self.coeff(0) > 1 or erreur_y/self.coeff(1) > 1
             if compteur > 25:
-                self.message(u"Échec du zoom automatique.")
+                self.message(u"Ã‰chec du zoom automatique.")
                 self.fenetre = fenetre_initiale
                 break
 
@@ -515,15 +515,15 @@ def %(_nom_)s(self, valeur = no_argument):
         if xxyy:
             def num_only(item):
                 # 'None' indique que l'objet ne fournit pas d'indication de dimension
-                # pour les abscisses ou pour les ordonnées.
+                # pour les abscisses ou pour les ordonnÃ©es.
                 return not(item is None or isinf(item) or isnan(item))
 
             noms = ('xmin', 'xmax', 'ymin', 'ymax')
             # Listes brutes des extremas obtenus pour chaque objet.
             listes_extremas = zip(noms, xxyy, self.fenetre)
-            # Synthèse : valeurs retenues pour l'ensemble de la feuille.
+            # SynthÃ¨se : valeurs retenues pour l'ensemble de la feuille.
             extremas = {}
-            # 'False' si le paramètre ne doit *pas* être modifié.
+            # 'False' si le paramÃ¨tre ne doit *pas* Ãªtre modifiÃ©.
             ajuster = {'xmin': True, 'xmax': True, 'ymin': True, 'ymax': True}
 
             for nom, liste, defaut in listes_extremas:
@@ -554,8 +554,8 @@ def %(_nom_)s(self, valeur = no_argument):
                     extremas[nom_min] -= rayon
                     extremas[nom_max] += rayon
                 else:
-                    # On prévoit 5% de marge (de manière à ce qu'un point
-                    # ne se retrouve pas collé au bord de la fenêtre par exemple).
+                    # On prÃ©voit 5% de marge (de maniÃ¨re Ã  ce qu'un point
+                    # ne se retrouve pas collÃ© au bord de la fenÃªtre par exemple).
                     if ajuster[nom_min]:
                         extremas[nom_min] -= 0.05*ecart
                     if ajuster[nom_max]:
@@ -569,8 +569,8 @@ def %(_nom_)s(self, valeur = no_argument):
     @track
     def orthonormer(self, event = None, mode = 1):
         u"""
-        mode 0 : on orthonormalise le repère en restreignant la vue.
-        mode 1 : on orthonormalise le repère en élargissant la vue."""
+        mode 0 : on orthonormalise le repÃ¨re en restreignant la vue.
+        mode 1 : on orthonormalise le repÃ¨re en Ã©largissant la vue."""
         if mode:
             xcoeff = self.coeff(1)/self.coeff(0) if self.coeff(0) < self.coeff(1) else 1
             ycoeff = 1 if self.coeff(0) < self.coeff(1) else self.coeff(0)/self.coeff(1)
@@ -673,13 +673,13 @@ def %(_nom_)s(self, valeur = no_argument):
         self.gerer_parametre_afficher_quadrillage(True)
 
 
-# Sélection d'une zone
+# SÃ©lection d'une zone
 ######################
 
     def _rectangle_selection(self, debut, pixel, linestyle='-', facecolor='y', edgecolor='y', respect_ratio=False):
         x, y = pixel
         xmax, ymax = self.dimensions
-        # Pour des questions d'arrondi lors de la conversion pixel -> coordonnée,
+        # Pour des questions d'arrondi lors de la conversion pixel -> coordonnÃ©e,
         # on met 0.1 au lieu de 0 comme valeur minimale en pixel (0+ en fait).
         x = max(min(x, xmax - 1), 0.1)
         y = max(min(y, ymax - 1), 0.1)
@@ -694,9 +694,9 @@ def %(_nom_)s(self, valeur = no_argument):
 
         # Exceptionnellement, il faut ici effacer manuellement le graphisme.
         # En effet, il n'est pas garanti qu'il y ait un rafraichissement
-        # de l'affichage à chaque fois que le rectangle de sélection change.
+        # de l'affichage Ã  chaque fois que le rectangle de sÃ©lection change.
         # Si l'on n'efface pas manuellement l'affichage, on risque donc d'avoir
-        # deux rectangles de sélection différents affichés simultanément.
+        # deux rectangles de sÃ©lection diffÃ©rents affichÃ©s simultanÃ©ment.
         self.graph._effacer_artistes()
         self.dessiner_polygone([x0, x0, x1, x1], [y0, y1, y1, y0], facecolor=facecolor, edgecolor=edgecolor, alpha=.1)
         self.dessiner_ligne([x0, x0, x1, x1, x0], [y0, y1, y1, y0, y0], edgecolor, linestyle=linestyle, alpha=1)
@@ -732,9 +732,9 @@ def %(_nom_)s(self, valeur = no_argument):
         self.feuille_actuelle.effacer_traces()
 
     def executer(self, commande, parser = False):
-        u"""Exécute une commande dans la feuille.
+        u"""ExÃ©cute une commande dans la feuille.
 
-        NB: le parser n'est *PAS* activé par défaut, par souci de rapidité."""
+        NB: le parser n'est *PAS* activÃ© par dÃ©faut, par souci de rapiditÃ©."""
         self.feuille_actuelle.executer(commande, parser = parser)
 
 
@@ -753,11 +753,11 @@ def %(_nom_)s(self, valeur = no_argument):
     def _actualiser_si_necessaire(self, event = None, _n=[0]):
 #        _n[0] += 1
         if self.feuille_actuelle._affichage_a_actualiser:
-#            print _n[0], u"Affichage actualisé."
+#            print _n[0], u"Affichage actualisÃ©."
             self._actualiser()
 
     def _actualiser(self, _n = [0]):
-        # Le code suivant est à activer uniquement pour le débogage de l'affichage:
+        # Le code suivant est Ã  activer uniquement pour le dÃ©bogage de l'affichage:
         # <DEBUG>
         if param.debug:
             s = "Actualisation"
@@ -767,15 +767,15 @@ def %(_nom_)s(self, valeur = no_argument):
             _n[0] += 1
         # </DEBUG>
         if 0 in self.dimensions:
-            # Fenêtre pas encore affichée (initialisation du programme).
+            # FenÃªtre pas encore affichÃ©e (initialisation du programme).
             if param.debug:
-                print u"Actualisation différée (fenêtre non chargée : " + self.parent.titre + ")"
+                print u"Actualisation diffÃ©rÃ©e (fenÃªtre non chargÃ©e : " + self.parent.titre + ")"
             return
         try:
             self.graph.dessiner(dessin_temporaire = self._dessin_temporaire,
                         rafraichir_axes = self.feuille_actuelle._repere_modifie)
         except Exception:
-            # Ne pas bloquer le logiciel par des rafraichissements successifs en cas de problème.
+            # Ne pas bloquer le logiciel par des rafraichissements successifs en cas de problÃ¨me.
             print_error()
         self.feuille_actuelle._repere_modifie = False
         self.feuille_actuelle._affichage_a_actualiser = False

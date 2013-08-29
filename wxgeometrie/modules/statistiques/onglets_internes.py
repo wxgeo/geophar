@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 from __future__ import with_statement
 
@@ -55,7 +55,7 @@ class Donnees(CstmPanel):
     def __init__(self, parent):
         CstmPanel.__init__(self, parent)
         sizer = QHBoxLayout()
-        sizer.addWidget(QLabel(u"Effectifs et valeurs associées:  "))
+        sizer.addWidget(QLabel(u"Effectifs et valeurs associÃ©es:  "))
         self.valeurs = QLineEdit()
         self.valeurs.setText(self.main.donnees_valeurs)
         self.valeurs.setMinimumWidth(500)
@@ -82,8 +82,8 @@ class Donnees(CstmPanel):
 class Legende(CstmPanel):
     def __init__(self, parent):
         CstmPanel.__init__(self, parent)
-        # Légendes
-        box = QGroupBox(u"Légende des axes")
+        # LÃ©gendes
+        box = QGroupBox(u"LÃ©gende des axes")
         sizer = QHBoxLayout()
         box.setLayout(sizer)
 
@@ -95,7 +95,7 @@ class Legende(CstmPanel):
         self.x.returnPressed.connect(self.main.actualiser)
         sizer.addWidget(self.x)
 
-        self.sy = QLabel(u"Ordonnées:")
+        self.sy = QLabel(u"OrdonnÃ©es:")
         sizer.addWidget(self.sy)
         self.y = QLineEdit()
         self.y.setText(self.main.legende_y)
@@ -108,7 +108,7 @@ class Legende(CstmPanel):
         self.a = QLineEdit()
         self.a.setText(self.main.legende_a)
         self.a.setMinimumWidth(100)
-        self.a.setToolTip(u"Pour les histogrammes.\nIndique en quelle unité s'exprime la quantité.\nExemples:\npersonnes, ampoules, %, $, ...")
+        self.a.setToolTip(u"Pour les histogrammes.\nIndique en quelle unitÃ© s'exprime la quantitÃ©.\nExemples:\npersonnes, ampoules, %, $, ...")
         self.a.returnPressed.connect(self.main.actualiser)
         sizer.addWidget(self.a)
         self.add(box)
@@ -134,12 +134,12 @@ class Graduation(CstmPanel):
         self.x.returnPressed.connect(self.main.actualiser)
         sizer.addWidget(self.x)
 
-        self.sy = QLabel(u"Ordonnées:")
+        self.sy = QLabel(u"OrdonnÃ©es:")
         sizer.addWidget(self.sy)
         self.y = QLineEdit()
         self.y.setText(self.main.gradu_y)
         self.y.setMinimumWidth(50)
-        self.y.setToolTip(u"Graduation en ordonnées.")
+        self.y.setToolTip(u"Graduation en ordonnÃ©es.")
         self.y.returnPressed.connect(self.main.actualiser)
         sizer.addWidget(self.y)
 
@@ -148,7 +148,7 @@ class Graduation(CstmPanel):
         self.a = QLineEdit()
         self.a.setText(self.main.gradu_a)
         self.a.setMinimumWidth(50)
-        self.a.setToolTip(u"Dimensions du carré ou rectangle donnant l'échelle.\nExemple:\n 1 (carré), 1x2 (rectangle)")
+        self.a.setToolTip(u"Dimensions du carrÃ© ou rectangle donnant l'Ã©chelle.\nExemple:\n 1 (carrÃ©), 1x2 (rectangle)")
         self.a.returnPressed.connect(self.main.actualiser)
         sizer.addWidget(self.a)
         msizer.addWidget(box)
@@ -169,12 +169,12 @@ class Graduation(CstmPanel):
         self.origine_x.returnPressed.connect(self.main.actualiser)
         sizer.addWidget(self.origine_x)
 
-        self.soy = QLabel(u"Ordonnées:")
+        self.soy = QLabel(u"OrdonnÃ©es:")
         sizer.addWidget(self.soy)
         self.origine_y = QLineEdit()
         self.origine_y.setText(self.main.origine_y)
         self.origine_y.setMinimumWidth(50)
-        self.origine_y.setToolTip(u"Origine de l'axe des ordonnées.")
+        self.origine_y.setToolTip(u"Origine de l'axe des ordonnÃ©es.")
         self.origine_y.returnPressed.connect(self.main.actualiser)
         sizer.addWidget(self.origine_y)
 
@@ -196,7 +196,7 @@ class Autres(CstmPanel):
         self.sm = QLabel(u'Affichage des effectifs:  ')
         hsizer.addWidget(self.sm)
         self.mode = QComboBox()
-        self.mode.addItems((u'tels quels', u'en pourcentages', u'en fréquences'))
+        self.mode.addItems((u'tels quels', u'en pourcentages', u'en frÃ©quences'))
         self.mode.setCurrentIndex(self.main.param("mode_effectifs"))
         self.mode.currentIndexChanged.connect(self.main.EvtCheck)
         hsizer.addWidget(self.mode)
@@ -217,7 +217,7 @@ class Autres(CstmPanel):
         self.hachures.stateChanged.connect(self.main.EvtCheck)
         vsizer.addWidget(self.hachures)
 
-        self.auto = QCheckBox(u"Réglage automatique de la fenêtre d'affichage.")
+        self.auto = QCheckBox(u"RÃ©glage automatique de la fenÃªtre d'affichage.")
         self.auto.setChecked(self.main.param("reglage_auto_fenetre"))
         self.auto.stateChanged.connect(self.main.EvtCheck)
         vsizer.addWidget(self.auto)
@@ -235,24 +235,24 @@ class Autres_quantile(CstmPanel):
         sizer = QHBoxLayout()
         box.setLayout(sizer)
 
-        self.mediane = QCheckBox(u'Construire la médiane')
+        self.mediane = QCheckBox(u'Construire la mÃ©diane')
         self.mediane.setChecked(self.main.choix_quantiles["mediane"][0])
         self.mediane.stateChanged.connect(self.main.EvtCheck)
 
         sizer.addWidget(self.mediane)
-        sizer.addSpacing(10) # valeur à ajuster
+        sizer.addSpacing(10) # valeur Ã  ajuster
 
         self.quartiles = QCheckBox(u'Construire les quartiles')
         self.quartiles.setChecked(self.main.choix_quantiles["quartiles"][0])
         self.quartiles.stateChanged.connect(self.main.EvtCheck)
         sizer.addWidget(self.quartiles)
-        sizer.addSpacing(10) # valeur à ajuster
+        sizer.addSpacing(10) # valeur Ã  ajuster
 
-        self.deciles = QCheckBox(u'Construire les déciles')
+        self.deciles = QCheckBox(u'Construire les dÃ©ciles')
         self.deciles.setChecked(self.main.choix_quantiles["deciles"][0])
         self.deciles.stateChanged.connect(self.main.EvtCheck)
         sizer.addWidget(self.deciles)
-        sizer.addSpacing(10) # valeur à ajuster
+        sizer.addSpacing(10) # valeur Ã  ajuster
 
         self.add(box)
 
@@ -269,10 +269,10 @@ class OngletsStatistiques(QTabWidget):
         self.tab_reglages = Autres(self)
         self.tab_quantiles = Autres_quantile(self)
 
-        self.addTab(self.tab_donnees, u'Données')
-        self.addTab(self.tab_legende, u'Légende')
+        self.addTab(self.tab_donnees, u'DonnÃ©es')
+        self.addTab(self.tab_legende, u'LÃ©gende')
         self.addTab(self.tab_graduation, u'Graduation')
-        self.addTab(self.tab_reglages, u'Réglages')
+        self.addTab(self.tab_reglages, u'RÃ©glages')
         self.addTab(self.tab_quantiles, u'Quantiles')
 
 

@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 #    :--------------------------------------------:
@@ -53,7 +53,7 @@ class TraceurMenuBar(MenuBar):
         self.ajouter("autres")
         self.ajouter(u"Outils",
         #[u"Tableau de valeurs", u"Tableaux de valeurs des fonctions.", u"Ctrl+T", self.panel.tableau],
-        [u"Représenter une suite", u"Représenter une suite numérique.", None, self.panel.suite],
+        [u"ReprÃ©senter une suite", u"ReprÃ©senter une suite numÃ©rique.", None, self.panel.suite],
         None, [u"options"])
         self.ajouter(u"avance1")
         self.ajouter(u"?")
@@ -99,7 +99,7 @@ class Traceur(Panel_API_graphique):
         self.equations = []
         self.intervalles = []
 
-        eq_box = QGroupBox(u"Équations")
+        eq_box = QGroupBox(u"Ã‰quations")
         entrees = QVBoxLayout()
         eq_box.setLayout(entrees)
 
@@ -146,12 +146,12 @@ class Traceur(Panel_API_graphique):
 
     def activer(self):
         Panel_API_graphique.activer(self)
-        # Actions à effectuer lorsque l'onglet devient actif
+        # Actions Ã  effectuer lorsque l'onglet devient actif
         self.equations[0].setFocus()
 
     def _changement_feuille(self):
-        u"""Après tout changement de feuille."""
-        if hasattr(self, 'nombre_courbes'): # initialisation terminée
+        u"""AprÃ¨s tout changement de feuille."""
+        if hasattr(self, 'nombre_courbes'): # initialisation terminÃ©e
             self._synchroniser_champs()
             self.feuille_actuelle.lier(self._synchroniser_champs)
 
@@ -160,7 +160,7 @@ class Traceur(Panel_API_graphique):
         u"""On synchronise le contenu des champs de texte avec les courbes.
 
         Lors de l'ouverture d'un fichier, ou d'un changement de feuille,
-        ou lorsqu'une commande est exécutée dans la feuille."""
+        ou lorsqu'une commande est exÃ©cutÃ©e dans la feuille."""
         print "Synchronisation des champs..."
         for i in xrange(self.nombre_courbes):
             nom_courbe = 'Cf' + str(i + 1)
@@ -194,9 +194,9 @@ class Traceur(Panel_API_graphique):
                 self.intervalles[i].setText('')
 
     def _synchroniser_courbes(self):
-        u"""Opération inverse : on synchronise les courbes avec le contenu des champs de texte.
+        u"""OpÃ©ration inverse : on synchronise les courbes avec le contenu des champs de texte.
 
-        Après un changement dans les champs de textes/cases à cocher."""
+        AprÃ¨s un changement dans les champs de textes/cases Ã  cocher."""
         objets = self.feuille_actuelle.objets
         for i in xrange(self.nombre_courbes):
             nom_courbe = 'Cf' + str(i + 1)
@@ -221,7 +221,7 @@ class Traceur(Panel_API_graphique):
 
     def _ouvrir(self, fgeo):
         Panel_API_graphique._ouvrir(self, fgeo)
-        # On synchronise le contenu des champs de texte avec les courbes *à la fin*.
+        # On synchronise le contenu des champs de texte avec les courbes *Ã  la fin*.
         self._synchroniser_champs()
 
     ##def EvtChar(self, event=None, i=None):
@@ -255,7 +255,7 @@ class Traceur(Panel_API_graphique):
 
     def synchronise_et_affiche(self):
         self._synchroniser_courbes()
-        self.action_effectuee(u'Courbes modifiées.')
+        self.action_effectuee(u'Courbes modifiÃ©es.')
         self.affiche()
         #event.Skip()
 

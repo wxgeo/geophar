@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 from pytest import XFAIL
@@ -14,8 +14,8 @@ def test_Fonction():
     u"Test sans feuille."
     g = Fonction('2x+7')
     assert g(17) == 41
-    # La fonction n'est compilée que s'il y a une feuille.
-    # -> à tester lorsque chaque objet aura un feuille par défaut.
+    # La fonction n'est compilÃ©e que s'il y a une feuille.
+    # -> Ã  tester lorsque chaque objet aura un feuille par dÃ©faut.
 
 
 def test_base():

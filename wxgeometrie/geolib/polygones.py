@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------#######
@@ -46,12 +46,12 @@ from .. import param
 
 
 class Cote(Segment):
-    u"""Un coté.
+    u"""Un cotÃ©.
 
-    Un coté d'un polygone, reliant le point numero 'n' au point numero 'n + 1'.
-    Note: n commence à 0.
-    L'objet est créé automatiquement lors de la création du polygone.
-    De plus, si l'objet est supprimé, le polygone est automatiquement supprimé."""
+    Un cotÃ© d'un polygone, reliant le point numero 'n' au point numero 'n + 1'.
+    Note: n commence Ã  0.
+    L'objet est crÃ©Ã© automatiquement lors de la crÃ©ation du polygone.
+    De plus, si l'objet est supprimÃ©, le polygone est automatiquement supprimÃ©."""
 
     _style_defaut = param.cotes
     _prefixe_nom = "c"
@@ -61,14 +61,14 @@ class Cote(Segment):
 
     def __new__(cls, polygone, n, **styles):
         try:
-            # Si le côté existe déjà, on retourne simplement le côté existant.
-            # Ceci évite de créer en double le même côté, lorsque la feuille
-            # est sauvegardée puis rechargée. En effet, lors du chargement de la
-            # feuille, des côtés vont être créés automatiquement à la création
+            # Si le cÃ´tÃ© existe dÃ©jÃ , on retourne simplement le cÃ´tÃ© existant.
+            # Ceci Ã©vite de crÃ©er en double le mÃªme cÃ´tÃ©, lorsque la feuille
+            # est sauvegardÃ©e puis rechargÃ©e. En effet, lors du chargement de la
+            # feuille, des cÃ´tÃ©s vont Ãªtre crÃ©Ã©s automatiquement Ã  la crÃ©ation
             # du polygone, puis de nouveau lorsque `c0 = Cote(p, 0, ...)` va
-            # être exécuté.
+            # Ãªtre exÃ©cutÃ©.
             return polygone.cotes[n]
-            # Attention, Cote.__init__() va être appelé de nouveau !
+            # Attention, Cote.__init__() va Ãªtre appelÃ© de nouveau !
         except (AttributeError, IndexError):
             cote = object.__new__(cls)
             return cote
@@ -88,40 +88,40 @@ class Cote(Segment):
         Objet._modifier_hierarchie(self, self.__polygone._hierarchie + (self.__n + N + 2)/(2*N + 2))
 
     def supprimer(self):
-        u"""Supprime le polygone auquel appartient le côté.
+        u"""Supprime le polygone auquel appartient le cÃ´tÃ©.
 
         ..note::
-            Il n'y a aucun intérêt à supprimer uniquement le côté
-            (d'autant qu'un côté supprimé ne peut pas facilement être
-            rétabli), et si un côté est supprimé sans le polygone, on a parfois
-            l'impression d'un bug (impossible de placer un point sur le côté par
+            Il n'y a aucun intÃ©rÃªt Ã  supprimer uniquement le cÃ´tÃ©
+            (d'autant qu'un cÃ´tÃ© supprimÃ© ne peut pas facilement Ãªtre
+            rÃ©tabli), et si un cÃ´tÃ© est supprimÃ© sans le polygone, on a parfois
+            l'impression d'un bug (impossible de placer un point sur le cÃ´tÃ© par
             exemple)."""
         self.__polygone.supprimer()
 
 
 # Pourquoi une classe Sommet ?
-# - afin de clarifier l'affichage de geolib (par ex, pour un parallélogramme,
+# - afin de clarifier l'affichage de geolib (par ex, pour un parallÃ©logramme,
 #   le titre "Sommet S1" est plus explicite que "Barycentre S1",
-#   qui reflète des détails d'implémentation).
-# - pour des questions de dépendance : le sommet S1 dépend du parallélogramme, alors
-#   que le barycentre qui est utilisé pour la construction ne dépend que des
-#   3 autres points du parallélogramme.
+#   qui reflÃ¨te des dÃ©tails d'implÃ©mentation).
+# - pour des questions de dÃ©pendance : le sommet S1 dÃ©pend du parallÃ©logramme, alors
+#   que le barycentre qui est utilisÃ© pour la construction ne dÃ©pend que des
+#   3 autres points du parallÃ©logramme.
 
 
 
 class Sommet(Point_generique):
     u"""Un sommet.
 
-    Le nième sommet d'un polygone.
+    Le niÃ¨me sommet d'un polygone.
 
-    .. note:: n commence à 0.
+    .. note:: n commence Ã  0.
 
-    L'objet est créé automatiquement lors de la création du polygone.
-    De plus, si l'objet est supprimé, le polygone est automatiquement supprimé."""
+    L'objet est crÃ©Ã© automatiquement lors de la crÃ©ation du polygone.
+    De plus, si l'objet est supprimÃ©, le polygone est automatiquement supprimÃ©."""
 
     _prefixe_nom = "S"
 
-    # Un sommet peut-être lié à un point, c'est-à-dire avoir toujours les mêmes coordonnées que ce point
+    # Un sommet peut-Ãªtre liÃ© Ã  un point, c'est-Ã -dire avoir toujours les mÃªmes coordonnÃ©es que ce point
     _point_lie = None
 
     polygone = __polygone = ArgumentNonModifiable("Polygone_generique")
@@ -129,14 +129,14 @@ class Sommet(Point_generique):
 
     def __new__(cls, polygone, n, **styles):
         try:
-            # Si le sommet existe déjà, on retourne simplement le sommet existant.
-            # Ceci évite de créer en double le même sommet, lorsque la feuille
-            # est sauvegardée puis rechargée. En effet, lors du chargement de la
-            # feuille, des sommets vont être créés automatiquement à la création
+            # Si le sommet existe dÃ©jÃ , on retourne simplement le sommet existant.
+            # Ceci Ã©vite de crÃ©er en double le mÃªme sommet, lorsque la feuille
+            # est sauvegardÃ©e puis rechargÃ©e. En effet, lors du chargement de la
+            # feuille, des sommets vont Ãªtre crÃ©Ã©s automatiquement Ã  la crÃ©ation
             # du polygone, puis de nouveau lorsque `S0 = Sommet(p, 0, ...)` va
-            # être exécuté.
+            # Ãªtre exÃ©cutÃ©.
             return polygone.sommets[n]
-            # Attention, Sommet.__init__() va être appelé de nouveau !
+            # Attention, Sommet.__init__() va Ãªtre appelÃ© de nouveau !
         except (AttributeError, IndexError):
             sommet = object.__new__(cls)
             return sommet
@@ -157,17 +157,17 @@ class Sommet(Point_generique):
             self._point_lie._set_coordonnees(x, y)
 
     def _modifier_hierarchie(self, valeur = None):
-        # Pour les sauvegardes par exemple, il est préférable que les sommets, puis les cotés,
-        # apparaissent juste après la construction du polygone ; ils doivent occuper des places consécutives dans la hiérarchie.
+        # Pour les sauvegardes par exemple, il est prÃ©fÃ©rable que les sommets, puis les cotÃ©s,
+        # apparaissent juste aprÃ¨s la construction du polygone ; ils doivent occuper des places consÃ©cutives dans la hiÃ©rarchie.
         # Par exemple, si le polygone a 4 sommets, et si sa place dans la hierarchie est 18, ses trois sommets
         # auront  comme valeur hierarchique, dans l'ordre, 18.1, 18.2, 18.3 et 18.4,
-        # et ses cotés auront pour valeur hiérarchique 18.6, 18.7, 18.8, 18.9.
+        # et ses cotÃ©s auront pour valeur hiÃ©rarchique 18.6, 18.7, 18.8, 18.9.
         poly = self.__polygone
         N = len(poly._Polygone_generique__points)
         Objet._modifier_hierarchie(self, poly._hierarchie + (self.__n + 1)/(2*N + 2))
 
     def _lier_sommet(self, point):
-        u"""Lie le sommet à un point, en le rendant déplaçable."""
+        u"""Lie le sommet Ã  un point, en le rendant dÃ©plaÃ§able."""
         self._point_lie = point
         self.style(couleur = "m")
 
@@ -180,17 +180,17 @@ class Sommet(Point_generique):
         u"""Supprime le polygone auquel appartient le sommet.
 
         .. note::
-            Il n'y a aucun intérêt à supprimer uniquement le sommet
-            (d'autant qu'un sommet supprimé ne peut pas facilement être
-            rétabli)."""
+            Il n'y a aucun intÃ©rÃªt Ã  supprimer uniquement le sommet
+            (d'autant qu'un sommet supprimÃ© ne peut pas facilement Ãªtre
+            rÃ©tabli)."""
         self.__polygone.supprimer()
 
 
 
 class Polygone_generique(Objet):
-    u"""Un polygone générique.
+    u"""Un polygone gÃ©nÃ©rique.
 
-    Classe mère de tous les polygones."""
+    Classe mÃ¨re de tous les polygones."""
 
     _style_defaut = param.polygones
     _prefixe_nom = "p"
@@ -208,10 +208,10 @@ class Polygone_generique(Objet):
 
 
     def _affecter_coordonnees_par_defaut(self, points):
-        u"""Affecte aux points des coordonnées par défaut.
+        u"""Affecte aux points des coordonnÃ©es par dÃ©faut.
 
-       Les coordonnées aléatoires sont générées manière à ce que le polygone
-       ait peu de chance d'être croisé, et occupe une bonne partie de la fenêtre d'affichage."""
+       Les coordonnÃ©es alÃ©atoires sont gÃ©nÃ©rÃ©es maniÃ¨re Ã  ce que le polygone
+       ait peu de chance d'Ãªtre croisÃ©, et occupe une bonne partie de la fenÃªtre d'affichage."""
         xmin, xmax, ymin, ymax = self.feuille.fenetre
         x0 = (xmin + xmax)/2
         y0 = (ymin + ymax)/2
@@ -219,10 +219,10 @@ class Polygone_generique(Objet):
         ry = (ymax - ymin)/2
         r = min(rx, ry)
         liste_k = [uniform(0.5*r, 1*r) for pt in points]
-        # Par défaut, pour éviter les polygones croisés, on construit les sommets successifs
-        # en rayonnant dans le sens direct à partir du centre de la fenêtre.
-        # Nota: si toutes les valeurs de liste_t étaient regroupées sur un intervalle
-        # d'amplitude < pi, il se pourrait que le polygone soit malgré tout croisé, d'où l'algorithme suivant :
+        # Par dÃ©faut, pour Ã©viter les polygones croisÃ©s, on construit les sommets successifs
+        # en rayonnant dans le sens direct Ã  partir du centre de la fenÃªtre.
+        # Nota: si toutes les valeurs de liste_t Ã©taient regroupÃ©es sur un intervalle
+        # d'amplitude < pi, il se pourrait que le polygone soit malgrÃ© tout croisÃ©, d'oÃ¹ l'algorithme suivant :
         if len(points) == 3:
             liste_t = [uniform(0, pi/3),
                             uniform(2*pi/3, pi),
@@ -239,9 +239,9 @@ class Polygone_generique(Objet):
 
 
     def on_register(self):
-        u"""Enregistre les côtés et les sommets du polygone dans la feuille lors
+        u"""Enregistre les cÃ´tÃ©s et les sommets du polygone dans la feuille lors
         de l'enregistrement du polygone."""
-        # On enregistre tous les côtés dans la feuille.
+        # On enregistre tous les cÃ´tÃ©s dans la feuille.
         for cote in self.__cotes:
             self.feuille.objets.add(cote)
 
@@ -272,8 +272,8 @@ class Polygone_generique(Objet):
                 add(sommet, nom_suggere=nom)
 
         if self._valeurs_par_defaut:
-            # Par défaut, on essaie d'éviter un polygone croisé, à l'aide
-            # de la méthode `._affecter_coordonnees_par_defaut()`.
+            # Par dÃ©faut, on essaie d'Ã©viter un polygone croisÃ©, Ã  l'aide
+            # de la mÃ©thode `._affecter_coordonnees_par_defaut()`.
             if len(args) == n:
                 if all(isinstance(arg, Point) for arg in args):
                     self._affecter_coordonnees_par_defaut(args)
@@ -302,7 +302,7 @@ class Polygone_generique(Objet):
 
     @property
     def regulier(self):
-        G = self.__centre # centre de gravité
+        G = self.__centre # centre de gravitÃ©
         distance_centre = tuple(distance(G, sommet) for sommet in self.__points)
         return self.equilateral and self.convexe and max(distance_centre) - min(distance_centre) < contexte['tolerance']
 
@@ -372,7 +372,7 @@ class Polygone_generique(Objet):
 
     @property
     def aire(self):
-        u"""D'après David Chandler, Area of a general polygon.
+        u"""D'aprÃ¨s David Chandler, Area of a general polygon.
         http://www.davidchandler.com/AreaOfAGeneralPolygon.pdf"""
 
         if self.existe:
@@ -408,7 +408,7 @@ class Polygone_generique(Objet):
 class Polygone(Polygone_generique):
     u"""Un polygone.
 
-    Un polygone défini par ses sommets."""
+    Un polygone dÃ©fini par ses sommets."""
 
     _points_crees_automatiquement = False
 
@@ -470,7 +470,7 @@ class Polygone(Polygone_generique):
         if self._points_crees_automatiquement:
             args = self.__points
             self._affecter_coordonnees_par_defaut(args)
-            # Nommage intelligent des sommets par défaut
+            # Nommage intelligent des sommets par dÃ©faut
             noms = re.findall(RE_NOM_OBJET, self._nom)
             if "".join(noms) != self._nom or len(args) != len(noms):
                 noms = len(args)*['']
@@ -525,7 +525,7 @@ class Triangle(Polygone_generique):
 
 
 class Quadrilatere(Polygone_generique):
-    u"""Un quadrilatère."""
+    u"""Un quadrilatÃ¨re."""
 
     point1 = __point1 = Argument("Point_generique", defaut = Point)
     point2 = __point2 = Argument("Point_generique", defaut = Point)
@@ -539,7 +539,7 @@ class Quadrilatere(Polygone_generique):
         self.__point4 = point4 = Ref(point4)
         Polygone_generique.__init__(self, point1, point2, point3, point4, **styles)
 
-    #TODO: compléter ces méthodes et les tester (tests unitaires)
+    #TODO: complÃ©ter ces mÃ©thodes et les tester (tests unitaires)
     @property
     def carre(self):
         return self.losange and self.rectangle
@@ -670,7 +670,7 @@ class Octogone(Polygone_generique):
 
 
 class Parallelogramme(Quadrilatere):
-    u"""Un parallélogramme."""
+    u"""Un parallÃ©logramme."""
 
     point1 = __point1 = Argument("Point_generique", defaut = Point)
     point2 = __point2 = Argument("Point_generique", defaut = Point)
@@ -717,7 +717,7 @@ class Sommet_rectangle(Point_generique):
         z = x + 1j*y
         try:
             zAB = zB - zA
-            # vecteur normal à A>B (sens direct)
+            # vecteur normal Ã  A>B (sens direct)
             zn = zAB*1j
             if issympy(zAB):
                 p = ((z - zB)*zn.conjugate()).expand(complex=True).as_real_imag()[1]
@@ -725,7 +725,7 @@ class Sommet_rectangle(Point_generique):
             else:
                 # produit scalaire
                 p = ((z - zB)*zn.conjugate()).real
-                # on divise par |zAB|²
+                # on divise par |zAB|Â²
                 self.__rapport = p/((zAB*zAB.conjugate()).real)
         except (OverflowError, ZeroDivisionError):
             if param.debug:
@@ -745,7 +745,7 @@ class Rectangle(Parallelogramme):
         self.__point2 = point2 = Ref(point2)
         self.__rapport = rapport = Ref(rapport)
         Parallelogramme.__init__(self, point1, point2, Sommet_rectangle(point1, point2, rapport), **styles)
-        # Hack infâme, pour lier le 3e sommet à l'objet 'Sommet_triangle_rectangle'
+        # Hack infÃ¢me, pour lier le 3e sommet Ã  l'objet 'Sommet_triangle_rectangle'
         self._Polygone_generique__sommets[2]._lier_sommet(self._Quadrilatere__point3)
 
 
@@ -761,7 +761,7 @@ class Losange(Parallelogramme):
         self.__point2 = point2 = Ref(point2)
         self.__angle = angle = Ref(angle)
         Parallelogramme.__init__(self, Sommet_triangle_isocele(point1, point2, angle), point1, point2, **styles)
-        # Hack infâme, pour lier le 3e sommet à l'objet 'Sommet_triangle_isocele'
+        # Hack infÃ¢me, pour lier le 3e sommet Ã  l'objet 'Sommet_triangle_isocele'
         self._Polygone_generique__sommets[0]._lier_sommet(self._Quadrilatere__point1)
 
 
@@ -771,9 +771,9 @@ class Losange(Parallelogramme):
 
 
 class Polygone_regulier_centre(Polygone_generique):
-    u"""Un polygone régulier.
+    u"""Un polygone rÃ©gulier.
 
-    Un polygone régulier défini par son centre, un sommet, et le nombre de côtés."""
+    Un polygone rÃ©gulier dÃ©fini par son centre, un sommet, et le nombre de cÃ´tÃ©s."""
 
     def __new__(cls, centre = None, sommet = None, n = None, **styles):
         if n is None:
@@ -797,7 +797,7 @@ class Polygone_regulier_centre(Polygone_generique):
         self.__sommet = sommet = Ref(sommet)
         if n is None:
             n = 3 + abs(int(normalvariate(0,4)))
-        # il ne faut pas utiliser de référence (Ref), car n n'est pas modifiable :
+        # il ne faut pas utiliser de rÃ©fÃ©rence (Ref), car n n'est pas modifiable :
         self.__n = n
         points = (Rotation(centre, '2*pi*' + str(i) + '/' + str(n), unite='r')(sommet) for i in xrange(1, n))
         Polygone_generique.__init__(self, sommet, *points, **styles)
@@ -809,9 +809,9 @@ class Polygone_regulier_centre(Polygone_generique):
 
 
 class Triangle_equilateral_centre(Triangle):
-    u"""Un triangle équilatéral.
+    u"""Un triangle Ã©quilatÃ©ral.
 
-    Un triangle équilatéral défini par son centre et un sommet."""
+    Un triangle Ã©quilatÃ©ral dÃ©fini par son centre et un sommet."""
 
     centre = __centre = Argument("Point_generique", defaut = Point)
     sommet = __sommet = Argument("Point_generique", defaut = Point)
@@ -828,9 +828,9 @@ class Triangle_equilateral_centre(Triangle):
 
 
 class Carre_centre(Quadrilatere):
-    u"""Un carré.
+    u"""Un carrÃ©.
 
-    Un carré défini par son centre et un sommet."""
+    Un carrÃ© dÃ©fini par son centre et un sommet."""
 
     centre = __centre = Argument("Point_generique", defaut = Point)
     sommet = __sommet = Argument("Point_generique", defaut = Point)
@@ -851,9 +851,9 @@ class Carre_centre(Quadrilatere):
 
 
 class Polygone_regulier(Polygone_generique):
-    u"""Un polygone régulier.
+    u"""Un polygone rÃ©gulier.
 
-    Un polygone régulier défini par deux points consécutif (sens direct)."""
+    Un polygone rÃ©gulier dÃ©fini par deux points consÃ©cutif (sens direct)."""
 
     def __new__(cls, point1 = None, point2 = None, n = None,  **styles):
         if n is None:
@@ -875,13 +875,13 @@ class Polygone_regulier(Polygone_generique):
         self.__point2 = point2 = Ref(point2)
         if n is None:
             n = 3 + abs(int(normalvariate(0,4)))
-        # il ne faut pas utiliser de référence (Ref), car n n'est pas modifiable :
+        # il ne faut pas utiliser de rÃ©fÃ©rence (Ref), car n n'est pas modifiable :
         self.__n = n
         angle = '(2-' + str(n) + ')*pi/' + str(n)
         point3 = Rotation(point2, angle, unite='r')(point1)
-        # Auparavant, tous les sommets étaient construits ainsi récursivement
+        # Auparavant, tous les sommets Ã©taient construits ainsi rÃ©cursivement
         # mais la taille de str(Polygone_regulier.points[i])
-        # croissait alors exponentiellement avec i (elle doublait à chaque itération) !
+        # croissait alors exponentiellement avec i (elle doublait Ã  chaque itÃ©ration) !
         points = [point1, point2, point3]
         self.__centre = centre = Point_equidistant(point1, point2, point3)
         for i in xrange(3, n):
@@ -896,9 +896,9 @@ class Polygone_regulier(Polygone_generique):
 
 
 class Triangle_equilateral(Triangle):
-    u"""Un triangle équilatéral.
+    u"""Un triangle Ã©quilatÃ©ral.
 
-    Un triangle équilatéral défini par deux points consécutif (sens direct)."""
+    Un triangle Ã©quilatÃ©ral dÃ©fini par deux points consÃ©cutif (sens direct)."""
 
     point1 = __point1 = Argument("Point_generique", defaut = Point)
     point2 = __point2 = Argument("Point_generique", defaut = Point)
@@ -914,9 +914,9 @@ class Triangle_equilateral(Triangle):
 
 
 class Carre(Quadrilatere):
-    u"""Un carré.
+    u"""Un carrÃ©.
 
-    Un carré défini par deux points consécutif (sens direct)."""
+    Un carrÃ© dÃ©fini par deux points consÃ©cutif (sens direct)."""
 
     point1 = __point1 = Argument("Point_generique", defaut = Point)
     point2 = __point2 = Argument("Point_generique", defaut = Point)
@@ -930,7 +930,7 @@ class Carre(Quadrilatere):
 
 
 class Sommet_triangle_isocele(Point_generique):
-    u"""Un sommet d'un triangle isocèle.
+    u"""Un sommet d'un triangle isocÃ¨le.
 
     Le 3e sommet du triangle isocele (un des sommets de la base).
     (Usage interne)."""
@@ -975,9 +975,9 @@ class Sommet_triangle_isocele(Point_generique):
 
 
 class Triangle_isocele(Triangle):
-    u"""Un triangle isocèle.
+    u"""Un triangle isocÃ¨le.
 
-    Un triangle isocèle défini par son sommet principal, un autre sommet, et son angle principal (sens direct)."""
+    Un triangle isocÃ¨le dÃ©fini par son sommet principal, un autre sommet, et son angle principal (sens direct)."""
 
     sommet_principal = __sommet_principal = Argument("Point_generique", defaut=Point)
     point2 = __point2 = Argument("Point_generique", defaut=Point)
@@ -988,14 +988,14 @@ class Triangle_isocele(Triangle):
         self.__point2 = point2 = Ref(point2)
         self.__angle = angle = Ref(angle)
         Triangle.__init__(self, sommet_principal, point2, Sommet_triangle_isocele(sommet_principal, point2, angle), **styles)
-        # Hack infâme, pour lier le 3e sommet à l'objet 'Sommet_triangle_isocele'
+        # Hack infÃ¢me, pour lier le 3e sommet Ã  l'objet 'Sommet_triangle_isocele'
         self._Polygone_generique__sommets[-1]._lier_sommet(self._Triangle__point3)
 
 
 class Sommet_triangle_rectangle(Point_generique):
     u"""Un sommet d'un triangle rectangle.
 
-    Le sommet opposé à l'hypothénuse du triangle rectangle.
+    Le sommet opposÃ© Ã  l'hypothÃ©nuse du triangle rectangle.
     (Usage interne)."""
 
     _style_defaut = param.points_deplacables
@@ -1042,7 +1042,7 @@ class Sommet_triangle_rectangle(Point_generique):
 class Triangle_rectangle(Triangle):
     u"""Un triangle rectangle.
 
-    Un triangle rectangle défini par les extrémités de son hypothénuse (sens direct), et un de ses angles aigus."""
+    Un triangle rectangle dÃ©fini par les extrÃ©mitÃ©s de son hypothÃ©nuse (sens direct), et un de ses angles aigus."""
 
     point1 = __point1 = Argument("Point_generique", defaut = Point)
     point2 = __point2 = Argument("Point_generique", defaut = Point)
@@ -1053,7 +1053,7 @@ class Triangle_rectangle(Triangle):
         self.__point2 = point2 = Ref(point2)
         self.__angle = angle = Ref(angle)
         Triangle.__init__(self, point1, point2, Sommet_triangle_rectangle(point1, point2, angle), **styles)
-        # Hack infâme, pour lier le 3e sommet à l'objet 'Sommet_triangle_rectangle'
+        # Hack infÃ¢me, pour lier le 3e sommet Ã  l'objet 'Sommet_triangle_rectangle'
         self._Polygone_generique__sommets[-1]._lier_sommet(self._Triangle__point3)
 
 
@@ -1061,9 +1061,9 @@ class Triangle_rectangle(Triangle):
 
 
 class Triangle_isocele_rectangle(Triangle):
-    u"""Un triangle isocèle rectangle.
+    u"""Un triangle isocÃ¨le rectangle.
 
-    Un triangle isocèle rectangle défini par les extrémités de son hypothénuse (sens direct)."""
+    Un triangle isocÃ¨le rectangle dÃ©fini par les extrÃ©mitÃ©s de son hypothÃ©nuse (sens direct)."""
 
     point1 = __point1 = Argument("Point_generique", defaut = Point)
     point2 = __point2 = Argument("Point_generique", defaut = Point)
@@ -1077,7 +1077,7 @@ class Triangle_isocele_rectangle(Triangle):
 
 
 class PrevisualisationPolygone(Polygone_generique):
-    u"""Une forme de polygone utilisée uniquement pour la prévisualisation.
+    u"""Une forme de polygone utilisÃ©e uniquement pour la prÃ©visualisation.
 
     Usage interne."""
 
@@ -1089,16 +1089,16 @@ class PrevisualisationPolygone(Polygone_generique):
             pt.enfants.remove(self)
         for pt in points:
             pt.enfants.append(self)
-        # NOTE: self.__points doit être de type tuple et surtout pas liste
-        # (une éventuelle modification de la liste ne gererait pas correctement les vassaux)
+        # NOTE: self.__points doit Ãªtre de type tuple et surtout pas liste
+        # (une Ã©ventuelle modification de la liste ne gererait pas correctement les vassaux)
         self.__points = points
 ##        self.creer_figure()
         self.figure_perimee()
 
-    # Exceptionnellement, on ne passe par un objet 'Arguments' ici (le but étant d'être le plus rapide possible).
+    # Exceptionnellement, on ne passe par un objet 'Arguments' ici (le but Ã©tant d'Ãªtre le plus rapide possible).
     points = property(_get_points, _set_points)
 
-    # De même, inutile de passer par un descripteur de type 'DescripteurFeuille' pour l'attribut '__feuille__'
+    # De mÃªme, inutile de passer par un descripteur de type 'DescripteurFeuille' pour l'attribut '__feuille__'
     feuille = None
 
     def __init__(self, *points):

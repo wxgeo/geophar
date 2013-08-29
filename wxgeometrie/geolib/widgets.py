@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------#######
@@ -35,7 +35,7 @@ class Bouton(Texte_editable_generique, Objet_avec_coordonnees_modifiables):
     u"""Un bouton cliquable.
 
     Un bouton avec texte. Typiquement, on lui associe une action
-    lorsque l'on clique dessus, via la méthode `onLeftClick`.
+    lorsque l'on clique dessus, via la mÃ©thode `onLeftClick`.
     """
 
     _style_defaut = param.boutons
@@ -121,7 +121,7 @@ class Bouton(Texte_editable_generique, Objet_avec_coordonnees_modifiables):
         ##return xmin - d - 3 < x < xmax + d + 3 and ymin - d < y < ymax + d
 
     def _boite(self):
-        # Note : ymin et ymax "permutent" souvent car les transformations appliquées inversent l'orientation.
+        # Note : ymin et ymax "permutent" souvent car les transformations appliquÃ©es inversent l'orientation.
         can = self.canvas
         l, h = can.dimensions
         box = can.txt_box(self.figure[1])
@@ -168,11 +168,11 @@ class Bouton(Texte_editable_generique, Objet_avec_coordonnees_modifiables):
 class Champ(Texte):
     u"""Un champ de texte.
 
-    Un champ de texte éditable en double-cliquant dessus.
+    Un champ de texte Ã©ditable en double-cliquant dessus.
 
-    Le champ peut être encadré par du texte, via les mots-clefs `prefixe`
-    (texte à gauche) et `suffixe` (texte à droite).
-    On peut également lui associer un résultat attendu,
+    Le champ peut Ãªtre encadrÃ© par du texte, via les mots-clefs `prefixe`
+    (texte Ã  gauche) et `suffixe` (texte Ã  droite).
+    On peut Ã©galement lui associer un rÃ©sultat attendu,
     via le mot-clef `attendu`::
 
         >>> from wxgeometrie import Champ, RIEN
@@ -184,11 +184,11 @@ class Champ(Texte):
         >>> print(c.label())
         1+1=? (entrer le resultat)
 
-    Si un résultat est attendu, alors le texte rentré par l'utilisateur passera
-    un test de validation. Si le résultat passe le test, un check vert est
-    affiché à côté, sinon, un smiley :-( rouge est affiché.
+    Si un rÃ©sultat est attendu, alors le texte rentrÃ© par l'utilisateur passera
+    un test de validation. Si le rÃ©sultat passe le test, un check vert est
+    affichÃ© Ã  cÃ´tÃ©, sinon, un smiley :-( rouge est affichÃ©.
 
-    Par défaut, pour être validé, il faut que le résultat soit exactement
+    Par dÃ©faut, pour Ãªtre validÃ©, il faut que le rÃ©sultat soit exactement
     conforme au texte attendu::
 
         >>> c.texte = "2.0"
@@ -198,7 +198,7 @@ class Champ(Texte):
         >>> c.correct
         True
 
-    Cependant, il est possible de définir un test de validation personnalisé::
+    Cependant, il est possible de dÃ©finir un test de validation personnalisÃ©::
 
         >>> def test(reponse, attendu):
         ...     return float(reponse) == float(attendu)
@@ -207,15 +207,15 @@ class Champ(Texte):
         >>> c.correct
         True
 
-    On peut aussi associer une action à la validation::
+    On peut aussi associer une action Ã  la validation::
 
         >>> def action(**kw):
         ...     if kw['correct']:
         ...         if not kw['correct_old']:
-        ...             # Ce n'était pas correct avant
+        ...             # Ce n'Ã©tait pas correct avant
         ...             print('Bravo !')
         ...         else:
-        ...             # C'était déjà correct
+        ...             # C'Ã©tait dÃ©jÃ  correct
         ...             print("Oui, c'est bon aussi !")
         ...     else:
         ...         print('Essaie encore...')
@@ -227,10 +227,10 @@ class Champ(Texte):
         >>> c.texte = "2.0"
         Oui, c'est bon aussi !
 
-    Cet action sera effectuée lorsque le texte du champ est modifié, si
+    Cet action sera effectuÃ©e lorsque le texte du champ est modifiÃ©, si
     celui-ci passe le test de validation.
 
-    Enfin, une liste des propositions peut être passée via le mot-clef `choix`::
+    Enfin, une liste des propositions peut Ãªtre passÃ©e via le mot-clef `choix`::
 
         >>> c = Champ('', 10, 5, choix=['oui', 'non', 'sans opinion'])
         >>> c.style('choix')
@@ -244,23 +244,23 @@ class Champ(Texte):
         if attendu is None:
             return
         if self.valider is None:
-            # Validation basique par défaut
+            # Validation basique par dÃ©faut
             return (txt == attendu)
         else:
-            # Méthode de validation personnalisée
+            # MÃ©thode de validation personnalisÃ©e
             return self.valider(txt, attendu)
 
     def _set_texte(self, value):
         value = Texte._set_texte(self, value)
         if self._initialise:
-            # Impossible de vérifier si le résultat est correct tant
-            # que l'objet n'a pas fini d'être initialisé (le style
-            # 'attendu' n'est pas encore enregistré.)
+            # Impossible de vÃ©rifier si le rÃ©sultat est correct tant
+            # que l'objet n'a pas fini d'Ãªtre initialisÃ© (le style
+            # 'attendu' n'est pas encore enregistrÃ©.)
             txt = self.texte
             if value != txt:
-                # Le contenu du champ de texte a changé.
-                # On vérifie si le résultat est correct, et on met
-                # en cache le résultat de cette vérification.
+                # Le contenu du champ de texte a changÃ©.
+                # On vÃ©rifie si le rÃ©sultat est correct, et on met
+                # en cache le rÃ©sultat de cette vÃ©rification.
                 self._correct_old = self.correct
                 self.correct = self._test_correct(value)
                 if getattr(self, 'evt_valider', None) is not None:
@@ -273,9 +273,9 @@ class Champ(Texte):
     abscisse = x = __x = Argument("Variable_generique", defaut = lambda: normalvariate(0,10))
     ordonnee = y = __y = Argument("Variable_generique", defaut = lambda: normalvariate(0,10))
 
-    # Il est possible d'attacher un test de validation personnalisé à l'objet.
+    # Il est possible d'attacher un test de validation personnalisÃ© Ã  l'objet.
     valider = None
-    # Par ailleurs, on peut attacher à l'objet une action qui sera appelée après
+    # Par ailleurs, on peut attacher Ã  l'objet une action qui sera appelÃ©e aprÃ¨s
     # chaque test de validation.
     evt_valider = None
     # Indique si le contenu du champ est conforme aux attentes
@@ -289,9 +289,9 @@ class Champ(Texte):
         Texte.__init__(self, texte, x, y, **styles)
 
         # Permet de conserver la valeur precedente de `self.correct`.
-        # Lorsque l'utilisateur entre un nouveau résultat, on peut ainsi
-        # savoir si celui-ci était déjà correct, ou si le résultat est
-        # devenu correct (il peut y avoir plusieurs résultats corrects).
+        # Lorsque l'utilisateur entre un nouveau rÃ©sultat, on peut ainsi
+        # savoir si celui-ci Ã©tait dÃ©jÃ  correct, ou si le rÃ©sultat est
+        # devenu correct (il peut y avoir plusieurs rÃ©sultats corrects).
         self._correct_old = self.correct = self._test_correct(self.texte)
         ##self.__label_old = self.style('label')
 

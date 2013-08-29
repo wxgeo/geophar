@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------#######
@@ -38,10 +38,10 @@ from .. import param
 
 
 class FichierGEO(object):
-    u"""Classe utilisée pour manipuler un fichier .geo.
+    u"""Classe utilisÃ©e pour manipuler un fichier .geo.
 
-    On peut aussi utiliser le DOM XML, mais les spécifications du format de fichier .geo
-    sont plus restreintes, et cette classe offre une surcouche au DOM XML pour un accès plus simple."""
+    On peut aussi utiliser le DOM XML, mais les spÃ©cifications du format de fichier .geo
+    sont plus restreintes, et cette classe offre une surcouche au DOM XML pour un accÃ¨s plus simple."""
 
     defaut = {"type": "Fichier WxGeometrie", "version": param.version, "module": '', "nom": '', "repertoire": ''}
 
@@ -131,8 +131,8 @@ class FichierGEO(object):
 
 
     def ajouter(self, nom, racine = None, contenu = None):
-        u"""Ajoute une ou plusieurs nouvelle(s) node(s) nommée(s) 'nom' à 'racine', leur contenu étant donné par 'contenu'.
-        Renvoie le contenu, ou la nouvelle racine crée (si le contenu était vide)."""
+        u"""Ajoute une ou plusieurs nouvelle(s) node(s) nommÃ©e(s) 'nom' Ã  'racine', leur contenu Ã©tant donnÃ© par 'contenu'.
+        Renvoie le contenu, ou la nouvelle racine crÃ©e (si le contenu Ã©tait vide)."""
         if racine is None:
             racine = self.contenu
         if contenu is None:
@@ -145,10 +145,10 @@ class FichierGEO(object):
 
 
     def ecrire(self, path, zip = False):
-        u"""Ecrit dans un fichier dont l'adresse est donnée par 'path'.
+        u"""Ecrit dans un fichier dont l'adresse est donnÃ©e par 'path'.
 
-        L'encodage est fixé par 'self.encoding'.
-        Eventuellement, le contenu peut-être compressé au format zip."""
+        L'encodage est fixÃ© par 'self.encoding'.
+        Eventuellement, le contenu peut-Ãªtre compressÃ© au format zip."""
 
         contenu = self.data
         f = None
@@ -168,9 +168,9 @@ class FichierGEO(object):
 
 
     def ouvrir(self, path, zip = None):
-        u"""Retourne un objet FichierGEO à partir du fichier dont l'adresse est donnée par 'path'.
+        u"""Retourne un objet FichierGEO Ã  partir du fichier dont l'adresse est donnÃ©e par 'path'.
 
-        Si l'attribut 'zip' n'est pas fixé, la détection est automatique."""
+        Si l'attribut 'zip' n'est pas fixÃ©, la dÃ©tection est automatique."""
 
         f = None
         if not os.path.exists(path):
@@ -181,10 +181,10 @@ class FichierGEO(object):
             f = open(path, "rU")
         except IOError:
             print_error()
-            return None, u"L'accès au fichier a été refusé."
+            return None, u"L'accÃ¨s au fichier a Ã©tÃ© refusÃ©."
         except UnicodeError:
             print_error()
-            return None, u"Caractères non reconnus."
+            return None, u"CaractÃ¨res non reconnus."
         except Exception:
             print_error()
             return None, u"Impossible d'ouvrir le fichier."
@@ -202,7 +202,7 @@ class FichierGEO(object):
                 f.close()
         self.importer(texte)
 
-        # Filtre d'import pour les versions antérieures
+        # Filtre d'import pour les versions antÃ©rieures
         if self.version_interne() < self.version_interne(param.version):
             filtre_versions_anterieures(self)
 
@@ -210,7 +210,7 @@ class FichierGEO(object):
         self.infos['repertoire'] = rep
         self.infos['nom'] = removeend(fich, ".geo", ".geoz") # nom sans l'extension
 
-        return self, u"Le fichier %s a bien été ouvert." %path
+        return self, u"Le fichier %s a bien Ã©tÃ© ouvert." %path
 
 
     def version_interne(self, version = None):
@@ -224,13 +224,13 @@ class FichierGEO(object):
 
 
 ##def __old__ouvrir_fichierGEO(path):
-##    u"Désuet. Utiliser plutôt FichierGEO().ouvrir(path)."
+##    u"DÃ©suet. Utiliser plutÃ´t FichierGEO().ouvrir(path)."
 ##    try:
 ##        f=open(path,"rU")
 ##    except IOError:
 ##        return None, u"Le fichier n'existe pas, ou est inaccessible."
 ##    except UnicodeError:
-##        return None, u"Caractères non reconnus."
+##        return None, u"CaractÃ¨res non reconnus."
 ##    except:
 ##        return None, u"Impossible d'ouvrir le fichier."
 ##    try:
@@ -238,7 +238,7 @@ class FichierGEO(object):
 ##    finally:
 ##        f.close()
 ##    fgeo = FichierGEO(texte)
-##    return fgeo, u"Le fichier %s a bien été ouvert." %path
+##    return fgeo, u"Le fichier %s a bien Ã©tÃ© ouvert." %path
 
 
 def ouvrir_fichierGEO(path):

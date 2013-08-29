@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 import re
@@ -23,7 +23,7 @@ def lister_classes():
 
 
 def test_toutes_classes():
-    u"On vérifie que toutes les classes de geolib soient bien testées."
+    u"On vÃ©rifie que toutes les classes de geolib soient bien testÃ©es."
     classes = lister_classes()
     classes_testees = set()
     path = join(WXGEODIR, 'geolib', 'tests')
@@ -46,20 +46,20 @@ def test_toutes_classes():
 
     non_testees = classes.difference(classes_testees, skip_test)
     if non_testees:
-        print("\n" + 58*"-" + u"\nErreur: Certaines classes de `geolib` ne sont pas testées")
+        print("\n" + 58*"-" + u"\nErreur: Certaines classes de `geolib` ne sont pas testÃ©es")
         print('    * ' + '\n    * '.join(non_testees) + "\n" + 58*"-" + "\n")
     assert not non_testees
 
     a_maj = skip_test.intersection(classes_testees)
     if a_maj:
-        print("\n" + 47*"-" + u"\nErreur: `skip_test` n'est pas à jour.")
-        print(u'Ces classes sont désormais testées:')
+        print("\n" + 47*"-" + u"\nErreur: `skip_test` n'est pas Ã  jour.")
+        print(u'Ces classes sont dÃ©sormais testÃ©es:')
         print('    * ' + '\n    * '.join(a_maj) + "\n" + 47*"-" + "\n")
     assert not a_maj
 
     a_suppr = skip_test.difference(classes)
     if a_suppr:
-        print("\n" + 47*"-" + u"\nErreur: `skip_test` n'est pas à jour.")
+        print("\n" + 47*"-" + u"\nErreur: `skip_test` n'est pas Ã  jour.")
         print(u"Ces classes n'existent plus:")
         print('    * ' + '\n    * '.join(a_suppr) + "\n" + 47*"-" + "\n")
     assert not a_suppr
@@ -77,9 +77,9 @@ def assert_not_heritage(classe, classe_parente):
 
 
 def test_heritages():
-    u"""On vérifie que les objets ont une méthode '_get_coordonnees' ssi ils descendent de la classe 'Objet_avec_coordonnees'.
+    u"""On vÃ©rifie que les objets ont une mÃ©thode '_get_coordonnees' ssi ils descendent de la classe 'Objet_avec_coordonnees'.
 
-    De même, les objets ont une méthode '_get_equation' et '_get_val' ssi ils descendent respectivement des classes
+    De mÃªme, les objets ont une mÃ©thode '_get_equation' et '_get_val' ssi ils descendent respectivement des classes
     'Objet_avec_equation' et 'Objet_avec_valeur'."""
 
     for classe in  G.__dict__.itervalues():
@@ -103,9 +103,9 @@ def test_heritages():
 
 
 ##def test_slots():
-    ##u"""On vérifie que tous les classes ont un attribut `__slots__`.
+    ##u"""On vÃ©rifie que tous les classes ont un attribut `__slots__`.
 ##
-    ##Ceci évite de mal orthographier des attributs, sans que l'érreur
+    ##Ceci Ã©vite de mal orthographier des attributs, sans que l'Ã©rreur
     ##n'apparaisse."""
     ##classes = set(value for value in G.__dict__.itervalues()
                   ##if type(value) is type and issubclass(value, G.Objet))
@@ -140,9 +140,9 @@ def test_methode_image_par():
 
 
 def test_arguments():
-    u"""On vérifie que l'attribut '.nom' des arguments correspondent bien à leur noms réels.
+    u"""On vÃ©rifie que l'attribut '.nom' des arguments correspondent bien Ã  leur noms rÃ©els.
 
-    Le nom doit être de la forme '_nomClasse__nomArgument'."""
+    Le nom doit Ãªtre de la forme '_nomClasse__nomArgument'."""
 
     for classe in G.__dict__.itervalues():
         if isinstance(classe, type) and issubclass(classe, G.Objet):
@@ -152,7 +152,7 @@ def test_arguments():
 
 @XFAIL
 def test_imports():
-    u"""Vérifie qu'il n'existe pas d'imports relatifs implicites."""
+    u"""VÃ©rifie qu'il n'existe pas d'imports relatifs implicites."""
     # On liste les modules locaux
     locaux = set()
     def test(line):
@@ -188,5 +188,5 @@ def test_imports():
 #        if isinstance(classe, type) and issubclass(classe, G.Objet):
 #            for attr in attributs_ou_methodes_obligatoires:
 #                if not hasattr(classe, attr):
-#                    print u"ERREUR: La classe %s doit posséder l'attribut ou la méthode '%s' !" %(classe, attr)
+#                    print u"ERREUR: La classe %s doit possÃ©der l'attribut ou la mÃ©thode '%s' !" %(classe, attr)
 #                    assert(hasattr(classe, attr))

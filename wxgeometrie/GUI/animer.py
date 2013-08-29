@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------#######
@@ -32,14 +32,14 @@ from PyQt4.QtCore import Qt, QCoreApplication
 from ..geolib.variables import Variable, Objet
 
 
-# Nécessaire pour que l'affichage soit rafraîchi au sein d'une boucle.
+# NÃ©cessaire pour que l'affichage soit rafraÃ®chi au sein d'une boucle.
 Objet.souffler = QCoreApplication.processEvents
 
 
 class DialogueAnimation(QDialog):
     def __init__(self, parent):
         QDialog.__init__(self, parent)
-        self.setWindowTitle(u"Créer une animation")
+        self.setWindowTitle(u"CrÃ©er une animation")
         self.parent = parent
         self.feuille_actuelle = self.parent.onglet_actuel.feuille_actuelle
 
@@ -59,7 +59,7 @@ class DialogueAnimation(QDialog):
         ##sizer.addWidget(line)
 
         terme = QHBoxLayout()
-        terme.addWidget(QLabel(u"Début :"))
+        terme.addWidget(QLabel(u"DÃ©but :"))
         self.deb = QLineEdit()
         self.deb.setText("0")
         self.deb.setMinimumWidth(25)
@@ -77,7 +77,7 @@ class DialogueAnimation(QDialog):
         sizer.addLayout(terme)
 
         terme = QHBoxLayout()
-        terme.addWidget(QLabel(u"Période (s) :"))
+        terme.addWidget(QLabel(u"PÃ©riode (s) :"))
         self.periode = QLineEdit()
         self.periode.setText("0.1")
         self.periode.setMinimumWidth(50)
@@ -117,7 +117,7 @@ class DialogueAnimation(QDialog):
         u"Liste des noms de variables de la feuille actuelle."
         self.var.setFocus()
         liste_objets = self.feuille_actuelle.objets.lister(False, type = Variable)
-        liste_objets.sort(key=attrgetter('nom')) # ordre alphabétique
+        liste_objets.sort(key=attrgetter('nom')) # ordre alphabÃ©tique
         if liste_objets:
             menu = QMenu()
             for obj in liste_objets:

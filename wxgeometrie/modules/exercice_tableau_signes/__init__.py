@@ -1,11 +1,11 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 from __future__ import with_statement
 
 #    .-------------------------------------.
 #    |    Exercices : tableaux de signes   |
 #    '-------------------------------------'
-#    Géophar
+#    GÃ©ophar
 #    Dynamic geometry, graph plotter, and more for french mathematic teachers.
 #    Copyright (C) 2005-2012  Nicolas Pourcelot
 #
@@ -39,10 +39,10 @@ from ... import param
 
 
 # TODO:
-# - ajouter un bonus substantiel si les résultats sont donnés
-#   sous forme de fraction simplifiée.
-# - possibilité de définir facilement les niveaux (fichier texte externe ?)
-# - gestion des carrés, des nombres seuls
+# - ajouter un bonus substantiel si les rÃ©sultats sont donnÃ©s
+#   sous forme de fraction simplifiÃ©e.
+# - possibilitÃ© de dÃ©finir facilement les niveaux (fichier texte externe ?)
+# - gestion des carrÃ©s, des nombres seuls
 
 
 
@@ -89,8 +89,8 @@ class ExercicesTableauxSignes(Exercice):
         fgeo.contenu[u"erreurs"] = [str(self.erreurs)]
 
     def _ouvrir(self, fgeo):
-        # Il ne doit y avoir qu'une seule feuille ouverte à la fois.
-        # XXX: intégrer cette fonctionnalité directement au Panel.
+        # Il ne doit y avoir qu'une seule feuille ouverte Ã  la fois.
+        # XXX: intÃ©grer cette fonctionnalitÃ© directement au Panel.
         self.fermer_feuilles()
         Panel_API_graphique._ouvrir(self, fgeo)
         if fgeo.contenu.has_key(u"expression"):
@@ -128,13 +128,13 @@ class ExercicesTableauxSignes(Exercice):
         return str(self.rationnel())
 
     def generer_expression(self, pattern):
-        u"""Génère une expression aléatoire en fonction respectant le format
+        u"""GÃ©nÃ¨re une expression alÃ©atoire en fonction respectant le format
         en cours.
 
-        Si `pattern` est déjà une expression, l'expression retournée
-        est identique à la valeur entrée.
+        Si `pattern` est dÃ©jÃ  une expression, l'expression retournÃ©e
+        est identique Ã  la valeur entrÃ©e.
         """
-        # Génération de l'expression:
+        # GÃ©nÃ©ration de l'expression:
         x = S('x')
         k = 0
         while True:
@@ -163,11 +163,11 @@ class ExercicesTableauxSignes(Exercice):
             else:
                 self.denominateur = den.split(',')
             if not any(gcd(S(P), S(Q)).has(x) for P in self.numerateur for Q in self.denominateur):
-                # Il ne faut pas qu'un facteur apparaisse à la fois
-                # au numérateur et au dénominateur.
+                # Il ne faut pas qu'un facteur apparaisse Ã  la fois
+                # au numÃ©rateur et au dÃ©nominateur.
                 break
 
-        # Génération de l'expression:
+        # GÃ©nÃ©ration de l'expression:
         if len(self.numerateur) > 1:
             num = ''.join(self._formater(facteur) for facteur in self.numerateur)
         else:
@@ -181,7 +181,7 @@ class ExercicesTableauxSignes(Exercice):
         else:
             self.expression = '(%s)/(%s)' %(num, den)
 
-        # On génère tous les dictionnaires utiles à la construction du tableau
+        # On gÃ©nÃ¨re tous les dictionnaires utiles Ã  la construction du tableau
         self.expression_latex = convertir_en_latex(self.expression, mode=None)
         num = '*'.join('(' + s + ')' for s in self.numerateur)
         den = '*'.join('(' + s + ')' for s in self.denominateur)
@@ -221,15 +221,15 @@ class ExercicesTableauxSignes(Exercice):
         sols = self.sols
 
 
-        # Lorsque l'affichage est actualisé (fenêtre redimensionnée par
-        # exemple), le champ n'est pas récréé, mais seulement mis à jour.
+        # Lorsque l'affichage est actualisÃ© (fenÃªtre redimensionnÃ©e par
+        # exemple), le champ n'est pas rÃ©crÃ©Ã©, mais seulement mis Ã  jour.
         # C'est primordial, car sinon, de nouveaux champs vides se superposent
-        # aux anciens, au lieu que les anciens soient déplacés.
-        # Si la feuille contient déjà des champs, c'est qu'il s'agit d'une
-        # simple mise à jour ; il ne faut donc *pas* recréer les champs.
+        # aux anciens, au lieu que les anciens soient dÃ©placÃ©s.
+        # Si la feuille contient dÃ©jÃ  des champs, c'est qu'il s'agit d'une
+        # simple mise Ã  jour ; il ne faut donc *pas* recrÃ©er les champs.
         creation = self.feuille_actuelle.objets.lister(type=Champ) == []
 
-        # Les pixels et les unités correspondent:
+        # Les pixels et les unitÃ©s correspondent:
         width, height = can.dimensions
         can.fenetre = 0, width, 0, height
 
@@ -256,7 +256,7 @@ class ExercicesTableauxSignes(Exercice):
                        attendu=resultat, taille=size, **kw)
             t.evt_valider = self.compter_points
             t.valider = self._valider
-            # Compteur qui s'incrémente à chaque nouveau champ.
+            # Compteur qui s'incrÃ©mente Ã  chaque nouveau champ.
             # Le but est que chaque champ ait un identifiant unique.
             compteur[0] += 1
 
@@ -267,26 +267,26 @@ class ExercicesTableauxSignes(Exercice):
             return can.dessiner_texte(x, height - y, texte, size=size, va=va, **kw)
 
 
-        # Paramètre d'espacement (marge entre le bord d'une case et le texte).
+        # ParamÃ¨tre d'espacement (marge entre le bord d'une case et le texte).
         marge = 4
 
         # --------
         # Consigne
         # --------
 
-        txt = dessiner_texte(10, 10, u"Étudier le signe de l'expression $"
+        txt = dessiner_texte(10, 10, u"Ã‰tudier le signe de l'expression $"
                                   + expression_latex + u'$ sur $\u211D$.',
                                   va='top', weight='bold', backgroundcolor='#ffffb5')
         box = can.txt_box(txt)
         h = 10 + box.height + 4*marge
 
         # -------------------------------
-        # Équations préalables au tableau
+        # Ã‰quations prÃ©alables au tableau
         # -------------------------------
 
-        choix = [u'décroissante', u'croissante']
+        choix = [u'dÃ©croissante', u'croissante']
 
-        # On écrit au dessus du tableau les équations à résoudre :
+        # On Ã©crit au dessus du tableau les Ã©quations Ã  rÃ©soudre :
         for expression, latex in facteurs_latex.items():
             # S'il y a des solutions:
             if facteurs_sols[expression]:
@@ -311,12 +311,12 @@ class ExercicesTableauxSignes(Exercice):
                         txt = dessiner_texte(30, h, u'Sur $\u211D$, la fonction affine'
                                                u' $x\\mapsto %s$ est strictement' %latex)
                         box = can.txt_box(txt)
-                        sens = (u'décroissante' if facteurs_diff[expression] < 0 else u'croissante')
+                        sens = (u'dÃ©croissante' if facteurs_diff[expression] < 0 else u'croissante')
                         dessiner_champ(35 + box.width, h, ha='left', choix=choix, resultat=sens)
                         h += box.height + 3*marge
                     elif facteurs_sympy[expression].as_base_exp()[1] == 2:
-                        # C'est un carré.
-                        txt = dessiner_texte(30, h, u'Sur $\u211D$, un carré est toujours')
+                        # C'est un carrÃ©.
+                        txt = dessiner_texte(30, h, u'Sur $\u211D$, un carrÃ© est toujours')
                         box = can.txt_box(txt)
                         dessiner_champ(35 + box.width, h, ha='left', resultat='positif')
                         h += box.height + 3*marge
@@ -344,13 +344,13 @@ class ExercicesTableauxSignes(Exercice):
         hauteurs = []
         # Objets texte de matplotlib
         txts = []
-        # Largeur de la première colonne
+        # Largeur de la premiÃ¨re colonne
         largeur_max = 0
 
-        # Hauteur de la 1ère ligne
+        # Hauteur de la 1Ã¨re ligne
         tab_hmin = h
 
-        # On n'affiche pas la dernière ligne si il n'y a qu'un seul
+        # On n'affiche pas la derniÃ¨re ligne si il n'y a qu'un seul
         # "facteur". Par ex, si l'expression est juste 2*x+3.
         print_last_line = self.denominateur or len(self.numerateur) > 1
 
@@ -358,7 +358,7 @@ class ExercicesTableauxSignes(Exercice):
         if print_last_line:
             textes.append(expression_latex)
 
-        # on dessine les lignes verticales et les textes de la 1ère colonne.
+        # on dessine les lignes verticales et les textes de la 1Ã¨re colonne.
         for txt in textes:
             dessiner_ligne_h(h)
             hauteurs.append(h)
@@ -375,7 +375,7 @@ class ExercicesTableauxSignes(Exercice):
         dessiner_ligne_h(h)
         hauteurs.append(h)
 
-        # Hauteur de la 1ère ligne
+        # Hauteur de la 1Ã¨re ligne
         tab_hmax = h
 
         # On centre les textes dans la colonne
@@ -388,7 +388,7 @@ class ExercicesTableauxSignes(Exercice):
         # Bords verticaux du tableau
         dessiner_ligne_v(10)
         dessiner_ligne_v(width - 30)
-        # Trait vertical à la fin de la première colonne
+        # Trait vertical Ã  la fin de la premiÃ¨re colonne
         col1 = largeur_max + 10 + 2*marge
         dessiner_ligne_v(col1)
 

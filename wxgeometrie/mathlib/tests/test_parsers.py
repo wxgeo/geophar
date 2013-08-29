@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 #from tools.testlib import *
@@ -54,11 +54,11 @@ def assert_latex(x, y):
     assert_formule(x, y, OOo = True, LaTeX = True)
 
 def assert_match(pattern, chaine):
-    u"""Teste si la chaine correspond entièrement au pattern."""
+    u"""Teste si la chaine correspond entiÃ¨rement au pattern."""
     assert (re.match(pattern + "$", chaine))
 
 def assert_not_match(pattern, chaine):
-    u"""Teste si la chaine ne correspond pas entièrement au pattern."""
+    u"""Teste si la chaine ne correspond pas entiÃ¨rement au pattern."""
     assert (not re.match(pattern + "$", chaine))
 
 def assert_VAR(chaine):
@@ -99,7 +99,7 @@ def test_tous_modes():
     assert_all("(x+1)cos(x+3)", "(x+1)*cos(x+3)")
     assert_all("-1.5x^(-2)+ab+3ab(2x+y)+x(y(z+1)))2(x)",
                "-1.5*x**(-2)+ab+3*ab*(2*x+y)+x*(y*(z+1)))*2*(x)")
-    assert_all(u"3x³-2x²y-2x==5y", "3*x**3-2*x**2*y-2*x==5*y")
+    assert_all(u"3xÂ³-2xÂ²y-2x==5y", "3*x**3-2*x**2*y-2*x==5*y")
     assert_all(u"25%*12 mod 5", "25/100*12%5")
     assert_all(u"(25%*12)mod 5", "(25/100*12)%5")
     assert_all(u"limite(1/x^3,x,1+)", "limite(1/x**3,x,1,'+')")
@@ -110,20 +110,20 @@ def test_tous_modes():
     assert_all(u"cos 2", "cos(2)")
     # Cas particulier :
     assert_all(u"cos -3", "cos-3")
-    # Développement décimal infini périodique
+    # DÃ©veloppement dÃ©cimal infini pÃ©riodique
     assert_all(u"17.03[45]", u"((1703+45/99)/100)")
     assert_all(u"17.[045]", u"((17+45/999)/1)")
     assert_all(u"17.1[0]", u"((171+0/9)/10)")
-    # Ne pas rajouter de * devant les parenthèses d'une méthode
+    # Ne pas rajouter de * devant les parenthÃ¨ses d'une mÃ©thode
     assert_all(u"A.transpose()", u"A.transpose()")
     assert_all(u"[j for j in liste]", u"[j for j in liste]")
-    # Texte entre guillemets "texte" ou """texte""" inchangé.
+    # Texte entre guillemets "texte" ou """texte""" inchangÃ©.
     assert_all('"ok"', '"ok"')
     assert_all('"x(x+1)" x(x+1) """x(x+1) " """', '"x(x+1)"x*(x+1)"""x(x+1) " """')
     assert_all(r'"\""', r'"\""')
     assert_all(r'"""\"+1\" ici, et non \"+n\""""', r'"""\"+1\" ici, et non \"+n\""""')
-    # Caractères unicode
-    assert_all(u"\u2013x\u22123\u00D7y\u00F7z²", "-x-3*y/z**2")
+    # CaractÃ¨res unicode
+    assert_all(u"\u2013x\u22123\u00D7y\u00F7zÂ²", "-x-3*y/z**2")
     # * entre un flottant et une parenthese
     assert_all(u".015(x-50)^2-20", ".015*(x-50)**2-20")
     assert_all(u"-1.015 (x-50)", "-1.015*(x-50)")
@@ -134,7 +134,7 @@ def test_matrice():
     # Rajouter mat() quand il n'y est pas.
     assert_all(u"[[1, 2], [3, 4]]", u"mat([[1,2],[3,4]])")
     assert_all(u"[ [1,2;2,5] ; [-3,4;4,2] ]", u"mat([[1.2,2.5],[-3.4,4.2]])")
-    # Ne pas rajouter mat() quand il y est déjà.
+    # Ne pas rajouter mat() quand il y est dÃ©jÃ .
     assert_all(u"mat([[1, 2], [3, 4]])", u"mat([[1,2],[3,4]])")
     assert_all(u"mat( [[1, 2], [3, 4]] )", u"mat([[1,2],[3,4]])")
 
@@ -250,15 +250,15 @@ def test_convertir_en_LaTeX_fractions_imbriquees():
 
 
 def test_convertir_en_LaTeX_bad_expression():
-    # XXX: Par défaut, quand l'expression n'est pas valide, la valeur
-    # retournée doit être la valeur entrée ??
-    # Pour l'instant, aucun comportement clair n'est défini lorsqu'une
-    # expression mathématiques invalide est entrée.
+    # XXX: Par dÃ©faut, quand l'expression n'est pas valide, la valeur
+    # retournÃ©e doit Ãªtre la valeur entrÃ©e ??
+    # Pour l'instant, aucun comportement clair n'est dÃ©fini lorsqu'une
+    # expression mathÃ©matiques invalide est entrÃ©e.
     # Simplement, le parser ne doit pas planter.
     assert_conv('2/', '2/')
     assert_conv('/', '/')
     assert_conv('-+', '-')
-    # Un signe plus ou un signe moins isolé peuvent être utiles
+    # Un signe plus ou un signe moins isolÃ© peuvent Ãªtre utiles
     assert_conv('+', '+')
 
 
@@ -318,10 +318,10 @@ def test_rechercher_denominateur():
     assert_denominateur('(x+1)^(x-2^cos(x))-3', '(x+1)^(x-2^cos(x))')
 
 def test_mathtext_parser():
-    u"On teste simplement qu'aucune erreur n'est renvoyée."
+    u"On teste simplement qu'aucune erreur n'est renvoyÃ©e."
     # Bug matplotlib 1.1.1
     mathtext_parser("$A'$")
     mathtext_parser(u"$A'$")
-    mathtext_parser(u"$f'$ est la dérivée")
-    mathtext_parser(u"$1^{er}$ dé")
+    mathtext_parser(u"$f'$ est la dÃ©rivÃ©e")
+    mathtext_parser(u"$1^{er}$ dÃ©")
     mathtext_parser(r"$\left]-\infty;\frac{1}{3}\right]\cup\left[2;5\right[$")

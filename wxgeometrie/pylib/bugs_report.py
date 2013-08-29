@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 #    WxGeometrie
@@ -45,7 +45,7 @@ def rapporter(titre='', auteur='', email='', description='', historique='',
     "fichier": fichier, # fichier en cours
     }
     for key, value in data.items():
-#        data[key] = zlib.compress(uu(value.replace("\n", "\n<br>\n")).encode("utf-8"), 9).replace("\x01", "\x01\x03").replace("\x00", "\x01\x02") # php n'aime pas les caractères nuls dans une chaîne semble-t-il...
+#        data[key] = zlib.compress(uu(value.replace("\n", "\n<br>\n")).encode("utf-8"), 9).replace("\x01", "\x01\x03").replace("\x00", "\x01\x02") # php n'aime pas les caractÃ¨res nuls dans une chaÃ®ne semble-t-il...
         data[key] = cgi.escape(uu(value)).replace("\n", "\n<br>\n").encode("iso-8859-1", 'xmlcharrefreplace')
     msg = 'Erreur inconnue.'
     try:

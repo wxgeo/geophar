@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------#######
@@ -40,16 +40,16 @@ from .. import param
 
 
 class Texte_generique(Objet_avec_coordonnees):
-    u"""Un texte générique.
+    u"""Un texte gÃ©nÃ©rique.
 
-    La classe mère de tous les objets Texte. (Usage interne)."""
+    La classe mÃ¨re de tous les objets Texte. (Usage interne)."""
 
     _style_defaut = param.textes
     _prefixe_nom = "txt"
-    # À cause du fond de couleur.
+    # Ã€ cause du fond de couleur.
     _affichage_depend_de_la_fenetre = True
 
-    # Utilisé pour éditer le texte interactivement dans le canvas.
+    # UtilisÃ© pour Ã©diter le texte interactivement dans le canvas.
     _label_temporaire = None
 
     def __init__(self, **styles):
@@ -72,8 +72,8 @@ class Texte_generique(Objet_avec_coordonnees):
         fond = self.style("fond")
         cadre = self.style('cadre')
         niveau = self.style("niveau")
-        # Le style alignement_vertical peut avoir un mode 'auto', il bénéficie
-        # par conséquent d'une méthode dédiée.
+        # Le style alignement_vertical peut avoir un mode 'auto', il bÃ©nÃ©ficie
+        # par consÃ©quent d'une mÃ©thode dÃ©diÃ©e.
         av = self.alignement_vertical()
         ah = self.style("alignement_horizontal")
         if av not in ('center', 'top', 'bottom', 'baseline'):
@@ -88,7 +88,7 @@ class Texte_generique(Objet_avec_coordonnees):
         font.set_size(self.style("taille"))
         #font.set_stretch(self.style("largeur"))  # mal gere par matploltib (version 0.87)
 
-        if param.latex:  # formatage géré par LaTeX
+        if param.latex:  # formatage gÃ©rÃ© par LaTeX
             style = self.style("style")
             if  style == "italic":
                 texte = "\\textit{" + texte + "}"
@@ -106,7 +106,7 @@ class Texte_generique(Objet_avec_coordonnees):
             elif famille != "sans-serif":
                 warning("Famille de police non disponible en mode LaTeX.")
             text._text = texte
-        else: # formatage géré par matplotlib
+        else: # formatage gÃ©rÃ© par matplotlib
 #            font.set_weight(self.style("epaisseur") == "gras" and "bold" or "normal")
             font.set_weight(self.style("epaisseur") > 55 and "bold" or "normal")
             font.set_style(self.style("style"))
@@ -117,7 +117,7 @@ class Texte_generique(Objet_avec_coordonnees):
         try:
             angle = float(angle)
         except (ValueError, TypeError):
-            # angle = 'auto' par exemple (sauf si la méthode .angle() est surclassée)
+            # angle = 'auto' par exemple (sauf si la mÃ©thode .angle() est surclassÃ©e)
             angle = 0
         text.set_rotation(angle)
         text.set_verticalalignment(av)
@@ -126,8 +126,8 @@ class Texte_generique(Objet_avec_coordonnees):
         if not fond and not cadre:
             rect.set_visible(False)
         else:
-            # Matplotlib: None donne le style par défaut,
-            # 'none' désactive l'affichage.
+            # Matplotlib: None donne le style par dÃ©faut,
+            # 'none' dÃ©sactive l'affichage.
             couleur_fond = (self.style('couleur_fond') if fond is not None else 'none')
             couleur_cadre = (self.style('couleur_cadre') if cadre is not None else 'none')
             # Contournement d'un bug de matplotlib 1.1.1
@@ -146,7 +146,7 @@ class Texte_generique(Objet_avec_coordonnees):
         return self._label_temporaire
 
     def _boite(self):
-        # Note : ymin et ymax "permutent" souvent car les transformations appliquées inversent l'orientation.
+        # Note : ymin et ymax "permutent" souvent car les transformations appliquÃ©es inversent l'orientation.
         can = self.canvas
         l, h = can.dimensions
         box = can.txt_box(self.figure[0])
@@ -157,7 +157,7 @@ class Texte_generique(Objet_avec_coordonnees):
         return xmin, xmax, ymin, ymax
 
     def _espace_vital(self):
-        # Note : ymin et ymax "permutent" souvent car les transformations appliquées inversent l'orientation.
+        # Note : ymin et ymax "permutent" souvent car les transformations appliquÃ©es inversent l'orientation.
         if not self.label():
             return
         can = self.canvas
@@ -169,13 +169,13 @@ class Texte_generique(Objet_avec_coordonnees):
     def angle(self):
         u"""Angle du texte.
 
-        À surclasser éventuellement pour implémenter un mode 'auto'."""
+        Ã€ surclasser Ã©ventuellement pour implÃ©menter un mode 'auto'."""
         return self.style('angle')
 
     def alignement_vertical(self):
         u"""Angle du texte.
 
-        À surclasser éventuellement pour implémenter un mode 'auto'."""
+        Ã€ surclasser Ã©ventuellement pour implÃ©menter un mode 'auto'."""
         return self.style('alignement_vertical')
 
     def _distance_inf(self, x, y, d):
@@ -191,16 +191,16 @@ class Texte_generique(Objet_avec_coordonnees):
 
 
 class Texte_editable_generique(Texte_generique):
-    u"""Un texte éditable générique.
+    u"""Un texte Ã©ditable gÃ©nÃ©rique.
 
-    La classe mère de tous les textes éditables.
+    La classe mÃ¨re de tous les textes Ã©ditables.
     (Usage interne).
     """
 
     # Note concernant les formules.
-    # Il y a 3 cas où `self._formule` doit être modifié :
+    # Il y a 3 cas oÃ¹ `self._formule` doit Ãªtre modifiÃ© :
     # - lorsqu'on passe d'un autre mode au mode FORMULE,
-    # - lorsqu'on passe du mode FORMULE à un autre mode,
+    # - lorsqu'on passe du mode FORMULE Ã  un autre mode,
     # - lorsqu'on conserve le mode FORMULE et qu'on change `self.texte`.
 
 
@@ -208,10 +208,10 @@ class Texte_editable_generique(Texte_generique):
         if self._initialise:
             formule = self.formule
             if formule is not None:
-                # Dans le cas d'une formule, il faut regénérer le texte.
-                # En effet, la formule peut faire référence à des objets qui ont été
-                # renommés depuis. Cela permet de garder un texte correctement
-                # interprétable.
+                # Dans le cas d'une formule, il faut regÃ©nÃ©rer le texte.
+                # En effet, la formule peut faire rÃ©fÃ©rence Ã  des objets qui ont Ã©tÃ©
+                # renommÃ©s depuis. Cela permet de garder un texte correctement
+                # interprÃ©table.
                 return eval(repr(formule))
         return value
 
@@ -221,14 +221,14 @@ class Texte_editable_generique(Texte_generique):
         value = value.replace("_prime", "'")
         if self._initialise and self._style['mode'] == FORMULE:
             self.formule = value
-        # Il faudra vérifier que le texte ne provoque pas d'erreur
+        # Il faudra vÃ©rifier que le texte ne provoque pas d'erreur
         # dans le parser LaTeX de matplotlib :
         self._label_correct = None
         return value
 
     texte = __texte = Argument("unicode", _get_texte, _set_texte)
 
-    # Contiendra éventuellement une formule (si le mode formule est activé).
+    # Contiendra Ã©ventuellement une formule (si le mode formule est activÃ©).
     _formule = None
 
     _modes = (RIEN, NOM, TEXTE, FORMULE)
@@ -245,41 +245,41 @@ class Texte_editable_generique(Texte_generique):
     def formule(self, txt=no_argument):
         if txt is no_argument:
             return self._formule
-        # On supprime proprement la formule précédente.
+        # On supprime proprement la formule prÃ©cÃ©dente.
         if self._formule is not None:
             self._formule.supprimer()
         self._formule = (Formule(self, txt) if txt else None)
 
 
     def label(self, texte=None, mode=None):
-        u"""Affiche ou modifie le label (ou étiquette) de l'objet.
+        u"""Affiche ou modifie le label (ou Ã©tiquette) de l'objet.
 
-        Si `texte` ou `mode` est spécifié, modifie le contenu du texte,
-        et/ou le mode associé, et ne renvoie rien (`None`).
+        Si `texte` ou `mode` est spÃ©cifiÃ©, modifie le contenu du texte,
+        et/ou le mode associÃ©, et ne renvoie rien (`None`).
 
-        (Si aucun mode n'est spécifié, le mode est fixé à `TEXTE`.)
+        (Si aucun mode n'est spÃ©cifiÃ©, le mode est fixÃ© Ã  `TEXTE`.)
 
         Sinon, renvoie le label de l'objet.
 
-        La signification de la chaine renvoyée dépendra du mode d'affichage de l'objet::
+        La signification de la chaine renvoyÃ©e dÃ©pendra du mode d'affichage de l'objet::
 
         - si mode = 0 (`param.RIEN`), renvoie ''
         - si mode = 1 (`param.NOM`), renvoie le nom de l'objet
         - si mode = 2 (`param.TEXTE`), renvoie le label proprement dit de l'objet
-        - si mode = 3  (`param.FORMULE`), renvoie le label interprété comme une formule
+        - si mode = 3  (`param.FORMULE`), renvoie le label interprÃ©tÃ© comme une formule
 
         Note::
 
         Le mode d'affichage est accessible en lecture seule via l'attribut `.mode_affichage`,
-        et le texte interne (non formaté) via l'attribut `.legende`.
+        et le texte interne (non formatÃ©) via l'attribut `.legende`.
         """
         if texte is not None:
             if mode is None:
                 mode = TEXTE
             # Il faut changer le mode **avant** de changer le texte.
-            # On utilise une commande de bas niveau, pour éviter de modifier
-            # réellement la formule tant que le texte n'est pas le bon.
-            # On supprime également la formule si l'on quitte le mode formule.
+            # On utilise une commande de bas niveau, pour Ã©viter de modifier
+            # rÃ©ellement la formule tant que le texte n'est pas le bon.
+            # On supprime Ã©galement la formule si l'on quitte le mode formule.
             if self._style['mode'] != mode:
                 if self._style['mode'] == FORMULE:
                     self.formule = None
@@ -301,7 +301,7 @@ class Texte_editable_generique(Texte_generique):
             elif mode == TEXTE:
                 label = self.texte
             elif mode == FORMULE:
-                # Retourne le texte avec les expressions évaluées
+                # Retourne le texte avec les expressions Ã©valuÃ©es
                 label = unicode(self.formule)
             elif mode == RIEN:
                 return ""
@@ -323,37 +323,37 @@ class Texte_editable_generique(Texte_generique):
                         if param.debug:
                             print_error()
                         self._label_correct = False
-                else: # le parser ne sera pas utilisé (ce n'est pas une expression LaTeX)
+                else: # le parser ne sera pas utilisÃ© (ce n'est pas une expression LaTeX)
                     self._label_correct = True
 
-            # Échec du parser LaTeX, on affiche une version "brute".
+            # Ã‰chec du parser LaTeX, on affiche une version "brute".
             if not self._label_correct:
                 label = old_label.replace('$', r'\$')
             return label
 
     @property
     def legende(self):
-        u"""Renvoie le texte brut associé à l'objet.
+        u"""Renvoie le texte brut associÃ© Ã  l'objet.
 
         Permet d'avoir une interface unique pour les objets avec
-        étiquette, et les textes (qui sont eux-mêmes leur propre
-        étiquette en quelque sorte), qui surclassent cette méthode.
+        Ã©tiquette, et les textes (qui sont eux-mÃªmes leur propre
+        Ã©tiquette en quelque sorte), qui surclassent cette mÃ©thode.
         """
         return self.texte
 
     def style(self, nom_style=None, **kw):
-        u"""Renvoie le ou les styles demandés, ou modifie les styles de l'objet.
+        u"""Renvoie le ou les styles demandÃ©s, ou modifie les styles de l'objet.
 
         * ``nom_style`` est un nom de style, ou une liste de noms de styles:
-        La propriété correspondante est recherchée dans self._style.
+        La propriÃ©tÃ© correspondante est recherchÃ©e dans self._style.
         Ex: couleur, taille = A.style(('couleur', 'taille'))
 
-        * ``**kw`` sert à modifier des styles.
+        * ``**kw`` sert Ã  modifier des styles.
         Ex: A.style(couleur = 'blue')
         """
         mode = kw.get('mode', None)
         if mode is not None and self._style['mode'] != mode:
-            # On met à jour la formule si besoin est.
+            # On met Ã  jour la formule si besoin est.
             if mode == FORMULE:
                 # On passe en mode formule
                 self.formule = self.texte
@@ -365,7 +365,7 @@ class Texte_editable_generique(Texte_generique):
 
     @property
     def mode_affichage(self):
-        u"Assure une interface commune entre les objets avec étiquette et les textes."
+        u"Assure une interface commune entre les objets avec Ã©tiquette et les textes."
         return self.style('mode')
 
 _get_texte = Texte_editable_generique._get_texte
@@ -377,7 +377,7 @@ _set_texte = Texte_editable_generique._set_texte
 class Texte(Texte_editable_generique, Objet_avec_coordonnees_modifiables):
     u"""Un texte.
 
-    Un texte à afficher"""
+    Un texte Ã  afficher"""
 
     texte = __texte = Argument("unicode", _get_texte, _set_texte)
     abscisse = x = __x = Argument("Variable_generique", defaut = lambda: normalvariate(0,10))
@@ -437,10 +437,10 @@ class Texte(Texte_editable_generique, Objet_avec_coordonnees_modifiables):
 
     def _en_gras(self, booleen):
         figure = self.figure
-        # La figure est vide si l'objet est masqué.
+        # La figure est vide si l'objet est masquÃ©.
         if figure:
             lw = 1
-            # On augmente l'épaisseur du cadre de 1 (s'il existe).
+            # On augmente l'Ã©paisseur du cadre de 1 (s'il existe).
             if self.style('cadre'):
                 epaisseur = self.style('epaisseur_cadre')
                 if epaisseur is not None:
@@ -464,13 +464,13 @@ class Texte(Texte_editable_generique, Objet_avec_coordonnees_modifiables):
         raise NotImplementedError
 
 ################################################################################
-# TODO: Tester et améliorer les classes suivantes.
+# TODO: Tester et amÃ©liorer les classes suivantes.
 
 
 class Texte_transformation_generique(Texte_generique):
     u"""Une image d'un texte par transformation.
 
-    Classe mère de toutes les images de textes par transformation. (Usage interne)."""
+    Classe mÃ¨re de toutes les images de textes par transformation. (Usage interne)."""
 
     texte = __texte = Argument("Texte_generique")
     transformation = __transformation = Argument("Transformation_generique")
@@ -491,7 +491,7 @@ class Texte_transformation_generique(Texte_generique):
 class Texte_rotation(Texte_transformation_generique):
     u"""Une image d'un texte par rotation.
 
-    Texte construit à partir d'un autre via une rotation d'angle et de centre donné."""
+    Texte construit Ã  partir d'un autre via une rotation d'angle et de centre donnÃ©."""
 
     texte = __texte = Argument("Texte_generique")
     rotation = __rotation = Argument("Rotation")
@@ -519,7 +519,7 @@ class Texte_rotation(Texte_transformation_generique):
 class Texte_translation(Texte_transformation_generique):
     u"""Une image d'un texte par translation.
 
-    Texte construit à partir d'un autre via une translation d'angle et de centre donné."""
+    Texte construit Ã  partir d'un autre via une translation d'angle et de centre donnÃ©."""
 
     texte = __texte = Argument("Texte_generique")
     translation = __translation = Argument("Translation")
@@ -539,7 +539,7 @@ class Texte_translation(Texte_transformation_generique):
 class Texte_homothetie(Texte_transformation_generique):
     u"""Une image d'un texte par homothetie.
 
-    Texte construit à partir d'un autre via une homothetie d'angle et de centre donné."""
+    Texte construit Ã  partir d'un autre via une homothetie d'angle et de centre donnÃ©."""
 
     texte = __texte = Argument("Texte_generique")
     homothetie = __homothetie = Argument("Homothetie")
@@ -561,7 +561,7 @@ class Texte_homothetie(Texte_transformation_generique):
 class Texte_reflexion(Texte_transformation_generique):
     u"""Une image d'un texte par reflexion.
 
-    Texte construit à partir d'un autre via une reflexion d'angle et de centre donné."""
+    Texte construit Ã  partir d'un autre via une reflexion d'angle et de centre donnÃ©."""
 
     texte = __texte = Argument("Texte_generique")
     reflexion = __reflexion = Argument("Reflexion")

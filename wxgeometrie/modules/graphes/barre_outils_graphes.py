@@ -1,8 +1,8 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------##
-#               Barre d'outils pour la géométrie               #
+#               Barre d'outils pour la gÃ©omÃ©trie               #
 ##--------------------------------------##
 #    WxGeometrie
 #    Dynamic geometry, graph plotter, and more for french mathematic teachers.
@@ -34,21 +34,21 @@ class BarreOutilsGraphes(BarreOutils):
 
 
     def creer_boutons(self):
-        self.add("F1", (u"Pointeur", u"fleche4", u"Déplacer ou modifier un objet.", self.curseur),
+        self.add("F1", (u"Pointeur", u"fleche4", u"DÃ©placer ou modifier un objet.", self.curseur),
                   (u"Zoomer", u"zoombox2", u"Recentrer la zone d'affichage.", self.zoombox),
-                  (u"Sélectionner", u"selection", u"Sélectionner une partie de la feuille.",
+                  (u"SÃ©lectionner", u"selection", u"SÃ©lectionner une partie de la feuille.",
                   self.selectionner)).select()
-        self.add("F2", (u"Sommet", u"point2",u"Créer un point.", self.point))
-        self.add("F3", (u"Arête", u"segment2", u"Créer une arête droite.", self.segment))
-        self.add("F4", (u"Arête orientée", u"vecteur", u"Créer une arête orientée droite.", self.vecteur),
+        self.add("F2", (u"Sommet", u"point2",u"CrÃ©er un point.", self.point))
+        self.add("F3", (u"ArÃªte", u"segment2", u"CrÃ©er une arÃªte droite.", self.segment))
+        self.add("F4", (u"ArÃªte orientÃ©e", u"vecteur", u"CrÃ©er une arÃªte orientÃ©e droite.", self.vecteur),
                     )
-        self.add("F5", (u"Arête courbe", u"arc_points",
-                    u"Créer une arête courbe (définir 3 points).", self.arc_points),
+        self.add("F5", (u"ArÃªte courbe", u"arc_points",
+                    u"CrÃ©er une arÃªte courbe (dÃ©finir 3 points).", self.arc_points),
                     )
-        self.add("F6", (u"Arête orientée (courbe)", u"arc_oriente",
-                    u"Créer une arête orientée courbe (définir 3 points).", self.arc_oriente),
+        self.add("F6", (u"ArÃªte orientÃ©e (courbe)", u"arc_oriente",
+                    u"CrÃ©er une arÃªte orientÃ©e courbe (dÃ©finir 3 points).", self.arc_oriente),
                     )
-        self.add("F7", (u"Texte", u"texte", u"Créer un texte.", self.texte))
+        self.add("F7", (u"Texte", u"texte", u"CrÃ©er un texte.", self.texte))
         self.add("F8", (u"Masquer", u"masquer", u"Masquer des objets.", self.masque))
         self.add("F9", (u"Gommer", u"gomme", u"Supprimer des objets.", self.gomme))
         self.add("Shift+F2", (u"Copier", u"pinceau", u"Copier le style d'un objet.", self.pinceau))
@@ -60,17 +60,17 @@ class BarreOutilsGraphes(BarreOutils):
         if event is False:
             self.arc(Arc_points, nom_style='arc', **kw)
         else:
-            self.interagir(self.arc_points, u"Choisissez ou créez 3 points.")
+            self.interagir(self.arc_points, u"Choisissez ou crÃ©ez 3 points.")
 
     def arc_oriente(self, event = False, **kw):
         if event is False:
             self.arc(Arc_oriente, nom_style='arcs_orientes', **kw)
         else:
-            self.interagir(self.arc_oriente, u"Choisissez ou créez 3 points.")
+            self.interagir(self.arc_oriente, u"Choisissez ou crÃ©ez 3 points.")
 
 
     def arc(self, classe, nom_style = '', **kw):
-        u"Création d'un arc défini par 3 points. Un style spécial est appliqué au point intermédaire."
+        u"CrÃ©ation d'un arc dÃ©fini par 3 points. Un style spÃ©cial est appliquÃ© au point intermÃ©daire."
         if self.test(True, **kw):
             self.cache = [obj for obj in self.cache if obj.nom and obj.feuille is self.feuille_actuelle]
             selection = kw["selection"]
@@ -78,8 +78,8 @@ class BarreOutilsGraphes(BarreOutils):
             n = len(self.cache)
 
             if n == 1:
-                # Le point intermédiaire a un style différent,
-                # et ne doit donc pas coïncider avec un point déjà existant.
+                # Le point intermÃ©diaire a un style diffÃ©rent,
+                # et ne doit donc pas coÃ¯ncider avec un point dÃ©jÃ  existant.
                 point = self.point(nom_style='points_ancrage', editer=None, **kw)
                 self.cache.append(point)
                 style = self.style(nom_style)

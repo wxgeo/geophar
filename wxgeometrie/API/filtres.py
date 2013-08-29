@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------#######
@@ -22,9 +22,9 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-__doc__ = u"""Gère l'import de fichiers de versions antérieures de WxGéométrie.
+__doc__ = u"""GÃ¨re l'import de fichiers de versions antÃ©rieures de WxGÃ©omÃ©trie.
 
-À terme, on devrait aussi pouvoir importer ou exporter des fichiers Géogébra par exemple.
+Ã€ terme, on devrait aussi pouvoir importer ou exporter des fichiers GÃ©ogÃ©bra par exemple.
 """
 
 import re
@@ -111,7 +111,7 @@ def filtre_versions_anterieures(fgeo):
                 figures[i] = re.sub("Barycentre[(].*", corrige5, figures[i])
 
             # 0.120 beta 6
-            # t, x, y sont maintenant des noms réservés pour un usage futur.
+            # t, x, y sont maintenant des noms rÃ©servÃ©s pour un usage futur.
             if version < [0, 120, -2, 6]:
                 lignes = figures[i].split("\n")
                 for num_ligne in xrange(len(lignes)):
@@ -126,7 +126,7 @@ def filtre_versions_anterieures(fgeo):
 
             # version 0.124
             # Nouveau codage des ' et autres " dans les noms d'objets
-            # Le filtre n'est pas parfait, et ne règle que les cas les plus courants
+            # Le filtre n'est pas parfait, et ne rÃ¨gle que les cas les plus courants
             if version < [0, 124]:
                 def transformer(match_obj):
                     chaine = match_obj.group(0)
@@ -209,7 +209,7 @@ def filtre_versions_anterieures(fgeo):
                 figures[i] = re.sub("(?<![A-Za-z0-9_])C?f[0-9]+(?![A-Za-z0-9_])",
                                     lambda r:r.group(0) + "_", figures[i])
 
-            # version 0.130 bêta 1
+            # version 0.130 bÃªta 1
             # (Le filtre n'est pas parfait)
             if version < [0, 130, -1, 1]:
                 if fgeo.module == 'probabilites':
@@ -230,7 +230,7 @@ def filtre_versions_anterieures(fgeo):
 
                 for j, ligne in enumerate(lignes):
                     # A.style('legende') -> A.etiquette.style('mode')
-                    # On cherche la dernière occurence de `legende=...`.
+                    # On cherche la derniÃ¨re occurence de `legende=...`.
                     match = None
                     for match in re.finditer(RE_LEGENDE, ligne):
                         pass
@@ -244,7 +244,7 @@ def filtre_versions_anterieures(fgeo):
                                      "    %s.etiquette.style(mode = %s)"
                                         % (ligne, nom_obj, nom_obj, mode))
                     # A.style('label') -> A.etiquette.texte
-                    # On cherche la dernière occurence de `label=...`.
+                    # On cherche la derniÃ¨re occurence de `label=...`.
                     match = None
                     for match in re.finditer(RE_LABEL, ligne):
                         pass

@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 from math import sqrt
@@ -99,7 +99,7 @@ def test_Parallele():
 #     C = Point(1.458, -5.255)
 #     D = Point(3.478, -2.14788)
 #     d = Droite(C, D)
-#     # Dans ce qui suit, d1, d2 et d3 doivent correspondre à la même droite.
+#     # Dans ce qui suit, d1, d2 et d3 doivent correspondre Ã  la mÃªme droite.
 #     d1 = Droite_rotation(d,  r)
 #     d2 = Droite(r(C), r(D))
 #     d3 = r(d)
@@ -207,7 +207,7 @@ def test_Demiplan():
     ##T = Tangente_courbe_interpolation(inter, x= 2.)
     ### la tangente doit passer par M par construction
     ##assertAlmostEqual( T.xy(2), (2, inter.fonction(2)))
-    ### son coef dir doit être la dérivée sur le point de passage
+    ### son coef dir doit Ãªtre la dÃ©rivÃ©e sur le point de passage
     ##assertAlmostEqual( -T.a / T.b, inter.fonction.derivative(2, 1))
 
 
@@ -221,10 +221,10 @@ def test_Tangente_glisseur_interpolation():
     T = Tangente_glisseur_interpolation(inter, M)
     # la tangente doit passer par M par construction
     assertAlmostEqual(T.xy(M.x.contenu), (M.x.contenu, M.y))
-    # son coef dir doit etre la dérivée sur le glisseur
+    # son coef dir doit etre la dÃ©rivÃ©e sur le glisseur
     assertAlmostEqual((float(-T.a)/float(T.b)),
                       inter.fonction.derivative(M.x.contenu, 1))
-    # rebelotte après déplacement du glisseur
+    # rebelotte aprÃ¨s dÃ©placement du glisseur
     M.x = 1
     assertAlmostEqual(T.xy(M.x.contenu), (M.x.contenu, M.y))
     assertAlmostEqual((float(-T.a)/float(T.b)),

@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------#######
@@ -40,7 +40,7 @@ class AccueilMenuBar(MenuBar):
 
 class Accueil(Panel_simple):
 
-    titre = u"Bienvenue !" # Donner un titre à chaque module
+    titre = u"Bienvenue !" # Donner un titre Ã  chaque module
 
     def __init__(self, *args, **kw):
         Panel_simple.__init__(self, *args, **kw)
@@ -53,34 +53,34 @@ class Accueil(Panel_simple):
         <body style='font-size:12pt;'>
         <table bgcolor='#FFFCD6' style='border-color:#FFCF8C;border-style:solid;'>
         <tr><td style='padding:15px;margin:15px;'>
-        <p><h2 align='center'>Bienvenue dans Géophar !</h2></p>
+        <p><h2 align='center'>Bienvenue dans GÃ©ophar !</h2></p>
         <br/>
         <p><i>Voici quelques indications pour bien commencer.</i></p>
-        <p>En haut de la fenêtre, vous apercevez deux boutons.</p>
+        <p>En haut de la fenÃªtre, vous apercevez deux boutons.</p>
         <p></p>
         <ul><li style="margin-top:10px;">
         Le bouton <img src="%(newtab)s"/> a deux usages :
         <ul>
         <li style="margin-top:10px;">
-        <b>activer les différents modules</b> : calculatrice, traceur de
-        courbes, géométrie dynamique...
+        <b>activer les diffÃ©rents modules</b> : calculatrice, traceur de
+        courbes, gÃ©omÃ©trie dynamique...
         <br/>
-        Les modules que vous activez le resteront au prochain démarrage.
+        Les modules que vous activez le resteront au prochain dÃ©marrage.
         </li>
         <li style="margin-top:10px;">
-        <b>restaurer la session précédente</b>.<br/>
+        <b>restaurer la session prÃ©cÃ©dente</b>.<br/>
         Vous pouvez ainsi reprendre vos calculs interrompus, votre figure
-        à moitié achevée... bref, tout votre travail en cours avant la fermeture du
+        Ã  moitiÃ© achevÃ©e... bref, tout votre travail en cours avant la fermeture du
         logiciel.
         </li>
         </ul>
         </li>
         <li style="margin-top:10px;">
-        Le bouton <img src="%(closetab)s"/> sert, à l'inverse,
-        à <b>fermer un module</b>.
+        Le bouton <img src="%(closetab)s"/> sert, Ã  l'inverse,
+        Ã  <b>fermer un module</b>.
         <br/>
-        Fermer les modules que vous n'utilisez pas permet un démarrage plus
-        rapide de Géophar.
+        Fermer les modules que vous n'utilisez pas permet un dÃ©marrage plus
+        rapide de GÃ©ophar.
         </li>
         </ul>
         <br/>

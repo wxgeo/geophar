@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------##
@@ -48,7 +48,7 @@ def _auto_tabval(chaine='', formatage_antecedents='VAL', formatage_images='VAL',
                  r"(?P<pas>[0-9.]+))?",            # "0,01"
                  chaine)
 
-    # NOTA: Pour l'instant, seul un intervalle de la forme [a;b] est supporté.
+    # NOTA: Pour l'instant, seul un intervalle de la forme [a;b] est supportÃ©.
 
     if m is None:
         raise ValueError, "Format incorrect."
@@ -58,8 +58,8 @@ def _auto_tabval(chaine='', formatage_antecedents='VAL', formatage_images='VAL',
     pas = _eval_math(m.group('pas') or '1')
 
 
-    # Correction automatique: [-5,5] est remplacé par [-5;5]
-    # (Attention, toutes les virgules ont été converties en points auparavant !)
+    # Correction automatique: [-5,5] est remplacÃ© par [-5;5]
+    # (Attention, toutes les virgules ont Ã©tÃ© converties en points auparavant !)
     if ';' not in intervalle:
         intervalle = intervalle.replace('.', ';')
     a, b = intervalle.split(';')
@@ -81,12 +81,12 @@ Exemples:
 \sin(x): -5,-4.9..5
 h(x)=sin(x)+1: [0.01]: -5,-4.5..0 ; 0,1..3
 
-Utilisez ; pour séparer plusieurs bloc de valeurs, et // pour indiquer
-un retour à la ligne (si le tableau est trop long).
+Utilisez ; pour sÃ©parer plusieurs bloc de valeurs, et // pour indiquer
+un retour Ã  la ligne (si le tableau est trop long).
 
-`formatage_images` contient éventuellement une formule pour formater
-les valeurs, par exemple '\nombre{VAL}'. La variable VAL correspond à la
-valeur du résultat.
+`formatage_images` contient Ã©ventuellement une formule pour formater
+les valeurs, par exemple '\nombre{VAL}'. La variable VAL correspond Ã  la
+valeur du rÃ©sultat.
 """
 
 # f(x)=x+4:-5,-4..0 ; 2 ; 5,7..10// 12,14..20
@@ -109,7 +109,7 @@ valeur du résultat.
     legende = [txt.strip() for txt in sequence[0].split("=", 1)]
     if len(legende) == 2:
         fonction, expression = legende
-        # On devine la variable (en principe, elle est entre parenthèses)
+        # On devine la variable (en principe, elle est entre parenthÃ¨ses)
         deb = fonction.find("(")
         fin = fonction.find(")")
         if deb == -1:
@@ -118,8 +118,8 @@ valeur du résultat.
             variable = fonction[deb+1:fin].strip()
     else:
         fonction = expression = legende[0]
-        # Reste à deviner la variable.
-        # On cherche les lettres isolées (sauf 'e', qui représente exp(1))
+        # Reste Ã  deviner la variable.
+        # On cherche les lettres isolÃ©es (sauf 'e', qui reprÃ©sente exp(1))
         m = re.search('(?<![A-Za-z])[A-DF-Za-df-z](?![A-Za-z])', expression)
         # Si on n'en trouve pas, la variable sera 'x'
         variable = m.group() if m else 'x'
@@ -127,10 +127,10 @@ valeur du résultat.
 
     lignes = [txt.strip() for txt in sequence[-1].split('\n') if txt.strip()]
 
-    # On génère le code LaTeX
+    # On gÃ©nÃ¨re le code LaTeX
     code = "\\begin{center}"
 
-    # On commence par créer la liste des valeurs
+    # On commence par crÃ©er la liste des valeurs
     for ligne in lignes:
         ensemble_valeurs = set()
         for intervalle in ligne.split(';'):
@@ -173,7 +173,7 @@ valeur du résultat.
 
         for val in valeurs: # on construit le tableau colonne par colonne
             n = max(len(code_variable), len(code_expression))
-            # on justifie avant chaque nouvelle colonne (le code LaTeX sera plus agréable à lire !)
+            # on justifie avant chaque nouvelle colonne (le code LaTeX sera plus agrÃ©able Ã  lire !)
             code_variable = code_variable.ljust(n)
             code_expression = code_expression.ljust(n)
             code_variable += '&' + formater(val, formatage_antecedents)

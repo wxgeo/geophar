@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------#######
@@ -46,7 +46,7 @@ class GeometreMenuBar(MenuBar):
 
 class Geometre(Panel_API_graphique):
 
-    titre = u"Géométrie dynamique" # Donner un titre à chaque module
+    titre = u"GÃ©omÃ©trie dynamique" # Donner un titre Ã  chaque module
 
     def __init__(self, *args, **kw):
         Panel_API_graphique.__init__(self, *args, **kw)

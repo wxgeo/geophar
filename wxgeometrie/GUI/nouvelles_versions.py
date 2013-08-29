@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 #    WxGeometrie
@@ -49,20 +49,20 @@ class Gestionnaire_mises_a_jour(QObject):
         if success:
             if update:
                 self.derniere_version = version
-                QMessageBox.information(self.parent, u"Une mise à jour a été trouvée.",
+                QMessageBox.information(self.parent, u"Une mise Ã  jour a Ã©tÃ© trouvÃ©e.",
                         (u"La version %s de %s est sortie.\n"
-                        u"Vous allez être redirigé vers la page de téléchargement.")
+                        u"Vous allez Ãªtre redirigÃ© vers la page de tÃ©lÃ©chargement.")
                         % (version, param.NOMPROG))
                 webbrowser.open(self.url_telechargement)
             else:
-                QMessageBox.information(self.parent, u"Aucune mise à jour trouvée.",
-                        u"Aucune mise à jour n'est disponible actuellement.<br>"
+                QMessageBox.information(self.parent, u"Aucune mise Ã  jour trouvÃ©e.",
+                        u"Aucune mise Ã  jour n'est disponible actuellement.<br>"
                         u"Consultez <a href='http://wxgeo.free.fr/wordpress/'>"
                         u"http://wxgeo.free.fr</a> pour plus d'informations.")
         else:
-            print(u'Connexion impossible à ' + self.url_version + ' : ' + msg)
+            print(u'Connexion impossible Ã  ' + self.url_version + ' : ' + msg)
             QMessageBox.warning(self.parent, u"Connexion impossible",
-                    u"Impossible de vérifier si une nouvelle version existe.<br>"
+                    u"Impossible de vÃ©rifier si une nouvelle version existe.<br>"
                     u"Consultez <a href='http://wxgeo.free.fr/wordpress/'>"
                     u"http://wxgeo.free.fr</a> pour plus d'informations.")
 
@@ -74,7 +74,7 @@ class Gestionnaire_mises_a_jour(QObject):
 
     def _verifier_version(self):
         # /!\ Ne **JAMAIS** utiliser `print()` depuis une autre thread que la principale !
-        # Utiliser `app.safe_print()` à la place.
+        # Utiliser `app.safe_print()` Ã  la place.
         version = '?'
         success = False
         update = False

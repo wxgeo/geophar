@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------##
@@ -37,15 +37,15 @@ from ... import param
 
 
 def _auto_tabvar(chaine='', derivee=True, limites=True, decimales=3, approche=False):
-    u"""Génère le code du tableau de variations d'une fonction à variable réelle.
+    u"""GÃ©nÃ¨re le code du tableau de variations d'une fonction Ã  variable rÃ©elle.
 
     On suppose que la fonction est de classe C1 sur tout intervalle ouvert de son
-    ensemble de définition.
-    Par ailleurs, les zéros de sa dérivée doivent être calculables pour la librairie sympy.
+    ensemble de dÃ©finition.
+    Par ailleurs, les zÃ©ros de sa dÃ©rivÃ©e doivent Ãªtre calculables pour la librairie sympy.
 
-    Pour les valeurs approchées, on conserve par défaut 3 chiffres après la virgule.
+    Pour les valeurs approchÃ©es, on conserve par dÃ©faut 3 chiffres aprÃ¨s la virgule.
     En mettant `decimales=2`, on peut par exemple afficher seulement 2 chiffres
-    après la virgule, etc.
+    aprÃ¨s la virgule, etc.
     """
     def nice_str2(x):
         if (isinstance(x, (float, Float)) and not isinstance(x, Rational)
@@ -55,14 +55,14 @@ def _auto_tabvar(chaine='', derivee=True, limites=True, decimales=3, approche=Fa
 
     chaine_initiale = chaine
 
-    # Ensemble de définition
+    # Ensemble de dÃ©finition
     if ' sur ' in chaine:
         chaine, ens_def = chaine.split(' sur ')
         ens_def = conversion_chaine_ensemble(ens_def, utiliser_sympy = True)
     else:
         ens_def = R
 
-    # Légende de la dernière ligne
+    # LÃ©gende de la derniÃ¨re ligne
     if '=' in chaine:
         legende, chaine = chaine.split('=', 1)
     else:
@@ -72,14 +72,14 @@ def _auto_tabvar(chaine='', derivee=True, limites=True, decimales=3, approche=Fa
     interprete = Interprete()
     interprete.evaluer(chaine)
     expr = interprete.ans()
-    # Récupération de la variable
+    # RÃ©cupÃ©ration de la variable
     variables = expr.atoms(Symbol)
     if len(variables) > 1:
         raise ValueError, "Il y a plusieurs variables dans l'expression !"
     elif not variables:
         raise ValueError, "Il n'y a pas de variable dans l'expression !"
     var = variables.pop()
-    # Récupération de l'ensemble de définition
+    # RÃ©cupÃ©ration de l'ensemble de dÃ©finition
     ens_def *= ensemble_definition(expr, var)
     valeurs_interdites = []
     xmin = ens_def.intervalles[0].inf
@@ -89,7 +89,7 @@ def _auto_tabvar(chaine='', derivee=True, limites=True, decimales=3, approche=Fa
     for intervalle in ens_def.intervalles:
         inf = intervalle.inf
         if sup != inf:
-            # Il y a un 'trou' dans l'ensemble de définition (ex: ]-oo;0[U]2;+oo[)
+            # Il y a un 'trou' dans l'ensemble de dÃ©finition (ex: ]-oo;0[U]2;+oo[)
             raise NotImplementedError
             #TODO: utiliser || pour noter un intervalle interdit
         sup = intervalle.sup
@@ -97,20 +97,20 @@ def _auto_tabvar(chaine='', derivee=True, limites=True, decimales=3, approche=Fa
             valeurs_interdites.append(sup)
     xmax = sup
 
-    # On étudie la dérivée
+    # On Ã©tudie la dÃ©rivÃ©e
     df = expr.diff(var)
     ens_def_deriv = ensemble_definition(df, var)
-    # Liste des zéros de la dérivée
+    # Liste des zÃ©ros de la dÃ©rivÃ©e
     solutions = solve(df, var)
 
     # On liste toutes les valeurs remarquables pour la fonction.
     # Remarques:
     # - On les convertit toutes au format Sympy, pour qu'il n'y ait pas
-    #   par exemple deux zéros "différents" listés (int(0), et sympy.Integer(0)).
-    # - Sympy n'arrive pas à ordonner certaines expressions compliquées,
-    #   commme les racines de certains polynômes de degré 3 par exemple.
-    #   Il faut donc évaluer les valeurs avec '.evalf(200)' lorsqu'on cherche
-    #   à les comparer ou à les ordonner.
+    #   par exemple deux zÃ©ros "diffÃ©rents" listÃ©s (int(0), et sympy.Integer(0)).
+    # - Sympy n'arrive pas Ã  ordonner certaines expressions compliquÃ©es,
+    #   commme les racines de certains polynÃ´mes de degrÃ© 3 par exemple.
+    #   Il faut donc Ã©valuer les valeurs avec '.evalf(200)' lorsqu'on cherche
+    #   Ã  les comparer ou Ã  les ordonner.
     valeurs = {sympify(xmin): None, sympify(xmax): None}
     for sol in solutions:
         if xmin <= sol.evalf(200) <= xmax:
@@ -123,7 +123,7 @@ def _auto_tabvar(chaine='', derivee=True, limites=True, decimales=3, approche=Fa
 ##    def reel(val):
 ##        return val.is_real and -oo < val < oo
 
-    # On génère le code, valeur après valeur
+    # On gÃ©nÃ¨re le code, valeur aprÃ¨s valeur
     code = str(var) + ';' + legende + ':'
     if param.debug and param.verbose:
         print "liste_valeurs", liste_valeurs, valeurs, set(valeurs), [type(val) for val in valeurs]
@@ -157,7 +157,7 @@ def _auto_tabvar(chaine='', derivee=True, limites=True, decimales=3, approche=Fa
                 lim_moins = lim_plus = expr.subs(var, valeur)
                 code_point += nice_str2(lim_moins)
         if valeur not in (-oo, oo) and valeur not in ens_def_deriv:
-            # La dérivée n'est pas définie en cette valeur
+            # La dÃ©rivÃ©e n'est pas dÃ©finie en cette valeur
             code_point += ';|'
         code_point += ')'
         if i > 0:
@@ -234,7 +234,7 @@ f: (-oo;3) << (1;2;0) << (3;+oo|-oo) << (5;2) >> (+oo;-oo)
 
 
 
-    # on découpe la chaîne, en une suite contenant soit les valeurs de x, f(x) (et éventuellement f'(x)),
+    # on dÃ©coupe la chaÃ®ne, en une suite contenant soit les valeurs de x, f(x) (et Ã©ventuellement f'(x)),
     # soit le sens de variation entre ces valeurs.
     # ex: "-oo;3 << 1;2 >> 3;-oo|+oo << 5;2 << +oo;+oo" devient
     # ["-oo;3", "<<", "1;2", ">>", "3;-oo|+oo", "<<", "5;2", "<<", "+oo;+oo"]
@@ -245,14 +245,14 @@ f: (-oo;3) << (1;2;0) << (3;+oo|-oo) << (5;2) >> (+oo;-oo)
         # en l'absence d'indication, x varie de -oo...
         sequence[0] = "-\\infty;"
     if not sequence[-1]:
-        # ... à +oo
+        # ... Ã  +oo
         sequence[-1] = "+\\infty;"
 
     def formater(chaine):
         chaine = chaine.strip()
         if chaine not in ("<<", ">>", "==", '||'):
-            # Les valeurs sont éventuellement encadrées par des parenthèses (facultatives) pour plus de lisibilité.
-            # On enlève ici les parenthèses. ex: (-2;0) devient -2;0
+            # Les valeurs sont Ã©ventuellement encadrÃ©es par des parenthÃ¨ses (facultatives) pour plus de lisibilitÃ©.
+            # On enlÃ¨ve ici les parenthÃ¨ses. ex: (-2;0) devient -2;0
             if chaine[0] == '(' and chaine[-1] == ')' and test_parentheses(chaine[1:-1]):
                 chaine = chaine[1:-1]
             if ";" not in chaine:
@@ -283,16 +283,16 @@ f: (-oo;3) << (1;2;0) << (3;+oo|-oo) << (5;2) >> (+oo;-oo)
     ecart_maximal = max(val[1] - val[0] for val in niveaux)
 
     # L'environnement tabvar ne permet pas de positionner un texte entre deux lignes.
-    # Si, dans la 3e partie du tableau (la fonction elle-même),
-    # le nombre de lignes (c-à-d. ecart_maximal+1) est impair,
-    # on décale le texte légèrement vers le haut pour le centrer verticalement (via raisebox).
+    # Si, dans la 3e partie du tableau (la fonction elle-mÃªme),
+    # le nombre de lignes (c-Ã -d. ecart_maximal+1) est impair,
+    # on dÃ©cale le texte lÃ©gÃ¨rement vers le haut pour le centrer verticalement (via raisebox).
     if ecart_maximal%2:
         ligne_fonction = "\\niveau{" + str((ecart_maximal+2)//2) +"}{" + str(ecart_maximal+1) + "}\\raisebox{0.5em}{$" + ligne_fonction + "$}"
     else:
         ligne_fonction = "\\niveau{" + str((ecart_maximal+2)//2) +"}{" + str(ecart_maximal+1) + "}" + ligne_fonction
 
     #print "niveaux: ", niveaux
-    colonnes = 'C|' # ex: 'CCCCC' pour 5 colonnes centrées
+    colonnes = 'C|' # ex: 'CCCCC' pour 5 colonnes centrÃ©es
     portion = 0 # indique la derniere portion traitee (les portions sont delimitees par les bornes de l'ensemble de definition et les valeurs interdites)
     debut = True
 
@@ -370,7 +370,7 @@ f: (-oo;3) << (1;2;0) << (3;+oo|-oo) << (5;2) >> (+oo;-oo)
                 if len(valeurs) < 3: # le nombre derive n'est pas specifie
                     if 0 < i < len(sequence)-1 and sequence[i-1] != sequence[i+1]:
                         # Changement de sens de variation en x :
-                        # la dérivée s'annule donc.
+                        # la dÃ©rivÃ©e s'annule donc.
                         valeurs.append("0")
                     else:
                         valeurs.append(" ")

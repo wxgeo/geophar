@@ -1,9 +1,9 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ######################################
 #
-#    Paramètres du programme
+#    ParamÃ¨tres du programme
 #
 ######################################
 #
@@ -35,24 +35,24 @@ from .modules import modules, modules_actifs, descriptions_modules
 from .parametres import *
 
 time_version = mktime(date_version + (0, 0, 0) + (0, 0, 0))
-# Dernière vérification d'une éventuelle mise à jour
+# DerniÃ¨re vÃ©rification d'une Ã©ventuelle mise Ã  jour
 time_verification = time_version
 
 
-# Détection de la configuration
+# DÃ©tection de la configuration
 plateforme = platform.system() #'Windows' ou 'Linux' par exemple.
 repertoire = os.getcwd() # memorise le repertoire de lancement
 python_version = float(sys.version[:3])
 python_version_info = sys.version_info
 py2exe = hasattr(sys, 'frozen') # le programme tourne-t-il en version "executable" ?
 
-# Paramètres détectés dynamiquement lors de l'exécution :
+# ParamÃ¨tres dÃ©tectÃ©s dynamiquement lors de l'exÃ©cution :
 ecriture_possible = None
-EMPLACEMENT = '' # le répertoire contenant wxgeometrie.pyw
+EMPLACEMENT = '' # le rÃ©pertoire contenant wxgeometrie.pyw
 
-# Les valeurs suivantes ne doivent pas être enregistrées dans les préférences de l'utilisateur :
-# - soit parce qu'il n'y aurait aucun sens à les sauver (__builtins__ par exemple)
-# - soit parce qu'elles doivent être générées dynamiquement
+# Les valeurs suivantes ne doivent pas Ãªtre enregistrÃ©es dans les prÃ©fÃ©rences de l'utilisateur :
+# - soit parce qu'il n'y aurait aucun sens Ã  les sauver (__builtins__ par exemple)
+# - soit parce qu'elles doivent Ãªtre gÃ©nÃ©rÃ©es dynamiquement
 
 valeurs_a_ne_pas_sauver = (
 'EMPLACEMENT',
@@ -94,7 +94,7 @@ valeurs_a_ne_pas_sauver = (
 )
 
 # IMPORTANT !
-# les dictionnaires pouvant comporter de nouvelles clés lors de la sortie d'une nouvelle version doivent être mis à jour :
+# les dictionnaires pouvant comporter de nouvelles clÃ©s lors de la sortie d'une nouvelle version doivent Ãªtre mis Ã  jour :
 a_mettre_a_jour = (
 'angles',
 'arcs',
@@ -124,4 +124,4 @@ a_mettre_a_jour = (
 
 del os, platform, sys
 
-print(u'Import des paramètres terminé.')
+print(u'Import des paramÃ¨tres terminÃ©.')

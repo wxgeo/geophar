@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------#######
@@ -34,14 +34,14 @@ from ...pylib import eval_safe
 
 class CreerSuite(MyMiniFrame):
     def __init__(self, parent):
-        MyMiniFrame.__init__(self, parent, u"Représenter une suite")
+        MyMiniFrame.__init__(self, parent, u"ReprÃ©senter une suite")
         ##self.SetExtraStyle(wx.WS_EX_BLOCK_EVENTS )
         self.parent = parent
         self._param_ = self.parent._param_
         ##p = self.panel = QWidget(self)
 
         self.sizer = sizer = QVBoxLayout()
-        sizer.addWidget(QLabel(u"Choisissez le mode de génération de la suite :"))
+        sizer.addWidget(QLabel(u"Choisissez le mode de gÃ©nÃ©ration de la suite :"))
         self.mode = QComboBox()
         self.mode.addItems([u"u(n+1)=f(u(n))", u"u(n)=f(n)"])
         self.mode.setCurrentIndex(0)
@@ -95,7 +95,7 @@ class CreerSuite(MyMiniFrame):
         boutons = QHBoxLayout()
         fermer = QPushButton(u"Fermer")
         boutons.addWidget(fermer)
-        lancer = QPushButton(u"Créer")
+        lancer = QPushButton(u"CrÃ©er")
         boutons.addWidget(lancer)
         fermer.clicked.connect(self.close)
         lancer.clicked.connect(self.Creer)
@@ -114,7 +114,7 @@ class CreerSuite(MyMiniFrame):
         style, epaisseur = self._param_.style_suites_recurrentes
         kw_lignes = {"style": style, "epaisseur": epaisseur}
 
-        # Les suites s'enregistrent auprès du module traceur
+        # Les suites s'enregistrent auprÃ¨s du module traceur
 #        if not hasattr(self.parent, "suites"):
 #            self.parent.suites = {}
 
@@ -134,7 +134,7 @@ class CreerSuite(MyMiniFrame):
             raise KeyError,  "courbe inexistante : %s" %nom_courbe
 
 
-        if self.mode.currentIndex() == 0: # cas des suites définies par récurrence
+        if self.mode.currentIndex() == 0: # cas des suites dÃ©finies par rÃ©currence
             u0 = eval_safe(self.un0.text())
             n0 = self.n0.value()
 
@@ -145,7 +145,7 @@ class CreerSuite(MyMiniFrame):
 #            self.parent.suites["u"] = [d, M]
 
             for i in xrange(self.termes.value() - 1):
-                # (Attention, ça ne va pas marcher pour les fonctions définies par morceau)
+                # (Attention, Ã§a ne va pas marcher pour les fonctions dÃ©finies par morceau)
                 u1 = fonction(u0)
                 N = Point(u0, u1, visible=self._param_.afficher_points_de_construction)
                 N.etiquette.visible = False
@@ -171,7 +171,7 @@ class CreerSuite(MyMiniFrame):
                 u0 = u1
             self.parent.canvas.zoom_auto()
 
-        else:   # suites définies explicitement
+        else:   # suites dÃ©finies explicitement
             n0 = self.n0.text()
 #            self.parent.suites[u"u"] = []
             for i in xrange(n0, n0 + self.termes.text()):

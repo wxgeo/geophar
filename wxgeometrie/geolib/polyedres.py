@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------#######
@@ -39,7 +39,7 @@ from .. import param
 
 ##########################################################################################
 
-# Perspectives cavalières
+# Perspectives cavaliÃ¨res
 
 
 
@@ -49,12 +49,12 @@ from .. import param
 
 
 class Arete(Segment):
-    u"""Une arête.
+    u"""Une arÃªte.
 
-    Une arête d'un polyèdre, reliant le point numero 'n' au point numero 'p'.
-    Note: n et p commencent à 0.
-    L'objet est créé automatiquement lors de la création du polyèdre.
-    De plus, si l'objet est supprimé, le polyèdre est automatiquement supprimé."""
+    Une arÃªte d'un polyÃ¨dre, reliant le point numero 'n' au point numero 'p'.
+    Note: n et p commencent Ã  0.
+    L'objet est crÃ©Ã© automatiquement lors de la crÃ©ation du polyÃ¨dre.
+    De plus, si l'objet est supprimÃ©, le polyÃ¨dre est automatiquement supprimÃ©."""
 
     _prefixe_nom = "a"
 
@@ -65,7 +65,7 @@ class Arete(Segment):
     def __new__(cls, polyedre, n, p, **styles):
         try:
             return polyedre.aretes[n]
-            # Attention, Arete.__init__() va être appelé de nouveau !
+            # Attention, Arete.__init__() va Ãªtre appelÃ© de nouveau !
         except (AttributeError, IndexError):
             arete = object.__new__(cls)
             return arete
@@ -101,7 +101,7 @@ class Arete(Segment):
     cachee = property(cachee, cachee)
 
     def _creer_figure(self):
-        # On s'assure que le test des arêtes a bien eu lieu.
+        # On s'assure que le test des arÃªtes a bien eu lieu.
         self.__polyedre._cache.get('test_aretes', self.__polyedre._tester_aretes)
         Segment._creer_figure(self)
 
@@ -110,14 +110,14 @@ class Arete(Segment):
 class Sommet_polyedre(Point_generique):
     u"""Un sommet.
 
-    Le nième sommet d'un polyèdre.
-    Note: n commence à 0.
-    L'objet est créé automatiquement lors de la création du polyedre.
-    De plus, si l'objet est supprimé, le polyèdre est automatiquement supprimé."""
+    Le niÃ¨me sommet d'un polyÃ¨dre.
+    Note: n commence Ã  0.
+    L'objet est crÃ©Ã© automatiquement lors de la crÃ©ation du polyedre.
+    De plus, si l'objet est supprimÃ©, le polyÃ¨dre est automatiquement supprimÃ©."""
 
     _prefixe_nom = "S"
 
-    # Un sommet peut-être lié à un point, c'est-à-dire avoir toujours les mêmes coordonnées que ce point
+    # Un sommet peut-Ãªtre liÃ© Ã  un point, c'est-Ã -dire avoir toujours les mÃªmes coordonnÃ©es que ce point
     _point_lie = None
 
     polyedre = __polyedre = ArgumentNonModifiable("Polyedre_generique")
@@ -125,14 +125,14 @@ class Sommet_polyedre(Point_generique):
 
     def __new__(cls, polyedre, n, **styles):
         try:
-            # Si le sommet existe déjà, on retourne simplement le sommet existant.
-            # Ceci évite de créer en double le même sommet, lorsque la feuille
-            # est sauvegardée puis rechargée. En effet, lors du chargement de la
-            # feuille, des sommets vont être créés automatiquement à la création
+            # Si le sommet existe dÃ©jÃ , on retourne simplement le sommet existant.
+            # Ceci Ã©vite de crÃ©er en double le mÃªme sommet, lorsque la feuille
+            # est sauvegardÃ©e puis rechargÃ©e. En effet, lors du chargement de la
+            # feuille, des sommets vont Ãªtre crÃ©Ã©s automatiquement Ã  la crÃ©ation
             # du polygone, puis de nouveau lorsque `S0 = Sommet(p, 0, ...)` va
-            # être exécuté.
+            # Ãªtre exÃ©cutÃ©.
             return polyedre.sommets[n]
-            # Attention, Sommet.__init__() va être appelé de nouveau !
+            # Attention, Sommet.__init__() va Ãªtre appelÃ© de nouveau !
         except (AttributeError, IndexError):
             sommet = object.__new__(cls)
             return sommet
@@ -153,16 +153,16 @@ class Sommet_polyedre(Point_generique):
             self._point_lie._set_coordonnees(x, y)
 
     def _modifier_hierarchie(self, valeur = None):
-        # Pour les sauvegardes par exemple, il est préférable que les sommets, puis les arêtes,
-        # apparaissent juste après la construction du polyèdre ; ils doivent occuper des places consécutives dans la hiérarchie.
-        # Par exemple, si le polyèdre a 4 sommets, et si sa place dans la hiérarchie est 18, ses trois sommets
-        # auront  comme valeur hiérarchique, dans l'ordre, 18.1, 18.2, 18.3 et 18.4,
-        # et ses arêtes auront pour valeur hiérarchique 18.6, 18.7, 18.8, 18.9.
+        # Pour les sauvegardes par exemple, il est prÃ©fÃ©rable que les sommets, puis les arÃªtes,
+        # apparaissent juste aprÃ¨s la construction du polyÃ¨dre ; ils doivent occuper des places consÃ©cutives dans la hiÃ©rarchie.
+        # Par exemple, si le polyÃ¨dre a 4 sommets, et si sa place dans la hiÃ©rarchie est 18, ses trois sommets
+        # auront  comme valeur hiÃ©rarchique, dans l'ordre, 18.1, 18.2, 18.3 et 18.4,
+        # et ses arÃªtes auront pour valeur hiÃ©rarchique 18.6, 18.7, 18.8, 18.9.
         N = len(self.__polyedre._Polyedre_generique__points)
         Objet._modifier_hierarchie(self, self.__polyedre._hierarchie + (self.__n + 1)/(3*N + 2))
 
     def _lier_sommet(self, point):
-        u"""Lie le sommet à un point, en le rendant déplaçable."""
+        u"""Lie le sommet Ã  un point, en le rendant dÃ©plaÃ§able."""
         self._point_lie = point
         self.style(couleur = "m")
 
@@ -176,9 +176,9 @@ class Sommet_polyedre(Point_generique):
 
 
 class Polyedre_generique(Objet):
-    u"""Un polyèdre générique.
+    u"""Un polyÃ¨dre gÃ©nÃ©rique.
 
-    Classe mère de toutes les représentations de polyèdres."""
+    Classe mÃ¨re de toutes les reprÃ©sentations de polyÃ¨dres."""
 
     _style_defaut = param.polyedres
     _prefixe_nom = "p"
@@ -192,24 +192,24 @@ class Polyedre_generique(Objet):
         Objet.__init__(self, **styles)
 #        self.etiquette = Label_polyedre(self)
         self.__sommets = tuple(Sommet_polyedre(self, i) for i in xrange(n))
-        # 'aretes' contient la liste des arêtes sous la forme de couples de numéros de sommets.
-        # ex: [(0, 1), (0, 2), (0,3), (1, 2), (1, 3), (2, 3)] pour un tétraèdre.
+        # 'aretes' contient la liste des arÃªtes sous la forme de couples de numÃ©ros de sommets.
+        # ex: [(0, 1), (0, 2), (0,3), (1, 2), (1, 3), (2, 3)] pour un tÃ©traÃ¨dre.
         aretes = styles.pop("aretes", [])
         self.__aretes = tuple(Arete(self, i, j) for i, j in aretes)
-        # 'faces' contient la liste des faces sous la forme de tuples de numéros de sommets.
-        # ex: [(0, 1, 2), (0, 1, 3), (0, 2, 3), (1, 2, 3)] pour un tétraèdre.
+        # 'faces' contient la liste des faces sous la forme de tuples de numÃ©ros de sommets.
+        # ex: [(0, 1, 2), (0, 1, 3), (0, 2, 3), (1, 2, 3)] pour un tÃ©traÃ¨dre.
         faces = styles.pop("faces", [])
         self.__faces = tuple(faces)
-        # Les faces 'principales' seront coloriées plus foncées.
+        # Les faces 'principales' seront coloriÃ©es plus foncÃ©es.
         # Typiquement, il s'agit de la vue de face.
         faces_principales = styles.pop("faces_principales", [])
         self.__faces_principales = tuple(faces_principales)
 
 
     def on_register(self):
-        u"""Enregistre les arêtes et les sommets du polyedre dans la feuille lors
+        u"""Enregistre les arÃªtes et les sommets du polyedre dans la feuille lors
         de l'enregistrement du polyedre."""
-        # On enregistre toutes les arêtes dans la feuille.
+        # On enregistre toutes les arÃªtes dans la feuille.
         for arete in self.__aretes:
             self.feuille.objets.add(arete)
 
@@ -240,8 +240,8 @@ class Polyedre_generique(Objet):
                 add(sommet, nom_suggere=nom)
 
         if self._valeurs_par_defaut:
-            # Par défaut, on essaie d'éviter un polygone croisé, à l'aide
-            # de la méthode `._affecter_coordonnees_par_defaut()`.
+            # Par dÃ©faut, on essaie d'Ã©viter un polygone croisÃ©, Ã  l'aide
+            # de la mÃ©thode `._affecter_coordonnees_par_defaut()`.
             if len(args) == n:
                 if all(isinstance(arg, Point) for arg in args):
                     self._affecter_coordonnees_par_defaut(args)
@@ -312,16 +312,16 @@ class Polyedre_generique(Objet):
 
 
     def _tester_aretes(self):
-        u"Méthode à surclasser."
+        u"MÃ©thode Ã  surclasser."
         raise NotImplementedError
 
 
 
 
 class Tetraedre(Polyedre_generique):
-    u"""Un tétraèdre.
+    u"""Un tÃ©traÃ¨dre.
 
-    La projection d'un tétraèdre."""
+    La projection d'un tÃ©traÃ¨dre."""
 
     point1 = __point1 = Argument("Point_generique", defaut = lambda:Point())
     point2 = __point2 = Argument("Point_generique", defaut = lambda:Point())
@@ -345,7 +345,7 @@ class Tetraedre(Polyedre_generique):
         print "Test aretes 2", self.__point2.coordonnees
         print "Test aretes 3", self.__point3.coordonnees
         print "Test aretes 4", self.__point4.coordonnees
-        # Ce qui suit doit être géré *avant* l'affichage du polyèdre, et de ses arêtes.
+        # Ce qui suit doit Ãªtre gÃ©rÃ© *avant* l'affichage du polyÃ¨dre, et de ses arÃªtes.
         if point_dans_polygone(self.__point4.coordonnees,
                 [self.__point1.coordonnees, self.__point2.coordonnees, self.__point3.coordonnees]):
             print "3 cachees -> ok"
@@ -397,7 +397,7 @@ class Sommet_cube(Point_generique):
         z = x + 1j*y
         try:
             if abs(zB - zA) > param.tolerance:
-           # TODO: cas où l'angle n'est pas en radian
+           # TODO: cas oÃ¹ l'angle n'est pas en radian
                 self.__angle.val = clog((z - zA)/(zB - zA)).imag
         except (OverflowError, ZeroDivisionError):
             if param.debug:
@@ -417,11 +417,11 @@ class Cube(Polyedre_generique):
 
 
     def _tester_aretes(self):
-        # Ce qui suit doit être géré *avant* l'affichage du polyèdre, et de ses arêtes.
+        # Ce qui suit doit Ãªtre gÃ©rÃ© *avant* l'affichage du polyÃ¨dre, et de ses arÃªtes.
         pts = self._Polyedre_generique__points
         aretes = self._Polyedre_generique__aretes
         face_avant = pts[:4]
-        # cas où un des sommets est caché par la face avant
+        # cas oÃ¹ un des sommets est cachÃ© par la face avant
         for i in (4, 5, 6, 7):
             if point_dans_polygone(pts[i], face_avant):
                 for arete in aretes:
@@ -430,7 +430,7 @@ class Cube(Polyedre_generique):
                     else:
                         arete.cachee = False
                 return Polyedre_generique._conditions_existence(self)
-        # sinon, on cherche quelle arrête "coupe" la face avant.
+        # sinon, on cherche quelle arrÃªte "coupe" la face avant.
         for i in (4, 5, 6, 7):
             j = i - 4 # sommet correspondant de la face avant
             if self._secantes((i, j), ((j + 1)%4, (j + 2)%4)) or self._secantes((i, j), ((j + 2)%4, (j + 3)%4)):
@@ -448,7 +448,7 @@ class Cube(Polyedre_generique):
         self.__angle = angle = Ref(angle)
         self.__rapport = rapport = Ref(rapport)
         styles["aretes"] = [(0, 1), (1, 2), (2, 3), (3, 0), # face avant
-                            (4, 5), (5, 6), (6, 7), (7, 4), # face arrière
+                            (4, 5), (5, 6), (6, 7), (7, 4), # face arriÃ¨re
                             (0, 4), (1, 5), (2, 6), (3, 7)]
         styles["faces"] = [(0, 1, 2, 3), (4, 5, 6, 7), (0, 1, 5, 4), (1, 2, 6, 5), (2, 3, 7, 6), (3, 0, 4, 7)]
         styles["faces_principales"] = [(0, 1, 2, 3)]

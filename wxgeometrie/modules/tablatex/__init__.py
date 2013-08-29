@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------#######
@@ -50,7 +50,7 @@ class TabLaTeXMenuBar(MenuBar):
         self.ajouter(u"Fichier", ['session'], ["quitter"])
         self.ajouter(u"Affichage", [u"onglet"], ["plein_ecran"])
         self.ajouter(u"Outils",
-                        [u"Mémoriser le résultat", u"Copie le code LaTeX généré "
+                        [u"MÃ©moriser le rÃ©sultat", u"Copie le code LaTeX gÃ©nÃ©rÃ© "
                         "dans le presse-papier, afin de pouvoir l'utiliser ailleurs.",
                         "Ctrl+M", self.panel.vers_presse_papier],
                         None,
@@ -83,14 +83,14 @@ class TabLaTeX(Panel_simple):
 
         self.utiliser_cellspace = QCheckBox(u"Utiliser le paquetage cellspace.", self)
         self.utiliser_cellspace.setChecked(self._param_.utiliser_cellspace)
-        self.utiliser_cellspace.setToolTip(u"Le paquetage cellspace évite que "
+        self.utiliser_cellspace.setToolTip(u"Le paquetage cellspace Ã©vite que "
                 "certains objets (comme les fractions) touchent les bordures du tableaux.")
         self.sizer_type.addSpacing(10)
         self.sizer_type.addWidget(self.utiliser_cellspace)
 
-        self.derivee = QCheckBox(u"Dérivée.", self)
+        self.derivee = QCheckBox(u"DÃ©rivÃ©e.", self)
         self.derivee.setChecked(self._param_.derivee)
-        self.derivee.setToolTip(u"Afficher une ligne indiquant le signe de la dérivée.")
+        self.derivee.setToolTip(u"Afficher une ligne indiquant le signe de la dÃ©rivÃ©e.")
         self.sizer_type.addSpacing(10)
         self.sizer_type.addWidget(self.derivee)
 
@@ -102,32 +102,32 @@ class TabLaTeX(Panel_simple):
 
         self.decimales_tabvar = QSpinBox()
         self.decimales_tabvar.setRange(-1, 20)
-        self.decimales_tabvar.setSuffix(u" décimales")
+        self.decimales_tabvar.setSuffix(u" dÃ©cimales")
         self.decimales_tabvar.setSpecialValueText(u"Valeurs exactes")
         self.decimales_tabvar.setValue(self._param_.decimales_tabvar)
         ##self.decimales_tabvar.setAccelerated(True)
-        aide = u"Nombre de décimales pour l'affichage des extrema, ou valeur exacte."
+        aide = u"Nombre de dÃ©cimales pour l'affichage des extrema, ou valeur exacte."
         self.decimales_tabvar.setToolTip(aide)
         self.sizer_type.addSpacing(10)
         self.sizer_type.addWidget(self.decimales_tabvar)
 
         self.decimales_tabval = QSpinBox()
         self.decimales_tabval.setRange(0, 20)
-        self.decimales_tabval.setSuffix(u" décimales")
+        self.decimales_tabval.setSuffix(u" dÃ©cimales")
         self.decimales_tabval.setValue(self._param_.decimales_tabval)
         ##self.decimales_tabval.setAccelerated(True)
-        aide = u"Nombre de décimales pour les valeurs du tableau."
+        aide = u"Nombre de dÃ©cimales pour les valeurs du tableau."
         self.decimales_tabval.setToolTip(aide)
         self.sizer_type.addSpacing(10)
         self.sizer_type.addWidget(self.decimales_tabval)
 
         self.sizer_type.addSpacing(15)
-        self.lbl_formatage = lbl = QLabel(u"Formatage des résultats :")
+        self.lbl_formatage = lbl = QLabel(u"Formatage des rÃ©sultats :")
         self.sizer_type.addWidget(lbl)
         self.formatage_images = QLineEdit()
         ##self.formatage_images.setMinimumWidth(200)
         self.formatage_images.setText(self._param_.formatage_images)
-        aide = u"Formatage à appliquer au résultat (VAL est la valeur du résultat)."
+        aide = u"Formatage Ã  appliquer au rÃ©sultat (VAL est la valeur du rÃ©sultat)."
         lbl.setToolTip(aide)
         self.formatage_images.setToolTip(aide)
         self.sizer_type.addSpacing(10)
@@ -137,7 +137,7 @@ class TabLaTeX(Panel_simple):
 
         self.sizer.addLayout(self.sizer_type)
 
-        box = QGroupBox(u"Code LaTeX permettant de de générer le tableau", self)
+        box = QGroupBox(u"Code LaTeX permettant de de gÃ©nÃ©rer le tableau", self)
         self.bsizer = QVBoxLayout()
         box.setLayout(self.bsizer)
 
@@ -149,7 +149,7 @@ class TabLaTeX(Panel_simple):
         self.copier_code = QPushButton(u"Copier dans le presse-papier", self)
         self.bsizer.addWidget(self.copier_code)
 
-        txt = u"Pensez à rajouter dans l'entête de votre fichier LaTeX la ligne suivante :"
+        txt = u"Pensez Ã  rajouter dans l'entÃªte de votre fichier LaTeX la ligne suivante :"
         self.bsizer.addWidget(QLabel(txt, self))
 
         self.sizer_entete = QHBoxLayout()
@@ -225,14 +225,14 @@ class TabLaTeX(Panel_simple):
 
     def activer(self):
         Panel_simple.activer(self)
-        # Actions à effectuer lorsque l'onglet devient actif
+        # Actions Ã  effectuer lorsque l'onglet devient actif
         self.entree.setFocus()
 
 
     def generer_code(self, commande, **kw):
         if not commande.strip():
             return
-        # Utilisé pour la sauvegarde automatique:x+3
+        # UtilisÃ© pour la sauvegarde automatique:x+3
 
         self.modifie = True
         try:
@@ -255,10 +255,10 @@ class TabLaTeX(Panel_simple):
             if self._param_.copie_automatique:
                 self.vers_presse_papier(texte = code_latex)
             self.focus_widget.setFocus()
-            self.message(u"Le code LaTeX a bien été généré.")
+            self.message(u"Le code LaTeX a bien Ã©tÃ© gÃ©nÃ©rÃ©.")
         except BaseException, erreur:
-            self.message(u"Impossible de générer le code LaTeX. " + message(erreur))
-            self.code_tableau.setText(u"<i><b>Erreur.</b> Impossible de générer le code LaTeX.</i>")
+            self.message(u"Impossible de gÃ©nÃ©rer le code LaTeX. " + message(erreur))
+            self.code_tableau.setText(u"<i><b>Erreur.</b> Impossible de gÃ©nÃ©rer le code LaTeX.</i>")
             self.entree.setFocus()
             if param.debug:
                 raise

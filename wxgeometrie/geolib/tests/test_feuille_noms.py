@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 from __future__ import with_statement
 
@@ -20,7 +20,7 @@ from wxgeometrie.geolib.feuille import parse_equation, is_equation
 
 
 def test_abreviations():
-    f = Feuille(titre = u"Feuille de travail n°1")
+    f = Feuille(titre = u"Feuille de travail nÂ°1")
     o = f.objets
 
     assert(o.has_key("Point"))
@@ -33,9 +33,9 @@ def test_abreviations():
     o.txt = ["salut"]
     assert(isinstance(o.txt, Texte))
     assert(o.txt.texte == "salut")
-    o.s = [u"Hé, ça marche !"]
+    o.s = [u"HÃ©, Ã§a marche !"]
     assert(isinstance(o.s, Texte))
-    assert(o.s.texte == u"Hé, ça marche !")
+    assert(o.s.texte == u"HÃ©, Ã§a marche !")
 
     o.A = (1, 2)
     o.k = 7
@@ -69,7 +69,7 @@ def test_abreviations():
     assert(o.B.coordonnees[0] == 31)
     o.A(-3.6, 0.4)
     assert(o.C.coordonnees[0] ==-3.6)
-    # 'o.EFG = Triangle' doit être accepté comme alias de 'o.EFG = Triangle()'
+    # 'o.EFG = Triangle' doit Ãªtre acceptÃ© comme alias de 'o.EFG = Triangle()'
     o.EFG = Triangle
     assert(isinstance(o.EFG, Triangle))
 
@@ -97,7 +97,7 @@ def test_noms_aleatoires():
     assert f.nom_aleatoire(s) == 's1'
     assert f.nom_aleatoire(g) == 'f1'
     assert f.nom_aleatoire(M, prefixe='A') == 'A3'
-    # f0, f1, etc. sont réservés aux fonctions
+    # f0, f1, etc. sont rÃ©servÃ©s aux fonctions
     nom = f.nom_aleatoire(M, prefixe='f')
     assert re.match('[A-Za-z]{8}[0-9]+$', nom)
 
@@ -153,7 +153,7 @@ def test_nommage_intelligent():
 
 
 def test_nommage_intelligent_lent():
-    #FIXME: accélérer la création du polygone.
+    #FIXME: accÃ©lÃ©rer la crÃ©ation du polygone.
     f = Feuille()
     s = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     p = f.objets[s] = Polygone(26)
@@ -232,15 +232,15 @@ def test_info():
     o = f.objets
     with contexte(decimales = 2):
         A = o.A = Point(5, 7)
-        assert(A.info == u"Point A de coordonnées (5 ; 7)")
+        assert(A.info == u"Point A de coordonnÃ©es (5 ; 7)")
         B = o.B = Point(6.5, 9.3)
-        assert(B.info == u"Point B de coordonnées (6,5 ; 9,3)")
+        assert(B.info == u"Point B de coordonnÃ©es (6,5 ; 9,3)")
         s = o.s = Segment(A, B)
         assert(s.info == u"Segment s de longueur 2,75")
         c = o.c = Cercle(s)
         assert(c.info == u"Cercle c de rayon 1,37")
         d = o.d = Droite(A, B)
-        assert(d.info == u"Droite d d'équation -2,3 x + 1,5 y + 1 = 0")
+        assert(d.info == u"Droite d d'Ã©quation -2,3 x + 1,5 y + 1 = 0")
         C = o.C = Point(-1.5, 2.7)
         a = o.a = Arc_cercle(A, B, C)
         assert(a.info == u'Arc a de longueur 7,5')

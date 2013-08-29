@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 from __future__ import with_statement, print_function
 
@@ -54,8 +54,8 @@ parser.add_option("-q", "--quiet",
 (options, args) = parser.parse_args()
 
 def publish(filename, version):
-    u"""Publie le fichier sur sourceforge, et met à jour le fichier distant
-    contenant le numéro de la dernière version.
+    u"""Publie le fichier sur sourceforge, et met Ã  jour le fichier distant
+    contenant le numÃ©ro de la derniÃ¨re version.
     """
     SOURCEFORGE_CONFIG = 'tools/.sourceforge'
     if isfile(SOURCEFORGE_CONFIG):
@@ -83,7 +83,7 @@ nom_prog = NOMPROG2.lower()
 if options.publish_only:
     filename = '%s_%s.tar.gz' % (nom_prog, version)
     publish(filename, version)
-    print(u'\nTerminé.')
+    print(u'\nTerminÃ©.')
     sys.exit()
 
 if len(args) != 1:
@@ -110,7 +110,7 @@ if options.fake:
         if isinstance(val, types.FunctionType):
             setattr(s, nom, eval("lambda s, *args, **kw:print('@%s: ' + s)" %nom))
 
-# Mise à jour de la version et de la date dans param.__init__.py
+# Mise Ã  jour de la version et de la date dans param.__init__.py
 t=time.localtime()
 date = str((t.tm_year, t.tm_mon, t.tm_mday))
 contenu = []
@@ -120,18 +120,18 @@ with open('version.py', 'r') as f:
             contenu.append('date_version = ' + date + '\n')
         elif line.startswith('version = '):
             version_precedente = line[11:].split('#')[0].strip()[:-1]
-            # Changement du numéro de version
+            # Changement du numÃ©ro de version
             contenu.append('version = ' + repr(version.replace('_', ' ')) + '\n')
         elif line.startswith('git = '):
             contenu.append('git = ' + repr(s.command('git describe')))
         else:
             contenu.append(line)
 
-# Quelques tests sur le numéro de version:
+# Quelques tests sur le numÃ©ro de version:
 while True:
     modifier = False
     print('\n-------------------')
-    print(u"Version précédente: " + version_precedente)
+    print(u"Version prÃ©cÃ©dente: " + version_precedente)
     version = test_version(version)
     if version is None:
         print('Numero de version incorrect: ' + args[0])
@@ -155,22 +155,22 @@ while True:
     if modifier:
         version = raw_input(u"Entrez un nouveau numero de version:")
 
-print(u'\nCréation de la version ' + version + '...')
+print(u'\nCrÃ©ation de la version ' + version + '...')
 
 if not options.fake:
-    # Mise à jour de param/version.py
+    # Mise Ã  jour de param/version.py
     with open('version.py', 'w') as f:
         f.write(''.join(contenu).strip())
 
-# Création du changelog correspondant
+# CrÃ©ation du changelog correspondant
 date = time.strftime("%d/%m/%Y")
-s.command(u'echo "%s version %s\nPubliée le %s\n\n">doc/changelog.txt'
+s.command(u'echo "%s version %s\nPubliÃ©e le %s\n\n">doc/changelog.txt'
                         % (NOMPROG, version, date))
 
 tags = s.command('git tag', quiet=True).strip().split('\n')
 # On inverse la liste et on supprime les 'v' devant chaque tag.
 tags = [tag[1:] for tag in reversed(tags)]
-# On récupère la version majeure précédente
+# On rÃ©cupÃ¨re la version majeure prÃ©cÃ©dente
 for tag in tags:
     if tag.count('.') == 1 and not version.startswith(tag):
         break
@@ -185,22 +185,22 @@ s.command('git commit -m %s' %repr('Version ' + version))
 archive_tar = "%s_%s.tar" % (nom_prog, version)
 archive_gz = archive_tar + '.gz'
 
-print(u'\nCréation du paquet...')
+print(u'\nCrÃ©ation du paquet...')
 
-# Nettoyage (inutile, sauf plantage précédent)
+# Nettoyage (inutile, sauf plantage prÃ©cÃ©dent)
 s.cd('..')
 s.rmdir('build_', quiet=True)
 s.rm(archive_gz, quiet=True)
 
-# Création d'un répertoire temporaire build_/
+# CrÃ©ation d'un rÃ©pertoire temporaire build_/
 s.mkdir('build_')
 s.mkdir('build_/%s' % nom_prog)
 
-# Création du tag de release
+# CrÃ©ation du tag de release
 tag = 'v' + version
 s.command('git tag -am %s %s' %(repr(options.message or 'Version ' + version), tag))
 
-# Récupération des fichiers via git
+# RÃ©cupÃ©ration des fichiers via git
 s.command('git archive %s -o build_/%s.tar' % (tag, nom_prog))
 s.cd('build_')
 s.command('tar -xf %s.tar --directory %s' % (nom_prog, nom_prog))
@@ -214,14 +214,14 @@ s.rm('.gitignore')
 s.rename('wxgeometrie/param/personnaliser_.py', 'wxgeometrie/param/personnaliser.py')
 s.cd('..')
 
-# Création de l'archive .tar.gz
+# CrÃ©ation de l'archive .tar.gz
 s.command('tar -cf %s %s' % (archive_tar, nom_prog))
 s.command('gzip %s' % archive_tar)
 s.mv(archive_gz, options.output)
 
-print(u'\nPaquet créé dans %s.\n' % os.path.abspath(options.output))
+print(u'\nPaquet crÃ©Ã© dans %s.\n' % os.path.abspath(options.output))
 
-# Publie sur sourceforge et met à jour le fichier de version...
+# Publie sur sourceforge et met Ã  jour le fichier de version...
 if options.publish:
     publish(archive_gz, version)
 

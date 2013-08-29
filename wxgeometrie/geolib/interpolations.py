@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------#######
@@ -49,7 +49,7 @@ from .. import param
 
 
 class Interpolation_generique(Courbe_generique):
-    u"""Classe mère de toutes les interpolations."""
+    u"""Classe mÃ¨re de toutes les interpolations."""
 
     points = __points = Arguments("Point_generique")
 
@@ -67,7 +67,7 @@ class Interpolation_generique(Courbe_generique):
         debut = self.style("debut")
         fin = self.style("fin")
 
-        # Début de la courbe
+        # DÃ©but de la courbe
         plot = self._representation[-2]
         x, y = self.__points[0].coordonnees
         a, b = self.__points[1].coordonnees
@@ -80,7 +80,7 @@ class Interpolation_generique(Courbe_generique):
             plot.zorder = niveau
         elif debut is False:
             arc = self.rendu.arc(x, y, vec_deb)
-            plot.set_data(*arc.get_data()) # À TESTER !!
+            plot.set_data(*arc.get_data()) # Ã€ TESTER !!
             plot.set(visible=True, color=couleur, linewidth=epaisseur, marker="")
             plot.zorder = niveau
         else:
@@ -99,7 +99,7 @@ class Interpolation_generique(Courbe_generique):
             plot.zorder = niveau
         elif fin is False:
             arc = self.rendu.arc(x, y, vec_fin)
-            plot.set_data(*arc.get_data()) # À TESTER !!
+            plot.set_data(*arc.get_data()) # Ã€ TESTER !!
             plot.set(visible=True, color=couleur, linewidth=epaisseur, marker="")
             plot.zorder = niveau
         else:
@@ -109,9 +109,9 @@ class Interpolation_generique(Courbe_generique):
 
 
 class Interpolation_lineaire(Interpolation_generique):
-    u"""Une interpolation linéaire.
+    u"""Une interpolation linÃ©aire.
 
-    Interpolation entre les points donnés par des segments joints (courbe de classe C0).
+    Interpolation entre les points donnÃ©s par des segments joints (courbe de classe C0).
     """
 
     points = __points = Arguments("Point_generique")
@@ -148,8 +148,8 @@ class Interpolation_lineaire(Interpolation_generique):
             plot.set_data(array((x1, x2)), array((y1, y2)))
             plot.set(color=couleur, linestyle=style, linewidth=epaisseur)
             plot.zorder = niveau
-            # TODO: améliorer l'algo de détection (notamment si l'échelle
-            # sur les 2 axes n'est pas la même).
+            # TODO: amÃ©liorer l'algo de dÃ©tection (notamment si l'Ã©chelle
+            # sur les 2 axes n'est pas la mÃªme).
             # Utiliser l'algorithme des segments.
             if abs(y2 - y1) < abs(x2 - x1):
                 x_array = arange(x1, x2, pas if x1 < x2 else -pas)
@@ -170,7 +170,7 @@ class Interpolation_lineaire(Interpolation_generique):
 
 
     def image_par(self, transformation):
-        # FIXME: l'image n'est plus correcte si le nombre de points est modifié ensuite
+        # FIXME: l'image n'est plus correcte si le nombre de points est modifiÃ© ensuite
         # Par exemple, interp = Interpolation_lineaire(A, B), puis interp.points = (A, B, C)
         return self.__class__(*(transformation(point) for point in self.__points))
 
@@ -180,8 +180,8 @@ class Interpolation_lineaire(Interpolation_generique):
 class Interpolation_quadratique(Interpolation_generique):
     u"""Une interpolation quadratique.
 
-    Interpolation des points donnés par une courbe polynomiale par morceaux, et de classe C1.
-    Pour chaque morceau, x(t)=at²+bt+c et y(t)=dt²+et+f, où t appartient à [0;1].
+    Interpolation des points donnÃ©s par une courbe polynomiale par morceaux, et de classe C1.
+    Pour chaque morceau, x(t)=atÂ²+bt+c et y(t)=dtÂ²+et+f, oÃ¹ t appartient Ã  [0;1].
     """
     points = __points = Arguments("Point_generique")
 
@@ -239,8 +239,8 @@ class Interpolation_quadratique(Interpolation_generique):
 class Interpolation_cubique(Interpolation_generique):
     u"""Une interpolation cubique.
 
-    Interpolation des points donnés par une courbe polynomiale par morceaux, de vecteur tangent horizontal aux sommets, et de classe C1 en général (ie. si x_n!=x_{n-1}).
-    Pour chaque morceau, x(t)=at^3+bt^2+ct+d et y(t)=et^3+ft^2+gt+h, où t appartient à [0;1], et y'(0)=y'(1)=0.
+    Interpolation des points donnÃ©s par une courbe polynomiale par morceaux, de vecteur tangent horizontal aux sommets, et de classe C1 en gÃ©nÃ©ral (ie. si x_n!=x_{n-1}).
+    Pour chaque morceau, x(t)=at^3+bt^2+ct+d et y(t)=et^3+ft^2+gt+h, oÃ¹ t appartient Ã  [0;1], et y'(0)=y'(1)=0.
     """
 
     points = __points = Arguments("Point_generique")
@@ -324,7 +324,7 @@ class Interpolation_polynomiale_par_morceaux(Interpolation_generique):
     Elle utilise l'interpolation par morceau de scipy pour construire la fonction
     c'est la classe scipy.interpolate.PiecewisePolynomial
 
-    elle passe par les points (xl, yl) et avec le nombre derive dans derivl à
+    elle passe par les points (xl, yl) et avec le nombre derive dans derivl Ã 
     l'abscisse xl.
 
     exemple::
@@ -401,7 +401,7 @@ class Interpolation_polynomiale_par_morceaux(Interpolation_generique):
                     dx = B.x - A.x
                     derivees.append(dy/dx if dx else 0)
                 else:
-                    # Il y a (au moins) un point avant et un point après
+                    # Il y a (au moins) un point avant et un point aprÃ¨s
                     A, B, C = points[i - 1:i + 2]
                     if B.y >= max(A.y, C.y) or B.y <= min(A.y, C.y):
                         derivees.append(0)
@@ -417,7 +417,7 @@ class Interpolation_polynomiale_par_morceaux(Interpolation_generique):
     def _strategie_pente_moyenne(self, A, B, C):
         u"""La pente en B est celle de la droite (AC).
 
-        Stratégie simple et qui donne un rendu assez esthétique en pratique.
+        StratÃ©gie simple et qui donne un rendu assez esthÃ©tique en pratique.
         """
         dy = C.y - A.y
         dx = C.x - A.x
@@ -426,13 +426,13 @@ class Interpolation_polynomiale_par_morceaux(Interpolation_generique):
     def _strategie_pente_minimale(self, A, B, C):
         u"""Pente la plus faible entre celle de (AB) et celle de (BC).
 
-        On prend la pente la plus faible, de façon à être sûr
-        qu'à gauche et à droite du point considéré, la courbe d'interpolation
-        reste comprise en ordonnées entre le point considéré et
+        On prend la pente la plus faible, de faÃ§on Ã  Ãªtre sÃ»r
+        qu'Ã  gauche et Ã  droite du point considÃ©rÃ©, la courbe d'interpolation
+        reste comprise en ordonnÃ©es entre le point considÃ©rÃ© et
         le point suivant.
         Cela facilite la construction d'extrema :
         si A, B, C sont trois points d'interpolation,
-        avec B.y < A.y et B.y < C.y, alors on est assuré que
+        avec B.y < A.y et B.y < C.y, alors on est assurÃ© que
         la courbe ne descendra pas en dessous de B.y sur
         l'intervalle [A.x, C.x].
         """
@@ -446,10 +446,10 @@ class Interpolation_polynomiale_par_morceaux(Interpolation_generique):
 
     def _strategie_moyenne_gauche_droite(self, A, B, C):
         u"""
-        Moyenne de la pente moyenne à gauche et de la pente moyenne à droite.
+        Moyenne de la pente moyenne Ã  gauche et de la pente moyenne Ã  droite.
 
-        Stratégie peu concluante en pratique.
-        Il faudrait utiliser un barycentre plutôt qu'une moyenne simple.
+        StratÃ©gie peu concluante en pratique.
+        Il faudrait utiliser un barycentre plutÃ´t qu'une moyenne simple.
         """
         dy1 = B.y - A.y
         dx1 = B.x - A.x
@@ -484,7 +484,7 @@ class Interpolation_polynomiale_par_morceaux(Interpolation_generique):
 
         if n < 2:
             return
-        # de même les tangentes sont recalculées
+        # de mÃªme les tangentes sont recalculÃ©es
         # il doit y avoir moyen de faire moins de calculs
         # self.__tangentes = []
         # for i in range(len(self.__points)):

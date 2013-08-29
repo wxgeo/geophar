@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 #    WxGeometrie
@@ -25,7 +25,7 @@ import optparse, os, sys
 from .version import NOMPROG2, version
 nomprog = NOMPROG2.lower()
 
-# FIXME : supprimer la dépendance à param.
+# FIXME : supprimer la dÃ©pendance Ã  param.
 # Par exemple, parser un fichier VERSION contenant simplement
 # `nom_prog version num_version`
 
@@ -36,15 +36,15 @@ nomprog = NOMPROG2.lower()
 #     NOMPROG2, version = .split(' version ')
 
 def lire_arguments():
-    u"""On récupère les options éventuelles passées au programme.
+    u"""On rÃ©cupÃ¨re les options Ã©ventuelles passÃ©es au programme.
 
-    -a ou --all : essaie de détecter tous les modules possibles pour les intégrer au démarrage
+    -a ou --all : essaie de dÃ©tecter tous les modules possibles pour les intÃ©grer au dÃ©marrage
     ex: python wxgeometrie.pyw --all monfichier1.geo monfichier2.geo
 
-    -p ou --param ou --parametres : modifier le contenu du module 'param'. Les parametres sont séparés par des points-virgules.
+    -p ou --param ou --parametres : modifier le contenu du module 'param'. Les parametres sont sÃ©parÃ©s par des points-virgules.
     ex: python wxgeometrie.pyw --param version='0.1';tolerance=0.01 monfichier1.geo monfichier2.geo
 
-    -d ou --defaut : ne pas charger les préférences
+    -d ou --defaut : ne pas charger les prÃ©fÃ©rences
 
     Retour : (options, args)
     """
@@ -74,10 +74,10 @@ def lire_arguments():
 
 
 def traiter_arguments(options, args):
-    u"""Modification des paramètres en fonction des arguments passés.
+    u"""Modification des paramÃ¨tres en fonction des arguments passÃ©s.
 
-    Le traitement des arguments est séparé de leur lecture,
-    afin que le splash screen puisse être affiché le plus tôt possible."""
+    Le traitement des arguments est sÃ©parÃ© de leur lecture,
+    afin que le splash screen puisse Ãªtre affichÃ© le plus tÃ´t possible."""
     from . import param
 
     parametres_additionnels = {}
@@ -86,12 +86,12 @@ def traiter_arguments(options, args):
         param.charger_preferences = False
 
     if options.lister_modules:
-        print(u"\nListe des modules détectés :\n----------------------------")
+        print(u"\nListe des modules dÃ©tectÃ©s :\n----------------------------")
         print '  '.join(param.modules)
         exit()
 
     if options.modules:
-        # Les séparateurs acceptés entre les noms de modules sont , et ;
+        # Les sÃ©parateurs acceptÃ©s entre les noms de modules sont , et ;
         if ',' in options.modules:
             a_activer = options.modules.split(',')
         else:
@@ -117,7 +117,7 @@ def traiter_arguments(options, args):
         for parametre in options.parametres.split(";"):
             try:
                 nom, valeur = parametre.split("=", 1)
-                parametres_additionnels[nom] = eval(valeur) # pas sensass question sécurité... :-( (?)
+                parametres_additionnels[nom] = eval(valeur) # pas sensass question sÃ©curitÃ©... :-( (?)
             except Exception:
                 #raise
                 print "Erreur: Parametre incorrect :", parametre
@@ -135,8 +135,8 @@ def traiter_arguments(options, args):
 
     arguments = []
 
-    # Sous les Unix-like, les espaces dans les noms de fichiers sont mal gérés par python semble-t-il.
-    # Par exemple, "mon fichier.geo" est coupé en "mon" et "fichier.geo"
+    # Sous les Unix-like, les espaces dans les noms de fichiers sont mal gÃ©rÃ©s par python semble-t-il.
+    # Par exemple, "mon fichier.geo" est coupÃ© en "mon" et "fichier.geo"
     complet = True
     for arg in args:
         if complet:
@@ -147,6 +147,6 @@ def traiter_arguments(options, args):
 
     for nom in parametres_additionnels:
         if not hasattr(param, nom):
-            print(u"Attention: Paramètre inconnu : " + nom)
+            print(u"Attention: ParamÃ¨tre inconnu : " + nom)
 
     return parametres_additionnels, arguments, options

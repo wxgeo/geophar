@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 from random import random
@@ -17,7 +17,7 @@ def test_operations():
             b += random()
         u = Variable(a)
         v = Variable(b)
-        # Test opérations :
+        # Test opÃ©rations :
         if i < 5:
             assertEqual(u+v, a+b)
             assertEqual(u-v, a-b)

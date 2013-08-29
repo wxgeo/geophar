@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------#######
@@ -46,7 +46,7 @@ class LocalDict(dict):
 ##        #~ print "Nom de clef: ", name
 ##        #~ print "local: ", self.has_key(name)
 ##        #~ print "global: ", self.globals.has_key(name)
-##        if self.has_key(name) or self.globals.has_key(name): # doit renvoyer une KeyError si la clé est dans le dictionnaire global, pour que Python y aille chercher ensuite la valeur associée à la clé
+##        if self.has_key(name) or self.globals.has_key(name): # doit renvoyer une KeyError si la clÃ© est dans le dictionnaire global, pour que Python y aille chercher ensuite la valeur associÃ©e Ã  la clÃ©
 ##            return dict.__getitem__(self, name)
 ##        return Symbol(name)
 
@@ -61,11 +61,11 @@ class LocalDict(dict):
         return self.globals.get(key, sympy.__dict__.get(key, Symbol(key)))
 
     def __setitem__(self, name, value):
-        # Pour éviter que l'utilisateur redéfinisse pi, i, e, etc. par mégarde.
+        # Pour Ã©viter que l'utilisateur redÃ©finisse pi, i, e, etc. par mÃ©garde.
         if self.globals.has_key(name) or (name.startswith('_') and name[1:].isalnum()):
             raise NameError, "%s est un nom reserve" %name
         if isinstance(value, str):
-            # exec/eval encodent les chaînes crées en utf8.
+            # exec/eval encodent les chaÃ®nes crÃ©es en utf8.
             value = value.decode("utf8").encode(param.encodage)
         dict.__setitem__(self, name, value)
 
@@ -73,31 +73,31 @@ class LocalDict(dict):
 
 
 class Interprete(object):
-    u"""Un interprêteur de commandes mathématiques, avec gestion des sessions.
+    u"""Un interprÃªteur de commandes mathÃ©matiques, avec gestion des sessions.
 
     Les options sont les suivantes::
 
-        * `calcul_exact`: mode calcul exact ou calcul approché
-        * `ecriture_scientifique`: affiche les résultats en écriture scientifique
-          (essentiellement pertinent pour des résultats numériques)
+        * `calcul_exact`: mode calcul exact ou calcul approchÃ©
+        * `ecriture_scientifique`: affiche les rÃ©sultats en Ã©criture scientifique
+          (essentiellement pertinent pour des rÃ©sultats numÃ©riques)
         * `forme_algebrique`: affiche les nombres complexes sous la forme a+ib
-        * `simplifier_ecriture_resultat`: Écrire le résultat sous une forme plus
-          agréable à lire (suppression des '*' dans '2*x', etc.)
-        * `separateur_decimal`: point ou virgule (',' par défaut)
-        * `formatage_OOo`: convertir et interpréter les formules OpenOffice
+        * `simplifier_ecriture_resultat`: Ã‰crire le rÃ©sultat sous une forme plus
+          agrÃ©able Ã  lire (suppression des '*' dans '2*x', etc.)
+        * `separateur_decimal`: point ou virgule (',' par dÃ©faut)
+        * `formatage_OOo`: convertir et interprÃ©ter les formules OpenOffice
           ou LibreOffice
-        * `formatage_LaTeX`: convertir et interpréter les formules LaTeX
-        * `ecriture_scientifique_decimales`: nombre de décimales affichées
-          en mode écriture scientifique.
-        * `precision_calcul`: précision utilisée en interne pour les calculs
-          approchés (nombre de chiffres).
-        * `precision_affichage`: nombre de chiffres affichés pour les résultats
-          approchés
+        * `formatage_LaTeX`: convertir et interprÃ©ter les formules LaTeX
+        * `ecriture_scientifique_decimales`: nombre de dÃ©cimales affichÃ©es
+          en mode Ã©criture scientifique.
+        * `precision_calcul`: prÃ©cision utilisÃ©e en interne pour les calculs
+          approchÃ©s (nombre de chiffres).
+        * `precision_affichage`: nombre de chiffres affichÃ©s pour les rÃ©sultats
+          approchÃ©s
         * `simpify`: convertir automatiquement les expressions au format sympy
-        * `verbose`: afficher le détail des transformations effectuées
-        * `appliquer_au_resultat`: une fonction à appliquer éventuellement
-          au résultat
-        * `ensemble`: 'R' ou 'C' (utilisé pour la résolution des équations).
+        * `verbose`: afficher le dÃ©tail des transformations effectuÃ©es
+        * `appliquer_au_resultat`: une fonction Ã  appliquer Ã©ventuellement
+          au rÃ©sultat
+        * `ensemble`: 'R' ou 'C' (utilisÃ© pour la rÃ©solution des Ã©quations).
     """
     def __init__(self,  calcul_exact=True,
                         ecriture_scientifique=False,
@@ -114,9 +114,9 @@ class Interprete(object):
                         appliquer_au_resultat=None,
                         ensemble='R'
                         ):
-        # Dictionnaire local (qui contiendra toutes les variables définies par l'utilisateur).
+        # Dictionnaire local (qui contiendra toutes les variables dÃ©finies par l'utilisateur).
         self.locals = LocalDict()
-        # Dictionnaire global (qui contient les fonctions, variables et constantes prédéfinies).
+        # Dictionnaire global (qui contient les fonctions, variables et constantes prÃ©dÃ©finies).
         self.globals = vars(end_user_functions).copy()
         self.globals.update({
                 "__builtins__": None,
@@ -127,7 +127,7 @@ class Interprete(object):
                 "Ensemble": Ensemble,
                 "__sympify__": sympify,
                 "ans": self.ans,
-                "rep": self.ans, # alias en français :)
+                "rep": self.ans, # alias en franÃ§ais :)
                 "__vars__": self.vars,
 #                "__decimal__": Decimal,
                 "__decimal__": self._decimal,
@@ -137,13 +137,13 @@ class Interprete(object):
                 "frac": self._frac,
                 "Decim": Decim,
                             })
-        # pour éviter que les procédures de réécriture des formules ne touchent au mots clefs,
-        # on les référence comme fonctions (elles seront inaccessibles, mais ce n'est pas grave).
+        # pour Ã©viter que les procÃ©dures de rÃ©Ã©criture des formules ne touchent au mots clefs,
+        # on les rÃ©fÃ©rence comme fonctions (elles seront inaccessibles, mais ce n'est pas grave).
         # ainsi, "c and(a or b)" ne deviendra pas "c and*(a or b)" !
         # self.globals.update({}.fromkeys(securite.keywords_autorises, lambda:None))
 
-        # On importe les fonctions python qui peuvent avoir une utilité éventuelle
-        # (et ne présentent pas de problème de sécurité)
+        # On importe les fonctions python qui peuvent avoir une utilitÃ© Ã©ventuelle
+        # (et ne prÃ©sentent pas de problÃ¨me de sÃ©curitÃ©)
         a_importer = ['all', 'unicode', 'isinstance', 'dict', 'oct', 'sorted',
                       'list', 'iter', 'set', 'reduce', 'issubclass', 'getattr',
                       'hash', 'len', 'frozenset', 'ord', 'filter', 'pow',
@@ -160,14 +160,14 @@ class Interprete(object):
         self.calcul_exact = calcul_exact
         # afficher les resultats en ecriture scientifique.
         self.ecriture_scientifique = ecriture_scientifique
-        # mettre les résultats complexes sous forme algébrique
+        # mettre les rÃ©sultats complexes sous forme algÃ©brique
         self.forme_algebrique = forme_algebrique
-        # Écrire le résultat sous une forme plus agréable à lire
+        # Ã‰crire le rÃ©sultat sous une forme plus agrÃ©able Ã  lire
         # (suppression des '*' dans '2*x', etc.)
         self.simplifier_ecriture_resultat = simplifier_ecriture_resultat
-        # appliquer les séparateurs personnalisés
+        # appliquer les sÃ©parateurs personnalisÃ©s
         self.separateur_decimal = separateur_decimal or param.separateur_decimal
-        # d'autres choix sont possibles, mais pas forcément heureux...
+        # d'autres choix sont possibles, mais pas forcÃ©ment heureux...
         self.formatage_OOo = formatage_OOo
         self.formatage_LaTeX = formatage_LaTeX
         self.ecriture_scientifique_decimales = ecriture_scientifique_decimales
@@ -175,14 +175,14 @@ class Interprete(object):
         self.precision_affichage = precision_affichage
         self.verbose = verbose
         self.simpify = simpify
-        # une fonction à appliquer à tous les résultats
+        # une fonction Ã  appliquer Ã  tous les rÃ©sultats
         self.appliquer_au_resultat = appliquer_au_resultat
         self.ensemble = ensemble
         self.latex_dernier_resultat = ''
         self.initialiser()
 
     def _decimal(self, nbr, prec=None):
-        u"""Convertit en fraction avec affichage décimal.
+        u"""Convertit en fraction avec affichage dÃ©cimal.
         """
         if prec is None:
             prec = self.precision_calcul
@@ -204,8 +204,8 @@ class Interprete(object):
             calcul_exact = self.calcul_exact
 
         self.warning = ""
-        # calcul = re.sub("[_]+", "_", calcul.strip()) # par mesure de sécurité, les "__" sont interdits.
-        # Cela permet éventuellement d'interdire l'accès à des fonctions.
+        # calcul = re.sub("[_]+", "_", calcul.strip()) # par mesure de sÃ©curitÃ©, les "__" sont interdits.
+        # Cela permet Ã©ventuellement d'interdire l'accÃ¨s Ã  des fonctions.
         # Warning: inefficace. Cf. "_import _builtins_import _
 
         # Ferme automatiquement les parentheses.
@@ -214,9 +214,9 @@ class Interprete(object):
             difference = calcul.count(parentheses[0][i])-calcul.count(parentheses[1][i])
             if difference > 0:
                 calcul += difference*parentheses[1][i]
-                self.warning += u" Attention, il manque des parenthèses \"" + parentheses[1][i] + "\"."
+                self.warning += u" Attention, il manque des parenthÃ¨ses \"" + parentheses[1][i] + "\"."
             elif difference < 0:
-                self.warning += u" Attention, il y a des parenthèses \"" + parentheses[1][i] + "\" superflues."
+                self.warning += u" Attention, il y a des parenthÃ¨ses \"" + parentheses[1][i] + "\" superflues."
                 if calcul.endswith(abs(difference)*parentheses[1][i]):
                     calcul = calcul[:difference]
 
@@ -251,7 +251,7 @@ class Interprete(object):
 
         try:
             param.calcul_approche = not calcul_exact
-            # utilisé en particulier dans la factorisation des polynômes
+            # utilisÃ© en particulier dans la factorisation des polynÃ´mes
             self._executer(calcul)
         finally:
             param.calcul_approche = False
@@ -327,13 +327,13 @@ class Interprete(object):
 ##            latex = "$" + resultat + "$"
         if self.separateur_decimal != '.' and not isinstance(valeur, basestring):
             resultat = re.sub(r"[ ]*[,;][ ]*", ' ; ', resultat)
-            # Éviter de remplacer \, par \; en LaTex.
+            # Ã‰viter de remplacer \, par \; en LaTex.
             latex = re.sub(r"(?<![\\ ])[ ]*,[ ]*", ';', latex)
             def sep(m):
                 return m.group().replace('.', self.separateur_decimal)
             resultat = re.sub(NBR, sep, resultat)
             latex = re.sub(NBR, sep, latex)
-            # TODO: utiliser un parser, pour détecter les chaînes, et ne pas remplacer à l'intérieur.
+            # TODO: utiliser un parser, pour dÃ©tecter les chaÃ®nes, et ne pas remplacer Ã  l'intÃ©rieur.
 
         if isinstance(valeur, basestring):
             latex = u'\u201C%s\u201D' %valeur
@@ -404,8 +404,8 @@ class Interprete(object):
         else:
             instruction = self._traduire(instruction)
 
-        # dans certains cas, il ne faut pas affecter le résultat à la variable "_" (cela provoquerait une erreur de syntaxe)
-        # (Mots clés devant se trouver en début de ligne : dans ce cas, on ne modifie pas la ligne)
+        # dans certains cas, il ne faut pas affecter le rÃ©sultat Ã  la variable "_" (cela provoquerait une erreur de syntaxe)
+        # (Mots clÃ©s devant se trouver en dÃ©but de ligne : dans ce cas, on ne modifie pas la ligne)
 ##        if True in [instruction.startswith(exception + " ") for exception in securite.__keywords_debut_ligne__]:
 ##        def re_keywords(liste):
 ##            global pylib
@@ -457,7 +457,7 @@ class Interprete(object):
         else:
             n = int(n)
         if self.derniers_resultats: return self.derniers_resultats[n]
-        self.warning += u" Ans(): aucun calcul antérieur."
+        self.warning += u" Ans(): aucun calcul antÃ©rieur."
         return 0
 
     def clear_state(self):
@@ -478,12 +478,12 @@ class Interprete(object):
     def load_state(self, state):
         def evaltry(expr):
             u"Evalue l'expression. En cas d'erreur, intercepte l'erreur et retourne None."
-            #XXX: ne pas remplacer à l'intérieur d'une chaîne.
+            #XXX: ne pas remplacer Ã  l'intÃ©rieur d'une chaÃ®ne.
             expr = re.sub(NBR_FLOTTANT, (lambda x: "Decim('%s')" % x.group()), expr)
             try:
                 return eval(expr, self.globals, self.locals)
             except Exception:
-                print("Error: l'expression suivante n'a pu être évaluée par l'interprète: %s." %repr(expr))
+                print("Error: l'expression suivante n'a pu Ãªtre Ã©valuÃ©e par l'interprÃ¨te: %s." %repr(expr))
                 print_error()
 
         self.clear_state()

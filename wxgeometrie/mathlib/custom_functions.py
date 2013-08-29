@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------#######
@@ -39,15 +39,15 @@ from .printers import custom_str
 
 
 #def deg(x):
-#    u'Conversion radians -> degrés.'
+#    u'Conversion radians -> degrÃ©s.'
 #    return .MesureDegres(x)
 
 def deg(x):
-    u'Conversion radians -> degrés.'
+    u'Conversion radians -> degrÃ©s.'
     return x*180/pi
 
 #def rad(x):
-#    u'Conversion degrés -> radians.'
+#    u'Conversion degrÃ©s -> radians.'
 #    return x*sympy.pi/180
 
 def jhms(s):
@@ -60,9 +60,9 @@ def cbrt(x):
     return cmp(x, 0)*math.exp(math.log(abs(x))/3)
 
 def root(x, n):
-    u"""Racine nième de x.
+    u"""Racine niÃ¨me de x.
 
-    N'est définie pour x négatif que si n est pair."""
+    N'est dÃ©finie pour x nÃ©gatif que si n est pair."""
     if n%2:
         return cmp(x, 0)*math.exp(math.log(abs(x))/n)
     return math.exp(math.log(x)/n)
@@ -84,12 +84,12 @@ def lcm(a, b):
     return a*b//gcd(a,b)
 
 def pgcd(*termes):
-    u"Le plus grand dénominateur commun à un nombre quelconque d'entiers."
+    u"Le plus grand dÃ©nominateur commun Ã  un nombre quelconque d'entiers."
     return reduce(lambda x,y:gcd(x,y), termes)
 
 
 def ppcm(*termes):
-    u"Le plus petit multiple commun à un nombre quelconque d'entiers."
+    u"Le plus petit multiple commun Ã  un nombre quelconque d'entiers."
     return reduce(lambda x,y:lcm(x,y), termes)
 
 
@@ -103,7 +103,7 @@ def n_premiers(n = 100, maximum = 50000): # securite face aux erreurs de frappe.
     while len(liste) < n:
         r = math.sqrt(m)
         for k in liste:
-            if k > r: # pas de diviseurs inferieurs à sa racine, donc le nombre est premier
+            if k > r: # pas de diviseurs inferieurs Ã  sa racine, donc le nombre est premier
                 liste.append(m)
                 break
             if not m%k:
@@ -115,7 +115,7 @@ def n_premiers(n = 100, maximum = 50000): # securite face aux erreurs de frappe.
 # Approximation rationnelle par fractions continues
 # cf. http://fr.wikipedia.org/wiki/Fraction_continue
 def frac(valeur, n = 20, epsilon = 1e-15):
-    u"Donne une fraction approximativement égale à la valeur."
+    u"Donne une fraction approximativement Ã©gale Ã  la valeur."
     if isinstance(valeur, Rational):
         if isinstance(valeur, Decim):
             valeur = valeur.to_Rational()
@@ -158,9 +158,9 @@ def bin(n):
 def floats2rationals(expr):
     u"""Convertit tous les flottants d'une expression sympy en rationnels.
 
-    Si l'expression est de type `list` ou `tuple`, la fonction est appelée
-    récursivement.
-    Sinon, si elle n'est pas de type sympy, l'expression est renvoyée telle
+    Si l'expression est de type `list` ou `tuple`, la fonction est appelÃ©e
+    rÃ©cursivement.
+    Sinon, si elle n'est pas de type sympy, l'expression est renvoyÃ©e telle
     qu'elle.
     """
     if isinstance(expr, (list, tuple)):
@@ -177,11 +177,11 @@ def floats2rationals(expr):
 def rationals2floats(expr, precision=None):
     u"""Convertit tous les rationnels d'une expression sympy en flottants.
 
-    On peut spécifier via `precision` le nombre de chiffres significatifs.
+    On peut spÃ©cifier via `precision` le nombre de chiffres significatifs.
 
-    Si l'expression est de type `list` ou `tuple`, la fonction est appelée
-    récursivement.
-    Sinon, si elle n'est pas de type sympy, l'expression est renvoyée telle
+    Si l'expression est de type `list` ou `tuple`, la fonction est appelÃ©e
+    rÃ©cursivement.
+    Sinon, si elle n'est pas de type sympy, l'expression est renvoyÃ©e telle
     qu'elle.
     """
     if isinstance(expr, (list, tuple)):
@@ -196,7 +196,7 @@ def rationals2floats(expr, precision=None):
     return expr.subs(dico)
 
 def _Pow2list(expression):
-    u"""On décompose une puissance en liste de facteurs."""
+    u"""On dÃ©compose une puissance en liste de facteurs."""
     base, puissance = expression.as_base_exp()
     if puissance.is_integer:
         return int(puissance)*[base]
@@ -207,7 +207,7 @@ def _Pow2list(expression):
     return [expression]
 
 def _Mul2list(expression):
-    u"""On décompose un produit en une liste de facteurs ; les puissances sont converties préalablement en produits."""
+    u"""On dÃ©compose un produit en une liste de facteurs ; les puissances sont converties prÃ©alablement en produits."""
     liste = []
     if expression.is_Mul:
         for facteur in expression.args:
@@ -217,7 +217,7 @@ def _Mul2list(expression):
 
 
 def auto_collect(expression):
-    u"""Factorise une expression en utilisant sympy.collect, sans préciser manuellement ce par quoi factoriser."""
+    u"""Factorise une expression en utilisant sympy.collect, sans prÃ©ciser manuellement ce par quoi factoriser."""
     if expression.is_Add:
         dico = {}
         liste0 = _Mul2list(expression.args[0])
@@ -252,7 +252,7 @@ def _convertir_frequences(frequences, serie):
         return frequences
 
 def moyenne(serie, coeffs = None):
-    u"Calcule l'espérance de la série des (xi, fi)."
+    u"Calcule l'espÃ©rance de la sÃ©rie des (xi, fi)."
     frequences = _convertir_frequences(coeffs, serie)
     return sum(xi*fi for xi, fi in zip(serie, frequences))
 
@@ -263,22 +263,22 @@ def variance(serie, coeffs = None):
     return sum(fi*(xi - M)**2 for xi, fi in zip(serie, frequences))
 
 def ecart_type(serie, coeffs = None):
-    u"Retourne l'écart-type de la série des (xi, fi)."
+    u"Retourne l'Ã©cart-type de la sÃ©rie des (xi, fi)."
     return sqrt(variance(serie, coeffs))
 
 def covariance(serie1, serie2, coeffs = None):
-    u"Retourne la covariance des deux séries."
-    assert len(serie1) == len(serie2), u"Les deux séries doivent avoir le même nombre de valeurs."
+    u"Retourne la covariance des deux sÃ©ries."
+    assert len(serie1) == len(serie2), u"Les deux sÃ©ries doivent avoir le mÃªme nombre de valeurs."
     frequences = _convertir_frequences(coeffs, serie1)
     x_ = moyenne(serie1, frequences)
     y_ = moyenne(serie2, frequences)
     return sum(fi*(xi - x_)*(yi - y_) for xi, yi, fi in zip(serie1, serie2, frequences))
 
 def linreg(serie1, serie2, coeffs = None):
-    u"""Droite de régression par la méthode des moindres carrés.
+    u"""Droite de rÃ©gression par la mÃ©thode des moindres carrÃ©s.
 
-    Retourne les coefficients a et b de l'équation y=ax+b
-     de la droite de régression par la méthode des moindres carrés.
+    Retourne les coefficients a et b de l'Ã©quation y=ax+b
+     de la droite de rÃ©gression par la mÃ©thode des moindres carrÃ©s.
 
      >>> from wxgeometrie.mathlib.custom_functions import linreg
      >>> linreg((85.6,84.5,81,80.2,72.8,71.2,73,48.1),(78.7,77.6,75.2,71.1,67.7,66.3,59.1,46.8))
@@ -290,7 +290,7 @@ def linreg(serie1, serie2, coeffs = None):
 
 
 def pstfunc(chaine):
-    u"Convertit une chaine représentant une fonction pst-trick en une fonction "
+    u"Convertit une chaine reprÃ©sentant une fonction pst-trick en une fonction "
     args = []
     dict_op = {'mul':'*','add':'+','exp':'**','div':'/','sub':'-'}
     dict_fn = {'ln':'ln'}
@@ -328,7 +328,7 @@ def aide(fonction):
 
 
 def arrondir(valeur, chiffres = 0):
-    # Nombre de chiffres de la partie entière :
+    # Nombre de chiffres de la partie entiÃ¨re :
     n = floor(log(valeur, 10)) + 1
     return sympify(valeur).evalf(chiffres + n)
 
@@ -404,15 +404,15 @@ def inv_normal(p):
 def fluctu(probabilite, taille=1000, seuil=None):
     u"""Intervalle de fluctuation.
 
-    Retourne l'intervalle de fluctuation correspondant à un échantillon de taille
-    `taille`, lorsque la probabilité est `probabilite`.
+    Retourne l'intervalle de fluctuation correspondant Ã  un Ã©chantillon de taille
+    `taille`, lorsque la probabilitÃ© est `probabilite`.
 
-    Par défaut, lorsque le seuil n'est pas fixé, l'approximation
-    [p - 1.96*sqrt(p(1-p)/n), p + 1.96*sqrt(p(1-p)/n)] est utilisée,
-    pour un seuil environ égal à 95%.
+    Par dÃ©faut, lorsque le seuil n'est pas fixÃ©, l'approximation
+    [p - 1.96*sqrt(p(1-p)/n), p + 1.96*sqrt(p(1-p)/n)] est utilisÃ©e,
+    pour un seuil environ Ã©gal Ã  95%.
     """
     if seuil is None:
-        # Approximation usuelle pour un seuil à 95%
+        # Approximation usuelle pour un seuil Ã  95%
         a = 1.96
     else:
         # P(-a < X < a) == seuil <=> P(X < a) == (seuil + 1)/2
@@ -424,11 +424,11 @@ def fluctu(probabilite, taille=1000, seuil=None):
 def confiance(frequence, taille=1000, seuil=None):
     u"""Intervalle de confiance au seuil de 95%.
 
-    Retourne l'intervalle de confiance correspondant à un échantillon de taille
-    `taille`, lorsque la fréquence observée sur l'échantillon est `frequence`.
+    Retourne l'intervalle de confiance correspondant Ã  un Ã©chantillon de taille
+    `taille`, lorsque la frÃ©quence observÃ©e sur l'Ã©chantillon est `frequence`.
 
-    Par défaut, si seuil n'est pas fixé, l'approximation utilisée est
-    [f - 1/sqrt(n), f + 1/sqrt(n)], pour un seuil environ égal à 95%.
+    Par dÃ©faut, si seuil n'est pas fixÃ©, l'approximation utilisÃ©e est
+    [f - 1/sqrt(n), f + 1/sqrt(n)], pour un seuil environ Ã©gal Ã  95%.
     """
     if seuil is not None:
         return fluctu(frequence, taille, seuil)
@@ -437,14 +437,14 @@ def confiance(frequence, taille=1000, seuil=None):
 
 
 def normal(a, b, mu=0, sigma=1):
-    u"""Retourne P(a < X < b), où X suit la loi normale N(mu, sigma²).
+    u"""Retourne P(a < X < b), oÃ¹ X suit la loi normale N(mu, sigmaÂ²).
     """
     X = Normal('X', mu, sigma)
     return (proba(X <= b) - proba(X < a)).evalf()
 
 
 def binomial(a, b, n, p):
-    u"""Retourne P(a <= X <= b), où X suit la loi binomiale B(n, p).
+    u"""Retourne P(a <= X <= b), oÃ¹ X suit la loi binomiale B(n, p).
 
     ..note:: Taper binomial(a, a, n, p) pour calculer P(X = a).
     """

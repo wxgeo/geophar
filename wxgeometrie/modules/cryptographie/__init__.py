@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------#######
@@ -40,26 +40,26 @@ from ...pylib import print_error
 
 
 dict_accents = {
-u"é": "E",
-u"É": "E",
-u"ê": "E",
-u"Ê": "E",
-u"è": "E",
-u"È": "E",
-u"à": "A",
-u"À": "A",
-u"â": "A",
-u"Â": "A",
-u"ô": "O",
-u"Ô": "O",
-u"î": "I",
-u"Î": "I",
-u"ù": "U",
-u"Ù": "U",
-u"û": "U",
-u"Û": "U",
-u"ç": "C",
-u"Ç": "C",
+u"Ã©": "E",
+u"Ã‰": "E",
+u"Ãª": "E",
+u"ÃŠ": "E",
+u"Ã¨": "E",
+u"Ãˆ": "E",
+u"Ã ": "A",
+u"Ã€": "A",
+u"Ã¢": "A",
+u"Ã‚": "A",
+u"Ã´": "O",
+u"Ã”": "O",
+u"Ã®": "I",
+u"ÃŽ": "I",
+u"Ã¹": "U",
+u"Ã™": "U",
+u"Ã»": "U",
+u"Ã›": "U",
+u"Ã§": "C",
+u"Ã‡": "C",
 }
 
 
@@ -76,7 +76,7 @@ class CaseLettre(QLineEdit):
             c = chr(n).upper()
             for case in self.parent.cases.values():
                 if case.text() == c:
-                    self.parent.message(u'La lettre %s est déjà utilisée !' %c)
+                    self.parent.message(u'La lettre %s est dÃ©jÃ  utilisÃ©e !' %c)
                     return
             self.setText(c)
         elif n in (Qt.Key_Backspace, Qt.Key_Delete):
@@ -90,14 +90,14 @@ class CryptographieMenuBar(MenuBar):
         self.ajouter(u"Fichier", ["quitter"])
         self.ajouter(u"Affichage", ["onglet"], ["plein_ecran"])
         self.ajouter(u"Outils",
-                        [u"Coder un message", u"Code le message par substitution mono-alphabétique.",
+                        [u"Coder un message", u"Code le message par substitution mono-alphabÃ©tique.",
                                 "Ctrl+K", panel.coder],
-                        [u"Coder avec espaces", u"Code le message en conservant les espaces (substitution mono-alphabétique).",
+                        [u"Coder avec espaces", u"Code le message en conservant les espaces (substitution mono-alphabÃ©tique).",
                                 "Ctrl+Shift+K", partial(panel.coder, espaces=True)],
-                        [u"Générer une nouvelle clé", u"Générer une nouvelle permutation de l'alphabet.", None, panel.generer_cle],
-                        [u"Modifier la clé", u"Générer une nouvelle permutation de l'alphabet.", None, panel.DlgModifierCle],
+                        [u"GÃ©nÃ©rer une nouvelle clÃ©", u"GÃ©nÃ©rer une nouvelle permutation de l'alphabet.", None, panel.generer_cle],
+                        [u"Modifier la clÃ©", u"GÃ©nÃ©rer une nouvelle permutation de l'alphabet.", None, panel.DlgModifierCle],
                         None,
-                        [u"Coder avec Vigenère", "Codage par la méthode de Vigenère (substitution poly-alphabétique).",
+                        [u"Coder avec VigenÃ¨re", "Codage par la mÃ©thode de VigenÃ¨re (substitution poly-alphabÃ©tique).",
                                 None, partial(panel.coder_vigenere, ask=True)],
                         None,
                         [u"options"])
@@ -108,7 +108,7 @@ class CryptographieMenuBar(MenuBar):
 
 
 class Cryptographie(Panel_simple):
-    titre = u"Cryptographie" # Donner un titre à chaque module
+    titre = u"Cryptographie" # Donner un titre Ã  chaque module
 
     def __init__(self, *args, **kw):
         Panel_simple.__init__(self, *args, **kw)
@@ -116,15 +116,15 @@ class Cryptographie(Panel_simple):
         self._freeze = False
         self.widget_modifie = None
 
-        # La clé est la permutation de l'alphabet actuellement utilisée
-        # pour le codage par substitution mono-alphabétique.
+        # La clÃ© est la permutation de l'alphabet actuellement utilisÃ©e
+        # pour le codage par substitution mono-alphabÃ©tique.
         self.generer_cle()
 
-        # La clé de chiffrement pour le codage par substitution poly-alphabétique
-        # (appelé aussi chiffre de Vigenère).
+        # La clÃ© de chiffrement pour le codage par substitution poly-alphabÃ©tique
+        # (appelÃ© aussi chiffre de VigenÃ¨re).
         self.cle_vigenere = 'EXEMPLE'
 
-        # Signe indiquant un caractère non déchiffré
+        # Signe indiquant un caractÃ¨re non dÃ©chiffrÃ©
         self.symbole = '-' # '.'
 
         self.sizer = QVBoxLayout()
@@ -142,12 +142,12 @@ class Cryptographie(Panel_simple):
         self.copier_clair = QPushButton(u'Copier le texte en clair')
         self.copier_clair.clicked.connect(partial(self.copier, widget=self.clair))
 
-        txt_code = QLabel(u"<b>Texte codé</b>")
+        txt_code = QLabel(u"<b>Texte codÃ©</b>")
         self.code = QTextEdit()
         self.code.setMinimumSize(*size)
         self.code.textChanged.connect(self.code_modifie)
         self.code.cursorPositionChanged.connect(partial(self.formater, widget=self.code))
-        self.copier_code = QPushButton(u'Copier le texte codé')
+        self.copier_code = QPushButton(u'Copier le texte codÃ©')
         self.copier_code.clicked.connect(partial(self.copier, widget=self.code))
 
         self.textes.addWidget(txt_clair, 0, 0)
@@ -161,7 +161,7 @@ class Cryptographie(Panel_simple):
         self.table = QGridLayout()
         self.table.setSpacing(3)
         self.cases = {}
-        self.table.addWidget(QLabel(u"Codé : ", self), 0, 0)
+        self.table.addWidget(QLabel(u"CodÃ© : ", self), 0, 0)
         self.table.addWidget(QLabel(u"Clair : ", self), 1, 0)
         ##self.table.setColumnStretch(0, 100)
         for i, l in enumerate(majuscules):
@@ -210,9 +210,9 @@ class Cryptographie(Panel_simple):
 
     def DlgModifierCle(self, evt=None):
         while True:
-            text, ok = QInputDialog.getText(self, u"Modifier la clé",
-                    u"La clé doit être une permutation de l'alphabet,\n"
-                    u"ou un chiffre qui indique de combien l'alphabet est décalé.",
+            text, ok = QInputDialog.getText(self, u"Modifier la clÃ©",
+                    u"La clÃ© doit Ãªtre une permutation de l'alphabet,\n"
+                    u"ou un chiffre qui indique de combien l'alphabet est dÃ©calÃ©.",
                     text=str(self.cle))
             if ok:
                 try:
@@ -276,7 +276,7 @@ class Cryptographie(Panel_simple):
         msg = msg.upper()
         if cle is None:
             pass
-        # Pour l'instant, les espaces ne sont pas supportés
+        # Pour l'instant, les espaces ne sont pas supportÃ©s
         clair = msg.replace(' ', '')
         clair = self.clair.toPlainText().upper()
         for key, val in dict_accents.items():
@@ -287,8 +287,8 @@ class Cryptographie(Panel_simple):
 
     def DlgModifierCleVigenere(self, evt=None):
         while True:
-            text, ok = QInputDialog.getText(self, u"Modifier la clé pour Vigenère",
-                    u"La clé doit contenir uniquement des lettres.",
+            text, ok = QInputDialog.getText(self, u"Modifier la clÃ© pour VigenÃ¨re",
+                    u"La clÃ© doit contenir uniquement des lettres.",
                     text=self.cle_vigenere)
             if ok:
                 text = text.strip()
@@ -322,14 +322,14 @@ class Cryptographie(Panel_simple):
 
 
     def _formater(self, widget_modifie):
-        # Impossible de formater les 2 textes de la même manière s'ils
-        # ne sont pas de la même longueur.
+        # Impossible de formater les 2 textes de la mÃªme maniÃ¨re s'ils
+        # ne sont pas de la mÃªme longueur.
         # Cela ne devrait se produire que temporairement (par ex.,
         # l'utilisateur copie un nouveau texte)
         if len(self.code.toPlainText()) != len(self.clair.toPlainText()):
             if self.code.toPlainText() and self.clair.toPlainText():
-                print(u'Warning: le message codé et le message en clair ne sont '
-                      u'pas de même longueur.')
+                print(u'Warning: le message codÃ© et le message en clair ne sont '
+                      u'pas de mÃªme longueur.')
             return
 
         def colorier(m, col1=[self.couleur1], col2=[self.couleur2]):

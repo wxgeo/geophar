@@ -1,13 +1,13 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 
-# Informations utilisée par l'installeur sous Windows.
+# Informations utilisÃ©e par l'installeur sous Windows.
 # titre : description sommaire du module
-# description : description détaillée
-# defaut : par défaut, le module est-il installé ou non ?
+# description : description dÃ©taillÃ©e
+# defaut : par dÃ©faut, le module est-il installÃ© ou non ?
 
 description = {
-"titre":                    u"Graphes orientés, pondérés, probabilistes...",
-"description":              u"Représentation de graphes, matrices, et algorithmes courants (Dijkstra, Welsh & Powell...).",
+"titre":                    u"Graphes orientÃ©s, pondÃ©rÃ©s, probabilistes...",
+"description":              u"ReprÃ©sentation de graphes, matrices, et algorithmes courants (Dijkstra, Welsh & Powell...).",
 "groupe":                   u"Modules",
 "defaut":  False,
 }

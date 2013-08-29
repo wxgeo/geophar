@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 #    WxGeometrie
@@ -23,7 +23,7 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 
 # bool -> CheckBox
-# file -> sélectionner un répertoire
+# file -> sÃ©lectionner un rÃ©pertoire
 # str -> TextCtrl
 # (min, max) -> SpinCtrl
 # [bool] -> CheckListBox
@@ -89,22 +89,22 @@ class Parametre(object):
 
 P = Parametre
 
-options = Options(u'Préférences')
+options = Options(u'PrÃ©fÃ©rences')
 
 ## GENERAL
-general = options.add(Theme(u'Général'))
+general = options.add(Theme(u'GÃ©nÃ©ral'))
 general.add(P(u'Utilisateur', utilisateur = str))
 general.add(P(u"Nombre maximal d'annulations", nbr_annulations = (0, 1000)))
 
-ouverture = general.add(Section(u'Au démarrage'))
-ouverture.add(P(u'Restaurer automatiquement la session précédente.', auto_restaurer_session=bool))
-fermeture = general.add(Section(u'À la fermeture'))
+ouverture = general.add(Section(u'Au dÃ©marrage'))
+ouverture.add(P(u'Restaurer automatiquement la session prÃ©cÃ©dente.', auto_restaurer_session=bool))
+fermeture = general.add(Section(u'Ã€ la fermeture'))
 fermeture.add(P(u'Demander confirmation avant de quitter.', confirmer_quitter = bool))
-fermeture.add(P(u'Sauvegarder les préférences.', sauver_preferences = bool))
+fermeture.add(P(u'Sauvegarder les prÃ©fÃ©rences.', sauver_preferences = bool))
 auto = general.add(Section(u'Sauvegarde automatique'))
 auto.add(P(u'Intervalle entre deux sauvegardes', sauvegarde_automatique = (0, 10000)))
 auto.add(u'Temps (en dizaine de s) entre deux sauvegardes automatiques.')
-auto.add(u'La valeur 0 désactive la sauvegarde automatique.')
+auto.add(u'La valeur 0 dÃ©sactive la sauvegarde automatique.')
 
 
 ## MODULES
@@ -114,20 +114,20 @@ for nom in _modules:
     d = {'modules_actifs__' + nom: bool}
     liste.add(P(descriptions_modules[nom]['titre'], **d))
 
-modules.add(u'Nota: les modules non activés par défaut peuvent être non documentés\net/ou encore expérimentaux.')
+modules.add(u'Nota: les modules non activÃ©s par dÃ©faut peuvent Ãªtre non documentÃ©s\net/ou encore expÃ©rimentaux.')
 
 #modules.add(P(u'Activer les modules suivants', modules_actifs = dict))
 
 ## FORMAT
 format = options.add(Theme(u'Format'))
-format.add(P(u'Décimales affichées', decimales = (0, 10)))
+format.add(P(u'DÃ©cimales affichÃ©es', decimales = (0, 10)))
 
-format.add(P(u'Unité d\'angle',
-             _get = (lambda k: {'d': u'degré', 'r': 'radian', 'g':' grade'}[k]),
+format.add(P(u'UnitÃ© d\'angle',
+             _get = (lambda k: {'d': u'degrÃ©', 'r': 'radian', 'g':' grade'}[k]),
              _set = (lambda s: s[0]),
-             unite_angle = [u'degré', 'radian', 'grade']
+             unite_angle = [u'degrÃ©', 'radian', 'grade']
              ))
-format.add(P(u'Séparateur décimal',
+format.add(P(u'SÃ©parateur dÃ©cimal',
              _get = (lambda k: {',': u'virgule', '.': 'point'}[k]),
              _set = (lambda k: {'virgule': ',', 'point': '.'}[k]),
              separateur_decimal = ['virgule', 'point']
@@ -135,15 +135,15 @@ format.add(P(u'Séparateur décimal',
 
 
 
-## AVANCÉ
-avance = options.add(Theme(u'Avancé'))
+## AVANCÃ‰
+avance = options.add(Theme(u'AvancÃ©'))
 export = avance.add(Section(u"Export"))
-export.add(P(u"Résolution des images PNG", dpi_export = (10, 10000)))
+export.add(P(u"RÃ©solution des images PNG", dpi_export = (10, 10000)))
 
 sauvegarde = avance.add(Section(u"Sauvegarde"))
-sauvegarde.add(P(u"Compresser les fichiers .geo par défaut.", compresser_geo = bool))
+sauvegarde.add(P(u"Compresser les fichiers .geo par dÃ©faut.", compresser_geo = bool))
 
-empl_pref = avance.add(Section(u"Répertoires d'enregistrement"))
-empl_pref.add(P(u"Préférences", emplacements__preferences = file))
+empl_pref = avance.add(Section(u"RÃ©pertoires d'enregistrement"))
+empl_pref.add(P(u"PrÃ©fÃ©rences", emplacements__preferences = file))
 empl_pref.add(P(u"Session", emplacements__session = file))
 empl_pref.add(P(u"Rapports d'erreur", emplacements__log = file))

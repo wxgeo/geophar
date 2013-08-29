@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division, absolute_import # 1/2 == .5 (par defaut, 1/2 == 0)
 
 from math import pi, sin, cos, sqrt
@@ -18,13 +18,13 @@ from wxgeometrie.geolib import (Point, Polygone, Milieu, Label_polygone, Barycen
                                 )
 
 # def test_Cote():
-#     pass # À ÉCRIRE
+#     pass # Ã€ Ã‰CRIRE
 #
 # def test_Sommet():
-#     pass # À ÉCRIRE
+#     pass # Ã€ Ã‰CRIRE
 
 def test_Polygone():
-    # cas général : polygone à 11 côtés :
+    # cas gÃ©nÃ©ral : polygone Ã  11 cÃ´tÃ©s :
     A = rand_pt()
     B = rand_pt()
     C = rand_pt()
@@ -62,7 +62,7 @@ def test_Polygone():
     p = Polygone(points = (A, B, C, D, E, F, G, H, I, J, K))
     assert(p.centre.coordonnees == p0.centre.coordonnees)
     assert("points" not in p.style())
-    # Syntaxe spéciale : Polygone créé sans arguments, ou avec un entier comme argument.
+    # Syntaxe spÃ©ciale : Polygone crÃ©Ã© sans arguments, ou avec un entier comme argument.
     p = Polygone()
     p = Polygone(2)
     assert(isinstance(p, Segment))
@@ -221,7 +221,7 @@ def test_Polygone_regulier():
     assert(isinstance(p,  Triangle))
     p = Polygone_regulier(O, M, 4)
     assert(isinstance(p,  Quadrilatere))
-    # Test de régression :
+    # Test de rÃ©gression :
     # la taille de str(p.points) croissait exponentiellement.
     assert(len(str(p.points)) < 30000)
 
@@ -245,7 +245,7 @@ def test_Carre():
     assert(A == O and B == M)
     assert(len(p.cotes) == 4)
     assertAlmostEqual(p.aire,  p.cotes[0].longueur**2)
-    # Test redéfinition d'un sommet
+    # Test redÃ©finition d'un sommet
     c = Carre((3, 2), (7, 2))
     M = Point(0, 2)
     c.point1 = M
@@ -262,7 +262,7 @@ def test_Triangle_isocele():
     a = Angle(B, A, C)
     assertAlmostEqual(a.radian, 2*pi/13)
     assertAlmostEqual(Segment(A, B).longueur, Segment(A, C).longueur)
-    t1 = Triangle_isocele((0, 0), (1, 1), u'90°')
+    t1 = Triangle_isocele((0, 0), (1, 1), u'90Â°')
     assertAlmostEqual(t1.point3.xy, (-1, 1))
     t2 = Triangle_isocele((0, 0), (2, 0), pi/3)
     assertAlmostEqual(t2.point3.xy, (2*cos(pi/3), 2*sin(pi/3)))
@@ -279,7 +279,7 @@ def test_Triangle_rectangle():
     assertAlmostEqual(a.degre, 90)
 
 def test_issue_215():
-    # Quand les angles sont en degré, les valeurs par défaut des triangles isocèles sont incorrectes
+    # Quand les angles sont en degrÃ©, les valeurs par dÃ©faut des triangles isocÃ¨les sont incorrectes
     with contexte(unite_angle='d'):
         for i in range(10):
             t = Triangle_isocele()
@@ -292,7 +292,7 @@ def test_Sommet():
     assert len(p.sommets) == 4
     coordonnees = [sommet.xy for sommet in p.sommets]
     assertAlmostEqual(coordonnees, [(1, 0), (0, 1), (-1, 0), (0, -1)])
-    # Si l'on tente de recréer un sommet, le sommet existant est renvoyé.
+    # Si l'on tente de recrÃ©er un sommet, le sommet existant est renvoyÃ©.
     S0 = p.sommets[0]
     assert S0.style('couleur') != 'y' # modifier la couleur dans le test sinon
     M0 = Sommet(p, 0, couleur='y')
@@ -306,7 +306,7 @@ def test_Cote():
     assert len(p.cotes) == 4
     for cote in p.cotes:
         assertAlmostEqual(cote.longueur, sqrt(2))
-    # Si l'on tente de recréer un côté, le côté existant est renvoyé.
+    # Si l'on tente de recrÃ©er un cÃ´tÃ©, le cÃ´tÃ© existant est renvoyÃ©.
     c0 = p.cotes[0]
     assert c0.style('couleur') != 'pink' # modifier la couleur dans le test sinon
     d0 = Cote(p, 0, couleur='pink')
@@ -314,8 +314,8 @@ def test_Cote():
     assert c0.style('couleur') == 'pink'
 
 def test_cotes_sommets():
-    # Teste qu'on puisse enregistrer plusieurs fois le même sommet ou le même
-    # côté sur la feuille sans erreur
+    # Teste qu'on puisse enregistrer plusieurs fois le mÃªme sommet ou le mÃªme
+    # cÃ´tÃ© sur la feuille sans erreur
     f = Feuille()
     p = f.objets.p = Parallelogramme()
     assert f.objets.S1 is p.sommets[3]
