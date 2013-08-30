@@ -546,7 +546,7 @@ class Onglets(QTabWidget):
             # Mémorise l'emplacement pour la prochaine fois
             self._nom_fichier_session = path
             # Enregistrement de la session
-            self.parent.gestion.sauver_session(lieu=path, seulement_si_necessaire=False)
+            self.parent.gestion.sauver_session(lieu=path, force=True)
 
     def ChargerSession(self):
         filtre = self.filtre_session

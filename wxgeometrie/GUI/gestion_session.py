@@ -70,9 +70,9 @@ class GestionnaireSession(QObject):
                                 if re.match(r'session-\d+-\d+\.geos$', name))
 
 
-    def sauver_session(self, lieu=None, seulement_si_necessaire=True):
+    def sauver_session(self, lieu=None, force=False):
         fichiers_ouverts = []
-        if seulement_si_necessaire and not any(onglet.modifie for onglet in self.onglets):
+        if not force and not any(onglet.modifie for onglet in self.onglets):
             return
         for onglet in self.onglets:
             fichiers_ouverts.extend(onglet._fichiers_ouverts())
@@ -129,7 +129,10 @@ class GestionnaireSession(QObject):
         """
         self.__run = False
         self.sauver_preferences()
-        self.sauver_session()
+        # On force la sauvegarde de session, même si aucun module ne signale
+        # de modification non sauvegardée, ne serait-ce que pour enregistrer
+        # l'onglet courant.
+        self.sauver_session(force=True)
         for name in self.liste_sessions()[:-param.nbr_sessions]:
             os.remove(self._session_path(name))
 
