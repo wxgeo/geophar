@@ -913,11 +913,18 @@ class Objet(object):
         :param nom_style: un nom de style, ou une liste de noms de styles.
         :param **kw: sert à modifier des styles.
 
+        Exemple d'utilisation::
+
             >>> from wxgeometrie import Point
             >>> A = Point(couleur='blue', taille=25)
             >>> A.style(['couleur', 'taille'])
             ['blue', 25]
-            >>> A.style(couleur = 'green')
+
+        On change la couleur (le nouveau dictionnaire de styles est renvoyé)::
+
+            >>> styles = A.style(couleur = 'green')
+            >>> styles['couleur']
+            'green'
             >>> A.style('couleur')
             'green'
 
