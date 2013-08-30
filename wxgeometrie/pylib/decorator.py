@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 ##########################     LICENCE     ###############################
 ##
 ##   Copyright (c) 2005, Michele Simionato
