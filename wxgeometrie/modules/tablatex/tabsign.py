@@ -33,6 +33,7 @@ from ...mathlib.sympy_functions import solve
 from ...mathlib.intervalles import R, conversion_chaine_ensemble
 from ...mathlib.solvers import ensemble_definition
 from ...mathlib.interprete import Interprete
+from ...mathlib.parsers import VAR
 from ... import param
 
 def _auto_tabsign(chaine, cellspace = False):
@@ -57,6 +58,7 @@ def _auto_tabsign(chaine, cellspace = False):
         legende, chaine = chaine.split('=', 1)
     else:
         legende = chaine
+    legende = legende.strip()
 
     # Décomposition en produit
     facteurs = extraire_facteurs(chaine)#.replace('/', '*'))
@@ -66,10 +68,18 @@ def _auto_tabsign(chaine, cellspace = False):
     expr = interprete.ans()
     # Récupération de la variable
     variables = expr.atoms(Symbol)
+    # On tente de récupérer le nom de variable dans la légende.
+    # Par exemple, si la légende est 'f(x)', la variable est 'x'.
+    m = re.match(r'%s\((%s)\)' % (VAR, VAR), 'f(x)')
+    if m is not None:
+        variables.add(Symbol(m.group(1)))
     if len(variables) > 1:
+        # Il est impossible de dresser le tableau de variations avec des
+        # variables non définies (sauf cas très particuliers, comme f(x)=a).
         raise ValueError, "Il y a plusieurs variables dans l'expression !"
     elif not variables:
-        raise ValueError, "Il n'y a pas de variable dans l'expression !"
+        # Variable par défaut.
+        variables = [Symbol('x')]
     var = variables.pop()
     # Récupération de l'ensemble de définition
     ens_def *= ensemble_definition(expr, var)

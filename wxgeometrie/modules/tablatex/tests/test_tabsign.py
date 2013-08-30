@@ -6,8 +6,8 @@ from wxgeometrie.modules.tablatex.tabsign import tabsign
 
 
 
-def assert_tabsign(chaine, code_latex):
-    assert_tableau(tabsign, chaine, code_latex)
+def assert_tabsign(chaine, code_latex, **options):
+    assert_tableau(tabsign, chaine, code_latex, **options)
 
 
 def test_mode_manuel():
@@ -308,22 +308,26 @@ $f(x)$    &           & + &      0      & $-$ &     0      & + &           \\
 def test_issue_189():
     # Tableaux de signes et de variation avec des décimaux
     s = '2-0.25x'
+    options = {'cellspace': True}
     tab = \
 r'''\begin{center}
 \begin{tabular}{|Sc|ScScScScSc|}
 \hline
-$x$        & $-\infty$ &   & $8$ &     & $\oo$ \\
+$x$        & $-\infty$ &   & $8$ &     & $+\infty$ \\
 \hline
-$2-0.25x$  &           & + &  0  & $-$ &       \\
+$2-0.25x$  &           & + &  0  & $-$ &           \\
 \hline
 \end{tabular}
 \end{center}
-% x: -oo;oo// 2-0.25 x: ++ 8 -- // 2-0.25x
+% x: -oo;+oo// 2-0.25 x: ++ 8 -- // 2-0.25x
 % 2-0.25x
 '''
+    assert_tabsign(s, tab, **options)
+
 
 def test_intervalle_virgule():
     s = 'h(x)=x^2-x/2-3 sur [-2,5;3,5]'
+    options = {'cellspace': True}
     tab = \
 r'''\begin{center}
 \begin{tabular}{|Sc|ScScScScScScSc|}
@@ -337,3 +341,22 @@ $h(x)$                &        & + &       0        & $-$ &  0  & + &       \\
 % x: -2,5;3,5// x^2-x/2-3: ++ -3/2 -- 2 ++ // h(x)
 % h(x)=x^2-x/2-3 sur [-2,5;3,5]
 '''
+    assert_tabsign(s, tab, **options)
+
+
+def test_constante():
+    s = 'f(x)=5'
+    tab = \
+r'''\begin{center}
+\begin{tabular}{|c|ccc|}
+\hline
+$x$    & $-\infty$ &   & $+\infty$ \\
+\hline
+$f(x)$ &           & + &           \\
+\hline
+\end{tabular}
+\end{center}
+% x: -oo;+oo// 5: ++ // f(x)
+% f(x)=5
+'''
+    assert_tabsign(s, tab)
