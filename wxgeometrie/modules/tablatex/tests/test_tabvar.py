@@ -238,7 +238,7 @@ x                                    &4             &      &8        &        &2
 \niveau{1}{2}\raisebox{0.5em}{$f(x)$}&\niveau{1}{2}0&\croit&4 \exp(3)&\decroit&16\\
 \hline
 \end{tabvar}\]
-% x;f(x) :(4;0) << (8;4*exp(3)) >> (20;16)
+% x;f(x):(4;0) << (8;4*exp(3)) >> (20;16)
 % f(x) = (x -4)\e^{-0,25x+5} sur [4;20]
 '''
     assert_tabvar(s, tab, **options)
@@ -251,7 +251,7 @@ x                                    &4             &      &8        &        &2
 \niveau{1}{2}\raisebox{0.5em}{$f(x)$}&\niveau{1}{2}0&\croit&4 \exp(3)&\decroit&16\\
 \hline
 \end{tabvar}\]
-% x;f(x) :(4;0) << (8;4*exp(3)) >> (20;16)
+% x;f(x):(4;0) << (8;4*exp(3)) >> (20;16)
 % f(x) = (x -4)\e^{-0,25x+5} sur [4;20]
 '''
     assert_tabvar(s, tab, **options)
@@ -306,5 +306,22 @@ f'(x)                                &                    &-       &0  &+     & 
 \end{tabvar}\]
 % x;f(x) :(-oo;+oo) >> (0,8;1,4) << (+oo;+oo)
 % f(x) = 0,5x + \text{e}^{-0,5x + 0,4}
+'''
+
+def test_constante():
+    s = "f(x)=5"
+    options = {'derivee': True}
+    tab = \
+r'''\[\begin{tabvar}{|C|CCC|}
+\hline
+x                &-\infty       &          &+\infty\\
+\hline
+g'(x)            &              &0         & \\
+\hline
+\niveau{1}{1}g(x)&\niveau{1}{1}5&\constante&5\\
+\hline
+\end{tabvar}\]
+% x;g(x):(-oo;5) == (+oo;5)
+% g(x)=5
 '''
 
