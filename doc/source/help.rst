@@ -693,12 +693,47 @@ Si le logiciel n'arrive pas à déterminer le signe de la fonction, ou si l'on s
     .. image:: img/tabsigne_tan.png
          :align: center
 
+    ..note::
+
 2.  « ``x:-2;2 // x+1:-- -1 ++ // !x-1:-- 1 ++`` »
 
     Tableau correspondant :
 
     .. image:: img/tabsigne_quotient.png
          :align: center
+
+
+Il est également possible de rentrer des valeurs symboliques.
+
+*Exemple :*
+
+    « ``f(x): -- x_1 ++ x_2 --`` »
+
+    Ici, :math:`x_1` et :math:`x_2` sont deux valeurs symboliques.
+
+    Tableau correspondant :
+
+    .. image:: img/tabsigne_polynome.png
+        :align: center
+
+
+Par défaut, ces valeurs symboliques sont placées dans l'ordre dans lequel elles apparaissent.
+
+On peut modifier manuellement leur position dans le tableau en leur attributant une valeur numérique.
+
+*Exemple :*
+
+    « ``x:-oo;+oo // f(x): -- 5 ++ // g(x): ++ \alpha=2,1 --``»
+
+    On indique que α vaut environ 2,1 et doit donc être placé après 5.
+
+    Tableau correspondant~:
+
+    ..image:: img/tabsigne_alpha.png
+        :align: center
+
+
+
 
 
 

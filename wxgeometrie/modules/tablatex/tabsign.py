@@ -70,9 +70,9 @@ def _auto_tabsign(chaine, cellspace = False):
     variables = expr.atoms(Symbol)
     # On tente de récupérer le nom de variable dans la légende.
     # Par exemple, si la légende est 'f(x)', la variable est 'x'.
-    m = re.match(r'%s\((%s)\)' % (VAR, VAR), 'f(x)')
+    m = re.match(r'%s\((%s)\)' % (VAR, VAR), legende)
     if m is not None:
-        variables.add(Symbol(m.group(1)))
+        variables.add(Symbol(str(m.group(1))))
     if len(variables) > 1:
         # Il est impossible de dresser le tableau de variations avec des
         # variables non définies (sauf cas très particuliers, comme f(x)=a).
@@ -155,6 +155,22 @@ def _auto_tabsign(chaine, cellspace = False):
 
 
 
+def _augmenter(val):
+    u"""Retourne une valeur numérique *légèrement* supérieure à la valeur rentrée.
+
+    La valeur retournée est aussi proche que possible de la valeur rentrée, tout
+    en s'assurant que _augmenter(val)>val.
+    """
+    if float(val) == float('-inf'):
+        return -100000000000000000000000000000000
+    eps = 1e-20
+    while val + eps <= val:
+        eps *= 10
+        if eps > 1e200:
+            raise OverflowError, "Can't find value bigger than %s." % val
+    return val + eps
+
+
 def tabsign(chaine = '', cellspace = False):
     u"""Indiquer ligne par ligne le signe de chaque facteur.
 La dernière ligne (produit ou quotient) est générée automatiquement.
@@ -171,7 +187,7 @@ Le point d'exclamation avant une expression signifie qu'elle correspond à un d�
     lignes = [ligne.strip() for ligne in chaine.split('\n') if ligne.strip()]
 
     if len(lignes) == 1:
-        if ':' in lignes:
+        if ':' in lignes[0]:
             lignes = [''] + lignes
         else:
             return _auto_tabsign(lignes[0], cellspace = cellspace)
@@ -251,18 +267,36 @@ Le point d'exclamation avant une expression signifie qu'elle correspond à un d�
     else:
         afficher_resultat = True
 
-    # Au besoin, on génère la légende de la première ligne (c.à-d. la variable)
+    # Au besoin, on génère la légende de la première ligne (c.à-d. la variable),
+    # à partir du résultat.
     if not variable:
-        # On cherche les lettres isolées (sauf 'e', qui représente exp(1))
-        m = re.search('(?<![A-Za-z])[A-DF-Za-df-z](?![A-Za-z])', resultat)
-        # Si on n'en trouve pas, la variable sera 'x'
-        variable = m.group() if m else 'x'
+        # On regarde si le résultat est de la forme `fonction(variable)`,
+        # par exemple, `f(x)`.
+        m = re.match(r'%s\((%s)\)' % (VAR, VAR), resultat.strip())
+        if m is not None:
+            variable = m.group(1)
+        else:
+            # On cherche les lettres isolées (sauf 'e', qui représente exp(1))
+            m = re.search('(?<![A-Za-z])[A-DF-Za-df-z](?![A-Za-z])', resultat)
+            # Si on n'en trouve pas, la variable sera 'x'
+            variable = m.group() if m else 'x'
 
     # On récupère la liste de toutes les valeurs de x
     valeurs = set() # va contenir toutes les valeurs numeriques
     correspondances = {} # servira à retrouver le code (LaTeX notamment) à partir de la valeur numérique.
 
     valeurs_interdites = set()
+
+    # `defaut_val` permet de construire des tableaux de signes contenant
+    # des valeurs symboliques (par exemple "f(x): -- x_1 ++ x_2 --").
+    # Pour attribuer une valeur numérique à cette valeur symbolique,
+    # on prend une valeur légèrement supérieure à la dernière valeur numérique rencontrée.
+    # NOTE: cet algorithme n'est pas parfait, mais permet de gérer les cas simples.
+    # Pour les cas plus compliqués, l'utilisateur garde la possibilité de rentrer
+    # manuellement une valeur numérique associée à la valeur symbolique.
+    # Exemple: f(x): -- x_1=0.27 ++ x_2=3.58 --
+
+    defaut_val = None
 
     # On convertit les bornes du domaine en valeurs numériques
     for intervalle in intervalles:
@@ -271,6 +305,9 @@ Le point d'exclamation avant une expression signifie qu'elle correspond à un d�
             if exclue:
                 borne = borne[1:]
             num = eval(traduire_latex(borne), maths.__dict__)
+            if defaut_val is None:
+                # Un peu plus que la borne inférieure.
+                defaut_val = _augmenter(num)
             if exclue:
                 valeurs_interdites.add(num)
             valeurs.add(num)
@@ -299,7 +336,13 @@ Le point d'exclamation avant une expression signifie qu'elle correspond à un d�
                     vals[0], valeur_num = vals[0].split('=', 1)
                     valeur_num = eval(traduire_latex(valeur_num), maths.__dict__)
                 else:
-                    valeur_num = eval(traduire_latex(vals[0]), maths.__dict__)
+                    try:
+                        valeur_num = eval(traduire_latex(vals[0]), maths.__dict__)
+                        defaut_val = valeur_num
+                    except (NameError, SyntaxError):
+                        defaut_val = _augmenter(defaut_val)
+                        valeur_num = defaut_val
+
                 valeurs.add(valeur_num)
                 correspondances[valeur_num] = vals[0]
                 vals[0] = valeur_num

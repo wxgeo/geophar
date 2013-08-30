@@ -360,3 +360,56 @@ $f(x)$ &           & + &           \\
 % f(x)=5
 '''
     assert_tabsign(s, tab)
+
+
+def test_issue_247():
+    u"FS#247 - Accepter la syntaxe suivant : 'f(x): -- -8 ++ -2 -- 5 ++'."
+    s = "f(x): -- -8 ++ -2 -- 5 ++"
+    tab = \
+r'''\begin{center}
+\begin{tabular}{|c|ccccccccc|}
+\hline
+$x$    & $-\infty$ &     & $-8$ &   & $-2$ &     & $5$ &   & $+\infty$ \\
+\hline
+$f(x)$ &           & $-$ &  0   & + &  0   & $-$ &  0  & + &           \\
+\hline
+\end{tabular}
+\end{center}
+% f(x): -- -8 ++ -2 -- 5 ++
+'''
+    assert_tabsign(s, tab)
+
+def test_mix_numeric_and_symbolic_values():
+    s = 'f(x): -- x_1 ++ 5 ++ x_2 -- 7 --'
+    tab = \
+r'''\begin{center}
+\begin{tabular}{|c|ccccccccccc|}
+\hline
+$x$    & $-\infty$ &     & $x_1$ &   & $5$ &   & $x_2$ &     & $7$ &     & $+\infty$ \\
+\hline
+$f(x)$ &           & $-$ &   0   & + &  0  & + &   0   & $-$ &  0  & $-$ &           \\
+\hline
+\end{tabular}
+\end{center}
+% f(x): -- x_1 ++ 5 ++ x_2 -- 7 --
+'''
+    assert_tabsign(s, tab)
+
+    s = r'x:-oo;+oo // f(x): -- 5 ++ // g(x): ++ \alpha=2,1 --'
+    tab = \
+r'''\begin{center}
+\begin{tabular}{|c|ccccccc|}
+\hline
+$x$        & $-\infty$ &     & $\alpha$ &     & $5$ &     & $+\infty$ \\
+\hline
+$f(x)$     &           & $-$ &          & $-$ &  0  &  +  &           \\
+\hline
+$g(x)$     &           &  +  &    0     & $-$ &     & $-$ &           \\
+\hline
+$f(x)g(x)$ &           & $-$ &    0     &  +  &  0  & $-$ &           \\
+\hline
+\end{tabular}
+\end{center}
+% x:-oo;+oo // f(x): -- 5 ++ // g(x): ++ \alpha=2,1 --
+'''
+    assert_tabsign(s, tab)

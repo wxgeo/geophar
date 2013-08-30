@@ -78,9 +78,9 @@ def _auto_tabvar(chaine='', derivee=True, limites=True, decimales=3, approche=Fa
     variables = expr.atoms(Symbol)
     # On tente de récupérer le nom de variable dans la légende.
     # Par exemple, si la légende est 'f(x)', la variable est 'x'.
-    m = re.match(r'%s\((%s)\)' % (VAR, VAR), 'f(x)')
+    m = re.match(r'%s\((%s)\)' % (VAR, VAR), legende)
     if m is not None:
-        variables.add(Symbol(m.group(1)))
+        variables.add(Symbol(str(m.group(1))))
     if len(variables) > 1:
         # Il est impossible de dresser le tableau de variations avec des
         # variables non définies (sauf cas très particuliers, comme f(x)=a).
