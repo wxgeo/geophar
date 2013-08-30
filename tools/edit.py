@@ -46,8 +46,14 @@ def edit(file_and_line, editor=DEFAULT_EDITOR):
         if m is None:
             # Format pyflakes
             m = re.search('([^"]+[.]py):([0-9]+)', file_and_line)
-        file_name = m.group(1)
-        line = m.group(2)
+        if m is None:
+            # Fichier seul
+            m = re.search('[^"]+[.]py', file_and_line)
+            file_name = m.group()
+            line = '1'
+        else:
+            file_name = m.group(1)
+            line = m.group(2)
     except AttributeError:
         print("Incorrect format (see help) : %s" % repr(file_and_line))
         return
