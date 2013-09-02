@@ -7,7 +7,7 @@ from __future__ import with_statement
 #    '-----------------------------------------------------'
 #    Géophar
 #    Dynamic geometry, graph plotter, and more for french mathematic teachers.
-#    Copyright (C) 2005-2012  Nicolas Pourcelot
+#    Copyright (C) 2005-2013  Nicolas Pourcelot
 #
 #    This program is free software; you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by

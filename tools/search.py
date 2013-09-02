@@ -8,7 +8,7 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 ##--------------------------------------##
 #    WxGeometrie
 #    Dynamic geometry, graph plotter, and more for french mathematic teachers.
-#    Copyright (C) 2005-2010  Nicolas Pourcelot
+#    Copyright (C) 2005-2013  Nicolas Pourcelot
 #
 #    This program is free software; you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -211,7 +211,7 @@ def gs(chaine='', case=True, exclude_comments=True, extensions=(".py", ".pyw"),
 def usage():
     u"Affiche l'aide."
     print u"""\n    === Usage ===\n
-    - Rechercher la chaîne 'hello' dans le code :
+    - Rechercher la chaîne 'hello' dans le code (hors commentaires) :
         $ ./tools/search.py "hello"
     - Remplacer partout la chaîne 'hello' par la chaîne 'world':
         $ ./tools/search.py "hello" -r "world"
@@ -228,6 +228,8 @@ def usage():
     - Inclure également dans les résultats les répertoires contenus dans
       la variable de configuration IGNORE (ne pas tenir compte de IGNORE).
         $ ./tools/search.py -k "hello world!"
+    - Rechercher la chaîne 'hello' dans le code, y compris dans les commentaires :
+        $ ./tools/search.py -a "hello"
         """
     exit()
 
@@ -283,6 +285,9 @@ if __name__ == "__main__":
     if '-c' in args:
         args.remove('-c')
         kw['color'] = True
+    if '-a' in args:
+        args.remove('-a')
+        kw['exclude_comments'] = False
     if '-k' in args:
         args.remove('-k')
         kw['skip_ignore'] = True
