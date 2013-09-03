@@ -128,10 +128,10 @@ class Texte_generique(Objet_avec_coordonnees):
         else:
             # Matplotlib: None donne le style par défaut,
             # 'none' désactive l'affichage.
-            couleur_fond = (self.style('couleur_fond') if fond is not None else 'none')
-            couleur_cadre = (self.style('couleur_cadre') if cadre is not None else 'none')
+            couleur_fond = (self.style('couleur_fond') if fond else 'none')
+            couleur_cadre = (self.style('couleur_cadre') if cadre else 'none')
             # Contournement d'un bug de matplotlib 1.1.1
-            lw = (self.style('epaisseur_cadre') if cadre is not None else 0)
+            lw = (self.style('epaisseur_cadre') if cadre else 0)
             conv = {'-': 'solid', '--': 'dashed', '.-': 'dashdot', ':': 'dotted'}
             linestyle = conv.get(self.style('style_cadre'), 'none')
             rect.set(visible=True, texte=text, facecolor=couleur_fond, edgecolor=couleur_cadre,

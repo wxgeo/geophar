@@ -51,6 +51,8 @@ class ProprietesAffichage(QWidget):
         self.objets = parent.objets
         self.sizer = QVBoxLayout()
 
+        assert len(self.objets) >= 1
+
         self.changements = {} # ce dictionnaire contiendra tous les styles modifiés
         encadre = QHBoxLayout()
 
@@ -97,27 +99,28 @@ class ProprietesAffichage(QWidget):
                 encadre1.addWidget(QLabel(u"Afficher : "))
                 encadre1.addLayout(legende)
 
-
+        categorie = self.objets[0].style("categorie")
+        tous_de_meme_categorie = all(objet.style("categorie") == categorie for objet in self.objets)
 
         encadre2 = QVBoxLayout()
 
-        hb = QHBoxLayout()
-        styles_possibles = getattr(param, "styles_de_%s" % objets[0].style("categorie"), [])
-        # On ne peut régler les styles simultanément que pour des objets de même catégorie.
-        if self.add_combo_box(hb, 'style', u"Style de l'objet : ", styles_possibles,
-                              verifier_categorie=True):
-            encadre2.addLayout(hb)
+        if tous_de_meme_categorie:
+            hb = QHBoxLayout()
+            styles_possibles = getattr(param, "styles_de_%s" % categorie, [])
+            # On ne peut régler les styles simultanément que pour des objets de même catégorie.
+            if self.add_combo_box(hb, 'style', u"Style de l'objet : ", styles_possibles):
+                encadre2.addLayout(hb)
 
         hb = QHBoxLayout()
         types_de_hachures = getattr(param, "types_de_hachures", [])
         if self.add_combo_box(hb, 'hachures', u"Style des hâchures : ", types_de_hachures):
             encadre2.addLayout(hb)
 
-        hb = QHBoxLayout()
-        familles_possibles = getattr(param, "familles_de_%s" % objets[0].style("categorie"), [])
-        if self.add_combo_box(hb, 'famille', 'Police : ', familles_possibles,
-                              verifier_categorie=True):
-            encadre2.addLayout(hb)
+        if tous_de_meme_categorie:
+            hb = QHBoxLayout()
+            familles_possibles = getattr(param, "familles_de_%s" % categorie, [])
+            if self.add_combo_box(hb, 'famille', 'Police : ', familles_possibles):
+                encadre2.addLayout(hb)
 
         hb = QHBoxLayout()
         if self.add_color_selecter(hb, 'couleur', "Couleur de l'objet : "):
@@ -145,19 +148,19 @@ class ProprietesAffichage(QWidget):
 
         self.add_checkbox(encadre, 'double_fleche', u"Flêche double")
 
-        hb = QHBoxLayout()
-        codages_possibles = getattr(param, "codage_des_%s" % objets[0].style("categorie"), [])
-        # On ne peut régler les codages simultanément que pour des objets de même catégorie.
-        if self.add_combo_box(hb, 'codage', 'Codage : ', codages_possibles,
-                              verifier_categorie=True):
-            encadre2.addLayout(hb)
+        if tous_de_meme_categorie:
+            hb = QHBoxLayout()
+            codages_possibles = getattr(param, "codage_des_%s" % categorie, [])
+            # On ne peut régler les codages simultanément que pour des objets de même catégorie.
+            if self.add_combo_box(hb, 'codage', 'Codage : ', codages_possibles):
+                encadre2.addLayout(hb)
 
         # --------------------------------------------------------
         # Styles s'appliquant aux textes seulement (fond et cadre)
         # --------------------------------------------------------
 
         encadre3 = QVBoxLayout()
-        if all(objet.style("categorie") == 'textes' for objet in objets):
+        if tous_de_meme_categorie and categorie == 'textes':
 
             #  FOND
             #  ====
@@ -325,16 +328,10 @@ class ProprietesAffichage(QWidget):
         return [label, widget]
 
 
-    def add_combo_box(self, layout, propriete, titre, liste, verifier_categorie=False):
+    def add_combo_box(self, layout, propriete, titre, liste):
         objets = [objet for objet in self.objets if objet.style(propriete) is not None]
         if not objets:
             print("pas d'objets... (%s)" % propriete)
-            return []
-
-        # On ne peut régler simultanément certains styles que pour des objets de même catégorie.
-        categorie = objets[0].style('categorie')
-        if verifier_categorie and any(objet.style("categorie") != categorie for objet in objets):
-            print(u"Objets hétérogènes: " + propriete)
             return []
 
         label = QLabel(titre)
