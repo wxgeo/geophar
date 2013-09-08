@@ -40,6 +40,10 @@ parser.add_option("-m", "--message", dest="message",
 parser.add_option("-n", "--dry-run",
                   action="store_true", dest="fake", default=False,
                   help="simulate only")
+parser.add_option("-a", "--archive-only",
+                  action="store_true", dest="archive_only", default=False,
+                  help="Create an archive but DON'T make a release tag in git.\n"
+                       "This is useful to make release candidates or test release process.")
 parser.add_option("-p", "--publish",
                   action="store_true", dest="publish", default=False,
                   help=("publish on sourceforge (source package only)\n"
@@ -75,21 +79,6 @@ def publish(filename, version):
                % (key, version, filename))
     urlopen('http://wxgeo.free.fr/wordpress/update_geophar_version.php?version=%s' % version)
 
-s.cd('..')
-sys.path.append(os.getcwd())
-from wxgeometrie.param import version, NOMPROG2, NOMPROG
-nom_prog = NOMPROG2.lower()
-
-if options.publish_only:
-    filename = '%s_%s.tar.gz' % (nom_prog, version)
-    publish(filename, version)
-    print(u'\nTerminé.')
-    sys.exit()
-
-if len(args) != 1:
-    parser.error("fournir un (et un seul) argument (numero de version).\nVersion actuelle: " + version)
-version = args[0]
-
 def version_interne(version):
     version = version.replace("alpha", "-3").replace("beta", "-2").replace("rc", "-1").replace(".", " ").replace("_", " ")
     return [int(n) for n in version.split(' ')]
@@ -100,6 +89,18 @@ def test_version(version):
     if re.match(reg, version):
         return version
 
+s.cd('..')
+sys.path.insert(0, os.getcwd())
+from wxgeometrie.param import version, NOMPROG2, NOMPROG
+nom_prog = NOMPROG2.lower()
+
+if options.publish_only:
+    filename = '%s_%s.tar.gz' % (nom_prog, version)
+    publish(filename, version)
+    print(u'\nTerminé.')
+    sys.exit()
+
+
 s.cd('wxgeometrie')
 
 sys.path.insert(0, os.getcwd())
@@ -107,7 +108,7 @@ sys.path.insert(0, os.getcwd())
 # Option --dry-run
 if options.fake:
     for nom, val in s.__dict__.items():
-        if isinstance(val, types.FunctionType):
+        if isinstance(val, types.FunctionType) and nom not in ('version_interne', 'test_version'):
             setattr(s, nom, eval("lambda s, *args, **kw:print('@%s: ' + s)" %nom))
 
 # Mise à jour de la version et de la date dans param.__init__.py
@@ -127,60 +128,70 @@ with open('version.py', 'r') as f:
         else:
             contenu.append(line)
 
-# Quelques tests sur le numéro de version:
-while True:
-    modifier = False
-    print('\n-------------------')
-    print(u"Version précédente: " + version_precedente)
-    version = test_version(version)
-    if version is None:
-        print('Numero de version incorrect: ' + args[0])
-        modifier = True
-    elif version_interne(version) <= version_interne(version_precedente):
-        print('Les numeros de version doivent etre croissants: ' + args[0])
-        modifier = True
-    else:
-        print(u"Nouvelle version: " + version)
-        if options.quiet:
-            break
-        rep = raw_input(u"Est-ce correct ? [y(es)/n(o)/(q)uit]")
-        if not rep:
-            continue
-        if rep in 'yYoO':
-            break
-        elif rep in 'qQ':
-            sys.exit()
-        elif rep in 'nN':
+
+if options.archive_only:
+    last_commit_hash = s.command('git rev-parse --short HEAD').strip()
+    date = time.strftime('%d.%m.%Y-%H.%M.%S')
+    version = '%s-git-%s-%s' % (version_precedente, last_commit_hash, date)
+else:
+    if len(args) != 1:
+        parser.error("fournir un (et un seul) argument (numero de version).\nVersion actuelle: " + version)
+    version = args[0]
+    # Quelques tests sur le numéro de version:
+    while True:
+        modifier = False
+        print('\n-------------------')
+        print(u"Version précédente: " + version_precedente)
+        version = test_version(version)
+        if version is None:
+            print('Numero de version incorrect: ' + args[0])
             modifier = True
-    if modifier:
-        version = raw_input(u"Entrez un nouveau numero de version:")
+        elif version_interne(version) <= version_interne(version_precedente):
+            print('Les numeros de version doivent etre croissants: ' + args[0])
+            modifier = True
+        else:
+            print(u"Nouvelle version: " + version)
+            if options.quiet:
+                break
+            rep = raw_input(u"Est-ce correct ? [y(es)/n(o)/(q)uit]")
+            if not rep:
+                continue
+            if rep in 'yYoO':
+                break
+            elif rep in 'qQ':
+                sys.exit()
+            elif rep in 'nN':
+                modifier = True
+        if modifier:
+            version = raw_input(u"Entrez un nouveau numero de version:")
 
 print(u'\nCréation de la version ' + version + '...')
 
-if not options.fake:
+if not (options.fake or options.archive_only):
     # Mise à jour de param/version.py
     with open('version.py', 'w') as f:
         f.write(''.join(contenu).strip())
 
-# Création du changelog correspondant
-date = time.strftime("%d/%m/%Y")
-s.command(u'echo "%s version %s\nPubliée le %s\n\n">doc/changelog.txt'
-                        % (NOMPROG, version, date))
+    # Création du changelog correspondant
+    date = time.strftime("%d/%m/%Y")
+    s.command(u'echo "%s version %s\nPubliée le %s\n\n">doc/changelog.txt'
+                            % (NOMPROG, version, date))
 
-tags = s.command('git tag', quiet=True).strip().split('\n')
-# On inverse la liste et on supprime les 'v' devant chaque tag.
-tags = [tag[1:] for tag in reversed(tags)]
-# On récupère la version majeure précédente
-for tag in tags:
-    if tag.count('.') == 1 and not version.startswith(tag):
-        break
+    tags = s.command('git tag', quiet=True).strip().split('\n')
 
-s.command('git log v%s..HEAD --no-merges --pretty="* %%s">>doc/changelog.txt' % tag)
+    # On inverse la liste et on supprime les 'v' devant chaque tag.
+    tags = [tag[1:] for tag in reversed(tags)]
+    # On récupère la version majeure précédente
+    for tag in tags:
+        if tag.count('.') == 1 and not version.startswith(tag):
+            break
 
-# Commit correspondant
-s.command('git add doc/changelog.txt')
-s.command('git add version.py')
-s.command('git commit -m %s' %repr('Version ' + version))
+    s.command('git log v%s..HEAD --no-merges --pretty="* %%s">>doc/changelog.txt' % tag)
+
+    # Commit correspondant
+    s.command('git add doc/changelog.txt')
+    s.command('git add version.py')
+    s.command('git commit -m %s' %repr('Version ' + version))
 
 archive_tar = "%s_%s.tar" % (nom_prog, version)
 archive_gz = archive_tar + '.gz'
@@ -196,17 +207,20 @@ s.rm(archive_gz, quiet=True)
 s.mkdir('build_')
 s.mkdir('build_/%s' % nom_prog)
 
-# Création du tag de release
-tag = 'v' + version
-s.command('git tag -am %s %s' %(repr(options.message or 'Version ' + version), tag))
+if options.archive_only:
+    s.command('git archive HEAD -o build_/%s.tar' % nom_prog)
+else:
+    # Création du tag de release
+    tag = 'v' + version
+    s.command('git tag -am %s %s' %(repr(options.message or 'Version ' + version), tag))
 
-# Récupération des fichiers via git
-s.command('git archive %s -o build_/%s.tar' % (tag, nom_prog))
+    # Récupération des fichiers via git
+    s.command('git archive %s -o build_/%s.tar' % (tag, nom_prog))
+
+# Personnalisation du contenu
 s.cd('build_')
 s.command('tar -xf %s.tar --directory %s' % (nom_prog, nom_prog))
 s.rm('%s.tar' % nom_prog)
-
-# Personnalisation du contenu
 s.cd(nom_prog)
 s.rename('README.md', 'README')
 s.rm('MANIFEST.in')
