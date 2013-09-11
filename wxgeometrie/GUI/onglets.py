@@ -59,8 +59,6 @@ class Onglets(QTabWidget):
     def __init__(self, parent):
         self.parent = parent
         QTabWidget.__init__(self, parent)
-        ##self.setUpdatesEnabled(False)
-        ##self.hide()
         self.setStyleSheet("""
             QTabBar::tab:selected {
             background: white;
@@ -131,13 +129,6 @@ class Onglets(QTabWidget):
         self._ancien_onglet = None
         # adaptation du titre de l'application et du menu.
         self.currentChanged.connect(self.evt_changer)
-        if self._liste:
-            # affiche le titre et le menu du 1er onglet
-            self.evt_changer(0)
-            ##self.actualise_onglet(self._liste[0])
-            ##self._liste[0].activer()
-        ##self.setVisible(True)
-        ##self.setUpdatesEnabled(True)
 
         # Use the tabMoved signal of QTabBar. You can get the QTabBar used
         # in QTabWidget with the tabBar() method.

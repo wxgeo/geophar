@@ -190,6 +190,17 @@ class FenetrePrincipale(QMainWindow):
         u"Bascule en mode plein écran <-> mode normal."
         self.setWindowState(self.windowState()^Qt.WindowFullScreen)
 
+    def show(self):
+        QMainWindow.show(self)
+        # Si la liste des onglets n'est pas vide, on indique que l'onglet
+        # affiché est devenu onglet actif (on invoque manuellement
+        # l'action .evt_changer() qui est associée à chaque changement d'onglet).
+        # NOTA: à effectuer **après** QMainWindow.show() !
+        # Sinon, par exemple, le champ de saisie de la calculatrice ne peut
+        # récupérer le focus à cette occasion.
+        if self.onglets.onglet_actuel is not None:
+            self.onglets.evt_changer(self.onglets.currentIndex())
+
     def closeEvent(self, event):
         self.activateWindow()
         self.showNormal()

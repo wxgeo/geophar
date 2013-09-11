@@ -178,7 +178,7 @@ class Credits(QWidget):
         <h3>Remerciements :</h3>
         <p>
         <a href="http://wxgeo.free.fr/doc/html/help.html#remerciements">
-        De nombreuses personnes</a> ont aidé ce projet, par leur retours d'expérience,<br>
+        De nombreuses personnes</a> ont aidé ce projet, par leurs retours d'expérience,<br>
         ou par leur aide à l'installation sur certaines plateformes.<br>
         Qu'elles en soient remerciées.</p>
         <p>
