@@ -480,8 +480,10 @@ class Interprete(object):
             u"Evalue l'expression. En cas d'erreur, intercepte l'erreur et retourne None."
             #XXX: ne pas remplacer à l'intérieur d'une chaîne.
             expr = re.sub(NBR_FLOTTANT, (lambda x: "Decim('%s')" % x.group()), expr)
+            name_space = self.globals.copy()
+            name_space.update(self.locals)
             try:
-                return eval(expr, self.globals, self.locals)
+                return sympify(expr, name_space)
             except Exception:
                 print("Error: l'expression suivante n'a pu être évaluée par l'interprète: %s." %repr(expr))
                 print_error()

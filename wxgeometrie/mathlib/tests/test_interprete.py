@@ -82,10 +82,6 @@ def test_exemples_de_base():
     assert_resultat('factor(exp(x)x^2+2x*exp(x)+exp(x))', \
                                     '(x + 1)^2 exp(x)', \
                                     '\left(x + 1\\right)^{2} \\mathrm{e}^{x}')
-    assert_resultat('cfactorise(x^2+7x+53)', \
-            '(x + 7/2 - sqrt(163)i/2)(x + 7/2 + sqrt(163)i/2)', \
-            r'\left(x + \frac{7}{2} - \frac{1}{2} \sqrt{163} \mathrm{i}\right) '
-            r'\left(x + \frac{7}{2} + \frac{1}{2} \sqrt{163} \mathrm{i}\right)')
     assert_resultat('evalue(pi-1)', '2,14159265358979324', '2,14159265358979324')
     assert_resultat('somme(x^2, (x, 1, 7))', '140', '140')
     assert_resultat('somme(x^2, x, 1, 7)', '140', '140')
@@ -110,6 +106,7 @@ def test_exemples_de_base():
     assert_resultat('-x^2+2x-3>>factor', '-x^2 + 2 x - 3')
     assert_resultat('abs(-24/5 - 2 i/5)', '2 sqrt(145)/5')
     assert_resultat('+oo - 2,5', '+oo', r'+\infty')
+    assert_resultat('canonique(x**2+5*x)', '(x + 5/2)^2 - 25/4', r'\left(x + \frac{5}{2}\right)^{2} - \frac{25}{4}')
 
 def test_ecriture_decimale_periodique():
     assert_resultat('0,[3]', '1/3', r'\frac{1}{3}')
@@ -133,7 +130,7 @@ def test_issue_270():
     r, l = i.evaluer("16000000000700,4")
     assert r == "16000000000700" # 1,6*10^13 environ
 
-def test_resolution_complexe():
+def test_ensemble_complexe():
     i = Interprete(verbose=VERBOSE, ensemble='C')
     r, l = i.evaluer("resoudre(x^2=-1")
     assert r in ('{i ; -i}', '{-i ; i}')
@@ -145,6 +142,11 @@ def test_resolution_complexe():
     r, l = i.evaluer("resoudre(x^2=-1 et 2x=-2i")
     assertEqual(r, '{-i}')
     assertEqual(l, r'$\left{- \mathrm{i}\right}$')
+    r, l = i.evaluer('factorise(x^2+7x+53)')
+    assertEqual(r, '(x + 7/2 - sqrt(163)i/2)(x + 7/2 + sqrt(163)i/2)')
+    assertEqual(l, r'$\left(x + \frac{7}{2} - \frac{1}{2} \sqrt{163} \mathrm{i}\right) '
+                   r'\left(x + \frac{7}{2} + \frac{1}{2} \sqrt{163} \mathrm{i}\right)$')
+
 
 
 def test_fonctions_avances():
@@ -324,6 +326,22 @@ u"""_ = 0
     i.load_state(etat_interne)
     i.evaluer('ln(9)-2ln(3)')
     assertDernier(i, '0')
+
+
+def test_load_state():
+    i = Interprete(verbose=VERBOSE)
+    etat_interne = \
+u"""_ = 2/5
+
+@derniers_resultats = [
+    'x^2',
+    '2/5',
+    ]"""
+    i.load_state(etat_interne)
+    i.evaluer('_')
+    assertDernier(i, '2/5')
+    i.evaluer('_1')
+    assertDernier(i, 'x**2')
 
 
 def test_systeme():

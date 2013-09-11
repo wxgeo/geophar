@@ -93,9 +93,13 @@ from .sympy_functions import factor
 factoriser = factorise = factor
 __classement__[u"Algèbre"].append((u"Factorise", "factorise", u"Factoriser une expression."))
 
+from .custom_functions import canonique
+__classement__[u"Algèbre"].append((u"Forme canonique", "canonique", u"Mettre sous forme canonique un polynôme de degré 2."))
+
 from .sympy_functions import together
 rassembler = rassemble = together
 __classement__[u"Algèbre"].append((u"Une seule fraction", "rassemble", u"Mettre sur le même dénominateur."))
+
 
 from .sympy_functions import evalf
 evaluer = evalue = evalf
@@ -103,13 +107,13 @@ __classement__[u"Algèbre"].append((u"Évalue", "evalue", u"Calculer une valeur 
 
 from .solvers import resoudre
 solve = resous = resoudre
-__classement__[u"Algèbre"].append((u"Résous", "resous", u"Résoudre une (in)équation ou un système dans R. ex: resous(2x-3>0 et 3x+1<=0"))
+__classement__[u"Algèbre"].append((u"Résous", "resous", u"Résoudre une (in)équation ou un système. ex: resous(2x-3>0 et 3x+1<=0)"))
 
 __classement__[u"Algèbre"].append(None)
 
-from .sympy_functions import cfactor
-cfactoriser = cfactorise = cfactor
-__classement__[u"Algèbre"].append((u"Factorise dans C", "cfactorise", u"Factoriser une expression dans le corps des complexes."))
+#~ from .sympy_functions import cfactor
+#~ cfactoriser = cfactorise = cfactor
+#~ __classement__[u"Algèbre"].append((u"Factorise dans C", "cfactorise", u"Factoriser une expression dans le corps des complexes."))
 
 from sympy import conjugate
 conjug = conjugue = conjuguer = conjugate

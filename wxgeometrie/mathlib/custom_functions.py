@@ -29,7 +29,7 @@ import math
 from types import FunctionType
 
 from sympy import (pi, E, Rational, Symbol, diff, log, floor,
-                    sqrt, sympify, Float, nsimplify, Basic, S
+                    sqrt, sympify, Float, nsimplify, Basic, S, Wild,
                     )
 from sympy.stats import Normal, Binomial, P
 import sympy.stats
@@ -331,6 +331,23 @@ def arrondir(valeur, chiffres = 0):
     # Nombre de chiffres de la partie entière :
     n = floor(log(valeur, 10)) + 1
     return sympify(valeur).evalf(chiffres + n)
+
+
+def canonique(polynome):
+    u"Met un polynôme du second degré sous forme canonique."
+    a = Wild('a')
+    b = Wild('b')
+    c = Wild('c')
+    x = Wild('x')
+    dico = polynome.match(a*x**2 + b*x + c)
+    if dico is None:
+        return polynome
+    a, b, c, x = dico[a], dico[b], dico[c], dico[x]
+    if not x.is_Symbol or a.has(x) or b.has(x) or c.has(x):
+        return polynome
+    alpha = -b/(2*a)
+    beta = (4*a*c - b**2)/(4*a)
+    return a*(x - alpha)**2 + beta
 
 
 def proba(relation):
