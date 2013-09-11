@@ -44,7 +44,7 @@ IGNORE_RE = re.compile('|'.join('(%s)' % pattern.replace('*', '.*').strip()
 SUPPORTED_EDITORS = ('geany', 'gedit', 'nano', 'vim', 'emacs', 'kate', 'kile')
 
 def gs(chaine='', case=True, exclude_comments=True, extensions=(".py", ".pyw"),
-        maximum=100, codec="latin1", statistiques=False, replace=None,
+        maximum=100, codec="utf8", statistiques=False, replace=None,
         color=None, edit_with=None, edit_result=None, skip_ignore=False):
     u"""Parcourt le répertoire courant et les sous-répertoire, à la recherche
     des fichiers dont l'extension est comprise dans 'extensions',
