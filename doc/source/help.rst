@@ -7,7 +7,7 @@ Manuel de l'utilisateur
 
     « Le couteau-suisse du prof de maths. »
 
-*Copyright © 2005-2012 Nicolas Pourcelot*
+*Copyright © 2005-2013 Nicolas Pourcelot*
 
 Informations complémentaires : http://wxgeo.free.fr__
 

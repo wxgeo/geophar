@@ -233,6 +233,8 @@ class CustomLatexPrinter(LatexPrinter, DecimGenericPrinter):
             self._print(expr.args[0])
 
     def _print_Union(self, expr):
+        if expr.vide:
+            return r"\varnothing"
         tex = r"\cup".join(self._print(intervalle) for intervalle in expr.intervalles)
         tex = tex.replace(r"\right\}\cup\left\{", "\,;\, ")
         return tex

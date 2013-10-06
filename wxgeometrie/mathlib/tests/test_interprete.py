@@ -168,6 +168,8 @@ def test_resoudre():
     # assert_resoudre(r'ln(x^2)-ln(x+1)>1', ']-1;e/2 - sqrt(4 e + exp(2))/2[U]e/2 + sqrt(4 e + exp(2))/2;+oo[')
     assert_resoudre(r'ln(x^2)-ln(x+1)>1', ']-1 ; -sqrt(e + 4)exp(1/2)/2 + e/2[U]e/2 + sqrt(e + 4)exp(1/2)/2 ; +oo[')
     assert_resoudre('0.5 exp(-0.5 x + 0.4)=0.5', '{4/5}')
+    assert_resoudre('x > 9 et x < 9', '{}', r'\varnothing')
+
 
 #TODO: @SLOW wrapper should be defined, and the test only run in some circonstances
 # (for ex, a 'slow' keyword in tools/tests.py arguments)
