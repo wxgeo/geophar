@@ -350,6 +350,21 @@ def canonique(polynome):
     return a*(x - alpha)**2 + beta
 
 
+def discriminant(polynome):
+    u"Calcule le discriminant d'un polynôme du second degré."
+    a = Wild('a')
+    b = Wild('b')
+    c = Wild('c')
+    x = Wild('x')
+    dico = polynome.match(a*x**2 + b*x + c)
+    if dico is None:
+        raise NotImplementedError
+    a, b, c, x = dico[a], dico[b], dico[c], dico[x]
+    if not x.is_Symbol or a.has(x) or b.has(x) or c.has(x):
+        raise NotImplementedError
+    return b**2 - 4*a*c
+
+
 def proba(relation):
     if relation is True:
         return S.One

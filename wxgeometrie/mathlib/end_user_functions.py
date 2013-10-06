@@ -58,17 +58,17 @@ from .custom_functions import derivee, moyenne, variance, ecart_type, \
 
 
 __classement__[u"Statistiques"].append((u"Moyenne", "moyenne", u"Moyenne de la série, éventuellement coefficientée."
-                                     u" Ex: moyenne((12, 13, 15), (1, 1, 2))"))
+                                     u" Ex: moyenne((12; 13; 15); (1; 1; 2))"))
 __classement__[u"Statistiques"].append((u"Variance", "variance", u"Variance de la série, éventuellement coefficientée."
-                                     u" Ex: variance((12, 13, 15), (1, 1, 2))"))
+                                     u" Ex: variance((12; 13; 15); (1; 1; 2))"))
 __classement__[u"Statistiques"].append((u"Écart-type", "ecart_type",
                         u"Écart-type de la série, éventuellement coefficientée."
-                                     u" Ex: ecart_type((12, 13, 15), (1, 1, 2))"))
+                                     u" Ex: ecart_type((12; 13; 15); (1; 1; 2))"))
 __classement__[u"Statistiques"].append((u"Covariance", "covariance", u"Covariance de deux séries."
-                                     u" Ex: covariance((1,2,3),(2,5,7))"))
+                                     u" Ex: covariance((1;2;3);(2;5;7))"))
 __classement__[u"Statistiques"].append((u"Droite de régression", "linreg",
                 u"Retourne (a, b) pour une droite d'ajustement d'équation y=ax+b"
-                                     u" (moindres carrés). Ex: linreg((1,2,3),(2,5,7))"))
+                                     u" (moindres carrés). Ex: linreg((1;2;3);(2;5;7))"))
 __classement__[u"Statistiques"].append((u"Loi normale", "normal",
                 u"Usage: normal(a, b, mu, sigma). Retourne P(a \u2264 X \u2264 b), où "
                 u"X suit une loi normale d'espérance mu et de variance sigma²."))
@@ -95,6 +95,9 @@ __classement__[u"Algèbre"].append((u"Factorise", "factorise", u"Factoriser une 
 
 from .custom_functions import canonique
 __classement__[u"Algèbre"].append((u"Forme canonique", "canonique", u"Mettre sous forme canonique un polynôme de degré 2."))
+
+from .custom_functions import discriminant
+__classement__[u"Algèbre"].append((u"Discriminant", "discriminant", u"Calcule le discriminant d'un polynôme de degré 2."))
 
 from .sympy_functions import together
 rassembler = rassemble = together
@@ -190,19 +193,19 @@ __classement__[u"Arithmétique"].append((u"Combinaisons", "nCr", u"Nombre de com
 
 from .sympy_functions import limit
 lim = limite = limit
-__classement__[u"Analyse"].append((u"Limite", "limite", u"Calculer une limite. Ex: 'limite(1/x,x,0+)', 'limite(x^2,x,-oo)'"))
+__classement__[u"Analyse"].append((u"Limite", "limite", u"Calculer une limite. Ex: 'limite(1/x; x; 0+)', 'limite(x^2; x; -oo)'"))
 
 from .sympy_functions import diff
 derive = diff
-__classement__[u"Analyse"].append((u"Dérive", "derive", u"Dériver une expression. Ex: 'derive(2x+7,x)' et 'derive(2x+7,x,2)' (dérivée seconde)"))
+__classement__[u"Analyse"].append((u"Dérive", "derive", u"Dériver une expression. Ex: 'derive(2x+7; x)' et 'derive(2x+7; x; 2)' (dérivée seconde)"))
 
 from .sympy_functions import integrate
 integrale = integral = integre = integrate
-__classement__[u"Analyse"].append((u"Intègre", "integre", u"Intégrer une expression. Ex: 'integre(x+1,x)' et 'integre(x+1,(x,-1,1))"))
+__classement__[u"Analyse"].append((u"Intègre", "integre", u"Intégrer une expression. Ex: 'integre(x+1; x)' et 'integre(x+1; (x; -1; 1))"))
 
 from .sympy_functions import series
 taylor = series
-__classement__[u"Analyse"].append((u"Taylor", "taylor", u"Développement limité. Ex: 'series(cos(x),x,0,5)'"))
+__classement__[u"Analyse"].append((u"Taylor", "taylor", u"Développement limité. Ex: 'taylor(cos(x); x; 0; 5)'"))
 
 from sympy import pi
 __classement__[u"Symboles"].append((u"pi", "pi", u"Le nombre pi (3,14...)."))
