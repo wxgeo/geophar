@@ -1,5 +1,5 @@
-WxGeometrie
-===========
+Geophar
+=======
 
 *Le couteau suisse du prof de maths. :-)*
 
@@ -46,7 +46,11 @@ Derrière un firewall, vous pouvez également utiliser :
 
 Pour l'installation, consultez le fichier *INSTALL*.
 
-Une documentation (hélas incomplète) se trouve à cette adresse :
+Le manuel de l'utilisateur est disponible à l'adresse suivante :
+
+<http://wxgeo.free.fr/doc/html/help.html>
+
+Vous pouvez également consulter ou compléter le wiki à cette adresse :
 
 <http://www.maths.ac-aix-marseille.fr/webphp/wiki/index.php/Accueil#Aide_WxG.C3.A9om.C3.A9trie>
 
@@ -55,7 +59,13 @@ Une documentation (hélas incomplète) se trouve à cette adresse :
 2. Tests
 --------
 
-À venir.
+Si vous envisager d'apporter une modification à Géophar, commencez par vérifier
+que tous les tests de régression passent toujours.
+
+Placez vous dans le répertoire de Géophar, et lancez la suite de tests :
+
+    $ python tools/test.py --all
+
 
 
 
@@ -84,8 +94,9 @@ statistiques, arbre de probabilités, tableaux LaTeX...
 
 Un grand merci à tous ceux qui ont pris la peine de rapporter des bugs, faire des
 commentaires, suggestions, etc.
-Remerciements tous particuliers à Christophe Vrignaud, Christophe Bal et Stéphane
-Clément pour leur aide et encouragements.
+Remerciements tous particuliers à Boris Mauricette, Jean-Pierre Garcia, Christophe Gragnic
+et Georges Khaznadar pour leur contribution, ainsi qu'à Christophe Vrignaud, Christophe Bal, 
+Stéphane Clément et Dominique Pommier pour leurs suggestions et encouragements.
 
 Mes remerciements vont également à la Sympy Development Team,
 et aux auteurs de Matplotlib, tant pour la qualité de leurs librairies que pour
