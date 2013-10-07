@@ -417,6 +417,15 @@ def test_issue_259():
     assertEqual(r, "1,0*10^-125")
     assertEqual(l, r"$10^{-125}$")
 
+def test_issue_278():
+    i = Interprete(verbose=VERBOSE)
+    i.evaluer("delta = 25")
+    r, l = i.evaluer('delta')
+    assertEqual(r, '25')
+    i.evaluer('del delta')
+    r, l = i.evaluer('delta')
+    assertEqual(r, 'delta')
+
 
 def test_proba_stats_basic_API():
     assert_resultat("inv_normal(.975)", "1,95996398612019")

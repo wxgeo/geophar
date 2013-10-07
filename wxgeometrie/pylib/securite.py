@@ -92,7 +92,7 @@ def keywords_interdits_presents(chaine):
     return bool(re.search(r'(?<!\w)(' + '|'.join(keywords_interdits) + ')(?!\w)', chaine))
 
 def expression_affectable(chaine):
-    return not bool(re.match('[ ]*(' + '|'.join(keywords_non_affectables) + ')', chaine))
+    return not bool(re.match('[ ]*(' + '|'.join(keywords_non_affectables) + ')(?!\w)', chaine))
 
 
 # Exemple d'usage :
