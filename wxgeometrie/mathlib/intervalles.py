@@ -252,15 +252,20 @@ class Union(Ensemble):
         return arrays
 
 
-    def evalf(self, n = 15, **options):
+    def evalf(self, n = 15, round_=None, **options):
         u"Convertit les bornes de chaque intervalle en float."
         union = vide
         def evalf(nbr):
             if nbr in (-oo, +oo):
-                return nbr
-            elif hasattr(nbr, 'evalf'):
-                return nbr.evalf(n, **options)
-            return float(nbr)
+                result = nbr
+            else:
+                if hasattr(nbr, 'evalf'):
+                    result = nbr.evalf(n, **options)
+                else:
+                    result = float(nbr)
+                if round_ is not None:
+                    result = round(result, round_)
+            return result
         for intervalle in self.intervalles:
             union += Intervalle(evalf(intervalle.inf),
                                 evalf(intervalle.sup),
