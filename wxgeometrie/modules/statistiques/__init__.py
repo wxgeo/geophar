@@ -614,8 +614,12 @@ class Statistiques(Panel_API_graphique):
         y_cum = []
         couleur = 'k' if self.param('hachures') else 'b'
         for classe in self.classes:
-            y_value = [sum([self.valeurs[valeur] for valeur in valeurs
-                            if mode*valeur <= mode*classe[i]]) for i in (0, 1)]
+            if mode == 1:
+                y_value = [sum([self.valeurs[valeur] for valeur in valeurs
+                            if valeur < classe[i]]) for i in (0, 1)]
+            else:
+                y_value = [sum([self.valeurs[valeur] for valeur in valeurs
+                            if valeur >= classe[i]]) for i in (0, 1)]
             self.canvas.dessiner_ligne(classe, y_value, color = couleur)
             y_cum.append((classe, y_value))
         dx, dy = self.canvas.dpix2coo(-5, 18)
@@ -645,7 +649,7 @@ class Statistiques(Panel_API_graphique):
                 legende_y = u"Pourcentages cumulés"
             else:
                 legende_y = u"Fréquences cumulées"
-        self.canvas.dessiner_texte(m + dx, 1.1*hmax + dy, legende_y, va='top')
+        self.canvas.dessiner_texte(m + dx, 1.1*hmax - dy, legende_y, va='top')
 
 
     def quantile_plot(self, classe, y, a, couleur='r', style='-'):
