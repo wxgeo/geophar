@@ -520,7 +520,7 @@ class Statistiques(Panel_API_graphique):
 
     def afficher_message(self, msg):
         u"Affichage un message précisant pourquoi le graphique ne s'affiche pas."
-        self.axes(x=False, y=False)
+        self.axes(x=False, y=False, classes=None)
         self.canvas.dessiner_texte(0, 0, msg, va='center', ha='center', size=16)
         self.fenetre(-1, 1, -1, 1)
 

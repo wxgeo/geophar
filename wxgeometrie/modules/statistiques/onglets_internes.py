@@ -277,8 +277,9 @@ class OngletsStatistiques(QTabWidget):
 
 
     def enable(self, x, y, a, classes=False, legende_x=False):
-        self.tab_donnees.classes.setEnabled(a or classes)
-        self.tab_donnees.sc.setEnabled(a or classes)
+        if classes is not None:
+            self.tab_donnees.classes.setEnabled(a or classes)
+            self.tab_donnees.sc.setEnabled(a or classes)
 
         self.tab_legende.setEnabled(x or y or a or legende_x)
         self.tab_legende.x.setEnabled(x or legende_x)
