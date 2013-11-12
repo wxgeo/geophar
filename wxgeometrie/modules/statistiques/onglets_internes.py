@@ -236,20 +236,20 @@ class Autres_quantile(CstmPanel):
         box.setLayout(sizer)
 
         self.mediane = QCheckBox(u'Construire la médiane')
-        self.mediane.setChecked(self.main.choix_quantiles["mediane"][0])
+        self.mediane.setChecked(self.main.param("quantiles")["mediane"][0])
         self.mediane.stateChanged.connect(self.main.EvtCheck)
 
         sizer.addWidget(self.mediane)
         sizer.addSpacing(10) # valeur à ajuster
 
         self.quartiles = QCheckBox(u'Construire les quartiles')
-        self.quartiles.setChecked(self.main.choix_quantiles["quartiles"][0])
+        self.quartiles.setChecked(self.main.param("quantiles")["quartiles"][0])
         self.quartiles.stateChanged.connect(self.main.EvtCheck)
         sizer.addWidget(self.quartiles)
         sizer.addSpacing(10) # valeur à ajuster
 
         self.deciles = QCheckBox(u'Construire les déciles')
-        self.deciles.setChecked(self.main.choix_quantiles["deciles"][0])
+        self.deciles.setChecked(self.main.param("quantiles")["deciles"][0])
         self.deciles.stateChanged.connect(self.main.EvtCheck)
         sizer.addWidget(self.deciles)
         sizer.addSpacing(10) # valeur à ajuster

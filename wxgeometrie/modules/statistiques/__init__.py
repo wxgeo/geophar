@@ -159,10 +159,6 @@ class Statistiques(Panel_API_graphique):
         self.donnees_valeurs = ''
         self.donnees_classes = ''
         self.intervalle_fluctuation = None
-        #test dico quantiles
-        self.choix_quantiles = {"mediane": [True, [0.5], 'r', '-'], \
-                                    "quartiles": [True, [0.25, 0.75], 'b', '--'],\
-                                    "deciles": [True, [0.1, 0.9], 'g', ':']}
 
         self.entrees = QVBoxLayout()
 
@@ -278,9 +274,9 @@ class Statistiques(Panel_API_graphique):
             self.donnees_classes = onglets.tab_donnees.classes.text()
 
             # test choix quantiles
-            self.choix_quantiles["mediane"][0] = onglets.tab_quantiles.mediane.isChecked()
-            self.choix_quantiles["quartiles"][0] = onglets.tab_quantiles.quartiles.isChecked()
-            self.choix_quantiles["deciles"][0] = onglets.tab_quantiles.deciles.isChecked()
+            self.param("quantiles")["mediane"][0] = onglets.tab_quantiles.mediane.isChecked()
+            self.param("quantiles")["quartiles"][0] = onglets.tab_quantiles.quartiles.isChecked()
+            self.param("quantiles")["deciles"][0] = onglets.tab_quantiles.deciles.isChecked()
 
             # On récupère les données de la série statistique
             self.classes = []
@@ -628,13 +624,13 @@ class Statistiques(Panel_API_graphique):
         # Ajout des quantiles
         for q in ["mediane", "quartiles", "deciles"]:
             # tracer si les quantiles sont activés
-            if self.choix_quantiles[q][0]:
-                freq = self.choix_quantiles[q][1]
+            if self.param("quantiles")[q][0]:
+                freq = self.param("quantiles")[q][1]
                 for a in freq:
                     try:
                         (c, y) = self.select_classe(y_cum, a, mode)
-                        self.quantile_plot(c, y, a, couleur=self.choix_quantiles[q][2],
-                                style=self.choix_quantiles[q][3])
+                        self.quantile_plot(c, y, a, couleur=self.param("quantiles")[q][2],
+                                style=self.param("quantiles")[q][3])
                     except TypeError:
                         # c peut être vide si les classes commencent à une
                         # fcc trop grande.
@@ -929,10 +925,12 @@ class Statistiques(Panel_API_graphique):
         self.canvas.dessiner_ligne([q1, q1], [.2, .8], linewidth = w, color = col('b'))
         self.canvas.dessiner_ligne([q3, q3], [.2, .8], linewidth = w, color = col('b'))
         # Médiane
-        if self.choix_quantiles['mediane'][0]:
-            self.canvas.dessiner_ligne([med, med], [.2, .8], linewidth = w, color = col('r'))
+        if self.param("quantiles")['mediane'][0]:
+            # Si la médiane est confondue avec les quartiles, on la trace un peu plus large.
+            med_width = (w if med not in [q1, q3] else 2)
+            self.canvas.dessiner_ligne([med, med], [.2, .8], linewidth= med_width, color = col('r'))
         # "Moustaches"
-        if self.choix_quantiles['deciles'][0]:
+        if self.param("quantiles")['deciles'][0]:
             # Les "moustaches" du diagramme correspondent au 1er et 9e décile
             self.canvas.dessiner_ligne([m, M], [.5, .5], linestyle="None", marker="o", color="k", markerfacecolor="w")
             self.canvas.dessiner_ligne([d1, q1], [.5, .5], color="k")
