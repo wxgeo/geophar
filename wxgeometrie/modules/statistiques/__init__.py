@@ -896,10 +896,10 @@ class Statistiques(Panel_API_graphique):
         q3 = self.quartile(3)
         d1 = self.decile(1)
         d9 = self.decile(9)
-        m = vals[0]
+        m = self.minimum()
         if isinstance(m, Classe):
             m = m[0]
-        M = vals[-1]
+        M = self.maximum()
         if isinstance(M, Classe):
             M = M[1]
         if str in [type(i) for i in (med, q1, q3, d1, d9)]:
@@ -986,11 +986,22 @@ class Statistiques(Panel_API_graphique):
         except (ZeroDivisionError, TypeError):
             return u"Calcul impossible."
 
+    def minimum(self):
+        try:
+            return min(val for val, eff in self.valeurs.items() if eff)
+        except (TypeError, ValueError):
+            return u"Calcul impossible."
+
+    def maximum(self):
+        try:
+            return max(val for val, eff in self.valeurs.items() if eff)
+        except (TypeError, ValueError):
+            return u"Calcul impossible."
+
     def etendue(self):
         try:
-            valeurs = self.liste_valeurs()
-            return valeurs[-1] - valeurs[0]
-        except (TypeError, IndexError):
+            return self.maximum() - self.minimum()
+        except TypeError:
             return u"Calcul impossible."
 
     def variance(self):
