@@ -134,7 +134,7 @@ class FenetrePrincipale(QMainWindow):
         assert event.mimeData().hasUrls()
         for url in event.mimeData().urls():
             if url.path().endswith('.geo') or url.path().endswith('.geoz'):
-                self.onglets.ouvrir(unicode(url.path()))
+                self.onglets.ouvrir(url.toLocalFile())
 
     def afficher_ligne_commande(self, afficher=None):
         u"Afficher ou non la ligne de commande."
