@@ -172,9 +172,9 @@ class CreerSuite(MyMiniFrame):
             self.parent.canvas.zoom_auto()
 
         else:   # suites définies explicitement
-            n0 = self.n0.text()
+            n0 = self.n0.value()
 #            self.parent.suites[u"u"] = []
-            for i in xrange(n0, n0 + self.termes.text()):
+            for i in xrange(n0, n0 + self.termes.value()):
                 yi = fonction(i)
                 M = Point(i, 0)
                 M.label(str(i))
