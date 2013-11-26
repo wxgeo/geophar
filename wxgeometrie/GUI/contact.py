@@ -23,6 +23,8 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import sys
+from webbrowser import open_new_tab
+from urllib import urlencode
 
 from PyQt4.QtCore import pyqtSignal
 from PyQt4.QtGui import (QHBoxLayout, QVBoxLayout, QCheckBox, QPushButton, QDialog,
@@ -172,5 +174,14 @@ vous êtes invités à signaler tout problème rencontré.</i>""", panel)
             QMessageBox.information(self, u"Message envoyé", u"Le message a été envoyé avec succès. Merci !")
             self.close()
         else:
-            QMessageBox.warning(self, u"Connexion impossible.", u"Impossible d'envoyer le message !")
+            QMessageBox.warning(self, u"Connexion impossible.",
+                    u"Impossible d'envoyer le message !\nVous allez être redirigé vers le tracker de bug.")
             self.show()
+            # On tente de se connecter directement au tracker.
+            # (Le navigateur par défaut est susceptible d'avoir des paramètres proxy correctement renseignés).
+
+            data = urlencode({'item_summary': unicode(self.titre.text()).encode('utf8'),
+                            'detailed_desc': unicode(self.commentaire.toPlainText()).encode('utf8'),
+                            'anon_email': unicode(self.mail.text()).encode('utf8')})
+            open_new_tab("http://wxgeo.free.fr/tracker/?do=newtask&project=1&" + data)
+
