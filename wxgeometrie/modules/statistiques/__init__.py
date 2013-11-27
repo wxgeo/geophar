@@ -24,7 +24,7 @@ from __future__ import with_statement
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import re
-from math import isnan, sqrt
+from math import isnan, sqrt, ceil, floor
 
 from PyQt4.QtGui import QVBoxLayout, QLabel, QGroupBox, QHBoxLayout, QComboBox
 
@@ -32,10 +32,11 @@ from numpy import array
 
 from ...GUI.menu import MenuBar
 from ...GUI.panel import Panel_API_graphique
-from .experience import LancerDes, Sondage, ExperienceFrame, alea, sondage, de, DIC
+from .experience import LancerDes, Sondage, ExperienceFrame, DIC
 from .onglets_internes import OngletsStatistiques
-from ...geolib.routines import arrondir
+from ...geolib.routines import nice_display, arrondir_1_2_5 as arrondir
 from ...pylib import property2, uu, regsub, advanced_split, print_error, eval_restricted
+from ... import param
 
 __doc__ = u"""
 Module Statistiques:
@@ -43,28 +44,33 @@ Calculs de moyenne, variance, quantiles sur des séries de données avec modèle
  linéaire si besoin.
 """
 
-def tst(result):
-    if isnan(result):
-        return u"Calcul impossible."
-    return result
+
+def catch_errors(function):
+    def new_function(*args, **kw):
+        try:
+            result = function(*args, **kw)
+            if isinstance(result, float) and isnan(result):
+                result = "Calcul impossible."
+        except Exception:
+            #~ if param.debug:
+                #~ print_error()
+            result = "Calcul impossible."
+        return result
+    return new_function
 
 
 class Classe(tuple):
-    lien = None
+    u"""Un intervalle de type [a;b[.
 
+    Pour les calculs, les classes sont approximées par leur centre de classe.
+    """
     def milieu(self):
         return float(sum(self))/len(self)
-
-    def lier(self, lien):
-        self.lien = lien
-        return self
 
     def __str__(self):         return "[%s ; %s[" % (self[0], self[-1])
     def __repr__(self):        return str(self)
     def __unicode__(self):     return uu(str(self))
     def __int__(self):         return int(self.milieu())
-    def __float__(self):       return self.milieu()
-
     def __add__(self, y):      return self.milieu() + y
     def __mul__(self, y):      return self.milieu()*y
     def __div__(self, y):      return self.milieu()/y
@@ -85,15 +91,9 @@ class Classe(tuple):
     def __le__(self, y):       return self.milieu() <= y
     def __nonzero__(self):     return self.milieu() != 0
 
-    def effectif(self):
-        return float(sum([self.lien.valeurs[valeur] for valeur in self.lien.liste_valeurs()
-                           if self[0] <= valeur < self[1]]))
 
     def amplitude(self):
         return self[1] - self[0]
-
-    def densite(self):
-        return self.effectif()/self.amplitude()
 
     __radd__ = __add__; __rmul__ = __mul__
     __float__ = milieu
@@ -146,8 +146,10 @@ class Statistiques(Panel_API_graphique):
         self.couleurs = "bgrmcy"
         self.hachures = ('/', '*', 'o', '\\', '//', 'xx', '.', 'x', 'O', '..', '\\\\\\')
 
-        self._valeurs = {}
-        self.classes = []
+        self._donnees = []
+        self._classes = []
+        # Numéro de la série actuellement sélectionnée
+        self.index_serie = 0
         self.legende_x = '' # axe des abscisses
         self.legende_y = '' # axe des ordonnees
         self.legende_a = '' # unite d'aire (histogramme)
@@ -156,8 +158,6 @@ class Statistiques(Panel_API_graphique):
         self.gradu_a = ''
         self.origine_x = ''
         self.origine_y = ''
-        self.donnees_valeurs = ''
-        self.donnees_classes = ''
         self.intervalle_fluctuation = None
 
         self.entrees = QVBoxLayout()
@@ -259,6 +259,66 @@ class Statistiques(Panel_API_graphique):
         self.param('reglage_auto_fenetre', self.onglets_bas.tab_reglages.auto.isChecked())
         self.actualiser()
 
+    def _recuperer_classes(self):
+        u"Récupère la liste des classes depuis le champ de texte correspondant."
+        self._classes = []
+        classes = self.onglets_bas.tab_donnees.classes.text()
+        if param.separateur_decimal == ',':
+            classes = classes.replace(',', '.')
+        classes = classes.replace(";", ",")
+
+        if not classes.strip():
+            return
+
+        for serie in advanced_split(classes, "|", symbols = "({})"):
+            self._classes.append([])
+            for classe in advanced_split(serie, " ", symbols = "({})"):
+                if classe.endswith("["):
+                    classe = classe[:-1] + "]"
+                self.ajouter_classes(Classe(eval_restricted(classe)), serie=-1)
+
+
+    def _recuperer_valeurs(self):
+        u"Récupère le dictionnaire des valeurs et des effectifs associés depuis le champ de texte correspondant."
+        # On peut saisir plusieurs séries (pour les comparer).
+        # self._donnees est une liste de dictionnaire de valeurs (un par série).
+        self._donnees = []
+        valeurs = self.onglets_bas.tab_donnees.valeurs.text()
+        # La chaine va être découpée au niveau des espaces.
+        # On commence par la préparer : on supprime les espaces inutiles, et en
+        # particulier les espaces autour des '*'.
+        valeurs = regsub("[ ]*[*][ ]*", valeurs, "*")
+        # une expression du style "[i for i in range(7)]" ne doit pas être découpée au niveau des espaces.
+        valeurs = regsub("[[][^]]*for[^]]*in[^]]*[]]", valeurs, lambda s:s.replace(' ','<@>'))
+
+        if param.separateur_decimal == ',':
+            valeurs = valeurs.replace(',', '.')
+        valeurs = valeurs.replace(";", ",")
+
+        if not valeurs.strip():
+            return
+
+        # Les séries sont séparées par le symbole |.
+        for serie in advanced_split(valeurs, "|", symbols = "({})"):
+            self._donnees.append({})
+            for val in advanced_split(valeurs, " ", symbols = "({})"):
+                if val.endswith("["):
+                    val = val[:-1] + "]"
+
+                if re.match("[[][^]]*for[^]]*in[^]]*[]]", val):
+                    val = eval_restricted(val.replace('<@>',' '))
+                    for v in val:
+                        if type(v) in (list, tuple):
+                            # syntaxe style "[(3,i) for i in range(7)]" où 3 est l'effectif
+                            self.ajouter_valeur(v[1], v[0])
+                        else:
+                            # syntaxe style "[i for i in range(7)]"
+                            self.ajouter_valeur(v)
+                else:
+                    val = [eval_restricted(x) for x in advanced_split(val, "*")]
+                    val.reverse()
+                    self.ajouter_valeur(*val, serie=-1)
+
     def actualiser(self, afficher = True):
         try:
             onglets = self.onglets_bas
@@ -270,8 +330,7 @@ class Statistiques(Panel_API_graphique):
             self.gradu_a = onglets.tab_graduation.a.text()
             self.origine_x = onglets.tab_graduation.origine_x.text()
             self.origine_y = onglets.tab_graduation.origine_y.text()
-            self.donnees_valeurs = onglets.tab_donnees.valeurs.text()
-            self.donnees_classes = onglets.tab_donnees.classes.text()
+
 
             # test choix quantiles
             self.param("quantiles")["mediane"][0] = onglets.tab_quantiles.mediane.isChecked()
@@ -279,44 +338,15 @@ class Statistiques(Panel_API_graphique):
             self.param("quantiles")["deciles"][0] = onglets.tab_quantiles.deciles.isChecked()
 
             # On récupère les données de la série statistique
-            self.classes = []
-            self._valeurs = {}
-
-            # La chaine va être découpée au niveau des espaces ; on supprime donc les espaces inutiles
-            # on supprime les espaces autour des '*'
-            valeurs = regsub("[ ]*[*][ ]*", onglets.tab_donnees.valeurs.text(), "*")
-            # une expression du style "[i for i in range(7)]" ne doit pas être découpée au niveau des espaces.
-            valeurs = regsub("[[][^]]*for[^]]*in[^]]*[]]", valeurs, lambda s:s.replace(' ','|'))
-            classes = onglets.tab_donnees.classes.text()
-
-
-            for classe in advanced_split(classes.replace(";", ","), " ", symbols = "({})"):
-                if classe.endswith("["):
-                    classe = classe[:-1] + "]"
-                self.ajouter_classes(Classe(eval_restricted(classe)).lier(self))
-
-            for val in advanced_split(valeurs.replace(";", ","), " ", symbols = "({})"):
-                if val.endswith("["):
-                    val = val[:-1] + "]"
-
-                if re.match("[[][^]]*for[^]]*in[^]]*[]]", val):
-                    val = eval_restricted(val.replace('|',' '))
-                    for v in val:
-                        if type(v) in (list, tuple):
-                            # syntaxe style "[(3,i) for i in range(7)]" où 3 est l'effectif
-                            self.ajouter_valeur(v[1], v[0])
-                        else:
-                            # syntaxe style "[i for i in range(7)]"
-                            self.ajouter_valeur(v)
-                else:
-                    val = [eval_restricted(x) for x in advanced_split(val, "*")]
-                    val.reverse()
-                    self.ajouter_valeur(*val)
+            self._recuperer_classes()
+            self._recuperer_valeurs()
 
             # par défaut, si toutes les valeurs entrées sont des classes,
             # le découpage en classes suit les classes entrées.
-            if not self.classes and not [x for x in self._valeurs.keys() if not isinstance(x, Classe)]:
-                self.classes = self._valeurs.keys()
+            if not self.classes:
+                for serie in self._donnees:
+                    if all(isinstance(x, Classe) for x in serie.keys()):
+                        self.classes.append(self._donnees.keys())
 
             self.calculer()
             if afficher:
@@ -330,7 +360,7 @@ class Statistiques(Panel_API_graphique):
 
     def calculer(self):
         e = self.effectif_total()
-        if e == int(e):
+        if isinstance(e, float) and e == int(e):
             e = int(e)
         self._effectif_total.setText(u"<i>Effectif total: %s</i>" % e)
         self._moyenne.setText(u"Moyenne: %s" % self.moyenne())
@@ -348,33 +378,80 @@ class Statistiques(Panel_API_graphique):
         self._variance.setText(u"Variance: %s" % self.variance())
         self._ecart_type.setText(u"Écart-type: %s" % self.ecart_type())
 
-    def ajouter_valeurs(self, *valeurs):
+    def ajouter_classes(self, *classes, **kw):
+        if not self._classes:
+            self._classes.append({})
+        serie = kw.get('serie', 0)
+        self._classes[serie] += classes
+        self._classes.sort()
+
+    def ajouter_valeurs(self, *valeurs, **kw):
+        serie = kw.get('serie', 0)
         for val in valeurs:
-            self.ajouter_valeur(val)
+            self.ajouter_valeur(val, serie=serie)
 
 
-    def ajouter_valeur(self, valeur, effectif = 1):
+    def ajouter_valeur(self, valeur, effectif = 1, serie=0):
+        if not self._donnees:
+            self._donnees.append({})
         if type(valeur) in (list, tuple):
-            valeur = Classe(valeur).lier(self)
-        if self._valeurs.has_key(valeur):
-            self._valeurs[valeur] += effectif
-        else:
-            self._valeurs[valeur] = float(effectif)
+            valeur = Classe(valeur)
+        donnees = self._donnees[serie]
+        donnees[valeur] = donnees.get(valeur, 0) + effectif
 
     @property
-    def valeurs(self):
+    def classes(self):
+        if not self._classes:
+            return None
+        return self._classes[self.index_serie]
+
+    @property
+    def donnees(self):
+        if not self._donnees:
+            return None
         mode = self.param('mode_effectifs')
-        valeurs = self._valeurs
+        donnees = self._donnees[self.index_serie]
         # mode = 0: valeurs
         # mode = 1: fréquences
         # mode = 2: pourcentages
         if mode:
             k = (100 if mode == 1 else 1)
-            valeurs = valeurs.copy()
-            total = sum(valeurs.itervalues())
-            for val in valeurs:
-                valeurs[val] *= k/total
-        return valeurs
+            donnees = donnees.copy()
+            total = sum(donnees.itervalues())
+            for val in donnees:
+                donnees[val] *= k/total
+        return donnees
+
+    @property
+    def donnees_brutes(self):
+        if not self._donnees:
+            return None
+        return self._donnees[self.index_serie]
+
+
+
+    def intervalle_classes(self):
+        return min([classe[0] for classe in self.classes]), max([classe[1] for classe in self.classes])
+
+    def effectif_classe(self, classe):
+        a, b = classe
+        return sum(effectif for valeur, effectif in self.donnees.iteritems() if a <= valeur < b)
+
+    def densite_classe(self, classe):
+        return self.effectif_classe(classe)/classe.amplitude()
+
+
+    def experience(self, formule, n, val_possibles = ()):
+        u"""Réalise 'n' fois l'expérience décrite par 'formule'.
+        Exemple: self.experience('int(6*rand())+1', 100) simule 100 lancers de dés."""
+
+        self.actualiser(False)
+        self.ajouter_valeurs(*[eval(formule, DIC) for i in xrange(n)])
+        for val in val_possibles:
+            self.ajouter_valeur(val, 0)
+        self.calculer()
+        self.affiche()
+
 
 
     def graduations(self, x, y):
@@ -395,39 +472,6 @@ class Statistiques(Panel_API_graphique):
     def fenetre(self, *args):
         if self.param('reglage_auto_fenetre'):
             self.canvas.fenetre = args
-
-
-    def ajouter_classes(self, *classes):
-        self.classes += classes
-        self.classes.sort()
-
-
-    def liste_valeurs(self):
-        valeurs = self._valeurs.keys()
-        valeurs.sort()
-        return valeurs
-
-    def liste_valeurs_effectifs(self):
-        valeurs_effectifs = self._valeurs.items()
-        valeurs_effectifs.sort()
-        return valeurs_effectifs
-
-
-
-    def intervalle_classes(self):
-        return min([classe[0] for classe in self.classes]), max([classe[1] for classe in self.classes])
-
-
-    def experience(self, formule, n, val_possibles = ()):
-        u"""Réalise 'n' fois l'expérience décrite par 'formule'.
-        Exemple: self.experience('int(6*rand())+1', 100) simule 100 lancers de dés."""
-
-        self.actualiser(False)
-        self.ajouter_valeurs(*[eval(formule, DIC) for i in xrange(n)])
-        for val in val_possibles:
-            self.ajouter_valeur(val, 0)
-        self.calculer()
-        self.affiche()
 
 
 
@@ -456,6 +500,9 @@ class Statistiques(Panel_API_graphique):
 
     def _affiche(self):
         # ('barres', 'batons', 'histogramme', 'cumul_croissant', 'cumul_decroissant', 'bandes', 'circulaire', 'semi-circulaire', 'boite')
+        if self.donnees is None:
+            self.afficher_message('Rentrez des données.')
+            return
         msg = ''
         if self.graph == 'barres':
             msg = self.diagramme_barre()
@@ -535,7 +582,10 @@ class Statistiques(Panel_API_graphique):
 
         m, M = self.intervalle_classes()
         l = min([classe[1] - classe[0] for classe in self.classes])
-        hmax = max([classe.densite() for classe in self.classes])
+        hmax = max([self.densite_classe(classe) for classe in self.classes])
+
+        if hmax == 0:
+            return u"Les classes choisies ne contiennent aucune valeur."
 
         # Réglage de la fenêtre d'affichage
         self.fenetre(m - 0.1*(M-m), M + 0.4*(M-m), -0.1*hmax, 1.1*hmax)
@@ -544,7 +594,7 @@ class Statistiques(Panel_API_graphique):
 
         i = 0
         for classe in sorted(self.classes):
-            h = classe.densite()
+            h = self.densite_classe(classe)
             xx = [classe[0], classe[0], classe[1], classe[1]]
             yy = [0, h, h, 0]
             if self.param('hachures'):
@@ -553,7 +603,8 @@ class Statistiques(Panel_API_graphique):
                 self.canvas.dessiner_polygone(xx, yy, self.couleurs[i%len(self.couleurs)])
             i += 1
 
-        self.canvas.dessiner_texte(M + 0.3*(M-m)-5*self.canvas.coeff(0), -18*self.canvas.coeff(1), self.legende_x, ha = "right")
+        self.canvas.dessiner_texte(M + 0.3*(M-m)-5*self.canvas.coeff(0),
+                        -18*self.canvas.coeff(1), self.legende_x, ha = "right")
 
         if 'x' in self.gradu_a:
             lu, hu_ = (float(c) for c in self.gradu_a.split('x'))
@@ -567,7 +618,7 @@ class Statistiques(Panel_API_graphique):
             hu = effectif/lu
         else:
             # l'effectif que represente le carre
-            effectif = float(self.gradu_a) if self.gradu_a else arrondir(sum([classe.effectif() for classe in self.classes])/20)
+            effectif = (float(self.gradu_a) if self.gradu_a else arrondir(self.total()/20))
             # cote du carre en pixels
             cote = sqrt(effectif/(self.canvas.coeff(0)*self.canvas.coeff(1)))
             lu = cote*self.canvas.coeff(0)
@@ -578,11 +629,7 @@ class Statistiques(Panel_API_graphique):
         self.canvas.dessiner_polygone([x, x + lu, x + lu, x, x],
                     [.5*hmax, .5*hmax, .5*hmax + hu, .5*hmax + hu, .5*hmax], col)
 
-        eff = str(effectif).replace('.', ',')
-        if eff.endswith(',0'):
-            eff = eff[:-2]
-
-        legende = eff + " " + (self.legende_a or u"unité")
+        legende = nice_display(effectif) + " " + (self.legende_a or u"unité")
 
         if effectif > 1 and not self.legende_a:
             legende += "s"
@@ -597,7 +644,7 @@ class Statistiques(Panel_API_graphique):
         if self.axes(x=True, y=True, classes=True):
             return u"Définissez des classes.\nExemple : [0;10[ [10;20["
 
-        valeurs = self.liste_valeurs()
+        donnees_triees = sorted(self.donnees.iteritems())
 
         l = min([classe[1] - classe[0] for classe in self.classes])
         m, M = self.intervalle_classes()
@@ -611,10 +658,10 @@ class Statistiques(Panel_API_graphique):
         couleur = 'k' if self.param('hachures') else 'b'
         for classe in self.classes:
             if mode == 1:
-                y_value = [sum([self.valeurs[valeur] for valeur in valeurs
+                y_value = [sum([effectif for valeur, effectif in donnees_triees
                             if valeur < classe[i]]) for i in (0, 1)]
             else:
-                y_value = [sum([self.valeurs[valeur] for valeur in valeurs
+                y_value = [sum([effectif for valeur, effectif in donnees_triees
                             if valeur >= classe[i]]) for i in (0, 1)]
             self.canvas.dessiner_ligne(classe, y_value, color = couleur)
             y_cum.append((classe, y_value))
@@ -719,12 +766,12 @@ class Statistiques(Panel_API_graphique):
         if self.axes(y=True, legende_x=True):
             return
 
-        valeurs = self.liste_valeurs()
+        donnees_triees = sorted(self.donnees.iteritems())
 
-        lmax = 100./len(valeurs)
+        lmax = 100./len(donnees_triees)
         l = ratio*lmax
         e = .5*(lmax - l)
-        hmax = max(self.valeurs.values())
+        hmax = max(self.donnees.values())
         self.fenetre(-10, 110, -.15*hmax, 1.15*hmax)
         self.canvas.dessiner_ligne((0, 110), (0, 0), 'k')
 
@@ -732,11 +779,10 @@ class Statistiques(Panel_API_graphique):
         self.origine(0, 0)
 
         n = 0
-        for valeur in valeurs:
-            h = self.valeurs[valeur]
+        for valeur, effectif in donnees_triees:
             x0, x1 = (2*n + 1)*e + n*l, (2*n + 1)*e + (n+1)*l
             xx = [x0, x0, x1, x1]
-            yy = [0, h, h, 0]
+            yy = [0, effectif, effectif, 0]
             if self.param('hachures'):
                 self.canvas.dessiner_polygone(xx, yy, 'w', hatch=self.hachures[(n - 1)%len(self.hachures)])
             else:
@@ -765,15 +811,13 @@ class Statistiques(Panel_API_graphique):
 
         `largeur` est la demi-largeur d'un bâton, en pixels."""
 
-        valeurs = self.liste_valeurs()
-
-        if not all(hasattr(val, '__float__') for val in valeurs):
+        if not all(hasattr(val, '__float__') for val in self.donnees):
             return u"La série doit être à valeurs numériques."
 
         if self.axes(x=True, y=True):
             return
 
-        m, M = valeurs[0], valeurs[-1]
+        m, M = min(self.donnees), max(self.donnees)
         if m == M:
             l = 1
             M += 1
@@ -783,7 +827,7 @@ class Statistiques(Panel_API_graphique):
             m = l*int(m/l) - l
 
 
-        hmax = max(self.valeurs.values())
+        hmax = max(self.donnees.values())
 
         # reglage de la fenetre d'affichage
         self.fenetre(m - 0.1*(M-m), M + 0.1*(M-m), -0.1*hmax, 1.1*hmax)
@@ -796,7 +840,7 @@ class Statistiques(Panel_API_graphique):
         e = largeur*self.canvas.coeff(0)
 
         i = 0
-        for val, eff in self.valeurs.items():
+        for val, eff in self.donnees.iteritems():
             couleur = 'k' if self.param('hachures') else self.couleurs[(i - 1)%len(self.couleurs)]
             self.canvas.dessiner_polygone([val - e, val - e, val + e, val + e], [0, eff, eff, 0], couleur)
             i+=1
@@ -826,8 +870,6 @@ class Statistiques(Panel_API_graphique):
         if self.axes():
             return
 
-        valeurs = self.liste_valeurs()
-
         l_unite = 100./self.total()
         n = 0
         x = 0
@@ -836,8 +878,8 @@ class Statistiques(Panel_API_graphique):
         self.graduations(0, 0)
 
 
-        for valeur in valeurs:
-            l = self.valeurs[valeur]*l_unite
+        for valeur, effectif in sorted(self.donnees.iteritems()):
+            l = effectif*l_unite
             if self.param('hachures'):
                 self.canvas.dessiner_polygone([x, x, x + l, x + l, x], [0, 1, 1, 0, 0],
                         'w', hatch = self.hachures[(n - 1)%len(self.hachures)])
@@ -855,9 +897,7 @@ class Statistiques(Panel_API_graphique):
         if self.axes():
             return
 
-        valeurs = self.liste_valeurs()
-
-        valeurs, effectifs = zip(*self.valeurs.items())
+        valeurs, effectifs = zip(*self.donnees.items())
 
         # petit raffinement pour eviter que 2 couleurs identiques se suivent
         n = len(effectifs)
@@ -883,9 +923,7 @@ class Statistiques(Panel_API_graphique):
     def diagramme_boite(self, afficher_extrema = True):
         u"Appelé aussi diagramme à moustache."
 
-        vals = self.liste_valeurs()
-
-        if not all(hasattr(val, '__float__') for val in vals):
+        if not all(hasattr(val, '__float__') for val in self.donnees):
             return u"La série doit être à valeurs numériques."
 
         if self.axes(x=True):
@@ -906,11 +944,14 @@ class Statistiques(Panel_API_graphique):
             # self.mediane() ou self.decile() ou... renvoie "calcul impossible."
             return
 
-        if int(m) == m:
-            m = int(m) # pour des raisons esthetiques
-        self.origine(m, 0)
         l = arrondir((M - m)/20)
         self.graduations(l, 0)
+        origine = floor(m/(2*l))*2*l
+        if origine <= m - 0.05*(M - m):
+            origine = ceil(m/(2*l))*2*l
+        if int(origine) == origine:
+            origine = int(origine) # pour des raisons esthetiques
+        self.origine(origine, 0)
         if m != M:
             self.fenetre(m - 0.1*(M - m), M + 0.1*(M - m), -0.1, 1.1)
         else:
@@ -957,23 +998,24 @@ class Statistiques(Panel_API_graphique):
 #------------------------------------------------------------
 
 
+    @catch_errors
     def effectif_total(self):
-        # self._valeurs : effectifs bruts (non convertis en fréquences)
-        return sum(self._valeurs.itervalues())
+        # Effectifs bruts (non convertis en fréquences, quel que soit le mode).
+        return sum(self.donnees_brutes.itervalues())
 
     def total(self):
         u"Retourne soit l'effectif total, soit 100, soit 1, selon les paramètres en cours."
-        return sum(self.valeurs.itervalues())
+        return sum(self.donnees.itervalues())
 
+    @catch_errors
     def mode(self):
-        if not self.effectif_total():
-            return u"Calcul impossible."
-        m = max(self.valeurs.values())
-        v = [str(key) for key in self.valeurs.keys() if self.valeurs[key] == m]
+        m = max(self.donnees.values())
+        v = [str(val) for val, effectif in self.donnees.iteritems() if effectif == m]
         if len(v) > 2:
             v = v[:2] + ["..."]
         return " ; ".join(v)
 
+    @catch_errors
     def moyenne(self):
         u"""Moyenne de la série.
 
@@ -981,44 +1023,30 @@ class Statistiques(Panel_API_graphique):
         est remplacée par son centre de classe, pour calculer une approximation
         de la moyenne.
         """
-        try:
-            return tst(1.*sum([eff*val for val, eff in self.valeurs.items()])/self.total())
-        except (ZeroDivisionError, TypeError):
-            return u"Calcul impossible."
+        return sum(eff*val for val, eff in self.donnees.items())/self.total()
 
+    @catch_errors
     def minimum(self):
-        try:
-            return min(val for val, eff in self.valeurs.items() if eff)
-        except (TypeError, ValueError):
-            return u"Calcul impossible."
+        return min(val for val, eff in self.donnees.items() if eff)
 
+    @catch_errors
     def maximum(self):
-        try:
-            return max(val for val, eff in self.valeurs.items() if eff)
-        except (TypeError, ValueError):
-            return u"Calcul impossible."
+        return max(val for val, eff in self.donnees.items() if eff)
 
+    @catch_errors
     def etendue(self):
-        try:
-            return self.maximum() - self.minimum()
-        except TypeError:
-            return u"Calcul impossible."
+        return self.maximum() - self.minimum()
 
+    @catch_errors
     def variance(self):
-        try:
-            m = self.moyenne()
-            if isinstance(m, basestring):
-                raise TypeError
-            return tst(1.*sum([eff*(val - m)**2 for val, eff in self.valeurs.items()])/self.total())
-        except (ZeroDivisionError, TypeError):
-            return u"Calcul impossible."
+        moyenne_des_carres = sum(eff*val**2 for val, eff in self.donnees.items())/self.total()
+        return moyenne_des_carres - self.moyenne()**2
 
+    @catch_errors
     def ecart_type(self):
-        v = self.variance()
-        if isinstance(v, basestring):
-            return u"Calcul impossible."
-        return tst(sqrt(v))
+        return sqrt(self.variance())
 
+    @catch_errors
     def mediane(self):
         u"""Correspond à la 'valeur du milieu' quand on ordonne les données.
 
@@ -1032,7 +1060,7 @@ class Statistiques(Panel_API_graphique):
         somme = 0
         old_val = None
         objectif = self.effectif_total()/2
-        for val, effectif in self.liste_valeurs_effectifs():
+        for val, effectif in sorted(self.donnees_brutes.iteritems()):
             somme += effectif
             if somme > objectif:
                 if isinstance(val, Classe):
@@ -1054,8 +1082,7 @@ class Statistiques(Panel_API_graphique):
             old_val = val
         return u"Calcul impossible."
 
-
-
+    @catch_errors
     def tile(self, k = 4, i = 1):
         u"""
         Renvoie la valeur x de la série telle que au moins i/k des données de la série
@@ -1068,7 +1095,7 @@ class Statistiques(Panel_API_graphique):
         somme = 0
         objectif = i/k*self.effectif_total()
         # objectif : position du quartile au sein de la série.
-        for val, effectif in self.liste_valeurs_effectifs():
+        for val, effectif in sorted(self.donnees_brutes.iteritems()):
             somme += effectif
             if somme >= objectif:
                 if isinstance(val, Classe):
@@ -1080,9 +1107,6 @@ class Statistiques(Panel_API_graphique):
                     return x*a + (1 - x)*b
                 else:
                     return val
-        return u"Calcul impossible."
-
-
 
 
     def quartile(self, i = 1):
@@ -1126,7 +1150,9 @@ class Statistiques(Panel_API_graphique):
     def _sauvegarder(self, fgeo, feuille = None):
         Panel_API_graphique._sauvegarder(self, fgeo, feuille)
         fgeo.contenu["Diagramme"] = [{
-            "serie" : [{"valeurs" : [self.donnees_valeurs], "classes" : [self.donnees_classes]}],
+            "serie" : [{
+            "valeurs" : [self.onglets_bas.tab_donnees.valeurs.text()],
+            "classes" : [self.onglets_bas.tab_donnees.classes.text()]}],
             "legende" : [{"x" : [self.legende_x], "y" : [self.legende_y], "a" : [self.legende_a]}],
             "graduation": [{"x" : [self.gradu_x], "y" : [self.gradu_y], "a" : [self.gradu_a]}],
             "origine": [{"x" : [self.origine_x], "y": [self.origine_y]}],

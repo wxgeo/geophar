@@ -1116,11 +1116,13 @@ class Feuille(object):
         ymax = ymax if ymax is not None else self.fenetre[3]
         epsilon = 100*contexte['tolerance']
         if abs(xmax - xmin) < epsilon:
-            self.erreur(u"Le réglage de la fenêtre est incorrect (xmin et xmax sont trop proches).\n"
-                        u"(Les paramètres doivent être dans cet ordre: xmin, xmax, ymin, ymax.)", ValueError)
+            self.erreur((u"Le réglage de la fenêtre est incorrect (xmin=%s et xmax=%s sont trop proches).\n"
+                         u"(Les paramètres doivent être dans cet ordre: xmin, xmax, ymin, ymax.)")
+                        % (xmin, xmax), ValueError)
         elif abs(ymax - ymin) < epsilon:
-            self.erreur(u"Le réglage de la fenêtre est incorrect (ymin et ymax sont trop proches).\n"
-                        u"(Les paramètres doivent être dans cet ordre: xmin, xmax, ymin, ymax.)", ValueError)
+            self.erreur((u"Le réglage de la fenêtre est incorrect (ymin=%s et ymax=%s sont trop proches).\n"
+                         u"(Les paramètres doivent être dans cet ordre: xmin, xmax, ymin, ymax.)")
+                         % (ymin, ymax), ValueError)
         # Les 'float()' servent à contourner un bug de numpy 1.1.x et numpy 1.2.x (repr de float64)
         return float(min(xmin, xmax)), float(max(xmin, xmax)), float(min(ymin, ymax)), float(max(ymin, ymax))
 

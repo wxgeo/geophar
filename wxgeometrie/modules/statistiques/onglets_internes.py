@@ -57,7 +57,8 @@ class Donnees(CstmPanel):
         sizer = QHBoxLayout()
         sizer.addWidget(QLabel(u"Effectifs et valeurs associées:  "))
         self.valeurs = QLineEdit()
-        self.valeurs.setText(self.main.donnees_valeurs)
+        #~ self.valeurs.setText(self.main.donnees_valeurs)
+        self.valeurs.setText('')
         self.valeurs.setMinimumWidth(500)
         aide = u"Valeurs simples:\n8 8 9 12 17 18\nEffectifs et valeurs:\n2*7 14*8 5*9 1*10\nClasses et effectifs:\n17*[0;10[ 24*[10;20["
         self.valeurs.setToolTip(aide)
@@ -69,7 +70,8 @@ class Donnees(CstmPanel):
         self.sc = QLabel(u"Regroupement par classes:  ")
         sizer.addWidget(self.sc)
         self.classes = QLineEdit()
-        self.classes.setText(self.main.donnees_classes)
+        #~ self.classes.setText(self.main.donnees_classes)
+        self.classes.setText('')
         self.classes.setMinimumWidth(500)
         self.classes.setToolTip(u"Exemple:\n[0;10[ [10;20[ [20;30[")
         self.classes.returnPressed.connect(self.main.actualiser)
@@ -207,11 +209,6 @@ class Autres(CstmPanel):
 
         vsizer = QVBoxLayout()
 
-        #~ self.pourcentages = wx.CheckBox(u'Effectifs en Pourcentages.   ')
-        #~ self.pourcentages.SetValue(self.main.param("mode_pourcentages"))
-        #~ self.pourcentages.stateChanged.connect(self.main.EvtCheck)
-        #~ vsizer.addWidget(self.pourcentages, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 7)
-
         self.hachures = QCheckBox(u'Mode noir et blanc (hachures).')
         self.hachures.setChecked(self.main.param("hachures"))
         self.hachures.stateChanged.connect(self.main.EvtCheck)
@@ -226,6 +223,7 @@ class Autres(CstmPanel):
         self.add(sizer)
 
         self.finaliser()
+
 
 class Autres_quantile(CstmPanel):
     def __init__(self, parent):
