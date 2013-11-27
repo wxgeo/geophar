@@ -5,9 +5,9 @@ Manuel de l'utilisateur
     :alt: Géophar
     :align: center
 
-« Le couteau-suisse du prof de maths. »
+    « Le couteau-suisse du prof de maths. »
 
-*Copyright © 2005-2012 Nicolas Pourcelot*
+*Copyright © 2005-2013 Nicolas Pourcelot*
 
 Informations complémentaires : http://wxgeo.free.fr__
 
@@ -186,8 +186,8 @@ En cliquant avec le bouton du milieu de la souris dans un champ, vous ferez
 également apparaitre diverses propositions.
 
 Vous pouvez utiliser les notations suivantes : ``[A B]`` pour le segment [AB],
-``(A B)`` pour la droite (AB), ``(A>B)`` pour le vecteur
-:math:`\overrightarrow{AB}`, ``||A>B||`` pour sa norme.
+``(A B)`` pour la droite (AB), ``A->B`` pour le vecteur
+:math:`\overrightarrow{AB}`, ``||A->B||`` pour sa norme.
 
 .. note:: Remarquez l'espace entre les lettres « A » et « B » dans les deux premiers cas.
 
@@ -250,37 +250,37 @@ Voici quelques exemples qui parleront mieux qu'un long discours...
 *Exemples*
 
 
-1.  « ``A=Point(1,2)`` » ou « ``A=(1,2)`` »
+1.  « ``A = Point(1, 2)`` » ou « ``A = (1, 2)`` »
 
     Création d'un point A de coordonnées (1 ; 2).
 
-2.  « ``u=Vecteur(1,2)`` » ou « ``u=(1,2)`` »
+2.  « ``u = Vecteur(1, 2)`` » ou « ``u = (1, 2)`` »
 
     Création d'un vecteur u de coordonnées (1 ; 2).
 
-3.  « ``AB=Segment(A,B)`` » ou « ``AB=[A B]`` »
+3.  « ``AB = Segment(A,B)`` » ou « ``AB = [A B]`` »
 
     Création du segment [AB].
 
     *Attention à l'espace entre les lettres dans le deuxième cas.*
 
-4.  « ``d=Droite(A,B)`` » ou « ``d=(A B)`` »
+4.  « ``d = Droite(A,B)`` » ou « ``d = (A B)`` »
 
     Création de la droite (AB).
 
     *Attention à l'espace entre les lettres dans le deuxième cas.*
 
-5.  « ``u=Vecteur(A,B)`` » ou « ``u=A>B`` »
+5.  « ``u = Vecteur(A,B)`` » ou « ``u = A->B`` »
 
     Création du vecteur :math:`\overrightarrow{AB}`.
 
-6.  « ``M=C+2*(A>B)`` »
+6.  « ``M = C + 2*A->B`` »
 
     Création du point M vérifiant :math:`\overrightarrow{CM}=2\overrightarrow{AB}`.
 
     *Les parenthèses sont obligatoires.*
 
-7.  « ``fenetre=(-10,10,-5,5)`` »
+7.  « ``fenetre = (-10, 10, -5, 5)`` »
 
     Changement de la fenetre d'affichage (xmin, xmax, ymin, ymax).
 
@@ -290,7 +290,7 @@ Les droites, les cercles et les courbes de fonctions peuvent également être cr
 
 *Exemple :*
 
-« ``y=2x+1`` », « ``y=ln(x)`` », « ``x² - 6x + y² + 2y + 5`` »
+« ``y = 2x + 1`` », « ``y = ln(x)`` », « ``x² - 6x + y² + 2y + 5 = 0`` »
 
 
 Le traceur de courbes
@@ -693,12 +693,47 @@ Si le logiciel n'arrive pas à déterminer le signe de la fonction, ou si l'on s
     .. image:: img/tabsigne_tan.png
          :align: center
 
+    ..note::
+
 2.  « ``x:-2;2 // x+1:-- -1 ++ // !x-1:-- 1 ++`` »
 
     Tableau correspondant :
 
     .. image:: img/tabsigne_quotient.png
          :align: center
+
+
+Il est également possible de rentrer des valeurs symboliques.
+
+*Exemple :*
+
+    « ``f(x): -- x_1 ++ x_2 --`` »
+
+    Ici, :math:`x_1` et :math:`x_2` sont deux valeurs symboliques.
+
+    Tableau correspondant :
+
+    .. image:: img/tabsigne_polynome.png
+        :align: center
+
+
+Par défaut, ces valeurs symboliques sont placées dans l'ordre dans lequel elles apparaissent.
+
+On peut modifier manuellement leur position dans le tableau en leur attributant une valeur numérique.
+
+*Exemple :*
+
+    « ``x:-oo;+oo // f(x): -- 5 ++ // g(x): ++ \alpha=2,1 --``»
+
+    On indique que α vaut environ 2,1 et doit donc être placé après 5.
+
+    Tableau correspondant~:
+
+    ..image:: img/tabsigne_alpha.png
+        :align: center
+
+
+
 
 
 

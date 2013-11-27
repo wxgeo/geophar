@@ -58,9 +58,7 @@
             
   <div class="section" id="manuel-de-l-utilisateur">
 <h1><a class="toc-backref" href="#id12">Manuel de l&#8217;utilisateur</a><a class="headerlink" href="#manuel-de-l-utilisateur" title="Lien permanent vers ce titre">¶</a></h1>
-<img alt="Géophar" class="align-center" src="_images/logo.png" />
-<p>« Le couteau-suisse du prof de maths. »</p>
-<p><em>Copyright © 2005-2012 Nicolas Pourcelot</em></p>
+<p><em>Copyright © 2005-2013 Nicolas Pourcelot</em></p>
 <p>Informations complémentaires : <a class="reference external" href="http://">http://</a><a class="reference external" href="http://wxgeo.free.fr">wxgeo.free.fr</a></p>
 <div class="contents topic" id="sommaire">
 <p class="topic-title first"><strong>Sommaire :</strong></p>
@@ -242,8 +240,8 @@ champ, pour obtenir une aide détaillée.</p>
 <p>En cliquant avec le bouton du milieu de la souris dans un champ, vous ferez
 également apparaitre diverses propositions.</p>
 <p>Vous pouvez utiliser les notations suivantes : <tt class="docutils literal"><span class="pre">[A</span> <span class="pre">B]</span></tt> pour le segment [AB],
-<tt class="docutils literal"><span class="pre">(A</span> <span class="pre">B)</span></tt> pour la droite (AB), <tt class="docutils literal"><span class="pre">(A&gt;B)</span></tt> pour le vecteur
-<span class="math">\overrightarrow{AB}</span>, <tt class="docutils literal"><span class="pre">||A&gt;B||</span></tt> pour sa norme.</p>
+<tt class="docutils literal"><span class="pre">(A</span> <span class="pre">B)</span></tt> pour la droite (AB), <tt class="docutils literal"><span class="pre">A-&gt;B</span></tt> pour le vecteur
+<span class="math">\overrightarrow{AB}</span>, <tt class="docutils literal"><span class="pre">||A-&gt;B||</span></tt> pour sa norme.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">Remarquez l&#8217;espace entre les lettres « A » et « B » dans les deux premiers cas.</p>
@@ -289,35 +287,35 @@ module statistiques.</p>
 <p>Voici quelques exemples qui parleront mieux qu&#8217;un long discours...</p>
 <p><em>Exemples</em></p>
 <ol class="arabic">
-<li><p class="first">« <tt class="docutils literal"><span class="pre">A=Point(1,2)</span></tt> » ou « <tt class="docutils literal"><span class="pre">A=(1,2)</span></tt> »</p>
+<li><p class="first">« <tt class="docutils literal"><span class="pre">A</span> <span class="pre">=</span> <span class="pre">Point(1,</span> <span class="pre">2)</span></tt> » ou « <tt class="docutils literal"><span class="pre">A</span> <span class="pre">=</span> <span class="pre">(1,</span> <span class="pre">2)</span></tt> »</p>
 <p>Création d&#8217;un point A de coordonnées (1 ; 2).</p>
 </li>
-<li><p class="first">« <tt class="docutils literal"><span class="pre">u=Vecteur(1,2)</span></tt> » ou « <tt class="docutils literal"><span class="pre">u=(1,2)</span></tt> »</p>
+<li><p class="first">« <tt class="docutils literal"><span class="pre">u</span> <span class="pre">=</span> <span class="pre">Vecteur(1,</span> <span class="pre">2)</span></tt> » ou « <tt class="docutils literal"><span class="pre">u</span> <span class="pre">=</span> <span class="pre">(1,</span> <span class="pre">2)</span></tt> »</p>
 <p>Création d&#8217;un vecteur u de coordonnées (1 ; 2).</p>
 </li>
-<li><p class="first">« <tt class="docutils literal"><span class="pre">AB=Segment(A,B)</span></tt> » ou « <tt class="docutils literal"><span class="pre">AB=[A</span> <span class="pre">B]</span></tt> »</p>
+<li><p class="first">« <tt class="docutils literal"><span class="pre">AB</span> <span class="pre">=</span> <span class="pre">Segment(A,B)</span></tt> » ou « <tt class="docutils literal"><span class="pre">AB</span> <span class="pre">=</span> <span class="pre">[A</span> <span class="pre">B]</span></tt> »</p>
 <p>Création du segment [AB].</p>
 <p><em>Attention à l&#8217;espace entre les lettres dans le deuxième cas.</em></p>
 </li>
-<li><p class="first">« <tt class="docutils literal"><span class="pre">d=Droite(A,B)</span></tt> » ou « <tt class="docutils literal"><span class="pre">d=(A</span> <span class="pre">B)</span></tt> »</p>
+<li><p class="first">« <tt class="docutils literal"><span class="pre">d</span> <span class="pre">=</span> <span class="pre">Droite(A,B)</span></tt> » ou « <tt class="docutils literal"><span class="pre">d</span> <span class="pre">=</span> <span class="pre">(A</span> <span class="pre">B)</span></tt> »</p>
 <p>Création de la droite (AB).</p>
 <p><em>Attention à l&#8217;espace entre les lettres dans le deuxième cas.</em></p>
 </li>
-<li><p class="first">« <tt class="docutils literal"><span class="pre">u=Vecteur(A,B)</span></tt> » ou « <tt class="docutils literal"><span class="pre">u=A&gt;B</span></tt> »</p>
+<li><p class="first">« <tt class="docutils literal"><span class="pre">u</span> <span class="pre">=</span> <span class="pre">Vecteur(A,B)</span></tt> » ou « <tt class="docutils literal"><span class="pre">u</span> <span class="pre">=</span> <span class="pre">A-&gt;B</span></tt> »</p>
 <p>Création du vecteur <span class="math">\overrightarrow{AB}</span>.</p>
 </li>
-<li><p class="first">« <tt class="docutils literal"><span class="pre">M=C+2*(A&gt;B)</span></tt> »</p>
+<li><p class="first">« <tt class="docutils literal"><span class="pre">M</span> <span class="pre">=</span> <span class="pre">C</span> <span class="pre">+</span> <span class="pre">2*A-&gt;B</span></tt> »</p>
 <p>Création du point M vérifiant <span class="math">\overrightarrow{CM}=2\overrightarrow{AB}</span>.</p>
 <p><em>Les parenthèses sont obligatoires.</em></p>
 </li>
-<li><p class="first">« <tt class="docutils literal"><span class="pre">fenetre=(-10,10,-5,5)</span></tt> »</p>
+<li><p class="first">« <tt class="docutils literal"><span class="pre">fenetre</span> <span class="pre">=</span> <span class="pre">(-10,</span> <span class="pre">10,</span> <span class="pre">-5,</span> <span class="pre">5)</span></tt> »</p>
 <p>Changement de la fenetre d&#8217;affichage (xmin, xmax, ymin, ymax).</p>
 <p><em>Si l&#8217;affichage est en mode orthonormé, la fenêtre sera éventuellement élargie pour respecter cette contrainte.</em></p>
 </li>
 </ol>
 <p>Les droites, les cercles et les courbes de fonctions peuvent également être créés par la donnée d&#8217;une équation.</p>
 <p><em>Exemple :</em></p>
-<p>« <tt class="docutils literal"><span class="pre">y=2x+1</span></tt> », « <tt class="docutils literal"><span class="pre">y=ln(x)</span></tt> », « <tt class="docutils literal"><span class="pre">x²</span> <span class="pre">-</span> <span class="pre">6x</span> <span class="pre">+</span> <span class="pre">y²</span> <span class="pre">+</span> <span class="pre">2y</span> <span class="pre">+</span> <span class="pre">5</span></tt> »</p>
+<p>« <tt class="docutils literal"><span class="pre">y</span> <span class="pre">=</span> <span class="pre">2x</span> <span class="pre">+</span> <span class="pre">1</span></tt> », « <tt class="docutils literal"><span class="pre">y</span> <span class="pre">=</span> <span class="pre">ln(x)</span></tt> », « <tt class="docutils literal"><span class="pre">x²</span> <span class="pre">-</span> <span class="pre">6x</span> <span class="pre">+</span> <span class="pre">y²</span> <span class="pre">+</span> <span class="pre">2y</span> <span class="pre">+</span> <span class="pre">5</span> <span class="pre">=</span> <span class="pre">0</span></tt> »</p>
 </div>
 </div>
 <div class="section" id="le-traceur-de-courbes">
@@ -581,12 +579,41 @@ Il faut bien sûr que le paquet <cite>cellspace</cite> soit installé au préala
 <p>La dernière ligne contient le produit ou le quotient lui-même (elle est générée automatiquement si elle est vide).</p>
 <p>Ici, on obtient le tableau suivant :</p>
 <img alt="_images/tabsigne_tan.png" class="align-center" src="_images/tabsigne_tan.png" />
+<p>..note:</p>
 </li>
 <li><p class="first">« <tt class="docutils literal"><span class="pre">x:-2;2</span> <span class="pre">//</span> <span class="pre">x+1:--</span> <span class="pre">-1</span> <span class="pre">++</span> <span class="pre">//</span> <span class="pre">!x-1:--</span> <span class="pre">1</span> <span class="pre">++</span></tt> »</p>
 <p>Tableau correspondant :</p>
 <img alt="_images/tabsigne_quotient.png" class="align-center" src="_images/tabsigne_quotient.png" />
 </li>
 </ol>
+<p>Il est également possible de rentrer des valeurs symboliques.</p>
+<p><em>Exemple :</em></p>
+<blockquote>
+<div><p>« <tt class="docutils literal"><span class="pre">f(x):</span> <span class="pre">--</span> <span class="pre">x_1</span> <span class="pre">++</span> <span class="pre">x_2</span> <span class="pre">--</span></tt> »</p>
+<p>Ici, <span class="math">x_1</span> et <span class="math">x_2</span> sont deux valeurs symboliques.</p>
+<p>Tableau correspondant :</p>
+<img alt="_images/tabsigne_polynome.png" class="align-center" src="_images/tabsigne_polynome.png" />
+</div></blockquote>
+<p>Par défaut, ces valeurs symboliques sont placées dans l&#8217;ordre dans lequel elles apparaissent.</p>
+<p>On peut modifier manuellement leur position dans le tableau en leur attributant une valeur numérique.</p>
+<p><em>Exemple :</em></p>
+<blockquote>
+<div><p>« <tt class="docutils literal"><span class="pre">x:-oo;+oo</span> <span class="pre">//</span> <span class="pre">f(x):</span> <span class="pre">--</span> <span class="pre">5</span> <span class="pre">++</span> <span class="pre">//</span> <span class="pre">g(x):</span> <span class="pre">++</span> <span class="pre">\alpha=2,1</span> <span class="pre">--</span></tt>»</p>
+<p>On indique que α vaut environ 2,1 et doit donc être placé après 5.</p>
+<p>Tableau correspondant~:</p>
+<dl class="docutils">
+<dt>..image:: img/tabsigne_alpha.png</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">align:</th><td class="field-body">center</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</div></blockquote>
 </div>
 <div class="section" id="tableau-de-valeurs">
 <h4><a class="toc-backref" href="#id33">Tableau de valeurs</a><a class="headerlink" href="#tableau-de-valeurs" title="Lien permanent vers ce titre">¶</a></h4>

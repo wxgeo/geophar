@@ -358,8 +358,8 @@ def strip_trailing_zeros(s):
     >>> from wxgeometrie.geolib.routines import strip_trailing_zeros
     >>> strip_trailing_zeros("4.0000")
     '4'
-    >>> strip_trailing_zeros("4.200*x + 3.007*y + .010 = 0")
-    '4.2*x + 3.007*y + .01 = 0'
+    >>> strip_trailing_zeros("4.200*x + 3.007*y + 5.0*z + .010 = 0")
+    '4.2*x + 3.007*y + 5*z + .01 = 0'
     """
     return re.sub(TRAILING_ZEROS, lambda m:m.group().rstrip('0').rstrip('.'), s)
 

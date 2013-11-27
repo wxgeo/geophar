@@ -1770,9 +1770,9 @@ False</p>
 <dl class="method">
 <dt id="wxgeometrie.geolib.contexte.Contexte.new">
 <tt class="descname">new</tt><big>(</big><big>)</big><a class="headerlink" href="#wxgeometrie.geolib.contexte.Contexte.new" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>CrÃ©e un nouveau contexte-fils, qui hÃ©rite de celui-ci.</p>
-<p>Toutes les clÃ©s non trouvÃ©es du contexte-fils sont ensuite
-cherchÃ©es dans le contexte pÃ¨re.</p>
+<dd><p>Crée un nouveau contexte-fils, qui hérite de celui-ci.</p>
+<p>Toutes les clés non trouvées du contexte-fils sont ensuite
+cherchées dans le contexte père.</p>
 </dd></dl>
 
 </dd></dl>
@@ -2065,7 +2065,8 @@ et la première, des autres qui vont rester immobiles.</p>
 <dt id="wxgeometrie.geolib.feuille.Feuille.nettoyer">
 <tt class="descname">nettoyer</tt><big>(</big><big>)</big><a class="headerlink" href="#wxgeometrie.geolib.feuille.Feuille.nettoyer" title="Lien permanent vers cette définition">¶</a></dt>
 <dd><p>Supprime les objets cachés inutiles.</p>
-<p>Un objet caché est inutile si aucun objet visible ne dépend de lui.</p>
+<p>Un objet caché est inutile si aucun objet visible ne dépend de lui.
+Les textes vides sont également supprimés.</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -2410,7 +2411,7 @@ l&#8217;abscisse xl.</p>
 
 <dl class="attribute">
 <dt id="wxgeometrie.geolib.interpolations.Interpolation_polynomiale_par_morceaux.strategies">
-<tt class="descname">strategies</tt><em class="property"> = {'moyenne_gauche_droite': &lt;function _strategie_moyenne_gauche_droite at 0x46908c0&gt;, 'pente_minimale': &lt;function _strategie_pente_minimale at 0x4690848&gt;, 'pente_moyenne': &lt;function _strategie_pente_moyenne at 0x46907d0&gt;}</em><a class="headerlink" href="#wxgeometrie.geolib.interpolations.Interpolation_polynomiale_par_morceaux.strategies" title="Lien permanent vers cette définition">¶</a></dt>
+<tt class="descname">strategies</tt><em class="property"> = {'moyenne_gauche_droite': &lt;function _strategie_moyenne_gauche_droite at 0x5400aa0&gt;, 'pente_minimale': &lt;function _strategie_pente_minimale at 0x5400a28&gt;, 'pente_moyenne': &lt;function _strategie_pente_moyenne at 0x54009b0&gt;}</em><a class="headerlink" href="#wxgeometrie.geolib.interpolations.Interpolation_polynomiale_par_morceaux.strategies" title="Lien permanent vers cette définition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -3788,15 +3789,42 @@ d&#8217;affichage:</p>
 <dt id="wxgeometrie.geolib.objet.Objet.style">
 <tt class="descname">style</tt><big>(</big><em>nom_style=None</em>, <em>**kw</em><big>)</big><a class="headerlink" href="#wxgeometrie.geolib.objet.Objet.style" title="Lien permanent vers cette définition">¶</a></dt>
 <dd><p>Renvoie le ou les styles demandés, ou modifie les styles de l&#8217;objet.</p>
-<ul class="simple">
-<li><tt class="docutils literal"><span class="pre">nom_style</span></tt> est un nom de style, ou une liste de noms de styles:</li>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Paramètres:</th><td class="field-body"><ul class="first last simple">
+<li><strong>nom_style</strong> &#8211; un nom de style, ou une liste de noms de styles.</li>
+<li><strong>**kw</strong> &#8211; <p>sert à modifier des styles.</p>
+</li>
 </ul>
-<p>La propriété correspondante est recherchée dans self._style.
-Ex: couleur, taille = A.style((&#8216;couleur&#8217;, &#8216;taille&#8217;))</p>
-<ul class="simple">
-<li><tt class="docutils literal"><span class="pre">**kw</span></tt> sert à modifier des styles.</li>
-</ul>
-<p>Ex: A.style(couleur = &#8216;blue&#8217;)</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Exemple d&#8217;utilisation:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">wxgeometrie</span> <span class="kn">import</span> <span class="n">Point</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">A</span> <span class="o">=</span> <span class="n">Point</span><span class="p">(</span><span class="n">couleur</span><span class="o">=</span><span class="s">&#39;blue&#39;</span><span class="p">,</span> <span class="n">taille</span><span class="o">=</span><span class="mi">25</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">A</span><span class="o">.</span><span class="n">style</span><span class="p">([</span><span class="s">&#39;couleur&#39;</span><span class="p">,</span> <span class="s">&#39;taille&#39;</span><span class="p">])</span>
+<span class="go">[&#39;blue&#39;, 25]</span>
+</pre></div>
+</div>
+<p>On change la couleur (le nouveau dictionnaire de styles est renvoyé):</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">styles</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">style</span><span class="p">(</span><span class="n">couleur</span> <span class="o">=</span> <span class="s">&#39;green&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">styles</span><span class="p">[</span><span class="s">&#39;couleur&#39;</span><span class="p">]</span>
+<span class="go">&#39;green&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">A</span><span class="o">.</span><span class="n">style</span><span class="p">(</span><span class="s">&#39;couleur&#39;</span><span class="p">)</span>
+<span class="go">&#39;green&#39;</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Note :</th><td class="field-body">les propriétés sont stockées en interne dans <tt class="docutils literal"><span class="pre">self._style</span></tt>.</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -3831,7 +3859,7 @@ Le formatage est respecté (essayez &#8216;un&#8217;, &#8216;UN&#8217;, &#8216;U
 
 <dl class="attribute">
 <dt id="wxgeometrie.geolib.objet.Objet.verrou">
-<tt class="descname">verrou</tt><em class="property"> = &lt;wxgeometrie.geolib.objet.Verrou object at 0x43c9910&gt;</em><a class="headerlink" href="#wxgeometrie.geolib.objet.Objet.verrou" title="Lien permanent vers cette définition">¶</a></dt>
+<tt class="descname">verrou</tt><em class="property"> = &lt;wxgeometrie.geolib.objet.Verrou object at 0x50a91d0&gt;</em><a class="headerlink" href="#wxgeometrie.geolib.objet.Objet.verrou" title="Lien permanent vers cette définition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -6158,8 +6186,8 @@ u et v doivent être de type list, tuple, array, ou geolib.Vecteur.</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">wxgeometrie.geolib.routines</span> <span class="kn">import</span> <span class="n">strip_trailing_zeros</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">strip_trailing_zeros</span><span class="p">(</span><span class="s">&quot;4.0000&quot;</span><span class="p">)</span>
 <span class="go">&#39;4&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">strip_trailing_zeros</span><span class="p">(</span><span class="s">&quot;4.200*x + 3.007*y + .010 = 0&quot;</span><span class="p">)</span>
-<span class="go">&#39;4.2*x + 3.007*y + .01 = 0&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">strip_trailing_zeros</span><span class="p">(</span><span class="s">&quot;4.200*x + 3.007*y + 5.0*z + .010 = 0&quot;</span><span class="p">)</span>
+<span class="go">&#39;4.2*x + 3.007*y + 5*z + .01 = 0&#39;</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -8520,7 +8548,7 @@ la classe Panel_API_graphique, plus evoluée que celle-ci.</p>
 
 <dl class="method">
 <dt id="wxgeometrie.GUI.panel.Panel_simple.param">
-<tt class="descname">param</tt><big>(</big><em>parametre</em>, <em>valeur=&lt;wxgeometrie.pylib.fonctions.NoArgument object at 0x419ab90&gt;</em>, <em>defaut=False</em><big>)</big><a class="headerlink" href="#wxgeometrie.GUI.panel.Panel_simple.param" title="Lien permanent vers cette définition">¶</a></dt>
+<tt class="descname">param</tt><big>(</big><em>parametre</em>, <em>valeur=&lt;wxgeometrie.pylib.fonctions.NoArgument object at 0x4f0e150&gt;</em>, <em>defaut=False</em><big>)</big><a class="headerlink" href="#wxgeometrie.GUI.panel.Panel_simple.param" title="Lien permanent vers cette définition">¶</a></dt>
 <dd><p>Renvoie la valeur du paramètre <cite>parametre</cite>.</p>
 <p>Recherche la valeur d&#8217;un paramètre d&#8217;abord dans les paramètres du module
 _(paramètres locaux), puis dans ceux de wxgéométrie.
@@ -8936,6 +8964,12 @@ le module doit définir :</p>
 </dd></dl>
 
 <dl class="function">
+<dt id="wxgeometrie.mathlib.custom_functions.canonique">
+<tt class="descclassname">wxgeometrie.mathlib.custom_functions.</tt><tt class="descname">canonique</tt><big>(</big><em>polynome</em><big>)</big><a class="headerlink" href="#wxgeometrie.mathlib.custom_functions.canonique" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Met un polynôme du second degré sous forme canonique.</p>
+</dd></dl>
+
+<dl class="function">
 <dt id="wxgeometrie.mathlib.custom_functions.cbrt">
 <tt class="descclassname">wxgeometrie.mathlib.custom_functions.</tt><tt class="descname">cbrt</tt><big>(</big><em>x</em><big>)</big><a class="headerlink" href="#wxgeometrie.mathlib.custom_functions.cbrt" title="Lien permanent vers cette définition">¶</a></dt>
 <dd><p>Racine cubique de x.</p>
@@ -8967,6 +9001,12 @@ le module doit définir :</p>
 <dt id="wxgeometrie.mathlib.custom_functions.derivee">
 <tt class="descclassname">wxgeometrie.mathlib.custom_functions.</tt><tt class="descname">derivee</tt><big>(</big><em>f</em><big>)</big><a class="headerlink" href="#wxgeometrie.mathlib.custom_functions.derivee" title="Lien permanent vers cette définition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="function">
+<dt id="wxgeometrie.mathlib.custom_functions.discriminant">
+<tt class="descclassname">wxgeometrie.mathlib.custom_functions.</tt><tt class="descname">discriminant</tt><big>(</big><em>polynome</em><big>)</big><a class="headerlink" href="#wxgeometrie.mathlib.custom_functions.discriminant" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Calcule le discriminant d&#8217;un polynôme du second degré.</p>
+</dd></dl>
 
 <dl class="function">
 <dt id="wxgeometrie.mathlib.custom_functions.ecart_type">
@@ -9907,8 +9947,8 @@ Les opération sur les intervalles sont :
 <dd><p>Une union finie d&#8217;intervalles réels. Les valeurs numériques isolées sont converties en singletons.
 Lors de l&#8217;initialisation, elle est reecrite sous forme d&#8217;union disjointe et ordonnée.</p>
 <p>Les opération sur les unions d&#8217;intervalles sont :
-- l&#8217;union : symbole &#8220;A+B&#8221;
-- l&#8217;intersection : symbole &#8220;A*B&#8221;
+- l&#8217;union : symbole &#8220;A+B&#8221; ou &#8220;A|B&#8217;
+- l&#8217;intersection : symbole &#8220;A*B&#8221; ou &#8220;A&amp;B&#8221;
 - la différence : symbole &#8220;A-B&#8221;
 - le complémentaire : symbole -A</p>
 <p>Note: l&#8217;inclusion et l&#8217;appartenance sont notées de manière identique:
@@ -9930,7 +9970,7 @@ Lors de l&#8217;initialisation, elle est reecrite sous forme d&#8217;union disjo
 
 <dl class="method">
 <dt id="wxgeometrie.mathlib.intervalles.Union.evalf">
-<tt class="descname">evalf</tt><big>(</big><em>n=15</em>, <em>**options</em><big>)</big><a class="headerlink" href="#wxgeometrie.mathlib.intervalles.Union.evalf" title="Lien permanent vers cette définition">¶</a></dt>
+<tt class="descname">evalf</tt><big>(</big><em>n=15</em>, <em>round_=None</em>, <em>**options</em><big>)</big><a class="headerlink" href="#wxgeometrie.mathlib.intervalles.Union.evalf" title="Lien permanent vers cette définition">¶</a></dt>
 <dd><p>Convertit les bornes de chaque intervalle en float.</p>
 </dd></dl>
 
@@ -10068,7 +10108,7 @@ et il permet l&#8217;export au format vectoriel (matplotlib utilise dvi2png sino
 <span id="tools"></span><h2>tools<a class="headerlink" href="#module-tools.search" title="Lien permanent vers ce titre">¶</a></h2>
 <dl class="function">
 <dt id="tools.search.gs">
-<tt class="descclassname">tools.search.</tt><tt class="descname">gs</tt><big>(</big><em>chaine=''</em>, <em>case=True</em>, <em>exclude_comments=True</em>, <em>extensions=('.py'</em>, <em>'.pyw')</em>, <em>maximum=100</em>, <em>codec='latin1'</em>, <em>statistiques=False</em>, <em>replace=None</em>, <em>color=None</em>, <em>edit_with=None</em>, <em>edit_result=None</em>, <em>skip_ignore=False</em><big>)</big><a class="headerlink" href="#tools.search.gs" title="Lien permanent vers cette définition">¶</a></dt>
+<tt class="descclassname">tools.search.</tt><tt class="descname">gs</tt><big>(</big><em>chaine=''</em>, <em>case=True</em>, <em>exclude_comments=True</em>, <em>extensions=('.py'</em>, <em>'.pyw')</em>, <em>maximum=100</em>, <em>codec='utf8'</em>, <em>statistiques=False</em>, <em>replace=None</em>, <em>color=None</em>, <em>edit_with=None</em>, <em>edit_result=None</em>, <em>skip_ignore=False</em><big>)</big><a class="headerlink" href="#tools.search.gs" title="Lien permanent vers cette définition">¶</a></dt>
 <dd><p>Parcourt le répertoire courant et les sous-répertoire, à la recherche
 des fichiers dont l&#8217;extension est comprise dans &#8216;extensions&#8217;,
 mais passe les répertoires et les fichiers dont le nom commence par
