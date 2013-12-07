@@ -507,6 +507,28 @@ Et on appuye sur [Entrée].
    :align: center
 
 
+
+Diagrammes en boites :
+----------------------
+
+Également appelés boîtes à moustache.
+
+Il est possible depuis peu d'afficher sur le même axe plusieurs diagrammes en boîtes, pour comparer plusieurs séries.
+
+Il suffit de séparer les séries par des |.
+
+.. image:: img/saisie_donnees_diag_boite.png
+   :align: center
+
+Et on appuye sur [Entrée].
+
+.. image:: img/diagrammes_boite.png
+   :align: center
+
+
+.. note:: On peut choisir de faire apparaître ou non les déciles.
+
+
 Pour aller plus loin :
 ----------------------
 
