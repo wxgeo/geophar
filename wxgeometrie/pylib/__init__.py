@@ -37,6 +37,11 @@ from generic_wrapper import GenericWrapper
 
 from .decorator import decorator
 
+try:
+    # Cx_Freeze version needs this (so that matplotlib can found pyparsing).
+    import pyparsing
+except ImportError:
+    pass
 import matplotlib, matplotlib.mathtext
 matplotlib.use(param.moteur_de_rendu, warn=False)
 matplotlib.rcParams['text.usetex'] = param.latex

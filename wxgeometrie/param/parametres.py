@@ -69,7 +69,7 @@ dependances = {'PyQt4': 'python-qt4', 'matplotlib': 'python-matplotlib', 'numpy'
 latex = False
 latex_unicode = True # (sera éventuellement désactivé ultérieurement, après l'import de wx)
 
-moteur_de_rendu = 'QTAgg' # ou 'QT' pour supprimer l'anti-crénêlage
+moteur_de_rendu = 'Qt4Agg'
 
 # Permet de tester les styles sous d'autres plateformes.
 # Styles possibles: 'Windows', 'Motif', 'CDE', 'Plastique', 'GTK+',
