@@ -288,6 +288,7 @@ class Statistiques(Panel_API_graphique):
         # On commence par la préparer : on supprime les espaces inutiles, et en
         # particulier les espaces autour des '*'.
         valeurs = regsub("[ ]*[*][ ]*", valeurs, "*")
+        valeurs = regsub("[ ]*[|][ ]*", valeurs, "|")
         # une expression du style "[i for i in range(7)]" ne doit pas être découpée au niveau des espaces.
         valeurs = regsub("[[][^]]*for[^]]*in[^]]*[]]", valeurs, lambda s:s.replace(' ','<@>'))
 
@@ -301,7 +302,7 @@ class Statistiques(Panel_API_graphique):
         # Les séries sont séparées par le symbole |.
         for serie in advanced_split(valeurs, "|", symbols = "({})"):
             self._donnees.append({})
-            for val in advanced_split(valeurs, " ", symbols = "({})"):
+            for val in advanced_split(serie, " ", symbols = "({})"):
                 if val.endswith("["):
                     val = val[:-1] + "]"
 
@@ -309,15 +310,17 @@ class Statistiques(Panel_API_graphique):
                     val = eval_restricted(val.replace('<@>',' '))
                     for v in val:
                         if type(v) in (list, tuple):
+                            _effectif, _valeur = v
                             # syntaxe style "[(3,i) for i in range(7)]" où 3 est l'effectif
-                            self.ajouter_valeur(v[1], v[0])
+                            self.ajouter_valeur(_valeur, _effectif, serie=-1)
                         else:
                             # syntaxe style "[i for i in range(7)]"
-                            self.ajouter_valeur(v)
+                            self.ajouter_valeur(v, serie=-1)
                 else:
                     val = [eval_restricted(x) for x in advanced_split(val, "*")]
                     val.reverse()
                     self.ajouter_valeur(*val, serie=-1)
+
 
     def actualiser(self, afficher = True):
         try:
@@ -570,7 +573,6 @@ class Statistiques(Panel_API_graphique):
 #------------------------------------
 #   Differents types de diagrammes.
 #------------------------------------
-
 
 
 
@@ -921,6 +923,26 @@ class Statistiques(Panel_API_graphique):
 
 
     def diagramme_boite(self, afficher_extrema = True):
+        try:
+            xmin = float('+inf')
+            xmax = float('-inf')
+            for i in range(len(self._donnees)):
+                self.index_serie = i
+                m = self.minimum()
+                if isinstance(m, Classe):
+                    m = m[0]
+                M = self.maximum()
+                if isinstance(M, Classe):
+                    M = M[1]
+                xmin = min(xmin, m)
+                xmax = max(xmax, M)
+            for i in range(len(self._donnees)):
+                self.index_serie = i
+                self._diagramme_boite(xmin, xmax, afficher_extrema)
+        finally:
+            self.index_serie = 0
+
+    def _diagramme_boite(self, xmin, xmax, afficher_extrema=True):
         u"Appelé aussi diagramme à moustache."
 
         if not all(hasattr(val, '__float__') for val in self.donnees):
@@ -944,51 +966,57 @@ class Statistiques(Panel_API_graphique):
             # self.mediane() ou self.decile() ou... renvoie "calcul impossible."
             return
 
-        l = arrondir((M - m)/20)
+        largeur = xmax - xmin
+
+        l = arrondir(largeur/20)
         self.graduations(l, 0)
-        origine = floor(m/(2*l))*2*l
-        if origine <= m - 0.05*(M - m):
-            origine = ceil(m/(2*l))*2*l
+        origine = floor(xmin/(2*l))*2*l
+        if origine <= xmin - 0.05*largeur:
+            origine = ceil(xmin/(2*l))*2*l
         if int(origine) == origine:
             origine = int(origine) # pour des raisons esthetiques
         self.origine(origine, 0)
-        if m != M:
-            self.fenetre(m - 0.1*(M - m), M + 0.1*(M - m), -0.1, 1.1)
+        N = len(self._donnees)
+        if xmin != xmax:
+            self.fenetre(xmin - 0.1*largeur, xmax + 0.1*largeur, -0.1*N, N + .1)
         else:
-            self.fenetre(m - 0.1, M + 0.1, -0.1, 1.1)
+            self.fenetre(xmin - 0.1, xmax + 0.1, -0.1, 1.1)
 
         def col(val):
             return 'k' if self.param('hachures') else val
 
         w = 1 if self.param('hachures') else 1.5
 
+        i = self.index_serie
+
         # Quartiles
-        self.canvas.dessiner_ligne([q1, q1], [.2, .8], linewidth = w, color = col('b'))
-        self.canvas.dessiner_ligne([q3, q3], [.2, .8], linewidth = w, color = col('b'))
+        self.canvas.dessiner_ligne([q1, q1], [.2 + i, .8 + i], linewidth = w, color = col('b'))
+        self.canvas.dessiner_ligne([q3, q3], [.2 + i, .8 + i], linewidth = w, color = col('b'))
         # Médiane
         if self.param("quantiles")['mediane'][0]:
             # Si la médiane est confondue avec les quartiles, on la trace un peu plus large.
             med_width = (w if med not in [q1, q3] else 2)
-            self.canvas.dessiner_ligne([med, med], [.2, .8], linewidth= med_width, color = col('r'))
+            self.canvas.dessiner_ligne([med, med], [.2 + i, .8 + i], linewidth= med_width, color = col('r'))
         # "Moustaches"
         if self.param("quantiles")['deciles'][0]:
             # Les "moustaches" du diagramme correspondent au 1er et 9e décile
-            self.canvas.dessiner_ligne([m, M], [.5, .5], linestyle="None", marker="o", color="k", markerfacecolor="w")
-            self.canvas.dessiner_ligne([d1, q1], [.5, .5], color="k")
-            self.canvas.dessiner_ligne([q3, d9], [.5, .5], color="k")
-            self.canvas.dessiner_ligne([d1, d1], [.4, .6], linewidth=w, color=col('g'))
-            self.canvas.dessiner_ligne([d9, d9], [.4, .6], linewidth=w, color=col('g'))
+            self.canvas.dessiner_ligne([m, M], [.5 + i, .5 + i], linestyle="None", marker="o", color="k", markerfacecolor="w")
+            self.canvas.dessiner_ligne([d1, q1], [.5 + i, .5 + i], color="k")
+            self.canvas.dessiner_ligne([q3, d9], [.5 + i, .5 + i], color="k")
+            self.canvas.dessiner_ligne([d1, d1], [.4 + i, .6 + i], linewidth=w, color=col('g'))
+            self.canvas.dessiner_ligne([d9, d9], [.4 + i, .6 + i], linewidth=w, color=col('g'))
         else:
             # Les "moustaches" du diagramme correspondent au minimum et maximum
-            self.canvas.dessiner_ligne([m, q1], [.5, .5], color="k")
-            self.canvas.dessiner_ligne([q3, M], [.5, .5], color="k")
-            self.canvas.dessiner_ligne([m, m], [.4, .6], linewidth=w, color='k')
-            self.canvas.dessiner_ligne([M, M], [.4, .6], linewidth=w, color='k')
+            self.canvas.dessiner_ligne([m, q1], [.5 + i, .5 + i], color="k")
+            self.canvas.dessiner_ligne([q3, M], [.5 + i, .5 + i], color="k")
+            self.canvas.dessiner_ligne([m, m], [.4 + i, .6 + i], linewidth=w, color='k')
+            self.canvas.dessiner_ligne([M, M], [.4 + i, .6 + i], linewidth=w, color='k')
         # Boîte
-        self.canvas.dessiner_ligne([q3, q1], [.2, .2], color="k")
-        self.canvas.dessiner_ligne([q3, q1], [.8, .8], color="k")
+        self.canvas.dessiner_ligne([q3, q1], [.2 + i, .2 + i], color="k")
+        self.canvas.dessiner_ligne([q3, q1], [.8 + i, .8 + i], color="k")
 
-        self.canvas.dessiner_texte(M + 0.1*(M - m) - 5*self.canvas.coeff(0),
+        if i == 0:
+            self.canvas.dessiner_texte(xmax + 0.1*largeur - 5*self.canvas.coeff(0),
                                     -18*self.canvas.coeff(1),
                                     self.legende_x, ha = "right")
 
