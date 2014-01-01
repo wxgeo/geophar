@@ -296,8 +296,9 @@ class Canvas(FigureCanvasAgg):
         if isinstance(y, (list, tuple)):
             y = numpy.array(y)
         l, h = self.dimensions
-        px = l*(x - self.fenetre[0])/(self.fenetre[1] - self.fenetre[0])
-        py = h*(self.fenetre[3] - y)/(self.fenetre[3] - self.fenetre[2])
+        fenetre = self.fenetre
+        px = l*(x - fenetre[0])/(fenetre[1] - fenetre[0])
+        py = h*(fenetre[3] - y)/(fenetre[3] - fenetre[2])
         return px, py
 
     def pix2coo(self, px, py):
@@ -307,23 +308,26 @@ class Canvas(FigureCanvasAgg):
         if isinstance(py, (list, tuple)):
             py = numpy.array(py)
         l, h = self.dimensions
-        x = px*(self.fenetre[1] - self.fenetre[0])/l + self.fenetre[0]
-        y = py*(self.fenetre[2] - self.fenetre[3])/h + self.fenetre[3]
+        fenetre = self.fenetre
+        x = px*(fenetre[1] - fenetre[0])/l + fenetre[0]
+        y = py*(fenetre[2] - fenetre[3])/h + fenetre[3]
 #        print x,  y,  -x,  -y
         return x, y
 
     def dcoo2pix(self, dx, dy):
         u"""Convertit un déplacement exprimé en coordonnées en un déplacement en pixels."""
         l, h = self.dimensions
-        dpx = l*dx/(self.fenetre[1] - self.fenetre[0])
-        dpy = h*dy/(self.fenetre[2] - self.fenetre[3])
+        fenetre = self.fenetre
+        dpx = l*dx/(fenetre[1] - fenetre[0])
+        dpy = h*dy/(fenetre[2] - fenetre[3])
         return dpx, dpy
 
     def dpix2coo(self, dpx, dpy):
         u"""Convertit un déplacement exprimé en pixels en un déplacement exprimé en coordonnées."""
         l, h = self.dimensions
-        dx = dpx*(self.fenetre[1] - self.fenetre[0])/l
-        dy = dpy*(self.fenetre[2] - self.fenetre[3])/h
+        fenetre = self.fenetre
+        dx = dpx*(fenetre[1] - fenetre[0])/l
+        dy = dpy*(fenetre[2] - fenetre[3])/h
         return dx, dy
 
 
@@ -415,16 +419,16 @@ def %(_nom_)s(self, valeur = no_argument):
 ########################################
 
 
-
     def _get_fenetre(self):
-        if self.orthonorme or getattr(self, 'ratio', None) is not None:
-            if self.orthonorme:
+        fenetre = self.feuille_actuelle.fenetre
+        orthonorme = self.orthonorme
+        if orthonorme or getattr(self, 'ratio', None) is not None:
+            if orthonorme:
                 rat = 1
             else:
                 rat = self.ratio # x:y -> x/y
                 # ratio est le rapport "unité en abscisse/unité en ordonnée"
             w, h = self.dimensions
-            fenetre = self.feuille_actuelle.fenetre
             coeff0 = rat*(fenetre[1] - fenetre[0])/w
             coeff1 = (fenetre[3] - fenetre[2])/h
             xmin, xmax, ymin, ymax = fenetre
@@ -432,7 +436,7 @@ def %(_nom_)s(self, valeur = no_argument):
             ycoeff = (1 if coeff0 < coeff1 else coeff0/coeff1)
             x, y, rx, ry = (xmin+xmax)/2., (ymin+ymax)/2., (xmax-xmin)/2., (ymax-ymin)/2.
             return x - xcoeff*rx, x + xcoeff*rx, y - ycoeff*ry, y + ycoeff*ry
-        return self.feuille_actuelle.fenetre
+        return fenetre
 
 
     def _set_fenetre(self, xmin_xmax_ymin_ymax):
