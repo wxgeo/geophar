@@ -39,7 +39,7 @@ from ..geolib.cercles import Arc_generique, Cercle_generique, Cercle, Arc_points
                              Arc_cercle
 from ..geolib.lignes import Droite_generique, Segment, Demidroite, Ligne_generique,\
                             Droite, Tangente, Parallele, Perpendiculaire, Bissectrice,\
-                            Mediatrice, Demiplan
+                            Mediatrice, Demiplan, Axe
 from ..geolib.polygones import Polygone_generique, PrevisualisationPolygone
 from ..geolib.angles import Angle_generique, Angle, Angle_oriente, Secteur_angulaire
 from ..geolib.transformations import Rotation, Homothetie, Translation
@@ -235,6 +235,8 @@ class BarreOutils(QWidget):
                     (u"Bissectrice", u"bissectrice", u"Créer une bissectrice.", self.bissectrice),
                     None,
                     (u"Demi-plan", 'demiplan', u"Créer un demi-plan", self.demiplan),
+                    None,
+                    (u"Axe", u"axe", u"Créer un axe.", self.axe),
                     )
         self.add("F6", (u"Cercle", u"cercle", u"Créer un cercle.", self.cercle),
                     (u"Cercle défini par son diamètre", u"cerclediametre",
@@ -534,6 +536,11 @@ class BarreOutils(QWidget):
         else:
             self.interagir(self.vecteur, u"Choisissez ou cr\xe9ez deux points.")
 
+    def axe(self, event = False, **kw):
+        if event is False:
+            self.npoints(Axe, **kw)
+        else:
+            self.interagir(self.axe, u"Choisissez ou cr\xe9ez deux points.")
 
     def droite(self, event = False, **kw):
         if event is False:
