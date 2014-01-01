@@ -1049,6 +1049,7 @@ class Axe(Droite):
         linewidth = self.style('epaisseur')
         color = self.style('couleur')
         zorder = self.style("niveau")
+        taille = self.style("taille")
 
         # Points d'intersection avec le bord de la fenêtre
         points = self._points_extremes()
@@ -1069,9 +1070,9 @@ class Axe(Droite):
         else:
             if (y2 - y1)*(yI - yO) < 0:
                 x2, x1, y2, y1 = x1, x2, y1, y2
-        taille = self.style("taille")
         fleche.set(xy0=(x1, y1), xy1=(x2, y2), linewidth=linewidth,
                    angle=self.style("angle"), taille=taille,
+                   double=self.style("double_fleche"),
                     color=color, linestyle=self.style("style"),
                    zorder=zorder,
                    )
@@ -1168,8 +1169,8 @@ class Axe(Droite):
             x -= sens*xu
             y -= sens*yu
 
-        lignes.set_segments(segments)
-        lignes.set(visible=True, color=color, lw=linewidth, zorder=zorder)
+        lignes.set(segments=segments, visible=True, color=color, lw=linewidth,
+                   zorder=zorder)
 
         # La légende en dessous des graduations
         # =====================================
@@ -1186,19 +1187,20 @@ class Axe(Droite):
         # de l'entier `pas_num` (qui indique combien il y a de graduations entre
         # 2 nombres successifs).
         ##print 'debug::axes::(n, pas_num, xu, yu)', n, pas_num, xu, yu
-        print ':::sens,xO,n,xu,xO+n*xu', sens, xO, n, xu, xO+n*xu
+        ##print ':::sens,xO,n,xu,xO+n*xu', sens, xO, n, xu, xO+n*xu
         n -= sens*(n%pas_num)
         x = xO + n*xu
         y = yO + n*yu
         ##print '(2) debug::axes::(n, xu, yu, x, y, xO, yO)', n, xu, yu, x, y, xO, yO
 
         pvnorm = hypot(pxv, pyv)
-        taille = self.etiquette.style('taille')
+        taille_txt = self.etiquette.style('taille')
+        couleur_txt = self.etiquette.style('couleur')
         # On s'écarte de 2 pixels par rapport à l'extrémité de la graduation,
         # ainsi que de la moitié de la hauteur du texte.
         # On choisit également le placement avec `self.style('placement_num')`
         # (qui vaut -1 ou 1).
-        coeff = self.style('placement_num')*(pvnorm + 2 + .5*taille)/pvnorm
+        coeff = self.style('placement_num')*(pvnorm + 2 + .5*taille_txt)/pvnorm
         xw, yw = self.canvas.dpix2coo(coeff*pxv, coeff*pyv)
 
         while xmin < x < xmax:
@@ -1208,8 +1210,8 @@ class Axe(Droite):
                 if s[0] == '-':
                     s = '$%s$' % s
                 txt = self.rendu.texte(x + xw, y + yw, s,
-                        va='center', ha='center', size=taille,
-                        color = self.etiquette.style('couleur'))
+                        va='center', ha='center', size=taille_txt,
+                        color = couleur_txt)
                 self._representation.append(txt)
             n -= sens*pas_num
             x -= sens*pas_num*xu

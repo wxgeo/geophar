@@ -289,7 +289,7 @@ axes = {
     "categorie": "lignes",
     "sous-categorie": "axes",
     "angle": 60,
-    "position": FIN,
+    ##"position": FIN,
     "double_fleche": False,
     "graduations": True, # XXX: temporaire
     "hauteur": 10,
