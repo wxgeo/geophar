@@ -66,7 +66,7 @@ class MiniEditeur:
     def _display(self, txt):
         if isinstance(self.objet, Texte):
             self.objet.label_temporaire = txt
-        else:
+        elif self.objet.etiquette is not None:
             self.objet.etiquette.label_temporaire = txt
 
     def display(self):
