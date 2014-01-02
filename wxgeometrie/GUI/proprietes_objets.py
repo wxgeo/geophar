@@ -99,17 +99,23 @@ class ProprietesAffichage(QWidget):
                 encadre1.addWidget(QLabel(u"Afficher : "))
                 encadre1.addLayout(legende)
 
-        categorie = self.objets[0].style("categorie")
-        tous_de_meme_categorie = all(objet.style("categorie") == categorie for objet in self.objets)
+        objets = self.objets
+        categorie = objets[0].style("categorie")
+        sous_categorie = objets[0].style("sous-categorie")
+        tous_de_meme_categorie = all(objet.style("categorie") == categorie for objet in objets)
+        tous_de_meme_sous_categorie = (tous_de_meme_categorie and
+                all(objet.style("sous-categorie") == sous_categorie for objet in objets))
 
         encadre2 = QVBoxLayout()
 
+        hb = QHBoxLayout()
         if tous_de_meme_categorie:
-            hb = QHBoxLayout()
             styles_possibles = getattr(param, "styles_de_%s" % categorie, [])
             # On ne peut régler les styles simultanément que pour des objets de même catégorie.
             if self.add_combo_box(hb, 'style', u"Style de l'objet : ", styles_possibles):
                 encadre2.addLayout(hb)
+
+        self.add_color_selecter(hb, 'couleur', "Couleur de l'objet")
 
         hb = QHBoxLayout()
         types_de_hachures = getattr(param, "types_de_hachures", [])
@@ -123,25 +129,29 @@ class ProprietesAffichage(QWidget):
                 encadre2.addLayout(hb)
 
         hb = QHBoxLayout()
-        if self.add_color_selecter(hb, 'couleur', "Couleur de l'objet : "):
+        if self.add_spin_box(hb, 'epaisseur', u'Épaisseur', .1, 1000, .5, ' px'):
             encadre2.addLayout(hb)
 
         hb = QHBoxLayout()
-        if self.add_spin_box(hb, 'epaisseur', u'Épaisseur : ', .1, 1000, .5, ' px'):
-            encadre2.addLayout(hb)
-
-        hb = QHBoxLayout()
-        if self.add_spin_box(hb, 'taille', u'Taille : ', .1, 1000, .5, ' px'):
+        if tous_de_meme_sous_categorie and sous_categorie in ('vecteurs', 'axes'):
+            legende = u"Taille de la flêche"
+        else:
+            legende = u'Taille'
+        if self.add_spin_box(hb, 'taille', legende, .1, 1000, .5, ' px'):
             #~ hb.addStretch()
             encadre2.addLayout(hb)
 
         hb = QHBoxLayout()
-        if self.add_spin_box(hb, 'position', u"Position de la flêche : ", 0, 100, 5, coeff=100):
+        if self.add_spin_box(hb, 'position', u"Position de la flêche", 0, 100, 5, coeff=100):
             #~ hb.addStretch()
             encadre2.addLayout(hb)
 
         hb = QHBoxLayout()
-        if self.add_spin_box(hb, 'angle', u"Angle : ", -180, 180,
+        if tous_de_meme_sous_categorie and sous_categorie in ('vecteurs', 'axes'):
+            legende = u"Angle d'ouverture"
+        else:
+            legende = u'Angle'
+        if self.add_spin_box(hb, 'angle', legende, -180, 180,
                              suffixe=u'°', wrapping=True, special_value='auto'):
             #~ hb.addStretch()
             encadre2.addLayout(hb)
@@ -168,11 +178,11 @@ class ProprietesAffichage(QWidget):
             # Réglage de l'opacité du fond
             # ----------------------------
             hb2 = QHBoxLayout()
-            widgets = self.add_spin_box(hb2, 'alpha_fond', u'Opacité : ', 0, 100, 5, '%', coeff=100)
+            widgets = self.add_spin_box(hb2, 'alpha_fond', u'Opacité', 0, 100, 5, '%', coeff=100)
 
             # Réglage de la couleur du fond
             # -----------------------------
-            widgets.extend(self.add_color_selecter(hb2, 'couleur_fond', 'Couleur : '))
+            widgets.extend(self.add_color_selecter(hb2, 'couleur_fond'))
 
             # Activation/désactivation du fond
             # --------------------------------
@@ -188,11 +198,11 @@ class ProprietesAffichage(QWidget):
             # Réglage de l'épaisseur du cadre
             # -------------------------------
             hb2 = QHBoxLayout()
-            widgets = self.add_spin_box(hb2, 'epaisseur_cadre', u'Épaisseur : ', 0, 100, 0.5, ' px')
+            widgets = self.add_spin_box(hb2, 'epaisseur_cadre', u'Épaisseur', 0, 100, 0.5, ' px')
 
             # Réglage de la couleur du cadre
             # ------------------------------
-            widgets.extend(self.add_color_selecter(hb2, 'couleur_cadre', 'Couleur : '))
+            widgets.extend(self.add_color_selecter(hb2, 'couleur_cadre'))
 
             # Réglage du style du cadre
             # -------------------------
@@ -204,6 +214,57 @@ class ProprietesAffichage(QWidget):
             self.add_checkbox(hb1, 'cadre', 'Cadre', fils=widgets)
             encadre3.addLayout(hb1)
             encadre3.addLayout(hb2)
+
+        # ----------------------------------------------------
+        # Styles s'appliquant aux axes seulement (graduations)
+        # ----------------------------------------------------
+
+        encadre4 = QVBoxLayout()
+        if tous_de_meme_sous_categorie and sous_categorie == 'axes':
+
+            """
+            Styles spécifiques:
+            - `graduations` (bool): afficher ou non les graduations
+            - `pas` (int|None):
+                * entier `n` (non nul): `n` fois l'écart entre les deux points repères
+                  de l'axe.
+                * `None` ou `0`: adapte automatiquement la taille
+                  de la graduation à la fenêtre (défaut)
+            - `pas_num` (int): entier positif `n`:
+                * si `n` est nul, n'affiche aucun nombre sur l'axe ;
+                * sinon, affiche un nombre toutes les `n` graduations
+                  (en partant de l'origine de l'axe).
+                  En particulier, si `pas_num=1`, toutes les graduations
+                  auront un nombre.
+            - `repeter` (bool): répéter ou non la numérotation sur les axes.
+            - `hauteur` (int): hauteur d'une graduation (en pixels).
+            - `placement_num` (-1|1): position de la numérotation par rapport à l'axe.
+            """
+
+
+            # GRADUATIONS (AXE)
+            # =================
+
+            # Espace entre deux valeurs de l'axe
+            # ----------------------------------
+            hb2 = QHBoxLayout()
+            widgets = self.add_checkbox(hb2, 'repeter', u"Afficher périodiquement les valeurs")
+
+            # Répéter ou non les valeurs
+            # --------------------------
+            hb3 = QHBoxLayout()
+            widgets.extend(self.add_spin_box(hb3, 'pas_num', u'Afficher les valeurs toutes les',
+                           0, 100, 1, ' graduations'))
+
+            # Activation/désactivation des graduations
+            # ----------------------------------------
+            hb1 = QHBoxLayout()
+            self.add_checkbox(hb1, 'graduations', u"Graduer l'axe", fils=widgets)
+            encadre4.addLayout(hb1)
+            encadre4.addLayout(hb2)
+            encadre4.addLayout(hb3)
+
+
 
 
 
@@ -229,6 +290,7 @@ class ProprietesAffichage(QWidget):
         self.add_groupbox(encadre1, u"Etiquette")
         self.add_groupbox(encadre2, u"Styles")
         self.add_groupbox(encadre3, u"Fond et encadrement")
+        self.add_groupbox(encadre4, u"Graduations")
         self.sizer.addLayout(boutons)
         self.setLayout(self.sizer)
         ##self.parent.parent.dim1 = self.sizer.CalcMin().Get()
@@ -266,12 +328,12 @@ class ProprietesAffichage(QWidget):
         return [cb]
 
 
-    def add_color_selecter(self, layout, propriete, titre):
+    def add_color_selecter(self, layout, propriete, titre='Couleur'):
         objets = [objet for objet in self.objets if objet.style(propriete) is not None]
         if not objets:
             return []
         couleur = objets[0].style(propriete)
-        label = QLabel(titre)
+        label = QLabel(titre + ' : ')
         layout.addWidget(label)
 
         if couleur and all(objet.style(propriete) == couleur for objet in objets):
@@ -296,7 +358,7 @@ class ProprietesAffichage(QWidget):
         if not objets:
             return []
         val = objets[0].style(propriete)
-        label = QLabel(titre)
+        label = QLabel(titre + ' : ')
         layout.addWidget(label)
         if isinstance(step, float):
             widget = QDoubleSpinBox()

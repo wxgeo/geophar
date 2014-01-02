@@ -1017,7 +1017,7 @@ class Axe(Droite):
           de l'axe.
         * `None` ou `0`: adapte automatiquement la taille
           de la graduation à la fenêtre (défaut)
-    - `pas_num` (int): entier `n`:
+    - `pas_num` (int): entier positif `n`:
         * si `n` est nul, n'affiche aucun nombre sur l'axe ;
         * sinon, affiche un nombre toutes les `n` graduations
           (en partant de l'origine de l'axe).
@@ -1042,6 +1042,10 @@ class Axe(Droite):
     def _creer_figure(self):
         if not self._representation:
             self._representation = [self.rendu.fleche(), self.rendu.lignes()]
+        else:
+            # On supprime les textes correspondant aux graduations, qui seront
+            # recréés.
+            self._representation = self._representation[:2]
 
         #  L'axe lui-même
         #  ==============
@@ -1175,7 +1179,6 @@ class Axe(Droite):
         # La légende en dessous des graduations
         # =====================================
 
-        self._representation = self._representation[:2]
         pas_num = self.style('pas_num')
 
         if not pas_num:
@@ -1203,7 +1206,12 @@ class Axe(Droite):
         coeff = self.style('placement_num')*(pvnorm + 2 + .5*taille_txt)/pvnorm
         xw, yw = self.canvas.dpix2coo(coeff*pxv, coeff*pyv)
 
+        compteur = 0
         while xmin < x < xmax:
+            if not self.style('repeter'):
+                if compteur == 2:
+                    # Deux valeurs suffisent.
+                    break
             if hypot(*self.canvas.dcoo2pix(x2 - x, y2 - y)) > 1.5*taille:
                 # Ne pas superposer une graduation à la pointe de la flêche
                 s = nice_display(n*pas)
@@ -1216,6 +1224,7 @@ class Axe(Droite):
             n -= sens*pas_num
             x -= sens*pas_num*xu
             y -= sens*pas_num*yu
+            compteur += 1
 
 
 
