@@ -101,7 +101,7 @@ class Ligne_generique(Objet_avec_equation):
         if eq is None:
             return
         a, b, c = eq
-        if abs(b) > contexte['tolerance'] :
+        if abs(b) > contexte['tolerance']:
             return (-a/b, -c/b)
         else:
             return (-c/a, )
@@ -1124,28 +1124,28 @@ class Axe(Droite):
         if abs(yu) < abs(xu):
             # Droite plutôt horizontale
             assert xu
-            # On va graduer **de droite à gauche**.
-            n = (xmax - xO)/xu
-            # On récupère la graduation située juste en dessous de xmax.
-            n = (floor(n) if (xO + floor(n)*xu) < xmax else ceil(n))
+            # On va graduer **de gauche à droite**.
+            n = (xmin - xO)/xu
+            # On récupère la graduation située juste après xmin.
+            n = ceil(n)#(floor(n) if (xO + floor(n)*xu) > xmin else ceil(n))
             # Et on gradue tant qu'on reste dans la fenetre.
             x = xO + n*xu
             y = yO + n*yu
-            assert x < xmax
-            # Il faut graduer dans le bon sens (on part de xmax, donc x doit
-            # diminuer à chaque étape).
+            assert x > xmin
+            # Il faut graduer dans le bon sens (on part de xmin, donc x doit
+            # augmenter à chaque étape).
             sens = sign(xu)
 
         else:
             # Droite plutôt verticale
             assert yu
             # On va graduer **de haut en bas**.
-            n = (ymax - yO)/yu
+            n = (ymin - yO)/yu
             # Même chose que précédemment, en inversant les rôles de x et de y.
-            n = (floor(n) if (yO + floor(n)*yu) < ymax else ceil(n))
+            n = ceil(n)#(floor(n) if (yO + floor(n)*yu) < ymax else ceil(n))
             x = xO + n*xu
             y = yO + n*yu
-            assert y < ymax
+            assert y > ymin
             sens = sign(yu)
 
         # On calcule le vecteur servant à générer les graduations.
@@ -1170,8 +1170,8 @@ class Axe(Droite):
             if hypot(*self.canvas.dcoo2pix(x2 - x, y2 - y)) > 1.5*taille:
                 # Ne pas superposer une graduation à la pointe de la flêche
                 segments.append([(x - xv, y - yv), (x + xv, y + yv)])
-            x -= sens*xu
-            y -= sens*yu
+            x += sens*xu
+            y += sens*yu
 
         lignes.set(segments=segments, visible=True, color=color, lw=linewidth,
                    zorder=zorder)
@@ -1191,7 +1191,7 @@ class Axe(Droite):
         # 2 nombres successifs).
         ##print 'debug::axes::(n, pas_num, xu, yu)', n, pas_num, xu, yu
         ##print ':::sens,xO,n,xu,xO+n*xu', sens, xO, n, xu, xO+n*xu
-        n -= sens*(n%pas_num)
+        n += sens*(n%pas_num)
         x = xO + n*xu
         y = yO + n*yu
         ##print '(2) debug::axes::(n, xu, yu, x, y, xO, yO)', n, xu, yu, x, y, xO, yO
@@ -1207,8 +1207,18 @@ class Axe(Droite):
         xw, yw = self.canvas.dpix2coo(coeff*pxv, coeff*pyv)
 
         compteur = 0
+        eps = contexte['tolerance']
         while xmin < x < xmax:
             if not self.style('repeter'):
+                if xmin < xO < xmax and xmin < xI < xmax:
+                    # Si seulement deux valeurs s'affichent, il est préférable
+                    # que ce soit 0 et 1, à condition cependant qu'ils soient
+                    # dans la fenêtre d'affichage.
+                    if abs(x - xO) > eps and abs(x - xI) > eps:
+                        n += sens*pas_num
+                        x += sens*pas_num*xu
+                        y += sens*pas_num*yu
+                        continue
                 if compteur == 2:
                     # Deux valeurs suffisent.
                     break
@@ -1221,9 +1231,9 @@ class Axe(Droite):
                         va='center', ha='center', size=taille_txt,
                         color = couleur_txt)
                 self._representation.append(txt)
-            n -= sens*pas_num
-            x -= sens*pas_num*xu
-            y -= sens*pas_num*yu
+            n += sens*pas_num
+            x += sens*pas_num*xu
+            y += sens*pas_num*yu
             compteur += 1
 
 
