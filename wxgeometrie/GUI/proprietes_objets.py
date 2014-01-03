@@ -245,13 +245,14 @@ class ProprietesAffichage(QWidget):
             # GRADUATIONS (AXE)
             # =================
 
-            # Espace entre deux valeurs de l'axe
-            # ----------------------------------
-            hb2 = QHBoxLayout()
-            widgets = self.add_checkbox(hb2, 'repeter', u"Afficher périodiquement les valeurs")
-
             # Répéter ou non les valeurs
             # --------------------------
+            hb2 = QHBoxLayout()
+            widgets = self.add_checkbox(hb2, 'repeter', u"Afficher régulièrement les valeurs")
+
+
+            # Espace entre deux valeurs de l'axe
+            # ----------------------------------
             hb3 = QHBoxLayout()
             widgets.extend(self.add_spin_box(hb3, 'pas_num', u'Afficher les valeurs toutes les',
                            0, 100, 1, ' graduations'))

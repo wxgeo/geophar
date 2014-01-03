@@ -1127,7 +1127,7 @@ class Axe(Droite):
             # On va graduer **de gauche à droite**.
             n = (xmin - xO)/xu
             # On récupère la graduation située juste après xmin.
-            n = ceil(n)#(floor(n) if (xO + floor(n)*xu) > xmin else ceil(n))
+            n = (ceil(n) if xu > 0 else floor(n)) #(floor(n) if (xO + floor(n)*xu) > xmin else ceil(n))
             # Et on gradue tant qu'on reste dans la fenetre.
             x = xO + n*xu
             y = yO + n*yu
@@ -1139,14 +1139,15 @@ class Axe(Droite):
         else:
             # Droite plutôt verticale
             assert yu
-            # On va graduer **de haut en bas**.
+            # On va graduer **de bas en haut**.
             n = (ymin - yO)/yu
             # Même chose que précédemment, en inversant les rôles de x et de y.
-            n = ceil(n)#(floor(n) if (yO + floor(n)*yu) < ymax else ceil(n))
+            n = (ceil(n) if yu > 0 else floor(n)) #(floor(n) if (yO + floor(n)*yu) < ymax else ceil(n))
             x = xO + n*xu
             y = yO + n*yu
             assert y > ymin
             sens = sign(yu)
+
 
         # On calcule le vecteur servant à générer les graduations.
         # Ce vecteur doit être normal au vecteur directeur... pour l'affichage !
@@ -1166,7 +1167,7 @@ class Axe(Droite):
         ##print '(1) debug::axes::(n, xu, yu, x, y, xO, yO)', n, xu, yu, x, y, xO, yO
 
         # Et on génère les graduations !
-        while xmin < x < xmax:
+        while xmin <= x <= xmax and ymin <= y <= ymax:
             if hypot(*self.canvas.dcoo2pix(x2 - x, y2 - y)) > 1.5*taille:
                 # Ne pas superposer une graduation à la pointe de la flêche
                 segments.append([(x - xv, y - yv), (x + xv, y + yv)])
@@ -1206,35 +1207,41 @@ class Axe(Droite):
         coeff = self.style('placement_num')*(pvnorm + 2 + .5*taille_txt)/pvnorm
         xw, yw = self.canvas.dpix2coo(coeff*pxv, coeff*pyv)
 
-        compteur = 0
         eps = contexte['tolerance']
-        while xmin < x < xmax:
-            if not self.style('repeter'):
-                if xmin < xO < xmax and xmin < xI < xmax:
-                    # Si seulement deux valeurs s'affichent, il est préférable
-                    # que ce soit 0 et 1, à condition cependant qu'ils soient
-                    # dans la fenêtre d'affichage.
-                    if abs(x - xO) > eps and abs(x - xI) > eps:
-                        n += sens*pas_num
-                        x += sens*pas_num*xu
-                        y += sens*pas_num*yu
-                        continue
-                if compteur == 2:
-                    # Deux valeurs suffisent.
-                    break
+        indice = 0
+        indice_O = None
+        valeurs = [] # contiendra les triplets (x, y, n)
+        while xmin <= x <= xmax and ymin <= y <= ymax:
             if hypot(*self.canvas.dcoo2pix(x2 - x, y2 - y)) > 1.5*taille:
-                # Ne pas superposer une graduation à la pointe de la flêche
-                s = nice_display(n*pas)
-                if s[0] == '-':
-                    s = '$%s$' % s
-                txt = self.rendu.texte(x + xw, y + yw, s,
-                        va='center', ha='center', size=taille_txt,
-                        color = couleur_txt)
-                self._representation.append(txt)
+                valeurs.append((x, y, n))
+                if abs(x - xO) < eps:
+                    indice_O = indice
+                indice += 1
             n += sens*pas_num
             x += sens*pas_num*xu
             y += sens*pas_num*yu
-            compteur += 1
+
+        if not self.style('repeter'):
+            # Si seulement deux valeurs s'affichent, il est préférable
+            # que ce soit 0 et la valeur suivante, à condition que 0
+            # soit dans la fenêtre d'affichage.
+            if indice_O is not None:
+                if indice_O == len(valeurs) - 1:
+                    valeurs = valeurs[indice_O - 1:]
+                else:
+                    valeurs = valeurs[indice_O:indice_O + 2]
+            else:
+                valeurs = valeurs[:2]
+
+
+        for x, y, n in valeurs:
+            s = nice_display(n*pas)
+            if s[0] == '-':
+                s = '$%s$' % s
+            txt = self.rendu.texte(x + xw, y + yw, s,
+                    va='center', ha='center', size=taille_txt,
+                    color = couleur_txt)
+            self._representation.append(txt)
 
 
 
