@@ -161,9 +161,22 @@ def gs(chaine='', case=True, exclude_comments=True, extensions=(".py", ".pyw"),
                         lignes[-1] = s.replace(chaine, replace)
                     s = s[:pos] + blue2(s[pos:pos+len(chaine)]) \
                                 + s[pos+len(chaine):]
-                    results.append(u"   " + blue('(' + str(n_lignes + 1) + ')')
+                    try:
+                        results.append(u"   " + blue('(' + str(n_lignes + 1) + ')')
                                           + "  line " + white(unicode(n + 1))
                                           + ":   " + s.decode(codec))
+                    except UnicodeError:
+                        if replace is not None:
+                            # Risk of file corruption !
+                            raise
+                        try:
+                            results.append(red('<Warning: encoding error in the following line>')
+                                          + '\n   '
+                                          + blue('(' + str(n_lignes + 1) + ')')
+                                          + "  line " + white(unicode(n + 1))
+                                          + ":   " + s.decode('latin1'))
+                        except UnicodeError:
+                            results.append(red("Can't read result (unknown encoding)"))
 
                     if edit_with is not None and (edit_result is None
                                                 or edit_result == n_lignes + 1):

@@ -35,12 +35,18 @@ _path_7zip = r"C:\Program Files\7-Zip\7z.exe"
 def norm(path):
     return os.path.realpath(os.path.normpath(os.path.expanduser(path)))
 
-def cp(src, dst):
+def cp(src, dst, **kw):
+    src_found = False
     for pth in glob.glob(norm(src)):
         if os.path.isfile(pth):
             shutil.copy(pth, norm(dst))
+            src_found = True
         elif os.path.isdir(pth):
             shutil.copytree(pth, norm(dst))
+            src_found = True
+    if not src_found and not kw.get('quiet', False):
+        print('Warning: %s not found.' % repr(src))
+
 
 def mv(src, dst):
     for pth in glob.glob(norm(src)):
