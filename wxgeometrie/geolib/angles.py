@@ -155,6 +155,7 @@ class Secteur_angulaire(Angle_generique):
 
         codage_angle.set(visible=bool(codage), linewidth=self.style('epaisseur'),
                          linestyle = FILL_STYLES.get(style, 'solid'),
+                         color=self.style('couleur'),
                         )
 
 
