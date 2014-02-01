@@ -168,7 +168,7 @@ class Arc_generique(Cercle_Arc_generique):
         return Cercle_Arc_generique._distance_inf(self, x, y, d)
 
 
-    def _intervalle(self):
+    def _intervalle(self, exact=False):
         u"Renvoie deux nombres a < b. L'arc est l'ensemble des points (r*cos(t), r*sin(t)) pour t apartenant à [a, b]."
         raise NotImplementedError
 
@@ -176,7 +176,7 @@ class Arc_generique(Cercle_Arc_generique):
         return 1
 
     def _longueur(self):
-        a, b = self._intervalle()
+        a, b = self._intervalle(exact=True)
         return (b - a)*self.rayon
 
     @property
@@ -324,9 +324,12 @@ class Arc_cercle(Arc_generique):
     def image_par(self, transformation):
         return Arc_cercle(self.__centre.image_par(transformation), self.__point1.image_par(transformation), self.__point2.image_par(transformation))
 
-    def _intervalle(self):
+    def _intervalle(self, exact=False):
         a = self._angle1.valeur
         b = self._angle2.valeur
+        if not exact:
+            a = float(a)
+            b = float(b)
         if b < a:
             b += 2*(PI if issympy(b) else pi)
         return a, b
@@ -365,11 +368,15 @@ class Arc_points(Arc_generique):
     def image_par(self, transformation):
         return Arc_points(self.__point1.image_par(transformation), self.__point2.image_par(transformation), self.__point3.image_par(transformation))
 
-    def _intervalle(self):
+    def _intervalle(self, exact=False):
         # mesure des angles dans ]-pi;pi]
         a = self._angle1.valeur
         b = self._angle2.valeur
         c = self._angle3.valeur
+        if not exact:
+            a = float(a)
+            b = float(b)
+            c = float(c)
         if b < a:
             b += 2*(PI if issympy(b) else pi)
         if c < a:
