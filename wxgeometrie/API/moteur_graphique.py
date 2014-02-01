@@ -487,16 +487,15 @@ class ZoomArtistes(object):
                         elif isinstance(artiste, LineCollection):
                             lws = self.linewidth[ID] = artiste.get_linewidth()
                             artiste.set_linewidth(tuple(lw*self.zoom_ligne for lw in lws))
-                            if isinstance(artiste, CodageAngle):
-                                angle = artiste.angle_associe
-                                taille = self.taille[ID] = angle.taille
-                                rayon = self.rayon[ID] = angle.rayon
-                                angle.set(taille=self.zoom_ligne*taille,
-                                        rayon=self.zoom_ligne*rayon)
-                                artiste._maj_data()
-                            elif isinstance(artiste, LigneDecoree):
+                            if isinstance(artiste, LigneDecoree):
                                 taille = self.taille[ID] = artiste.taille
                                 artiste.set(taille=self.zoom_ligne*taille)
+                        elif isinstance(artiste, Angle):
+                            taille = self.taille[ID] = artiste.taille
+                            rayon = self.rayon[ID] = artiste.rayon
+                            artiste.set(taille=self.zoom_ligne*taille,
+                                        rayon=self.zoom_ligne*rayon)
+
             # Réglages à effectuer après les autres
             for artiste in self.artistes:
                 if artiste._visible:
@@ -505,6 +504,11 @@ class ZoomArtistes(object):
                             # L'objet DécorationTexte doit être adapté
                             # **après** l'objet Text correspondant.
                             artiste.set(scale=self.zoom_texte)
+                    if self.regler_lignes:
+                        if isinstance(artiste, CodageAngle):
+                            # L'objet CodageAngle doit être actualisé
+                            # **après** l'objet Angle correspondant.
+                            artiste._maj_data()
         return self.artistes
 
     def __exit__(self, type, value, traceback):
@@ -522,19 +526,22 @@ class ZoomArtistes(object):
                             artiste.set_markeredgewidth(self.markeredgewidth[ID])
                         elif isinstance(artiste, LineCollection):
                             artiste.set_linewidth(self.linewidth[ID])
-                            if isinstance(artiste, CodageAngle):
-                                angle = artiste.angle_associe
-                                angle.set(taille=self.taille[ID],
-                                        rayon=self.rayon[ID])
-                                artiste._maj_data()
-                            elif isinstance(artiste, LigneDecoree):
+                            if isinstance(artiste, LigneDecoree):
                                 artiste.set(taille=self.taille[ID])
+                        elif isinstance(artiste, Angle):
+                            artiste.set(taille=self.taille[ID],
+                                    rayon=self.rayon[ID])
             # Réglages à effectuer après les autres
             for artiste in self.artistes:
                 if artiste._visible:
                     if self.regler_textes:
                         if isinstance(artiste, DecorationTexte):
                             artiste.set(scale=1)
+                    if self.regler_lignes:
+                        if isinstance(artiste, CodageAngle):
+                            # L'objet CodageAngle doit être actualisé
+                            # **après** l'objet Angle correspondant.
+                            artiste._maj_data()
 
 
 class CollecterArtistes(object):
