@@ -40,6 +40,8 @@ from ..pylib import fullrange, is_in, uu, warning, print_error
 from ..mathlib.parsers import tex_dollars
 from .. import param
 
+# ascii_lowercase is converted to list, so that `'' in ascii_lowercase` fails.
+ascii_lowercase = list(ascii_lowercase)
 
 
 class LigneDecoree(LineCollection):
@@ -1023,6 +1025,7 @@ class Moteur_graphique(object):
         #un = nbr_axes == 1              # un seul axe
         #x = num == 0; y = not x         # axe des abscisses / des ordonnees
         #rep = self.utiliser_repere      # repere ou non
+        # Note that ascii_lowercase is a list, so `'' in ascii_lowercase` fails.
         vect = self.canvas.utiliser_repere and self.canvas.repere[1 + num] in ascii_lowercase
         # repere defini ou non par des vecteurs
         correspondance = {"b" : "bottom", "c": "center", "l": "left", "r": "right", "t": "top"}
