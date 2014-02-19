@@ -27,7 +27,7 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 from math import floor, log
 
-from sympy import Symbol, Integer, Float, Basic
+from sympy import Symbol, Integer, Float, Basic, FunctionClass
 from sympy.printing.latex import LatexPrinter
 from sympy.printing.str import StrPrinter
 from sympy.core import S
@@ -39,7 +39,9 @@ class DecimGenericPrinter(object):
     u"Classe implémentant des méthodes génériques pour gérer les objets Decim."
     def _convert_Decim(self, expr):
         conv = self._convert_Decim
-        if hasattr(expr, 'atoms') and hasattr(expr, 'subs'):
+        if isinstance(expr, FunctionClass):
+            return expr
+        elif hasattr(expr, 'atoms') and hasattr(expr, 'subs'):
             dico = {}
             for a in expr.atoms():
                 if a.is_Rational and isinstance(a, Decim):
