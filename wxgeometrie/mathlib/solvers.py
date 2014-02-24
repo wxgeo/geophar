@@ -27,7 +27,7 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 from functools import partial
 
 from sympy import (exp, ln, tan, pi, Symbol, oo, solve, Wild, sympify,
-                    Add, Mul, sqrt,
+                    Add, Mul, sqrt, Abs,
                     )
 from .intervalles import Intervalle, vide, Union, R
 from .internal_functions import extract_var, count_syms, is_pos, is_var, is_neg
@@ -158,11 +158,11 @@ def positif(expression, variable = None, strict = False):
             strict = True
         if p.is_integer and p.is_even:
             if strict:
-                return ens_def*(R - (positif(base, variable, strict = False) - positif(base, variable, strict = True)))
+                return ens_def & (R - (positif(base, variable, strict=False) - positif(base, variable, strict=True)))
             else:
                 return ens_def
         else:
-            return ens_def*positif(base, variable, strict = strict)
+            return ens_def & positif(base, variable, strict=strict)
     if hasattr(expression, "is_Mul") and expression.is_Mul:
         posit = R
         posit_nul = R
@@ -173,7 +173,8 @@ def positif(expression, variable = None, strict = False):
             pos_nul = positif(facteur, variable, strict = False)
             # posit : les deux sont strictements positifs, ou les deux sont strictements négatifs
             # posit_nul : les deux sont positifs ou nuls, ou les deux sont négatifs ou nuls
-            posit, posit_nul = (posit*pos + (-posit_nul)*(-pos_nul))*ens_def, (posit_nul*pos_nul + (-posit)*(-pos))*ens_def
+            posit, posit_nul = ((posit & pos) + (-posit_nul & -pos_nul) & ens_def,
+                                ((posit_nul & pos_nul) + (-posit & -pos)) & ens_def)
 
 ##            print "resultat", facteur, res
 ####            if res is NotImplemented:
@@ -257,14 +258,31 @@ def positif(expression, variable = None, strict = False):
                         facteur_constant = Mul(*liste_facteurs_constants)
                         autre_facteur = Mul(*liste_autres_facteurs)
                         if is_pos(facteur_constant):
-                            return positif(autre_facteur + partie_constante/facteur_constant, variable, strict = strict)
+                            return positif(autre_facteur + partie_constante/facteur_constant, variable, strict=strict)
                         elif is_neg(facteur_constant):
-                            return ens_def*(R - positif(autre_facteur + partie_constante/facteur_constant, variable, strict = not strict))
+                            return ens_def & (R - positif(autre_facteur + partie_constante/facteur_constant, variable, strict=not strict))
+
+
+    # Valeur absolue seule:
+    if isinstance(expression, Abs):
+        return ens_def
+
+    # Valeur absolue: cas général. L'idée est simplement de supprimer la valeur
+    # absolue en faisant deux cas: |f(x)| = f(x) si f(x)>=0 et -f(x) si f(x)<0.
+    # (Le `for` est trompeur: on ne supprime qu'une seule valeur absolue à la fois, la récursivité fait le reste...)
+    for subexpr in expression.find(Abs):
+        # subexpr = |f(x)|
+        # val = f(x)
+        val = subexpr.args[0]
+        pos = positif(val, variable)
+        # g(|f(x)|, x) > 0 <=> g(f(x), x) > 0 et f(x) >= 0 ou g(-f(x), x) > 0 et f(x) < 0
+        return ((positif(expression.xreplace({subexpr: val}), variable, strict=strict) & pos) |
+                (positif(expression.xreplace({subexpr: -val}), variable, strict=strict) & -pos))
 
 
     # Logarithme :
     if isinstance(expression, ln):
-        return positif(expression.args[0] - 1, variable, strict = strict)
+        return positif(expression.args[0] - 1, variable, strict=strict)
     # Résolution de ln(X1) + ln(X2) + ... + b > 0, où X1=f1(x), X2 = f2(x) ...
     if getattr(expression, "is_Add", False):
         args = expression.args
@@ -295,7 +313,7 @@ def positif(expression, variable = None, strict = False):
             # ln(X1)+ln(X2)+b>0 <=> X1*X2-exp(-b)>0
             contenu_log = Mul(*(logarithme.args[0] for logarithme in liste_ln))
             contenu_cst = exp(- Add(*liste_constantes))
-            return ens_def*positif(contenu_log - contenu_cst, variable, strict = strict)
+            return ens_def & positif(contenu_log - contenu_cst, variable, strict=strict)
 
 
 
@@ -318,10 +336,10 @@ def positif(expression, variable = None, strict = False):
                         return ens_def
                     elif is_neg(a):
                         # l'ensemble de définition ne change pas
-                        return positif(- X + ln(-b/a), variable, strict = strict)
+                        return positif(- X + ln(-b/a), variable, strict=strict)
                 elif is_neg(b):
                     if is_pos(a):
-                        return positif(X - ln(-b/a), variable, strict = strict)
+                        return positif(X - ln(-b/a), variable, strict=strict)
                     elif is_neg(a):
                         return vide
 
@@ -333,7 +351,7 @@ def positif(expression, variable = None, strict = False):
             if isinstance(arg, exp):
                 changements = True
                 expr += arg.args[0] + 1 - arg
-        if changements and (ens_def - positif(expr, variable, strict = strict) == vide):
+        if changements and (ens_def - positif(expr, variable, strict=strict) == vide):
             return ens_def
 
     # Sommes contenant des logarithmes :
@@ -358,7 +376,7 @@ def positif(expression, variable = None, strict = False):
             # Somme contenant des logarithmes : si aucune autre méthode n'a fonctionné, on tente ln(a)+ln(b)>0 <=> a*b>1 (pour a>0 et b>0)
             expr = Mul(*(exp(arg) for arg in expression.args)) - 1
             try:
-                return ens_def*positif(expr, variable, strict = strict)
+                return ens_def*positif(expr, variable, strict=strict)
             except NotImplementedError:
                 pass
 
@@ -370,21 +388,21 @@ def positif(expression, variable = None, strict = False):
     for X in (variable**2, variable**3, exp(variable), ln(variable), sqrt(variable)):
         expr = expression.subs(X, tmp2)
         # Si la nouvelle variable apparait une seule fois,
-        # le changement de variable produirait une récurrence infinie !
+        # le changement de variable produirait une récursion infinie !
         if variable not in expr.atoms() and count_syms(expr, X) > 1:
 ##            print "nouvelle variable:", X
-            solution_temp = positif(expr, tmp2, strict = strict)
+            solution_temp = positif(expr, tmp2, strict=strict)
             solution = vide
             for intervalle in solution_temp.intervalles:
                 sol = R
                 a = intervalle.inf
                 b = intervalle.sup
                 if a != - oo:
-                    sol *= positif(X - a, variable, strict = strict)
+                    sol &= positif(X - a, variable, strict=strict)
                 if b != oo:
-                    sol *= positif(b - X, variable, strict = strict)
+                    sol &= positif(b - X, variable, strict=strict)
                 solution += sol
-            return ens_def*solution
+            return ens_def & solution
     raise NotImplementedError
 
 

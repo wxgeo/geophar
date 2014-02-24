@@ -37,6 +37,13 @@ def test_resoudre():
     assert_resoudre("exp(x^2)-x^2-1>=0", "]-oo;+oo[")
     assert_resoudre(u"x*(sqrt(64-x^2))=32", "{4*sqrt(2)}")
 
+def test_resoudre_abs():
+    assert_resoudre('abs(2*x+3)-4>0', ']-oo;-7/2[U]1/2;+oo[')
+    assert_resoudre('exp(abs(2*x+3))>3', ']-oo;-3/2 - ln(3)/2[U]-3/2 + ln(3)/2;+oo[')
+    assert_resoudre('3*abs(2*x-7)-2*abs(5*x+2)>0', ']-25/4;17/16[')
+    assert_resoudre('3*abs(2*x-7)-2*abs(5*x+2)+5*abs(x+4)-9>0', ']-oo;-4[U]-4;28/11[U]14;+oo[')
+
+
 def test_resoudre_floats():
     # pass (Geophar 12.08 revision 64f4bb42)
     assert_resoudre(u"0.5*exp(-0.5*x + 0.4)=0.5", "{4/5}")
