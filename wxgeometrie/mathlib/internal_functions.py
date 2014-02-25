@@ -42,7 +42,7 @@ def is_neg(expr):
     return getattr(expr, "is_negative", float(expr) < 0)
 
 def is_var(expression, variable):
-    return hasattr(expression, "has_any_symbols") and expression.has(variable)
+    return hasattr(expression, "has") and expression.has(variable)
 
 
 def poly_factor(polynome, variable, corps = None, approchee = None):

@@ -44,6 +44,13 @@ def test_resoudre_abs():
     assert_resoudre('3*abs(2*x-7)-2*abs(5*x+2)+5*abs(x+4)-9>0', ']-oo;-4[U]-4;28/11[U]14;+oo[')
 
 
+def test_resoudre_puissances():
+    assert_resoudre('sqrt(x)>4', ']16;+oo[')
+    assert_resoudre('x^2.3>4', ']2^(20/23);+oo[')
+    assert_resoudre('-3*x^2.3>4', '{}')
+    assert_resoudre('x+sqrt(x)>4', '](-1/2 + sqrt(17)/2)^2;+oo[')
+
+
 def test_resoudre_floats():
     # pass (Geophar 12.08 revision 64f4bb42)
     assert_resoudre(u"0.5*exp(-0.5*x + 0.4)=0.5", "{4/5}")

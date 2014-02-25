@@ -27,7 +27,7 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 from functools import partial
 
 from sympy import (exp, ln, tan, pi, Symbol, oo, solve, Wild, sympify,
-                    Add, Mul, sqrt, Abs,
+                    Add, Mul, sqrt, Abs, real_root,
                     )
 from .intervalles import Intervalle, vide, Union, R
 from .internal_functions import extract_var, count_syms, is_pos, is_var, is_neg
@@ -145,6 +145,9 @@ def positif(expression, variable = None, strict = False):
         variable = Symbol("_tmp",real=True)
         expression = expression.subs({old_variable:variable})
     ens_def = ensemble_definition(expression, variable)
+    a = Wild('a')
+    # sqrt(x^2) = |x|
+    expression = expression.replace(sqrt(a**2),Abs(a)).replace(Abs(sqrt(a)),sqrt(a))
     try:
         expression = factor(expression, variable, "R", decomposer_entiers = False)
     except NotImplementedError:
@@ -200,7 +203,7 @@ def positif(expression, variable = None, strict = False):
             return ens_def
         else:
             return vide
-    # pas besoin de l'ensemble de définition pour les fonctions polynomiales
+    # Inutile de se préoccuper de l'ensemble de définition pour les fonctions polynômiales.
     if hasattr(expression, "is_polynomial") and expression.is_polynomial():
         P = expression.as_poly(variable)
         if P.degree() == 1:
@@ -239,7 +242,7 @@ def positif(expression, variable = None, strict = False):
             liste_constantes = []
             liste_autres = []
             for arg in args:
-                if is_var(arg, variable):
+                if arg.has(variable):
                     liste_autres.append(arg)
                 else:
                     liste_constantes.append(arg)
@@ -279,6 +282,44 @@ def positif(expression, variable = None, strict = False):
         return ((positif(expression.xreplace({subexpr: val}), variable, strict=strict) & pos) |
                 (positif(expression.xreplace({subexpr: -val}), variable, strict=strict) & -pos))
 
+    # Puissances
+    # Résolution de a*x^q-b > 0, où q n'est pas entier
+    if getattr(expression, "is_Add", False):
+        a_ = Wild('a', exclude=[variable, 0])
+        q_ = Wild('q', exclude=[variable, 1])
+        b_ = Wild('b', exclude=[variable])
+        X_ = Wild('X')
+        # match ne semble pas fonctionner avec a_*X_**q_ - b_
+        match = expression.match(a_*X_**q_ + b_)
+        if match is not None and X_ in match:
+            a = match[a_]
+            q = match[q_]
+            b = -match[b_]/a
+            X = match[X_]
+            # Le cas où q est entier est déjà traité par ailleurs (polynômes).
+            # Lorsque q est de la forme 1/n, on peut définir la fonction x−>x^(1/n)
+            # sur R si n est impair et sur R+ sinon.
+            # Dans tous les autres cas, on définit la fonction x->x^q sur ]0;+oo[.
+            if not q.is_integer:
+                if a.is_negative:
+                    # si a < 0, a*x^q-b > 0 <=> x^q-b/a < 0 <=> non(x^q-b/a >= 0)
+                    strict = not strict
+                if q.is_rational:
+                    n, d = q.as_numer_denom()
+                    if n == 1:
+                        # Racine n-ièmes de l'unité.
+                        if d.is_even and b.is_negative:
+                            sols = Intervalle(0, oo)
+                        else:
+                            sols = Intervalle(b**d, oo, inf_inclus=not strict)
+                # Cas général.
+                if b.is_negative:
+                    sols = Intervalle(0, oo, inf_inclus=q.is_positive)
+                else:
+                    sols = Intervalle(b**(1/q), oo, inf_inclus=not strict)
+                if a.is_negative:
+                    sols = ens_def - sols
+                return sols
 
     # Logarithme :
     if isinstance(expression, ln):
@@ -304,9 +345,9 @@ def positif(expression, variable = None, strict = False):
 ##        print "Resultat 1er passage:", expression
         # Deuxième passage : ln(X1)+ln(X2)+b>0 <=> X1*X2-exp(-b)>0
         for arg in args:
-            if isinstance(arg, ln) and hasattr(arg, "has_any_symbols") and arg.has(variable):
+            if isinstance(arg, ln) and hasattr(arg, "has") and arg.has(variable):
                 liste_ln.append(arg)
-            elif not hasattr(arg, "has_any_symbols") or not arg.has(variable):
+            elif not hasattr(arg, "has") or not arg.has(variable):
                 liste_constantes.append(arg)
 
         if liste_ln and len(liste_ln) + len(liste_constantes) == len(args):
@@ -320,8 +361,8 @@ def positif(expression, variable = None, strict = False):
     # Exponentielle
     # Résolution de a*exp(f(x)) + b > 0
     if getattr(expression, "is_Add", False):
-        a_ = Wild('a')
-        b_ = Wild('b')
+        a_ = Wild('a', exclude=[variable, 0])
+        b_ = Wild('b', exclude=[variable])
         X_ = Wild('X')
         match = expression.match(a_*exp(X_) + b_)
         if match is not None and X_ in match:
@@ -330,18 +371,17 @@ def positif(expression, variable = None, strict = False):
             a = match[a_]
             b = match[b_]
             X = match[X_]
-            if  a != 0 and not a.has(variable) and not b.has(variable):
-                if is_pos(b):
-                    if is_pos(a):
-                        return ens_def
-                    elif is_neg(a):
-                        # l'ensemble de définition ne change pas
-                        return positif(- X + ln(-b/a), variable, strict=strict)
-                elif is_neg(b):
-                    if is_pos(a):
-                        return positif(X - ln(-b/a), variable, strict=strict)
-                    elif is_neg(a):
-                        return vide
+            if is_pos(b):
+                if is_pos(a):
+                    return ens_def
+                elif is_neg(a):
+                    # l'ensemble de définition ne change pas
+                    return positif(- X + ln(-b/a), variable, strict=strict)
+            elif is_neg(b):
+                if is_pos(a):
+                    return positif(X - ln(-b/a), variable, strict=strict)
+                elif is_neg(a):
+                    return vide
 
     # Cas très particulier : on utilise le fait que exp(x)>=x+1 sur R
     if getattr(expression, "is_Add", False):
@@ -387,9 +427,11 @@ def positif(expression, variable = None, strict = False):
     # changements de variables courants : x², exp(x), ln(x), sqrt(x), x³ :
     for X in (variable**2, variable**3, exp(variable), ln(variable), sqrt(variable)):
         expr = expression.subs(X, tmp2)
+        if X == sqrt(variable):
+            expr = expr.subs(variable, tmp2**2)
         # Si la nouvelle variable apparait une seule fois,
         # le changement de variable produirait une récursion infinie !
-        if variable not in expr.atoms() and count_syms(expr, X) > 1:
+        if variable not in expr.atoms() and count_syms(expr, tmp2) > 1:
 ##            print "nouvelle variable:", X
             solution_temp = positif(expr, tmp2, strict=strict)
             solution = vide
@@ -404,6 +446,9 @@ def positif(expression, variable = None, strict = False):
                 solution += sol
             return ens_def & solution
     raise NotImplementedError
+
+
+
 
 
 def resoudre(chaine, variables=(), local_dict=None, ensemble='R'):
