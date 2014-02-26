@@ -36,6 +36,7 @@ def test_resoudre():
     assert_resoudre("ln(x)<ln(-2*x+1)", "]0;1/3[")
     assert_resoudre("exp(x^2)-x^2-1>=0", "]-oo;+oo[")
     assert_resoudre(u"x*(sqrt(64-x^2))=32", "{4*sqrt(2)}")
+    assert_resoudre('x - 1 + exp(x)>=0', '[0;+oo[')
 
 def test_resoudre_abs():
     assert_resoudre('abs(2*x+3)-4>0', ']-oo;-7/2[U]1/2;+oo[')
@@ -68,7 +69,6 @@ def test_positif():
     assert_positif((x - 1)/(x + 1), ']-oo;-1[U[1;+oo[')
     assert_positif(x*exp(3) - 1, '[exp(-3);+oo[')
 
-@XFAIL
 def test_positif2():
     x = Symbol("x")
     assert_positif(x - 1 + exp(x), "[0;+oo[")

@@ -154,7 +154,7 @@ def positif(expression, variable = None, strict = False):
         if param.debug:
             print "Warning: Factorisation impossible de ", expression
 ##    print "T455451", expression, variable
-    if hasattr(expression, "is_Pow") and expression.is_Pow and expression.as_base_exp()[1].is_rational:
+    if expression.is_Pow and expression.as_base_exp()[1].is_rational:
         base, p = expression.as_base_exp()
         # Le dénominateur ne doit pas s'annuler :
         if p < 0:
@@ -166,7 +166,7 @@ def positif(expression, variable = None, strict = False):
                 return ens_def
         else:
             return ens_def & positif(base, variable, strict=strict)
-    if hasattr(expression, "is_Mul") and expression.is_Mul:
+    if expression.is_Mul:
         posit = R
         posit_nul = R
         for facteur in expression.args:
@@ -188,15 +188,15 @@ def positif(expression, variable = None, strict = False):
             return posit
         else:
             return posit_nul
-    if getattr(expression, "is_positive", None) is True: # > 0
+    if expression.is_positive is True: # > 0
         return ens_def
-    if getattr(expression, "is_negative", None) is True: # < 0
+    if expression.is_negative is True: # < 0
         return vide
-    if getattr(expression, "is_positive", None) is False and strict: # <= 0
+    if expression.is_positive is False and strict: # <= 0
         return vide
-    if getattr(expression, "is_negative", None) is False and not strict: # >= 0
+    if expression.is_negative is False and not strict: # >= 0
         return ens_def
-    if getattr(expression, "is_zero", None) is True and not strict: # == 0
+    if expression.is_zero is True and not strict: # == 0
         return ens_def
     if isinstance(expression, (int, float, long)):
         if expression > 0 or (expression == 0 and not strict):
@@ -204,7 +204,7 @@ def positif(expression, variable = None, strict = False):
         else:
             return vide
     # Inutile de se préoccuper de l'ensemble de définition pour les fonctions polynômiales.
-    if hasattr(expression, "is_polynomial") and expression.is_polynomial():
+    if expression.is_polynomial():
         P = expression.as_poly(variable)
         if P.degree() == 1:
             a, b = P.all_coeffs()
@@ -236,7 +236,7 @@ def positif(expression, variable = None, strict = False):
                    return vide
 
     # a*f(x)+b > 0 <=> f(x)+b/a > 0 pour a > 0, -f(x) - b/a > 0 pour a < 0
-    if getattr(expression, "is_Add", False):
+    if expression.is_Add:
         args = expression.args
         if len(args) == 2:
             liste_constantes = []
@@ -284,7 +284,7 @@ def positif(expression, variable = None, strict = False):
 
     # Puissances
     # Résolution de a*x^q-b > 0, où q n'est pas entier
-    if getattr(expression, "is_Add", False):
+    if expression.is_Add:
         a_ = Wild('a', exclude=[variable, 0])
         q_ = Wild('q', exclude=[variable, 1])
         b_ = Wild('b', exclude=[variable])
@@ -325,7 +325,7 @@ def positif(expression, variable = None, strict = False):
     if isinstance(expression, ln):
         return positif(expression.args[0] - 1, variable, strict=strict)
     # Résolution de ln(X1) + ln(X2) + ... + b > 0, où X1=f1(x), X2 = f2(x) ...
-    if getattr(expression, "is_Add", False):
+    if expression.is_Add and expression.has(ln):
         args = expression.args
         liste_constantes = []
         liste_ln = []
@@ -360,7 +360,7 @@ def positif(expression, variable = None, strict = False):
 
     # Exponentielle
     # Résolution de a*exp(f(x)) + b > 0
-    if getattr(expression, "is_Add", False):
+    if expression.is_Add:
         a_ = Wild('a', exclude=[variable, 0])
         b_ = Wild('b', exclude=[variable])
         X_ = Wild('X')
@@ -384,7 +384,7 @@ def positif(expression, variable = None, strict = False):
                     return vide
 
     # Cas très particulier : on utilise le fait que exp(x)>=x+1 sur R
-    if getattr(expression, "is_Add", False):
+    if expression.is_Add and expression.has(exp):
         expr = expression
         changements = False
         for arg in expr.args:
@@ -394,8 +394,23 @@ def positif(expression, variable = None, strict = False):
         if changements and (ens_def - positif(expr, variable, strict=strict) == vide):
             return ens_def
 
+    # Cas très particulier : si a≥0, b*(a*x-1+exp(x))>0 <=> b*x>0
+    if expression.is_Add and expression.has(exp):
+        a_ = Wild('a', exclude=[variable, 0])
+        b_ = Wild('b', exclude=[variable, 0])
+        X_ = Wild('X')
+        match = expression.match(b_*(a_*X_ - 1 + exp(X_)))
+        if match is not None and X_ in match:
+            a = match[a_]
+            if a >= 0:
+                b = match[b_]
+                X = match[X_]
+                return positif(b*X, variable, strict=strict)
+
+
+
     # Sommes contenant des logarithmes :
-    if getattr(expression, "is_Add", False):
+    if expression.is_Add and expression.has(ln):
         # Cas très particulier : on utilise le fait que ln(x)<=x-1 sur ]0;+oo[
         expr = expression
         changements = False
@@ -426,8 +441,12 @@ def positif(expression, variable = None, strict = False):
     tmp2 = Symbol("_tmp2", real=True)
     # changements de variables courants : x², exp(x), ln(x), sqrt(x), x³ :
     for X in (variable**2, variable**3, exp(variable), ln(variable), sqrt(variable)):
+        if X == exp(variable) and not expression.has(exp):
+            continue
+        if X == ln(variable) and not expression.has(ln):
+            continue
         expr = expression.subs(X, tmp2)
-        if X == sqrt(variable):
+        if X == sqrt(variable) and expr != expression:
             expr = expr.subs(variable, tmp2**2)
         # Si la nouvelle variable apparait une seule fois,
         # le changement de variable produirait une récursion infinie !
