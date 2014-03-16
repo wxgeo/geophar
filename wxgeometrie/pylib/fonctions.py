@@ -667,15 +667,6 @@ class CustomWeakKeyDictionary(weakref.WeakKeyDictionary):
     """WeakKeyDictionary utilisant Weakref au lieu de weakref.ref.
     """
 
-    def __init__(self, dict=None):
-        self.data = {}
-        def remove(k, selfref=weakref.ref(self)):
-            self = selfref()
-            if self is not None:
-                del self.data[k]
-        self._remove = remove
-        if dict is not None: self.update(dict)
-
     def __delitem__(self, key):
         del self.data[WeakRef(key)]
 
