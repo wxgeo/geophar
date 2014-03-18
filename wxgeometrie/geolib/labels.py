@@ -65,7 +65,7 @@ class Label_generique(Texte_editable_generique):
     def sauvegarder(self):
         nom = self.parent.nom
         return "%s.etiquette.texte = %s\n" \
-               "%s.etiquette.style(**%s)\n" \
+               "%s.etiquette.style(**%s)" \
                % (nom, repr(self.texte), nom, repr(self.style()))
 
     @property2

@@ -1281,31 +1281,39 @@ class Feuille(object):
         ##return texte + a_rajouter_a_la_fin
 
 
-    def sauvegarder(self):
+    def sauvegarder(self, _as_list=False):
         u"""Renvoie l'ensemble des commandes python qui permettra de recréer
         la figure avec tous ses objets.
 
         La figure pourra ensuite être restaurée à l'aide la commande `charger()`.
 
-        :rtype: string
+        Si _as_list=True, renvoie une liste de commandes (par défaut, les
+        lignes de commandes sont concaténées et une chaîne est renvoyée).
+
+        :rtype: string/list        
         """
 
         # On sauvegarde les paramètres de la feuille.
-        texte = '\n'.join(nom + ' = ' + repr(getattr(self, nom))
-                         for nom in self._parametres_repere
-                         ) + '\n\n'
+        commandes = [nom + ' = ' + repr(getattr(self, nom))
+                         for nom in self._parametres_repere]
+
+        # On ajoute une ligne vide juste pour la lisibilité.
+        commandes.append('')
 
         # Enfin, on sauvegarde les objets de la feuille.
         # On doit enregistrer les objets dans le bon ordre (suivant la _hierarchie).
-        objets = sorted(self.liste_objets(objets_caches=True, etiquettes=True),
-                                key=attrgetter("_hierarchie_et_nom"))
-        return texte + ''.join(obj.sauvegarder() for obj in objets
-                                            if obj._enregistrer_sur_la_feuille)
+        objets = sorted(self.liste_objets(objets_caches=True, 
+                 etiquettes=True), key=attrgetter("_hierarchie_et_nom"))
+        commandes += [obj.sauvegarder() for obj in objets
+                                     if obj._enregistrer_sur_la_feuille]
+        if _as_list:
+            return commandes
+        return '\n'.join(commandes)
 
     def effacer(self):
         self.objets.clear()
         self.affichage_perime()
-
+    
 
     def charger(self, commandes, rafraichir = True, archiver = True,
                                  mode_tolerant = False):
@@ -1359,23 +1367,43 @@ class Feuille(object):
                                    l'objet %s se retrouve dépendre de lui-même."
                                    %(valeur, nom))
                         #raise RuntimeError, "Definition circulaire dans %s : l'objet %s se retrouve dependre de lui-meme." %(valeur, nom)
-        actuel = self.sauvegarder()
+        commandes = self.sauvegarder(_as_list=True)
+        backup = '\n'.join(commandes)
         # Utiliser '.copier_style()' et non '.style()' car le type de l'objet
         # a pu changer, auquel cas il ne faut copier que les styles qui ont
         # du sens pour le nouveau type d'objet.
         valeur += "\n%s.copier_style(%s)" % (nom, repr(objet))
-        old = "\n" + objet.sauvegarder()
-        assert old in actuel
-        nouveau = actuel.replace(old, "\n%s=%s\n" % (nom, valeur))
-        if param.debug:
-            print(nouveau)
-        try:
-            self.historique.restaurer(nouveau)
-        except Exception:
-            print_error()
-            self.historique.restaurer(actuel)
-            self.erreur(u"Erreur lors de la redéfinition de %s." %nom)
+        old_save = objet.sauvegarder()
+        etiquette = objet.etiquette
+        
+        if etiquette is not None:
+            s = etiquette.sauvegarder()
+            commandes.remove(s)
+            # On déplace la commande concernant l'étiquette en dernière position, dans le doute.
+            commandes.append(s)
 
+        i = commandes.index(old_save)
+        # On remplace l'ancienne définition de l'objet par la nouvelle
+        commandes[i] = "\n%s=%s\n" % (nom, valeur)
+        
+        # Il se peut que la nouvelle définition rajoute des dépendances
+        # à l'objet et oblige à le définir plus tard dans la feuille.
+        # L'idée est de repousser la définition de l'objet de plus en
+        # plus loin dans la feuille jusqu'à ce qu'il n'y ait plus d'erreur.
+        # Cette technique est loin d'être optimale, mais elle a
+        # l'avantage d'être simple et robuste.
+        while i < len(commandes):
+            try:
+                if param.debug:
+                    print('\n'.join(commandes))
+                self.historique.restaurer('\n'.join(commandes))
+                break
+            except Exception:
+                lignes.insert(i + 1, lignes.pop(i))
+                i += 1
+        else:
+            self.historique.restaurer(backup)
+            self.erreur(u"Erreur lors de la redéfinition de %s." %nom)   
 
 
     def inventaire(self):

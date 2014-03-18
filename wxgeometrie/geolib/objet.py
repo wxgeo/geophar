@@ -1629,7 +1629,7 @@ class Objet(object):
 
         :rtype: string
         """
-        return "%s = %s\n" % (self.nom, repr(self))
+        return "%s = %s" % (self.nom, repr(self))
 
     def _definition(self):
         u"""Utilisé pour afficher la définition actuelle de l'objet avant de le redéfinir.
