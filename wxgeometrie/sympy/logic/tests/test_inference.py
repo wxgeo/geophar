@@ -1,13 +1,27 @@
 """For more tests on satisfiability, see test_dimacs"""
 
-from sympy import symbols
-from sympy.logic.boolalg import Equivalent, Implies
-from sympy.logic.inference import pl_true, satisfiable, PropKB
+from sympy import symbols, Q
+from sympy.logic.boolalg import Or, Equivalent, Implies, And
+from sympy.logic.inference import is_literal, literal_symbol, \
+     pl_true, satisfiable, PropKB
 from sympy.logic.algorithms.dpll import dpll, dpll_satisfiable, \
     find_pure_symbol, find_unit_clause, unit_propagate, \
     find_pure_symbol_int_repr, find_unit_clause_int_repr, \
     unit_propagate_int_repr
 from sympy.utilities.pytest import raises
+
+
+def test_literal():
+    A, B = symbols('A,B')
+    assert is_literal(True) is True
+    assert is_literal(False) is True
+    assert is_literal(A) is True
+    assert is_literal(~A) is True
+    assert is_literal(Or(A, B)) is False
+    assert literal_symbol(True) is True
+    assert literal_symbol(False) is False
+    assert literal_symbol(A) is A
+    assert literal_symbol(~A) is A
 
 
 def test_find_pure_symbol():
@@ -167,3 +181,23 @@ def test_propKB_tolerant():
     kb = PropKB()
     A, B, C = symbols('A,B,C')
     assert kb.ask(B) is False
+
+def test_satisfiable_non_symbols():
+    x, y = symbols('x y')
+    assumptions = Q.zero(x*y)
+    facts = Implies(Q.zero(x*y), Q.zero(x) | Q.zero(y))
+    query = ~Q.zero(x) & ~Q.zero(y)
+    refutations = [
+        {Q.zero(x): True, Q.zero(x*y): True},
+        {Q.zero(y): True, Q.zero(x*y): True},
+        {Q.zero(x): True, Q.zero(y): True, Q.zero(x*y): True},
+        {Q.zero(x): True, Q.zero(y): False, Q.zero(x*y): True},
+        {Q.zero(x): False, Q.zero(y): True, Q.zero(x*y): True}]
+    assert not satisfiable(And(assumptions, facts, query), algorithm='dpll')
+    assert satisfiable(And(assumptions, facts, ~query), algorithm='dpll') in refutations
+    assert not satisfiable(And(assumptions, facts, query), algorithm='dpll2')
+    assert satisfiable(And(assumptions, facts, ~query), algorithm='dpll2') in refutations
+
+def test_satisfiable_bool():
+    assert satisfiable(True) == {}
+    assert satisfiable(False) == False

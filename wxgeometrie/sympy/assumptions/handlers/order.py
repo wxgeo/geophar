@@ -1,8 +1,11 @@
 """
 AskHandlers related to order relations: positive, negative, etc.
 """
+from __future__ import print_function, division
+
 from sympy.assumptions import Q, ask
 from sympy.assumptions.handlers import CommonHandler
+from sympy.core.logic import fuzzy_not, fuzzy_and, fuzzy_or
 
 
 class AskNegativeHandler(CommonHandler):
@@ -41,12 +44,16 @@ class AskNegativeHandler(CommonHandler):
         """
         if expr.is_number:
             return AskNegativeHandler._number(expr, assumptions)
+        nonpos = 0
         for arg in expr.args:
-            if not ask(Q.negative(arg), assumptions):
-                break
+            if ask(Q.negative(arg), assumptions) is not True:
+                if ask(Q.positive(arg), assumptions) is False:
+                    nonpos += 1
+                else:
+                    break
         else:
-            # if all argument's are negative
-            return True
+            if nonpos < len(expr.args):
+                return True
 
     @staticmethod
     def Mul(expr, assumptions):
@@ -75,19 +82,30 @@ class AskNegativeHandler(CommonHandler):
             return AskNegativeHandler._number(expr, assumptions)
         if ask(Q.real(expr.base), assumptions):
             if ask(Q.positive(expr.base), assumptions):
-                return False
+                if ask(Q.real(expr.exp), assumptions):
+                    return False
             if ask(Q.even(expr.exp), assumptions):
                 return False
             if ask(Q.odd(expr.exp), assumptions):
                 return ask(Q.negative(expr.base), assumptions)
 
-    @staticmethod
-    def ImaginaryUnit(expr, assumptions):
-        return False
+    ImaginaryUnit, Abs = [staticmethod(CommonHandler.AlwaysFalse)]*2
 
     @staticmethod
-    def Abs(expr, assumptions):
-        return False
+    def exp(expr, assumptions):
+        if ask(Q.real(expr.args[0]), assumptions):
+            return False
+
+
+class AskNonNegativeHandler(CommonHandler):
+    @staticmethod
+    def Basic(expr, assumptions):
+        if expr.is_number:
+            notnegative = fuzzy_not(AskNegativeHandler._number(expr, assumptions))
+            if notnegative:
+                return ask(Q.real(expr), assumptions)
+            else:
+                return notnegative
 
 
 class AskNonZeroHandler(CommonHandler):
@@ -121,14 +139,32 @@ class AskNonZeroHandler(CommonHandler):
     def Pow(expr, assumptions):
         return ask(Q.nonzero(expr.base), assumptions)
 
-    @staticmethod
-    def NaN(expr, assumptions):
-        return True
+    NaN = staticmethod(CommonHandler.AlwaysTrue)
 
     @staticmethod
     def Abs(expr, assumptions):
         return ask(Q.nonzero(expr.args[0]), assumptions)
 
+class AskZeroHandler(CommonHandler):
+    @staticmethod
+    def Basic(expr, assumptions):
+        return fuzzy_and([fuzzy_not(ask(Q.nonzero(expr), assumptions)),
+            ask(Q.real(expr), assumptions)])
+
+    @staticmethod
+    def Mul(expr, assumptions):
+        # TODO: This should be deducible from the nonzero handler
+        return fuzzy_or(ask(Q.zero(arg), assumptions) for arg in expr.args)
+
+class AskNonPositiveHandler(CommonHandler):
+    @staticmethod
+    def Basic(expr, assumptions):
+        if expr.is_number:
+            notpositive = fuzzy_not(AskPositiveHandler._number(expr, assumptions))
+            if notpositive:
+                return ask(Q.real(expr), assumptions)
+            else:
+                return notpositive
 
 class AskPositiveHandler(CommonHandler):
     """
@@ -166,19 +202,24 @@ class AskPositiveHandler(CommonHandler):
     def Add(expr, assumptions):
         if expr.is_number:
             return AskPositiveHandler._number(expr, assumptions)
+        nonneg = 0
         for arg in expr.args:
             if ask(Q.positive(arg), assumptions) is not True:
-                break
+                if ask(Q.negative(arg), assumptions) is False:
+                    nonneg += 1
+                else:
+                    break
         else:
-            # if all argument's are positive
-            return True
+            if nonneg < len(expr.args):
+                return True
 
     @staticmethod
     def Pow(expr, assumptions):
         if expr.is_number:
             return expr.evalf() > 0
         if ask(Q.positive(expr.base), assumptions):
-            return True
+            if ask(Q.real(expr.exp), assumptions):
+                return True
         if ask(Q.negative(expr.base), assumptions):
             if ask(Q.even(expr.exp), assumptions):
                 return True
@@ -191,9 +232,29 @@ class AskPositiveHandler(CommonHandler):
             return True
 
     @staticmethod
-    def ImaginaryUnit(expr, assumptions):
-        return False
+    def factorial(expr, assumptions):
+        x = expr.args[0]
+        if ask(Q.integer(x) & Q.positive(x), assumptions):
+            return True
+
+    ImaginaryUnit = staticmethod(CommonHandler.AlwaysFalse)
 
     @staticmethod
     def Abs(expr, assumptions):
         return ask(Q.nonzero(expr), assumptions)
+
+    @staticmethod
+    def Trace(expr, assumptions):
+        if ask(Q.positive_definite(expr.arg), assumptions):
+            return True
+
+    @staticmethod
+    def Determinant(expr, assumptions):
+        if ask(Q.positive_definite(expr.arg), assumptions):
+            return True
+
+    @staticmethod
+    def MatrixElement(expr, assumptions):
+        if (expr.i == expr.j
+                and ask(Q.positive_definite(expr.parent), assumptions)):
+            return True

@@ -1,6 +1,10 @@
-from sympy.core import C, Add
+from __future__ import print_function, division
+
+from sympy.core import C, Add, Mul, Pow, S
+from sympy.core.compatibility import default_sort_key
+from sympy.core.mul import _keep_coeff
 from sympy.printing.str import StrPrinter
-from sympy.tensor import get_indices, get_contraction_structure
+from sympy.printing.precedence import precedence
 
 
 class AssignmentError(Exception):
@@ -15,6 +19,12 @@ class CodePrinter(StrPrinter):
     The base class for code-printing subclasses.
     """
 
+    _operators = {
+        'and': '&&',
+        'or': '||',
+        'not': '!',
+    }
+
     def _doprint_a_piece(self, expr, assign_to=None):
         # Here we print an expression that may contain Indexed objects, they
         # correspond to arrays in the generated code.  The low-level implementation
@@ -25,11 +35,18 @@ class CodePrinter(StrPrinter):
         lines = []
 
         # Setup loops over non-dummy indices  --  all terms need these
-        indices = self.get_expression_indices(expr, assign_to)
+        if self._settings.get('contract', True):
+            indices = self.get_expression_indices(expr, assign_to)
+        else:
+            indices = []
         openloop, closeloop = self._get_loop_opening_ending(indices)
 
         # Setup loops over dummy indices  --  each term needs separate treatment
-        d = get_contraction_structure(expr)
+        from sympy.tensor import get_contraction_structure
+        if self._settings.get('contract', True):
+            d = get_contraction_structure(expr)
+        else:
+            d = {None: (expr,)}
 
         # terms with no summations first
         if None in d:
@@ -37,6 +54,7 @@ class CodePrinter(StrPrinter):
         else:
             # If all terms have summations we must initialize array to Zero
             text = CodePrinter.doprint(self, 0)
+
         # skip redundant assignments
         if text != lhs_printed:
             lines.extend(openloop)
@@ -53,7 +71,7 @@ class CodePrinter(StrPrinter):
                     indices)
 
                 for term in d[dummies]:
-                    if term in d and not ([f.keys() for f in d[term]]
+                    if term in d and not ([list(f.keys()) for f in d[term]]
                             == [[None] for f in d[term]]):
                         # If one factor in the term has it's own internal
                         # contractions, those must be computed first.
@@ -77,8 +95,8 @@ class CodePrinter(StrPrinter):
                             raise AssignmentError(
                                 "need assignment variable for loops")
                         if term.has(assign_to):
-                            raise(ValueError("FIXME: lhs present in rhs,\
-                                this is undefined in CCodePrinter"))
+                            raise ValueError("FIXME: lhs present in rhs,\
+                                this is undefined in CCodePrinter")
 
                         lines.extend(openloop)
                         lines.extend(openloop_d)
@@ -91,6 +109,7 @@ class CodePrinter(StrPrinter):
         return lines
 
     def get_expression_indices(self, expr, assign_to):
+        from sympy.tensor import get_indices, get_contraction_structure
         rinds, junk = get_indices(expr)
         linds, junk = get_indices(assign_to)
 
@@ -138,6 +157,79 @@ class CodePrinter(StrPrinter):
     _print_Catalan = _print_NumberSymbol
     _print_EulerGamma = _print_NumberSymbol
     _print_GoldenRatio = _print_NumberSymbol
+
+    def _print_And(self, expr):
+        PREC = precedence(expr)
+        return (" %s " % self._operators['and']).join(self.parenthesize(a, PREC)
+                for a in sorted(expr.args, key=default_sort_key))
+
+    def _print_Or(self, expr):
+        PREC = precedence(expr)
+        return (" %s " % self._operators['or']).join(self.parenthesize(a, PREC)
+                for a in sorted(expr.args, key=default_sort_key))
+
+    def _print_Xor(self, expr):
+        if self._operators.get('xor') is None:
+            return self._print_not_supported(expr)
+        PREC = precedence(expr)
+        return (" %s " % self._operators['xor']).join(self.parenthesize(a, PREC)
+                for a in expr.args)
+
+    def _print_Equivalent(self, expr):
+        if self._operators.get('equivalent') is None:
+            return self._print_not_supported(expr)
+        PREC = precedence(expr)
+        return (" %s " % self._operators['equivalent']).join(self.parenthesize(a, PREC)
+                for a in expr.args)
+
+    def _print_Not(self, expr):
+        PREC = precedence(expr)
+        return self._operators['not'] + self.parenthesize(expr.args[0], PREC)
+
+    def _print_Mul(self, expr):
+
+        prec = precedence(expr)
+
+        c, e = expr.as_coeff_Mul()
+        if c < 0:
+            expr = _keep_coeff(-c, e)
+            sign = "-"
+        else:
+            sign = ""
+
+        a = []  # items in the numerator
+        b = []  # items that are in the denominator (if any)
+
+        if self.order not in ('old', 'none'):
+            args = expr.as_ordered_factors()
+        else:
+            # use make_args in case expr was something like -x -> x
+            args = Mul.make_args(expr)
+
+        # Gather args for numerator/denominator
+        for item in args:
+            if item.is_commutative and item.is_Pow and item.exp.is_Rational and item.exp.is_negative:
+                if item.exp != -1:
+                    b.append(Pow(item.base, -item.exp, evaluate=False))
+                else:
+                    b.append(Pow(item.base, -item.exp))
+            else:
+                a.append(item)
+
+        a = a or [S.One]
+
+        a_str = [self.parenthesize(x, prec) for x in a]
+        b_str = [self.parenthesize(x, prec) for x in b]
+
+        if len(b) == 0:
+            return sign + '*'.join(a_str)
+        elif len(b) == 1:
+            if len(a) == 1 and not (a[0].is_Atom or a[0].is_Add):
+                return sign + "%s/" % a_str[0] + '*'.join(b_str)
+            else:
+                return sign + '*'.join(a_str) + "/%s" % b_str[0]
+        else:
+            return sign + '*'.join(a_str) + "/(%s)" % '*'.join(b_str)
 
     def _print_not_supported(self, expr):
         self._not_supported.add(expr)

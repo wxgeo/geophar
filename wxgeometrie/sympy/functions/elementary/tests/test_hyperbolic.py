@@ -2,7 +2,7 @@ from sympy import symbols, Symbol, sinh, nan, oo, zoo, pi, asinh, acosh, log, sq
     coth, I, cot, E, tanh, tan, cosh, cos, S, sin, Rational, atanh, acoth, \
     Integer, O, exp
 
-from sympy.utilities.pytest import XFAIL
+from sympy.utilities.pytest import XFAIL, raises
 
 
 def test_sinh():
@@ -66,8 +66,6 @@ def test_sinh():
     assert sinh(17*k*pi*I) == 0
 
     assert sinh(k*pi*I/2) == sin(k*pi/2)*I
-
-    assert sinh(x).inverse() == asinh
 
 
 def test_sinh_series():
@@ -138,8 +136,6 @@ def test_cosh():
 
     assert cosh(k*pi) == cosh(k*pi)
 
-    assert cosh(x).inverse() == acosh
-
 
 def test_cosh_series():
     x = Symbol('x')
@@ -209,8 +205,6 @@ def test_tanh():
 
     assert tanh(k*pi*I/2) == tan(k*pi/2)*I
 
-    assert tanh(x).inverse() == atanh
-
 
 def test_tanh_series():
     x = Symbol('x')
@@ -279,8 +273,6 @@ def test_coth():
     assert coth(17*k*pi*I) == -cot(17*k*pi)*I
 
     assert coth(k*pi*I) == -cot(k*pi)*I
-
-    assert coth(x).inverse() == acoth
 
 
 def test_coth_series():
@@ -472,6 +464,18 @@ def test_acoth_series():
         I*pi/2 + x + x**3/3 + x**5/5 + x**7/7 + x**9/9 + O(x**10)
 
 
+def test_inverses():
+    x = Symbol('x')
+    assert sinh(x).inverse() == asinh
+    raises(AttributeError, lambda: cosh(x).inverse())
+    assert tanh(x).inverse() == atanh
+    assert coth(x).inverse() == acoth
+    assert asinh(x).inverse() == sinh
+    assert acosh(x).inverse() == cosh
+    assert atanh(x).inverse() == tanh
+    assert acoth(x).inverse() == coth
+
+
 def test_leading_term():
     x = Symbol('x')
     for func in [sinh, cosh, tanh, coth]:
@@ -536,7 +540,8 @@ def test_issue1037():
 
 def test_sinh_rewrite():
     x = Symbol('x')
-    assert sinh(x).rewrite(exp) == (exp(x) - exp(-x))/2
+    assert sinh(x).rewrite(exp) == (exp(x) - exp(-x))/2 \
+        == sinh(x).rewrite('tractable')
     assert sinh(x).rewrite(cosh) == -I*cosh(x + I*pi/2)
     tanh_half = tanh(S.Half*x)
     assert sinh(x).rewrite(tanh) == 2*tanh_half/(1 - tanh_half**2)
@@ -546,7 +551,8 @@ def test_sinh_rewrite():
 
 def test_cosh_rewrite():
     x = Symbol('x')
-    assert cosh(x).rewrite(exp) == (exp(x) + exp(-x))/2
+    assert cosh(x).rewrite(exp) == (exp(x) + exp(-x))/2 \
+        == cosh(x).rewrite('tractable')
     assert cosh(x).rewrite(sinh) == -I*sinh(x + I*pi/2)
     tanh_half = tanh(S.Half*x)**2
     assert cosh(x).rewrite(tanh) == (1 + tanh_half)/(1 - tanh_half)
@@ -556,7 +562,8 @@ def test_cosh_rewrite():
 
 def test_tanh_rewrite():
     x = Symbol('x')
-    assert tanh(x).rewrite(exp) == (exp(x) - exp(-x))/(exp(x) + exp(-x))
+    assert tanh(x).rewrite(exp) == (exp(x) - exp(-x))/(exp(x) + exp(-x)) \
+        == tanh(x).rewrite('tractable')
     assert tanh(x).rewrite(sinh) == I*sinh(x)/sinh(I*pi/2 - x)
     assert tanh(x).rewrite(cosh) == I*cosh(I*pi/2 - x)/cosh(x)
     assert tanh(x).rewrite(coth) == 1/coth(x)
@@ -564,7 +571,8 @@ def test_tanh_rewrite():
 
 def test_coth_rewrite():
     x = Symbol('x')
-    assert coth(x).rewrite(exp) == (exp(x) + exp(-x))/(exp(x) - exp(-x))
+    assert coth(x).rewrite(exp) == (exp(x) + exp(-x))/(exp(x) - exp(-x)) \
+        == coth(x).rewrite('tractable')
     assert coth(x).rewrite(sinh) == -I*sinh(I*pi/2 - x)/sinh(x)
     assert coth(x).rewrite(cosh) == -I*cosh(x)/cosh(I*pi/2 - x)
     assert coth(x).rewrite(tanh) == 1/tanh(x)
@@ -580,3 +588,17 @@ def test_derivs():
     assert asinh(x).diff(x) == 1/sqrt(x**2 + 1)
     assert acosh(x).diff(x) == 1/sqrt(x**2 - 1)
     assert atanh(x).diff(x) == 1/(-x**2 + 1)
+
+def test_sinh_expansion():
+    x,y = symbols('x,y')
+    assert sinh(x+y).expand(trig=True) == sinh(x)*cosh(y) + cosh(x)*sinh(y)
+    assert sinh(2*x).expand(trig=True) == 2*sinh(x)*cosh(x)
+    assert sinh(3*x).expand(trig=True).expand() == \
+        sinh(x)**3 + 3*sinh(x)*cosh(x)**2
+
+def test_cosh_expansion():
+    x,y = symbols('x,y')
+    assert cosh(x+y).expand(trig=True) == cosh(x)*cosh(y) + sinh(x)*sinh(y)
+    assert cosh(2*x).expand(trig=True) == cosh(x)**2 + sinh(x)**2
+    assert cosh(3*x).expand(trig=True).expand() == \
+        3*sinh(x)**2*cosh(x) + cosh(x)**3

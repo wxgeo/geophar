@@ -1,14 +1,15 @@
-from __future__ import with_statement
 from sympy import Symbol, exp, Integer, Float, sin, cos, log, Poly, Lambda, \
-    Function, I, S, sqrt, srepr, Rational, Tuple, Matrix
+    Function, I, S, sqrt, srepr, Rational, Tuple, Matrix, Interval, Add, Mul,\
+    Pow, And, Or, Xor, Not, true, false
 from sympy.abc import x, y
-from sympy.core.sympify import sympify, _sympify, SympifyError
+from sympy.core.sympify import sympify, _sympify, SympifyError, kernS
 from sympy.core.decorators import _sympifyit
 from sympy.utilities.pytest import XFAIL, raises
 from sympy.utilities.decorator import conserve_mpmath_dps
 from sympy.geometry import Point, Line
 from sympy.functions.combinatorial.factorials import factorial, factorial2
 from sympy.abc import _clash, _clash1, _clash2
+from sympy.core.compatibility import exec_, HAS_GMPY
 
 from sympy import mpmath
 
@@ -76,11 +77,12 @@ def test_sympify_Fraction():
 
 
 def test_sympify_gmpy():
-    try:
-        import gmpy
-    except ImportError:
-        pass
-    else:
+    if HAS_GMPY:
+        if HAS_GMPY == 2:
+            import gmpy2 as gmpy
+        elif HAS_GMPY == 1:
+            import gmpy
+
         value = sympify(gmpy.mpz(1000001))
         assert value == Integer(1000001) and type(value) is Integer
 
@@ -142,10 +144,8 @@ def test_sympify_float():
 
 
 def test_sympify_bool():
-    """Test that sympify accepts boolean values
-    and that output leaves them unchanged"""
-    assert sympify(True) is True
-    assert sympify(False) is False
+    assert sympify(True) is true
+    assert sympify(False) is false
 
 
 def test_sympyify_iterables():
@@ -383,6 +383,21 @@ def test_int_float():
     assert abs(_sympify(f1_1c) - 1.1) < 1e-5
 
 
+def test_evaluate_false():
+    cases = {
+        '2 + 3': Add(2, 3, evaluate=False),
+        '2**2 / 3': Mul(Pow(2, 2, evaluate=False), Pow(3, -1, evaluate=False), evaluate=False),
+        '2 + 3 * 5': Add(2, Mul(3, 5, evaluate=False), evaluate=False),
+        '2 - 3 * 5': Add(2, -Mul(3, 5, evaluate=False), evaluate=False),
+        '1 / 3': Mul(1, Pow(3, -1, evaluate=False), evaluate=False),
+        'True | False': Or(True, False, evaluate=False),
+        '1 + 2 + 3 + 5*3 + integrate(x)': Add(1, 2, 3, Mul(5, 3, evaluate=False), x**2/2, evaluate=False),
+        '2 * 4 * 6 + 8': Add(Mul(2, 4, 6, evaluate=False), 8, evaluate=False),
+    }
+    for case, result in cases.items():
+        assert sympify(case, evaluate=False) == result
+
+
 def test_issue1034():
     a = sympify('Integer(4)')
 
@@ -432,20 +447,27 @@ def test_geometry():
     assert L == Line((0, 1), (1, 0)) and type(L) == Line
 
 
-def test_no_autosimplify_into_Mul():
-    s = '-1 - 2*(-(-x + 1/x)/(x*(x - 1/x)**2) - 1/(x*(x - 1/x)))'
-
-    def clean(s):
-        return ''.join(str(s).split())
+def test_kernS():
+    s =   '-1 - 2*(-(-x + 1/x)/(x*(x - 1/x)**2) - 1/(x*(x - 1/x)))'
+    # when 1497 is fixed, this no longer should pass: the expression
+    # should be unchanged
     assert -1 - 2*(-(-x + 1/x)/(x*(x - 1/x)**2) - 1/(x*(x - 1/x))) == -1
     # sympification should not allow the constant to enter a Mul
     # or else the structure can change dramatically
-    ss = S(s)
-    assert ss != 1 and ss.simplify() == -1
+    ss = kernS(s)
+    assert ss != -1 and ss.simplify() == -1
     s = '-1 - 2*(-(-x + 1/x)/(x*(x - 1/x)**2) - 1/(x*(x - 1/x)))'.replace(
         'x', '_kern')
-    ss = S(s)
-    assert ss != 1 and ss.simplify() == -1
+    ss = kernS(s)
+    assert ss != -1 and ss.simplify() == -1
+    # issue 3588
+    assert kernS('Interval(-1,-2 - 4*(-3))') == Interval(-1, 10)
+    assert kernS('_kern') == Symbol('_kern')
+    assert kernS('E**-(x)') == exp(-x)
+    e = 2*(x + y)*y
+    assert kernS(['2*(x + y)*y', ('2*(x + y)*y',)]) == [e, (e,)]
+    assert kernS('-(2*sin(x)**2 + 2*sin(x)*cos(x))*y/2') == \
+        -y*(2*sin(x)**2 + 2*sin(x)*cos(x))/2
 
 
 def test_issue_3441_3453():
@@ -459,5 +481,5 @@ def test_issue_2497():
     assert str(S('pi(x)', locals=_clash2)) == 'pi(x)'
     assert str(S('pi(C, Q)', locals=_clash)) == 'pi(C, Q)'
     locals = {}
-    exec "from sympy.abc import Q, C" in locals
+    exec_("from sympy.abc import Q, C", locals)
     assert str(S('C&Q', locals)) == 'And(C, Q)'

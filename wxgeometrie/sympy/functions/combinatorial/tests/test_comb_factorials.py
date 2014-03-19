@@ -1,5 +1,6 @@
 from sympy import (Symbol, symbols, factorial, factorial2, binomial,
-    rf, ff, gamma, polygamma, EulerGamma, O, pi, nan, oo, simplify)
+                   rf, ff, gamma, polygamma, EulerGamma, O, pi, nan,
+                   oo, zoo, simplify, expand_func)
 from sympy.functions.combinatorial.factorials import subfactorial
 from sympy.utilities.pytest import XFAIL, raises
 
@@ -64,12 +65,19 @@ def test_ff_eval_apply():
 
 def test_factorial():
     n = Symbol('n', integer=True)
+    k = Symbol('k', integer=True, positive=True)
 
-    assert factorial(-2) == 0
+    assert factorial(-2) == zoo
     assert factorial(0) == 1
     assert factorial(7) == 5040
     assert factorial(n).func == factorial
     assert factorial(2*n).func == factorial
+
+    assert factorial(n).is_integer
+    assert factorial(n).is_positive is None
+    assert factorial(k).is_positive
+
+    assert factorial(oo) == oo
 
 
 def test_factorial_diff():
@@ -120,16 +128,21 @@ def test_binomial():
     assert binomial(-10, 7) == -11440
     assert binomial(n, -1) == 0
     assert binomial(n, 0) == 1
-    assert binomial(n, 1) == n
-    assert binomial(n, 2) == n*(n - 1)/2
-    assert binomial(n, n - 2) == n*(n - 1)/2
-    assert binomial(n, n - 1) == n
+    assert expand_func(binomial(n, 1)) == n
+    assert expand_func(binomial(n, 2)) == n*(n - 1)/2
+    assert expand_func(binomial(n, n - 2)) == n*(n - 1)/2
+    assert expand_func(binomial(n, n - 1)) == n
+    assert binomial(n, 3).func == binomial
+    assert binomial(n, 3).expand(func=True) ==  n**3/6 - n**2/2 + n/3
+    assert expand_func(binomial(n, 3)) ==  n*(n - 2)*(n - 1)/6
     assert binomial(n, n) == 1
     assert binomial(n, n + 1) == 0
     assert binomial(n, u) == 0
     assert binomial(n, v).func == binomial
     assert binomial(n, k).func == binomial
     assert binomial(n, n + v) == 0
+
+    assert expand_func(binomial(n, n-3)) == n*(n - 2)*(n - 1)/6
 
 
 def test_binomial_diff():

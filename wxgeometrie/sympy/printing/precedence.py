@@ -1,13 +1,16 @@
 """A module providing information about the necessity of brackets"""
 
+from __future__ import print_function, division
+
 from sympy.core.function import _coeff_isneg
 
 # Default precedence values for some basic types
 PRECEDENCE = {
     "Lambda": 1,
-    "Relational": 20,
+    "Xor": 10,
     "Or": 20,
     "And": 30,
+    "Relational": 35,
     "Add": 40,
     "Mul": 50,
     "Pow": 60,
@@ -19,6 +22,8 @@ PRECEDENCE = {
 # treated like they were inherited, so not every single class has to be named
 # here.
 PRECEDENCE_VALUES = {
+    "Equivalent": PRECEDENCE["Xor"],
+    "Xor": PRECEDENCE["Xor"],
     "Or": PRECEDENCE["Or"],
     "And": PRECEDENCE["And"],
     "Add": PRECEDENCE["Add"],
@@ -65,11 +70,32 @@ def precedence_Float(item):
         return PRECEDENCE["Add"]
     return PRECEDENCE["Atom"]
 
+
+def precedence_PolyElement(item):
+    if item.is_generator:
+        return PRECEDENCE["Atom"]
+    elif item.is_ground:
+        return precedence(item.coeff(1))
+    elif item.is_term:
+        return PRECEDENCE["Mul"]
+    else:
+        return PRECEDENCE["Add"]
+
+
+def precedence_FracElement(item):
+    if item.denom == 1:
+        return precedence_PolyElement(item.numer)
+    else:
+        return PRECEDENCE["Mul"]
+
+
 PRECEDENCE_FUNCTIONS = {
     "Integer": precedence_Integer,
     "Mul": precedence_Mul,
     "Rational": precedence_Rational,
     "Float": precedence_Float,
+    "PolyElement": precedence_PolyElement,
+    "FracElement": precedence_FracElement,
 }
 
 

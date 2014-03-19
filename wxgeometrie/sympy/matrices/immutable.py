@@ -1,3 +1,5 @@
+from __future__ import print_function, division
+
 from sympy.core import Basic, Integer, Tuple, Dict
 from sympy.core.sympify import converter as sympify_converter
 
@@ -20,9 +22,10 @@ class ImmutableMatrix(MatrixExpr, DenseMatrix):
     >>> from sympy import eye
     >>> from sympy.matrices import ImmutableMatrix
     >>> ImmutableMatrix(eye(3))
-    [1, 0, 0]
-    [0, 1, 0]
-    [0, 0, 1]
+    Matrix([
+    [1, 0, 0],
+    [0, 1, 0],
+    [0, 0, 1]])
     >>> _[0, 0] = 42
     Traceback (most recent call last):
     ...
@@ -35,8 +38,7 @@ class ImmutableMatrix(MatrixExpr, DenseMatrix):
     def _new(cls, *args, **kwargs):
         if len(args) == 1 and isinstance(args[0], ImmutableMatrix):
             return args[0]
-        rows, cols, flat_list = MatrixBase._handle_creation_inputs(
-            *args, **kwargs)
+        rows, cols, flat_list = cls._handle_creation_inputs(*args, **kwargs)
         rows = Integer(rows)
         cols = Integer(cols)
         mat = Tuple(*flat_list)
@@ -88,6 +90,9 @@ class ImmutableMatrix(MatrixExpr, DenseMatrix):
     __neg__ = MatrixBase.__neg__
     __div__ = MatrixBase.__div__
     __truediv__ = MatrixBase.__truediv__
+# This is included after the class definition as a workaround for issue 4114.
+# See http://code.google.com/p/sympy/issues/detail?id=4114
+ImmutableMatrix.is_zero = DenseMatrix.is_zero
 
 
 class ImmutableSparseMatrix(Basic, SparseMatrix):
@@ -99,11 +104,12 @@ class ImmutableSparseMatrix(Basic, SparseMatrix):
     >>> from sympy import eye
     >>> from sympy.matrices.immutable import ImmutableSparseMatrix
     >>> ImmutableSparseMatrix(1, 1, {})
-    [0]
+    Matrix([[0]])
     >>> ImmutableSparseMatrix(eye(3))
-    [1, 0, 0]
-    [0, 1, 0]
-    [0, 0, 1]
+    Matrix([
+    [1, 0, 0],
+    [0, 1, 0],
+    [0, 0, 1]])
     >>> _[0, 0] = 42
     Traceback (most recent call last):
     ...
@@ -133,3 +139,6 @@ class ImmutableSparseMatrix(Basic, SparseMatrix):
         raise TypeError("Cannot set values of ImmutableSparseMatrix")
 
     subs = MatrixBase.subs
+
+    def __hash__(self):
+        return hash((type(self).__name__,) + (self.shape, tuple(self._smat)))

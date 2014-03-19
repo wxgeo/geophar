@@ -2,7 +2,7 @@
 rename this to test_assumptions.py when the old assumptions system is deleted
 """
 from sympy.abc import x, y
-from sympy.assumptions import global_assumptions, Predicate
+from sympy.assumptions.assume import global_assumptions, Predicate
 from sympy.assumptions.ask import _extract_facts, Q
 from sympy.core import symbols
 from sympy.logic.boolalg import Or
@@ -30,6 +30,10 @@ def test_extract_facts():
     assert _extract_facts(~a(x), y) is None
     assert _extract_facts(a(x) | b(x), x) == a | b
     assert _extract_facts(a(x) | ~b(x), x) == a | ~b
+    assert _extract_facts(a(x) & b(y), x) == a
+    assert _extract_facts(a(x) & b(y), y) == b
+    assert _extract_facts(a(x) | b(y), x) == None
+    assert _extract_facts(~(a(x) | b(y)), x) == ~a
 
 
 def test_global():

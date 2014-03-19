@@ -1,15 +1,24 @@
+from __future__ import print_function, division
+
 from sympy.core import S, C, sympify
 from sympy.core.function import Function, ArgumentIndexError
 from sympy.ntheory import sieve
 from math import sqrt as _sqrt
 
-from sympy.core.compatibility import reduce, as_int
+from sympy.core.compatibility import reduce, as_int, xrange
 from sympy.core.cache import cacheit
 
 
 
 class CombinatorialFunction(Function):
     """Base class for combinatorial functions. """
+
+    def _eval_simplify(self, ratio, measure):
+        from sympy.simplify.simplify import combsimp
+        expr = combsimp(self)
+        if measure(expr) <= ratio*measure(self):
+            return expr
+        return self
 
 ###############################################################################
 ######################## FACTORIAL and MULTI-FACTORIAL ########################
@@ -18,13 +27,12 @@ class CombinatorialFunction(Function):
 
 class factorial(CombinatorialFunction):
     """Implementation of factorial function over nonnegative integers.
-       For the sake of convenience and simplicity of procedures using
-       this function it is defined for negative integers and returns
-       zero in this case.
+       By convention (consistent with the gamma function and the binomial
+       coefficients), factorial of a negative integer is complex infinity.
 
        The factorial is very important in combinatorics where it gives
-       the number of ways in which 'n' objects can be permuted. It also
-       arises in calculus, probability, number theory etc.
+       the number of ways in which `n` objects can be permuted. It also
+       arises in calculus, probability, number theory, etc.
 
        There is strict relation of factorial with gamma function. In
        fact n! = gamma(n+1) for nonnegative integers. Rewrite of this
@@ -39,11 +47,8 @@ class factorial(CombinatorialFunction):
        Examples
        ========
 
-       >>> from sympy import Symbol, factorial
+       >>> from sympy import Symbol, factorial, S
        >>> n = Symbol('n', integer=True)
-
-       >>> factorial(-2)
-       0
 
        >>> factorial(0)
        1
@@ -51,19 +56,23 @@ class factorial(CombinatorialFunction):
        >>> factorial(7)
        5040
 
+       >>> factorial(-2)
+       zoo
+
        >>> factorial(n)
-       n!
+       factorial(n)
 
        >>> factorial(2*n)
-       (2*n)!
+       factorial(2*n)
+
+       >>> factorial(S(1)/2)
+       factorial(1/2)
 
        See Also
        ========
 
        factorial2, RisingFactorial, FallingFactorial
     """
-
-    nargs = 1
 
     def fdiff(self, argindex=1):
         if argindex == 1:
@@ -127,9 +136,11 @@ class factorial(CombinatorialFunction):
         if n.is_Number:
             if n is S.Zero:
                 return S.One
+            elif n is S.Infinity:
+                return S.Infinity
             elif n.is_Integer:
                 if n.is_negative:
-                    return S.Zero
+                    return S.ComplexInfinity
                 else:
                     n, result = n.p, 1
 
@@ -149,14 +160,15 @@ class factorial(CombinatorialFunction):
 
                     return C.Integer(result)
 
-        if n.is_negative:
-            return S.Zero
-
     def _eval_rewrite_as_gamma(self, n):
         return C.gamma(n + 1)
 
     def _eval_is_integer(self):
         return self.args[0].is_integer
+
+    def _eval_is_positive(self):
+        if self.args[0].is_integer and self.args[0].is_positive:
+            return True
 
 
 class MultiFactorial(CombinatorialFunction):
@@ -178,7 +190,7 @@ class subfactorial(CombinatorialFunction):
 
     References
     ==========
-    * http://en.wikipedia.org/wiki/Subfactorial
+    .. [1] http://en.wikipedia.org/wiki/Subfactorial
 
     Examples
     ========
@@ -186,7 +198,7 @@ class subfactorial(CombinatorialFunction):
     >>> from sympy import subfactorial
     >>> from sympy.abc import n
     >>> subfactorial(n + 1)
-    !(n + 1)
+    subfactorial(n + 1)
     >>> subfactorial(5)
     44
 
@@ -194,7 +206,6 @@ class subfactorial(CombinatorialFunction):
     ========
     factorial, sympy.utilities.iterables.generate_derangements
     """
-    nargs = 1
 
     @classmethod
     @cacheit
@@ -216,12 +227,6 @@ class subfactorial(CombinatorialFunction):
             if sympify(arg).is_Number:
                 raise ValueError("argument must be a nonnegative integer")
 
-    def _sympystr(self, p):
-        if self.args[0].is_Atom:
-            return "!%s" % p.doprint(self.args[0])
-        else:
-            return "!(%s)" % p.doprint(self.args[0])
-
 
 class factorial2(CombinatorialFunction):
     """The double factorial n!!, not to be confused with (n!)!
@@ -241,7 +246,7 @@ class factorial2(CombinatorialFunction):
     >>> var('n')
     n
     >>> factorial2(n + 1)
-    (n + 1)!!
+    factorial2(n + 1)
     >>> factorial2(5)
     15
     >>> factorial2(-1)
@@ -252,7 +257,6 @@ class factorial2(CombinatorialFunction):
 
     factorial, RisingFactorial, FallingFactorial
     """
-    nargs = 1
 
     @classmethod
     def eval(cls, arg):
@@ -261,11 +265,6 @@ class factorial2(CombinatorialFunction):
                 return S.One
             return factorial2(arg - 2)*arg
 
-    def _sympystr(self, p):
-        if self.args[0].is_Atom:
-            return "%s!!" % p.doprint(self.args[0])
-        else:
-            return "(%s)!!" % p.doprint(self.args[0])
 
 ###############################################################################
 ######################## RISING and FALLING FACTORIALS ########################
@@ -303,8 +302,6 @@ class RisingFactorial(CombinatorialFunction):
 
        factorial, factorial2, FallingFactorial
     """
-
-    nargs = 2
 
     @classmethod
     def eval(cls, x, k):
@@ -372,8 +369,6 @@ class FallingFactorial(CombinatorialFunction):
        factorial, factorial2, RisingFactorial
     """
 
-    nargs = 2
-
     @classmethod
     def eval(cls, x, k):
         x = sympify(x)
@@ -435,10 +430,15 @@ class binomial(CombinatorialFunction):
        For the sake of convenience for negative 'k' this function
        will return zero no matter what valued is the other argument.
 
+       To expand the binomial when n is a symbol, use either
+       expand_func() or expand(func=True). The former will keep the
+       polynomial in factored form while the latter will expand the
+       polynomial itself. See examples for details.
+
        Examples
        ========
 
-       >>> from sympy import Symbol, Rational, binomial
+       >>> from sympy import Symbol, Rational, binomial, expand_func
        >>> n = Symbol('n', integer=True)
 
        >>> binomial(15, 8)
@@ -462,11 +462,15 @@ class binomial(CombinatorialFunction):
        -5/128
 
        >>> binomial(n, 3)
+       binomial(n, 3)
+
+       >>> binomial(n, 3).expand(func=True)
+       n**3/6 - n**2/2 + n/3
+
+       >>> expand_func(binomial(n, 3))
        n*(n - 2)*(n - 1)/6
 
     """
-
-    nargs = 2
 
     def fdiff(self, argindex=1):
         if argindex == 1:
@@ -521,14 +525,13 @@ class binomial(CombinatorialFunction):
                                 result *= prime**exp
 
                     return C.Integer(result)
-                else:
+                elif n.is_Number:
                     result = n - k + 1
-
                     for i in xrange(2, k + 1):
                         result *= n - k + i
                         result /= i
-
                     return result
+
         elif k.is_negative:
             return S.Zero
         elif (n - k).simplify().is_negative:
@@ -538,6 +541,35 @@ class binomial(CombinatorialFunction):
 
             if d.is_Integer:
                 return cls.eval(n, d)
+
+    def _eval_expand_func(self, **hints):
+        """
+        Function to expand binomial(n,k) when m is positive integer
+        Also,
+        n is self.args[0] and k is self.args[1] while using binomial(n, k)
+        """
+        n = self.args[0]
+        if n.is_Number:
+            return binomial(*self.args)
+
+        k = self.args[1]
+        if k.is_Add and n in k.args:
+            k = n - k
+
+        if k.is_Integer:
+            if k == S.Zero:
+                return S.One
+            elif k < 0:
+                return S.Zero
+            else:
+                n = self.args[0]
+                result = n - k + 1
+                for i in xrange(2, k + 1):
+                    result *= n - k + i
+                    result /= i
+                return result
+        else:
+            return binomial(*self.args)
 
     def _eval_rewrite_as_factorial(self, n, k):
         return C.factorial(n)/(C.factorial(k)*C.factorial(n - k))

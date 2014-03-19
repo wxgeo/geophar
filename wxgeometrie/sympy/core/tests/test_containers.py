@@ -1,7 +1,7 @@
-from sympy import Matrix, Tuple, symbols, sympify, Basic, Dict, S, FiniteSet
+from sympy import Matrix, Tuple, symbols, sympify, Basic, Dict, S, FiniteSet, Integer
 from sympy.core.containers import tuple_wrapper
 from sympy.utilities.pytest import raises, XFAIL
-from sympy.core.compatibility import is_sequence, iterable
+from sympy.core.compatibility import is_sequence, iterable, u
 
 
 def test_Tuple():
@@ -25,7 +25,7 @@ def test_Tuple():
 
     assert Tuple(t2) == Tuple(Tuple(*t2))
     assert Tuple.fromiter(t2) == Tuple(*t2)
-    assert Tuple.fromiter(x for x in xrange(4)) == Tuple(0, 1, 2, 3)
+    assert Tuple.fromiter(x for x in range(4)) == Tuple(0, 1, 2, 3)
     assert st2.fromiter(st2.args) == st2
 
 
@@ -69,6 +69,35 @@ def test_Tuple_comparision():
     assert (Tuple(1, 3) <= Tuple(1, 3)) is True
 
 
+def test_Tuple_tuple_count():
+    assert Tuple(0, 1, 2, 3).tuple_count(4) == 0
+    assert Tuple(0, 4, 1, 2, 3).tuple_count(4) == 1
+    assert Tuple(0, 4, 1, 4, 2, 3).tuple_count(4) == 2
+    assert Tuple(0, 4, 1, 4, 2, 4, 3).tuple_count(4) == 3
+
+
+def test_Tuple_index():
+    assert Tuple(4, 0, 1, 2, 3).index(4) == 0
+    assert Tuple(0, 4, 1, 2, 3).index(4) == 1
+    assert Tuple(0, 1, 4, 2, 3).index(4) == 2
+    assert Tuple(0, 1, 2, 4, 3).index(4) == 3
+    assert Tuple(0, 1, 2, 3, 4).index(4) == 4
+
+    raises(ValueError, lambda: Tuple(0, 1, 2, 3).index(4))
+    raises(ValueError, lambda: Tuple(4, 0, 1, 2, 3).index(4, 1))
+    raises(ValueError, lambda: Tuple(0, 1, 2, 3, 4).index(4, 1, 4))
+
+
+def test_Tuple_mul():
+    assert Tuple(1, 2, 3)*2 == Tuple(1, 2, 3, 1, 2, 3)
+    assert 2*Tuple(1, 2, 3) == Tuple(1, 2, 3, 1, 2, 3)
+    assert Tuple(1, 2, 3)*Integer(2) == Tuple(1, 2, 3, 1, 2, 3)
+    assert Integer(2)*Tuple(1, 2, 3) == Tuple(1, 2, 3, 1, 2, 3)
+
+    raises(TypeError, lambda: Tuple(1, 2, 3)*S.Half)
+    raises(TypeError, lambda: S.Half*Tuple(1, 2, 3))
+
+
 def test_tuple_wrapper():
 
     @tuple_wrapper
@@ -84,7 +113,7 @@ def test_tuple_wrapper():
 def test_iterable_is_sequence():
     ordered = [list(), tuple(), Tuple(), Matrix([[]])]
     unordered = [set()]
-    not_sympy_iterable = [{}, '', u'']
+    not_sympy_iterable = [{}, '', u('')]
     assert all(is_sequence(i) for i in ordered)
     assert all(not is_sequence(i) for i in unordered)
     assert all(iterable(i) for i in ordered + unordered)
@@ -128,19 +157,7 @@ def test_Dict():
 
 def test_issue_2689():
     args = [(1, 2), (2, 1)]
-    for o in [Dict, Tuple]:
-        # __eq__ and arg handling
-        if o != Tuple:
-            assert o(*args) == o(*reversed(args))
-        pair = [o(*args), o(*reversed(args))]
-        assert sorted(pair) == sorted(reversed(pair))
-        assert set(o(*args))  # doesn't fail
-
-
-@XFAIL
-def test_issue_2689b():
-    args = [(1, 2), (2, 1)]
-    for o in [FiniteSet]:
+    for o in [Dict, Tuple, FiniteSet]:
         # __eq__ and arg handling
         if o != Tuple:
             assert o(*args) == o(*reversed(args))

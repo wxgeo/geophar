@@ -1,3 +1,5 @@
+from __future__ import print_function, division
+
 from sympy.core.sympify import _sympify
 from sympy.core import S, Basic
 
@@ -34,7 +36,8 @@ class Inverse(MatPow):
 
     def __new__(cls, mat):
         mat = _sympify(mat)
-        assert mat.is_Matrix
+        if not mat.is_Matrix:
+            raise TypeError("mat should be a matrix")
         if not mat.is_square:
             raise ShapeError("Inverse of non-square matrix %s" % mat)
         return Basic.__new__(cls, mat)
@@ -49,6 +52,10 @@ class Inverse(MatPow):
 
     def _eval_inverse(self):
         return self.arg
+
+    def _eval_determinant(self):
+        from sympy.matrices.expressions.determinant import det
+        return 1/det(self.arg)
 
     def doit(self, **hints):
         if hints.get('deep', True):

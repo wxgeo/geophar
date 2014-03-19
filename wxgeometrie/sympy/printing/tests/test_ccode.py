@@ -1,4 +1,4 @@
-from sympy.core import pi, oo, symbols, Function, Rational, Integer, GoldenRatio, EulerGamma, Catalan, Lambda, Dummy
+from sympy.core import pi, oo, symbols, Function, Rational, Integer, GoldenRatio, EulerGamma, Catalan, Lambda, Dummy, Eq
 from sympy.functions import Piecewise, sin, cos, Abs, exp, ceiling, sqrt
 from sympy.utilities.pytest import raises
 from sympy.printing.ccode import CCodePrinter
@@ -31,6 +31,7 @@ def test_ccode_Pow():
     assert ccode(1/(g(x)*3.5)**(x - y**x)/(x**2 + y)) == \
         "pow(3.5*g(x), -x + pow(y, x))/(pow(x, 2) + y)"
     assert ccode(x**-1.0) == '1.0/x'
+    assert ccode(x**Rational(2, 3)) == 'pow(x, 2.0L/3.0L)'
 
 
 def test_ccode_constants_mathh():
@@ -48,10 +49,12 @@ def test_ccode_constants_other():
 
 
 def test_ccode_Rational():
-    assert ccode(Rational(3, 7)) == "3.0/7.0"
+    assert ccode(Rational(3, 7)) == "3.0L/7.0L"
     assert ccode(Rational(18, 9)) == "2"
-    assert ccode(Rational(3, -7)) == "-3.0/7.0"
-    assert ccode(Rational(-3, -7)) == "3.0/7.0"
+    assert ccode(Rational(3, -7)) == "-3.0L/7.0L"
+    assert ccode(Rational(-3, -7)) == "3.0L/7.0L"
+    assert ccode(x + Rational(3, 7)) == "x + 3.0L/7.0L"
+    assert ccode(Rational(3, 7)*x) == "(3.0L/7.0L)*x"
 
 
 def test_ccode_Integer():
@@ -75,7 +78,7 @@ def test_ccode_inline_function():
     g = implemented_function('g', Lambda(x, x*(1 + x)*(2 + x)))
     assert ccode(g(A[i]), assign_to=A[i]) == (
         "for (int i=0; i<n; i++){\n"
-        "   A[i] = (1 + A[i])*(2 + A[i])*A[i];\n"
+        "   A[i] = A[i]*(1 + A[i])*(2 + A[i]);\n"
         "}"
     )
 
@@ -83,6 +86,18 @@ def test_ccode_inline_function():
 def test_ccode_exceptions():
     assert ccode(ceiling(x)) == "ceil(x)"
     assert ccode(Abs(x)) == "fabs(x)"
+
+
+def test_ccode_user_functions():
+    x = symbols('x', integer=False)
+    n = symbols('n', integer=True)
+    custom_functions = {
+        "ceiling": "ceil",
+        "Abs": [(lambda x: not x.is_integer, "fabs"), (lambda x: x.is_integer, "abs")],
+    }
+    assert ccode(ceiling(x), user_functions=custom_functions) == "ceil(x)"
+    assert ccode(Abs(x), user_functions=custom_functions) == "fabs(x)"
+    assert ccode(Abs(n), user_functions=custom_functions) == "abs(n)"
 
 
 def test_ccode_boolean():
@@ -113,12 +128,12 @@ def test_ccode_Piecewise_deep():
     p = ccode(2*Piecewise((x, x < 1), (x**2, True)))
     s = \
 """\
-2*if (x < 1) {
+2*((x < 1) ? (
    x
-}
-else {
+)
+: (
    pow(x, 2)
-}\
+) )\
 """
     assert p == s
 
@@ -130,19 +145,30 @@ def test_ccode_settings():
 def test_ccode_Indexed():
     from sympy.tensor import IndexedBase, Idx
     from sympy import symbols
-    i, j, k, n, m, o = symbols('i j k n m o', integer=True)
-
+    n, m, o = symbols('n m o', integer=True)
+    i, j, k = Idx('i', n), Idx('j', m), Idx('k', o)
     p = CCodePrinter()
     p._not_c = set()
 
-    x = IndexedBase('x')[Idx(j, n)]
+    x = IndexedBase('x')[j]
     assert p._print_Indexed(x) == 'x[j]'
-    A = IndexedBase('A')[Idx(i, m), Idx(j, n)]
-    assert p._print_Indexed(A) == 'A[%s]' % str(j + n*i)
-    B = IndexedBase('B')[Idx(i, m), Idx(j, n), Idx(k, o)]
-    assert p._print_Indexed(B) == 'B[%s]' % str(k + i*n*o + j*o)
+    A = IndexedBase('A')[i, j]
+    assert p._print_Indexed(A) == 'A[%s]' % (m*i+j)
+    B = IndexedBase('B')[i, j, k]
+    assert p._print_Indexed(B) == 'B[%s]' % (i*o*m+j*o+k)
 
     assert p._not_c == set()
+
+
+def test_ccode_Indexed_without_looking_for_contraction():
+    len_y = 5
+    y = IndexedBase('y', shape=(len_y,))
+    x = IndexedBase('x', shape=(len_y,))
+    Dy = IndexedBase('Dy', shape=(len_y-1,))
+    i = Idx('i', len_y-1)
+    e=Eq(Dy[i], (y[i+1]-y[i])/(x[i+1]-x[i]))
+    code0 = ccode(e.rhs, assign_to=e.lhs, contract=False)
+    assert code0 == 'Dy[i] = (y[%s] - y[i])*1.0/(x[%s] - x[i]);' % (i + 1, i + 1)
 
 
 def test_ccode_loops_matrix_vector():
@@ -159,7 +185,7 @@ def test_ccode_loops_matrix_vector():
         '}\n'
         'for (int i=0; i<m; i++){\n'
         '   for (int j=0; j<n; j++){\n'
-        '      y[i] = y[i] + A[i*n + j]*x[j];\n'
+        '      y[i] = y[i] + A[%s]*x[j];\n' % (i*n + j) +\
         '   }\n'
         '}'
     )
@@ -202,7 +228,7 @@ def test_ccode_loops_add():
         '}\n'
         'for (int i=0; i<m; i++){\n'
         '   for (int j=0; j<n; j++){\n'
-        '      y[i] = y[i] + A[i*n + j]*x[j];\n'
+        '      y[i] = y[i] + A[%s]*x[j];\n' % (i*n + j) +\
         '   }\n'
         '}'
     )
@@ -230,7 +256,7 @@ def test_ccode_loops_multiple_contractions():
         '   for (int j=0; j<n; j++){\n'
         '      for (int k=0; k<o; k++){\n'
         '         for (int l=0; l<p; l++){\n'
-        '            y[i] = y[i] + b[j*o*p + k*p + l]*a[i*n*o*p + j*o*p + k*p + l];\n'
+        '            y[i] = y[i] + b[%s]*a[%s];\n' % (j*o*p + k*p + l, i*n*o*p + j*o*p + k*p + l) +\
         '         }\n'
         '      }\n'
         '   }\n'
@@ -261,7 +287,7 @@ def test_ccode_loops_addfactor():
         '   for (int j=0; j<n; j++){\n'
         '      for (int k=0; k<o; k++){\n'
         '         for (int l=0; l<p; l++){\n'
-        '            y[i] = (a[i*n*o*p + j*o*p + k*p + l] + b[i*n*o*p + j*o*p + k*p + l])*c[j*o*p + k*p + l] + y[i];\n'
+        '            y[i] = (a[%s] + b[%s])*c[%s] + y[i];\n' % (i*n*o*p + j*o*p + k*p + l, i*n*o*p + j*o*p + k*p + l, j*o*p + k*p + l) +\
         '         }\n'
         '      }\n'
         '   }\n'
@@ -292,7 +318,7 @@ def test_ccode_loops_multiple_terms():
         'for (int i=0; i<m; i++){\n'
         '   for (int j=0; j<n; j++){\n'
         '      for (int k=0; k<o; k++){\n'
-        '         y[i] = b[j]*b[k]*c[i*n*o + j*o + k] + y[i];\n'
+        '         y[i] = b[j]*b[k]*c[%s] + y[i];\n' % (i*n*o + j*o + k) +\
         '      }\n'
         '   }\n'
         '}\n'
@@ -300,14 +326,14 @@ def test_ccode_loops_multiple_terms():
     s2 = (
         'for (int i=0; i<m; i++){\n'
         '   for (int k=0; k<o; k++){\n'
-        '      y[i] = b[k]*a[i*o + k] + y[i];\n'
+        '      y[i] = b[k]*a[%s] + y[i];\n' % (i*o + k) +\
         '   }\n'
         '}\n'
     )
     s3 = (
         'for (int i=0; i<m; i++){\n'
         '   for (int j=0; j<n; j++){\n'
-        '      y[i] = b[j]*a[i*n + j] + y[i];\n'
+        '      y[i] = b[j]*a[%s] + y[i];\n' % (i*n + j) +\
         '   }\n'
         '}\n'
     )

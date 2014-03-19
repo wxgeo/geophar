@@ -1,12 +1,10 @@
-from __future__ import with_statement
-
-from os import walk, sep, chdir, pardir
+from os import walk, sep, pardir
 from os.path import split, join, abspath, exists, isfile
 from glob import glob
 import re
 import random
-import sys
-from sympy.utilities.pytest import raises
+
+from sympy.core.compatibility import PY3
 
 # System path separator (usually slash or backslash) to be
 # used with excluded files, e.g.
@@ -23,8 +21,6 @@ TOP_PATH = abspath(join(SYMPY_PATH, pardir))
 BIN_PATH = join(TOP_PATH, "bin")
 EXAMPLES_PATH = join(TOP_PATH, "examples")
 
-IS_PYTHON_3 = (sys.version_info[0] == 3)
-
 # Error messages
 message_space = "File contains trailing whitespace: %s, line %s."
 message_implicit = "File contains an implicit import: %s, line %s."
@@ -37,14 +33,14 @@ message_eof = "File does not end with a newline: %s, line %s"
 message_multi_eof = "File ends with more than 1 newline: %s, line %s"
 message_test_suite_def = "Function should start with 'test_' or '_': %s, line %s"
 
-implicit_test_re = re.compile('^\s*(>>> )?(\.\.\. )?from .* import .*\*')
+implicit_test_re = re.compile(r'^\s*(>>> )?(\.\.\. )?from .* import .*\*')
 str_raise_re = re.compile(
     r'^\s*(>>> )?(\.\.\. )?raise(\s+(\'|\")|\s*(\(\s*)+(\'|\"))')
 gen_raise_re = re.compile(
     r'^\s*(>>> )?(\.\.\. )?raise(\s+Exception|\s*(\(\s*)+Exception)')
 old_raise_re = re.compile(r'^\s*(>>> )?(\.\.\. )?raise((\s*\(\s*)|\s+)\w+\s*,')
-test_suite_def_re = re.compile('^def\s+(?!(_|test))[^(]*\(\s*\)\s*:$')
-
+test_suite_def_re = re.compile(r'^def\s+(?!(_|test))[^(]*\(\s*\)\s*:$')
+test_file_re = re.compile(r'.*test_.*\.py$')
 
 def tab_in_leading(s):
     """Returns True if there are tabs in the leading whitespace of a line,
@@ -80,9 +76,9 @@ def check_files(files, file_check, exclusions=set(), pattern=None):
     for fname in files:
         if not exists(fname) or not isfile(fname):
             continue
-        if filter(lambda ex: ex in fname, exclusions):
+        if any(ex in fname for ex in exclusions):
             continue
-        if pattern is None or re.match(patttern, fname):
+        if pattern is None or re.match(pattern, fname):
             file_check(fname)
 
 
@@ -99,7 +95,7 @@ def test_files():
     """
 
     def test(fname):
-        if IS_PYTHON_3:
+        if PY3:
             with open(fname, "rt", encoding="utf8") as test_file:
                 test_this_file(fname, test_file)
         else:
@@ -109,7 +105,7 @@ def test_files():
     def test_this_file(fname, test_file):
         line = None  # to flag the case where there were no lines in file
         for idx, line in enumerate(test_file):
-            if re.match(r'.*test_.*\.py$', fname) and test_suite_def_re.match(line):
+            if test_file_re.match(fname) and test_suite_def_re.match(line):
                 assert False, message_test_suite_def % (fname, idx + 1)
             if line.endswith(" \n") or line.endswith("\t\n"):
                 assert False, message_space % (fname, idx + 1)
@@ -153,8 +149,12 @@ def test_files():
         # glob imports are allowed in top-level __init__.py:
         "%(sep)ssympy%(sep)s__init__.py" % sepd,
         # these __init__.py should be fixed:
+        # XXX: not really, they use useful import pattern (DRY)
+        "%(sep)svector%(sep)s__init__.py" % sepd,
         "%(sep)smechanics%(sep)s__init__.py" % sepd,
         "%(sep)squantum%(sep)s__init__.py" % sepd,
+        "%(sep)spolys%(sep)s__init__.py" % sepd,
+        "%(sep)spolys%(sep)sdomains%(sep)s__init__.py" % sepd,
         # interactive sympy executes ``from sympy import *``:
         "%(sep)sinteractive%(sep)ssession.py" % sepd,
         # isympy executes ``from sympy import *``:
@@ -169,7 +169,7 @@ def test_files():
         "%(sep)splotting%(sep)stextplot.py" % sepd,
     ])
     check_files(top_level_files, test)
-    check_directory_tree(BIN_PATH, test, set(["~", ".pyc"]), "*")
+    check_directory_tree(BIN_PATH, test, set(["~", ".pyc", ".sh"]), "*")
     check_directory_tree(SYMPY_PATH, test, exclude)
     check_directory_tree(EXAMPLES_PATH, test, exclude)
 

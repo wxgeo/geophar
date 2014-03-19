@@ -2,6 +2,7 @@ from sympy import (Add, ceiling, cos, E, Eq, exp, factorial, fibonacci, floor,
                    Function, GoldenRatio, I, log, Mul, oo, pi, Pow, Rational,
                    sin, sqrt, sstr, Sum, sympify, S, integrate, atan, product)
 from sympy.core.evalf import complex_accuracy, PrecisionExhausted, scaled_zero
+from sympy.core.compatibility import long
 from sympy.mpmath import inf, ninf, nan
 from sympy.abc import n, x, y
 from sympy.mpmath.libmp.libmpf import from_float
@@ -194,6 +195,33 @@ def test_evalf_bugs():
     assert NS((-x).n()) == '-x'
     assert NS((-2*x).n()) == '-2.00000000000000*x'
     assert NS((-2*x*y).n()) == '-2.00000000000000*x*y'
+    assert cos(x).n(subs={x: 1+I}) == cos(x).subs(x, 1+I).n()
+    #3561. Also NaN != mpmath.nan
+    # In this order:
+    # 0*nan, 0/nan, 0*inf, 0/inf
+    # 0+nan, 0-nan, 0+inf, 0-inf
+    # >>> n = Some Number
+    # n*nan, n/nan, n*inf, n/inf
+    # n+nan, n-nan, n+inf, n-inf
+    assert (0*sin(oo)).n() == S.Zero
+    assert (0/sin(oo)).n() == S.Zero
+    assert (0*E**(oo)).n() == S.NaN
+    assert (0/E**(oo)).n() == S.Zero
+
+    assert (0+sin(oo)).n() == S.NaN
+    assert (0-sin(oo)).n() == S.NaN
+    assert (0+E**(oo)).n() == S.Infinity
+    assert (0-E**(oo)).n() == S.NegativeInfinity
+
+    assert (5*sin(oo)).n() == S.NaN
+    assert (5/sin(oo)).n() == S.NaN
+    assert (5*E**(oo)).n() == S.Infinity
+    assert (5/E**(oo)).n() == S.Zero
+
+    assert (5+sin(oo)).n() == S.NaN
+    assert (5-sin(oo)).n() == S.NaN
+    assert (5+E**(oo)).n() == S.Infinity
+    assert (5-E**(oo)).n() == S.NegativeInfinity
 
 
 def test_evalf_integer_parts():
@@ -206,10 +234,10 @@ def test_evalf_integer_parts():
     # equals, as a fallback, can still fail but it might succeed as here
     assert ceiling(10*(sin(1)**2 + cos(1)**2)) == 10
 
-    assert int(floor(factorial(50)/E, evaluate=False).evalf()) == \
-        11188719610782480504630258070757734324011354208865721592720336800L
-    assert int(ceiling(factorial(50)/E, evaluate=False).evalf()) == \
-        11188719610782480504630258070757734324011354208865721592720336801L
+    assert int(floor(factorial(50)/E, evaluate=False).evalf(70)) == \
+        long(11188719610782480504630258070757734324011354208865721592720336800)
+    assert int(ceiling(factorial(50)/E, evaluate=False).evalf(70)) == \
+        long(11188719610782480504630258070757734324011354208865721592720336801)
     assert int(floor((GoldenRatio**999 / sqrt(5) + Rational(1, 2)))
                .evalf(1000)) == fibonacci(999)
     assert int(floor((GoldenRatio**1000 / sqrt(5) + Rational(1, 2)))
@@ -224,6 +252,11 @@ def test_evalf_trig_zero_detection():
     assert a.evalf(chop=True) == 0
     raises(PrecisionExhausted, lambda: a.evalf(strict=True))
 
+def test_evalf_sum():
+    assert Sum(n,(n,1,2)).evalf() == 3.
+    assert Sum(n,(n,1,2)).doit().evalf() == 3.
+    # the next test should return instantly
+    assert Sum(1/n,(n,1,2)).evalf() == 1.5
 
 def test_evalf_divergent_series():
     raises(ValueError, lambda: Sum(1/n, (n, 1, oo)).evalf())
@@ -374,8 +407,8 @@ def test_infinities():
 
 
 def test_to_mpmath():
-    assert sqrt(3)._to_mpmath(20)._mpf_ == (0, 908093L, -19, 20)
-    assert S(3.2)._to_mpmath(20)._mpf_ == (0, 838861L, -18, 20)
+    assert sqrt(3)._to_mpmath(20)._mpf_ == (0, long(908093), -19, 20)
+    assert S(3.2)._to_mpmath(20)._mpf_ == (0, long(838861), -18, 20)
 
 
 def test_issue_3533_evalf():

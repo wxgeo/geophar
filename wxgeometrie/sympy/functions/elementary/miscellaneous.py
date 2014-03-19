@@ -1,16 +1,20 @@
+from __future__ import print_function, division
+
 from sympy.core import S, C, sympify
+from sympy.core.add import Add
 from sympy.core.basic import Basic
 from sympy.core.containers import Tuple
 from sympy.core.numbers import Rational
 from sympy.core.operations import LatticeOp, ShortCircuit
-from sympy.core.function import Application, Lambda
+from sympy.core.function import Application, Lambda, ArgumentIndexError
 from sympy.core.expr import Expr
 from sympy.core.singleton import Singleton
 from sympy.core.rules import Transform
-from sympy.core.compatibility import as_int
+from sympy.core.compatibility import as_int, with_metaclass, xrange
+from sympy.core.logic import fuzzy_and
 
 
-class IdentityFunction(Lambda):
+class IdentityFunction(with_metaclass(Singleton, Lambda)):
     """
     The identity function
 
@@ -23,14 +27,15 @@ class IdentityFunction(Lambda):
     x
 
     """
-    __metaclass__ = Singleton
-    __slots__ = []
-    nargs = 1
 
     def __new__(cls):
+        from sympy.core.sets import FiniteSet
         x = C.Dummy('x')
         #construct "by hand" to avoid infinite loop
-        return Expr.__new__(cls, Tuple(x), x)
+        obj = Expr.__new__(cls, Tuple(x), x)
+        obj.nargs = FiniteSet(1)
+        return obj
+
 Id = S.IdentityFunction
 
 ###############################################################################
@@ -63,10 +68,9 @@ def sqrt(arg):
     This is because the two are not equal to each other in general.
     For example, consider x == -1:
 
-    >>> sqrt(x**2).subs(x, -1)
-    1
-    >>> x.subs(x, -1)
-    -1
+    >>> from sympy import Eq
+    >>> Eq(sqrt(x**2), x).subs(x, -1)
+    False
 
     This is because sqrt computes the principal square root, so the square may
     put the argument in a different branch.  This identity does hold if x is
@@ -95,7 +99,7 @@ def sqrt(arg):
     See Also
     ========
 
-    sympy.polys.rootoftools.RootOf, root
+    sympy.polys.rootoftools.RootOf, root, real_root
 
     References
     ==========
@@ -108,8 +112,59 @@ def sqrt(arg):
     return C.Pow(arg, S.Half)
 
 
+
+def cbrt(arg):
+    """This function computes the principial cube root of `arg`, so
+    it's just a shortcut for `arg**Rational(1, 3)`.
+
+    Examples
+    ========
+
+    >>> from sympy import cbrt, Symbol
+    >>> x = Symbol('x')
+
+    >>> cbrt(x)
+    x**(1/3)
+
+    >>> cbrt(x)**3
+    x
+
+    Note that cbrt(x**3) does not simplify to x.
+
+    >>> cbrt(x**3)
+    (x**3)**(1/3)
+
+    This is because the two are not equal to each other in general.
+    For example, consider `x == -1`:
+
+    >>> from sympy import Eq
+    >>> Eq(cbrt(x**3), x).subs(x, -1)
+    False
+
+    This is because cbrt computes the principal cube root, this
+    identity does hold if `x` is positive:
+
+    >>> y = Symbol('y', positive=True)
+    >>> cbrt(y**3)
+    y
+
+    See Also
+    ========
+
+    sympy.polys.rootoftools.RootOf, root, real_root
+
+    References
+    ==========
+
+    * http://en.wikipedia.org/wiki/Cube_root
+    * http://en.wikipedia.org/wiki/Principal_value
+
+    """
+    return C.Pow(arg, C.Rational(1, 3))
+
+
 def root(arg, n):
-    """The n-th root function (a shortcut for arg**(1/n))
+    """The n-th root function (a shortcut for ``arg**(1/n)``)
 
     root(x, n) -> Returns the principal n-th root of x.
 
@@ -351,6 +406,25 @@ class MinMaxBase(Expr, LatticeOp):
             return True
         return False
 
+    def _eval_derivative(self, s):
+        # f(x).diff(s) -> x.diff(s) * f.fdiff(1)(s)
+        i = 0
+        l = []
+        for a in self.args:
+            i += 1
+            da = a.diff(s)
+            if da is S.Zero:
+                continue
+            try:
+                df = self.fdiff(i)
+            except ArgumentIndexError:
+                df = Function.fdiff(self, i)
+            l.append(df * da)
+        return Add(*l)
+
+    @property
+    def is_real(self):
+        return fuzzy_and(arg.is_real for arg in self.args)
 
 class Max(MinMaxBase, Application):
     """
@@ -457,6 +531,18 @@ class Max(MinMaxBase, Application):
         """
         return (x < y)
 
+    def fdiff( self, argindex ):
+        from sympy.functions.special.delta_functions import Heaviside
+        n = len(self.args)
+        if 0 < argindex and argindex <= n:
+            argindex -= 1
+            if n == 2:
+                return Heaviside( self.args[argindex] - self.args[1-argindex] )
+            newargs = tuple([self.args[i] for i in xrange(n) if i != argindex])
+            return Heaviside( self.args[argindex] - Max(*newargs) )
+        else:
+            raise ArgumentIndexError(self, argindex)
+
 
 class Min(MinMaxBase, Application):
     """
@@ -506,3 +592,15 @@ class Min(MinMaxBase, Application):
         Check if x > y.
         """
         return (x > y)
+
+    def fdiff( self, argindex ):
+        from sympy.functions.special.delta_functions import Heaviside
+        n = len(self.args)
+        if 0 < argindex and argindex <= n:
+            argindex -= 1
+            if n == 2:
+                return Heaviside( self.args[1-argindex] - self.args[argindex] )
+            newargs = tuple([ self.args[i] for i in xrange(n) if i != argindex])
+            return Heaviside( Min(*newargs) - self.args[argindex] )
+        else:
+            raise ArgumentIndexError(self, argindex)

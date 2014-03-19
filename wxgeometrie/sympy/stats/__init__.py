@@ -8,16 +8,16 @@ Normal, Exponential, Coin, Die, etc...  or built with functions like FiniteRV.
 
 Queries on random expressions can be made using the functions
 
-===================== =============================
-    Expression                Meaning
---------------------- -----------------------------
- P(condition)          Probability
- E(expression)         Expectation value
- variance(expression)  Variance
- density(expression)   Probability Density Function
- sample(expression)    Produce a realization
- where(condition)      Where the condition is true
-===================== =============================
+========================= =============================
+    Expression                    Meaning
+------------------------- -----------------------------
+ ``P(condition)``          Probability
+ ``E(expression)``         Expected value
+ ``variance(expression)``  Variance
+ ``density(expression)``   Probability Density Function
+ ``sample(expression)``    Produce a realization
+ ``where(condition)``      Where the condition is true
+========================= =============================
 
 Examples
 ========
@@ -38,24 +38,32 @@ Examples
 
 __all__ = []
 
-import rv_interface
-from rv_interface import (
+from . import rv_interface
+from .rv_interface import (
     cdf, covariance, density, dependent, E, given, independent, P, pspace,
     random_symbols, sample, sample_iter, skewness, std, variance, where,
+    correlation, moment, cmoment, smoment,
 )
 __all__.extend(rv_interface.__all__)
 
-import frv_types
-from frv_types import (
+from . import frv_types
+from .frv_types import (
     Bernoulli, Binomial, Coin, Die, DiscreteUniform, FiniteRV, Hypergeometric,
 )
 __all__.extend(frv_types.__all__)
 
-import crv_types
-from crv_types import (
-    Arcsin, Benini, Beta, BetaPrime, Cauchy, Chi, ContinuousRV, Dagum,
-    Exponential, Gamma, Laplace, Logistic, LogNormal, Maxwell, Nakagami,
-    Normal, Pareto, Rayleigh, StudentT, Triangular, Uniform, UniformSum,
-    Weibull, WignerSemicircle,
+from . import crv_types
+from .crv_types import (
+    ContinuousRV,
+    Arcsin, Benini, Beta, BetaPrime, Cauchy, Chi, ChiNoncentral, ChiSquared,
+    Dagum, Erlang, Exponential, FDistribution, FisherZ, Frechet, Gamma,
+    GammaInverse, Kumaraswamy, Laplace, Logistic, LogNormal, Maxwell,
+    Nakagami, Normal, Pareto, QuadraticU, RaisedCosine, Rayleigh,
+    StudentT, Triangular, Uniform, UniformSum, VonMises, Weibull,
+    WignerSemicircle
 )
 __all__.extend(crv_types.__all__)
+
+from . import drv_types
+from .drv_types import (Geometric, Poisson)
+__all__.extend(drv_types.__all__)
