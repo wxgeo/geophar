@@ -44,7 +44,21 @@ sys.path.insert(0, ROOTDIR)
 
 print(ROOTDIR)
 
+try:
+    import sip
+    # PyQt new API (PyQt 4.6+)
+    sip.setapi('QDate', 2)
+    sip.setapi('QDateTime', 2)
+    sip.setapi('QString', 2)
+    sip.setapi('QTextStream', 2)
+    sip.setapi('QTime', 2)
+    sip.setapi('QUrl', 2)
+    sip.setapi('QVariant', 2)
+except ValueError:
+    print("Warning: SIP API has already been set.")
+
 from wxgeometrie import param
+
 
 # Make sure I have the right Python version.
 if sys.version_info[:2] < param.python_min:
@@ -106,18 +120,6 @@ def test(*args):
 def doctest(*args):
     "Run all doctests."
     os.chdir(WXGEODIR)
-    try:
-        import sip
-        # PyQt new API (PyQt 4.6+)
-        sip.setapi('QDate', 2)
-        sip.setapi('QDateTime', 2)
-        sip.setapi('QString', 2)
-        sip.setapi('QTextStream', 2)
-        sip.setapi('QTime', 2)
-        sip.setapi('QUrl', 2)
-        sip.setapi('QVariant', 2)
-    except ValueError:
-        print("Warning: SIP API has already been set.")
 
     param.debug = False
     param.verbose = False

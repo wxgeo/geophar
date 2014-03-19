@@ -47,9 +47,8 @@ def test_sympy_solving_with_floats():
     sol = sols[0]
     assertAlmostEqual(sol, Float('0.8'))
 
-@XFAIL
 def test_sympy_1_div_0():
-    assert S.One/S.Zero in (S.NaN, S.ComplexInfinity)
+    assert S.One/S.Zero is S.ComplexInfinity
 
 def test_sympy_files():
     sympy_dir = os.path.normpath(os.path.dirname(os.path.abspath(__file__)) + '/../../sympy')
