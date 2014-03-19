@@ -3,7 +3,7 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 from pytest import XFAIL
 
-from tools.testlib import assertRaises, assertAlmostEqual
+from tools.testlib import assertRaises, assertAlmostEqual, assertEqual
 
 from wxgeometrie.mathlib.interprete import Interprete
 from sympy import S
@@ -17,12 +17,12 @@ def assert_resultat(s, resultat, latex = None, **parametres):
     if r != resultat:
         i = Interprete(verbose = True, **parametres)
         r, l = i.evaluer(s)
-        print "ERREUR (" + s + "): ", r, " != ",  resultat
+        print "\nERREUR (" + s + "):\n", r, "\n!=\n",  resultat, '\n'
     assert(r == resultat)
     if latex is not None:
         latex = "$" + latex + "$"
         if l != latex:
-            print "ERREUR (" + s + "): ", l, " != ",  latex
+            print "\nERREUR (" + s + "):\n", l, "\n!=\n",  latex, '\n'
         assert(l == latex)
 
 def assert_resoudre(s, *args, **kw):
@@ -36,10 +36,10 @@ def assert_ecriture_scientifique(s, resultat, latex=None, decimales=3, **paramet
                     calcul_exact=False, ecriture_scientifique=True,
                     ecriture_scientifique_decimales=decimales, **parametres)
 
-def assertEqual(x, y):
-    if x != y:
-        print "ERREUR:", repr(x), "!=", repr(y)
-    assert(x == y)
+#~ def assertEqual(x, y):
+    #~ if x != y:
+        #~ print "ERREUR:", repr(x), "!=", repr(y)
+    #~ assert(x == y)
 
 def assertDernier(i, s):
     assertEqual(str(i.derniers_resultats[-1]), s)
@@ -60,17 +60,18 @@ def test_exemples_de_base():
     assert_resultat('integre(x+1, (x, -1, 1))', '2', '2')
     assert_resultat('integre(x+1, x, -1, 1)', '2', '2')
     assert_resultat('taylor(sin x, x, 0, 4)', 'x - x^3/6 + O(x^4)', \
-                                    'x - \\frac{1}{6} x^{3} + \\mathcal{O}\\left(x^{4}\\right)')
+                r'x - \frac{x^{3}}{6} + \mathcal{O}\left(x^{4}\right)')
     assert_resultat('cos x>>taylor', \
-                                    '1 - x^2/2 + x^4/24 + O(x^5)', \
-                                    '1 - \\frac{1}{2} x^{2} + \\frac{1}{24} x^{4} + \\mathcal{O}\\left(x^{5}\\right)')
+                '1 - x^2/2 + x^4/24 + O(x^5)', \
+               r'1 - \frac{x^{2}}{2} + \frac{x^{4}}{24} + \mathcal{O}\left(x^{5}\right)')
     # Algèbre
     assert_resultat('developpe((x-3)(x+7)(2y+x+5))', \
                                     'x^3 + 2 x^2 y + 9 x^2 + 8 x y - x - 42 y - 105', \
                                     'x^{3} + 2 x^{2} y + 9 x^{2} + 8 x y - x - 42 y - 105')
     assert_resultat('factorise(x^2-7x+3)', \
-                                    '(x - 7/2 - sqrt(37)/2)(x - 7/2 + sqrt(37)/2)',
-                                    r'\left(x - \frac{7}{2} - \frac{1}{2} \sqrt{37}\right) \left(x - \frac{7}{2} + \frac{1}{2} \sqrt{37}\right)')
+                 '(x - 7/2 - sqrt(37)/2)(x - 7/2 + sqrt(37)/2)',
+                r'\left(x - \frac{7}{2} - \frac{\sqrt{37}}{2}\right) '
+                r'\left(x - \frac{7}{2} + \frac{\sqrt{37}}{2}\right)')
     assert_resultat('factorise(x^2+x)', 'x(x + 1)',  'x \\left(x + 1\\right)')
     assert_resultat('factor(exp(x)x^2+5/2x*exp(x)+exp(x))', '(x + 1/2)(x + 2)exp(x)')
     ##assert_resultat('factor(exp(x)x^2+2.5x*exp(x)+exp(x))', '(x + 0,5)(x + 2)exp(x)')
@@ -144,8 +145,8 @@ def test_ensemble_complexe():
     assertEqual(l, r'$\left{- \mathrm{i}\right}$')
     r, l = i.evaluer('factorise(x^2+7x+53)')
     assertEqual(r, '(x + 7/2 - sqrt(163)i/2)(x + 7/2 + sqrt(163)i/2)')
-    assertEqual(l, r'$\left(x + \frac{7}{2} - \frac{1}{2} \sqrt{163} \mathrm{i}\right) '
-                   r'\left(x + \frac{7}{2} + \frac{1}{2} \sqrt{163} \mathrm{i}\right)$')
+    assertEqual(l, r'$\left(x + \frac{7}{2} - \frac{\sqrt{163} \mathrm{i}}{2}\right) '
+                   r'\left(x + \frac{7}{2} + \frac{\sqrt{163} \mathrm{i}}{2}\right)$')
 
 
 
@@ -397,17 +398,17 @@ def test_issue_263():
     i.evaluer("C = A*B")
     assert 'C' in i.vars()
     r, l = i.evaluer("C")
-    assertEqual(r, "[1 ; 2]\n[3 ; 4]")
+    assertEqual(r, "Matrix([\n[1 ; 2] ; \n[3 ; 4]])")
     etat_interne = i.save_state()
     i.clear_state()
     assert 'C' not in i.vars()
     i.load_state(etat_interne)
     assert 'C' in i.vars()
     r, l = i.evaluer("C")
-    assertEqual(r, "[1 ; 2]\n[3 ; 4]")
+    assertEqual(r, "Matrix([\n[1 ; 2] ; \n[3 ; 4]])")
     i.evaluer("A=[[0,1 ; 0,8]; [0,5; 0,5]]")
     r, l = i.evaluer("[[0,3 ; 0,4]]*A")
-    assertEqual(r, "[23/100 ; 11/25]")
+    assertEqual(r, "Matrix([[0,23 ; 0,44]])")
     # ou encore [0,23 ; 0,44]
     assertEqual(l, r"$\begin{pmatrix}0,23 & 0,44\end{pmatrix}$")
 

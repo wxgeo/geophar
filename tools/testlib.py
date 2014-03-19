@@ -27,8 +27,16 @@ def assertAlmostEqual(x, y):
     else:
         TEST = abs(y - x) < EPSILON
         if not TEST:
-            print x,  "!=",  y
-        assert TEST
+            print('''
+--------------
+ *** FAIL ***
+-> Output:
+%s
+-> Expected:
+%s
+--------------
+''' %(repr(x), repr(y)))
+            assert TEST
 
 def assertNotAlmostEqual(x, y):
     # TODO: define test for tuple

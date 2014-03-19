@@ -467,9 +467,9 @@ class Interprete(object):
         def repr2(expr):
             if isinstance(expr, (types.BuiltinFunctionType, types.TypeType, types.FunctionType)):
                 return expr.__name__
-            elif isinstance(expr, Matrix):
-                return 'Matrix([%s])' % ', '.join(repr(expr).split('\n'))
-            return repr(expr)
+            #~ elif isinstance(expr, Matrix):
+                #~ return 'Matrix([%s])' % ', '.join(repr(expr).split('\n'))
+            return repr(expr).replace('\n', ' ')
         variables = '\n'.join(k + ' = ' + repr2(v) for k, v in self.locals.items())
         resultats = '\n    '.join(repr(repr2(res)) + ',' for res in self.derniers_resultats)
         return '%s\n\n@derniers_resultats = [\n    %s\n    ]' % (variables, resultats)

@@ -27,7 +27,8 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 from math import floor, log
 
-from sympy import Symbol, Integer, Float, Basic, FunctionClass
+from sympy import Symbol, Integer, Float, Basic, FunctionClass, I, Mul
+from sympy.core.core import BasicMeta
 from sympy.printing.latex import LatexPrinter
 from sympy.printing.str import StrPrinter
 from sympy.core import S
@@ -35,8 +36,49 @@ from sympy.core import S
 from .custom_objects import Decim
 
 
-class DecimGenericPrinter(object):
-    u"Classe implémentant des méthodes génériques pour gérer les objets Decim."
+class MyCustomPrinter(object):
+    u"""Personnalisation du printer de sympy.
+    
+    * implémentation de méthodes génériques pour gérer les objets Decim.
+    * changement de l'ordre de recherche des méthodes d'impression :
+      on cherche d'abord l'existence d'une méthode _print_ClasseObjet,
+      avant de regarder si l'objet a une méthode ._latex() ou ._str().
+      
+      Ceci facilite la personnalisation de l'impression : il est plus
+      propre de rajouter une méthode au printer que de modifier les
+      méthodes d'impressions de nombreux objets par surclassage ou
+      par "Monkey Patching" !
+    """
+
+    def _print(self, expr, *args, **kwargs):
+        """Internal dispatcher
+
+        Tries the following concepts to print an expression:
+            1. Take the best fitting method defined in the printer.
+            2. Let the object print itself if it knows how.
+            3. As fall-back use the emptyPrinter method for the printer.
+        """
+        self._print_level += 1
+        try:
+            # See if the class of expr is known, or if one of its super
+            # classes is known, and use that print function
+            for cls in type(expr).__mro__:
+                printmethod = '_print_' + cls.__name__
+                if hasattr(self, printmethod):
+                    return getattr(self, printmethod)(expr, *args, **kwargs)
+
+            # If the printer defines a name for a printing method
+            # (Printer.printmethod) and the object knows for itself how it
+            # should be printed, use that method.
+            if (self.printmethod and hasattr(expr, self.printmethod)
+                    and not isinstance(expr, BasicMeta)):
+                return getattr(expr, self.printmethod)(self, *args, **kwargs)
+
+            # Unknown object, fall back to the emptyPrinter.
+            return self.emptyPrinter(expr)
+        finally:
+            self._print_level -= 1
+
     def _convert_Decim(self, expr):
         conv = self._convert_Decim
         if isinstance(expr, FunctionClass):
@@ -69,7 +111,7 @@ class DecimGenericPrinter(object):
         return expr.evalf(decimales)
 
 
-class CustomStrPrinter(StrPrinter, DecimGenericPrinter):
+class CustomStrPrinter(MyCustomPrinter, StrPrinter):
     def __init__(self, settings):
         defaults = {'decimales': 18,
                     'mode_scientifique': False,
@@ -157,7 +199,8 @@ def custom_str(expr, **settings):
 Basic.__repr__ = (lambda self: custom_str(self, order=None))
 
 
-class CustomLatexPrinter(LatexPrinter, DecimGenericPrinter):
+class CustomLatexPrinter(MyCustomPrinter, LatexPrinter):
+
     def __init__(self, settings):
         defaults = {'decimales': 18,
                     'mode_scientifique': False,
@@ -165,6 +208,8 @@ class CustomLatexPrinter(LatexPrinter, DecimGenericPrinter):
                     "mat_str" : "pmatrix",
                     "mat_delim" : "",
                     "mode": "inline",
+                    "fold_frac_powers": False,
+                    "fold_short_frac": False,
                     }
         self._default_settings.update(defaults)
         LatexPrinter.__init__(self, settings)
@@ -181,7 +226,7 @@ class CustomLatexPrinter(LatexPrinter, DecimGenericPrinter):
 
     def _print_Abs(self, *args, **kw):
         res = LatexPrinter._print_Abs(self, *args, **kw)
-        return res.replace(r'\lvert', r'\left|').replace(r'\rvert', r'\right|')
+        return res.replace(r'\lvert', r'|').replace(r'\rvert', r'|')
 
     def _print_ImaginaryUnit(self, expr):
         return r"\mathrm{i}"
@@ -220,8 +265,10 @@ class CustomLatexPrinter(LatexPrinter, DecimGenericPrinter):
             s = LatexPrinter._print_Float(self, self._float_evalf(expr*10**-n))
             return r"%s \times 10^{%s}" % (s, n)
         s = LatexPrinter._print_Float(self, self._float_evalf(expr))
-        if s.startswith(r'1.0 \times '):
+        if s.startswith(r'1.0 \times '): # sympy 0.7.3
             return s[11:]
+        elif s.startswith(r'1.0 \cdot '): # sympy 0.7.5
+            return s[10:]
         elif r'\times' not in s:
             # Ne pas supprimer un zéro de la puissance !
             s = s.rstrip('0').rstrip('.')
@@ -240,6 +287,14 @@ class CustomLatexPrinter(LatexPrinter, DecimGenericPrinter):
         tex = r"\cup".join(self._print(intervalle) for intervalle in expr.intervalles)
         tex = tex.replace(r"\right\}\cup\left\{", "\,;\, ")
         return tex
+
+    def _print_Mul(self, expr):
+        args = expr.args
+        if args[-1] is I:
+            if len(args) == 2 and args[0] == -1:
+                return LatexPrinter._print_Mul(self, expr)
+            return '%s %s' % (self._print(Mul(*args[:-1])), self._print(I))
+        return LatexPrinter._print_Mul(self, expr)
 
     def _print_set(self, expr):
         return r'\left{%s\right}' % '\,;\,'.join(self._print(val) for val in expr)
