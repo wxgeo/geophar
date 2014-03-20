@@ -26,7 +26,7 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 import re
 
-from sympy import sympify, oo, nan, limit, Symbol, Float, Rational
+from sympy import sympify, oo, nan, limit, Symbol, Float, Rational, Wild, sqrt
 
 from .tablatexlib import convertir_en_latex, test_parentheses, nice_str
 from ...mathlib.solvers import ensemble_definition
@@ -74,6 +74,9 @@ def _auto_tabvar(chaine='', derivee=True, limites=True, decimales=3, approche=Fa
     interprete = Interprete()
     interprete.evaluer(chaine)
     expr = interprete.ans()
+    # Remplacement de |u| par sqrt(u²). Ceci améliore le calcul de la dérivée.
+    a = Wild('a')
+    expr = expr.replace(abs(a), sqrt(a**2))
     # Récupération de la variable
     variables = expr.atoms(Symbol)
     # On tente de récupérer le nom de variable dans la légende.
@@ -110,6 +113,20 @@ def _auto_tabvar(chaine='', derivee=True, limites=True, decimales=3, approche=Fa
     # On étudie la dérivée
     df = expr.diff(var)
     ens_def_deriv = ensemble_definition(df, var)
+
+    valeurs_interdites_deriv = []
+    if not ens_def_deriv.intervalles[0].inf_inclus:
+        valeurs_interdites_deriv.append(xmin)
+    sup = ens_def_deriv.intervalles[0].inf
+    for intervalle in ens_def_deriv.intervalles:
+        inf = intervalle.inf
+        if sup != inf:
+            # Il y a un 'trou' dans l'ensemble de définition (ex: ]-oo;0[U]2;+oo[)
+            raise NotImplementedError
+            #TODO: utiliser || pour noter un intervalle interdit
+        sup = intervalle.sup
+        if not intervalle.sup_inclus:
+            valeurs_interdites_deriv.append(sup)
     # Liste des zéros de la dérivée
     solutions = solve(df, var)
 
@@ -126,6 +143,9 @@ def _auto_tabvar(chaine='', derivee=True, limites=True, decimales=3, approche=Fa
         if xmin <= sol.evalf(200) <= xmax:
             valeurs[sol] = 0
     for val in valeurs_interdites:
+        if xmin <= val <= xmax:
+            valeurs[sympify(val)] = nan
+    for val in valeurs_interdites_deriv:
         if xmin <= val <= xmax:
             valeurs[sympify(val)] = nan
     liste_valeurs = sorted(valeurs, key=(lambda x: x.evalf(200)))

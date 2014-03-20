@@ -325,3 +325,17 @@ g'(x)            &              &0         & \\
 % g(x)=5
 '''
 
+def test_abs():
+    s = "abs(x**2-5)"
+    options = {'derivee': True}
+    tab = \
+r'''\[\begin{tabvar}{|C|CCCCCCCCCCCCC|}
+\hline
+x                                 &-\infty      &        & &-\sqrt{5}& &      &0&        & &\sqrt{5}& &      &+\infty\\
+\hline
+\niveau{1}{2}\raisebox{0.5em}{$f$}&\niveau{2}{2}&\decroit& &0&         &\croit&5&\decroit& &0&        &\croit&\\
+\hline
+\end{tabvar}\]
+% x;f:(-oo;) >> (-sqrt(5);0;|) << (0;5) >> (sqrt(5);0;|) << (+oo;)
+% abs(x**2-5)
+'''
