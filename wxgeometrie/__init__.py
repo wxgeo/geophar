@@ -5,6 +5,21 @@
 from os.path import dirname, realpath, abspath, join
 import sys
 
+# Le module sip doit être importé très tôt, avant Qt bien sûr,
+# mais bizarrement également avant sympy (depuis sympy 0.7.5 au moins). 
+try:
+    import sip
+    # PyQt new API (PyQt 4.6+)
+    sip.setapi('QDate', 2)
+    sip.setapi('QDateTime', 2)
+    sip.setapi('QString', 2)
+    sip.setapi('QTextStream', 2)
+    sip.setapi('QTime', 2)
+    sip.setapi('QUrl', 2)
+    sip.setapi('QVariant', 2)
+except ImportError:
+    print("Warning: sip not found.")
+
 
 # VERSION COMPILEE AVEC CX_FREEZE
 # -------------------------------

@@ -20,16 +20,7 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 
-import sip
-# PyQt new API (PyQt 4.6+)
-sip.setapi('QDate', 2)
-sip.setapi('QDateTime', 2)
-sip.setapi('QString', 2)
-sip.setapi('QTextStream', 2)
-sip.setapi('QTime', 2)
-sip.setapi('QUrl', 2)
-sip.setapi('QVariant', 2)
 
 # Important :
 # Pour que le splash screen se charge le plus vite possible,
-# il ne faut rien importer ici (en dehors de sip).
+# il ne faut rien importer ici.
