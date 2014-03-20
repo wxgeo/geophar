@@ -162,9 +162,12 @@ class ExercicesTableauxSignes(Exercice):
                 self.denominateur = []
             else:
                 self.denominateur = den.split(',')
-            if not any(gcd(S(P), S(Q)).has(x) for P in self.numerateur for Q in self.denominateur):
-                # Il ne faut pas qu'un facteur apparaisse à la fois
-                # au numérateur et au dénominateur.
+            # On évite les racines multiples
+            racines = []
+            for facteur in self.numerateur + self.denominateur:
+                racines.extend(solve(facteur))
+            if len(racines) == len(set(racines)):
+                # Pas de racine multiple
                 break
 
         # Génération de l'expression:
