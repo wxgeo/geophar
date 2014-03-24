@@ -72,6 +72,7 @@ valeurs_a_ne_pas_sauver = (
 'familles_de_textes',
 'getdefaultlocale',
 'modules',
+'moteur_de_rendu',
 'os',
 'pi',
 'plateforme',

@@ -37,13 +37,18 @@ if getattr(sys, '_launch_geophar', False):
     # Par contre, il ne doit pas être affiché si le fichier est importé simplement
     # comme module.
     if not (options.script or options.lister_modules):
-        from .GUI.app import app, splash
+        try:
+            from .GUI.app import app, splash
 
-        splash_screen = splash(normpath(EMPLACEMENT + '/wxgeometrie/images/logo6-1.png'))
-        # .showMessage() doit être appelé pour que le splash screen apparaisse.
-        # cf. https://bugreports.qt-project.org/browse/QTBUG-24910
-        splash_screen.showMessage(u'Chargement en cours...')
-        print(u"Démarrage GUI...")
+            splash_screen = splash(normpath(EMPLACEMENT + '/wxgeometrie/images/logo6-1.png'))
+            # .showMessage() doit être appelé pour que le splash screen apparaisse.
+            # cf. https://bugreports.qt-project.org/browse/QTBUG-24910
+            splash_screen.showMessage(u'Chargement en cours...')
+            print(u"Démarrage GUI...")
+        except ImportError:
+            # Il manque très probablement PyQt4, un message d'erreur sera affiché
+            # un peu plus loin lors de la vérification des modules.
+            splash_screen = None
 
     parametres_additionnels, arguments, options = traiter_arguments(options, arguments)
 
@@ -100,7 +105,14 @@ if getattr(sys, '_launch_geophar', False):
         # Test for dependencies:
         for module in dependances:
             try:
-                imp.find_module(module)
+                # imp.find_module() doesn't support submodules.
+                path = None
+                while '.' in module:
+                    module, submodule = module.split('.', 1)
+                    f, filename, description = imp.find_module(module, path)
+                    module = submodule
+                    path = [filename]
+                imp.find_module(module, path)
             except ImportError:
                 msg = u'** Erreur fatale **\nLe module %s est introuvable !\n' % module
 
@@ -121,8 +133,10 @@ if getattr(sys, '_launch_geophar', False):
                     print(msg)
 
                     if which('xmessage'):
+                        if splash_screen is not None:
+                            splash_screen.close()
                         btn = subprocess.call(["xmessage", "-buttons", "OK,Annuler",
-                                  "-center", "-default", "OK", "-print", str3(msg)])
+                                  "-center", "-default", "OK", "-title", "Geophar : librairies manquantes !", "-print", str3(msg)])
                         if btn == 101 and which('gksudo'):
                             # Installation du paquet manquant
                             if not subprocess.call(['gksudo', 'apt-get', 'install', paquet]):

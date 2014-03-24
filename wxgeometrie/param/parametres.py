@@ -61,10 +61,14 @@ ligne_commande = False
 GUIlib = 'Qt'
 LOGO = '%/wxgeometrie/images/logo6-1.png'
 
-version_wxpython = "2.8-unicode"
-
 # Les valeurs sont les noms des paquets sous Debian/Ubuntu.
-dependances = {'PyQt4': 'python-qt4', 'matplotlib': 'python-matplotlib', 'numpy': 'python-numpy'}
+dependances = {'PyQt4': 'python-qt4',
+               'matplotlib': 'python-matplotlib',
+               'scipy': 'python-scipy',
+               'numpy': 'python-numpy',
+               'sip': 'python-sip',
+               'PyQt4.Qsci': 'python-qscintilla2',
+               }
 
 latex = False
 latex_unicode = True # (sera éventuellement désactivé ultérieurement, après l'import de wx)
@@ -640,10 +644,10 @@ except ImportError:
 if install:
     # Les préférences, fichiers log, etc... sont stockés dans le dossier de l'utilisateur.
     # ~ se réfère au répertoire de l'utilisateur (ex: /home/BillG/ sous Linux, ou C:\Documents and Settings\LTorvald\ sous Windows)
-    emplacements.setdefault("log", "~/.wxgeometrie/log")
-    emplacements.setdefault("preferences", "~/.wxgeometrie/preferences")
-    emplacements.setdefault("macros", "~/.wxgeometrie/macros")
-    emplacements.setdefault("session", "~/.wxgeometrie/session")
+    emplacements.setdefault("log", "~/.geophar/log")
+    emplacements.setdefault("preferences", "~/.geophar/preferences")
+    emplacements.setdefault("macros", "~/.geophar/macros")
+    emplacements.setdefault("session", "~/.geophar/session")
 else:
     # Utilisation sans installation. Tout est stocké directement dans le dossier wxgeometrie/.
     # % se réfère au dossier contenant WxGeometrie (indiqué par param.EMPLACEMENT)
