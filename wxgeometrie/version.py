@@ -6,5 +6,5 @@ NOMPROG2 = 'Geophar' # sans accent
 
 # Numéro de version (et date de sa sortie)
 version = '13.04.8'
-date_version = (2013, 6, 22)
-git = 'v13.04.7-11-g1a1e68f\n'
+date_version = (2014, 3, 24)
+git = 'v13.04.8-78-gb1f5dd1\n'
