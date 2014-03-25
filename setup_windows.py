@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Documentation : http://cx-freeze.readthedocs.org/en/latest/distutils.html
- 
+
 import sys, os
 import compileall
 from cx_Freeze import setup, Executable
@@ -28,49 +28,49 @@ install = True''')
     # import imp, os, sys
     # global __bootstrap__, __loader__
     # __loader__ = None; del __bootstrap__, __loader__
-	# found = False
-	# for p in sys.path:
-		# if not os.path.isdir(p):
-			# continue
-		# f = os.path.join(p, "%s")
-		# if not os.path.exists(f):
-			# continue
-		# m = imp.load_dynamic(__name__, f)
-		# import sys
-		# sys.modules[__name__] = m
-		# found = True
-		# break
-	# if not found:
-		# del sys.modules[__name__]
-		# raise ImportError("No module named %%s" %% __name__)
+    # found = False
+    # for p in sys.path:
+        # if not os.path.isdir(p):
+            # continue
+        # f = os.path.join(p, "%s")
+        # if not os.path.exists(f):
+            # continue
+        # m = imp.load_dynamic(__name__, f)
+        # import sys
+        # sys.modules[__name__] = m
+        # found = True
+        # break
+    # if not found:
+        # del sys.modules[__name__]
+        # raise ImportError("No module named %%s" %% __name__)
 # __bootstrap__()
 # """
- 
+
 #############################################################################
-# preparation des options 
+# preparation des options
 # path = sys.path.append(os.path.join("..", "..", "biblio"))
 # includes = ["printx", "bibconcours"]
-includes = ['sys']
+includes = ['sys', 'six']
 excludes = ['Tkinter', 'wx']
 packages = []
 # A cause du système dynamique de chargement des modules, la version de wxgeometrie contenue dans librairie.zip ne suffit pas.
 include_files = ['wxgeometrie']
- 
+
 build_exe_options = {#"path": ['.'] + sys.path,
            "includes": includes,
            "excludes": excludes,
            "packages": packages,
-		   "compressed": True,
-		   "create_shared_zip": True,
+           "compressed": True,
+           "create_shared_zip": True,
            # Ne fonctionne pas
-		   # "replace_paths": [('*', 'local\\')],
+           # "replace_paths": [('*', 'local\\')],
            'icon' : 'wxgeometrie\\images\\icone.ico',
            'include_msvcr': True,
            'include_files': include_files,
            'append_script_to_exe': True,
            'include_in_shared_zip': False,
            }
-    
+
 # Shortcuts for Windows Installer.
 # cf. http://stackoverflow.com/questions/15734703/use-cx-freeze-to-create-an-msi-that-adds-a-shortcut-to-the-desktop
 # First, create Shortcut Table.
@@ -103,14 +103,14 @@ bdist_msi_options = {
     'initial_target_dir': r'[ProgramFilesFolder]\geophar',
     'data': msi_data
     }
-    
-    
+
+
 #############################################################################
 # preparation des cibles
 base = None
 if sys.platform == "win32":
     base = "Win32GUI"
- 
+
 cible_1 = Executable(
     script = "geophar.pyw",
     base = base,
@@ -119,7 +119,7 @@ cible_1 = Executable(
     shortcutName = "Geophar",
     shortcutDir = "ProgramMenuFolder"
     )
- 
+
 cible_2 = Executable(
     script = "geophar.pyw",
     base = None,
@@ -127,8 +127,8 @@ cible_2 = Executable(
     compress = True,
     icon = None,
     )
-    
-    
+
+
 #############################################################################
 # creation du setup
 
@@ -144,8 +144,8 @@ setup(
     license='GNU Public License v2+',
     url='http://wxgeo.free.fr',
     )
-    
-    
+
+
 #############################################################################
 # Optimisation et empaquetage de la version sans installation
 

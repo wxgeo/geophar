@@ -103,8 +103,8 @@ def command(string, quiet=False):
 def zip7(string):
     command('"%s" %s' %(_path_7zip, string))
 
-def compil(script):
-    command(sys.executable + ' -O ' + script + ' py2exe')
+#~ def compil(script):
+    #~ command(sys.executable + ' -O ' + script + ' py2exe')
 
 def append(srcs, dst):
     with open(dst, 'wb') as dest:

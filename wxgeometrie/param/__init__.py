@@ -44,7 +44,7 @@ plateforme = platform.system() #'Windows' ou 'Linux' par exemple.
 repertoire = os.getcwd() # memorise le repertoire de lancement
 python_version = float(sys.version[:3])
 python_version_info = sys.version_info
-py2exe = hasattr(sys, 'frozen') # le programme tourne-t-il en version "executable" ?
+frozen = hasattr(sys, 'frozen') # le programme tourne-t-il en version "executable" ?
 
 # Paramètres détectés dynamiquement lors de l'exécution :
 ecriture_possible = None
@@ -77,7 +77,7 @@ valeurs_a_ne_pas_sauver = (
 'pi',
 'plateforme',
 'platform',
-'py2exe',
+'frozen',
 'python_min',
 'python_version',
 'python_version',

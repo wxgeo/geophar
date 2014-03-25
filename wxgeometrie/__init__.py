@@ -6,7 +6,7 @@ from os.path import dirname, realpath, abspath, join
 import sys
 
 # Le module sip doit être importé très tôt, avant Qt bien sûr,
-# mais bizarrement également avant sympy (depuis sympy 0.7.5 au moins). 
+# mais bizarrement également avant sympy (depuis sympy 0.7.5 au moins).
 try:
     import sip
     # PyQt new API (PyQt 4.6+)
@@ -24,7 +24,7 @@ except ImportError:
 # VERSION COMPILEE AVEC CX_FREEZE
 # -------------------------------
 if getattr(sys, 'frozen', False) and sys.platform == "win32":
-    application_path = os.path.dirname(sys.executable)
+    application_path = dirname(sys.executable)
     # XXX: Hack temporaire, permettant de préférer la version locale de sympy.
     sympy_path = join(application_path, 'library.zip', 'wxgeometrie')
     sys.path.insert(0, sympy_path)

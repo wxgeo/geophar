@@ -80,20 +80,7 @@ if getattr(sys, '_launch_geophar', False):
             app.setStyle(param.style_Qt)
         app.icone(u"%/wxgeometrie/images/icone.ico")
 
-    if param.py2exe:
-        # Ce qui suit concerne seulement py2exe, et non py2app.
-        if param.plateforme != 'Darwin':
-            # cf. py2exe/boot_common.py
-            # Par défaut dans py2exe, sys.stdout redirige nul part,
-            # et sys.stderr redirige vers un fichier .log via un mécanisme assez élaboré
-            sys._py2exe_stderr = sys.stderr
-            sys._py2exe_stdout = sys.stdout
-            def msgbox(titre='Message', texte='', MB=sys._py2exe_stderr.write.func_defaults[0]):
-                MB(0, texte.encode(param.encodage), titre.encode(param.encodage))
-            # Outil de débogage avec py2exe
-            def _test(condition = True):
-                msgbox('** Test **', ('Success !' if condition else 'Failure.'))
-    else:
+    if not param.frozen:
         # Ne pas faire ces tests avec py2exe (non seulement inutiles, mais en plus ils échouent).
         # Make sure I have the right Python version.
         if sys.version_info[:2] < param.python_min:
@@ -181,8 +168,7 @@ if getattr(sys, '_launch_geophar', False):
             # Sous Windows, l'encodage se fait en cp1252, sauf dans console où cp850 est utilisé !
     #        default_out.write(chaine if plateforme != 'Windows' else uni.encode('cp850'))
             # Sous Windows, l'encodage se fait en cp1252, sauf dans console où cp850 est utilisé !
-            if not param.py2exe:
-                sys.__stdout__.write(chaine if plateforme != 'Windows' else uni.encode('cp850'))
+            sys.__stdout__.write(chaine if plateforme != 'Windows' else uni.encode('cp850'))
 
             self.total += len(chaine)
             if self.total - len(chaine) < param.taille_max_log <= self.total:
@@ -234,12 +220,8 @@ if getattr(sys, '_launch_geophar', False):
         # Tester sys.stdout/stderr (les plantages de sys.stderr sont très pénibles à tracer !)
         sorties.write('')
     except:
-        if param.py2exe:
-            sys.stderr = sys._py2exe_stderr
-            sys.stdout = sys._py2exe_stdout
-        else:
-            sys.stdout = sys.__stdout__
-            sys.stderr = sys.__stderr__
+        sys.stdout = sys.__stdout__
+        sys.stderr = sys.__stderr__
         raise
 
     log_filename = path2(param.emplacements['log'] + u"/messages.log")
@@ -253,12 +235,8 @@ if getattr(sys, '_launch_geophar', False):
         except IOError:
             fichier_log = None
             param.enregistrer_messages = param.historique_log = False
-            if param.py2exe:
-                sys.stderr = sys._py2exe_stderr
-                sys.stdout = sys._py2exe_stdout
-            else:
-                print(traceback.format_exc(sys.exc_info()))
-                print('Warning: This exception was not raised.')
+            print(traceback.format_exc(sys.exc_info()))
+            print('Warning: This exception was not raised.')
     else:
         fichier_log = None
 
@@ -276,7 +254,7 @@ if getattr(sys, '_launch_geophar', False):
             if options.script:
                 print u"--- Mode script activé. ---"
 
-        if param.py2exe:
+        if param.frozen:
             print sys.path
             sys.path.extend(('library.zip\\matplotlib', 'library.zip\\' + GUIlib))
 
@@ -400,16 +378,16 @@ if getattr(sys, '_launch_geophar', False):
                 os.execv(sys.executable, args)
 
     except Exception: # do *NOT* catch SystemExit ! ("wxgeometrie -h" use it)
-        if param.py2exe:
-            details = u"Détails de l'erreur :\n"
-            # 25 lignes maxi dans la fenetre
-            l = uu(traceback.format_exc(sys.exc_info())).split('\n')[-25:]
-            details += '\n'.join(l) + '\n\n'
-            if param.enregistrer_messages:
-                details += u"Pour plus de détails, voir \n'%s'." %log_filename
-            else:
-                details += u"Par ailleurs, impossible de générer le fichier\n'%s'." %log_filename
-            msgbox(u"Erreur fatale lors de l'initialisation.", details)
+        #~ if param.freezed:
+            #~ details = u"Détails de l'erreur :\n"
+            #~ # 25 lignes maxi dans la fenetre
+            #~ l = uu(traceback.format_exc(sys.exc_info())).split('\n')[-25:]
+            #~ details += '\n'.join(l) + '\n\n'
+            #~ if param.enregistrer_messages:
+                #~ details += u"Pour plus de détails, voir \n'%s'." %log_filename
+            #~ else:
+                #~ details += u"Par ailleurs, impossible de générer le fichier\n'%s'." %log_filename
+            #~ msgbox(u"Erreur fatale lors de l'initialisation.", details)
         sys.excepthook(*sys.exc_info())
         sys.stdout = sys.__stdout__
         sys.stderr = sys.__stderr__
