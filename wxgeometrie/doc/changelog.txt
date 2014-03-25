@@ -1,7 +1,10 @@
-Géophar version 14.03
-Publiée le 24/03/2014
+Géophar version 14.03.1
+Publiée le 25/03/2014
 
 
+* Fix incorrect version number replacement in release process.
+* [Windows] Fix issues when freezing application with cx_freeze.
+* Version 14.03
 * Improve dependancies detection at geophar launch.
 * [FS#279] In module tablatex, tabvar() handles abs() now.
 * Module sip must be imported before sympy.
