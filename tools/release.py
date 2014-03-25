@@ -91,12 +91,12 @@ def test_version(version):
 
 s.cd('..')
 sys.path.insert(0, os.getcwd())
-from wxgeometrie.param import version, NOMPROG2, NOMPROG
+from wxgeometrie.param import version as version_precedente, NOMPROG2, NOMPROG
 nom_prog = NOMPROG2.lower()
 
 if options.publish_only:
-    filename = '%s_%s.tar.gz' % (nom_prog, version)
-    publish(filename, version)
+    filename = '%s_%s.tar.gz' % (nom_prog, version_precedente)
+    publish(filename, version_precedente)
     print(u'\nTerminé.')
     sys.exit()
 
@@ -111,20 +111,21 @@ if options.fake:
         if isinstance(val, types.FunctionType) and nom not in ('version_interne', 'test_version'):
             setattr(s, nom, eval("lambda s, *args, **kw:print('@%s: ' + s)" %nom))
 
-# Mise à jour de la version et de la date dans param.__init__.py
+# Récupération des infos de version puis mise en cache.
+# Celles-ci serviront à mettre à jour version.py.
 t=time.localtime()
 date = str((t.tm_year, t.tm_mon, t.tm_mday))
 contenu = []
 with open('version.py', 'r') as f:
     for line in f:
         if line.startswith('date_version = '):
-            contenu.append('date_version = ' + date + '\n')
+            contenu.append('date_version = %s\n' % date)
         elif line.startswith('version = '):
-            version_precedente = line[11:].split('#')[0].strip()[:-1]
-            # Changement du numéro de version
-            contenu.append('version = ' + repr(version.replace('_', ' ')) + '\n')
+            #~ version_precedente = line[11:].split('#')[0].strip()[:-1]
+            # Le nouveau numéro de version sera complété plus tard.
+            contenu.append('version = %s\n')
         elif line.startswith('git = '):
-            contenu.append('git = ' + repr(s.command('git describe')))
+            contenu.append('git = ' + repr(s.command('git describe').strip()))
         else:
             contenu.append(line)
 
@@ -135,7 +136,7 @@ if options.archive_only:
     version = '%s-git-%s-%s' % (version_precedente, last_commit_hash, date)
 else:
     if len(args) != 1:
-        parser.error("fournir un (et un seul) argument (numero de version).\nVersion actuelle: " + version)
+        parser.error("fournir un (et un seul) argument (numero de version).\nVersion actuelle: " + version_precedente)
     version = args[0]
     # Quelques tests sur le numéro de version:
     while True:
@@ -168,9 +169,9 @@ else:
 print(u'\nCréation de la version ' + version + '...')
 
 if not (options.fake or options.archive_only):
-    # Mise à jour de param/version.py
+    # Mise à jour de version.py
     with open('version.py', 'w') as f:
-        f.write(''.join(contenu).strip())
+        f.write(''.join(contenu).strip() % repr(version))
 
     # Création du changelog correspondant
     date = time.strftime("%d/%m/%Y")
@@ -191,7 +192,7 @@ if not (options.fake or options.archive_only):
     # Commit correspondant
     s.command('git add doc/changelog.txt')
     s.command('git add version.py')
-    s.command('git commit -m %s' %repr('Version ' + version))
+    s.command('git commit -m %s' % repr('Version ' + version))
 
 archive_tar = "%s_%s.tar" % (nom_prog, version)
 archive_gz = archive_tar + '.gz'
