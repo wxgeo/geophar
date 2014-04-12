@@ -38,12 +38,12 @@ from .custom_objects import Decim
 
 class MyCustomPrinter(object):
     u"""Personnalisation du printer de sympy.
-    
+
     * implémentation de méthodes génériques pour gérer les objets Decim.
     * changement de l'ordre de recherche des méthodes d'impression :
       on cherche d'abord l'existence d'une méthode _print_ClasseObjet,
       avant de regarder si l'objet a une méthode ._latex() ou ._str().
-      
+
       Ceci facilite la personnalisation de l'impression : il est plus
       propre de rajouter une méthode au printer que de modifier les
       méthodes d'impressions de nombreux objets par surclassage ou
@@ -227,6 +227,9 @@ class CustomLatexPrinter(MyCustomPrinter, LatexPrinter):
     def _print_Abs(self, *args, **kw):
         res = LatexPrinter._print_Abs(self, *args, **kw)
         return res.replace(r'\lvert', r'|').replace(r'\rvert', r'|')
+
+    def _print_Pi(self, *args, **kw):
+        return r"\pi"
 
     def _print_ImaginaryUnit(self, expr):
         return r"\mathrm{i}"
