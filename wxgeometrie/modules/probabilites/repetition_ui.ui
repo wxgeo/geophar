@@ -26,10 +26,10 @@
      <item>
       <widget class="QLineEdit" name="evenements">
        <property name="toolTip">
-        <string>Rentrer les évènements séparés par une virgule.
-Exemple: « A, B, C ».
-Si un seul évènement est entré, l'évènement contraire est rajouté.
-</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Rentrer les évènements séparés par un &lt;span style=&quot; font-weight:600;&quot;&gt;point-virgule&lt;/span&gt;.&lt;/p&gt;&lt;p&gt;Exemple: « A ; B ; C ».&lt;/p&gt;&lt;p&gt;Si un seul évènement est entré, l'évènement contraire est rajouté.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="whatsThis">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Rentrer les évènements séparés par un &lt;span style=&quot; font-weight:600;&quot;&gt;point-virgule&lt;/span&gt;.&lt;/p&gt;&lt;p&gt;Exemple: « A ; B ; C ».&lt;/p&gt;&lt;p&gt;Si un seul évènement est entré, l'évènement contraire est rajouté.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
       </widget>
      </item>
@@ -47,8 +47,10 @@ Si un seul évènement est entré, l'évènement contraire est rajouté.
      <item>
       <widget class="QLineEdit" name="probas">
        <property name="toolTip">
-        <string>Rentrer les probabilités des évènements précédents, séparés par une virgule.
-La dernière probabilité peut-être omise.</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Rentrer les probabilités des évènements précédents, séparés par un &lt;span style=&quot; font-weight:600;&quot;&gt;point-virgule&lt;/span&gt;.&lt;/p&gt;&lt;p&gt;La dernière probabilité peut-être omise.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="whatsThis">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Rentrer les probabilités des évènements précédents, séparés par un &lt;span style=&quot; font-weight:600;&quot;&gt;point-virgule&lt;/span&gt;.&lt;/p&gt;&lt;p&gt;La dernière probabilité peut-être omise.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
       </widget>
      </item>

@@ -69,7 +69,7 @@ def repetition_experiences(_profondeur=3, _numeroter=True, evts=[], probas=[]):
     else:
         if len(probas) == len(evts) - 1:
             try:
-                probas.append(nice_str(1 - sum(S(proba) for proba in probas)))
+                probas.append(nice_str(1 - sum(S(proba.replace(',', '.')) for proba in probas)))
             except SympifyError:
                 pass
         if len(probas) < len(evts):
@@ -82,7 +82,7 @@ def repetition_experiences(_profondeur=3, _numeroter=True, evts=[], probas=[]):
         suffixe = ('_' + str(niveau) if _numeroter else '')
         for i in range(len(lines), 0, -1):
             if lines[i - 1].startswith((niveau - 1)*'>'):
-                for evt, proba in zip(evts, probas):
+                for evt, proba in reversed(zip(evts, probas)):
                     #~ proba = nice_str(proba) if proba != '' else ''
                     lines.insert(i, prefixe + evt + suffixe + ':' + proba)
             assert len(lines) < 10000
@@ -100,8 +100,8 @@ class DialogRepetition(QDialog, Ui_DialogRepetition):
     def accept(self):
         n = self.niveaux.value()
         num = self.numeroter.isChecked()
-        evts = [evt.strip() for evt in self.evenements.text().split(',')]
-        probas = [proba.strip() for proba in self.probas.text().split(',')]
+        evts = [evt.strip() for evt in self.evenements.text().split(';')]
+        probas = [proba.strip() for proba in self.probas.text().split(';')]
 
         code = repetition_experiences(n, num, evts, probas)
         self.parent().instructions.setPlainText(code)
