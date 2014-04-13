@@ -235,6 +235,7 @@ def positif(expression, variable = None, strict = False):
                else:
                    return vide
 
+    # --------------- CODE À SUPPRIMER ? --------------
     # a*f(x)+b > 0 <=> f(x)+b/a > 0 pour a > 0, -f(x) - b/a > 0 pour a < 0
     if expression.is_Add:
         args = expression.args
@@ -264,7 +265,7 @@ def positif(expression, variable = None, strict = False):
                             return positif(autre_facteur + partie_constante/facteur_constant, variable, strict=strict)
                         elif is_neg(facteur_constant):
                             return ens_def & (R - positif(autre_facteur + partie_constante/facteur_constant, variable, strict=not strict))
-
+    # -------------------------------------------------
 
     # Valeur absolue seule:
     if isinstance(expression, Abs):
@@ -304,22 +305,19 @@ def positif(expression, variable = None, strict = False):
                 if a.is_negative:
                     # si a < 0, a*x^q-b > 0 <=> x^q-b/a < 0 <=> non(x^q-b/a >= 0)
                     strict = not strict
-                if q.is_rational:
-                    n, d = q.as_numer_denom()
-                    if n == 1:
-                        # Racine n-ièmes de l'unité.
-                        if d.is_even and b.is_negative:
-                            sols = Intervalle(0, oo)
-                        else:
-                            sols = Intervalle(b**d, oo, inf_inclus=not strict)
-                # Cas général.
                 if b.is_negative:
-                    sols = Intervalle(0, oo, inf_inclus=q.is_positive)
+                    # pour X > 0, X^(2/3)-b > X^2/3 > 0
+                    sols = ens_def
                 else:
-                    sols = Intervalle(b**(1/q), oo, inf_inclus=not strict)
+                    # pour X > 0, X^(2/3)-b > 0 <=> X > b^(3/2)
+                    sols = ens_def & positif(X - b**(1/q), strict=strict)
+                # si a < 0, a*x^q-b > 0 <=> x^q-b/a < 0 <=> non(x^q-b/a >= 0)
                 if a.is_negative:
                     sols = ens_def - sols
                 return sols
+
+    # résolution de a*sqrt(X)-B > 0 où signe(B) = signe(A)
+    # TODO !
 
     # Logarithme :
     if isinstance(expression, ln):
