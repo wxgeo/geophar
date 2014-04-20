@@ -340,16 +340,9 @@ class Statistiques(Panel_API_graphique):
             self.param("quantiles")["quartiles"][0] = onglets.tab_quantiles.quartiles.isChecked()
             self.param("quantiles")["deciles"][0] = onglets.tab_quantiles.deciles.isChecked()
 
-            # On récupère les données de la série statistique
+            # On récupère la liste des classes et les données de la série statistique.
             self._recuperer_classes()
             self._recuperer_valeurs()
-
-            # par défaut, si toutes les valeurs entrées sont des classes,
-            # le découpage en classes suit les classes entrées.
-            if not self.classes:
-                for serie in self._donnees:
-                    if all(isinstance(x, Classe) for x in serie.keys()):
-                        self.classes.append(self._donnees.keys())
 
             self.calculer()
             if afficher:
@@ -383,7 +376,7 @@ class Statistiques(Panel_API_graphique):
 
     def ajouter_classes(self, *classes, **kw):
         if not self._classes:
-            self._classes.append({})
+            self._classes.append([])
         serie = kw.get('serie', 0)
         self._classes[serie] += classes
         self._classes.sort()
@@ -402,14 +395,25 @@ class Statistiques(Panel_API_graphique):
         donnees = self._donnees[serie]
         donnees[valeur] = donnees.get(valeur, 0) + effectif
 
+    # TODO: renommer classes en classes_serie
     @property
     def classes(self):
-        if not self._classes:
+        u"Les classes de la série courante."
+        index = self.index_serie
+        if not self._classes or len(self._classes) < index:
+            if self._donnees:
+                # Par défaut, si toutes les valeurs entrées sont des classes,
+                # le découpage en classes suit les classes entrées.
+                donnees = self._donnees[index].keys()
+                if all(isinstance(x, Classe) for x in donnees):
+                    return donnees
             return None
-        return self._classes[self.index_serie]
+        return self._classes[index]
 
+    # TODO: renommer donnees en donnees_serie
     @property
     def donnees(self):
+        u"Les données de la série courante."
         if not self._donnees:
             return None
         mode = self.param('mode_effectifs')
