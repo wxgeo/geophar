@@ -27,7 +27,7 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 from functools import partial
 
 from sympy import (exp, ln, tan, pi, Symbol, oo, solve, Wild, sympify,
-                    Add, Mul, sqrt, Abs, real_root,
+                    Add, Mul, sqrt, Abs, real_root, S,
                     )
 from .intervalles import Intervalle, vide, Union, R
 from .internal_functions import extract_var, count_syms, is_pos, is_var, is_neg
@@ -438,13 +438,19 @@ def positif(expression, variable=None, strict=False, _niveau=0, _changement_vari
     # En dernier recours, on tente un changement de variable.
     # NB: _niveau sert à éviter les récursions infinies !
     if _niveau < 20:
-        tmp2 = Symbol("_tmp2", real=True)
+        new = Symbol("_tmp2", real=True)
         # changements de variables courants : x², exp(x), ln(x), sqrt(x), x³ :
         changements = {'^2': variable**2,
                        '^3': variable**3,
                        'exp': exp(variable),
                        'ln': ln(variable),
                        'sqrt': sqrt(variable)
+                       }
+        reciproques = {'^2': sqrt(new),
+                       '^3': new**(S(1)/3),
+                       'exp': ln(new),
+                       'ln': exp(new),
+                       'sqrt': new**2
                        }
         for nom in changements:
             if {_changement_variable, nom} == {'exp', 'ln'}:
@@ -453,19 +459,16 @@ def positif(expression, variable=None, strict=False, _niveau=0, _changement_vari
             if {_changement_variable, nom} == {'^2', 'sqrt'}:
                 # On tourne en rond !
                 continue
-            if nom == 'exp' and not expression.has(exp):
-                continue
-            if nom == 'ln' and not expression.has(ln):
-                continue
             X = changements[nom]
-            expr = expression.subs(X, tmp2)
-            if nom == 'sqrt' and expr != expression:
-                expr = expr.subs(variable, tmp2**2)
+            if not expression.has(X):
+                # Changement de variable non pertinent.
+                continue
+            expr = expression.subs(variable, reciproques[nom])
             if variable in expr.atoms():
                 # Changement de variable incomplet
                 continue
     ##            print "nouvelle variable:", X
-            solution_temp = positif(expr, tmp2, strict=strict, _niveau=_niveau+1, _changement_variable=nom)
+            solution_temp = positif(expr, new, strict=strict, _niveau=_niveau+1, _changement_variable=nom)
             solution = vide
             for intervalle in solution_temp.intervalles:
                 sol = R
@@ -477,6 +480,8 @@ def positif(expression, variable=None, strict=False, _niveau=0, _changement_vari
                     sol &= positif(b - X, variable, strict=strict)
                 solution += sol
             return ens_def & solution
+    else:
+        print("Infinite reccursion suspected. Aborting...")
     raise NotImplementedError
 
 
