@@ -44,6 +44,8 @@ def test_resoudre_abs():
     assert_resoudre('3*abs(2*x-7)-2*abs(5*x+2)>0', ']-25/4;17/16[')
     assert_resoudre('3*abs(2*x-7)-2*abs(5*x+2)+5*abs(x+4)-9>0', ']-oo;-4[U]-4;28/11[U]14;+oo[')
 
+def test_resoudre_substitution():
+    assert_resoudre('sqrt(x**2+3)-x**2+3>=0', '[-sqrt(6);sqrt(6)]')
 
 def test_resoudre_puissances():
     assert_resoudre('sqrt(x)>4', ']16;+oo[')

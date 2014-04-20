@@ -27,10 +27,11 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 from functools import partial
 
 from sympy import (exp, ln, tan, pi, Symbol, oo, solve, Wild, sympify,
-                    Add, Mul, sqrt, Abs, real_root, S,
+                    Add, Mul, sqrt, Abs, preorder_traversal, Lambda, Dummy,
+                    count_ops,
                     )
 from .intervalles import Intervalle, vide, Union, R
-from .internal_functions import extract_var, count_syms, is_pos, is_var, is_neg
+from .internal_functions import extract_var, is_pos, is_var, is_neg
 from .custom_functions import floats2rationals
 from ..pylib import split_around_parenthesis
 from .sympy_functions import factor, solve as solve_
@@ -142,7 +143,7 @@ def positif(expression, variable=None, strict=False, _niveau=0, _changement_vari
         variable = extract_var(expression)
     if hasattr(expression, "subs"):
         old_variable = variable
-        variable = Symbol("_tmp",real=True)
+        variable = Dummy(real=True)
         expression = expression.subs({old_variable:variable})
     ens_def = ensemble_definition(expression, variable)
     a = Wild('a')
@@ -235,37 +236,37 @@ def positif(expression, variable=None, strict=False, _niveau=0, _changement_vari
                else:
                    return vide
 
-    # --------------- CODE À SUPPRIMER ? --------------
-    # a*f(x)+b > 0 <=> f(x)+b/a > 0 pour a > 0, -f(x) - b/a > 0 pour a < 0
-    if expression.is_Add:
-        args = expression.args
-        if len(args) == 2:
-            liste_constantes = []
-            liste_autres = []
-            for arg in args:
-                if arg.has(variable):
-                    liste_autres.append(arg)
-                else:
-                    liste_constantes.append(arg)
-            if len(liste_autres) == 1:
-                partie_constante = Add(*liste_constantes)
-                partie_variable = liste_autres[0]
-                if getattr(partie_variable, "is_Mul", False):
-                    liste_facteurs_constants = []
-                    liste_autres_facteurs = []
-                    for facteur in partie_variable.args:
-                        if is_var(facteur, variable):
-                            liste_autres_facteurs.append(facteur)
-                        else:
-                            liste_facteurs_constants.append(facteur)
-                    if liste_facteurs_constants:
-                        facteur_constant = Mul(*liste_facteurs_constants)
-                        autre_facteur = Mul(*liste_autres_facteurs)
-                        if is_pos(facteur_constant):
-                            return positif(autre_facteur + partie_constante/facteur_constant, variable, strict=strict)
-                        elif is_neg(facteur_constant):
-                            return ens_def & (R - positif(autre_facteur + partie_constante/facteur_constant, variable, strict=not strict))
-    # -------------------------------------------------
+    #~ # --------------- CODE À SUPPRIMER ? --------------
+    #~ # a*f(x)+b > 0 <=> f(x)+b/a > 0 pour a > 0, -f(x) - b/a > 0 pour a < 0
+    #~ if expression.is_Add:
+        #~ args = expression.args
+        #~ if len(args) == 2:
+            #~ liste_constantes = []
+            #~ liste_autres = []
+            #~ for arg in args:
+                #~ if arg.has(variable):
+                    #~ liste_autres.append(arg)
+                #~ else:
+                    #~ liste_constantes.append(arg)
+            #~ if len(liste_autres) == 1:
+                #~ partie_constante = Add(*liste_constantes)
+                #~ partie_variable = liste_autres[0]
+                #~ if getattr(partie_variable, "is_Mul", False):
+                    #~ liste_facteurs_constants = []
+                    #~ liste_autres_facteurs = []
+                    #~ for facteur in partie_variable.args:
+                        #~ if is_var(facteur, variable):
+                            #~ liste_autres_facteurs.append(facteur)
+                        #~ else:
+                            #~ liste_facteurs_constants.append(facteur)
+                    #~ if liste_facteurs_constants:
+                        #~ facteur_constant = Mul(*liste_facteurs_constants)
+                        #~ autre_facteur = Mul(*liste_autres_facteurs)
+                        #~ if is_pos(facteur_constant):
+                            #~ return positif(autre_facteur + partie_constante/facteur_constant, variable, strict=strict)
+                        #~ elif is_neg(facteur_constant):
+                            #~ return ens_def & (R - positif(autre_facteur + partie_constante/facteur_constant, variable, strict=not strict))
+    #~ # -------------------------------------------------
 
     # Valeur absolue seule:
     if isinstance(expression, Abs):
@@ -434,54 +435,129 @@ def positif(expression, variable=None, strict=False, _niveau=0, _changement_vari
                 pass
 
 
-##    print "Changement de variable."
-    # En dernier recours, on tente un changement de variable.
-    # NB: _niveau sert à éviter les récursions infinies !
-    if _niveau < 20:
-        new = Symbol("_tmp2", real=True)
-        # changements de variables courants : x², exp(x), ln(x), sqrt(x), x³ :
-        changements = {'^2': variable**2,
-                       '^3': variable**3,
-                       'exp': exp(variable),
-                       'ln': ln(variable),
-                       'sqrt': sqrt(variable)
-                       }
-        reciproques = {'^2': sqrt(new),
-                       '^3': new**(S(1)/3),
-                       'exp': ln(new),
-                       'ln': exp(new),
-                       'sqrt': new**2
-                       }
-        for nom in changements:
-            if {_changement_variable, nom} == {'exp', 'ln'}:
-                # On tourne en rond !
-                continue
-            if {_changement_variable, nom} == {'^2', 'sqrt'}:
-                # On tourne en rond !
-                continue
-            X = changements[nom]
-            if not expression.has(X):
-                # Changement de variable non pertinent.
-                continue
-            expr = expression.subs(variable, reciproques[nom])
-            if variable in expr.atoms():
-                # Changement de variable incomplet
-                continue
-    ##            print "nouvelle variable:", X
-            solution_temp = positif(expr, new, strict=strict, _niveau=_niveau+1, _changement_variable=nom)
+    def _resolution_par_substitution(expr, X):
+        try:
+            solutions_intermediaires = positif(expr, X, strict=strict,
+                                  _niveau=_niveau + 1,
+                                  _changement_variable=Lambda(variable,sub))
             solution = vide
-            for intervalle in solution_temp.intervalles:
+            for intervalle in solutions_intermediaires.intervalles:
                 sol = R
                 a = intervalle.inf
                 b = intervalle.sup
                 if a != - oo:
-                    sol &= positif(X - a, variable, strict=strict)
+                    sol &= positif(sub - a, variable, strict=strict)
                 if b != oo:
-                    sol &= positif(b - X, variable, strict=strict)
+                    sol &= positif(b - sub, variable, strict=strict)
                 solution += sol
             return ens_def & solution
-    else:
+        except NotImplementedError:
+            return None
+
+    # En dernier recours, on tente un changement de variable.
+    # NB: _niveau sert à éviter les récursions infinies !
+    if _niveau > 10:
         print("Infinite reccursion suspected. Aborting...")
+        raise NotImplementedError
+
+    # La technique globalement est la suivante :
+    # sqrt(x² + 5) - 9 > 0 <=> sqrt(X) - 9 > 0 (avec X = x² + 5) <=> X in ]3;+oo[ <=> X - 3 > 0 <=> x² + 5 - 3 > 0, etc.
+    # On commence par lister tous les changements de variable potentiels,
+    # c'est-à-dire toutes les sous-expressions qui contiennent la variable.
+    changements = sorted(set(subexpr for subexpr in preorder_traversal(expression)
+                         if subexpr.has(variable)) - {variable, expression},
+                         key=count_ops)
+    q = Wild('a', exclude=[variable, 0])
+    b = Wild('b', exclude=[variable, 0])
+    X = Dummy(real=True)
+    changements_incomplets = []
+    for sub in changements:
+        if _changement_variable is not None:
+            enchainement = _changement_variable(sub)
+            if enchainement.match(a*variable) or enchainement.match(a*abs(variable)):
+                # On enchaîne deux changements de variable réciproque,
+                # comme ln() et exp() ou encore x->x² et x-> sqrt(x).
+                # Ce qui conduirait à une récursion infinie.
+                continue
+        match = expression.match(a*sub + b)
+        if match and match['a'] in (-1, 1):
+            # Ceci conduirait à des récursions infinies du genre :
+            # sqrt(x² + 5) - 9 > 0 <=> X - 9 > 0 (avec X = sqrt(x² + 5)) <=> X in ]9;+oo[ <=> X - 9 > 0 <=> sqrt(x² + 5) - 9 > 0, etc.
+            continue
+        # On tente le changement de variable.
+        new = expression.subs(sub, X)
+        if new.has(variable):
+            # Changement de variable incomplet.
+            # On le garde en réserve pour une 2e passe si on n'a pas trouvé mieux.
+            changements_incomplets.append(sub)
+        else:
+            sols = _resolution_par_substitution(new, X)
+            if sols is not None:
+                return sols
+    for sub in changements_incomplets:
+        # On cherche si le changement de variable est inversible.
+        # Si oui, au lieu de remplacer f(x) par X, on remplace x par f-¹(X)
+        # Bizarrement, l'assertion real=True fait planter le solver() de sympy
+        # lorsqu'on lance solve(sqrt(x)-y, x). On utilise donc des variables
+        # temporaires sans assertions.
+        var1 = Dummy()
+        var2 = Dummy()
+        antecedents = solve((sub - X).xreplace({variable:var1, X:var2}), var1)
+        if len(antecedents) == 1:
+            new = expression.subs(variable, antecedents[0].xreplace({var1:variable, var2:X}))
+            sols = _resolution_par_substitution(new, X)
+            if sols is not None:
+                return sols
+
+
+##    print "Changement de variable."
+    # En dernier recours, on tente un changement de variable.
+    # NB: _niveau sert à éviter les récursions infinies !
+    #~ if _niveau < 20:
+        #~ new = Symbol("_tmp2", real=True)
+        #~ # changements de variables courants : x², exp(x), ln(x), sqrt(x), x³ :
+        #~ changements = {'^2': variable**2,
+                       #~ '^3': variable**3,
+                       #~ 'exp': exp(variable),
+                       #~ 'ln': ln(variable),
+                       #~ 'sqrt': sqrt(variable)
+                       #~ }
+        #~ reciproques = {'^2': sqrt(new),
+                       #~ '^3': new**(S(1)/3),
+                       #~ 'exp': ln(new),
+                       #~ 'ln': exp(new),
+                       #~ 'sqrt': new**2
+                       #~ }
+        #~ for nom in changements:
+            #~ if {_changement_variable, nom} == {'exp', 'ln'}:
+                #~ # On tourne en rond !
+                #~ continue
+            #~ if {_changement_variable, nom} == {'^2', 'sqrt'}:
+                #~ # On tourne en rond !
+                #~ continue
+            #~ X = changements[nom]
+            #~ if not expression.has(X):
+                #~ # Changement de variable non pertinent.
+                #~ continue
+            #~ expr = expression.subs(variable, reciproques[nom])
+            #~ if variable in expr.atoms():
+                #~ # Changement de variable incomplet
+                #~ continue
+    #~ ##            print "nouvelle variable:", X
+            #~ solution_temp = positif(expr, new, strict=strict, _niveau=_niveau+1, _changement_variable=nom)
+            #~ solution = vide
+            #~ for intervalle in solution_temp.intervalles:
+                #~ sol = R
+                #~ a = intervalle.inf
+                #~ b = intervalle.sup
+                #~ if a != - oo:
+                    #~ sol &= positif(X - a, variable, strict=strict)
+                #~ if b != oo:
+                    #~ sol &= positif(b - X, variable, strict=strict)
+                #~ solution += sol
+            #~ return ens_def & solution
+    #~ else:
+        #~ print("Infinite reccursion suspected. Aborting...")
     raise NotImplementedError
 
 
