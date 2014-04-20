@@ -134,7 +134,7 @@ def ensemble_definition(expression, variable = None):
 
 
 
-def positif(expression, variable = None, strict = False):
+def positif(expression, variable=None, strict=False, _niveau=0, _changement_variable=None):
     u"""Retourne l'ensemble sur lequel une expression à variable réelle est positive (resp. strictement positive)."""
     from .sympy_functions import factor
     # L'étude du signe se fait dans R, on indique donc à sympy que la variable est réelle.
@@ -435,22 +435,37 @@ def positif(expression, variable = None, strict = False):
 
 
 ##    print "Changement de variable."
-    # En dernier recours, on tente un changement de variable :
-    tmp2 = Symbol("_tmp2", real=True)
-    # changements de variables courants : x², exp(x), ln(x), sqrt(x), x³ :
-    for X in (variable**2, variable**3, exp(variable), ln(variable), sqrt(variable)):
-        if X == exp(variable) and not expression.has(exp):
-            continue
-        if X == ln(variable) and not expression.has(ln):
-            continue
-        expr = expression.subs(X, tmp2)
-        if X == sqrt(variable) and expr != expression:
-            expr = expr.subs(variable, tmp2**2)
-        # Si la nouvelle variable apparait une seule fois,
-        # le changement de variable produirait une récursion infinie !
-        if variable not in expr.atoms() and count_syms(expr, tmp2) > 1:
-##            print "nouvelle variable:", X
-            solution_temp = positif(expr, tmp2, strict=strict)
+    # En dernier recours, on tente un changement de variable.
+    # NB: _niveau sert à éviter les récursions infinies !
+    if _niveau < 20:
+        tmp2 = Symbol("_tmp2", real=True)
+        # changements de variables courants : x², exp(x), ln(x), sqrt(x), x³ :
+        changements = {'^2': variable**2,
+                       '^3': variable**3,
+                       'exp': exp(variable),
+                       'ln': ln(variable),
+                       'sqrt': sqrt(variable)
+                       }
+        for nom in changements:
+            if {_changement_variable, nom} == {'exp', 'ln'}:
+                # On tourne en rond !
+                continue
+            if {_changement_variable, nom} == {'^2', 'sqrt'}:
+                # On tourne en rond !
+                continue
+            if nom == 'exp' and not expression.has(exp):
+                continue
+            if nom == 'ln' and not expression.has(ln):
+                continue
+            X = changements[nom]
+            expr = expression.subs(X, tmp2)
+            if nom == 'sqrt' and expr != expression:
+                expr = expr.subs(variable, tmp2**2)
+            if variable in expr.atoms():
+                # Changement de variable incomplet
+                continue
+    ##            print "nouvelle variable:", X
+            solution_temp = positif(expr, tmp2, strict=strict, _niveau=_niveau+1, _changement_variable=nom)
             solution = vide
             for intervalle in solution_temp.intervalles:
                 sol = R

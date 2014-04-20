@@ -50,7 +50,7 @@ def test_resoudre_puissances():
     assert_resoudre('x^2.3>4', ']2^(20/23);+oo[')
     assert_resoudre('-3*x^2.3>4', '{}')
     assert_resoudre('x+sqrt(x)>4', ']-sqrt(17)/2 + 9/2;+oo[')
-    assert_resoudre('resoudre(sqrt(x^2-3)<=5)', '[-2 sqrt(7) ; -sqrt(3)]U[sqrt(3) ; 2 sqrt(7)]')
+    assert_resoudre('sqrt(x^2-3)<=5', '[-2*sqrt(7);-sqrt(3)]U[sqrt(3);2*sqrt(7)]')
 
 
 def test_resoudre_floats():
