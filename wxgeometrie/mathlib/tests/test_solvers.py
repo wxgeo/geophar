@@ -46,13 +46,17 @@ def test_resoudre_abs():
 
 def test_resoudre_substitution():
     assert_resoudre('sqrt(x**2+3)-x**2+3>=0', '[-sqrt(6);sqrt(6)]')
+    assert_resoudre('sqrt(x+3)+x-5>=0', '[-sqrt(33)/2 + 11/2;+oo[')
 
 def test_resoudre_puissances():
     assert_resoudre('sqrt(x)>4', ']16;+oo[')
     assert_resoudre('x^2.3>4', ']2^(20/23);+oo[')
     assert_resoudre('-3*x^2.3>4', '{}')
+
+def test_sqrt():
     assert_resoudre('x+sqrt(x)>4', ']-sqrt(17)/2 + 9/2;+oo[')
     assert_resoudre('sqrt(x^2-3)<=5', '[-2*sqrt(7);-sqrt(3)]U[sqrt(3);2*sqrt(7)]')
+    assert_resoudre('sqrt(x+3)-sqrt(x**2-4)>=0', '[-sqrt(29)/2 + 1/2;-2]U[2;1/2 + sqrt(29)/2]')
 
 
 def test_resoudre_floats():

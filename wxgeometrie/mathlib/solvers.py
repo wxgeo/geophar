@@ -149,12 +149,13 @@ def positif(expression, variable=None, strict=False, _niveau=0, _changement_vari
     a = Wild('a')
     # sqrt(x^2) = |x|
     expression = expression.replace(sqrt(a**2),Abs(a)).replace(Abs(sqrt(a)),sqrt(a))
+    del a
     try:
         expression = factor(expression, variable, "R", decomposer_entiers = False)
     except NotImplementedError:
         if param.debug:
             print "Warning: Factorisation impossible de ", expression
-##    print "T455451", expression, variable
+
     if expression.is_Pow and expression.as_base_exp()[1].is_rational:
         base, p = expression.as_base_exp()
         # Le dénominateur ne doit pas s'annuler :
@@ -167,6 +168,7 @@ def positif(expression, variable=None, strict=False, _niveau=0, _changement_vari
                 return ens_def
         else:
             return ens_def & positif(base, variable, strict=strict)
+
     if expression.is_Mul:
         posit = R
         posit_nul = R
@@ -179,16 +181,11 @@ def positif(expression, variable=None, strict=False, _niveau=0, _changement_vari
             # posit_nul : les deux sont positifs ou nuls, ou les deux sont négatifs ou nuls
             posit, posit_nul = ((posit & pos) + (-posit_nul & -pos_nul) & ens_def,
                                 ((posit_nul & pos_nul) + (-posit & -pos)) & ens_def)
-
-##            print "resultat", facteur, res
-####            if res is NotImplemented:
-####                return NotImplemented
-##            # le résultat est positif si les deux facteurs sont positifs, ou si les deux facteurs sont négatifs:
-##            resultat = resultat*res + (-resultat)*(-res)
         if strict:
             return posit
         else:
             return posit_nul
+
     if expression.is_positive is True: # > 0
         return ens_def
     if expression.is_negative is True: # < 0
@@ -199,11 +196,13 @@ def positif(expression, variable=None, strict=False, _niveau=0, _changement_vari
         return ens_def
     if expression.is_zero is True and not strict: # == 0
         return ens_def
+
     if isinstance(expression, (int, float, long)):
         if expression > 0 or (expression == 0 and not strict):
             return ens_def
         else:
             return vide
+
     # Inutile de se préoccuper de l'ensemble de définition pour les fonctions polynômiales.
     if expression.is_polynomial():
         P = expression.as_poly(variable)
@@ -236,38 +235,6 @@ def positif(expression, variable=None, strict=False, _niveau=0, _changement_vari
                else:
                    return vide
 
-    #~ # --------------- CODE À SUPPRIMER ? --------------
-    #~ # a*f(x)+b > 0 <=> f(x)+b/a > 0 pour a > 0, -f(x) - b/a > 0 pour a < 0
-    #~ if expression.is_Add:
-        #~ args = expression.args
-        #~ if len(args) == 2:
-            #~ liste_constantes = []
-            #~ liste_autres = []
-            #~ for arg in args:
-                #~ if arg.has(variable):
-                    #~ liste_autres.append(arg)
-                #~ else:
-                    #~ liste_constantes.append(arg)
-            #~ if len(liste_autres) == 1:
-                #~ partie_constante = Add(*liste_constantes)
-                #~ partie_variable = liste_autres[0]
-                #~ if getattr(partie_variable, "is_Mul", False):
-                    #~ liste_facteurs_constants = []
-                    #~ liste_autres_facteurs = []
-                    #~ for facteur in partie_variable.args:
-                        #~ if is_var(facteur, variable):
-                            #~ liste_autres_facteurs.append(facteur)
-                        #~ else:
-                            #~ liste_facteurs_constants.append(facteur)
-                    #~ if liste_facteurs_constants:
-                        #~ facteur_constant = Mul(*liste_facteurs_constants)
-                        #~ autre_facteur = Mul(*liste_autres_facteurs)
-                        #~ if is_pos(facteur_constant):
-                            #~ return positif(autre_facteur + partie_constante/facteur_constant, variable, strict=strict)
-                        #~ elif is_neg(facteur_constant):
-                            #~ return ens_def & (R - positif(autre_facteur + partie_constante/facteur_constant, variable, strict=not strict))
-    #~ # -------------------------------------------------
-
     # Valeur absolue seule:
     if isinstance(expression, Abs):
         return ens_def
@@ -287,17 +254,17 @@ def positif(expression, variable=None, strict=False, _niveau=0, _changement_vari
     # Puissances
     # Résolution de a*x^q-b > 0, où q n'est pas entier
     if expression.is_Add:
-        a_ = Wild('a', exclude=[variable, 0])
-        q_ = Wild('q', exclude=[variable, 1])
-        b_ = Wild('b', exclude=[variable])
-        X_ = Wild('X')
-        # match ne semble pas fonctionner avec a_*X_**q_ - b_
-        match = expression.match(a_*X_**q_ + b_)
-        if match is not None and X_ in match:
-            a = match[a_]
-            q = match[q_]
-            b = -match[b_]/a
-            X = match[X_]
+        a = Wild('a', exclude=[variable, 0])
+        q = Wild('q', exclude=[variable, 1])
+        b = Wild('b', exclude=[variable])
+        X = Wild('X')
+        # match ne semble pas fonctionner avec a*X**q - b
+        match = expression.match(a*X**q + b)
+        if match and X in match:
+            a = match[a]
+            q = match[q]
+            b = -match[b]/a
+            X = match[X]
             # Le cas où q est entier est déjà traité par ailleurs (polynômes).
             # Lorsque q est de la forme 1/n, on peut définir la fonction x−>x^(1/n)
             # sur R si n est impair et sur R+ sinon.
@@ -316,13 +283,31 @@ def positif(expression, variable=None, strict=False, _niveau=0, _changement_vari
                 if a.is_negative:
                     sols = ens_def - sols
                 return sols
+        del a, q, b, X
 
-    # résolution de a*sqrt(X)-B > 0 où signe(B) = signe(A)
-    # TODO !
+    # résolution de a*sqrt(B)-c*sqrt(D) > 0 où signe(c) = signe(a)
+    if expression.is_Add:
+        a = Wild('a', exclude=[0, variable])
+        B = Wild('B', exclude=[0])
+        c = Wild('c', exclude=[0, variable])
+        D = Wild('D', exclude=[0])
+        match = expression.match(a*sqrt(B) - c*sqrt(D))
+        if match:
+            a = match[a]
+            B = match[B]
+            c = match[c]
+            D = match[D]
+            if a.is_positive and c.is_positive:
+                return ens_def & positif(a**2*B - c**2*D, variable, strict=strict)
+            elif a.is_negative and c.is_negative:
+                return ens_def & positif(c**2*D - a**2*B, variable, strict=strict)
+        del a, B, c, D
 
     # Logarithme :
     if isinstance(expression, ln):
         return positif(expression.args[0] - 1, variable, strict=strict)
+
+    # Sommes contenant des logarithmes :
     # Résolution de ln(X1) + ln(X2) + ... + b > 0, où X1=f1(x), X2 = f2(x) ...
     if expression.is_Add and expression.has(ln):
         args = expression.args
@@ -338,10 +323,8 @@ def positif(expression, variable=None, strict=False, _niveau=0, _changement_vari
                         liste_ln.append(facteur)
                     elif not is_var(facteur, variable):
                         liste_constantes.append(facteur)
-##                print facteur, liste_constantes, liste_ln
                 if len(liste_constantes) == len(arg.args) - 1 and len(liste_ln) == 1:
                     expression += ln(liste_ln[0].args[0]**Add(*liste_constantes)) - arg
-##        print "Resultat 1er passage:", expression
         # Deuxième passage : ln(X1)+ln(X2)+b>0 <=> X1*X2-exp(-b)>0
         for arg in args:
             if isinstance(arg, ln) and hasattr(arg, "has") and arg.has(variable):
@@ -355,21 +338,40 @@ def positif(expression, variable=None, strict=False, _niveau=0, _changement_vari
             contenu_cst = exp(- Add(*liste_constantes))
             return ens_def & positif(contenu_log - contenu_cst, variable, strict=strict)
 
+        # Cas très particulier : on utilise le fait que ln(x)<=x-1 sur ]0;+oo[
+        expr = expression
+        changements = False
+        for arg in expr.args:
+            if isinstance(arg, ln):
+                changements = True
+                expr += arg.args[0] + 1 - arg
+        if changements:
+            try:
+                non_positif = positif(-expr, variable, strict = not strict) # complementaire
+                (ens_def - positif(expr, variable, strict = not strict) == vide)
+                if (ens_def - non_positif == vide):
+                    return vide
+            except NotImplementedError:
+                pass
 
+        # Si aucune autre méthode n'a fonctionné, on tente ln(a)+ln(b)>0 <=> a*b>1 (pour a>0 et b>0)
+        expr = Mul(*(exp(arg) for arg in expression.args)) - 1
+        try:
+            return ens_def*positif(expr, variable, strict=strict)
+        except NotImplementedError:
+            pass
 
     # Exponentielle
     # Résolution de a*exp(f(x)) + b > 0
-    if expression.is_Add:
-        a_ = Wild('a', exclude=[variable, 0])
-        b_ = Wild('b', exclude=[variable])
-        X_ = Wild('X')
-        match = expression.match(a_*exp(X_) + b_)
-        if match is not None and X_ in match:
-            # Il faut tester si X_ est dans match, car on peut avoir a_=0, et
-            # X_ non défini.
-            a = match[a_]
-            b = match[b_]
-            X = match[X_]
+    if expression.is_Add and expression.has(exp):
+        a = Wild('a', exclude=[variable, 0])
+        b = Wild('b', exclude=[variable])
+        X = Wild('X')
+        match = expression.match(a*exp(X) + b)
+        if match:
+            a = match[a]
+            b = match[b]
+            X = match[X]
             if is_pos(b):
                 if is_pos(a):
                     return ens_def
@@ -381,9 +383,9 @@ def positif(expression, variable=None, strict=False, _niveau=0, _changement_vari
                     return positif(X - ln(-b/a), variable, strict=strict)
                 elif is_neg(a):
                     return vide
+        del a, b, X
 
-    # Cas très particulier : on utilise le fait que exp(x)>=x+1 sur R
-    if expression.is_Add and expression.has(exp):
+        # Cas très particulier : on utilise le fait que exp(x)>=x+1 sur R
         expr = expression
         changements = False
         for arg in expr.args:
@@ -393,47 +395,27 @@ def positif(expression, variable=None, strict=False, _niveau=0, _changement_vari
         if changements and (ens_def - positif(expr, variable, strict=strict) == vide):
             return ens_def
 
-    # Cas très particulier : si a≥0, b*(a*x-1+exp(x))>0 <=> b*x>0
-    if expression.is_Add and expression.has(exp):
-        a_ = Wild('a', exclude=[variable, 0])
-        b_ = Wild('b', exclude=[variable, 0])
-        X_ = Wild('X')
-        match = expression.match(b_*(a_*X_ - 1 + exp(X_)))
-        if match is not None and X_ in match:
-            a = match[a_]
+        # Cas très particulier : si a≥0, b*(a*x-1+exp(x))>0 <=> b*x>0
+        a = Wild('a', exclude=[variable, 0])
+        b = Wild('b', exclude=[variable, 0])
+        X = Wild('X')
+        match = expression.match(b*(a*X - 1 + exp(X)))
+        if match is not None and X in match:
+            a = match[a]
             if a >= 0:
-                b = match[b_]
-                X = match[X_]
+                b = match[b]
+                X = match[X]
                 return positif(b*X, variable, strict=strict)
+        del a, b, X
 
+    # En dernier recours, on tente un changement de variable.
+    # NB: _niveau sert à éviter les récursions infinies !
+    if _niveau > 10:
+        print("Infinite recursion suspected. Aborting...")
+        raise NotImplementedError
 
-
-    # Sommes contenant des logarithmes :
-    if expression.is_Add and expression.has(ln):
-        # Cas très particulier : on utilise le fait que ln(x)<=x-1 sur ]0;+oo[
-        expr = expression
-        changements = False
-        for arg in expr.args:
-            if isinstance(arg, ln):
-                changements = True
-                expr += arg.args[0] + 1 - arg
-        if changements:
-            try:
-##                print "S458475",  -expr
-                non_positif = positif(-expr, variable, strict = not strict) # complementaire
-                (ens_def - positif(expr, variable, strict = not strict) == vide)
-                if (ens_def - non_positif == vide):
-                    return vide
-            except NotImplementedError:
-                pass
-
-            # Somme contenant des logarithmes : si aucune autre méthode n'a fonctionné, on tente ln(a)+ln(b)>0 <=> a*b>1 (pour a>0 et b>0)
-            expr = Mul(*(exp(arg) for arg in expression.args)) - 1
-            try:
-                return ens_def*positif(expr, variable, strict=strict)
-            except NotImplementedError:
-                pass
-
+    # La technique globalement est la suivante :
+    # sqrt(x² + 5) - 9 > 0 <=> sqrt(X) - 9 > 0 (avec X = x² + 5) <=> X in ]3;+oo[ <=> X - 3 > 0 <=> x² + 5 - 3 > 0, etc.
 
     def _resolution_par_substitution(expr, X):
         try:
@@ -454,20 +436,12 @@ def positif(expression, variable=None, strict=False, _niveau=0, _changement_vari
         except NotImplementedError:
             return None
 
-    # En dernier recours, on tente un changement de variable.
-    # NB: _niveau sert à éviter les récursions infinies !
-    if _niveau > 10:
-        print("Infinite reccursion suspected. Aborting...")
-        raise NotImplementedError
-
-    # La technique globalement est la suivante :
-    # sqrt(x² + 5) - 9 > 0 <=> sqrt(X) - 9 > 0 (avec X = x² + 5) <=> X in ]3;+oo[ <=> X - 3 > 0 <=> x² + 5 - 3 > 0, etc.
     # On commence par lister tous les changements de variable potentiels,
     # c'est-à-dire toutes les sous-expressions qui contiennent la variable.
     changements = sorted(set(subexpr for subexpr in preorder_traversal(expression)
                          if subexpr.has(variable)) - {variable, expression},
                          key=count_ops)
-    q = Wild('a', exclude=[variable, 0])
+    a = Wild('a', exclude=[variable, 0])
     b = Wild('b', exclude=[variable, 0])
     X = Dummy(real=True)
     changements_incomplets = []
@@ -509,55 +483,14 @@ def positif(expression, variable=None, strict=False, _niveau=0, _changement_vari
             if sols is not None:
                 return sols
 
+    # TODO: Résolution par continuité.
+    # Les fonctions usuelles sont continues sur tout intervalle de leur ensemble de définition.
+    # Il suffit donc de rechercher les zéros de la fonction, et d'évaluer le signe
+    # de l'expression sur chaque tronçon.
+    # Cette méthode est simple, mais elle suppose que **tous** les zéros aient bien
+    # été trouvés par solve(), ce qui n'est pas toujours le cas.
+    # C'est pourquoi elle est proposée seulement en dernier recours.
 
-##    print "Changement de variable."
-    # En dernier recours, on tente un changement de variable.
-    # NB: _niveau sert à éviter les récursions infinies !
-    #~ if _niveau < 20:
-        #~ new = Symbol("_tmp2", real=True)
-        #~ # changements de variables courants : x², exp(x), ln(x), sqrt(x), x³ :
-        #~ changements = {'^2': variable**2,
-                       #~ '^3': variable**3,
-                       #~ 'exp': exp(variable),
-                       #~ 'ln': ln(variable),
-                       #~ 'sqrt': sqrt(variable)
-                       #~ }
-        #~ reciproques = {'^2': sqrt(new),
-                       #~ '^3': new**(S(1)/3),
-                       #~ 'exp': ln(new),
-                       #~ 'ln': exp(new),
-                       #~ 'sqrt': new**2
-                       #~ }
-        #~ for nom in changements:
-            #~ if {_changement_variable, nom} == {'exp', 'ln'}:
-                #~ # On tourne en rond !
-                #~ continue
-            #~ if {_changement_variable, nom} == {'^2', 'sqrt'}:
-                #~ # On tourne en rond !
-                #~ continue
-            #~ X = changements[nom]
-            #~ if not expression.has(X):
-                #~ # Changement de variable non pertinent.
-                #~ continue
-            #~ expr = expression.subs(variable, reciproques[nom])
-            #~ if variable in expr.atoms():
-                #~ # Changement de variable incomplet
-                #~ continue
-    #~ ##            print "nouvelle variable:", X
-            #~ solution_temp = positif(expr, new, strict=strict, _niveau=_niveau+1, _changement_variable=nom)
-            #~ solution = vide
-            #~ for intervalle in solution_temp.intervalles:
-                #~ sol = R
-                #~ a = intervalle.inf
-                #~ b = intervalle.sup
-                #~ if a != - oo:
-                    #~ sol &= positif(X - a, variable, strict=strict)
-                #~ if b != oo:
-                    #~ sol &= positif(b - X, variable, strict=strict)
-                #~ solution += sol
-            #~ return ens_def & solution
-    #~ else:
-        #~ print("Infinite reccursion suspected. Aborting...")
     raise NotImplementedError
 
 
