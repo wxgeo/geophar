@@ -28,7 +28,7 @@ from functools import partial
 
 from sympy import (exp, ln, tan, pi, Symbol, oo, solve, Wild, sympify,
                     Add, Mul, sqrt, Abs, preorder_traversal, Lambda, Dummy,
-                    count_ops,
+                    count_ops, sin, cos, S,
                     )
 from .intervalles import Intervalle, vide, Union, R
 from .internal_functions import extract_var, is_pos, is_var, is_neg
@@ -134,6 +134,63 @@ def ensemble_definition(expression, variable = None):
     return ens_def
 
 
+def periode(expression, variable=None):
+    u"""Retourne la période minimale de la fonction.
+
+    Si la fonction n'est pas périodique (ou si elle n'est pas encore supportée),
+    retourne +oo.
+    Retourne 0 si la fonction est constante.
+    """
+    expression = sympify(expression)
+    if variable is None:
+        variable = extract_var(expression)
+    a = Wild('a', exclude=[0, variable])
+    b = Wild('b', exclude=[variable])
+    if isinstance(expression, (cos, sin)):
+        match = expression.args[0].match(a*variable + b)
+        if match:
+            return 2*pi/match[a]
+        else:
+            # Il est possible que la fonction soit malgré tout périodique,
+            # mais l'on ne sait pas faire pour l'instant...
+            return oo
+    elif isinstance(expression, tan):
+        match = expression.args[0].match(a*variable + b)
+        if match:
+            return pi/match[a]
+        else:
+            # Il est possible que la fonction soit malgré tout périodique,
+            # mais l'on ne sait pas faire pour l'instant...
+            return oo
+    elif expression.args:
+        T = 0
+        for arg in expression.args:
+            T_ = periode(arg)
+            if not T:
+                T = T_
+            if T_ is oo:
+                return oo
+            elif T_:
+                ratio = T/T_
+                # T/T_ == p/q <=> q T == p T_, donc q T (== p T_) est la plus petite période commune.
+                if ratio.is_Rational:
+                    T = ratio.q*T
+                else:
+                    # Il n'existe pas (k, k') entiers tels que k T == k' T_
+                    # Donc pas de période commune.
+                    return oo
+        return T
+    else:
+        if expression.has(variable):
+            # Les seuls fonctions usuelles périodiques sont sin, cos et tan.
+            return oo
+        else:
+            # Fonction constante
+            return 0
+
+
+
+
 
 def positif(expression, variable=None, strict=False, _niveau=0, _changement_variable=None):
     u"""Retourne l'ensemble sur lequel une expression à variable réelle est positive (resp. strictement positive)."""
@@ -145,11 +202,21 @@ def positif(expression, variable=None, strict=False, _niveau=0, _changement_vari
         old_variable = variable
         variable = Dummy(real=True)
         expression = expression.subs({old_variable:variable})
+
+    # Ensemble de définition et périodicité
     ens_def = ensemble_definition(expression, variable)
+    T = periode(expression, variable)
+    if T not in (0, oo):
+        ens_def &= Intervalle(0, T)
+        if param.debug:
+            print(u'Fonction périodique %s détectée. Résolution sur [0;%s]' % (expression, T))
+
+    # On remplace sqrt(x^2) par |x|.
     a = Wild('a')
-    # sqrt(x^2) = |x|
     expression = expression.replace(sqrt(a**2),Abs(a)).replace(Abs(sqrt(a)),sqrt(a))
     del a
+
+    # On factorise au maximum.
     try:
         expression = factor(expression, variable, "R", decomposer_entiers = False)
     except NotImplementedError:
@@ -408,7 +475,7 @@ def positif(expression, variable=None, strict=False, _niveau=0, _changement_vari
                 return positif(b*X, variable, strict=strict)
         del a, b, X
 
-    # En dernier recours, on tente un changement de variable.
+    # Aucun cas connu n'a été détecté, on tente un changement de variable.
     # NB: _niveau sert à éviter les récursions infinies !
     if _niveau > 10:
         print("Infinite recursion suspected. Aborting...")
@@ -428,9 +495,9 @@ def positif(expression, variable=None, strict=False, _niveau=0, _changement_vari
                 a = intervalle.inf
                 b = intervalle.sup
                 if a != - oo:
-                    sol &= positif(sub - a, variable, strict=strict)
+                    sol &= positif(sub - a, variable, strict=(not intervalle.inf_inclus))
                 if b != oo:
-                    sol &= positif(b - sub, variable, strict=strict)
+                    sol &= positif(b - sub, variable, strict=(not intervalle.sup_inclus))
                 solution += sol
             return ens_def & solution
         except NotImplementedError:
@@ -454,7 +521,7 @@ def positif(expression, variable=None, strict=False, _niveau=0, _changement_vari
                 # Ce qui conduirait à une récursion infinie.
                 continue
         match = expression.match(a*sub + b)
-        if match and match['a'] in (-1, 1):
+        if match and match[a] in (-1, 1):
             # Ceci conduirait à des récursions infinies du genre :
             # sqrt(x² + 5) - 9 > 0 <=> X - 9 > 0 (avec X = sqrt(x² + 5)) <=> X in ]9;+oo[ <=> X - 9 > 0 <=> sqrt(x² + 5) - 9 > 0, etc.
             continue
@@ -483,15 +550,38 @@ def positif(expression, variable=None, strict=False, _niveau=0, _changement_vari
             if sols is not None:
                 return sols
 
-    # TODO: Résolution par continuité.
+    # En dernier ressort, résolution par continuité.
     # Les fonctions usuelles sont continues sur tout intervalle de leur ensemble de définition.
     # Il suffit donc de rechercher les zéros de la fonction, et d'évaluer le signe
     # de l'expression sur chaque tronçon.
     # Cette méthode est simple, mais elle suppose que **tous** les zéros aient bien
     # été trouvés par solve(), ce qui n'est pas toujours le cas.
     # C'est pourquoi elle est proposée seulement en dernier recours.
+    if param.debug:
+        print(u"Warning: résolution par continuité. Les résultats peuvent être\n"
+              u"faux si certaines racines ne sont pas touvées !")
 
-    raise NotImplementedError
+    racines = nul(expression, variable, intervalle=False)
+    solutions = vide
+    for intervalle in ens_def.intervalles:
+        inf = intervalle.inf
+        sup = intervalle.sup
+        decoupage = {S(inf), S(sup)}
+        for borne in decoupage:
+            if borne in intervalle:
+                if expression.subs(variable, borne) > 0:
+                    solutions |= Intervalle(borne, borne)
+        for rac in racines:
+            if rac in intervalle:
+                if not strict:
+                    solutions |= Intervalle(rac, rac)
+                decoupage.add(rac)
+        decoupage = sorted(decoupage)
+        for val1, val2 in zip(decoupage[:-1], decoupage[1:]):
+            milieu = (val1 + val2)/2
+            if expression.subs(variable, milieu) > 0:
+                solutions |= Intervalle(val1, val2, False, False)
+    return ens_def&solutions
 
 
 

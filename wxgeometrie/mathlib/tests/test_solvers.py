@@ -58,6 +58,9 @@ def test_sqrt():
     assert_resoudre('sqrt(x^2-3)<=5', '[-2*sqrt(7);-sqrt(3)]U[sqrt(3);2*sqrt(7)]')
     assert_resoudre('sqrt(x+3)-sqrt(x**2-4)>=0', '[-sqrt(29)/2 + 1/2;-2]U[2;1/2 + sqrt(29)/2]')
 
+def test_trigo():
+    assert_resoudre('sin(x)<=1/2', '[0;pi/6]U[5*pi/6;2*pi]')
+    assert_resoudre('sin(2*x)<1/2', '[0;pi/12[U]5*pi/12;pi]')
 
 def test_resoudre_floats():
     # pass (Geophar 12.08 revision 64f4bb42)
