@@ -262,6 +262,8 @@ f: (-oo;3) << (1;2;0) << (3;+oo|-oo) << (5;2) >> (+oo;-oo)
                 ligne_derivee = ligne_fonction[:deb].strip() + "'(" + ligne_variable + ")"
 
 
+    # On élargit un peu la case (pour l'esthétique...)
+    ligne_variable = '\,\,%s\,\,' %  ligne_variable
 
 
     # on découpe la chaîne, en une suite contenant soit les valeurs de x, f(x) (et éventuellement f'(x)),
@@ -348,7 +350,7 @@ f: (-oo;3) << (1;2;0) << (3;+oo|-oo) << (5;2) >> (+oo;-oo)
 
         elt = sequence[i]
         if elt in (">>", "<<", "==", "||"):  # il s'agit d'une variation
-            colonnes += ('N' if elt == '||' else 'C')
+            colonnes += ('U' if elt == '||' else 'C')
             #ligne_variable += " "
             if elt == "<<":
                 ligne_derivee += "+"
