@@ -26,7 +26,7 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 import re
 
-from sympy import sympify, oo, nan, limit, Symbol, Float, Rational, Wild, sqrt
+from sympy import sympify, oo, nan, limit, Symbol, Float, Rational, Wild, sqrt, S
 
 from .tablatexlib import convertir_en_latex, test_parentheses, nice_str
 from ...mathlib.solvers import ensemble_definition
@@ -35,6 +35,8 @@ from ...mathlib.intervalles import R, conversion_chaine_ensemble
 from ...mathlib.interprete import Interprete
 from ...mathlib.parsers import VAR
 from ... import param
+
+
 
 
 def _auto_tabvar(chaine='', derivee=True, limites=True, decimales=3, approche=False):
@@ -207,6 +209,171 @@ def _auto_tabvar(chaine='', derivee=True, limites=True, decimales=3, approche=Fa
     return tabvar(code, derivee=derivee) + '% ' + chaine_initiale + '\n'
 
 
+def _auto_tabvar(chaine='', derivee=True, limites=True, decimales=3, approche=False, parse_only=False):
+    u"""Génère le code du tableau de variations d'une fonction à variable réelle.
+
+    On suppose que la fonction est de classe C1 sur tout intervalle ouvert de son
+    ensemble de définition.
+    Par ailleurs, les zéros de sa dérivée doivent être calculables pour la librairie sympy.
+
+    Pour les valeurs approchées, on conserve par défaut 3 chiffres après la virgule.
+    En mettant `decimales=2`, on peut par exemple afficher seulement 2 chiffres
+    après la virgule, etc.
+    """
+    def nice_str2(x):
+        if (isinstance(x, (float, Float)) and not isinstance(x, Rational)
+                or approche and x not in (-oo, oo)):
+            x = round(x, decimales)
+        return nice_str(x)
+
+    # ------------------------------------------------------
+    # Extraction  des informations contenues dans la chaîne.
+    # ------------------------------------------------------
+    chaine_initiale = chaine
+
+    # Ensemble de définition rentré par l'utilisateur
+    if ' sur ' in chaine:
+        chaine, ens_def = chaine.split(' sur ')
+        ens_def = conversion_chaine_ensemble(ens_def, utiliser_sympy = True)
+    else:
+        ens_def = R
+
+    # Nom de la fonction
+    if '=' in chaine:
+        nom_fonction, chaine = chaine.split('=', 1)
+    else:
+        nom_fonction = 'f'
+    nom_fonction = nom_fonction.strip()
+
+    # Conversion de f(x) en expression sympy (-> expr).
+    interprete = Interprete()
+    interprete.evaluer(chaine)
+    expr = interprete.ans()
+    # Nota: |u| est remplacé par sqrt(u²). Ceci facilite le calcul de la dérivée.
+    a = Wild('a')
+    expr = expr.replace(abs(a), sqrt(a**2))
+
+    # Récupération de la variable (-> var).
+    variables = expr.atoms(Symbol)
+    # On tente de récupérer le nom de variable dans la légende.
+    # Par exemple, si la légende est 'f(x)', la variable est 'x'.
+    m = re.match(r'%s\((%s)\)' % (VAR, VAR), nom_fonction)
+    if m is not None:
+        variables.add(Symbol(str(m.group(1))))
+    if len(variables) > 1:
+        # Il est impossible de dresser le tableau de variations avec des
+        # variables non définies (sauf cas très particuliers, comme f(x)=a).
+        raise ValueError, "Il y a plusieurs variables dans l'expression !"
+    elif not variables:
+        # Variable par défaut.
+        variables = [Symbol('x')]
+    var = variables.pop()
+
+    # Récupération de l'ensemble de définition (-> ens_def).
+    ens_def *= ensemble_definition(expr, var)
+
+    # --------------------
+    # Calcul de la dérivée
+    # --------------------
+    df = expr.diff(var)
+    ens_def_df = ensemble_definition(df, var)
+
+    # Liste des zéros de la dérivée triés par ordre croissant.
+    # Nota: sympy n'arrive pas à ordonner certaines expressions compliquées,
+    # commme les racines de certains polynômes de degré 3 par exemple.
+    # On calcule donc des valeurs approchées ('.evalf(200)') pour les comparer.
+    racines_df = sorted(solve(df, var), key=(lambda x: x.evalf(200)))
+
+    # ------------------------------------------
+    # Étude des variations et génération du code
+    # ------------------------------------------
+
+    sups = [S(intervalle.sup) for intervalle in ens_def]
+    infs = [S(intervalle.inf) for intervalle in ens_def]
+
+    def _code_val(x):
+        u"Génère le code correspondant à une valeur `x` remarquable."
+        if x in ens_def:
+            # On calcule simplement f(x).
+            fx = nice_str2(expr.subs(var, x))
+        else:
+            # x est une valeur interdite ou -oo ou +oo.
+            symb = ('|' if x not in (-oo, oo) else '')
+            gauche = droite = ''
+            if limites:
+                # On calcule la limite à gauche et/ou à droite.
+                if x in sups:
+                    gauche = nice_str2(limit(expr, var, x, dir = '-'))
+                if x in infs:
+                    droite = nice_str2(limit(expr, var, x, dir = '+'))
+            fx = '%s%s%s' % (gauche, symb, droite)
+        if x in ens_def_df or x in (-oo, oo):
+            x = nice_str2(x)
+            return '(%s;%s)' % (x, fx)
+        else:
+            x = nice_str2(x)
+            return '(%s;%s;|)' % (x, fx)
+
+    def _code_inter(a, b):
+        u"Retourne les variations entre a et b."
+        if a == -oo and b == +oo:
+            a = b = 0
+        elif a == -oo:
+            a = b - 1
+        elif b == +oo:
+            b = a + 1
+        signe_df = df.subs(var, (a + b)/2).evalf(200)
+        if signe_df > 0:
+            symb = '<<'
+        elif signe_df < 0:
+            symb = '>>'
+        else:
+            symb = '=='
+        return ' %s ' % symb
+
+
+    code = '%s;%s:' % (var, nom_fonction)
+
+    pos = 0
+    sup = None
+
+    # On procède intervalle par intervalle.
+    for intervalle in ens_def.intervalles:
+        # On convertit les bornes en expressions sympy.
+        inf = S(intervalle.inf)
+        if inf != sup:
+            if sup is not None:
+                code += ' XX '
+            code += _code_val(inf)
+        sup = S(intervalle.sup)
+        # On élimine toutes les racines situées avant l'intervalle considéré.
+        while pos < len(racines_df):
+            racine = racines_df[pos]
+            if racine.evalf(200) > inf.evalf(200):
+                break
+            pos += 1
+        # On découpe l'intervalle suivant les racines, et on regarde le signe
+        # de la dérivée sur chaque tronçon.
+        while pos < len(racines_df):
+            racine = racines_df[pos]
+            pos += 1
+            if racine.evalf(200) >= sup.evalf(200):
+                break
+            code += _code_inter(inf, racine)
+            code += _code_val(racine)
+            inf = racine
+        code += _code_inter(inf, sup)
+        code += _code_val(sup)
+
+
+    if param.debug and param.verbose:
+        print 'Code TABVar:', code
+    if parse_only:
+        return code
+    return tabvar(code, derivee=derivee) + '% ' + chaine_initiale + '\n'
+
+
+
 
 
 def tabvar(chaine="", derivee=True, limites=True, decimales=3, approche=False):
@@ -214,7 +381,7 @@ def tabvar(chaine="", derivee=True, limites=True, decimales=3, approche=False):
 
 Exemples :
 f: (-oo;3) << (1;2;0) << (3;+oo|-oo) << (5;2) >> (+oo;-oo)
-\\sqrt{x};(\\sqrt{x})';x: 0;0;| << +oo;+oo"""
+x;\\sqrt{x};(\\sqrt{x})': 0;0;| << +oo;+oo"""
 
     chaine_originale = chaine = chaine.strip()
 
@@ -271,7 +438,7 @@ f: (-oo;3) << (1;2;0) << (3;+oo|-oo) << (5;2) >> (+oo;-oo)
     # ex: "-oo;3 << 1;2 >> 3;-oo|+oo << 5;2 << +oo;+oo" devient
     # ["-oo;3", "<<", "1;2", ">>", "3;-oo|+oo", "<<", "5;2", "<<", "+oo;+oo"]
 
-    sequence = re.split(r"(>>|<<|==|\|\|)", chaine.strip())
+    sequence = re.split(r"(>>|<<|==|\|\||XX|)", chaine.strip())
 
     if not sequence[0]:
         # en l'absence d'indication, x varie de -oo...
@@ -282,7 +449,7 @@ f: (-oo;3) << (1;2;0) << (3;+oo|-oo) << (5;2) >> (+oo;-oo)
 
     def formater(chaine):
         chaine = chaine.strip()
-        if chaine not in ("<<", ">>", "==", '||'):
+        if chaine not in ("<<", ">>", "==", '||', 'XX'):
             # Les valeurs sont éventuellement encadrées par des parenthèses (facultatives) pour plus de lisibilité.
             # On enlève ici les parenthèses. ex: (-2;0) devient -2;0
             if chaine[0] == '(' and chaine[-1] == ')' and test_parentheses(chaine[1:-1]):
@@ -299,7 +466,7 @@ f: (-oo;3) << (1;2;0) << (3;+oo|-oo) << (5;2) >> (+oo;-oo)
     niveau = niveau_minimum = niveau_maximum = 0
     for elt in sequence:
         if (";" in elt and "|" in elt.split(";")[1]) \
-                or elt == '||': # presence d'une valeur interdite
+                or elt in ('||', 'XX'): # presence d'une valeur interdite
             niveaux.append((niveau_minimum, niveau_maximum))
             niveau = niveau_minimum = niveau_maximum = 0
         else:
@@ -349,8 +516,8 @@ f: (-oo;3) << (1;2;0) << (3;+oo|-oo) << (5;2) >> (+oo;-oo)
         ligne_derivee += "&"
 
         elt = sequence[i]
-        if elt in (">>", "<<", "==", "||"):  # il s'agit d'une variation
-            colonnes += ('U' if elt == '||' else 'C')
+        if elt in (">>", "<<", "==", "||", "XX"):  # il s'agit d'une variation
+            colonnes += ('U' if elt in ('||', 'XX') else 'C')
             #ligne_variable += " "
             if elt == "<<":
                 ligne_derivee += "+"

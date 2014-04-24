@@ -4,6 +4,7 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 from wxgeometrie.modules.tablatex.tests.tabtestlib import assert_tableau
 from wxgeometrie.modules.tablatex.tabvar import tabvar
 
+from pytest import XFAIL
 
 def assert_tabvar(chaine, code_latex, **options):
     assert_tableau(tabvar, chaine, code_latex, **options)
@@ -14,7 +15,7 @@ def test_mode_manuel():
     tab = \
 r"""\[\begin{tabvar}{|C|CCCCCCC|}
 \hline
-x                                    & &0&             &        &1&      &2\\
+\,\,x\,\,                            & &0&             &        &1&      &2\\
 \hline
 f'(x)                                &&\dbarre&        &-       &1&+     &0\\
 \hline
@@ -29,7 +30,7 @@ f'(x)                                &&\dbarre&        &-       &1&+     &0\\
     tab = \
 r"""\[\begin{tabvar}{|C|CCCCCCC|}
 \hline
-x                                    & &0&             &        &1&      &2\\
+\,\,x\,\,                            & &0&             &        &1&      &2\\
 \hline
 f'(x)                                &&\dbarre&        &-       &1&+     &0\\
 \hline
@@ -44,7 +45,7 @@ f'(x)                                &&\dbarre&        &-       &1&+     &0\\
     tab = \
 r"""\[\begin{tabvar}{|C|CCCCCCC|}
 \hline
-x                                    &-\infty             &        & &0&                                &        &+\infty\\
+\,\,x\,\,                            &-\infty             &        & &0&                                &        &+\infty\\
 \hline
 f'(x)                                &                    &-       &&\dbarre&                           &-       & \\
 \hline
@@ -59,7 +60,7 @@ f'(x)                                &                    &-       &&\dbarre&   
     tab = \
 r"""\[\begin{tabvar}{|C|CCCCCCC|}
 \hline
-x                                    &-\infty             &        & &0&                                &        &+\infty\\
+\,\,x\,\,                            &-\infty             &        & &0&                                &        &+\infty\\
 \hline
 f'(x)                                &                    &-       &&\dbarre&                           &-       & \\
 \hline
@@ -70,11 +71,12 @@ f'(x)                                &                    &-       &&\dbarre&   
 """
     assert_tabvar(s, tab)
 
+def test_manuel_zone_interdite():
     s = "x;f(x);f'(x):(0;2;|) >> (1;-oo) || (2;+oo) << (+oo;3)"
     tab = \
-r"""\[\begin{tabvar}{|C|CCCCCNCCC|}
+r"""\[\begin{tabvar}{|C|CCCCCUCCC|}
 \hline
-x                                    & &0&             &        &1      &\hspace*{15mm}&2      &      &+\infty\\
+\,\,x\,\,                            & &0&             &        &1      &\hspace*{15mm}&2      &      &+\infty\\
 \hline
 f'(x)                                &&\dbarre&        &-       &0      &              &0      &+     & \\
 \hline
@@ -84,7 +86,21 @@ f'(x)                                &&\dbarre&        &-       &0      &       
 % x;f(x);f'(x):(0;2;|) >> (1;-oo) || (2;+oo) << (+oo;3)
 """
     assert_tabvar(s, tab)
-
+    # Syntaxe alternative : XX au lieu de ||.
+    s = "x;f(x);f'(x):(0;2;|) >> (1;-oo) XX (2;+oo) << (+oo;3)"
+    tab = \
+r"""\[\begin{tabvar}{|C|CCCCCUCCC|}
+\hline
+\,\,x\,\,                            & &0&             &        &1      &\hspace*{15mm}&2      &      &+\infty\\
+\hline
+f'(x)                                &&\dbarre&        &-       &0      &              &0      &+     & \\
+\hline
+\niveau{1}{2}\raisebox{0.5em}{$f(x)$}&\niveau{2}{2} &2&&\decroit&-\infty&              &+\infty&\croit&3\\
+\hline
+\end{tabvar}\]
+% x;f(x);f'(x):(0;2;|) >> (1;-oo) XX (2;+oo) << (+oo;3)
+"""
+    assert_tabvar(s, tab)
 
 
 
@@ -93,7 +109,7 @@ def test_mode_auto():
     tab = \
 r"""\[\begin{tabvar}{|C|CCCCCCC|}
 \hline
-x                                    &-\infty                 &        & &\frac{2}{3}&                      &        &+\infty\\
+\,\,x\,\,                            &-\infty                 &        & &\frac{2}{3}&                      &        &+\infty\\
 \hline
 f'(x)                                &                        &-       &&\dbarre&                           &-       & \\
 \hline
@@ -109,7 +125,7 @@ f'(x)                                &                        &-       &&\dbarre
     tab = \
 r"""\[\begin{tabvar}{|C|CCCCC|}
 \hline
-x                                 &-\infty             &        &-\frac{3}{2}&      &+\infty\\
+\,\,x\,\,                         &-\infty             &        &-\frac{3}{2}&      &+\infty\\
 \hline
 f'(x)                             &                    &-       &0           &+     & \\
 \hline
@@ -125,7 +141,7 @@ f'(x)                             &                    &-       &0           &+ 
     tab = \
 r"""\[\begin{tabvar}{|C|CCCCCCC|}
 \hline
-x                                    & &0&                                      &      &\e          &        &+\infty\\
+\,\,x\,\,                            & &0&                                      &      &\e          &        &+\infty\\
 \hline
 f'(x)                                &&\dbarre&                                 &+     &0           &-       & \\
 \hline
@@ -143,7 +159,7 @@ def test_intervalle():
     tab = \
 r"""\[\begin{tabvar}{|C|CCC|}
 \hline
-x                                 &1             &      &+\infty\\
+\,\,x\,\,                         &1             &      &+\infty\\
 \hline
 f'(x)                             &              &+     & \\
 \hline
@@ -161,7 +177,7 @@ def test_latex():
     tab = \
 r"""\[\begin{tabvar}{|C|CCCCC|}
 \hline
-x                                    &-\infty       &        &\ln(2)&      &+\infty\\
+\,\,x\,\,                            &-\infty       &        &\ln(2)&      &+\infty\\
 \hline
 f'(x)                                &              &-       &0     &+     & \\
 \hline
@@ -179,7 +195,7 @@ def test_issue_194():
     tab = \
 r"""\[\begin{tabvar}{|C|CCCCC|}
 \hline
-x                                 &-\infty      &      &-\frac{1}{\ln(2)}&        &+\infty\\
+\,\,x\,\,                         &-\infty      &      &-\frac{1}{\ln(2)}&        &+\infty\\
 \hline
 f'(x)                             &             &+     &0                &-       & \\
 \hline
@@ -196,7 +212,7 @@ def test_issue_pi():
     tab = \
 r'''\[\begin{tabvar}{|C|CCCCC|}
 \hline
-x                                 &-\pi          &      &\frac{\pi}{2}&        &\pi\\
+\,\,x\,\,                         &-\pi          &      &\frac{\pi}{2}&        &\pi\\
 \hline
 f'(x)                             &              &+     &0            &-       & \\
 \hline
@@ -215,7 +231,7 @@ def test_options():
     tab = \
 r'''\[\begin{tabvar}{|C|CCCCC|}
 \hline
-x                                    &-\infty      &        &3  &      &+\infty\\
+\,\,x\,\,                            &-\infty      &        &3  &      &+\infty\\
 \hline
 \niveau{1}{2}\raisebox{0.5em}{$f(x)$}&\niveau{2}{2}&\decroit&-25&\croit&\\
 \hline
@@ -233,7 +249,7 @@ def test_issue_189():
     tab = \
 r'''\[\begin{tabvar}{|C|CCCCC|}
 \hline
-x                                    &4             &      &8        &        &20\\
+\,\,x\,\,                            &4             &      &8        &        &20\\
 \hline
 \niveau{1}{2}\raisebox{0.5em}{$f(x)$}&\niveau{1}{2}0&\croit&4 \exp(3)&\decroit&16\\
 \hline
@@ -246,7 +262,7 @@ x                                    &4             &      &8        &        &2
     tab = \
 r'''\[\begin{tabvar}{|C|CCCCC|}
 \hline
-x                                    &4             &      &8        &        &20\\
+\,\,x\,\,                            &4             &      &8        &        &20\\
 \hline
 \niveau{1}{2}\raisebox{0.5em}{$f(x)$}&\niveau{1}{2}0&\croit&4 \exp(3)&\decroit&16\\
 \hline
@@ -262,7 +278,7 @@ def test_valeur_approchee():
     tab = \
 r'''\[\begin{tabvar}{|C|CCC|}
 \hline
-x                                    &4                &        &6\\
+\,\,x\,\,                            &4                &        &6\\
 \hline
 f'(x)                                &                 &-       & \\
 \hline
@@ -274,13 +290,14 @@ f'(x)                                &                 &-       & \\
 '''
     assert_tabvar(s, tab, **options)
 
+@XFAIL
 def test_issue_187():
     s = "5x+31+(1500x+100)/(x^2)"
     options = {'derivee': True, 'decimales': 2, 'approche': True}
     tab = \
 r'''\[\begin{tabvar}{|C|CCCCCCCCCCCCC|}
 \hline
-x             &-\infty             &      &-17,25 &        &-0,13   &      & &0&                                &        &17,39 &        &+\infty\\
+\,\,x\,\,     &-\infty             &      &-17,25 &        &-0,13   &      & &0&                                &        &17,39 &        &+\infty\\
 \hline
 f'(x)         &                    &+     &0      &-       &0       &+     &&\dbarre&                           &-       &      &-       & \\
 \hline
@@ -290,14 +307,16 @@ f'(x)         &                    &+     &0      &-       &0       &+     &&\db
 % x;f:(-oo;-oo) << (-17,25;-141,87) >> (-0,13;-5594,67) << (0;+oo|+oo;|) >> (17,39;204,54) >> (+oo;+oo)
 % 5x+31+(1500x+100)/(x^2)
 '''
+    assert_tabvar(s, tab, **options)
 
+@XFAIL
 def test_issue_249():
     s = "f(x) = 0,5x + \text{e}^{-0,5x + 0,4}"
     options = {'derivee': True, 'decimales': 2, 'approche': True}
     tab = \
 r'''\[\begin{tabvar}{|C|CCCCC|}
 \hline
-x                                    &-\infty             &        &0,8&      &+\infty\\
+\,\,x\,\,                            &-\infty             &        &0,8&      &+\infty\\
 \hline
 f'(x)                                &                    &-       &0  &+     & \\
 \hline
@@ -307,14 +326,16 @@ f'(x)                                &                    &-       &0  &+     & 
 % x;f(x) :(-oo;+oo) >> (0,8;1,4) << (+oo;+oo)
 % f(x) = 0,5x + \text{e}^{-0,5x + 0,4}
 '''
+    assert_tabvar(s, tab, **options)
+
 
 def test_constante():
-    s = "f(x)=5"
+    s = "g(x)=5"
     options = {'derivee': True}
     tab = \
 r'''\[\begin{tabvar}{|C|CCC|}
 \hline
-x                &-\infty       &          &+\infty\\
+\,\,x\,\,        &-\infty       &          &+\infty\\
 \hline
 g'(x)            &              &0         & \\
 \hline
@@ -324,14 +345,16 @@ g'(x)            &              &0         & \\
 % x;g(x):(-oo;5) == (+oo;5)
 % g(x)=5
 '''
+    assert_tabvar(s, tab, **options)
 
+@XFAIL
 def test_abs():
     s = "abs(x**2-5)"
     options = {'derivee': True}
     tab = \
 r'''\[\begin{tabvar}{|C|CCCCCCCCCCCCC|}
 \hline
-x                                 &-\infty      &        & &-\sqrt{5}& &      &0&        & &\sqrt{5}& &      &+\infty\\
+\,\,x\,\,                         &-\infty      &        & &-\sqrt{5}& &      &0&        & &\sqrt{5}& &      &+\infty\\
 \hline
 \niveau{1}{2}\raisebox{0.5em}{$f$}&\niveau{2}{2}&\decroit& &0&         &\croit&5&\decroit& &0&        &\croit&\\
 \hline
@@ -339,3 +362,23 @@ x                                 &-\infty      &        & &-\sqrt{5}& &      &0
 % x;f:(-oo;) >> (-sqrt(5);0;|) << (0;5) >> (sqrt(5);0;|) << (+oo;)
 % abs(x**2-5)
 '''
+    assert_tabvar(s, tab, **options)
+
+
+def test_issue_286():
+    s = 'sqrt{x^2 - 1}'
+    options = {'derivee': True}
+    tab = \
+r'''\[\begin{tabvar}{|C|CCCCCUCCCCC|}
+\hline
+\,\,x\,\,                         &-\infty             &        & &-1&    &\hspace*{15mm}& &1&     &      &+\infty\\
+\hline
+f'(x)                             &                    &-       &&\dbarre&&              &&\dbarre&&+     & \\
+\hline
+\niveau{1}{2}\raisebox{0.5em}{$f$}&\niveau{2}{2}+\infty&\decroit& &0&     &              & &0&     &\croit&+\infty\\
+\hline
+\end{tabvar}\]
+% x;f:(-oo;+oo) >> (-1;0;|) XX (1;0;|) << (+oo;+oo)
+% sqrt{x^2 - 1}
+'''
+    assert_tabvar(s, tab, **options)
