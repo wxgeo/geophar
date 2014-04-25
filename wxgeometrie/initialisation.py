@@ -205,10 +205,10 @@ if getattr(sys, '_launch_geophar', False):
                 print(u'Création du répertoire : ' + emplacement)
         except IOError:
             print(u"Impossible de créer le répertoire %s !" %emplacement)
-            print_error()
+            print('%s: %s' % sys.exc_info()[:2])
         except Exception:
             print(u'Erreur inattendue lors de la création du répertoire %s.' %emplacement)
-            print_error()
+            print('%s: %s' % sys.exc_info()[:2])
 
 
     # PARTIE CRITIQUE (redirection des messages d'erreur)
