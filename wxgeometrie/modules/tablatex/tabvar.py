@@ -270,13 +270,13 @@ def _auto_tabvar(chaine='', derivee=True, limites=True, decimales=3, approche=Fa
     var = variables.pop()
 
     # Récupération de l'ensemble de définition (-> ens_def).
-    ens_def *= ensemble_definition(expr, var)
+    ens_def &= ensemble_definition(expr, var)
 
     # --------------------
     # Calcul de la dérivée
     # --------------------
     df = expr.diff(var)
-    ens_def_df = ensemble_definition(df, var)
+    ens_def_df = ensemble_definition(df, var) & ens_def
 
     # Liste des zéros de la dérivée triés par ordre croissant.
     # Nota: sympy n'arrive pas à ordonner certaines expressions compliquées,
@@ -338,27 +338,35 @@ def _auto_tabvar(chaine='', derivee=True, limites=True, decimales=3, approche=Fa
     sup = None
 
     # On procède intervalle par intervalle.
-    for intervalle in ens_def.intervalles:
+    # L'idée est que les fonctions usuelles sont toutes dérivables par morceaux,
+    # et que leur dérivée est elle-même continue sur chaque intervalle
+    # où elles sont dérivables. Pour connaître le signe de la dérivée sur un
+    # intervalle où la fonction est dérivable et la dérivée ne s'annule pas,
+    # il suffit donc de prendre une valeur dans cet intervalle
+    # et de calculer son image par la fonction dérivée.
+    for intervalle in ens_def_df.intervalles:
         # On convertit les bornes en expressions sympy.
         inf = S(intervalle.inf)
+        inf_approx = inf.evalf(200)
         if inf != sup:
             if sup is not None:
                 code += ' XX '
             code += _code_val(inf)
         sup = S(intervalle.sup)
+        sup_approx = sup.evalf(200)
         # On élimine toutes les racines situées avant l'intervalle considéré.
         while pos < len(racines_df):
             racine = racines_df[pos]
-            if racine.evalf(200) > inf.evalf(200):
+            if racine.evalf(200) > inf_approx:
                 break
             pos += 1
         # On découpe l'intervalle suivant les racines, et on regarde le signe
         # de la dérivée sur chaque tronçon.
         while pos < len(racines_df):
             racine = racines_df[pos]
-            pos += 1
-            if racine.evalf(200) >= sup.evalf(200):
+            if racine.evalf(200) >= sup_approx:
                 break
+            pos += 1
             code += _code_inter(inf, racine)
             code += _code_val(racine)
             inf = racine

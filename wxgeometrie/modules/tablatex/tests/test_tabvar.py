@@ -290,28 +290,28 @@ f'(x)                                &                 &-       & \\
 '''
     assert_tabvar(s, tab, **options)
 
-@XFAIL
+
 def test_issue_187():
     s = "5x+31+(1500x+100)/(x^2)"
     options = {'derivee': True, 'decimales': 2, 'approche': True}
     tab = \
 r'''\[\begin{tabvar}{|C|CCCCCCCCCCCCC|}
 \hline
-\,\,x\,\,     &-\infty             &      &-17,25 &        &-0,13   &      & &0&                                &        &17,39 &        &+\infty\\
+\,\,x\,\,                         &-\infty             &      &-17,25 &        &-0,13   &      & &0&                                &        &17,39 &      &+\infty\\
 \hline
-f'(x)         &                    &+     &0      &-       &0       &+     &&\dbarre&                           &-       &      &-       & \\
+f'(x)                             &                    &+     &0      &-       &0       &+     &&\dbarre&                           &-       &0     &+     & \\
 \hline
-\niveau{2}{3}f&\niveau{1}{3}-\infty&\croit&-141,87&\decroit&-5594,67&\croit&+\infty&\dbarre&\niveau{3}{3}+\infty&\decroit&204,54&\decroit&+\infty\\
+\niveau{1}{2}\raisebox{0.5em}{$f$}&\niveau{1}{2}-\infty&\croit&-141,87&\decroit&-5594,67&\croit&+\infty&\dbarre&\niveau{2}{2}+\infty&\decroit&204,54&\croit&+\infty\\
 \hline
 \end{tabvar}\]
-% x;f:(-oo;-oo) << (-17,25;-141,87) >> (-0,13;-5594,67) << (0;+oo|+oo;|) >> (17,39;204,54) >> (+oo;+oo)
+% x;f:(-oo;-oo) << (-17,25;-141,87) >> (-0,13;-5594,67) << (0;+oo|+oo;|) >> (17,39;204,54) << (+oo;+oo)
 % 5x+31+(1500x+100)/(x^2)
 '''
     assert_tabvar(s, tab, **options)
 
-@XFAIL
+
 def test_issue_249():
-    s = "f(x) = 0,5x + \text{e}^{-0,5x + 0,4}"
+    s = r"f(x) = 0,5x + \text{e}^{-0,5x + 0,4}"
     options = {'derivee': True, 'decimales': 2, 'approche': True}
     tab = \
 r'''\[\begin{tabvar}{|C|CCCCC|}
@@ -323,7 +323,7 @@ f'(x)                                &                    &-       &0  &+     & 
 \niveau{1}{2}\raisebox{0.5em}{$f(x)$}&\niveau{2}{2}+\infty&\decroit&1,4&\croit&+\infty\\
 \hline
 \end{tabvar}\]
-% x;f(x) :(-oo;+oo) >> (0,8;1,4) << (+oo;+oo)
+% x;f(x):(-oo;+oo) >> (0,8;1,4) << (+oo;+oo)
 % f(x) = 0,5x + \text{e}^{-0,5x + 0,4}
 '''
     assert_tabvar(s, tab, **options)
@@ -347,19 +347,21 @@ g'(x)            &              &0         & \\
 '''
     assert_tabvar(s, tab, **options)
 
-@XFAIL
+
 def test_abs():
     s = "abs(x**2-5)"
-    options = {'derivee': True}
+    options = {'derivee': True, 'limites':True}
     tab = \
 r'''\[\begin{tabvar}{|C|CCCCCCCCCCCCC|}
 \hline
-\,\,x\,\,                         &-\infty      &        & &-\sqrt{5}& &      &0&        & &\sqrt{5}& &      &+\infty\\
+\,\,x\,\,                         &-\infty             &        & &-\sqrt{5}& &      &0&        & &\sqrt{5}& &      &+\infty\\
 \hline
-\niveau{1}{2}\raisebox{0.5em}{$f$}&\niveau{2}{2}&\decroit& &0&         &\croit&5&\decroit& &0&        &\croit&\\
+f'(x)                             &                    &-       &&\dbarre&    &+     &0&-       &&\dbarre&   &+     & \\
+\hline
+\niveau{1}{2}\raisebox{0.5em}{$f$}&\niveau{2}{2}+\infty&\decroit& &0&         &\croit&5&\decroit& &0&        &\croit&+\infty\\
 \hline
 \end{tabvar}\]
-% x;f:(-oo;) >> (-sqrt(5);0;|) << (0;5) >> (sqrt(5);0;|) << (+oo;)
+% x;f:(-oo;+oo) >> (-sqrt(5);0;|) << (0;5) >> (sqrt(5);0;|) << (+oo;+oo)
 % abs(x**2-5)
 '''
     assert_tabvar(s, tab, **options)
