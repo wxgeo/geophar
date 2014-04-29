@@ -69,6 +69,7 @@ def publish(filename, version):
         key = raw_input('API-key:')
     print(u'\nMise en ligne de la version %s (%s)' % (version, filename))
     remote_dir = '/home/frs/project/geophar/Geophar/version_%s' % version
+    s.command('ssh wxgeo,geophar@shell.sourceforge.net create')
     s.command('cat %s | ssh wxgeo@shell.sourceforge.net "mkdir -p %s;cat > %s/%s"'
                 % (filename, remote_dir, remote_dir, filename))
     # http://sourceforge.net/p/forge/community-docs/Using%20the%20Release%20API/
