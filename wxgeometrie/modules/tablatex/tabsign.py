@@ -372,15 +372,17 @@ Le point d'exclamation avant une expression signifie qu'elle correspond à un d�
         i += 1
     lignes.append(convertir_en_latex(resultat))
 
+    titres = lignes[:]
+
     # On justifie le texte de la première colonne pour que le code LaTeX généré soit plus lisible.
     n = max(len(texte) for texte in lignes) + 1
     for i, ligne in enumerate(lignes):
         lignes[i] = ligne.ljust(n)
 
-    def latex_signe(val, co):
+    def latex_signe(val, co, li):
         u"Retourne le signe à afficher dans le tableau, selon la valeur (et la colonne)."
         if val == nan:
-            return '||'
+            return '\\geopharDB{%s}' % titres[li]
         elif val > 0:
             return '+' if not co%2 else ''
         elif val < 0:
@@ -423,7 +425,7 @@ Le point d'exclamation avant une expression signifie qu'elle correspond à un d�
                 if co%2: # 1er cas: on est au niveau d'une valeur
                     if donnees[position][0] == valeur_num:
                         if donnees[position][1] == '|':
-                            colonne[li + 1] = '||'
+                            colonne[li + 1] = '\\geopharDB{%s}' % titres[li + 1]
                             signe = nan
                         else:
                             colonne[li + 1] = donnees[position][1]
@@ -433,16 +435,16 @@ Le point d'exclamation avant une expression signifie qu'elle correspond à un d�
                 else: # 2e cas: on est entre deux valeurs
                     assert position + 1 < len(donnees), "Verifiez que les valeurs de la ligne sont bien rangees dans l'ordre croissant."
                     signe_ = dict_signes[donnees[position + 1]]
-                    colonne[li + 1] += latex_signe(signe_, co) # le signe qui est juste apres la derniere valeur
+                    colonne[li + 1] += latex_signe(signe_, co, li + 1) # le signe qui est juste apres la derniere valeur
                     signe *= signe_
             else: # 3e cas: on est en début de ligne
                 if co%2 == 0: # on est entre deux valeurs
                     signe_ = dict_signes[donnees[1]]
-                    colonne[li + 1] += latex_signe(signe_, co)
+                    colonne[li + 1] += latex_signe(signe_, co, li + 1)
                     signe *= signe_
 
         # Dernière ligne : signe du produit ou du quotient
-        colonne[-1] += latex_signe(signe, co)
+        colonne[-1] += latex_signe(signe, co, -1)
 
         # On centre le texte dans la colonne pour que le code LaTeX généré soit plus lisible.
         n = max(len(texte) for texte in colonne) + 2
@@ -463,11 +465,13 @@ Le point d'exclamation avant une expression signifie qu'elle correspond à un d�
         # cela permet d'avoir   f(x) | -  1  +   dans le tableau,
         # au lieu de            x-1  | -  1  +
 
+    code = '\\providecommand{\\geopharDB}[1]{$\\left|\\vphantom{\\text{#1}}\\right|$}\n'
+
     # Et on rassemble les lignes
     if cellspace:
-        code = "\\begin{center}\n\\begin{tabular}{|Sc|" + (nbr_colonnes - 1)*"Sc" + "|}\n\\hline\n"
+        code += "\\begin{center}\n\\begin{tabular}{|Sc|" + (nbr_colonnes - 1)*"Sc" + "|}\n\\hline\n"
     else:
-        code = "\\begin{center}\n\\begin{tabular}{|c|" + (nbr_colonnes - 1)*"c" + "|}\n\\hline\n"
+        code += "\\begin{center}\n\\begin{tabular}{|c|" + (nbr_colonnes - 1)*"c" + "|}\n\\hline\n"
     for ligne in lignes:
         code += ligne + "\\\\\n\\hline\n"
     code += "\\end{tabular}\n\\end{center}\n% " + chaine_originale + "\n"
