@@ -4,7 +4,7 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 from wxgeometrie.modules.tablatex.tests.tabtestlib import assert_tableau
 from wxgeometrie.modules.tablatex.tabsign import tabsign
 
-
+from pytest import XFAIL
 
 def assert_tabsign(chaine, code_latex, **options):
     assert_tableau(tabsign, chaine, code_latex, **options)
@@ -91,16 +91,17 @@ $-6 x^{2}-12 x+4$ &           & $-$ &            0             & + &            
 def test_quotients():
     s = '(3x-2)/((x-1)^2)'
     tab = \
-r'''\begin{center}
+r'''\providecommand{\geopharDB}[1]{$\left|\vphantom{\text{#1}}\right|$}
+\begin{center}
 \begin{tabular}{|c|ccccccc|}
 \hline
-$x$                      & $-\infty$ &     & $\frac{2}{3}$ &   & $1$ &   & $+\infty$ \\
+$x$                      & $-\infty$ &     & $\frac{2}{3}$ &   &                 $1$                  &   & $+\infty$ \\
 \hline
-$3 x-2$                  &           & $-$ &       0       & + &     & + &           \\
+$3 x-2$                  &           & $-$ &       0       & + &                                      & + &           \\
 \hline
-$(x-1)^{2}$              &           &  +  &               & + &  0  & + &           \\
+$(x-1)^{2}$              &           &  +  &               & + &                  0                   & + &           \\
 \hline
-$\frac{3x-2}{(x-1)^{2}}$ &           & $-$ &       0       & + &  || & + &           \\
+$\frac{3x-2}{(x-1)^{2}}$ &           & $-$ &       0       & + & \geopharDB{$\frac{3x-2}{(x-1)^{2}}$} & + &           \\
 \hline
 \end{tabular}
 \end{center}
@@ -111,16 +112,17 @@ $\frac{3x-2}{(x-1)^{2}}$ &           & $-$ &       0       & + &  || & + &      
 
     s = '(3x-2)/(x-1)^2'
     tab = \
-r'''\begin{center}
+r'''\providecommand{\geopharDB}[1]{$\left|\vphantom{\text{#1}}\right|$}
+\begin{center}
 \begin{tabular}{|c|ccccccc|}
 \hline
-$x$                      & $-\infty$ &     & $\frac{2}{3}$ &   & $1$ &   & $+\infty$ \\
+$x$                      & $-\infty$ &     & $\frac{2}{3}$ &   &                 $1$                  &   & $+\infty$ \\
 \hline
-$3 x-2$                  &           & $-$ &       0       & + &     & + &           \\
+$3 x-2$                  &           & $-$ &       0       & + &                                      & + &           \\
 \hline
-$(x-1)^{2}$              &           &  +  &               & + &  0  & + &           \\
+$(x-1)^{2}$              &           &  +  &               & + &                  0                   & + &           \\
 \hline
-$\frac{3x-2}{(x-1)^{2}}$ &           & $-$ &       0       & + &  || & + &           \\
+$\frac{3x-2}{(x-1)^{2}}$ &           & $-$ &       0       & + & \geopharDB{$\frac{3x-2}{(x-1)^{2}}$} & + &           \\
 \hline
 \end{tabular}
 \end{center}
@@ -133,16 +135,17 @@ $\frac{3x-2}{(x-1)^{2}}$ &           & $-$ &       0       & + &  || & + &      
 def test_latex():
     s = '\dfrac{3x-2}{(x-1)^2}'
     tab = \
-r'''\begin{center}
+r'''\providecommand{\geopharDB}[1]{$\left|\vphantom{\text{#1}}\right|$}
+\begin{center}
 \begin{tabular}{|c|ccccccc|}
 \hline
-$x$                       & $-\infty$ &     & $\frac{2}{3}$ &   & $1$ &   & $+\infty$ \\
+$x$                       & $-\infty$ &     & $\frac{2}{3}$ &   &                  $1$                  &   & $+\infty$ \\
 \hline
-$3 x-2$                   &           & $-$ &       0       & + &     & + &           \\
+$3 x-2$                   &           & $-$ &       0       & + &                                       & + &           \\
 \hline
-$(x-1)^{2}$               &           &  +  &               & + &  0  & + &           \\
+$(x-1)^{2}$               &           &  +  &               & + &                   0                   & + &           \\
 \hline
-$\dfrac{3x-2}{(x-1)^{2}}$ &           & $-$ &       0       & + &  || & + &           \\
+$\dfrac{3x-2}{(x-1)^{2}}$ &           & $-$ &       0       & + & \geopharDB{$\dfrac{3x-2}{(x-1)^{2}}$} & + &           \\
 \hline
 \end{tabular}
 \end{center}
@@ -207,12 +210,13 @@ $x^{2}$ &     & + &           \\
 
     s = "u(x)=1-x sur ]0;+oo["
     tab = \
-r'''\begin{center}
+r'''\providecommand{\geopharDB}[1]{$\left|\vphantom{\text{#1}}\right|$}
+\begin{center}
 \begin{tabular}{|c|ccccc|}
 \hline
-$x$    & $0$ &   & $1$ &     & $+\infty$ \\
+$x$    &        $0$         &   & $1$ &     & $+\infty$ \\
 \hline
-$u(x)$ &  || & + &  0  & $-$ &           \\
+$u(x)$ & \geopharDB{$u(x)$} & + &  0  & $-$ &           \\
 \hline
 \end{tabular}
 \end{center}
@@ -223,16 +227,17 @@ $u(x)$ &  || & + &  0  & $-$ &           \\
 
     s = "u(x)=x(1-x) sur ]-1;0[U]0;4["
     tab = \
-r'''\begin{center}
+r'''\providecommand{\geopharDB}[1]{$\left|\vphantom{\text{#1}}\right|$}
+\begin{center}
 \begin{tabular}{|c|ccccccc|}
 \hline
-$x$    & $-1$ &     & $0$ &   & $1$ &     & $4$ \\
+$x$    &        $-1$        &     &        $0$         &   & $1$ &     &        $4$         \\
 \hline
-$x$    &      & $-$ &  0  & + &     &  +  &     \\
+$x$    &                    & $-$ &         0          & + &     &  +  &                    \\
 \hline
-$1-x$  &      &  +  &     & + &  0  & $-$ &     \\
+$1-x$  &                    &  +  &                    & + &  0  & $-$ &                    \\
 \hline
-$u(x)$ &  ||  & $-$ &  || & + &  0  & $-$ &  || \\
+$u(x)$ & \geopharDB{$u(x)$} & $-$ & \geopharDB{$u(x)$} & + &  0  & $-$ & \geopharDB{$u(x)$} \\
 \hline
 \end{tabular}
 \end{center}
@@ -244,18 +249,19 @@ $u(x)$ &  ||  & $-$ &  || & + &  0  & $-$ &  || \\
 
     s = "u(x)=(1+x)(1-x)/x sur ]-3;2[U]2;4]"
     tab = \
-r'''\begin{center}
+r'''\providecommand{\geopharDB}[1]{$\left|\vphantom{\text{#1}}\right|$}
+\begin{center}
 \begin{tabular}{|c|ccccccccccc|}
 \hline
-$x$    & $-3$ &     & $-1$ &     & $0$ &   & $1$ &     & $2$ &     & $4$ \\
+$x$    &        $-3$        &     & $-1$ &     &        $0$         &   & $1$ &     &        $2$         &     & $4$ \\
 \hline
-$1+x$  &      & $-$ &  0   &  +  &     & + &     &  +  &     &  +  &     \\
+$1+x$  &                    & $-$ &  0   &  +  &                    & + &     &  +  &                    &  +  &     \\
 \hline
-$1-x$  &      &  +  &      &  +  &     & + &  0  & $-$ &     & $-$ &     \\
+$1-x$  &                    &  +  &      &  +  &                    & + &  0  & $-$ &                    & $-$ &     \\
 \hline
-$x$    &      & $-$ &      & $-$ &  0  & + &     &  +  &     &  +  &     \\
+$x$    &                    & $-$ &      & $-$ &         0          & + &     &  +  &                    &  +  &     \\
 \hline
-$u(x)$ &  ||  &  +  &  0   & $-$ &  || & + &  0  & $-$ &  || & $-$ &     \\
+$u(x)$ & \geopharDB{$u(x)$} &  +  &  0   & $-$ & \geopharDB{$u(x)$} & + &  0  & $-$ & \geopharDB{$u(x)$} & $-$ &     \\
 \hline
 \end{tabular}
 \end{center}

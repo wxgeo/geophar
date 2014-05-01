@@ -465,14 +465,16 @@ Le point d'exclamation avant une expression signifie qu'elle correspond √† un d√
         # cela permet d'avoir   f(x) | -  1  +   dans le tableau,
         # au lieu de            x-1  | -  1  +
 
-    code = '\\providecommand{\\geopharDB}[1]{$\\left|\\vphantom{\\text{#1}}\\right|$}\n'
 
+    code = []
     # Et on rassemble les lignes
     if cellspace:
-        code += "\\begin{center}\n\\begin{tabular}{|Sc|" + (nbr_colonnes - 1)*"Sc" + "|}\n\\hline\n"
+        code.append("\\begin{center}\n\\begin{tabular}{|Sc|" + (nbr_colonnes - 1)*"Sc" + "|}\n\\hline")
     else:
-        code += "\\begin{center}\n\\begin{tabular}{|c|" + (nbr_colonnes - 1)*"c" + "|}\n\\hline\n"
+        code.append("\\begin{center}\n\\begin{tabular}{|c|" + (nbr_colonnes - 1)*"c" + "|}\n\\hline")
     for ligne in lignes:
-        code += ligne + "\\\\\n\\hline\n"
-    code += "\\end{tabular}\n\\end{center}\n% " + chaine_originale + "\n"
-    return code
+        code.append(ligne + "\\\\\n\\hline")
+    code.append("\\end{tabular}\n\\end{center}\n% " + chaine_originale)
+    if any(('\\geopharDB{' in line) for line in code):
+        code.insert(0, '\\providecommand{\\geopharDB}[1]{$\\left|\\vphantom{\\text{#1}}\\right|$}')
+    return '\n'.join(code) + '\n'
