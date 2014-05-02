@@ -578,7 +578,14 @@ def positif(expression, variable=None, strict=False, _niveau=0, _changement_vari
                 decoupage.add(rac)
         decoupage = sorted(decoupage)
         for val1, val2 in zip(decoupage[:-1], decoupage[1:]):
-            milieu = (val1 + val2)/2
+            if val1 == -oo and val2 == oo:
+                milieu = 0
+            elif val2 == oo:
+                milieu = val1 + 1
+            elif val1 == -oo:
+                milieu = val2 - 1
+            else:
+                milieu = (val1 + val2)/2
             if expression.subs(variable, milieu) > 0:
                 solutions |= Intervalle(val1, val2, False, False)
     return ens_def&solutions

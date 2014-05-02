@@ -34,7 +34,7 @@ from sympy import (Basic, expand as expand_, apart, Function, Integer, factorint
                     diff as diff_, divisors as divisors_, cancel, together as together_,
                     limit as limit_, factor as factor_, integrate as integrate_, Sum,
                     sqrtdenest, solve as solve_, product as product_, Matrix,
-                    ZeroMatrix, Identity, FunctionMatrix, Lambda)
+                    ZeroMatrix, Identity, FunctionMatrix, Lambda, Dummy)
 
 from .custom_objects import Fonction, ProduitEntiers, Decim, \
                             convert2decim
@@ -94,7 +94,6 @@ def factor(expression, variable = None, ensemble = None, decomposer_entiers = Tr
             return ProduitEntiers(*factorint(expression).iteritems())
         else:
             return expression
-
 
     elif isinstance(expression, Basic) and expression.is_polynomial():
         if variable is None:
@@ -231,7 +230,14 @@ def solve(expression, *variables, **kw):
     if not variables:
         variables = syms(expression)
     if len(variables) == 1:
-        solutions = solve_(expression, variables[0])
+        # Bug de sympy si la variable est réelle.
+        # solve(sqrt(x)) renvoie une erreur par exemple.
+        # cf. test_solve_reals()
+        # On supprime toutes les assertions.
+        var = variables[0]
+        x = Dummy()
+        expression = expression.subs(var, x)
+        solutions = solve_(expression, x)
         if ensemble == "R":
             solutions_reelles = []
             for solution in solutions:

@@ -91,3 +91,9 @@ def test_issue_230():
     # 3 racines réelles pour le polynôme.
     assertEqual(str(resoudre("x^3+7*x^2-5*x-4==0").evalf()),
           '{-7.58937000406433 ; -0.48882774214088 ; 1.07819774620521}')
+
+def test_issue_306():
+    x = Symbol("x")
+    assert_positif(x + sqrt(x**2 - 5), '[sqrt(5);+oo[')
+    assert_positif(x - sqrt(x**2 - 5), '[sqrt(5);+oo[')
+

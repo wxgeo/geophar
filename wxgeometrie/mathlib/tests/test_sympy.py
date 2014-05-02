@@ -6,7 +6,7 @@ import os, math
 from pytest import XFAIL
 
 from sympy import (Symbol, exp, solve, limit, S, E, Matrix, Integer, oo,
-                    sympify, Float
+                    sympify, Float, sqrt,
                     )
 
 from tools.testlib import assertAlmostEqual
@@ -16,7 +16,7 @@ from tools.testlib import assertAlmostEqual
 
 
 def test_sympy():
-    x = Symbol('x', real = True)
+    x = Symbol('x', real=True)
     assert -oo < oo
     assert not(-1.5 < -oo)
     assert (1 - exp(x)).is_negative is None
@@ -30,7 +30,7 @@ def test_sympy():
 
 
 def test_sympy_solving_with_floats():
-    x = Symbol('x', real = True)
+    x = Symbol('x', real=True)
 
     sols = solve(exp(-Float('0.5')*x + Float('0.4')) - 1)
     assert len(sols) == 1
@@ -57,3 +57,14 @@ def test_sympy_files():
     tst('AUTHORS')
     tst('LICENSE')
     tst('README.rst')
+
+
+@XFAIL
+def test_solve_reals():
+    x = Symbol('x', real=True)
+    assert solve(sqrt(x)) == [0]
+
+@XFAIL
+def test_set():
+    assert S(2) == 2
+    assert {S(2)} == {2}
