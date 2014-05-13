@@ -1007,7 +1007,7 @@ Remerciements plus particuliers à **Chris Smith**, **Vinzent Steinberg** et **A
 -   **François Lermigeaux**, pour les coups de pub occasionnels.
 -   **Georges Khaznadar**, pour ses nombreux conseils concernant Debian.
 -   Tous ceux qui ont pris le temps de faire des rapports de bugs et des
-    retours.
+    retours, en particulier **Dominique Pommier**.
 
 
 

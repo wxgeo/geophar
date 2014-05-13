@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Autodoc &mdash; Geophar 13.04.8 documentation</title>
+    <title>Autodoc &mdash; Geophar 14.04 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '13.04.8',
+        VERSION:     '14.04',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -27,7 +27,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="_static/translations.js"></script>
     <script type="text/javascript" src="_static/jsMath/easy/load.js"></script>
-    <link rel="top" title="Geophar 13.04.8 documentation" href="index.html" />
+    <link rel="top" title="Geophar 14.04 documentation" href="index.html" />
     <link rel="prev" title="Formats de fichiers" href="format.geo.html" /> 
   </head>
   <body>
@@ -43,7 +43,7 @@
         <li class="right" >
           <a href="format.geo.html" title="Formats de fichiers"
              accesskey="P">précédent</a> |</li>
-        <li><a href="index.html">Geophar 13.04.8 documentation</a> &raquo;</li> 
+        <li><a href="index.html">Geophar 14.04 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -591,7 +591,7 @@ ymax, height et width. (En pixels).</p>
 <p>À terme, on devrait aussi pouvoir importer ou exporter des fichiers Géogébra par exemple.</p>
 <dl class="function">
 <dt id="wxgeometrie.API.filtres.filtre_versions_anterieures">
-<tt class="descclassname">wxgeometrie.API.filtres.</tt><tt class="descname">filtre_versions_anterieures</tt><big>(</big><em>fgeo</em><big>)</big><a class="headerlink" href="#wxgeometrie.API.filtres.filtre_versions_anterieures" title="Lien permanent vers cette définition">¶</a></dt>
+<tt class="descclassname">wxgeometrie.API.filtres.</tt><tt class="descname">filtre_versions_anterieures</tt><big>(</big><em>fgeo</em>, <em>version</em><big>)</big><a class="headerlink" href="#wxgeometrie.API.filtres.filtre_versions_anterieures" title="Lien permanent vers cette définition">¶</a></dt>
 <dd></dd></dl>
 
 <span class="target" id="module-wxgeometrie.API.macros_construction"></span><dl class="class">
@@ -1084,7 +1084,7 @@ Renvoie le contenu, ou la nouvelle racine crée (si le contenu était vide).</p>
 
 <dl class="attribute">
 <dt id="wxgeometrie.API.sauvegarde.FichierGEO.defaut">
-<tt class="descname">defaut</tt><em class="property"> = {'nom': '', 'version': '13.04.8', 'type': 'Fichier WxGeometrie', 'module': '', 'repertoire': ''}</em><a class="headerlink" href="#wxgeometrie.API.sauvegarde.FichierGEO.defaut" title="Lien permanent vers cette définition">¶</a></dt>
+<tt class="descname">defaut</tt><em class="property"> = {'nom': '', 'version': '14.04', 'type': 'Fichier WxGeometrie', 'module': '', 'repertoire': ''}</em><a class="headerlink" href="#wxgeometrie.API.sauvegarde.FichierGEO.defaut" title="Lien permanent vers cette définition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -1140,7 +1140,9 @@ Eventuellement, le contenu peut-être compressé au format zip.</p>
 <dl class="method">
 <dt id="wxgeometrie.API.sauvegarde.FichierGEO.version_interne">
 <tt class="descname">version_interne</tt><big>(</big><em>version=None</em><big>)</big><a class="headerlink" href="#wxgeometrie.API.sauvegarde.FichierGEO.version_interne" title="Lien permanent vers cette définition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Renvoie le numéro de version sous forme d&#8217;une liste, ex: [12, 4, 1] pour la version 12.4.1.</p>
+<p>Par défaut, le numéro de version est celui du logiciel ayant servi à créer le fichier.</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -2132,15 +2134,17 @@ Sinon, un préfixe aléatoire est généré.</p>
 
 <dl class="method">
 <dt id="wxgeometrie.geolib.feuille.Feuille.sauvegarder">
-<tt class="descname">sauvegarder</tt><big>(</big><big>)</big><a class="headerlink" href="#wxgeometrie.geolib.feuille.Feuille.sauvegarder" title="Lien permanent vers cette définition">¶</a></dt>
+<tt class="descname">sauvegarder</tt><big>(</big><em>_as_list=False</em><big>)</big><a class="headerlink" href="#wxgeometrie.geolib.feuille.Feuille.sauvegarder" title="Lien permanent vers cette définition">¶</a></dt>
 <dd><p>Renvoie l&#8217;ensemble des commandes python qui permettra de recréer
 la figure avec tous ses objets.</p>
 <p>La figure pourra ensuite être restaurée à l&#8217;aide la commande <cite>charger()</cite>.</p>
+<p>Si _as_list=True, renvoie une liste de commandes (par défaut, les
+lignes de commandes sont concaténées et une chaîne est renvoyée).</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Type retourné:</th><td class="field-body">string</td>
+<tr class="field-odd field"><th class="field-name">Type retourné:</th><td class="field-body">string/list</td>
 </tr>
 </tbody>
 </table>
@@ -2411,7 +2415,7 @@ l&#8217;abscisse xl.</p>
 
 <dl class="attribute">
 <dt id="wxgeometrie.geolib.interpolations.Interpolation_polynomiale_par_morceaux.strategies">
-<tt class="descname">strategies</tt><em class="property"> = {'moyenne_gauche_droite': &lt;function _strategie_moyenne_gauche_droite at 0x5400aa0&gt;, 'pente_minimale': &lt;function _strategie_pente_minimale at 0x5400a28&gt;, 'pente_moyenne': &lt;function _strategie_pente_moyenne at 0x54009b0&gt;}</em><a class="headerlink" href="#wxgeometrie.geolib.interpolations.Interpolation_polynomiale_par_morceaux.strategies" title="Lien permanent vers cette définition">¶</a></dt>
+<tt class="descname">strategies</tt><em class="property"> = {'moyenne_gauche_droite': &lt;function _strategie_moyenne_gauche_droite at 0x57b7938&gt;, 'pente_minimale': &lt;function _strategie_pente_minimale at 0x57b78c0&gt;, 'pente_moyenne': &lt;function _strategie_pente_moyenne at 0x57b7848&gt;}</em><a class="headerlink" href="#wxgeometrie.geolib.interpolations.Interpolation_polynomiale_par_morceaux.strategies" title="Lien permanent vers cette définition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -2871,7 +2875,7 @@ de la graduation à la fenêtre (défaut)</li>
 </div></blockquote>
 <ul>
 <li><dl class="first docutils">
-<dt><cite>pas_num</cite> (int): entier <cite>n</cite>:</dt>
+<dt><cite>pas_num</cite> (int): entier positif <cite>n</cite>:</dt>
 <dd><ul class="first last simple">
 <li>si <cite>n</cite> est nul, n&#8217;affiche aucun nombre sur l&#8217;axe ;</li>
 <li>sinon, affiche un nombre toutes les <cite>n</cite> graduations
@@ -3859,7 +3863,7 @@ Le formatage est respecté (essayez &#8216;un&#8217;, &#8216;UN&#8217;, &#8216;U
 
 <dl class="attribute">
 <dt id="wxgeometrie.geolib.objet.Objet.verrou">
-<tt class="descname">verrou</tt><em class="property"> = &lt;wxgeometrie.geolib.objet.Verrou object at 0x50a91d0&gt;</em><a class="headerlink" href="#wxgeometrie.geolib.objet.Objet.verrou" title="Lien permanent vers cette définition">¶</a></dt>
+<tt class="descname">verrou</tt><em class="property"> = &lt;wxgeometrie.geolib.objet.Verrou object at 0x5331ad0&gt;</em><a class="headerlink" href="#wxgeometrie.geolib.objet.Objet.verrou" title="Lien permanent vers cette définition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -7110,6 +7114,11 @@ nom de l&#8217;image, aide, action</p>
 <dd></dd></dl>
 
 <dl class="method">
+<dt id="wxgeometrie.GUI.barre_outils.BarreOutils.axe">
+<tt class="descname">axe</tt><big>(</big><em>event=False</em>, <em>**kw</em><big>)</big><a class="headerlink" href="#wxgeometrie.GUI.barre_outils.BarreOutils.axe" title="Lien permanent vers cette définition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="wxgeometrie.GUI.barre_outils.BarreOutils.bissectrice">
 <tt class="descname">bissectrice</tt><big>(</big><em>event=False</em>, <em>**kw</em><big>)</big><a class="headerlink" href="#wxgeometrie.GUI.barre_outils.BarreOutils.bissectrice" title="Lien permanent vers cette définition">¶</a></dt>
 <dd></dd></dl>
@@ -8548,7 +8557,7 @@ la classe Panel_API_graphique, plus evoluée que celle-ci.</p>
 
 <dl class="method">
 <dt id="wxgeometrie.GUI.panel.Panel_simple.param">
-<tt class="descname">param</tt><big>(</big><em>parametre</em>, <em>valeur=&lt;wxgeometrie.pylib.fonctions.NoArgument object at 0x4f0e150&gt;</em>, <em>defaut=False</em><big>)</big><a class="headerlink" href="#wxgeometrie.GUI.panel.Panel_simple.param" title="Lien permanent vers cette définition">¶</a></dt>
+<tt class="descname">param</tt><big>(</big><em>parametre</em>, <em>valeur=&lt;wxgeometrie.pylib.fonctions.NoArgument object at 0x450d690&gt;</em>, <em>defaut=False</em><big>)</big><a class="headerlink" href="#wxgeometrie.GUI.panel.Panel_simple.param" title="Lien permanent vers cette définition">¶</a></dt>
 <dd><p>Renvoie la valeur du paramètre <cite>parametre</cite>.</p>
 <p>Recherche la valeur d&#8217;un paramètre d&#8217;abord dans les paramètres du module
 _(paramètres locaux), puis dans ceux de wxgéométrie.
@@ -9176,12 +9185,7 @@ tout en ayant en interne des résultats exacts, et donc d&#8217;éviter les cumu
 d&#8217;erreurs d&#8217;arrondis.</p>
 <dl class="attribute">
 <dt id="wxgeometrie.mathlib.custom_objects.Decim.default_assumptions">
-<tt class="descname">default_assumptions</tt><em class="property"> = {'real': True, 'nonzero': True, 'noninteger': True, 'commutative': True, 'infinitesimal': False, 'composite': False, 'unbounded': False, 'even': False, 'zero': False, 'prime': False, 'hermitian': True, 'complex': True, 'bounded': True, 'rational': True, 'integer': False, 'imaginary': False, 'finite': True, 'odd': False, 'irrational': False}</em><a class="headerlink" href="#wxgeometrie.mathlib.custom_objects.Decim.default_assumptions" title="Lien permanent vers cette définition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="wxgeometrie.mathlib.custom_objects.Decim.is_bounded">
-<tt class="descname">is_bounded</tt><em class="property"> = True</em><a class="headerlink" href="#wxgeometrie.mathlib.custom_objects.Decim.is_bounded" title="Lien permanent vers cette définition">¶</a></dt>
+<tt class="descname">default_assumptions</tt><em class="property"> = {'real': True, 'nonzero': True, 'noninteger': True, 'commutative': True, 'composite': False, 'prime': False, 'even': False, 'zero': False, 'hermitian': True, 'complex': True, 'rational': True, 'integer': False, 'imaginary': False, 'odd': False, 'irrational': False}</em><a class="headerlink" href="#wxgeometrie.mathlib.custom_objects.Decim.default_assumptions" title="Lien permanent vers cette définition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -9205,11 +9209,6 @@ d&#8217;erreurs d&#8217;arrondis.</p>
 <dd></dd></dl>
 
 <dl class="attribute">
-<dt id="wxgeometrie.mathlib.custom_objects.Decim.is_finite">
-<tt class="descname">is_finite</tt><em class="property"> = True</em><a class="headerlink" href="#wxgeometrie.mathlib.custom_objects.Decim.is_finite" title="Lien permanent vers cette définition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
 <dt id="wxgeometrie.mathlib.custom_objects.Decim.is_hermitian">
 <tt class="descname">is_hermitian</tt><em class="property"> = True</em><a class="headerlink" href="#wxgeometrie.mathlib.custom_objects.Decim.is_hermitian" title="Lien permanent vers cette définition">¶</a></dt>
 <dd></dd></dl>
@@ -9217,11 +9216,6 @@ d&#8217;erreurs d&#8217;arrondis.</p>
 <dl class="attribute">
 <dt id="wxgeometrie.mathlib.custom_objects.Decim.is_imaginary">
 <tt class="descname">is_imaginary</tt><em class="property"> = False</em><a class="headerlink" href="#wxgeometrie.mathlib.custom_objects.Decim.is_imaginary" title="Lien permanent vers cette définition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="wxgeometrie.mathlib.custom_objects.Decim.is_infinitesimal">
-<tt class="descname">is_infinitesimal</tt><em class="property"> = False</em><a class="headerlink" href="#wxgeometrie.mathlib.custom_objects.Decim.is_infinitesimal" title="Lien permanent vers cette définition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -9262,11 +9256,6 @@ d&#8217;erreurs d&#8217;arrondis.</p>
 <dl class="attribute">
 <dt id="wxgeometrie.mathlib.custom_objects.Decim.is_real">
 <tt class="descname">is_real</tt><em class="property"> = True</em><a class="headerlink" href="#wxgeometrie.mathlib.custom_objects.Decim.is_real" title="Lien permanent vers cette définition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="wxgeometrie.mathlib.custom_objects.Decim.is_unbounded">
-<tt class="descname">is_unbounded</tt><em class="property"> = False</em><a class="headerlink" href="#wxgeometrie.mathlib.custom_objects.Decim.is_unbounded" title="Lien permanent vers cette définition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -10192,7 +10181,7 @@ affichées), la fonction renvoie False, sinon, True.</p>
         <li class="right" >
           <a href="format.geo.html" title="Formats de fichiers"
              >précédent</a> |</li>
-        <li><a href="index.html">Geophar 13.04.8 documentation</a> &raquo;</li> 
+        <li><a href="index.html">Geophar 14.04 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">

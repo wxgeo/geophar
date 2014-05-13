@@ -264,7 +264,7 @@ def filtre_versions_anterieures(fgeo, version):
 
                 print(figures[i])
 
-            if [13] <= version < [14]:
+            if [13] <= version < [14, 5]:
                 figures[i] = figures[i].replace("'fond': 'none'", "'fond': False")
 
     if version < [13, 1]:
