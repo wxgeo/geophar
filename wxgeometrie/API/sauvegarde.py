@@ -202,9 +202,14 @@ class FichierGEO(object):
                 f.close()
         self.importer(texte)
 
+        version = self.version_interne()
+
         # Filtre d'import pour les versions antérieures
-        if self.version_interne() < self.version_interne(param.version):
-            filtre_versions_anterieures(self)
+        print(u'Test de la version du fichier...')
+        if version < self.version_interne(param.version):
+            print(u"Ce fichier a été créé avec une ancienne version du logiciel (%s)."
+                      u" Conversion en cours..." % '.'.join(str(n) for n in version))
+            filtre_versions_anterieures(self, version)
 
         rep, fich = os.path.split(path)
         self.infos['repertoire'] = rep
@@ -214,6 +219,10 @@ class FichierGEO(object):
 
 
     def version_interne(self, version = None):
+        u"""Renvoie le numéro de version sous forme d'une liste, ex: [12, 4, 1] pour la version 12.4.1.
+
+        Par défaut, le numéro de version est celui du logiciel ayant servi à créer le fichier.
+        """
         if version is None:
             version = self.version
         version = version.strip().lower()

@@ -30,8 +30,7 @@ __doc__ = u"""Gère l'import de fichiers de versions antérieures de WxGéométr
 import re
 
 
-def filtre_versions_anterieures(fgeo):
-    version = fgeo.version_interne()
+def filtre_versions_anterieures(fgeo, version):
     if fgeo.contenu.has_key("Affichage"):
         if fgeo.contenu["Affichage"]:
             parametres = fgeo.contenu["Affichage"][0]
@@ -264,6 +263,9 @@ def filtre_versions_anterieures(fgeo):
                 figures[i] = '\n'.join(lignes)
 
                 print(figures[i])
+
+            if [13] <= version < [14]:
+                figures[i] = figures[i].replace("'fond': 'none'", "'fond': False")
 
     if version < [13, 1]:
         if fgeo.contenu.has_key("Diagramme") and fgeo.module == "statistiques":
