@@ -135,13 +135,19 @@ def _auto_tabvar(chaine='', derivee=True, limites=True, decimales=3, approche=Fa
                 if x in infs:
                     droite = nice_str2(limit(expr, var, x, dir = '+'))
             fx = '%s%s%s' % (gauche, symb, droite)
-        if x in ens_def_df or x in (-oo, oo):
-            x = nice_str2(x)
-            return '(%s;%s)' % (x, fx)
+            
+        # Affichage de f'(x) (seulement si f'(x)=0 ou f'(x) non défini).
+        if x in (-oo, oo):
+            dfx = ''
+        elif x in ens_def_df: # `oo in ens_def_df` plante actuellement (05/2014)
+            dfx = ('0' if abs(df.subs(var, x).evalf()) < param.tolerance else '')
         else:
-            x = nice_str2(x)
-            return '(%s;%s;|)' % (x, fx)
-
+            dfx = '|'
+        if dfx and derivee:
+            return '(%s;%s;%s)' % (nice_str2(x), fx, dfx)
+        else:
+            return '(%s;%s)' % (nice_str2(x), fx)
+            
     def _code_inter(a, b):
         u"Retourne les variations entre a et b."
         if a == -oo and b == +oo:

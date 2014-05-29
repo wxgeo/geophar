@@ -132,7 +132,7 @@ f'(x)                             &                    &-       &0           &+ 
 \niveau{1}{2}\raisebox{0.5em}{$f$}&\niveau{2}{2}+\infty&\decroit&-\frac{1}{4}&\croit&+\infty\\
 \hline
 \end{tabvar}\]
-% x;f:(-oo;+oo) >> (-3/2;-1/4) << (+oo;+oo)
+% x;f:(-oo;+oo) >> (-3/2;-1/4;0) << (+oo;+oo)
 % (x+1)(x+2)
 """
     assert_tabvar(s, tab)
@@ -148,7 +148,7 @@ f'(x)                                &&\dbarre&                                 
 \niveau{1}{2}\raisebox{0.5em}{$f(x)$}&\niveau{1}{2}&\dbarre&\niveau{1}{2}-\infty&\croit&5 \exp(-1)+3&\decroit&3\\
 \hline
 \end{tabvar}\]
-% x;f(x):(0;|-oo;|) << (e;5*exp(-1) + 3) >> (+oo;3)
+% x;f(x):(0;|-oo;|) << (e;5*exp(-1) + 3;0) >> (+oo;3)
 % f(x)=5*ln(x)/x+3
 """
     assert_tabvar(s, tab)
@@ -184,7 +184,7 @@ f'(x)                                &              &-       &0     &+     & \\
 \niveau{1}{2}\raisebox{0.5em}{$f(x)$}&\niveau{2}{2}5&\decroit&-7    &\croit&+\infty\\
 \hline
 \end{tabvar}\]
-% x;f(x):(-oo;5) >> (ln(2);-7) << (+oo;+oo)
+% x;f(x):(-oo;5) >> (ln(2);-7;0) << (+oo;+oo)
 % f(x)=3e^{2x}-12e^{x}+5
 """
     assert_tabvar(s, tab)
@@ -219,7 +219,7 @@ f'(x)                             &              &+     &0            &-       &
 \niveau{1}{2}\raisebox{0.5em}{$f$}&\niveau{1}{2}0&\croit&1            &\decroit&0\\
 \hline
 \end{tabvar}\]
-% x;f:(-pi;0) << (pi/2;1) >> (pi;0)
+% x;f:(-pi;0) << (pi/2;1;0) >> (pi;0)
 % sin(x) sur [-pi;pi]
 '''
     assert_tabvar(s, tab)
@@ -304,7 +304,7 @@ f'(x)                             &                    &+     &0      &-       &
 \niveau{1}{2}\raisebox{0.5em}{$f$}&\niveau{1}{2}-\infty&\croit&-141,87&\decroit&-5594,67&\croit&+\infty&\dbarre&\niveau{2}{2}+\infty&\decroit&204,54&\croit&+\infty\\
 \hline
 \end{tabvar}\]
-% x;f:(-oo;-oo) << (-17,25;-141,87) >> (-0,13;-5594,67) << (0;+oo|+oo;|) >> (17,39;204,54) << (+oo;+oo)
+% x;f:(-oo;-oo) << (-17,25;-141,87;0) >> (-0,13;-5594,67;0) << (0;+oo|+oo;|) >> (17,39;204,54;0) << (+oo;+oo)
 % 5x+31+(1500x+100)/(x^2)
 '''
     assert_tabvar(s, tab, **options)
@@ -323,7 +323,7 @@ f'(x)                                &                    &-       &0  &+     & 
 \niveau{1}{2}\raisebox{0.5em}{$f(x)$}&\niveau{2}{2}+\infty&\decroit&1,4&\croit&+\infty\\
 \hline
 \end{tabvar}\]
-% x;f(x):(-oo;+oo) >> (0,8;1,4) << (+oo;+oo)
+% x;f(x):(-oo;+oo) >> (0,8;1,4;0) << (+oo;+oo)
 % f(x) = 0,5x + \text{e}^{-0,5x + 0,4}
 '''
     assert_tabvar(s, tab, **options)
@@ -361,7 +361,7 @@ f'(x)                             &                    &-       &&\dbarre&    &+
 \niveau{1}{2}\raisebox{0.5em}{$f$}&\niveau{2}{2}+\infty&\decroit& &0&         &\croit&5&\decroit& &0&        &\croit&+\infty\\
 \hline
 \end{tabvar}\]
-% x;f:(-oo;+oo) >> (-sqrt(5);0;|) << (0;5) >> (sqrt(5);0;|) << (+oo;+oo)
+% x;f:(-oo;+oo) >> (-sqrt(5);0;|) << (0;5;0) >> (sqrt(5);0;|) << (+oo;+oo)
 % abs(x**2-5)
 '''
     assert_tabvar(s, tab, **options)
@@ -384,3 +384,20 @@ f'(x)                             &                    &-       &&\dbarre&&     
 % sqrt{x^2 - 1}
 '''
     assert_tabvar(s, tab, **options)
+    
+def test_zeros_derivee():
+    s = 'f(x)=x^3'
+    options = {'derivee': True}
+    tab = \
+r'''\[\begin{tabvar}{|C|CCCCC|}
+\hline
+\,\,x\,\,        &-\infty             &      &0&      &+\infty\\
+\hline
+f'(x)            &                    &+     &0&+     &\\
+\hline
+\niveau{2}{3}f(x)&\niveau{1}{3}-\infty&\croit&0&\croit&+\infty\\
+\hline
+\end{tabvar}\]
+% x;f(x):(-oo;-oo;) << (0;0;0) << (+oo;+oo;)
+% f(x)=x^3
+'''
