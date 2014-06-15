@@ -31,6 +31,8 @@ from time import mktime
 import sys, platform, os
 
 from ..version import version, date_version, NOMPROG, NOMPROG2
+from ..dependances import dependances, latex, latex_unicode, moteur_de_rendu, \
+                          python_version_min, python_version_max, plateforme
 from .modules import modules, modules_actifs, descriptions_modules
 from .parametres import *
 
@@ -40,7 +42,6 @@ time_verification = time_version
 
 
 # Détection de la configuration
-plateforme = platform.system() #'Windows' ou 'Linux' par exemple.
 repertoire = os.getcwd() # memorise le repertoire de lancement
 python_version = float(sys.version[:3])
 python_version_info = sys.version_info
@@ -78,7 +79,8 @@ valeurs_a_ne_pas_sauver = (
 'plateforme',
 'platform',
 'frozen',
-'python_min',
+'python_version_min',
+'python_version_max',
 'python_version',
 'python_version',
 'repertoire',

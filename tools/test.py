@@ -61,7 +61,7 @@ from wxgeometrie import param
 
 
 # Make sure I have the right Python version.
-if sys.version_info[:2] < param.python_min:
+if sys.version_info[:2] < param.python_version_min:
     print("Python %d.%d or newer is required. Python %d.%d detected." % \
           (param.python_min + sys.version_info[:2]))
     sys.exit(-1)

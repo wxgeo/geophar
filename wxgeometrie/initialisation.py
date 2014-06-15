@@ -80,60 +80,6 @@ if getattr(sys, '_launch_geophar', False):
             app.setStyle(param.style_Qt)
         app.icone(u"%/wxgeometrie/images/icone.ico")
 
-    if not param.frozen:
-        # Ne pas faire ces tests avec py2exe (non seulement inutiles, mais en plus ils échouent).
-        # Make sure I have the right Python version.
-        if sys.version_info[:2] < param.python_min:
-            print(u" ** Erreur fatale **")
-            print(NOMPROG + u" nécessite Python %d.%d au minimum.")
-            print(u"Python %d.%d détecté." % (param.python_min + sys.version_info[:2]))
-            sys.exit(-1)
-
-        # Test for dependencies:
-        for module in dependances:
-            try:
-                # imp.find_module() doesn't support submodules.
-                path = None
-                while '.' in module:
-                    module, submodule = module.split('.', 1)
-                    f, filename, description = imp.find_module(module, path)
-                    module = submodule
-                    path = [filename]
-                imp.find_module(module, path)
-            except ImportError:
-                msg = u'** Erreur fatale **\nLe module %s est introuvable !\n' % module
-
-                if plateforme == 'Linux':
-                    def which(cmd):
-                        out = subprocess.Popen(("which", cmd), stdout=subprocess.PIPE, stderr=subprocess.STDOUT).stdout
-                        sortie = out.read()
-                        out.close()
-                        return sortie
-
-                    if which('apt-get'):
-                        paquet = dependances[module]
-                        if which('gksudo'):
-                            msg += "\nVoulez-vous installer le paquet '%s' correspondant ?" % paquet
-                        else:
-                            msg += "Sous Ubuntu/Debian, tapez 'sudo apt-get install %s'" \
-                                " pour installer le module manquant.\n" % paquet
-                    print(msg)
-
-                    if which('xmessage'):
-                        if splash_screen is not None:
-                            splash_screen.close()
-                        btn = subprocess.call(["xmessage", "-buttons", "OK,Annuler",
-                                  "-center", "-default", "OK", "-title", "Geophar : librairies manquantes !", "-print", str3(msg)])
-                        if btn == 101 and which('gksudo'):
-                            # Installation du paquet manquant
-                            if not subprocess.call(['gksudo', 'apt-get', 'install', paquet]):
-                                continue
-                else:
-                    print(msg)
-                sys.exit(-1)
-
-
-
     #def my_excepthook(exc_type, exc_obj, exc_tb):
     #    u"""Affiche l'erreur sans interrompre le programme.
     #    C'est un alias de sys.excepthook, mais qui est plus souple avec les encodages.

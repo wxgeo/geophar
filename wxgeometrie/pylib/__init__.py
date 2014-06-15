@@ -37,25 +37,6 @@ from generic_wrapper import GenericWrapper
 
 from .decorator import decorator
 
-try:
-    # Cx_Freeze version needs this (so that matplotlib can found pyparsing).
-    import pyparsing
-except ImportError:
-    pass
-import matplotlib, matplotlib.mathtext
-matplotlib.use(param.moteur_de_rendu, warn=False)
-matplotlib.rcParams['text.usetex'] = param.latex
-matplotlib.rcParams["text.latex.unicode"] = param.latex_unicode
-
-# A changer *avant* d'importer pylab ?
-matplotlib.rcParams['font.family'] ='serif'
-#matplotlib.rcParams['font.sans-serif'] ='STIXGeneral'
-matplotlib.rcParams['font.serif'] ='STIXGeneral'
-#matplotlib.rcParams['font.monospace'] ='STIXGeneral'
-matplotlib.rcParams['mathtext.fontset'] ='stix'
-
-import pylab_ as pylab
-# le fichier pylab_.py est modifie lors d'une "compilation" avec py2exe
 import numpy
 
 

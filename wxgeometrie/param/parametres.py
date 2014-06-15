@@ -61,19 +61,8 @@ ligne_commande = False
 GUIlib = 'Qt'
 LOGO = '%/wxgeometrie/images/logo6-1.png'
 
-# Les valeurs sont les noms des paquets sous Debian/Ubuntu.
-dependances = {'PyQt4': 'python-qt4',
-               'matplotlib': 'python-matplotlib',
-               'scipy': 'python-scipy',
-               'numpy': 'python-numpy',
-               'sip': 'python-sip',
-               'PyQt4.Qsci': 'python-qscintilla2',
-               }
 
-latex = False
-latex_unicode = True # (sera éventuellement désactivé ultérieurement, après l'import de wx)
 
-moteur_de_rendu = 'Qt4Agg'
 
 # Permet de tester les styles sous d'autres plateformes.
 # Styles possibles: 'Windows', 'Motif', 'CDE', 'Plastique', 'GTK+',
