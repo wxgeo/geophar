@@ -932,7 +932,7 @@ class Feuille(object):
                         "gradu": tuple,
                         "utiliser_repere": bool,
                         "liste_axes": tuple,
-                        "orthonorme": bool,
+                        "ratio": (int, float, type(None)),
                         "fenetre": tuple,
                         "zoom_texte": (int, float),
                         "zoom_ligne": (int, float),
@@ -1062,7 +1062,7 @@ class Feuille(object):
         if kw:
             self.__dict_repere.update(kw)
             self._repere_modifie = True
-            if 'fenetre' in kw or 'orthonorme' in kw:
+            if 'fenetre' in kw or 'ratio' in kw:
                 self.fenetre_modifiee()
 ##                self._mettre_a_jour_figures = True
             if 'afficher_objets_caches' in kw:

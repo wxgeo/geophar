@@ -2,7 +2,7 @@
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 
-orthonorme = True
+ratio = 1
 afficher_axes = False
 
 afficher_barre_outils = True

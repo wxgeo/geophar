@@ -138,7 +138,8 @@ tolerance = 1e-8 # seuil de tolérance, utilisé en particulier par geolib pour 
 # Parametres d'affichage
 # ----------------------
 
-orthonorme = False
+#~ orthonorme = False
+ratio = None
 grille_aimantee = False # force les points à se placer sur le quadrillage
 
 afficher_barre_outils = False

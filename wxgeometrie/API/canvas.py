@@ -128,7 +128,7 @@ class Canvas(FigureCanvasAgg):
         self.parametres = [u"taille", u"gradu", u"afficher_axes", u"afficher_quadrillage",
                            u"afficher_fleches", u"repere", u"resolution", u"origine_axes",
                            u"utiliser_repere", u"quadrillages", u"couleur_papier_millimetre",
-                           u"liste_axes", u"orthonorme", u"grille_aimantee", u"zoom_texte", "zoom_ligne"]
+                           u"liste_axes", u"ratio", u"grille_aimantee", u"zoom_texte", "zoom_ligne"]
         self.liste_objets_en_gras = WeakList()
         self.initialiser()
 
@@ -421,13 +421,9 @@ def %(_nom_)s(self, valeur = no_argument):
 
     def _get_fenetre(self):
         fenetre = self.feuille_actuelle.fenetre
-        orthonorme = self.orthonorme
-        if orthonorme or getattr(self, 'ratio', None) is not None:
-            if orthonorme:
-                rat = 1
-            else:
-                rat = self.ratio # x:y -> x/y
-                # ratio est le rapport "unité en abscisse/unité en ordonnée"
+        rat = self.ratio # x:y -> x/y
+        # ratio est le rapport "unité en abscisse/unité en ordonnée"
+        if rat is not None:
             w, h = self.dimensions
             coeff0 = rat*(fenetre[1] - fenetre[0])/w
             coeff1 = (fenetre[3] - fenetre[2])/h
@@ -585,6 +581,15 @@ def %(_nom_)s(self, valeur = no_argument):
         x, y, rx, ry = (xmin+xmax)/2., (ymin+ymax)/2., (xmax-xmin)/2., (ymax-ymin)/2.
         self.fenetre = x - xcoeff*rx, x + xcoeff*rx, y - ycoeff*ry, y + ycoeff*ry
 
+    @property2
+    def orthonorme(self, value=None):
+        if value is None:
+            return self.ratio == 1
+        elif value:
+            self.ratio = 1
+        else:
+            self.ratio = None
+
     # < Zooms concernant uniquement la taille des objets >
 
     def zoom_text(self, event = None, valeur = 100):
@@ -689,8 +694,8 @@ def %(_nom_)s(self, valeur = no_argument):
         y = max(min(y, ymax - 1), 0.1)
         x1, y1 = self.pix2coo(x, y)
         x0, y0 = (debut if debut else (x1, y1))
-        if respect_ratio and (self.orthonorme or getattr(self, 'ratio', None) is not None):
-            rymax = (ymax if self.orthonorme else ymax*self.ratio)
+        if respect_ratio and self.ratio is not None:
+            rymax = ymax*self.ratio
             if rymax*abs(x0 - x1) > xmax*abs(y0 - y1):
                 y1 = y0 + rymax/xmax*abs(x0 - x1)*cmp(y1, y0)
             else:
