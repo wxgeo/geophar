@@ -275,6 +275,7 @@ if getattr(sys, '_launch_geophar', False):
                     print("Temps d'initialisation: %f s" % (time.time() - t0))
                 frame = FenetrePrincipale(app, fichier_log = fichier_log)
                 if not param._restart:
+                    # Tous les modules ont pu être chargés (pas d'erreur fatale).
                     splash_screen.finish(frame)
                     if isinstance(sys.stdout, SortiesMultiples):
                         if param.debug:
@@ -306,6 +307,12 @@ if getattr(sys, '_launch_geophar', False):
                     if param.debug:
                         print('Temps de démarrage: %f s' % (time.time() - t0))
                     app.boucle()
+                else:
+                    # Une erreur fatale s'est produite lors du chargement d'un ou plusieurs modules.
+                    # L'application va être redémarrée sans les modules problématiques.
+                    # On ferme proprement le module de gestion des paramètres avant de quitter
+                    # (pour mémoriser en particulier les noms des modules à désactiver).
+                    frame.gestion.fermer()
                 sys.stdout = sys.__stdout__
                 sys.stderr = sys.__stderr__
                 sorties.close()
