@@ -689,7 +689,7 @@ def %(_nom_)s(self, valeur = no_argument):
         y = max(min(y, ymax - 1), 0.1)
         x1, y1 = self.pix2coo(x, y)
         x0, y0 = (debut if debut else (x1, y1))
-        if respect_ratio and self.orthonorme or getattr(self, 'ratio', None) is not None:
+        if respect_ratio and (self.orthonorme or getattr(self, 'ratio', None) is not None):
             rymax = (ymax if self.orthonorme else ymax*self.ratio)
             if rymax*abs(x0 - x1) > xmax*abs(y0 - y1):
                 y1 = y0 + rymax/xmax*abs(x0 - x1)*cmp(y1, y0)

@@ -268,8 +268,10 @@ class Dictionnaire_objets(dict):
 
         self.update(pause = self.feuille.pause, erreur = self.feuille.erreur,
                     effacer = self.feuille.effacer,
-                    coder = self.feuille.coder, effacer_codage = self.feuille.effacer_codage,
+                    coder = self.feuille.coder,
+                    effacer_codage = self.feuille.effacer_codage,
                     nettoyer = self.feuille.nettoyer,
+                    supprimer = self.supprimer,
                     )
         dict.__setitem__(self, 'None', None)
         dict.__setitem__(self, 'True', True)
@@ -1290,7 +1292,7 @@ class Feuille(object):
         Si _as_list=True, renvoie une liste de commandes (par défaut, les
         lignes de commandes sont concaténées et une chaîne est renvoyée).
 
-        :rtype: string/list        
+        :rtype: string/list
         """
 
         # On sauvegarde les paramètres de la feuille.
@@ -1302,7 +1304,7 @@ class Feuille(object):
 
         # Enfin, on sauvegarde les objets de la feuille.
         # On doit enregistrer les objets dans le bon ordre (suivant la _hierarchie).
-        objets = sorted(self.liste_objets(objets_caches=True, 
+        objets = sorted(self.liste_objets(objets_caches=True,
                  etiquettes=True), key=attrgetter("_hierarchie_et_nom"))
         commandes += [obj.sauvegarder() for obj in objets
                                      if obj._enregistrer_sur_la_feuille]
@@ -1313,7 +1315,7 @@ class Feuille(object):
     def effacer(self):
         self.objets.clear()
         self.affichage_perime()
-    
+
 
     def charger(self, commandes, rafraichir = True, archiver = True,
                                  mode_tolerant = False):
@@ -1375,7 +1377,7 @@ class Feuille(object):
         valeur += "\n%s.copier_style(%s)" % (nom, repr(objet))
         old_save = objet.sauvegarder()
         etiquette = objet.etiquette
-        
+
         if etiquette is not None:
             s = etiquette.sauvegarder()
             commandes.remove(s)
@@ -1385,7 +1387,7 @@ class Feuille(object):
         i = commandes.index(old_save)
         # On remplace l'ancienne définition de l'objet par la nouvelle
         commandes[i] = "\n%s=%s\n" % (nom, valeur)
-        
+
         # Il se peut que la nouvelle définition rajoute des dépendances
         # à l'objet et oblige à le définir plus tard dans la feuille.
         # L'idée est de repousser la définition de l'objet de plus en
@@ -1403,7 +1405,7 @@ class Feuille(object):
                 i += 1
         else:
             self.historique.restaurer(backup)
-            self.erreur(u"Erreur lors de la redéfinition de %s." %nom)   
+            self.erreur(u"Erreur lors de la redéfinition de %s." %nom)
 
 
     def inventaire(self):

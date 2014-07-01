@@ -22,6 +22,7 @@ from __future__ import with_statement
 
 import re
 from cStringIO import StringIO
+from functools import partial
 
 from PyQt4.QtCore import Qt, QTimer
 from PyQt4.QtGui import QCursor, QImage
@@ -39,7 +40,7 @@ from ..pylib import print_error, debug
 from ..geolib.textes import Texte
 from ..geolib.widgets import Champ
 from ..geolib.objet import Objet
-from ..geolib.constantes import NOM
+#~ from ..geolib.constantes import NOM
 
 class MiniEditeur:
     def __init__(self, parent):
@@ -444,11 +445,13 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
 
         if left_down(event):# or self.interaction:
             self.editeur.close()
-            if ctrl_down(event): # selection d'un zone pour zoomer
-                if alt_down(event): # selection simultanée de tous les objets d'une zone
+            if ctrl_down(event): # selection d'un zone
+                if alt_down(event):
+                    # selection simultanée de tous les objets d'une zone
                     self.selection_zone(lieu(event))
 
                 elif not self.fixe:
+                    # sélection d'une zone pour zoomer
                     self.gestion_zoombox(lieu(event))
 
             elif alt_down(event) or meta_down(event): # deplacement de l'etiquette d'un objet
@@ -533,24 +536,36 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
         action.triggered.connect(exporte)
 
         if objets_dans_la_zone:
-            action = menu.addAction(u"Supprimer les objets")
-            def supprimer():
-                noms = ','.join(obj.nom for obj in objets_dans_la_zone)
-                self.executer(u'supprimer(%s)' %noms)
-            action.triggered.connect(supprimer)
+            categories = ['tous'] + sorted(set(objet.style("categorie") for objet in objets_dans_la_zone))
 
-            action = menu.addAction(u'Masquer les objets')
-            def masquer():
+            def objets(categorie='tous'):
+                u"Retourne uniquement les objets de la zone sélectionnée d'une catégorie donnée."
+                if categorie == 'tous':
+                    return (obj for obj in objets_dans_la_zone)
+                else:
+                    return (obj for obj in objets_dans_la_zone
+                            if obj.style('categorie') == categorie)
+
+            def supprimer(categorie='tous'):
+                noms = ','.join(obj.nom for obj in objets(categorie))
+                self.executer(u'supprimer(%s)' % noms)
+
+            def masquer(categorie='tous'):
                 with self.geler_affichage(actualiser=True):
-                    for objet in objets_dans_la_zone:
+                    for objet in objets(categorie):
                         self.executer(u"%s.cacher()" % objet.nom)
-            action.triggered.connect(masquer)
 
-            action = menu.addAction(u'Éditer les objets')
-            def editer():
-                win = Proprietes(self, objets_dans_la_zone)
+            def editer(categorie='tous'):
+                win = Proprietes(self, list(objets(categorie)))
                 win.show()
-            action.triggered.connect(editer)
+
+            for title, func in ((u"Supprimer les objets", supprimer),
+                                  (u'Masquer les objets', masquer),
+                                  (u'Éditer les objets', editer)):
+                submenu = menu.addMenu(title)
+                for categorie in categories:
+                    action = submenu.addAction(categorie.capitalize())
+                    action.triggered.connect(partial(func, categorie))
 
         ##app.processEvents()
         menu.exec_(QCursor.pos())
