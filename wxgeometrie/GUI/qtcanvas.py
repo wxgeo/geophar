@@ -586,11 +586,10 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
 
     def mouseDoubleClickEvent(self, event):
         self.detecter(lieu(event))
-        if isinstance(self.select, Texte):
-            # Un double-clic permet d'éditer un texte.
+        if self.select is not None:
+            # Un double-clic permet d'éditer les propriétés de l'objet.
             menu = MenuActionsObjet(self)
-            menu.etiquette()
-
+            menu.proprietes()
 
     def left_down(self, event):
         # Patch pour l'utilisation avec un dispositif de pointage absolu (tablette graphique ou TNI)
@@ -602,6 +601,9 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
             x, y = self.select.coordonnees
             x1, y1 = self.coordonnees(event)
             self.decalage_coordonnees = x - x1, y - y1
+            # On mémorise les coordonnées au moment du clic pour savoir
+            # si l'objet a été déplacé ("drag") ou non lors du clic.
+            self.coordonnees_left_down = x1, y1
         if getattr(self.select, 'on_left_click', None) is not None:
             self.select.on_left_click()
         elif isinstance(self.select, Champ):
@@ -675,9 +677,10 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
             self.setCursor(Qt.ArrowCursor)
 
         elif self.deplacable(self.select):
-            self.parent.action_effectuee(self.select.nom + str(self.select.coordonnees))
-            # pas super precis : il se peut qu'on relache le bouton sans avoir deplace le point.
-            # ca fait un enregistrement inutile dans l'historique...
+            # Si on relache le bouton sans avoir déplacé le point,
+            # inutile de faire un enregistrement pour rien dans l'historique.
+            if self.coordonnees_left_down != self.coordonnees(event):
+                self.parent.action_effectuee(self.select.nom + str(self.select.coordonnees))
 
 
     def right_up(self, event):

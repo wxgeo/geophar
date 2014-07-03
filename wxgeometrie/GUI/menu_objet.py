@@ -66,7 +66,7 @@ class MenuActionsObjet(PopUpMenu):
             action = self.addAction(u"Formatage mathématique" if select.style('formatage') == RIEN
                                             else u"Formatage par défaut")
             action.triggered.connect(self.mode_formatage)
-            
+
         elif select.etiquette is not None:
             action = self.addAction(u"Texte associé")
             action.triggered.connect(self.etiquette)
@@ -168,7 +168,7 @@ class MenuActionsObjet(PopUpMenu):
         # -----------
 
         dlg = QDialog(self.canvas)
-        dlg.setWindowTitle("Changer la légende de l'objet (texte quelconque)")
+        dlg.setWindowTitle(u"Changer la légende de l'objet (texte quelconque)")
 
         sizer = QVBoxLayout()
         sizer.addWidget(QLabel(u"Note: le code LATEX doit etre entre $$. Ex: $\\alpha$"))
@@ -208,7 +208,7 @@ class MenuActionsObjet(PopUpMenu):
                     mode = (FORMULE if dlg.cb.isChecked() else TEXTE)
                     self.executer(u"%s.label(%s, %s)" %(nom, txt, mode))
                 except:
-					# Au cas où une formule incorrecte fasse buguer l'affichage (?)
+                    # Au cas où une formule incorrecte fasse buguer l'affichage (?)
                     etiquette.texte = old['texte']
                     etiquette.style(mode=old['mode'])
                     print_error()
