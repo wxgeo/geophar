@@ -164,9 +164,6 @@ class BarreOutils(QWidget):
     def __init__(self, parent):
         self.parent = parent
         QWidget.__init__(self, parent)
-        ##self.SetBackgroundColour(couleur if couleur is not None else wx.NamedColor(u"WHITE"))
-        self.debut_selection = None
-        self.debut_zoombox = None
         self._selected_button = None
 
         self.sizer = QHBoxLayout()
@@ -302,9 +299,6 @@ class BarreOutils(QWidget):
     def canvas(self):
         return self.parent.canvas
 
-##    @property
-##    def commande(self):
-##        return self.parent.commande
 
     def rafraichir(self):
         u"Appelé par le parent pour rafraichir la barre d'outils."
@@ -317,12 +311,6 @@ class BarreOutils(QWidget):
         self.feuille_actuelle.objet_temporaire(None)
         self.canvas.liste_objets_en_gras.clear()
         self.canvas.selection_en_gras()
-        if self.debut_zoombox is not None or self.debut_selection is not None:
-            self.debut_zoombox = None
-            self.debut_selection = None
-            # on rafraichit l'affichage pour effacer le rectangle de sélection ou de zoom
-            self.canvas.rafraichir_affichage(dessin_temporaire = True) # pour ne pas tout rafraichir
-
 
 
     def dialogue(self, titre, question, defaut=""):
@@ -399,59 +387,20 @@ class BarreOutils(QWidget):
 
     def curseur(self, event = None):
         u"Revenir en mode standard (flêche simple)."
-        self.interagir(None)
+        self.interagir(None, u"Sélectionnez ou déplacez un objet.")
+        self.canvas.mode = "defaut"
 
 
     def zoombox(self, event = False, **kw):
         u"Mode zoom."
-        if event is not False:
-            self.debut_zoombox = None
-            self.interagir(self.zoombox, u"Cliquez pour délimiter le début de la zone à afficher.", self.zoombox_onmotion)
-        elif not self.canvas.fixe:
-            if kw.get("special", None) == "ESC":
-                self.initialiser()
-                self.canvas.message(u"Cliquez pour délimiter le début de la zone à afficher.")
-            elif self.debut_zoombox is None:
-                self.canvas.message(u"Cliquez pour délimiter la fin de la zone à afficher.")
-                self.debut_zoombox = kw["position"]
-            else:
-                (x0, y0), (x1, y1) = self.debut_zoombox, self.canvas.fin_zoom
-                self.canvas.executer("fenetre = " + str((x0, x1, y0, y1)))
-                self.canvas.message(u"Cliquez pour délimiter le début de la zone à afficher.")
-                self.debut_zoombox = None
-
-
-    def zoombox_onmotion(self, **kw):
-        if self.debut_zoombox is not None:
-            self.canvas.debut_zoom = self.debut_zoombox
-            self.canvas.gestion_zoombox(kw["pixel"])
-            self.canvas.debut_zoom = None
+        self.interagir(None, u"Sélectionnez une zone pour zoomer dessus.")
+        self.canvas.mode = "zoom"
 
 
     def selectionner(self, event = False, **kw):
         u"Sélectionner une zone."
-        if event is not False:
-            self.debut_selection = None
-            self.interagir(self.selectionner, u"Cliquez pour délimiter le début de la zone à sélectionner.", self.selectionner_onmotion)
-        else:
-            if kw.get("special", None) == "ESC":
-                self.initialiser()
-                self.canvas.message(u"Cliquez pour délimiter le début de la zone à sélectionner.")
-            elif self.debut_selection is None:
-                self.canvas.message(u"Cliquez pour délimiter la fin de la zone à sélectionner.")
-                self.debut_selection = kw["position"]
-            else:
-                (x0, y0), (x1, y1) = self.debut_selection, self.canvas.fin_select
-                self.canvas.OnSelect(x0, x1, y0, y1)
-                self.canvas.message(u"Cliquez pour délimiter le début de la zone à sélectionner.")
-                self.debut_selection = None
-
-
-    def selectionner_onmotion(self, **kw):
-        if self.debut_selection is not None:
-            self.canvas.debut_select = self.debut_selection
-            self.canvas.selection_zone(kw["pixel"])
-            self.canvas.debut_select = None
+        self.interagir(None, u"Sélectionnez une zone.")
+        self.canvas.mode = "select"
 
 
     def point(self, event = False, nom_style='points', editer='defaut', **kw):

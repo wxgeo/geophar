@@ -685,7 +685,7 @@ def %(_nom_)s(self, valeur = no_argument):
 # Sélection d'une zone
 ######################
 
-    def _rectangle_selection(self, debut, pixel, linestyle='-', facecolor='y', edgecolor='y', respect_ratio=False):
+    def _rectangle_selection(self, pixel, linestyle='-', facecolor='y', edgecolor='y', respect_ratio=False):
         x, y = pixel
         xmax, ymax = self.dimensions
         # Pour des questions d'arrondi lors de la conversion pixel -> coordonnée,
@@ -693,7 +693,7 @@ def %(_nom_)s(self, valeur = no_argument):
         x = max(min(x, xmax - 1), 0.1)
         y = max(min(y, ymax - 1), 0.1)
         x1, y1 = self.pix2coo(x, y)
-        x0, y0 = (debut if debut else (x1, y1))
+        x0, y0 = self.coordonnees_left_down
         if respect_ratio and self.ratio is not None:
             rymax = ymax*self.ratio
             if rymax*abs(x0 - x1) > xmax*abs(y0 - y1):
@@ -710,19 +710,22 @@ def %(_nom_)s(self, valeur = no_argument):
         self.dessiner_polygone([x0, x0, x1, x1], [y0, y1, y1, y0], facecolor=facecolor, edgecolor=edgecolor, alpha=.1)
         self.dessiner_ligne([x0, x0, x1, x1, x0], [y0, y1, y1, y0, y0], edgecolor, linestyle=linestyle, alpha=1)
 
-        self.rafraichir_affichage(dessin_temporaire = True) # pour ne pas tout rafraichir
-        return (x0, y0), (x1, y1)
+        # Pour ne pas tout rafraichir.
+        self.rafraichir_affichage(dessin_temporaire=True)
+
+        # On renvoie le point de fin de sélection, qui ne correspondra pas
+        # toujours au point où le bouton de la souris a été relâché (même si
+        # la souris sort de la fenêtre, la sélection ne dépasse pas la fenêtre).
+        self.fin_selection = (x1, y1)
 
 
     def gestion_zoombox(self, pixel):
-        self.debut_zoom, self.fin_zoom = self._rectangle_selection(
-                self.debut_zoom, pixel, facecolor='c', edgecolor='c',
-                respect_ratio=True)
+        self._rectangle_selection(pixel, facecolor='c', edgecolor='c',
+                                  respect_ratio=True)
 
     def selection_zone(self, pixel):
-        self.debut_select, self.fin_select = self._rectangle_selection(
-                self.debut_select, pixel, facecolor='y', edgecolor='g',
-                linestyle=':')
+        self._rectangle_selection(pixel, facecolor='y', edgecolor='g',
+                                  linestyle=':')
 
 
 # Evenements concernant directement la feuille

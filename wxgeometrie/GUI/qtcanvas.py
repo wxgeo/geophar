@@ -168,12 +168,19 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
 
         # Message à afficher en dehors des affichages temporaires
         self._message_remanent = ''
-        # Utilisé pour zoomer avec Ctrl + Clic gauche (contiendra la position initiale)
-        self.debut_zoom = None
-        # Utilisé pour sélectionner simultanément plusieurs objets avec Alt + Clic gauche (pos. initiale)
-        self.debut_select = None
-        # Utilisé pour translater le contenu de la fenêtre (position initiale)
-        self.debut_shift = None
+        # Les modes définissent l'effet des évènements de la souris.
+        # Modes possibles:
+        # - 'defaut' (déplacer un objet),
+        # - 'zoom' (zoomer sur une zone),
+        # - 'select' (sélectionner une zone).
+        self.mode = "defaut"
+        # Action en cours :
+        # - None (aucune)
+        # - 'select' (sélection d'une zone pour export ou édition)
+        # - 'zoom' (sélection d'une zone pour zoomer)
+        # - 'shift' (translation du contenu de la fenêtre)
+        self.action_en_cours = None
+
         # Rechercher les objets à proximité du pointeur
         self.redetecter = True
 
@@ -364,7 +371,6 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
         Typiquement, on utilise self.detecter(lieu(event))."""
 
         self.redetecter = False
-        self.debut_zoom = None
         actuelle = self.feuille_actuelle # feuille courante
 
         if not self.affichage_gele:
@@ -410,6 +416,20 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
             self.selection_en_gras()
 
 
+    def test_mode(self, event):
+        u"""Retourne le mode ('defaut', 'select' ou 'zoom').
+
+        La méthode `.test_mode()` ne tient pas seulement compte de self.mode,
+        mais aussi des touches pressées (CTRL, ALT...), et de self.fixe."""
+        mode = self.mode
+        if ctrl_down(event):
+            mode = ('select' if alt_down(event) else 'zoom')
+        if self.fixe and mode == 'zoom':
+            # Zoom interdit (fenêtre d'affichage bloquée).
+            mode = 'defaut'
+        return mode
+
+
     def wheelEvent(self, event):
         u"Gestion du zoom par la roulette de la souris."
         pas = event.delta()/120.
@@ -445,17 +465,21 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
 
         if left_down(event):# or self.interaction:
             self.editeur.close()
-            if ctrl_down(event): # selection d'un zone
-                if alt_down(event):
-                    # selection simultanée de tous les objets d'une zone
-                    self.selection_zone(lieu(event))
+            if self.test_mode(event) != self.action_en_cours:
+                # L'action a été interrompue par l'utilisateur
+                self.action_en_cours = None
+                self.rafraichir_affichage()
 
-                elif not self.fixe:
-                    # sélection d'une zone pour zoomer
-                    self.gestion_zoombox(lieu(event))
+            if self.action_en_cours == 'select':
+                # Sélection simultanée de tous les objets d'une zone.
+                self.selection_zone(lieu(event))
 
-            elif alt_down(event) or meta_down(event): # deplacement de l'etiquette d'un objet
-                self.debut_zoom = None
+            elif self.action_en_cours == 'zoom':
+                # Sélection d'une zone pour zoomer.
+                self.gestion_zoombox(lieu(event))
+
+            elif alt_down(event) or meta_down(event):
+                # Déplacement de l'étiquette d'un objet.
                 x, y = lieu(event)
                 if self.etiquette_selectionnee is None:
                     for objet in actuelle.liste_objets(False):
@@ -476,26 +500,30 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
 
 
             elif self.select is not None and not self.interaction: # deplacement d'un objet avec la souris
-                self.debut_zoom = None
                 if self.deplacable(self.select):
                     self.select(*self.coordonnees(event, *self.decalage_coordonnees))
                 self.infos()
 
-        elif right_down(event) and self.debut_shift and not self.fixe: # deplacement de la feuille
+        elif right_down(event) and self.action_en_cours == 'shift':
+            # Translation du contenu de la feuille.
             self.setCursor(Qt.SizeAllCursor)
-            self.fin_shift = self.pix2coo(*lieu(event))
-            translation = array(self.fin_shift) - array(self.debut_shift)
-            self.fenetre = (self.fenetre[0] - translation[0], self.fenetre[1] - translation[0],
-                            self.fenetre[2] - translation[1], self.fenetre[3] - translation[1])
+            x_clic, y_clic = self.coordonnees_right_down
+            x, y = self.coordonnees(event)
+            # Calcul du déplacement.
+            dx, dy = x - x_clic, y - y_clic
+            self.fenetre = (self.fenetre[0] - dx, self.fenetre[1] - dx,
+                            self.fenetre[2] - dy, self.fenetre[3] - dy)
             if self.select is not None:
                 self.select = None
                 self.selection_en_gras()
 
-        elif self.interaction_deplacement is not None:
-            self.interaction_deplacement(pixel = lieu(event))
+        else:
+            self.action_en_cours = None
+            if self.interaction_deplacement is not None:
+                self.interaction_deplacement(pixel = lieu(event))
 
-        elif not ctrl_down(event):   # detection des objets a proximite du pointeur
-            self.detecter(lieu(event))
+            elif not ctrl_down(event):   # detection des objets a proximite du pointeur
+                self.detecter(lieu(event))
 
 
 
@@ -510,6 +538,8 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
                 if x0 <= xmin <= xmax <= x1 and y0 <= ymin <= ymax <= y1:
                     objets_dans_la_zone.append(objet)
         self.feuille_actuelle.objets_en_gras(*objets_dans_la_zone)
+        self._rectangle_selection(self.coo2pix(*self.fin_selection), facecolor='y', edgecolor='g',
+                                  linestyle=':')
 
         def exporte():
             actuelle = self.feuille_actuelle # feuille de travail courante
@@ -594,28 +624,31 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
     def left_down(self, event):
         # Patch pour l'utilisation avec un dispositif de pointage absolu (tablette graphique ou TNI)
         self.detecter(lieu(event))
-        ##if self.HasCapture():
-            ##self.ReleaseMouse()
+        # On mémorise les coordonnées au moment du clic.
+        # Cela permet :
+        # - de savoir si un objet a été déplacé ("drag") ou non lors du clic.
+        # - de sélectionner une zone.
+        self.coordonnees_left_down = x_clic, y_clic = self.coordonnees(event)
         self.setFocus()
         if self.deplacable(self.select):
             x, y = self.select.coordonnees
-            x1, y1 = self.coordonnees(event)
-            self.decalage_coordonnees = x - x1, y - y1
-            # On mémorise les coordonnées au moment du clic pour savoir
-            # si l'objet a été déplacé ("drag") ou non lors du clic.
-            self.coordonnees_left_down = x1, y1
+            self.decalage_coordonnees = x - x_clic, y - y_clic
         if getattr(self.select, 'on_left_click', None) is not None:
             self.select.on_left_click()
         elif isinstance(self.select, Champ):
             # Un simple clic suffit pour éditer un champ.
             menu = MenuActionsObjet(self)
             menu.etiquette()
+        else:
+            self.action_en_cours = self.test_mode(event)
 
 
 
     def right_down(self, event):
         self.editeur.close()
         self.detecter(lieu(event))
+        # On mémorise les coordonnées au moment du clic.
+        self.coordonnees_right_down = self.coordonnees(event)
 
         if self.select is not None and not ctrl_down(event):
             if self.edition_par_clic_droit:
@@ -626,10 +659,8 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
                 self.selection_en_gras()
             self.setCursor(Qt.ArrowCursor)
         elif not self.fixe:
-            self.debut_shift = self.pix2coo(*lieu(event))
             self.setCursor(Qt.SizeAllCursor)
-            ##if not self.HasCapture():
-                ##self.CaptureMouse()
+            self.action_en_cours = 'shift'
 
 
     def mouseReleaseEvent(self, event):
@@ -643,34 +674,25 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
 
 
     def left_up(self, event):
-        ##if self.HasCapture():
-            ##self.ReleaseMouse()
-
         if self.etiquette_selectionnee:
             x, y = self.etiquette_selectionnee.coordonnees
             self.parent.action_effectuee(u"%s.etiquette(%s, %s)" %(self.etiquette_selectionnee.parent.nom, x, y))
             self.etiquette_selectionnee = None
             return
 
-        if self.debut_zoom and not self.fixe:
-            try:
-                if ctrl_down(event):
-                    (x0, y0), (x1, y1) = self.debut_zoom, self.fin_zoom
-                    self.executer("fenetre = " + str((x0, x1, y0, y1)))
+        action = self.action_en_cours
+        if action in ('zoom', 'select'):
+            x0, y0 = self.coordonnees_left_down
+            x1, y1 = self.fin_selection
+            if (x0, y0) != (x1, y1):
+                # Zoom sur la zone sélectionnée.
+                if action == 'zoom':
+                    self.executer("fenetre = %s, %s, %s, %s" % (x0, x1, y0, y1))
+                # Sélection d'une zone.
                 else:
-                    self.rafraichir_affichage()
-            finally:
-                self.debut_zoom = None
-
-        elif self.debut_select and not self.fixe:
-            try:
-                if ctrl_down(event) and alt_down(event):
-                    (x0, y0), (x1, y1) = self.debut_select, self.fin_select
                     self.OnSelect(x0, x1, y0, y1)
-                else:
-                    self.rafraichir_affichage()
-            finally:
-                self.debut_select = None
+            else:
+                self.rafraichir_affichage()
 
         elif self.interaction:
             self.signal(event)
@@ -691,8 +713,8 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
 
         self.setCursor(Qt.ArrowCursor)
 
-        if self.debut_shift:
-            self.debut_shift= None
+        if self.action_en_cours == 'shift':
+            self.action_en_cours = None
             self.parent.action_effectuee(u"fenetre = " + str(self.fenetre))
 
 
@@ -722,10 +744,14 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
         elif self.editeur and not self.editeur.key(key, txt, modifiers):
             accept = False
 
-        if key == Qt.Key_Escape and self.interaction:
-            print "ESCAPE !"
-            self.interaction(special="ESC")
-            accept = True
+        if key == Qt.Key_Escape:
+            if self.action_en_cours is not None:
+                self.action_en_cours = None
+                self.rafraichir_affichage()
+            elif self.interaction:
+                print "ESCAPE !"
+                self.interaction(special="ESC")
+                accept = True
 
         if not accept:
             FigureCanvasQTAgg.keyPressEvent(self, event)

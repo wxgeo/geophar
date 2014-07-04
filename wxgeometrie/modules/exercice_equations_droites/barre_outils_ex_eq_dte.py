@@ -32,8 +32,6 @@ class BarreOutilsExEqDte(BarreOutils):
     def __init__(self, parent):
         self.parent = parent
         QWidget.__init__(self, parent)
-        self.debut_selection = None
-        self.debut_zoombox = None
         self._selected_button = None
 
         self.sizer = QHBoxLayout()
