@@ -685,15 +685,23 @@ def %(_nom_)s(self, valeur = no_argument):
 # Sélection d'une zone
 ######################
 
-    def _rectangle_selection(self, pixel, linestyle='-', facecolor='y', edgecolor='y', respect_ratio=False):
-        x, y = pixel
-        xmax, ymax = self.dimensions
-        # Pour des questions d'arrondi lors de la conversion pixel -> coordonnée,
-        # on met 0.1 au lieu de 0 comme valeur minimale en pixel (0+ en fait).
-        x = max(min(x, xmax - 1), 0.1)
-        y = max(min(y, ymax - 1), 0.1)
-        x1, y1 = self.pix2coo(x, y)
-        x0, y0 = self.coordonnees_left_down
+    def _rectangle_selection(self, xy0, xy1, linestyle='-', facecolor='y',
+                             edgecolor='y', respect_ratio=False, coins=False,
+                             coin_actif=None):
+        u"""Dessine un rectangle de sélection au dessus de la figure actuelle.
+
+        L'option `coins` sert à afficher des poignées aux 4 coins du rectangle
+        pour indiquer que la sélection est redimensionnable.
+        """
+        x0, y0 = xy0
+        x1, y1 = xy1
+        # Le rectangle de sélection ne doit pas sortir de la fenêtre.
+        xmin, xmax, ymin, ymax = self.fenetre
+        x0 = max(min(x0, xmax), xmin)
+        y0 = max(min(y0, ymax), ymin)
+        x1 = max(min(x1, xmax), xmin)
+        y1 = max(min(y1, ymax), ymin)
+
         if respect_ratio and self.ratio is not None:
             rymax = ymax*self.ratio
             if rymax*abs(x0 - x1) > xmax*abs(y0 - y1):
@@ -709,6 +717,10 @@ def %(_nom_)s(self, valeur = no_argument):
         self.graph._effacer_artistes()
         self.dessiner_polygone([x0, x0, x1, x1], [y0, y1, y1, y0], facecolor=facecolor, edgecolor=edgecolor, alpha=.1)
         self.dessiner_ligne([x0, x0, x1, x1, x0], [y0, y1, y1, y0, y0], edgecolor, linestyle=linestyle, alpha=1)
+        if coins:
+            for x, y in [(x0, y0), (x0, y1), (x1, y0), (x1, y1)]:
+                self.dessiner_point(x, y, color=('k' if (x, y) != coin_actif else 'r'),
+                                    marker='s', markersize=4)
 
         # Pour ne pas tout rafraichir.
         self.rafraichir_affichage(dessin_temporaire=True)
@@ -716,16 +728,16 @@ def %(_nom_)s(self, valeur = no_argument):
         # On renvoie le point de fin de sélection, qui ne correspondra pas
         # toujours au point où le bouton de la souris a été relâché (même si
         # la souris sort de la fenêtre, la sélection ne dépasse pas la fenêtre).
-        self.fin_selection = (x1, y1)
+        self.coordonnees_rectangle_selection = ((x0, y0), (x1, y1))
 
 
-    def gestion_zoombox(self, pixel):
-        self._rectangle_selection(pixel, facecolor='c', edgecolor='c',
+    def rectangle_zoom(self, xy0, xy1):
+        self._rectangle_selection(xy0, xy1, facecolor='c', edgecolor='c',
                                   respect_ratio=True)
 
-    def selection_zone(self, pixel):
-        self._rectangle_selection(pixel, facecolor='y', edgecolor='g',
-                                  linestyle=':')
+    def rectangle_selection(self, xy0, xy1, coins=False, coin_actif=None):
+        self._rectangle_selection(xy0, xy1, facecolor='y', edgecolor='g',
+                                  linestyle=':', coins=coins, coin_actif=coin_actif)
 
 
 # Evenements concernant directement la feuille

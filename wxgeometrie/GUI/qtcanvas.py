@@ -244,11 +244,20 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
         return self.parent.param(*args, **kw)
 
     def message(self, txt, lieu=0, temporaire=True):
+        u"""Affiche un message dans la barre d'état.
+
+        Par défaut, le message est temporaire, c'est-à-dire qu'il sera effacé
+        dès que l'utilisateur bougera la souris, pour laisser la place au
+        message « permanent », qui indique généralement le mode actif.
+
+        Cette méthode retourne le message « permanent » actuel.
+        """
         if not temporaire:
             self._message_remanent = txt
         if not txt:
             txt = self._message_remanent
-        self.fenetre_principale.message(txt, lieu) # cf. geometrie.py
+        self.fenetre_principale.message(txt, lieu)
+        return self._message_remanent
 
     def _curseur(self, sablier):
         if sablier:
@@ -452,31 +461,52 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
                 self.zoomer(param.zoom_out**(-pas))
                 self.parent.action_effectuee("zoom_out", signature = 'zoom_out')
 
+    def _detecter_coin_actif(self, event):
+        u"""Retourne le coin du rectangle de sélection situé sous le pointeur de la souris.
+
+        Retourne None si la souris ne pointe pas sur un coin."""
+        px, py = lieu(event)
+        d = param.precision_selection + 3
+        (x0, y0), (x1, y1) = self.coordonnees_rectangle_selection
+        for coin in [(x0, y0), (x0, y1), (x1, y0), (x1, y1)]:
+            px_coin, py_coin = self.coo2pix(*coin)
+            if (px - px_coin)**2 + (py - py_coin)**2 < d**2:
+                return coin
+
     def mouseMoveEvent(self, event):
-        #if self.FindFocus() in (self.parent, self.parent.parent, self.parent.parent.parent):
         if self.window().isActiveWindow() and (left_down(event) or right_down(event)):
             self.setFocus()
         if self.redetecter:
             self.detecter()
         actuelle = self.feuille_actuelle
 
-        if actuelle.objet_temporaire(): # Utilisé pour la prévisualisation d'objets, avant leur construction avec la souris
+        if actuelle.objet_temporaire():
+            # Utilisé pour la prévisualisation d'objets, avant leur construction avec la souris.
             actuelle.point_temporaire().coordonnees = self.coordonnees(event)
 
-        if left_down(event):# or self.interaction:
+        if self.action_en_cours == 'edit_select':
+            if self.coin_actif is not None:
+                self.coin_actif = self.coordonnees(event)
+                self.coordonnees_rectangle_selection = (self.coin_actif, self.coin_oppose)
+            coin_actif = (self.coin_actif or self._detecter_coin_actif(event))
+            self.setCursor(Qt.SizeAllCursor if coin_actif else Qt.ArrowCursor)
+            self.rectangle_selection(*self.coordonnees_rectangle_selection,
+                                coins=True, coin_actif=coin_actif)
+        elif left_down(event):
             self.editeur.close()
             if self.test_mode(event) != self.action_en_cours:
-                # L'action a été interrompue par l'utilisateur
-                self.action_en_cours = None
-                self.rafraichir_affichage()
+                # L'action a été interrompue par l'utilisateur.
+                # (Par exemple, l'utilisateur a relâché la touche Ctrl
+                # lors de la sélection de la zone de zoom).
+                self.interrompre_action_en_cours()
 
             if self.action_en_cours == 'select':
                 # Sélection simultanée de tous les objets d'une zone.
-                self.selection_zone(lieu(event))
+                self.rectangle_selection(self.coordonnees_left_down, self.coordonnees(event))
 
             elif self.action_en_cours == 'zoom':
                 # Sélection d'une zone pour zoomer.
-                self.gestion_zoombox(lieu(event))
+                self.rectangle_zoom(self.coordonnees_left_down, self.coordonnees(event))
 
             elif alt_down(event) or meta_down(event):
                 # Déplacement de l'étiquette d'un objet.
@@ -518,16 +548,23 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
                 self.selection_en_gras()
 
         else:
-            self.action_en_cours = None
+            #~ self.action_en_cours = None
             if self.interaction_deplacement is not None:
                 self.interaction_deplacement(pixel = lieu(event))
 
             elif not ctrl_down(event):   # detection des objets a proximite du pointeur
                 self.detecter(lieu(event))
 
+    def interrompre_action_en_cours(self):
+        if self.action_en_cours == 'edit_select':
+            self.message(self._message_precedent, temporaire=False)
+        self.action_en_cours = None
+        self.rafraichir_affichage()
 
 
-    def OnSelect(self, x0, x1, y0, y1):
+    def onSelect(self):
+        self.interrompre_action_en_cours()
+        (x0, y0), (x1, y1) = self.coordonnees_rectangle_selection
         x0, x1 = min(x0, x1), max(x0, x1)
         y0, y1 = min(y0, y1), max(y0, y1)
         objets_dans_la_zone = []
@@ -537,31 +574,34 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
                 xmin, xmax, ymin, ymax = espace
                 if x0 <= xmin <= xmax <= x1 and y0 <= ymin <= ymax <= y1:
                     objets_dans_la_zone.append(objet)
-        self.feuille_actuelle.objets_en_gras(*objets_dans_la_zone)
-        self._rectangle_selection(self.coo2pix(*self.fin_selection), facecolor='y', edgecolor='g',
-                                  linestyle=':')
+        #~ self.feuille_actuelle.objets_en_gras(*objets_dans_la_zone)
+        self.rectangle_selection(*self.coordonnees_rectangle_selection)
+
+        def ajuste():
+            self.action_en_cours = 'edit_select'
+            self.coin_actif = None
+            self._message_precedent = self.message(u'Sélectionnez un coin '
+                          'pour étendre la sélection (ESC pour annuler, '
+                          'clic-droit pour exporter/éditer).', temporaire=False)
+
 
         def exporte():
             actuelle = self.feuille_actuelle # feuille de travail courante
-##            if actuelle.sauvegarde["export"]:
-##                dir, fichier = os.path.split(actuelle.sauvegarde["export"]) # on exporte sous le même nom qu'avant par défaut
-##            elif actuelle.sauvegarde["nom"]:
-##                fichier = actuelle.sauvegarde["nom"] # le nom par defaut est le nom de sauvegarde
-##                dir = actuelle.sauvegarde["repertoire"]
-##            else:
-##                if param.rep_export is None:
-##                    dir = param.repertoire
-##                else:
-##                    dir = param.rep_export
 
-            filename = self.parent.parent.ExportFile(exporter = False)
-            # ne pas faire l'export, mais récupérer juste le nom
+            filename = self.parent.parent.ExportFile(exporter=False)
+            # Ne pas faire l'export, mais récupérer juste le nom choisi par
+            # l'utilisateur dans la boîte de dialogue.
+            # En effet, on ne veut pas exporter toute la feuille, mais
+            # seulement la zone sélectionnée.
 
             if filename:
                 self.exporter(filename, zone = (x0, x1, y0, y1))
                 actuelle.sauvegarde["export"] = filename
 
         menu = PopUpMenu(u"Zone sélectionnée", self, 'crayon')
+        action = menu.addAction(u'Ajuster la sélection')
+        action.triggered.connect(ajuste)
+
         action = menu.addAction(u'Exporter la zone comme image')
         action.triggered.connect(exporte)
 
@@ -608,9 +648,9 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
     def mousePressEvent(self, event):
         button = event.button()
         if button == Qt.LeftButton:
-            self.left_down(event)
+            self.onLeftDown(event)
         elif button == Qt.RightButton:
-            self.right_down(event)
+            self.onRightDown(event)
         else:
             FigureCanvasQTAgg.mousePressEvent(self, event)
 
@@ -620,37 +660,47 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
             # Un double-clic permet d'éditer les propriétés de l'objet.
             menu = MenuActionsObjet(self)
             menu.proprietes()
+        if self.action_en_cours == 'edit_select':
+            self.onSelect()
 
-    def left_down(self, event):
-        # Patch pour l'utilisation avec un dispositif de pointage absolu (tablette graphique ou TNI)
-        self.detecter(lieu(event))
-        # On mémorise les coordonnées au moment du clic.
-        # Cela permet :
-        # - de savoir si un objet a été déplacé ("drag") ou non lors du clic.
-        # - de sélectionner une zone.
-        self.coordonnees_left_down = x_clic, y_clic = self.coordonnees(event)
-        self.setFocus()
-        if self.deplacable(self.select):
-            x, y = self.select.coordonnees
-            self.decalage_coordonnees = x - x_clic, y - y_clic
-        if getattr(self.select, 'on_left_click', None) is not None:
-            self.select.on_left_click()
-        elif isinstance(self.select, Champ):
-            # Un simple clic suffit pour éditer un champ.
-            menu = MenuActionsObjet(self)
-            menu.etiquette()
+    def onLeftDown(self, event):
+        if self.action_en_cours == 'edit_select':
+            self.coin_actif = self._detecter_coin_actif(event)
+            if self.coin_actif is not None:
+                x, y = self.coin_actif
+                (x0, y0), (x1, y1) = self.coordonnees_rectangle_selection
+                self.coin_oppose = (x0 if x == x1 else x1), (y0 if y == y1 else y1)
         else:
-            self.action_en_cours = self.test_mode(event)
+            # Patch pour l'utilisation avec un dispositif de pointage absolu (tablette graphique ou TNI)
+            self.detecter(lieu(event))
+            # On mémorise les coordonnées au moment du clic.
+            # Cela permet :
+            # - de savoir si un objet a été déplacé ("drag") ou non lors du clic.
+            # - de sélectionner une zone.
+            self.coordonnees_left_down = x_clic, y_clic = self.coordonnees(event)
+            self.setFocus()
+            if self.deplacable(self.select):
+                x, y = self.select.coordonnees
+                self.decalage_coordonnees = x - x_clic, y - y_clic
+            if getattr(self.select, 'on_left_click', None) is not None:
+                self.select.on_left_click()
+            elif isinstance(self.select, Champ):
+                # Un simple clic suffit pour éditer un champ.
+                menu = MenuActionsObjet(self)
+                menu.etiquette()
+            else:
+                self.action_en_cours = self.test_mode(event)
 
 
-
-    def right_down(self, event):
+    def onRightDown(self, event):
         self.editeur.close()
         self.detecter(lieu(event))
         # On mémorise les coordonnées au moment du clic.
         self.coordonnees_right_down = self.coordonnees(event)
 
-        if self.select is not None and not ctrl_down(event):
+        if self.action_en_cours == 'edit_select':
+            self.onSelect()
+        elif self.select is not None and not ctrl_down(event):
             if self.edition_par_clic_droit:
                 menu = MenuActionsObjet(self)
                 menu.exec_(event.globalPos())
@@ -666,14 +716,14 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
     def mouseReleaseEvent(self, event):
         button = event.button()
         if button == Qt.LeftButton:
-            self.left_up(event)
+            self.onLeftUp(event)
         elif button == Qt.RightButton:
-            self.right_up(event)
+            self.onRightUp(event)
         else:
             FigureCanvasQTAgg.mouseReleaseEvent(self, event)
 
 
-    def left_up(self, event):
+    def onLeftUp(self, event):
         if self.etiquette_selectionnee:
             x, y = self.etiquette_selectionnee.coordonnees
             self.parent.action_effectuee(u"%s.etiquette(%s, %s)" %(self.etiquette_selectionnee.parent.nom, x, y))
@@ -682,17 +732,19 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
 
         action = self.action_en_cours
         if action in ('zoom', 'select'):
-            x0, y0 = self.coordonnees_left_down
-            x1, y1 = self.fin_selection
+            (x0, y0), (x1, y1) = self.coordonnees_rectangle_selection
             if (x0, y0) != (x1, y1):
                 # Zoom sur la zone sélectionnée.
                 if action == 'zoom':
                     self.executer("fenetre = %s, %s, %s, %s" % (x0, x1, y0, y1))
                 # Sélection d'une zone.
                 else:
-                    self.OnSelect(x0, x1, y0, y1)
+                    self.onSelect()
             else:
                 self.rafraichir_affichage()
+
+        elif action == 'edit_select':
+            self.coin_actif = None
 
         elif self.interaction:
             self.signal(event)
@@ -705,16 +757,11 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
                 self.parent.action_effectuee(self.select.nom + str(self.select.coordonnees))
 
 
-    def right_up(self, event):
-        ##if self.HasCapture():
-            ##self.ReleaseMouse()
-
-        if self.fixe: return
-
+    def onRightUp(self, event):
         self.setCursor(Qt.ArrowCursor)
 
         if self.action_en_cours == 'shift':
-            self.action_en_cours = None
+            self.interrompre_action_en_cours()
             self.parent.action_effectuee(u"fenetre = " + str(self.fenetre))
 
 
@@ -746,8 +793,7 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
 
         if key == Qt.Key_Escape:
             if self.action_en_cours is not None:
-                self.action_en_cours = None
-                self.rafraichir_affichage()
+                self.interrompre_action_en_cours()
             elif self.interaction:
                 print "ESCAPE !"
                 self.interaction(special="ESC")

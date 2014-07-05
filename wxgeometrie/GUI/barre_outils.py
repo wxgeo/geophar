@@ -387,7 +387,7 @@ class BarreOutils(QWidget):
 
     def curseur(self, event = None):
         u"Revenir en mode standard (flêche simple)."
-        self.interagir(None, u"Sélectionnez ou déplacez un objet.")
+        self.interagir(None, u"Sélectionnez ou déplacez un objet (touches Win ou Win+Alt enfoncées pour déplacer une étiquette).")
         self.canvas.mode = "defaut"
 
 
