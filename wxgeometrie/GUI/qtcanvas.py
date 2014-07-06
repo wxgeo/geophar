@@ -581,8 +581,8 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
             self.action_en_cours = 'edit_select'
             self.coin_actif = None
             self._message_precedent = self.message(u'Sélectionnez un coin '
-                          'pour étendre la sélection (ESC pour annuler, '
-                          'clic-droit pour exporter/éditer).', temporaire=False)
+                          u'pour étendre la sélection (ESC pour annuler, '
+                          u'clic-droit pour exporter/éditer).', temporaire=False)
 
 
         def exporte():
