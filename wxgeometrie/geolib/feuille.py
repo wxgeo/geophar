@@ -53,7 +53,8 @@ from .courbes import Courbe
 from .textes import Texte, Texte_generique
 ##from .labels import Label_generique
 from .vecteurs import Vecteur_libre
-from .variables import Variable, XMinVar, XMaxVar, YMinVar, YMaxVar, Dpx, Dpy
+from .variables import Variable, XMinVar, XMaxVar, YMinVar, YMaxVar, Dpx, Dpy, \
+                       Variable_affichage, Pixel_unite
 from .constantes import NOM, RIEN#, FORMULE,
 
 from .pseudo_canvas import _pseudocanvas
@@ -1251,36 +1252,6 @@ class Feuille(object):
 
 # Methodes se rapportant a la feuille elle-meme
 
-    ##def sauvegarder(self):
-        ##u"Renvoie l'ensemble des commandes python qui permettra de recréer la figure avec tous ses objets."
-##
-        ##objets = self.liste_objets(True)
-        ### on doit enregistrer les objets dans le bon ordre (suivant la _hierarchie) :
-        ##objets.sort(key = attrgetter("_hierarchie_et_nom"))
-##
-        ##texte = '\n'.join(nom + ' = ' + repr(getattr(self, nom))
-                         ##for nom in self._parametres_repere
-                         ##) + '\n'
-##
-        ##a_rajouter_a_la_fin = ""
-##
-        ##for objet in objets:
-            ##if not objet._enregistrer_sur_la_feuille:
-                ##continue
-            ##elif isinstance(objet, Texte) and objet.style("legende") == FORMULE:
-                ### on fait un cas particulier pour les objets Texte, car ils peuvent contenir une formule
-                ### qui dépend d'autres objets. Leur style n'est alors appliqué qu'après.
-                ##texte += objet.nom + " = " + objet.__repr__(False) + "\n"
-                ##a_rajouter_a_la_fin += objet.nom + ".style(**" + repr(objet.style()) + ")\n"
-            ##else:
-                ##texte += objet.nom + " = " + repr(objet) + "\n"
-##
-        ### Les étiquettes peuvent contenir des formules qui dépendent d'autres objets.
-        ##for objet in objets:
-            ##if objet.etiquette is not None:
-                ##texte += objet.nom + ".etiquette.style(**" + repr(objet.etiquette.style()) + ")\n"
-##
-        ##return texte + a_rajouter_a_la_fin
 
 
     def sauvegarder(self, _as_list=False):
@@ -1409,11 +1380,13 @@ class Feuille(object):
 
 
     def inventaire(self):
+        objets = self.liste_objets(True)
         if param.debug:
-            for obj in self.liste_objets(True):
+            for obj in objets:
                 print "- " + obj.nom + " : " + repr(obj) + " (" + obj.type() + ")"
-        liste = [uu(obj.nom_complet) + u" (" + uu(obj.titre(point_final = False))
-                + (not obj.style("visible") and u" invisible)" or u")") for obj in self.liste_objets(True)]
+        liste = [u"%s (%s%s)" % (uu(obj.nom_complet), uu(obj.titre(point_final=False)),
+                 ('' if obj.style("visible") else u" invisible")) for obj in objets
+                 if not isinstance(obj, (Variable_affichage, Pixel_unite))]
         liste.sort()
         return liste
 
@@ -1435,21 +1408,17 @@ class Feuille(object):
         for obj in self.liste_objets(True):
             if obj.style("codage") is not None:
                 obj.style(codage = "")
-##                obj.figure_perimee()
-##        self.affichage_perime()
 
     def coder(self):
         u"Codage automatique de la figure (longueurs égales, angles égaux, et angles droits)."
         def test(groupe, liste, i):
             if len(groupe) is 1:
                 groupe[0]["objet"].style(codage = "")
-##                groupe[0]["objet"].creer_figure()
                 return False
             else:
                 try:
                     for elt in groupe:
                         elt["objet"].style(codage = liste[i])
-##                        elt["objet"].creer_figure()
                     return True
                 except IndexError:
                     self.message(u"Le nombre de codages disponibles est insuffisant.")
@@ -1488,7 +1457,6 @@ class Feuille(object):
                     if abs(abs(groupe[-1]["angle"]) - PI/2) < contexte['tolerance']:
                         for elt in groupe:
                             elt["objet"].style(codage = "^")
-##                            elt["objet"].creer_figure()
                     else:
                         resultat = test(groupe, param.codage_des_angles, i)
                         if resultat is None:
@@ -1499,7 +1467,6 @@ class Feuille(object):
             if abs(abs(groupe[-1]["angle"]) - PI/2) < contexte['tolerance']:
                 for elt in groupe:
                     elt["objet"].style(codage = "^")
-##                    elt["objet"].creer_figure()
             else:
                 test(groupe, param.codage_des_angles, i)
 
@@ -1509,7 +1476,6 @@ class Feuille(object):
     def objet_temporaire(self, objet = False):
         if objet is not False:
             if self._objets_temporaires:
-#                obj = self._objets_temporaires[0]
                 self.affichage_perime()
             if objet is None:
                 self._objets_temporaires = []
