@@ -12,7 +12,7 @@ ecriture_scientifique_decimales = 2
 precision_calcul = 60
 precision_affichage = 18
 forme_affichage_complexe = ("algebrique", "exponentielle")[0]
-# Fonction à appliquer à tout résultat avant de le renvoyer :
+# Opération à appliquer à tout résultat avant de le renvoyer :
 appliquer_au_resultat = None
 # Domaine de résolution des équations ('R' ou 'C')
 ensemble = 'R'

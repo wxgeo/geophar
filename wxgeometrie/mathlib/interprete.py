@@ -95,8 +95,9 @@ class Interprete(object):
           approchés
         * `simpify`: convertir automatiquement les expressions au format sympy
         * `verbose`: afficher le détail des transformations effectuées
-        * `appliquer_au_resultat`: une fonction à appliquer éventuellement
-          au résultat
+        * `appliquer_au_resultat`: une opération à appliquer éventuellement
+          au résultat. La résultat est représenté par un underscore : _.
+          Exemple : 'factoriser(_)'.
         * `ensemble`: 'R' ou 'C' (utilisé pour la résolution des équations).
     """
     def __init__(self,  calcul_exact=True,
@@ -175,7 +176,7 @@ class Interprete(object):
         self.precision_affichage = precision_affichage
         self.verbose = verbose
         self.simpify = simpify
-        # une fonction à appliquer à tous les résultats
+        # Une opération à appliquer à tous les résultats.
         self.appliquer_au_resultat = appliquer_au_resultat
         self.ensemble = ensemble
         self.latex_dernier_resultat = ''
@@ -256,6 +257,9 @@ class Interprete(object):
         finally:
             param.calcul_approche = False
 
+        if self.appliquer_au_resultat is not None:
+            self._executer(self.appliquer_au_resultat)
+
         self.derniers_resultats.append(self.locals["_"])
 
         if not calcul_exact:
@@ -263,36 +267,7 @@ class Interprete(object):
         return self._formater(self.locals["_"])
 
 
-    ##def _ecriture_scientifique(self, chaine):
-        ##valeur = float(chaine)
-        ##mantisse = int(math.floor(math.log10(abs(valeur))))
-        ##chaine = str(round(valeur/10.**mantisse, self.ecriture_scientifique_decimales))
-        ##if mantisse:
-            ##chaine += "*10^"+str(mantisse)
-        ##return  chaine
-##
-    ##def _ecriture_scientifique_latex(self, chaine):
-        ##valeur = float(chaine)
-        ##mantisse = int(math.floor(math.log10(abs(valeur))))
-        ##chaine = str(round(valeur/10.**mantisse, self.ecriture_scientifique_decimales))
-        ##if mantisse:
-            ##chaine += "\\times 10^{%s}" %mantisse
-        ##return  chaine
-
-
-
-
-    ##def _formater_decimaux(self, chaine):
-        ##if "." in chaine:
-            ##chaine = str(Float(str(chaine), self.precision_calcul).evalf(self.precision_affichage))
-            ##chaine = chaine.rstrip('0')
-            ##if chaine.endswith("."):
-                ##chaine = chaine[:-1]
-        ##return chaine
-
-
     def _formater(self, valeur):
-##        resultat = self._formatage_simple(valeur)
         if isinstance(valeur, Basic):
             valeur = valeur.subs(Float(1), S.One)
 
@@ -311,20 +286,6 @@ class Interprete(object):
                 latex = ''
 
 
-        ##if self.ecriture_scientifique and not self.calcul_exact:
-            ##resultat = regsub(NBR, resultat, self._ecriture_scientifique)
-            ##latex = regsub(NBR, latex, self._ecriture_scientifique_latex)
-        ##else:
-##            print "initial", resultat
-            ##resultat = regsub(NBR, resultat, self._formater_decimaux)
-##            print "final", resultat
-            ##latex = regsub(NBR, latex, self._formater_decimaux)
-
-##        if re.match("[0-9]*[.][0-9]+$", resultat):
-##            resultat = resultat.rstrip('0')
-##            if resultat.endswith("."):
-##                resultat += "0"
-##            latex = "$" + resultat + "$"
         if self.separateur_decimal != '.' and not isinstance(valeur, basestring):
             resultat = re.sub(r"[ ]*[,;][ ]*", ' ; ', resultat)
             # Éviter de remplacer \, par \; en LaTex.
@@ -347,16 +308,6 @@ class Interprete(object):
     def _traduire(self, formule):
         variables = self.globals.copy()
         variables.update(self.locals)
-        #callable_types = (  types.BuiltinFunctionType,
-                            #types.BuiltinMethodType,
-                            #types.FunctionType,
-                            #types.UfuncType,
-                            #types.MethodType,
-                            #types.TypeType,
-                            #types.ClassType)
-        #fonctions = [key for key, val in variables.items() if isinstance(val, callable_types)]
-##        fonctions = [key for key, val in variables.items() if hasattr(val, "__call__") and not isinstance(val, sympy.Atom)]
-        #print fonctions
         # La fonction traduire_formule de la librairie formatage permet d'effectuer un certain nombre de conversions.
         formule = traduire_formule(formule, fonctions = variables,
                         OOo = self.formatage_OOo,
@@ -406,16 +357,6 @@ class Interprete(object):
 
         # dans certains cas, il ne faut pas affecter le résultat à la variable "_" (cela provoquerait une erreur de syntaxe)
         # (Mots clés devant se trouver en début de ligne : dans ce cas, on ne modifie pas la ligne)
-##        if True in [instruction.startswith(exception + " ") for exception in securite.__keywords_debut_ligne__]:
-##        def re_keywords(liste):
-##            global pylib
-##            return "("+"|".join(securite.keywords_debut_ligne)+")[ :(;'\"]"
-
-##        if re.match(re_keywords(securite.keywords_debut_ligne), instruction):
-##            self.locals["_"] = None
-##        else:
-##            instruction = "_=" + instruction
-
         loc = self.locals
 
         if securite.expression_affectable(instruction):
@@ -441,10 +382,6 @@ class Interprete(object):
                 except NotImplementedError:
                     print_error()
 
-        if self.appliquer_au_resultat is not None:
-            loc["_"] = self.appliquer_au_resultat(loc["_"])
-
-
     def vars(self):
         dictionnaire = self.globals.copy()
         dictionnaire.update(self.locals)
@@ -467,8 +404,6 @@ class Interprete(object):
         def repr2(expr):
             if isinstance(expr, (types.BuiltinFunctionType, types.TypeType, types.FunctionType)):
                 return expr.__name__
-            #~ elif isinstance(expr, Matrix):
-                #~ return 'Matrix([%s])' % ', '.join(repr(expr).split('\n'))
             return repr(expr).replace('\n', ' ')
         variables = '\n'.join(k + ' = ' + repr2(v) for k, v in self.locals.items())
         resultats = '\n    '.join(repr(repr2(res)) + ',' for res in self.derniers_resultats)

@@ -27,7 +27,8 @@ from functools import partial
 
 from PyQt4.QtGui import (QHBoxLayout, QVBoxLayout, QCheckBox, QIcon, QPushButton,
                          QTextEdit, QMenu, QLabel, QSpinBox, QCursor, QTextCursor,
-                         QToolButton, QWidget, QTabWidget, QGroupBox, QComboBox)
+                         QToolButton, QWidget, QTabWidget, QGroupBox, QComboBox,
+                         QLineEdit)
 from PyQt4.QtCore import Qt
 
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
@@ -60,9 +61,6 @@ class CalculatriceMenuBar(MenuBar):
             # pas de parenthese apres un symbole
         self.ajouter(u"Outils",
                         [u"Mémoriser le résultat", u"Copie le resultat du calcul dans le presse-papier, afin de pouvoir l'utiliser ailleurs.", "Ctrl+M", self.panel.vers_presse_papier],
-#                        [u"LaTeX",
-#                            [u"Inverser les sommes", "Inverser l'ordre d'affichage des termes des sommes.", None, self.panel.inverser_sommes_LaTeX, self.panel.inverser_sommes_LaTeX]
-#                            ],
                         [u"options"],
                         )
         self.ajouter(u"Avancé",
@@ -324,37 +322,71 @@ class Options(QWidget):
 
 
 
+class Avance(QWidget):
+    def __init__(self, parent):
+        QWidget.__init__(self, parent)
+        self.parent = parent
+        prm = parent.param
+
+
+        ### Liste des options avancées de la calculatrice ###
+        self.pave = QVBoxLayout()
+
+        box = QGroupBox(u"Post-traitement")
+        box_layout = QVBoxLayout()
+        box.setLayout(box_layout)
+        box_layout.addWidget(QLabel(u"Traitement automatiquement du résultat :"))
+        self.traitement = QLineEdit()
+        traitement = self.parent.param("appliquer_au_resultat") or '_'
+        self.traitement.setText(traitement)
+        self.traitement.setMinimumWidth(100)
+        self.traitement.setToolTip(u"Fonction ou opérations à appliquer automatiquement au résultat (représenté par _). Ex: 'factoriser(_)'.")
+        self.traitement.editingFinished.connect(self.EvtAppliquerResultat)
+        box_layout.addWidget(self.traitement)
+        self.pave.addWidget(box)
+        self.setLayout(self.pave)
+        self.pave.addStretch()
+
+
+    def EvtAppliquerResultat(self, event=None):
+        val = self.traitement.text().strip()
+        if val == '_':
+            val = None
+        self.parent.param("appliquer_au_resultat", val)
+
+
+
 
 class OngletsCalc(QTabWidget):
     def __init__(self, parent):
-        ##self.parent = parent
         QTabWidget.__init__(self, parent)
         self.addTab(PaveNumerique(parent), u' Pavé numérique ')
         self.addTab(Options(parent), u'Options')
+        self.addTab(Avance(parent), u'Avancé')
         self.setTabPosition(QTabWidget.South)
         self.setStyleSheet("""
-QTabBar::tab:selected {
-background: white;
-border: 1px solid #C4C4C3;
-border-top-color: white; /* same as the pane color */
-border-bottom-left-radius: 4px;
-border-bottom-right-radius: 4px;
-border-top-left-radius: 0px;
-border-top-right-radius: 0px;
-min-width: 8ex;
-padding: 7px;
-}
-QStackedWidget {background:white}
-QTabBar QToolButton {
-background:white;
-border: 1px solid #C4C4C3;
-border-top-color: white; /* same as the pane color */
-border-bottom-left-radius: 4px;
-border-bottom-right-radius: 4px;
-border-top-left-radius: 0px;
-border-top-right-radius: 0px;
-}
-""")
+        QTabBar::tab:selected {
+        background: white;
+        border: 1px solid #C4C4C3;
+        border-top-color: white; /* same as the pane color */
+        border-bottom-left-radius: 4px;
+        border-bottom-right-radius: 4px;
+        border-top-left-radius: 0px;
+        border-top-right-radius: 0px;
+        min-width: 8ex;
+        padding: 7px;
+        }
+        QStackedWidget {background:white}
+        QTabBar QToolButton {
+        background:white;
+        border: 1px solid #C4C4C3;
+        border-top-color: white; /* same as the pane color */
+        border-bottom-left-radius: 4px;
+        border-bottom-right-radius: 4px;
+        border-top-left-radius: 0px;
+        border-top-right-radius: 0px;
+        }
+        """)
 
 
 
@@ -372,6 +404,7 @@ class Calculatrice(Panel_simple):
                                 ecriture_scientifique_decimales = self.param("ecriture_scientifique_decimales"),
                                 precision_calcul = self.param("precision_calcul"),
                                 precision_affichage = self.param("precision_affichage"),
+                                appliquer_au_resultat = self.param('appliquer_au_resultat'),
                                 simpify = True,
                                 ensemble=self.param('ensemble'),
                                 )
@@ -421,12 +454,8 @@ class Calculatrice(Panel_simple):
     def _sauvegarder(self, fgeo):
         fgeo.contenu["Calculatrice"] = [{}]
         fgeo.contenu["Calculatrice"][0]["Historique"] = [repr(self.entree.historique)]
-#        fgeo.contenu["Calculatrice"][0]["Resultats"] = [repr(self.interprete.derniers_resultats)]
         fgeo.contenu["Calculatrice"][0]["Affichage"] = [self.resultats.toPlainText()]
         fgeo.contenu["Calculatrice"][0]["Etat_interne"] = [self.interprete.save_state()]
-        ##fgeo.contenu["Calculatrice"][0]["Options"] = [{}]
-        ##for i in range(len(self.options)):
-            ##fgeo.contenu["Calculatrice"][0]["Options"][0][self.options[i][1]] = [str(self.options_box[i].isChecked())]
 
 
 
@@ -436,27 +465,12 @@ class Calculatrice(Panel_simple):
             self.initialiser()
 
             self.entree.historique = eval_safe(calc["Historique"][0])
-#            self.interprete.derniers_resultats = securite.eval_safe(calc["Resultats"][0])
             resultats = calc["Affichage"][0]
             if resultats:
                 resultats += '\n\n'
             self.resultats.setPlainText(resultats)
             self.resultats.moveCursor(QTextCursor.End)
             self.interprete.load_state(calc["Etat_interne"][0])
-
-            ##liste = calc["Options"][0].items()
-            ##options = [option for aide, option in self.options]
-            ##for key, value in liste:
-                ##value = eval_safe(value[0])
-                ##self.param(key, value)
-                ##if key in options:
-                    ##self.options_box[options.index(key)].setChecked(value)
-            # il faudrait encore sauvegarder les variables, mais la encore, 2 problemes :
-            # - pb de securite pour evaluer les variables
-            # - pb pour obtenir le code source d'une fonction.
-            # Pour remedier a cela, il faut envisager de :
-            # - creer un module d'interpretation securisee.
-            # - rajouter a chaque fonction un attribut __code__, ou creer une nouvelle classe.
 
 
     def modifier_pp_texte(self, chaine):
@@ -577,10 +591,6 @@ class Calculatrice(Panel_simple):
 
 
     def EvtMenu(self, event):
-#        if not event.ControlDown():
-#            event.Skip()
-#            return
-#            entree.setSelection(final, final)
         menu = QMenu()
         menu.setWindowTitle(u"Fonctions mathématiques")
         debut = True
@@ -600,8 +610,6 @@ class Calculatrice(Panel_simple):
         action = menu.addAction("Copier LaTeX", self.copier_latex)
         action.setToolTip("Copier le code LaTeX dans le presse-papier.")
         menu.exec_(QCursor.pos())
-#        self.PopupMenu(menu)
-#        menu.Destroy()
 
     def EvtCurrentChanged(self, index):
         self.param('onglet', index)
