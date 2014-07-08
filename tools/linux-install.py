@@ -89,7 +89,10 @@ with open(script_name, 'w') as f:
     f.write('#!/bin/sh\n')
     f.write('exec %s/geophar.pyw $*' % os.getcwd())
 
-os.chmod(script_name, stat.S_IRWXU)
+if choice == 'root':
+    os.chmod(script_name, stat.S_IRWXU|stat.S_IXOTH)
+else:
+    os.chmod(script_name, stat.S_IRWXU)
 
 # Mise à jour des bases de données.
 
@@ -110,6 +113,7 @@ with open('linux-uninstall.py', 'w') as f:
     f.write('rm(%s)\n' % repr(join(locations['mime_path'], 'x-geophar.xml')))
     f.write('rm(%s)\n' % repr(join(locations['svg_icon_path'], 'geophar.svg')))
     f.write('rm(%s)\n' % repr(join(locations['png_icon_path'], 'geophar.png')))
+    f.write('rm(%s)\n' % repr(script_name))
     f.write('command(%s)\n' % repr(update_desktop))
     f.write('command(%s)\n' % repr(update_mime))
     f.write('print("=== Desinstallation terminee. ===")')
