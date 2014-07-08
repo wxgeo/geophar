@@ -1,0 +1,19 @@
+Pour Linux
+----------
+
+Le lanceur geophar.desktop est à installer dans /usr/share/applications/
+(ou ~/.local/share/applications/).
+
+L'icône geophar.png est à installer dans /usr/share/icons/hicolor/48x48/apps
+(ou ~/.local/share/icons/hicolor/48x48/apps).
+
+Le fichier geophar.xml contient les types MIME associés à Géophar.
+http://www.freedesktop.org/wiki/Specifications/AddingMIMETutor/
+Il est à copier dans le dossier /usr/share/mime/application
+(ou ~/.local/share/mime/application).
+
+Lancer ensuite update-desktop-database et update-mime-database
+pour mettre à jour les bases de données.
+
+update-desktop-database ~/.local/share/applications
+update-mime-database ~/.local/share/mime

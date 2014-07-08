@@ -54,6 +54,9 @@ tmp
 temp
 wxgeometrie/test.py
 
+# Fichier générés automatiquement.
+tools/linux-uninstall.py
+
 # À ne pas inclure **pour l'instant**
 tools/isympy
 tools/others/

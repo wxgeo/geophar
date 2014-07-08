@@ -1,0 +1,15 @@
+[Desktop Entry]
+Version=1.0
+Name=geophar
+GenericName=Math multi-purpose tool
+GenericName[fr]=Outil à tout faire en math
+Comment=Swiss-army knife for math teachers and enthusiasts
+Comment[fr]=Couteau suisse pour enseignants et amateurs de mathématiques
+Exec=geophar
+Icon=geophar
+Terminal=false
+Type=Application
+MimeType=application/x-geophar-geo;application/x-geophar-geoz;
+Categories=Qt;Science;Math;Education;
+StartupNotify=true
+

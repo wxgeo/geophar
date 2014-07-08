@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mime-info xmlns="http://www.freedesktop.org/standards/shared-mime-info">
+ <mime-type type="application/x-geophar-geo">
+   <sub-class-of type="text/xml"/>
+   <comment xml:lang="en">Raw GEO File (Geophar)</comment>
+   <comment xml:lang="fr">Fichier GEO (Géophar)</comment>
+   <glob pattern="*.geo"/>
+ </mime-type>
+ <mime-type type="application/x-geophar-geoz">
+   <sub-class-of type="text/xml"/>
+   <comment xml:lang="en">Compressed GEO file (Geophar)</comment>
+   <comment xml:lang="fr">Fichier GEO compressé (Géophar)</comment>
+   <glob pattern="*.geoz"/>
+ </mime-type>
+</mime-info>
