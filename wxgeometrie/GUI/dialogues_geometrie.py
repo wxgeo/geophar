@@ -26,7 +26,7 @@ from operator import attrgetter
 from functools import partial
 
 from PyQt4.QtGui import (QDialog, QVBoxLayout, QHBoxLayout, QFrame, QLabel,
-                         QLineEdit, QPushButton, QMenu)
+                         QLineEdit, QPushButton, QMenu, QCursor)
 from PyQt4.QtCore import Qt, QSize
 
 from .qtlib import MultipleChoiceDialog
@@ -97,20 +97,25 @@ class Dialogue(QDialog):
 
 
     def ajoute(self, contenu, aide = ""):
-        # ajoute une ligne de contenu dans la boite de dialogue
-        # format du contenu : ("texte statique",("nom de champ", taille), etc...)
-        # exemple : ("entrez l'abscisse :",("absc",10),"cm")
-        # pour un champ, un 3e argument peut-être indiqué pour donner le type d'objet, s'il s'agit d'un objet géométrique (ou None)
-        # un 4eme argument peut-etre saisi, pour donner le comportement en cas d'agrandissement,
-        # et un 5eme, pour indiquer une valeur initiale du champ
-        # le champ cree sera accessible via self.champ("abcs")
-        #
-        # L'argument type d'objet sert à faire des propositions à l'utilisateur lors d'un clic du milieu.
-        #
-        # le type d'objet peut-être compris dans une liste d'un seul élement, par exemple : [Point_generique]
-        # Cela signifie alors que le champ doit contenir une liste de points, et non un seul point
-        #
-        # A noter qu'un tuple, comme (Point_generique, Vecteur), par contre, correspond au comportement habituel de Python: l'objet est soit un Point_generique, soit un Vecteur
+        u"""Ajoute une ligne de contenu dans la boite de dialogue.
+
+        Format du contenu : ("texte statique",("nom de champ", taille), etc...)
+        Exemple : ("entrez l'abscisse :",("absc",10),"cm")
+        Pour un champ, un 3e argument peut-être indiqué pour donner le type d'objet,
+        s'il s'agit d'un objet géométrique (ou None).
+        Un 4e argument peut-etre saisi, pour donner le comportement en cas d'agrandissement,
+        et un 5e, pour indiquer une valeur initiale du champ.
+        Le champ créé sera accessible via self.champ("abcs").
+
+        L'argument type d'objet sert à faire des propositions à l'utilisateur lors d'un clic du milieu.
+
+        Le type d'objet peut-être compris dans une liste d'un seul élement, par exemple : [Point_generique]
+        Cela signifie alors que le champ doit contenir une liste de points, et non un seul point.
+
+        A noter qu'un tuple, comme (Point_generique, Vecteur), par contre,
+        correspond au comportement habituel de Python:
+        l'objet est soit un Point_generique, soit un Vecteur
+        """
 
         self.box = QHBoxLayout()
         for txt in contenu:
@@ -177,7 +182,7 @@ class Dialogue(QDialog):
 
 
     def right_click(self, type, champ):
-        u"Retourne une fonction qui sera executée lors d'un clic avec le bouton du milieu sur le champ 'champ'."
+        u"Retourne une fonction qui sera executée lors d'un clic droit sur le champ 'champ'."
         champ.setFocus()
         plusieurs = isinstance(type, list)
         if plusieurs:
@@ -192,7 +197,7 @@ class Dialogue(QDialog):
             action = menu.addAction(obj.nom_complet)
             action.nom = obj.nom
 
-        action = menu.exec_()
+        action = menu.exec_(QCursor.pos())
         if action:
             if plusieurs:
                 # le champ doit contenir non pas un objet, mais une liste d'objets
