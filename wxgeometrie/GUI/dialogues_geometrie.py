@@ -818,39 +818,6 @@ class DialogueFenetre(Dialogue):
         self.champs["ymax"].setText(str(round(param.fenetre[3], 4)))
 
 
-class DialogueReperage(Dialogue):
-    def __init__(self, parent):
-        Dialogue.__init__(self, parent, u"Personnaliser le repère")
-        gradu = self.onglet_actuel.canvas.gradu
-        repere = self.onglet_actuel.canvas.repere
-        self.ajoute([u"Entrez le repère :  (", ("origine", 5, None, 1, repere[0]),
-                     "; ", ("x", 5, None, 1, repere[1]), "; ", ("y", 5, None, 1, repere[2]), ")"],
-                     u"Entrez le repère qui sera affiché. Exemples: (O;i;j), (O;I;J), (0;5;10)")
-        self.ajoute([u"Choisissez les graduations :"])
-        self.ajoute([u"axe des abscisses :", ("xgradu", 10, None, 1, round(gradu[0], 4))],
-                    u"Ecart entre deux graduations en abscisse. Exemple : 2")
-        self.ajoute([u"axe des ordonnées :", ("ygradu", 10, None, 1, round(gradu[1], 4))],
-                    u"Ecart entre deux graduations en ordonnée. Exemple : 2.5")
-        self.finalise()
-        btn = QPushButton(u" Défaut ")
-        btn.clicked.connect(self.EvtRestaurer)
-        btn.setWhatsThis(u"Restaurer les valeurs par défaut.")
-        self.box.addWidget(btn)
-        ##self.sizer.Fit(self)
-
-    def commande(self):
-        return u"repere = " + ", ".join(repr_str(self.champs[nom].text())
-                                       for nom in ("origine", "x", "y")) + \
-               u"\ngradu = " + ", ".join(self.champs[nom].text() for nom in ("xgradu", "ygradu"))
-
-    def EvtRestaurer(self):
-        self.champs["origine"].setText(param.repere[0])
-        self.champs["x"].setText(param.repere[1])
-        self.champs["y"].setText(param.repere[2])
-        self.champs["xgradu"].setText(str(round(param.gradu[0], 4)))
-        self.champs["ygradu"].setText(str(round(param.gradu[1], 4)))
-
-
 ################################################################################
 
 
@@ -867,3 +834,5 @@ class EditerObjet(MultipleChoiceDialog):
         liste = parent.onglet_actuel.feuille_actuelle.inventaire()
         MultipleChoiceDialog.__init__(self, parent, u"Editer", u"Sélectionnez les objets à éditer :", liste)
         ##self.resize(QSize(250, 400))
+
+

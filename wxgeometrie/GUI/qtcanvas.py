@@ -35,6 +35,7 @@ from .menu_objet import MenuActionsObjet
 from .proprietes_objets import Proprietes
 from .qtlib import (BusyCursor, shift_down, alt_down, ctrl_down, left_down,
                    right_down, meta_down, lieu, PopUpMenu)
+from .reperage import DialogReperage
 from .. import param
 from ..pylib import print_error, debug
 from ..geolib.textes import Texte
@@ -290,6 +291,12 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
 
     def Copy_to_Clipboard(self, **kw):
         app.clipboard().setImage(self.as_QImage(**kw))
+
+
+    def regler_repere(self, event=None):
+        dl = DialogReperage(self)
+        dl.exec_()
+
 
 
 #    Gestion des evenements (essentiellement la souris).

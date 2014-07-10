@@ -63,6 +63,16 @@ if getattr(sys, '_launch_geophar', False):
     from .param import dependances, NOMPROG, NOMPROG2, LOGO, plateforme, GUIlib
     from .pylib.fonctions import path2, uu, str3
 
+    # Résolution de l'écran en dpi (remarque : 1 inch = 2.54 cm)
+    param.screen_dpi = (app.desktop().physicalDpiX() + app.desktop().physicalDpiY())/2
+    # Remarque:
+    # Sous Linux, on peut facilement calculer la résolution
+    # via la commande suivante, qui donne le nombre de pixels et la taille physique (en mm) du moniteur:
+    # xrandr | grep -w connected
+    # Le résultat est exact, contrairement à la résolution fournie par Qt
+    # qui est très approximative.
+
+
     param.EMPLACEMENT = EMPLACEMENT
     # Un identifiant unique pour chaque instance de wxgeometrie lancée.
     # Doit permettre notamment de gérer les accès simultannés aux ressources

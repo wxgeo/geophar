@@ -128,7 +128,8 @@ class Canvas(FigureCanvasAgg):
         self.parametres = [u"taille", u"gradu", u"afficher_axes", u"afficher_quadrillage",
                            u"afficher_fleches", u"repere", u"resolution", u"origine_axes",
                            u"utiliser_repere", u"quadrillages", u"couleur_papier_millimetre",
-                           u"liste_axes", u"ratio", u"grille_aimantee", u"zoom_texte", "zoom_ligne"]
+                           u"liste_axes", u"ratio", u"grille_aimantee", u"zoom_texte",
+                           u"zoom_ligne", u"screen_dpi"]
         self.liste_objets_en_gras = WeakList()
         self.initialiser()
 
@@ -177,7 +178,6 @@ class Canvas(FigureCanvasAgg):
 
         self.afficher_objets_caches = afficher_objets_caches
         self.selection_en_gras()
-
 
 
     def selection_en_gras(self):

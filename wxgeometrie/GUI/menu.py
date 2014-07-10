@@ -231,7 +231,7 @@ class MenuBar(QMenuBar):
                 [u"par des points", u"Repérage par l'origine et 2 points.", None, self.canvas.repere_OIJ],
                 [u"par des vecteurs", u"Repérage par l'origine et les 2 vecteurs de base.", None, self.canvas.repere_Oij],
                 [u"par des valeurs numériques", u"Graduation numérique des axes", None, self.canvas.repere_011],
-                [u"Personnaliser le repère", u"Personnaliser l'affichage du repère, et les graduations", "Ctrl+Alt+R", self.parent.creer["Reperage"]],
+                [u"Personnaliser le repère", u"Personnaliser l'affichage du repère, et les graduations", "Ctrl+Alt+R", self.canvas.regler_repere],
             ],
 
 "quadrillages":  [u"Quadrillage",
