@@ -165,12 +165,27 @@ class ProprietesAffichage(QWidget):
             if self.add_combo_box(hb, 'codage', 'Codage : ', codages_possibles):
                 encadre2.addLayout(hb)
 
-        # --------------------------------------------------------
-        # Styles s'appliquant aux textes seulement (fond et cadre)
-        # --------------------------------------------------------
+        # ------------------------------------------------------------------
+        # Styles s'appliquant aux textes seulement (alignement, fond, cadre)
+        # ------------------------------------------------------------------
 
         encadre3 = QVBoxLayout()
+        encadre5 = QVBoxLayout()
         if tous_de_meme_categorie and categorie == 'textes':
+
+            # ALIGNEMENT
+            # ==========
+
+            ha_values = ['left', 'center', 'right']
+            va_values = ['top', 'center', 'baseline', 'bottom']
+
+            hb = QHBoxLayout()
+            if self.add_combo_box(hb, 'alignement_horizontal', 'Alignement horizontal : ', ha_values):
+                encadre5.addLayout(hb)
+
+            hb = QHBoxLayout()
+            if self.add_combo_box(hb, 'alignement_vertical', 'Alignement vertical : ', va_values):
+                encadre5.addLayout(hb)
 
             #  FOND
             #  ====
@@ -290,6 +305,7 @@ class ProprietesAffichage(QWidget):
         self.add_groupbox(encadre, u"Mode d'affichage")
         self.add_groupbox(encadre1, u"Etiquette")
         self.add_groupbox(encadre2, u"Styles")
+        self.add_groupbox(encadre5, u"Alignement du texte")
         self.add_groupbox(encadre3, u"Fond et encadrement")
         self.add_groupbox(encadre4, u"Graduations")
         self.sizer.addLayout(boutons)
