@@ -1252,6 +1252,10 @@ class Feuille(object):
 
 # Methodes se rapportant a la feuille elle-meme
 
+    def exporter(self, backend_name, **options):
+        from .backends import backends_dict
+        backends_dict[backend_name].exporter(self, **options)
+
 
 
     def sauvegarder(self, _as_list=False):
