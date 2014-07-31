@@ -28,7 +28,7 @@ from .cercles import (Cercle_Arc_generique, Arc_generique, Arc_cercle, Arc_point
                        Disque
                        )
 from .classeur import Classeur
-from .constantes import RIEN, TEXTE, NOM, FORMULE, MILIEU, DEBUT, MILIEU, FIN
+from .constantes import RIEN, TEXTE, NOM, FORMULE
 from .contexte import Contexte, contexte
 from .courbes import Courbe_generique, Courbe
 from .feuille import (MethodesObjets, Liste_objets, ModeTolerant,

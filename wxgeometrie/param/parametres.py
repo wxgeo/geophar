@@ -155,9 +155,6 @@ NOM = 1
 TEXTE = 2
 FORMULE = 3
 MATH = 4
-DEBUT = 0
-MILIEU = 0.5
-FIN = 1
 #TODO: supprimer cette section une fois qu'une partie de param sera directement intégrée à geolib.
 
 # Styles liés à la catégorie:
@@ -270,7 +267,7 @@ vecteurs = {
     "categorie": "lignes",
     "sous-categorie": "vecteurs",
     "angle": 60,
-    "position": FIN,
+    "position": 1, # FIN
     "double_fleche": False,
     }
 axes = {
@@ -321,7 +318,7 @@ arcs_orientes = {
     "categorie": "lignes",
     "sous-categorie": "arcs",
     "angle": 60,
-    "position": FIN,
+    "position": 1, # FIN
     "double_fleche": False,
     }
 polygones = {
@@ -458,7 +455,7 @@ angles = {
 # le parametre "categorie" indique quelle liste de styles est à appliquer.
 # par défaut, on applique souvent 'styles_de_lignes'.
 
-del NOM, FORMULE, TEXTE, RIEN, DEBUT, MILIEU, FIN
+del NOM, FORMULE, TEXTE, RIEN
 
 # Options de style pour les objets geometriques :
 #   couleur:      str

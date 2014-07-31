@@ -1223,7 +1223,7 @@ class Feuille(object):
             x = array(x)
         if isinstance(y, (list, tuple)):
             y = array(y)
-        l, h = self.dimensions
+        l, h = self.dimensions_en_pixels
         fenetre = self.fenetre
         px = l*(x - fenetre[0])/(fenetre[1] - fenetre[0])
         py = h*(fenetre[3] - y)/(fenetre[3] - fenetre[2])
@@ -1232,10 +1232,10 @@ class Feuille(object):
     def pix2coo(self, px, py):
         u"""Convertit un pixel en coordonnées."""
         if isinstance(px, (list, tuple)):
-            px = numpy.array(px)
+            px = array(px)
         if isinstance(py, (list, tuple)):
-            py = numpy.array(py)
-        l, h = self.dimensions
+            py = array(py)
+        l, h = self.dimensions_en_pixels
         fenetre = self.fenetre
         x = px*(fenetre[1] - fenetre[0])/l + fenetre[0]
         y = py*(fenetre[2] - fenetre[3])/h + fenetre[3]
@@ -1244,7 +1244,7 @@ class Feuille(object):
 
     def dcoo2pix(self, dx, dy):
         u"""Convertit un déplacement exprimé en coordonnées en un déplacement en pixels."""
-        l, h = self.dimensions
+        l, h = self.dimensions_en_pixels
         fenetre = self.fenetre
         dpx = l*dx/(fenetre[1] - fenetre[0])
         dpy = h*dy/(fenetre[2] - fenetre[3])
@@ -1252,7 +1252,7 @@ class Feuille(object):
 
     def dpix2coo(self, dpx, dpy):
         u"""Convertit un déplacement exprimé en pixels en un déplacement exprimé en coordonnées."""
-        l, h = self.dimensions
+        l, h = self.dimensions_en_pixels
         fenetre = self.fenetre
         dx = dpx*(fenetre[1] - fenetre[0])/l
         dy = dpy*(fenetre[2] - fenetre[3])/h
