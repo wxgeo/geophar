@@ -50,7 +50,7 @@ class Courbe_generique(Objet):
 
     def _distance_inf(self, x, y, d):
         if len(self.xarray) and len(self.yarray):
-            u, v = self.canvas.coo2pix(self.xarray, self.yarray)
+            u, v = self.feuille.coo2pix(self.xarray, self.yarray)
             u -= x
             v -= y
             m = min(u*u + v*v) # u*u est beaucoup plus rapide que u**2 (sic!)
@@ -319,11 +319,11 @@ class Courbe(Courbe_generique):
 
     def _distance_inf(self, x, y, d):
         P = x, y
-        xm = self.canvas.pix2coo(x - d, y)[0]
-        xM = self.canvas.pix2coo(x + d, y)[0]
+        xm = self.feuille.pix2coo(x - d, y)[0]
+        xM = self.feuille.pix2coo(x + d, y)[0]
         xarray = self.xarray
         filtre = (xm < xarray) & (xarray < xM)
-        xa, ya = self.canvas.coo2pix(xarray[filtre], self.yarray[filtre])
+        xa, ya = self.feuille.coo2pix(xarray[filtre], self.yarray[filtre])
         A = None
         for x, y in izip(xa, ya):
             B = A

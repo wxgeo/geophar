@@ -160,10 +160,10 @@ class Texte_generique(Objet_avec_coordonnees):
         # Note : ymin et ymax "permutent" souvent car les transformations appliquées inversent l'orientation.
         if not self.label():
             return
-        can = self.canvas
+        pix2coo = self.feuille.pix2coo
         _xmin, _xmax, _ymin, _ymax = self._boite()
-        xmin, ymin = can.pix2coo(_xmin, _ymax)
-        xmax, ymax = can.pix2coo(_xmax, _ymin)
+        xmin, ymin = pix2coo(_xmin, _ymax)
+        xmax, ymax = pix2coo(_xmax, _ymin)
         return xmin, xmax, ymin, ymax
 
     def angle(self):

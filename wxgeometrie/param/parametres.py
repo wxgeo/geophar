@@ -564,7 +564,10 @@ zoom_texte_out = 0.95
 zoom_ligne_in = 1.07
 zoom_ligne_out = 0.93
 
-dpi_ecran = 80
+dpi_ecran = 100
+# Taille de l'image en pixels par défaut. Sert lorsque Géophar est utilisé
+# en mode texte, ie. sans GUI, pour simuler un écran.
+dimensions_en_pixels = (800, 600)
 # Tableau récapitulatif des résolutions les plus courantes :
 # http://forum.notebookreview.com/notebook-dummy-guide-articles/124093-guide-screen-sizes-dots-per-inch-dpi.html
 

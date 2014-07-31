@@ -36,6 +36,8 @@ from operator import attrgetter
 import re
 import time
 
+from numpy import array
+
 from sympy import Symbol, Wild, sympify, oo
 
 from ..pylib import uu, is_in, str3, property2, print_error, rstrip_, CompressedList
@@ -938,6 +940,8 @@ class Feuille(object):
                         "zoom_texte": (int, float),
                         "zoom_ligne": (int, float),
                         "afficher_objets_caches": bool,
+                        "dpi_ecran": (int, float),
+                        "dimensions_en_pixels": tuple,
                         }
 
     def __hash__(self):
@@ -1211,6 +1215,48 @@ class Feuille(object):
             return _pseudocanvas
 
         self.__canvas = val
+
+
+    def coo2pix(self, x, y):
+        u"""Convertit des coordonnées en pixel."""
+        if isinstance(x, (list, tuple)):
+            x = array(x)
+        if isinstance(y, (list, tuple)):
+            y = array(y)
+        l, h = self.dimensions
+        fenetre = self.fenetre
+        px = l*(x - fenetre[0])/(fenetre[1] - fenetre[0])
+        py = h*(fenetre[3] - y)/(fenetre[3] - fenetre[2])
+        return px, py
+
+    def pix2coo(self, px, py):
+        u"""Convertit un pixel en coordonnées."""
+        if isinstance(px, (list, tuple)):
+            px = numpy.array(px)
+        if isinstance(py, (list, tuple)):
+            py = numpy.array(py)
+        l, h = self.dimensions
+        fenetre = self.fenetre
+        x = px*(fenetre[1] - fenetre[0])/l + fenetre[0]
+        y = py*(fenetre[2] - fenetre[3])/h + fenetre[3]
+#        print x,  y,  -x,  -y
+        return x, y
+
+    def dcoo2pix(self, dx, dy):
+        u"""Convertit un déplacement exprimé en coordonnées en un déplacement en pixels."""
+        l, h = self.dimensions
+        fenetre = self.fenetre
+        dpx = l*dx/(fenetre[1] - fenetre[0])
+        dpy = h*dy/(fenetre[2] - fenetre[3])
+        return dpx, dpy
+
+    def dpix2coo(self, dpx, dpy):
+        u"""Convertit un déplacement exprimé en pixels en un déplacement exprimé en coordonnées."""
+        l, h = self.dimensions
+        fenetre = self.fenetre
+        dx = dpx*(fenetre[1] - fenetre[0])/l
+        dy = dpy*(fenetre[2] - fenetre[3])/h
+        return dx, dy
 
     # TODO: à réécrire
     # les paramètres par défaut de geolib doivent être contenus dans geolib lui-même.

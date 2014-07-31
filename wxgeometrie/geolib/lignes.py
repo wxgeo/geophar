@@ -213,7 +213,7 @@ class Ligne_generique(Objet_avec_equation):
         u"Angle, à l'écran, de la ligne par rapport l'horizontale, en radians."
         x1, y1 = self.__point1.coordonnees
         x2, y2 = self.__point2.coordonnees
-        dx, dy = self.canvas.dcoo2pix(x2 - x1, y2 - y1)
+        dx, dy = self.feuille.dcoo2pix(x2 - x1, y2 - y1)
         return atan2(-dy, dx)
 
 
@@ -1000,7 +1000,7 @@ class Demiplan(Objet_avec_equation):
 
 
     def _distance_inf(self, x, y, d):
-        return self.canvas.pix2coo(x, y) in self
+        return self.feuille.pix2coo(x, y) in self
 
 
 
@@ -1154,13 +1154,13 @@ class Axe(Droite):
         # Autrement dit, le repère n'étant pas forcément orthonormé, il faut
         # travailler **en pixels**.
         # La norme (en pixels également) est fixée par le style `hauteur`.
-        pxu, pyu = self.canvas.dcoo2pix(xu, yu)
+        pxu, pyu = self.feuille.dcoo2pix(xu, yu)
         pnorm = hypot(pxu, pyu)
         k = .5*self.style('hauteur')/pnorm
         # Vecteur normal à (pxu, pyu) :
         pxv, pyv = k*pyu, -k*pxu
         # On retourne au système de coordonnées.
-        xv, yv = self.canvas.dpix2coo(pxv, pyv)
+        xv, yv = self.feuille.dpix2coo(pxv, pyv)
 
         segments = []
         ##print ':::', xO, n, xu, xO+n*xu
@@ -1168,7 +1168,7 @@ class Axe(Droite):
 
         # Et on génère les graduations !
         while xmin <= x <= xmax and ymin <= y <= ymax:
-            if hypot(*self.canvas.dcoo2pix(x2 - x, y2 - y)) > 1.5*taille:
+            if hypot(*self.feuille.dcoo2pix(x2 - x, y2 - y)) > 1.5*taille:
                 # Ne pas superposer une graduation à la pointe de la flêche
                 segments.append([(x - xv, y - yv), (x + xv, y + yv)])
             x += sens*xu
@@ -1205,14 +1205,14 @@ class Axe(Droite):
         # On choisit également le placement avec `self.style('placement_num')`
         # (qui vaut -1 ou 1).
         coeff = self.style('placement_num')*(pvnorm + 2 + .5*taille_txt)/pvnorm
-        xw, yw = self.canvas.dpix2coo(coeff*pxv, coeff*pyv)
+        xw, yw = self.feuille.dpix2coo(coeff*pxv, coeff*pyv)
 
         eps = contexte['tolerance']
         indice = 0
         indice_O = None
         valeurs = [] # contiendra les triplets (x, y, n)
         while xmin <= x <= xmax and ymin <= y <= ymax:
-            if hypot(*self.canvas.dcoo2pix(x2 - x, y2 - y)) > 1.5*taille:
+            if hypot(*self.feuille.dcoo2pix(x2 - x, y2 - y)) > 1.5*taille:
                 valeurs.append((x, y, n))
                 if abs(x - xO) < eps:
                     indice_O = indice

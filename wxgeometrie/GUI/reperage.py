@@ -61,7 +61,7 @@ class DialogReperage(QDialog, Ui_DialogReperage):
         # Fenêtre, en coordonnées cette fois.
         xmin, xmax, ymin, ymax = canvas.fenetre
         # Résolution de l'écran (pixels per inch)
-        dpi = canvas.screen_dpi
+        dpi = canvas.dpi_ecran
         # Mesure en pixels d'une unité
         pixels_per_unit_x = width/(xmax - xmin)
         pixels_per_unit_y = height/(ymax - ymin)
@@ -119,7 +119,7 @@ class DialogReperage(QDialog, Ui_DialogReperage):
                  str2num(self.gradu_y.text()),
                  )
 
-        canvas.screen_dpi = dpi = str2num(self.resolution.text())
+        canvas.dpi_ecran = dpi = str2num(self.resolution.text())
 
         # Nouvelle fenêtre d'affichage.
         # À partir de l'échelle en abscisse et en ordonnée, on détermine
@@ -169,7 +169,7 @@ class DialogReperage(QDialog, Ui_DialogReperage):
                             gradu_y=param.gradu[1],
                             #~ echelle_x=cm_per_unit_x,
                             #~ echelle_y=cm_per_unit_y,
-                            resolution=param.screen_dpi,
+                            resolution=param.dpi_ecran,
                             )
         self.rapport.setChecked(param.ratio is not None)
 

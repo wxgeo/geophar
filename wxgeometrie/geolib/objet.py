@@ -267,11 +267,6 @@ class Rendu(object):
         artiste._cree_par = self.parent
         return artiste
 
-    def _pixel(self, point = None):
-        if point is None:
-            point = self.parent
-        return self.canvas.coo2pix(*point.coordonnees_approchees)
-
 
 
 class Cache(object):
@@ -1295,7 +1290,7 @@ class Objet(object):
     def _pixel(self, point = None):
         if point is None:
             point = self
-        return self.canvas.coo2pix(*point.coordonnees_approchees)
+        return self.feuille.coo2pix(*point.coordonnees_approchees)
 
 
     def message(self, message):

@@ -183,14 +183,14 @@ class Label_point(Label_generique):
         parent = self.parent
         r = self.style("_rayon_")
         a = self.style("_angle_")
-        rx, ry = self.canvas.dpix2coo(r*cos(a), r*sin(a))
+        rx, ry = self.feuille.dpix2coo(r*cos(a), r*sin(a))
         x0, y0 = parent.xy
         return  x0 + rx, y0 - ry
 
     def _set_coordonnees(self, x = None, y = None):
         if x is not None:
             parent = self.parent
-            rx, ry = self.canvas.dcoo2pix(x - parent.abscisse, parent.ordonnee - y)
+            rx, ry = self.feuille.dcoo2pix(x - parent.abscisse, parent.ordonnee - y)
             # rayon: distance(point, etiquette), en pixels.
             rayon = hypot(rx, ry)
             if rayon:
@@ -228,7 +228,7 @@ class Label_glisseur(Label_generique):
         x0, y0 =  self._M.coordonnees
         r = self.style("_rayon_")
         a = self.style("_angle_")
-        rx, ry = self.canvas.dpix2coo(r*cos(a), r*sin(a));
+        rx, ry = self.feuille.dpix2coo(r*cos(a), r*sin(a));
         return  x0 + rx, y0 - ry
 
     def _set_coordonnees(self, x = None, y = None):
@@ -238,7 +238,7 @@ class Label_glisseur(Label_generique):
             self._M.coordonnees = (x, y)
             x0, y0 = self._M.coordonnees # comme _M est un glisseur, ce n'est pas x0 et y0 en général
             self.style(_k_ = self._M.parametre)
-            rx, ry = self.canvas.dcoo2pix(x - x0, y - y0)
+            rx, ry = self.feuille.dcoo2pix(x - x0, y - y0)
             rayon = hypot(rx, ry)
             if rayon:
                 self.style(_angle_ = acos(rx/rayon)*sign(-ry))
@@ -355,7 +355,8 @@ class Label_polygone(Label_generique):
             x1, x2, y1, y2 = parent._espace_vital()
             x = max(min(x, x2), x1)
             y = max(min(y, y2), y1)
-            rx, ry = self.canvas.dcoo2pix(x - parent.centre.abscisse, y - parent.centre.ordonnee)
+            xG, yG = parent.centre.xy
+            rx, ry = self.feuille.dcoo2pix(x - xG, y - yG)
             rayon = hypot(rx, ry)
             if rayon:
                 self.style(_angle_ = acos(rx/rayon)*sign(-ry))
@@ -365,7 +366,7 @@ class Label_polygone(Label_generique):
         parent = self.__parent
         r = self.style("_rayon_")
         a = self.style("_angle_")
-        rx, ry = self.canvas.dpix2coo(r*cos(a), r*sin(a))
+        rx, ry = self.feuille.dpix2coo(r*cos(a), r*sin(a))
         x0, y0 = parent.centre.xy
         return  x0 + rx, y0 - ry
 
@@ -386,10 +387,11 @@ class Label_angle(Label_generique):
 
     def _get_coordonnees(self):
         parent = self.parent
+        dpix2coo = self.feuille.dpix2coo
         r = self.style("_rayon_")
         k = self.style("_k_")
-        u = self.canvas.dpix2coo(*parent._Secteur_angulaire__vecteur1)
-        v = self.canvas.dpix2coo(*parent._Secteur_angulaire__vecteur2)
+        u = dpix2coo(*parent._Secteur_angulaire__vecteur1)
+        v = dpix2coo(*parent._Secteur_angulaire__vecteur2)
         i = (1, 0)
         a = angle_vectoriel(i, u)
         b = angle_vectoriel(i, v)
@@ -398,7 +400,7 @@ class Label_angle(Label_generique):
         if b < a:
             b += 2*pi
         c = k*b + (1 - k)*a
-        rx, ry = self.canvas.dpix2coo(r*cos(c), r*sin(c))
+        rx, ry = dpix2coo(r*cos(c), r*sin(c))
         x0, y0 = parent._Secteur_angulaire__point.xy
         return x0 + rx, y0 - ry
 
@@ -406,12 +408,13 @@ class Label_angle(Label_generique):
     def _set_coordonnees(self, x = None, y = None):
         if x is not None:
             parent = self.parent
+            feuille = self.feuille
             x0, y0 = parent.point.xy
-            rx, ry = self.canvas.dcoo2pix(x - x0, y - y0)
+            rx, ry = feuille.dcoo2pix(x - x0, y - y0)
             rayon = hypot(rx, ry)
             if rayon:
-                u = self.canvas.dpix2coo(*parent._Secteur_angulaire__vecteur1)
-                v = self.canvas.dpix2coo(*parent._Secteur_angulaire__vecteur2)
+                u = feuille.dpix2coo(*parent._Secteur_angulaire__vecteur1)
+                v = feuille.dpix2coo(*parent._Secteur_angulaire__vecteur2)
                 i = (1, 0)
                 a = angle_vectoriel(i, u)
                 b = angle_vectoriel(i, v)

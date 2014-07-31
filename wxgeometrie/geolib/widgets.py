@@ -90,9 +90,8 @@ class Bouton(Texte_editable_generique, Objet_avec_coordonnees_modifiables):
         Texte_editable_generique._creer_figure(self)
         text, rect = self._representation
         rect.set_visible(True)
-        can = self.canvas
-        box = can.txt_box(text)
-        w, h = can.dpix2coo(box.width, -box.height)
+        box = self.canvas.txt_box(text)
+        w, h = self.feuille.dpix2coo(box.width, -box.height)
         niveau = self.style("niveau")
         marge = self.style("marge")
         ##if av == "left":
@@ -103,7 +102,7 @@ class Bouton(Texte_editable_generique, Objet_avec_coordonnees_modifiables):
             ##y -= h
         ##elif ah == "bottom":
             ##y += h
-        mx, my = can.dpix2coo(marge, -marge) # marge verticale et horizontale (en pixels)
+        mx, my = self.feuille.dpix2coo(marge, -marge) # marge verticale et horizontale (en pixels)
         rect.set_width(w + 2*mx)
         rect.set_height(h + 2*my)
         rect.set_x(self.x - .5*w - mx)
@@ -328,7 +327,7 @@ class Champ(Texte):
         can = self.canvas
         box = can.txt_box(self._representation[0])
         px, py = box.max
-        x, y = can.pix2coo(px + 5, can.hauteur - py)
+        x, y = self.feuille.pix2coo(px + 5, can.hauteur - py)
         txt = self._representation[2]
         attendu = self.style('attendu')
         if attendu is None or not self.texte.strip():

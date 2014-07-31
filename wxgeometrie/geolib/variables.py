@@ -412,14 +412,14 @@ class Dpx(Pixel_unite):
     u"""Un pixel unité en abscisse."""
 
     def _get_valeur(self):
-        if self.feuille.canvas:
-            return self.feuille.canvas.dpix2coo(1, 0)[0]
+        if self.feuille:
+            return self.feuille.dpix2coo(1, 0)[0]
 
 
 class Dpy(Pixel_unite):
     u"""Un pixel unité en ordonnée."""
 
     def _get_valeur(self):
-        if self.feuille.canvas:
-            return self.feuille.canvas.dpix2coo(0, -1)[1]
+        if self.feuille:
+            return self.feuille.dpix2coo(0, -1)[1]
 

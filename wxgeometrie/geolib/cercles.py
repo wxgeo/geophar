@@ -83,7 +83,7 @@ class Cercle_Arc_generique(Objet_avec_equation):
 
     def _distance_inf(self, x, y, d): # à surclasser pour les arcs
         x0, y0 = self._pixel(self.__centre)
-        rx, ry = self.canvas.dcoo2pix(self.rayon, self.rayon)
+        rx, ry = self.feuille.dcoo2pix(self.rayon, self.rayon)
         rx = abs(rx) ; ry = abs(ry)
         if x0 - rx - d < x < x0 + rx + d and y0 - ry - d < y < y0 + ry + d:
             return carre_distance_point_ellipse((x0, y0), rx, ry, (x, y), epsilon = .000001) < d**2
@@ -150,7 +150,8 @@ class Arc_generique(Cercle_Arc_generique):
         # On travaille avec les coordonnées de la feuille
         a, b = self._intervalle()
         z0 = self.__centre.z
-        xM, yM = self.canvas.pix2coo(x, y)
+        feuille = self.feuille
+        xM, yM = feuille.pix2coo(x, y)
         zM = xM + 1j*yM
         if abs(zM - z0) > 10*contexte['tolerance']:
             phi = phase(zM - z0)
@@ -162,8 +163,8 @@ class Arc_generique(Cercle_Arc_generique):
                 zA = z0 + rect(self.rayon, a)
                 zB = z0 + rect(self.rayon, b)
                 # On travaille maintenant avec les coordonnées en pixel
-                _xA, _yA = self.canvas.coo2pix(zA.real, zA.imag)
-                _xB, _yB = self.canvas.coo2pix(zB.real, zB.imag)
+                _xA, _yA = feuille.coo2pix(zA.real, zA.imag)
+                _xB, _yB = feuille.coo2pix(zB.real, zB.imag)
                 return min((_xA - x)**2 + (_yA - y)**2, (_xB - x)**2 + (_yB - y)**2) < d**2
         return Cercle_Arc_generique._distance_inf(self, x, y, d)
 
@@ -789,7 +790,7 @@ class Disque(Cercle_generique):
         return self.__cercle.rayon
 
     def _distance_inf(self, x, y, d):
-        x, y = self.canvas.pix2coo(x, y)
+        x, y = self.feuille.pix2coo(x, y)
         return distance(self._Cercle_generique__centre, (x, y)) <= self.rayon
 
     def _contains(self, M):

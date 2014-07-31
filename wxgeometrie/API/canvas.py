@@ -129,7 +129,7 @@ class Canvas(FigureCanvasAgg):
                            u"afficher_fleches", u"repere", u"resolution", u"origine_axes",
                            u"utiliser_repere", u"quadrillages", u"couleur_papier_millimetre",
                            u"liste_axes", u"ratio", u"grille_aimantee", u"zoom_texte",
-                           u"zoom_ligne", u"screen_dpi"]
+                           u"zoom_ligne", u"dpi_ecran"]
         self.liste_objets_en_gras = WeakList()
         self.initialiser()
 
@@ -270,17 +270,13 @@ class Canvas(FigureCanvasAgg):
         return (self.fenetre[1] - self.fenetre[0])/(self.resolution)
 
     ## <DESUET> ##
-    def coeff(self, i): # DESUET
+    def _coeff(self, i): # DESUET
 #        warning("Desuet. Utiliser dpix2coo (*coeff) et dcoo2pix (/coeff)")
         return (self.fenetre[1+2*i] - self.fenetre[2*i])/self.dimensions[i]
         # Rq: une ZeroDivisionError se produit juste après avoir beaucoup réduit une fenêtre,
         # wxpython renvoit parfois (0,0) pour la taille.
         # le plus simple serait de laisser l'erreur, mais ça innonde le débugueur de messages... :-/
 
-    def coeffs(self): # DESUET
-#        warning("Desuet. Utiliser dpix2coo et dcoo2pix")
-        return self.coeff(0), self.coeff(1)
-    ## </DESUET> ##
 
     def txt_box(self, matplotlib_text):
         u"""Retourne l'espace (rectangulaire) occupé par le texte.
@@ -291,45 +287,19 @@ class Canvas(FigureCanvasAgg):
 
     def coo2pix(self, x, y):
         u"""Convertit des coordonnées en pixel."""
-        if isinstance(x, (list, tuple)):
-            x = numpy.array(x)
-        if isinstance(y, (list, tuple)):
-            y = numpy.array(y)
-        l, h = self.dimensions
-        fenetre = self.fenetre
-        px = l*(x - fenetre[0])/(fenetre[1] - fenetre[0])
-        py = h*(fenetre[3] - y)/(fenetre[3] - fenetre[2])
-        return px, py
+        return self.feuille_actuelle.coo2pix(x, y)
 
     def pix2coo(self, px, py):
         u"""Convertit un pixel en coordonnées."""
-        if isinstance(px, (list, tuple)):
-            px = numpy.array(px)
-        if isinstance(py, (list, tuple)):
-            py = numpy.array(py)
-        l, h = self.dimensions
-        fenetre = self.fenetre
-        x = px*(fenetre[1] - fenetre[0])/l + fenetre[0]
-        y = py*(fenetre[2] - fenetre[3])/h + fenetre[3]
-#        print x,  y,  -x,  -y
-        return x, y
+        return self.feuille_actuelle.pix2coo(px, py)
 
     def dcoo2pix(self, dx, dy):
         u"""Convertit un déplacement exprimé en coordonnées en un déplacement en pixels."""
-        l, h = self.dimensions
-        fenetre = self.fenetre
-        dpx = l*dx/(fenetre[1] - fenetre[0])
-        dpy = h*dy/(fenetre[2] - fenetre[3])
-        return dpx, dpy
+        return self.feuille_actuelle.dcoo2pix(dx, dy)
 
     def dpix2coo(self, dpx, dpy):
         u"""Convertit un déplacement exprimé en pixels en un déplacement exprimé en coordonnées."""
-        l, h = self.dimensions
-        fenetre = self.fenetre
-        dx = dpx*(fenetre[1] - fenetre[0])/l
-        dy = dpy*(fenetre[2] - fenetre[3])/h
-        return dx, dy
-
+        return self.feuille_actuelle.dpix2coo(dpx, dpy)
 
     def _affiche_module(self):
         u"Affichage spécifique au module en cours. (À surclasser.)"
@@ -367,7 +337,7 @@ class Canvas(FigureCanvasAgg):
         return self._affichage_gele_en_apparence
 
     def saturation(self, i):
-        return self.zoom_ligne*self.coeff(i)/self.gradu[i]
+        return self.zoom_ligne*self._coeff(i)/self.gradu[i]
 
 
 #    Reglage des parametres d'affichage
@@ -404,6 +374,8 @@ def gerer_parametre_%(_nom_)s(self, afficher = None):
 
     # Paramètres gérés directement par la feuille
     for _nom_ in Feuille._parametres_repere:
+        if _nom_ == "dimensions_en_pixels":
+            continue
         exec('''assert "%(_nom_)s" not in locals(), "Erreur: %(_nom_)s est deja defini !"
 @property2
 def %(_nom_)s(self, valeur = no_argument):
@@ -500,7 +472,7 @@ def %(_nom_)s(self, valeur = no_argument):
             erreur_x = abs(a[0] - b[0]) + abs(a[1] - b[1])
             erreur_y = abs(a[2] - b[2]) + abs(a[3] - b[3])
             # l'erreur doit être inférieure à 1 pixel:
-            condition = erreur_x/self.coeff(0) > 1 or erreur_y/self.coeff(1) > 1
+            condition = erreur_x/self._coeff(0) > 1 or erreur_y/self._coeff(1) > 1
             if compteur > 25:
                 self.message(u"Échec du zoom automatique.")
                 self.fenetre = fenetre_initiale
@@ -572,11 +544,11 @@ def %(_nom_)s(self, valeur = no_argument):
         mode 0 : on orthonormalise le repère en restreignant la vue.
         mode 1 : on orthonormalise le repère en élargissant la vue."""
         if mode:
-            xcoeff = self.coeff(1)/self.coeff(0) if self.coeff(0) < self.coeff(1) else 1
-            ycoeff = 1 if self.coeff(0) < self.coeff(1) else self.coeff(0)/self.coeff(1)
+            xcoeff = self._coeff(1)/self._coeff(0) if self._coeff(0) < self._coeff(1) else 1
+            ycoeff = 1 if self._coeff(0) < self._coeff(1) else self._coeff(0)/self._coeff(1)
         else:
-            xcoeff = self.coeff(1)/self.coeff(0) if self.coeff(0) > self.coeff(1) else 1
-            ycoeff = 1 if self.coeff(0) > self.coeff(1) else self.coeff(0)/self.coeff(1)
+            xcoeff = self._coeff(1)/self._coeff(0) if self._coeff(0) > self._coeff(1) else 1
+            ycoeff = 1 if self._coeff(0) > self._coeff(1) else self._coeff(0)/self._coeff(1)
         xmin, xmax, ymin, ymax = self.fenetre
         x, y, rx, ry = (xmin+xmax)/2., (ymin+ymax)/2., (xmax-xmin)/2., (ymax-ymin)/2.
         self.fenetre = x - xcoeff*rx, x + xcoeff*rx, y - ycoeff*ry, y + ycoeff*ry
@@ -771,6 +743,8 @@ def %(_nom_)s(self, valeur = no_argument):
     def rafraichir_affichage(self, dessin_temporaire = False, rafraichir_axes = None):
         if rafraichir_axes is not None:
             self.feuille_actuelle._repere_modifie = rafraichir_axes
+        if rafraichir_axes:
+            self.feuille_actuelle.dimensions_en_pixels = self.dimensions
         self.feuille_actuelle.affichage_perime()
         self._dessin_temporaire = dessin_temporaire
 

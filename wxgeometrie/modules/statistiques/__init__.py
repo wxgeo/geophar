@@ -558,8 +558,8 @@ class Statistiques(Panel_API_graphique):
         m = self.moyenne(); f = m/100.
         e = 200*sqrt(f*(1-f)/n)
         x0 = m - e; x1 = m + e
-        y0 = self.canvas.fenetre[2] + 4*self.canvas.coeff(1)
-        y1 = self.canvas.fenetre[3] - 6*self.canvas.coeff(1)
+        y0 = self.canvas.fenetre[2] + 4*self.canvas._coeff(1)
+        y1 = self.canvas.fenetre[3] - 6*self.canvas._coeff(1)
         if self.param('hachures'):
             self.canvas.dessiner_polygone([x0, x0, x1, x1], [y0, y1, y1, y0], facecolor='w', edgecolor='k',alpha = .3, hatch = '/')
             self.canvas.dessiner_ligne([x0, x0, x1, x1, x0], [y0, y1, y1, y0, y0], 'k', alpha = 1)
@@ -609,8 +609,8 @@ class Statistiques(Panel_API_graphique):
                 self.canvas.dessiner_polygone(xx, yy, self.couleurs[i%len(self.couleurs)])
             i += 1
 
-        self.canvas.dessiner_texte(M + 0.3*(M-m)-5*self.canvas.coeff(0),
-                        -18*self.canvas.coeff(1), self.legende_x, ha = "right")
+        self.canvas.dessiner_texte(M + 0.3*(M-m)-5*self.canvas._coeff(0),
+                        -18*self.canvas._coeff(1), self.legende_x, ha = "right")
 
         if 'x' in self.gradu_a:
             lu, hu_ = (float(c) for c in self.gradu_a.split('x'))
@@ -626,9 +626,9 @@ class Statistiques(Panel_API_graphique):
             # l'effectif que represente le carre
             effectif = (float(self.gradu_a) if self.gradu_a else arrondir(self.total()/20))
             # cote du carre en pixels
-            cote = sqrt(effectif/(self.canvas.coeff(0)*self.canvas.coeff(1)))
-            lu = cote*self.canvas.coeff(0)
-            hu = cote*self.canvas.coeff(1)
+            cote = sqrt(effectif/(self.canvas._coeff(0)*self.canvas._coeff(1)))
+            lu = cote*self.canvas._coeff(0)
+            hu = cote*self.canvas._coeff(1)
 
         x = M + 0.1*(M-m)
         col = '0.85' if self.param('hachures') else 'b'
@@ -640,7 +640,7 @@ class Statistiques(Panel_API_graphique):
         if effectif > 1 and not self.legende_a:
             legende += "s"
 
-        self.canvas.dessiner_texte(x, .5*hmax - 15*self.canvas.coeff(1), legende, va = "top")
+        self.canvas.dessiner_texte(x, .5*hmax - 15*self.canvas._coeff(1), legende, va = "top")
 
 
     def courbe_effectifs(self, mode=1):
@@ -793,10 +793,10 @@ class Statistiques(Panel_API_graphique):
                 self.canvas.dessiner_polygone(xx, yy, 'w', hatch=self.hachures[(n - 1)%len(self.hachures)])
             else:
                 self.canvas.dessiner_polygone(xx, yy, self.couleurs[(n - 1)%len(self.couleurs)])
-            self.canvas.dessiner_texte((x0 + x1)/2., - 18*self.canvas.coeff(1), str(valeur), ha='center')
+            self.canvas.dessiner_texte((x0 + x1)/2., - 18*self.canvas._coeff(1), str(valeur), ha='center')
             n += 1
 
-        self.canvas.dessiner_texte(110 - 5*self.canvas.coeff(0), -35*self.canvas.coeff(1), self.legende_x, ha='right')
+        self.canvas.dessiner_texte(110 - 5*self.canvas._coeff(0), -35*self.canvas._coeff(1), self.legende_x, ha='right')
         legende_y = self.legende_y
         if not legende_y:
             mode = self.param('mode_effectifs')
@@ -806,7 +806,7 @@ class Statistiques(Panel_API_graphique):
                 legende_y = u"Pourcentages"
             else:
                 legende_y = u"Fréquences"
-        self.canvas.dessiner_texte(15*self.canvas.coeff(0), 1.15*hmax - 5*self.canvas.coeff(1), legende_y, va = "top")
+        self.canvas.dessiner_texte(15*self.canvas._coeff(0), 1.15*hmax - 5*self.canvas._coeff(1), legende_y, va = "top")
 
         # les donnees sont affichees entre 0 et 100 en abscisse
 
@@ -843,7 +843,7 @@ class Statistiques(Panel_API_graphique):
         self.origine(m, 0)
         self.graduations(l, arrondir(hmax/10))
 
-        e = largeur*self.canvas.coeff(0)
+        e = largeur*self.canvas._coeff(0)
 
         i = 0
         for val, eff in self.donnees.iteritems():
@@ -852,8 +852,8 @@ class Statistiques(Panel_API_graphique):
             i+=1
 
 
-        self.canvas.dessiner_texte(M + 0.1*(M - m) - 5*self.canvas.coeff(0),
-                                    -18*self.canvas.coeff(1),
+        self.canvas.dessiner_texte(M + 0.1*(M - m) - 5*self.canvas._coeff(0),
+                                    -18*self.canvas._coeff(1),
                                     self.legende_x, ha = "right")
         legende_y = self.legende_y
         if not legende_y:
@@ -864,7 +864,7 @@ class Statistiques(Panel_API_graphique):
                 legende_y = u"Pourcentages"
             else:
                 legende_y = u"Fréquences"
-        self.canvas.dessiner_texte(m + 15*self.canvas.coeff(0), 1.1*hmax - 5*self.canvas.coeff(1),
+        self.canvas.dessiner_texte(m + 15*self.canvas._coeff(0), 1.1*hmax - 5*self.canvas._coeff(1),
                                     legende_y, va = "top")
 
         self.dessiner_intervalle_fluctuation()
@@ -892,7 +892,7 @@ class Statistiques(Panel_API_graphique):
             else:
                 self.canvas.dessiner_polygone([x, x, x + l, x + l, x], [0, 1, 1, 0, 0],
                         self.couleurs[(n - 1)%len(self.couleurs)])
-            self.canvas.dessiner_texte(x+l/2., - 18*self.canvas.coeff(1),
+            self.canvas.dessiner_texte(x+l/2., - 18*self.canvas._coeff(1),
                     str(valeur),  ha="center")
             n += 1
             x += l
@@ -1020,8 +1020,8 @@ class Statistiques(Panel_API_graphique):
         self.canvas.dessiner_ligne([q3, q1], [.8 + i, .8 + i], color="k")
 
         if i == 0:
-            self.canvas.dessiner_texte(xmax + 0.1*largeur - 5*self.canvas.coeff(0),
-                                    -18*self.canvas.coeff(1),
+            self.canvas.dessiner_texte(xmax + 0.1*largeur - 5*self.canvas._coeff(0),
+                                    -18*self.canvas._coeff(1),
                                     self.legende_x, ha = "right")
 
 #------------------------------------------------------------

@@ -1174,12 +1174,12 @@ class Moteur_graphique(object):
             pas[n] = 1.*abs(pas[n])
 
             # graduations sur l'axe:
-            if pas[n] and self.canvas.coeff(n)/pas[n] < param.saturation:
+            if pas[n] and self.canvas._coeff(n)/pas[n] < param.saturation:
 
                 maxi = fenetre[2*n + 1]
                 if self.canvas.afficher_axes and (n in self.canvas.liste_axes) and hauteur:
                     # les graduations qui chevauchent les fleches, c'est pas joli
-                    maxi -= .7*self.canvas.taille[">"]*self.zoom_ligne*sqrt(3)*self.canvas.coeff(n)
+                    maxi -= .7*self.canvas.taille[">"]*self.zoom_ligne*sqrt(3)*self.canvas._coeff(n)
 
                 valeurs = concatenate((arange(origine[n], fenetre[2*n], -pas[n]), arange(origine[n] + pas[n], maxi, pas[n])))
                 for val in valeurs:
