@@ -34,7 +34,6 @@ from .objet import Objet_avec_coordonnees, Ref, Argument, Objet, Arguments, \
                    contexte, Objet_avec_coordonnees_modifiables, issympy
 from .routines import angle_vectoriel, vect, carre_distance, produit_scalaire, \
                       distance
-from .constantes import FORMULE
 
 from .. import param
 
@@ -158,7 +157,7 @@ class Point_generique(Objet_avec_coordonnees):
             from .lignes import Segment
             with self.canvas.geler_affichage(actualiser = True):
                 M = Point("%s.x" %self.nom, 0, fixe = True)
-                M.label("${%s.x}$" %self.nom, mode=FORMULE)
+                M.label("${%s.x}$" %self.nom, mode='formule')
                 s = Segment(self, M, style = ":")
                 self.feuille.objets.add(M)
                 self.feuille.objets.add(s)
@@ -169,7 +168,7 @@ class Point_generique(Objet_avec_coordonnees):
             from .lignes import Segment
             with self.canvas.geler_affichage(actualiser = True):
                 M = Point(0, "%s.y" %self.nom, fixe = True)
-                M.label("${%s.y}$" %self.nom, mode=FORMULE)
+                M.label("${%s.y}$" %self.nom, mode='formule')
                 s = Segment(self, M, style = ":")
                 self.feuille.objets.add(M)
                 self.feuille.objets.add(s)

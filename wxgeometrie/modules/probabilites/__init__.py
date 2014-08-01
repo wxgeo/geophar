@@ -30,7 +30,7 @@ from PyQt4.QtGui import QVBoxLayout, QLabel, QPushButton, QHBoxLayout, QMessageB
 from ...GUI.menu import MenuBar
 from ...GUI.panel import Panel_API_graphique
 from ...GUI.proprietes_objets import Proprietes
-from ...geolib import Segment, Texte, Point, TEXTE
+from ...geolib import Segment, Texte, Point
 from ... import param
 from .repetition import DialogRepetition, repetition_experiences
 

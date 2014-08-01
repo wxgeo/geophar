@@ -12,7 +12,7 @@ from wxgeometrie.geolib.tests.geotestlib import rand_pt
 from wxgeometrie.geolib import (Triangle_rectangle, DescripteurFeuille, Point, Segment,
                     Vecteur, Fonction, Variable, Feuille, Angle, contexte, Arc_cercle,
                     Texte, Droite, Carre, Triangle, Polygone, Cercle, Parallelogramme,
-                    NOM, Droite_equation, Cercle_equation, Courbe, FORMULE, Formule,
+                    Droite_equation, Cercle_equation, Courbe, Formule,
                     Representant
                     )
 from wxgeometrie.geolib.routines import nice_display
@@ -142,7 +142,7 @@ def test_nommage_intelligent():
     assert(o.MNP.point1.nom == "M")
     assert(o.MNP.point2.nom == "N")
     assert(o.MNP.sommets[2].nom == "P")
-    assert(o.P.mode_affichage == NOM)
+    assert(o.P.mode_affichage == 'nom')
 
 
     o.ABCD = Carre()

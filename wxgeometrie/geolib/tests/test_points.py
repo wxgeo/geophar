@@ -22,7 +22,7 @@ from wxgeometrie.geolib import (Glisseur_arc_cercle, Glisseur_cercle, Glisseur_d
                                 Barycentre, Mediatrice, Droite_equation,
                                 Cercle_equation, Polygone, Rotation, Translation,
                                 Vecteur, Vecteur_libre, Representant, Reflexion,
-                                Homothetie, NOM, Nuage, Fonction,
+                                Homothetie, Nuage, Fonction,
                                 )
 
 def test_Point():
@@ -34,7 +34,7 @@ def test_Point():
     A.x = 5
     A.y = 7
     assertEqual(A.coordonnees, (5, 7))
-    assert(A.mode_affichage == NOM)
+    assert(A.mode_affichage == 'nom')
     # Test du typage dynamique
     d = Droite(rand_pt(), rand_pt())
     B = Point(d)

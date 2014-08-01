@@ -48,8 +48,9 @@ def filtre_versions_anterieures(fgeo, version):
             # 0.108
             if version < [0, 108]:
                 lignes = figures[i].split("\n")
+                reg = re.compile(u"[A-Za-z_][A-Za-z_0-9]*[=](Point|Intersection|Glisseur|Projete|Barycentre|Milieu|Centre|Orthocentre)")
                 for j in range(len(lignes)):
-                    if not re.match(u"[A-Za-z_][A-Za-z_0-9]*[=](Point|Intersection|Glisseur|Projete|Barycentre|Milieu|Centre|Orthocentre)", lignes[j]):
+                    if not re.match(reg, lignes[j]):
                         lignes[j] = lignes[j].replace(u"'legende': 1", u"'legende': 2")
                 figures[i] = "\n".join(lignes)
 
@@ -121,7 +122,10 @@ def filtre_versions_anterieures(fgeo, version):
             # 0.123.1
             # Les noms Cercle et Cercle_rayon permutent.
             if version < [0, 123, 1]:
-                figures[i] = figures[i].replace("Cercle_rayon(", "_Gtftqsff45ezytaezfehge(").replace("Cercle(", "Cercle_rayon(").replace("_Gtftqsff45ezytaezfehge(", "Cercle(")
+                randstr = "_Gtftqsff45ezytaezfehge("
+                figures[i] = figures[i].replace("Cercle_rayon(", randstr)\
+                                       .replace("Cercle(", "Cercle_rayon(")\
+                                       .replace(randstr, "Cercle(")
 
             # version 0.124
             # Nouveau codage des ' et autres " dans les noms d'objets
@@ -266,6 +270,13 @@ def filtre_versions_anterieures(fgeo, version):
 
             if [13] <= version < [14, 5]:
                 figures[i] = figures[i].replace("'fond': 'none'", "'fond': False")
+            if version < [14, 8]:
+                for old, new in ((0, 'rien'), (1, 'nom'), (2, 'texte'),
+                                 (3, 'formule'), (4, 'math')):
+                    figures[i] = figures[i].replace(", 'mode': %s," % old,
+                                                    ", 'mode': %s," % repr(new))
+                    figures[i] = figures[i].replace(".style(mode = %s)" % old,
+                                                    ".style(mode = %s)" % repr(new))
 
     if version < [13, 1]:
         if fgeo.contenu.has_key("Diagramme") and fgeo.module == "statistiques":

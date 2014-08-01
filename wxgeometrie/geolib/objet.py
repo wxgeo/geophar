@@ -36,7 +36,6 @@ from ..pylib import property2, uu, str2, print_error, \
                     is_in, WeakList, CustomWeakKeyDictionary, warning
 from ..mathlib.parsers import mathtext_parser
 from .routines import nice_display
-from .constantes import NOM, RIEN#, FORMULE, TEXTE,
 ##from .formules import Formule
 from .contexte import contexte
 from .. import param
@@ -860,7 +859,7 @@ class Objet(object):
             >>> D1.label()
             ''
 
-            >>> D1.label(mode=NOM)
+            >>> D1.label(mode='nom')
             >>> print(D1.label())
             $\\mathscr{D}_{1}$
 
@@ -869,10 +868,10 @@ class Objet(object):
             Je suis une droite.
 
         Si le texte contient des formules entre accolades, elles
-        peuvent également être interprétées, si le mode FORMULE
+        peuvent également être interprétées, si le mode 'formule'
         est activé::
 
-            >>> D1.label("A a pour abscisse {A.x}.", mode=FORMULE)
+            >>> D1.label("A a pour abscisse {A.x}.", mode='formule')
             >>> D1.label()
             u'A a pour abscisse -2,7.'
 
@@ -985,9 +984,9 @@ class Objet(object):
             self.feuille.objets._dereferencer(self)
             self.feuille.objets[nom] = self
         if afficher_nom:
-            self.label(mode=NOM)
+            self.label(mode='nom')
         elif afficher_nom is False:
-            self.label(mode=RIEN)
+            self.label(mode='rien')
         self.style(**kw)
         self.figure_perimee()
 

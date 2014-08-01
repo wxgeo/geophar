@@ -37,7 +37,7 @@ from sympy.core.sympify import SympifyError
 from ...GUI.menu import MenuBar
 from ...GUI.panel import Panel_API_graphique
 from ...GUI.proprietes_objets import Proprietes
-from ...geolib import Segment, Texte, Point, Droite, Champ, TEXTE, NOM
+from ...geolib import Segment, Texte, Point, Droite, Champ
 from ...geolib.routines import nice_str, det, vect
 from ...pylib import OrderedDict, print_error
 from ...mathlib.parsers import convertir_en_latex, traduire_formule
@@ -380,7 +380,7 @@ class ExercicesTrigonometrie(Panel_API_graphique):
         for nom, eq in (('d1', eq1), ('d2', eq2)):
             if nom in self.feuille_actuelle.objets.noms:
                 d = self.feuille_actuelle.objets[nom]
-                d.label(mode=NOM)
+                d.label(mode='nom')
                 champ = self.feuille_actuelle.objets['champ_cache_' + nom]
                 M, N = d
                 M = (int(M.x), int(M.y))

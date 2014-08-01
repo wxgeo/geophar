@@ -38,7 +38,6 @@ from .qtlib import ColorSelecter
 from .app import white_palette, app
 from .. import param
 from ..pylib import print_error, debug, advanced_split, OrderedDict
-from ..geolib.constantes import NOM, FORMULE, TEXTE, RIEN
 from ..geolib.routines import nice_display
 
 class ProprietesAffichage(QWidget):
@@ -83,10 +82,10 @@ class ProprietesAffichage(QWidget):
                 mode = objets[0].mode_affichage
                 legende = QHBoxLayout()
                 self.radios = OrderedDict((
-                        (NOM, QRadioButton("Nom")),
-                        (TEXTE, QRadioButton(u"Texte")),
-                        (FORMULE, QRadioButton(u"Formule")),
-                        (RIEN, QRadioButton(u"Aucun")),
+                        ('nom', QRadioButton("Nom")),
+                        ('texte', QRadioButton(u"Texte")),
+                        ('formule', QRadioButton(u"Formule")),
+                        ('rien', QRadioButton(u"Aucun")),
                               ))
                 if all(objet.mode_affichage == mode for objet in objets):
                     self.radios[mode].setChecked(True)
@@ -484,8 +483,8 @@ class ProprietesAffichage(QWidget):
                     if mode is not None or label is not None:
                         if mode is None:
                             # Conserver le mode formule, sinon basculer en mode TEXTE.
-                            mode = (FORMULE if objet.mode_affichage == FORMULE else TEXTE)
-                        self.canvas.executer(u"%s.label(%s, %s)" %(objet.nom, repr(label), mode))
+                            mode = ('formule' if objet.mode_affichage == 'formule' else 'texte')
+                        self.canvas.executer(u"%s.label(%s, %s)" %(objet.nom, repr(label), repr(mode)))
                         self.radios[mode].setChecked(True)
                         # Le texte a pu changer (ajout automatique des accolades en mode formule)
                         self.etiquette.setText(objet.legende)

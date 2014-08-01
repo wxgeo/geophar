@@ -10,7 +10,7 @@ from wxgeometrie.geolib import (Tangente, Perpendiculaire, Parallele, Mediatrice
                                 Droite_vectorielle, Point, Cercle, Droite,
                                 Bissectrice, Label_droite, Label_demidroite,
                                 Label_segment, Droite_equation, Milieu, Segment,
-                                Barycentre, Vecteur_libre, RIEN, Demidroite, Demiplan,
+                                Barycentre, Vecteur_libre, Demidroite, Demiplan,
                                 )
 
 from wxgeometrie.geolib import (Interpolation_polynomiale_par_morceaux,
@@ -30,7 +30,7 @@ def test_Segment():
     assert(I in s)
     assert(M not in s)
     assert(N not in s)
-    assert(s.mode_affichage == RIEN)
+    assert(s.mode_affichage == 'rien')
     K = Point(s, 0.5)
     assert K == I
 
@@ -47,7 +47,7 @@ def test_Demidroite():
     assert(I in s)
     assert(M in s)
     assert(N not in s)
-    assert(s.mode_affichage == RIEN)
+    assert(s.mode_affichage == 'rien')
 
 def test_Droite():
     A = Point(4.5,  7.3)
@@ -63,7 +63,7 @@ def test_Droite():
     assert(M in d)
     assert(N in d)
     assert(isinstance(d.equation,  tuple))
-    assert(d.mode_affichage == RIEN)
+    assert(d.mode_affichage == 'rien')
     # Test du typage dynamique
     d = Droite("y=x+1")
     assert(Point(0, 1) in d)

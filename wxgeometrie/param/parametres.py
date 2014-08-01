@@ -149,13 +149,6 @@ afficher_boutons = True  # Possibilité de ne pas afficher les boutons, pour obl
 zoom_texte = 1
 zoom_ligne = 1
 
-#constantes
-RIEN = 0
-NOM = 1
-TEXTE = 2
-FORMULE = 3
-MATH = 4
-#TODO: supprimer cette section une fois qu'une partie de param sera directement intégrée à geolib.
 
 # Styles liés à la catégorie:
 styles_de_lignes = ['-', '--', '-.', ':', 'None']
@@ -371,7 +364,7 @@ textes = {
     "famille": familles_de_textes[1],
     "visible": True,
     "angle": 0,
-    "mode": TEXTE,
+    "mode": 'texte',
     "fixe": False,
     "categorie": "textes",
     "sous-categorie": "textes ordinaires",
@@ -386,10 +379,10 @@ textes = {
     "epaisseur_cadre": 1,
     'couleur_cadre': 'k',
     "style_cadre": styles_de_lignes[0],
-    "formatage": RIEN,
+    "formatage": 'rien',
     }
 champs = {
-    "formatage": MATH,
+    "formatage": 'math',
     "fixe": True,
     "sous-categorie": "champs de texte",
     }
@@ -401,7 +394,7 @@ boutons = {
     "style": "italic",
     "visible": True,
     "angle": 0,
-    "mode": TEXTE,
+    "mode": 'texte',
     "fixe": True,
     "categorie": "widgets",
     "sous-categorie": "boutons",
@@ -419,7 +412,7 @@ labels = {
     "famille": familles_de_textes[1],
     "visible": True,
     "angle": 0,
-    "mode": RIEN,
+    "mode": 'rien',
     "fixe": False,
     "categorie": "textes",
     "sous-categorie": u"étiquettes",
@@ -454,8 +447,6 @@ angles = {
 
 # le parametre "categorie" indique quelle liste de styles est à appliquer.
 # par défaut, on applique souvent 'styles_de_lignes'.
-
-del NOM, FORMULE, TEXTE, RIEN
 
 # Options de style pour les objets geometriques :
 #   couleur:      str

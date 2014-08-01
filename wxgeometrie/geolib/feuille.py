@@ -57,7 +57,6 @@ from .textes import Texte, Texte_generique
 from .vecteurs import Vecteur_libre
 from .variables import Variable, XMinVar, XMaxVar, YMinVar, YMaxVar, Dpx, Dpy, \
                        Variable_affichage, Pixel_unite
-from .constantes import NOM, RIEN#, FORMULE,
 
 from .pseudo_canvas import _pseudocanvas
 from .. import param
@@ -435,8 +434,8 @@ class Dictionnaire_objets(dict):
             # Attention, la feuille doit être déjà definie !
             nom = valeur._nom_alea()
             # Pour les objets nommés automatiquement, le nom n'est pas affiché par défaut.
-            if valeur.mode_affichage == NOM:
-                valeur.label(mode = RIEN)
+            if valeur.mode_affichage == 'nom':
+                valeur.label(mode='rien')
 
         # Les objets dont le nom commence par "_" ne sont pas affichés par défaut (pure convention) :
         if nom[0] == "_":

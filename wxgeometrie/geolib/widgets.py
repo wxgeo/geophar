@@ -174,9 +174,9 @@ class Champ(Texte):
     On peut également lui associer un résultat attendu,
     via le mot-clef `attendu`::
 
-        >>> from wxgeometrie import Champ, RIEN
+        >>> from wxgeometrie import Champ
         >>> c = Champ('modifiez moi', 10, 5, prefixe="1+1=", attendu="2",
-        ...            formatage=RIEN, suffixe=" (entrer le resultat)")
+        ...            formatage='rien', suffixe=" (entrer le resultat)")
         >>> c.style("attendu")
         '2'
         >>> c.texte = '?'

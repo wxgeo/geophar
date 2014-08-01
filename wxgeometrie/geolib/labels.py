@@ -28,7 +28,6 @@ from math import cos, sin, hypot, pi, acos
 
 from .objet import Objet, Argument, Ref
 from .textes import Texte_editable_generique, _get_texte, _set_texte
-from .constantes import NOM
 from .routines import angle_vectoriel, sign
 from .points import (Glisseur_arc_cercle, Glisseur_segment, Glisseur_droite,
                      Glisseur_vecteur, Glisseur_cercle, Glisseur_demidroite,)
@@ -169,7 +168,7 @@ class Label_generique(Texte_editable_generique):
 class Label_point(Label_generique):
     u"L'étiquette d'un point."
 
-    _style_defaut = {'mode': NOM}
+    _style_defaut = {'mode': 'nom'}
 
     __parent = parent = Argument('Point_generique')
     __texte = texte = Argument("unicode", _get_texte, _set_texte)

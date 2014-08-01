@@ -28,7 +28,7 @@ from PyQt4.QtGui import (QPushButton, QWidget, QLabel, QSpinBox,
                          )
 
 from ...GUI.qtlib import MyMiniFrame
-from ...geolib import Point, Segment, Droite, RIEN, TEXTE
+from ...geolib import Point, Segment, Droite
 from ...pylib import eval_safe
 
 

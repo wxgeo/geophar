@@ -27,7 +27,6 @@ from PyQt4.QtGui import (QDialog, QVBoxLayout, QHBoxLayout, QFrame, QLineEdit,
                          QMenu,)
 from PyQt4.QtCore import Qt
 
-from ..geolib.constantes import NOM, FORMULE, TEXTE, RIEN, MATH
 from ..geolib import Texte_generique, Point_generique, Champ, Texte, Polygone_generique
 from .proprietes_objets import Proprietes
 from ..pylib import print_error
@@ -63,7 +62,7 @@ class MenuActionsObjet(PopUpMenu):
         if isinstance(select, Texte_generique):
             action = self.addAction(u"Éditer le texte")
             action.triggered.connect(self.etiquette)
-            action = self.addAction(u"Formatage mathématique" if select.style('formatage') == RIEN
+            action = self.addAction(u"Formatage mathématique" if select.style('formatage') == 'rien'
                                             else u"Formatage par défaut")
             action.triggered.connect(self.mode_formatage)
 
@@ -179,7 +178,7 @@ class MenuActionsObjet(PopUpMenu):
         sizer.addWidget(dlg.text)
 
         dlg.cb = QCheckBox(u"Interpréter la formule", dlg)
-        dlg.cb.setChecked(select.mode_affichage == FORMULE)
+        dlg.cb.setChecked(select.mode_affichage == 'formule')
         sizer.addWidget(dlg.cb)
 
         line = QFrame(self)
@@ -205,7 +204,7 @@ class MenuActionsObjet(PopUpMenu):
                 try:
                     nom = select.nom
                     txt = repr(dlg.text.toPlainText())
-                    mode = (FORMULE if dlg.cb.isChecked() else TEXTE)
+                    mode = ('formule' if dlg.cb.isChecked() else 'texte')
                     self.executer(u"%s.label(%s, %s)" %(nom, txt, mode))
                 except:
                     # Au cas où une formule incorrecte fasse buguer l'affichage (?)
@@ -245,18 +244,18 @@ class MenuActionsObjet(PopUpMenu):
     def masquer_nom(self):
         select = self.canvas.select
         if select.label():
-            mode = RIEN
+            mode = 'rien'
         else:
             if select.legende:
-                mode = TEXTE
+                mode = 'texte'
             else:
-                mode = NOM
+                mode = 'nom'
         self.executer(u"%s.label(mode = %s)" %(select.nom, mode))
 
     def mode_formatage(self):
         select = self.canvas.select
         actuel = select.style('formatage')
-        select.style(formatage=(MATH if actuel == RIEN else RIEN))
+        select.style(formatage=('math' if actuel == 'rien' else 'rien'))
 
     def redefinir(self):
         u"""Redéfinit l'objet (si possible).

@@ -12,7 +12,7 @@ from wxgeometrie.geolib.tests.geotestlib import rand_pt
 from wxgeometrie.geolib import (Triangle_rectangle, DescripteurFeuille, Point, Segment,
                     Vecteur, Fonction, Variable, Feuille, Angle, contexte, Arc_cercle,
                     Texte, Droite, Carre, Triangle, Polygone, Cercle, Parallelogramme,
-                    NOM, Droite_equation, Cercle_equation, Courbe, FORMULE, Formule
+                    Droite_equation, Cercle_equation, Courbe, Formule
                     )
 from wxgeometrie.geolib.routines import nice_display
 from wxgeometrie.geolib.feuille import parse_equation, is_equation

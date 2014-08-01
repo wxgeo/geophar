@@ -29,7 +29,6 @@ from math import cos, sin
 
 from .objet import Objet_avec_coordonnees, Argument, Ref, Objet, \
                    Objet_avec_coordonnees_modifiables
-from .constantes import NOM, TEXTE, MATH, FORMULE, RIEN
 from .formules import Formule
 
 from ..pylib import uu, warning, property2, no_argument, print_error
@@ -219,7 +218,7 @@ class Texte_editable_generique(Texte_generique):
         if not isinstance(value, unicode):
             value = uu(value)
         value = value.replace("_prime", "'")
-        if self._initialise and self._style['mode'] == FORMULE:
+        if self._initialise and self._style['mode'] == 'formule':
             self.formule = value
         # Il faudra vérifier que le texte ne provoque pas d'erreur
         # dans le parser LaTeX de matplotlib :
@@ -231,7 +230,7 @@ class Texte_editable_generique(Texte_generique):
     # Contiendra éventuellement une formule (si le mode formule est activé).
     _formule = None
 
-    _modes = (RIEN, NOM, TEXTE, FORMULE)
+    _modes = ('rien', 'nom', 'texte', 'formule')
 
     def __init__(self, texte='', **styles):
         if not isinstance(texte, (Ref, unicode)):
@@ -257,16 +256,16 @@ class Texte_editable_generique(Texte_generique):
         Si `texte` ou `mode` est spécifié, modifie le contenu du texte,
         et/ou le mode associé, et ne renvoie rien (`None`).
 
-        (Si aucun mode n'est spécifié, le mode est fixé à `TEXTE`.)
+        (Si aucun mode n'est spécifié, le mode est fixé à `'texte'`.)
 
         Sinon, renvoie le label de l'objet.
 
         La signification de la chaine renvoyée dépendra du mode d'affichage de l'objet::
 
-        - si mode = 0 (`param.RIEN`), renvoie ''
-        - si mode = 1 (`param.NOM`), renvoie le nom de l'objet
-        - si mode = 2 (`param.TEXTE`), renvoie le label proprement dit de l'objet
-        - si mode = 3  (`param.FORMULE`), renvoie le label interprété comme une formule
+        - si mode = 'rien', renvoie ''
+        - si mode = ''nom'', renvoie le nom de l'objet
+        - si mode = 'texte', renvoie le label proprement dit de l'objet
+        - si mode = 'formule', renvoie le label interprété comme une formule
 
         Note::
 
@@ -275,13 +274,13 @@ class Texte_editable_generique(Texte_generique):
         """
         if texte is not None:
             if mode is None:
-                mode = TEXTE
+                mode = 'texte'
             # Il faut changer le mode **avant** de changer le texte.
             # On utilise une commande de bas niveau, pour éviter de modifier
             # réellement la formule tant que le texte n'est pas le bon.
             # On supprime également la formule si l'on quitte le mode formule.
             if self._style['mode'] != mode:
-                if self._style['mode'] == FORMULE:
+                if self._style['mode'] == 'formule':
                     self.formule = None
                 self._style['mode'] = mode
             self.texte = texte
@@ -295,22 +294,22 @@ class Texte_editable_generique(Texte_generique):
             mode = self.style("mode")
             if mode not in self._modes:
                 print('Warning: Mode inconnu (%s)' % mode)
-                mode = TEXTE
-            if mode == NOM:
+                mode = 'texte'
+            if mode == 'nom':
                 return self.nom_latex
-            elif mode == TEXTE:
+            elif mode == 'texte':
                 label = self.texte
-            elif mode == FORMULE:
+            elif mode == 'formule':
                 # Retourne le texte avec les expressions évaluées
                 label = unicode(self.formule)
-            elif mode == RIEN:
+            elif mode == 'rien':
                 return ""
 
             old_label = label
 
             # TODO: add support for a CUSTOM mode, to use a custom
             # formating function.
-            if self.style("formatage") == MATH:
+            if self.style("formatage") == 'math':
                 label = convertir_en_latex(label)
 
             if self._label_correct is None:
@@ -354,10 +353,10 @@ class Texte_editable_generique(Texte_generique):
         mode = kw.get('mode', None)
         if mode is not None and self._style['mode'] != mode:
             # On met à jour la formule si besoin est.
-            if mode == FORMULE:
+            if mode == 'formule':
                 # On passe en mode formule
                 self.formule = self.texte
-            elif self._style['mode'] == FORMULE:
+            elif self._style['mode'] == 'formule':
                 # On quitte le mode formule
                 self.formule = None
 

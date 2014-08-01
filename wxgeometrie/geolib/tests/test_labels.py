@@ -6,7 +6,7 @@ from pytest import XFAIL
 #from tools.testlib import assertAlmostEqual
 from wxgeometrie.geolib.tests.geotestlib import rand_pt
 from tools.testlib import assertEqual
-from wxgeometrie.geolib import Feuille, Segment, NOM
+from wxgeometrie.geolib import Feuille, Segment
 
 def test_Label_point():
     A = rand_pt()
@@ -15,8 +15,8 @@ def test_Label_point():
     B.label(u"Position de l'hirondelle européenne.")
     assert(A.label() == "Position de l'hirondelle d'Afrique.")
     assert(B.label() == u"Position de l'hirondelle européenne.")
-    A.label(mode=NOM)
-    assert A.mode_affichage == NOM
+    A.label(mode='nom')
+    assert A.mode_affichage == 'nom'
     assert(A.label() == '')
     f = Feuille()
     f.objets.A = A
@@ -38,7 +38,7 @@ def test_Label_segment():
     assert s.label() == ''
     s.label('bonjour !')
     assert s.label() == 'bonjour !'
-    s.label(mode=NOM)
+    s.label(mode='nom')
     assertEqual(s.label(), r'$\mathscr{s}$')
 
 
@@ -82,17 +82,17 @@ def test_changement_mode():
     A = rand_pt()
     f = Feuille()
     f.objets.A = A
-    A.label('-6', 3)
+    A.label('-6', 'formule')
     assertEqual(A.label(), '-6')
     assertEqual(A.legende, '{-6}')
-    A.label('-3', 2)
+    A.label('-3', 'texte')
     assertEqual(A.legende, '-3')
     A.x = -7
-    A.label('A.x', 3)
+    A.label('A.x', 'formule')
     assertEqual(A.legende, '{A.x}')
     assertEqual(A.label(), '-7')
     # Il ne doit pas y avoir d'erreur : le changement de mode doit être
     # effectué **avant** le changement de texte.
-    A.label('-----', 2)
+    A.label('-----', 'texte')
     assertEqual(A.legende, '-----')
     assertEqual(A.label(), '-----')
