@@ -374,7 +374,9 @@ class Label_polygone(Label_generique):
 class Label_angle(Label_generique):
     u"L'étiquette d'un angle."
 
-    _style_defaut = {'_rayon_': param.codage["rayon"] + 10}
+    _style_defaut = {'_rayon_': param.codage["rayon"] + 20,
+                     'alignement_vertical': 'center',
+                     'alignement_horizontal': 'center',}
 
     __parent = parent = Argument("Angle_generique")
     __texte = texte = Argument("unicode", _get_texte, _set_texte)
@@ -401,7 +403,7 @@ class Label_angle(Label_generique):
         c = k*b + (1 - k)*a
         rx, ry = dpix2coo(r*cos(c), r*sin(c))
         x0, y0 = parent._Secteur_angulaire__point.xy
-        return x0 + rx, y0 - ry
+        return x0 - rx, y0 - ry
 
 
     def _set_coordonnees(self, x = None, y = None):
@@ -419,7 +421,7 @@ class Label_angle(Label_generique):
                 b = angle_vectoriel(i, v)
                 if parent.sens == u"non défini" and parent._sens() < 0:
                     a, b = b, a
-                c = angle_vectoriel(i, (rx, -ry))
+                c = angle_vectoriel(i, (-rx, -ry))
                 if a != b:
                     if b < a:
                         b += 2*pi
