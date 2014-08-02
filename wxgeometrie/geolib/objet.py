@@ -1748,10 +1748,6 @@ class Objet_avec_coordonnees(Objet):
     def _get_coordonnees(self):
         raise NotImplementedError
 
-    def _set_coordonnees(self):
-        raise NotImplementedError
-
-
     def __call__(self, *args):
         if args and not self.style("fixe"):
             if len(args) == 1:

@@ -69,3 +69,10 @@ def test_intersection_et_feuille():
     f.objets._ = Intersection_droite_cercle(f.objets.d1, f.objets.c1)
     # On vérifie qu'on a bien obtenu le 2e point d'intersection (et non deux fois de suite le même)
     assert(f.objets.M6.premier_point == False)
+
+def test_intersections_non_deplacables():
+    d1 = rand_dte()
+    d2 = rand_dte()
+    A = Intersection_droites(d1, d2)
+    assert(not A._modifiable)
+    assert(not A._deplacable)
