@@ -939,8 +939,8 @@ class Feuille(object):
                         "zoom_texte": (int, float),
                         "zoom_ligne": (int, float),
                         "afficher_objets_caches": bool,
-                        "dpi_ecran": (int, float),
-                        "dimensions_en_pixels": tuple,
+                        #~ "dpi_ecran": (int, float),
+                        #~ "dimensions_en_pixels": tuple,
                         }
 
     def __hash__(self):
@@ -988,7 +988,6 @@ class Feuille(object):
         self.historique = Historique_feuille(self)
         self.interprete = Interprete_feuille(self)
 
-
         # Informations sur le document
         self._infos = {
             "titre": titre,
@@ -998,10 +997,20 @@ class Feuille(object):
             "version": "",
             "resume": "",
             "notes": "",
+            "dimensions-pixels": repr(param.dimensions_en_pixels),
+            "dpi": repr(param.dpi_ecran),
             }
+        # Resolution et dimensions ne sont pas intégrés aux paramètres,
+        # car ils ne sont pas gérés par la feuille, mais servent uniquement
+        # à enregistrer les dimensions et la résolution pour que le fichier .geo
+        # puisse être utilisé sans interface graphique.
+        # Dpi et dimensions en pixels dépendent du système (moniteur et taille de la fenêtre).
+        # En particulier, lorsque l'on charge un fichier, il ne faut pas
+        # que l'ancien dpi soit utilisé.
 
         # Actions à effectuer après qu'une commande ait été exécutée.
         self._actions = []
+
 
 
 #        Objet.__feuille__ = self # les objets sont crees dans cette feuille par defaut
@@ -1204,13 +1213,51 @@ class Feuille(object):
 
 #########################################################################################
 
+    def _dimensions_en_pixels(self):
+        u"Dimensions en pixels de la feuille affichée par le canevas."
+        if self.canvas is not _pseudocanvas:
+            return self.canvas.dimensions
+        else:
+            return eval(self._infos['dimensions-pixels'])
+
+    def fenetre_reellement_affichee(self):
+        u"""Fenêtre réellement affichée à l'écran.
+
+        Dans le cas où le ratio abscisse/ordonnée est fixe (par exemple,
+        si l'utilisateur impose un repère orthonormé), les valeurs
+        de xmin, xmax, ymin et ymax définies par l'utilisateur ne
+        peuvent plus correspondre en général à la fenêtre d'affichage réelle
+        (qui élargie dans une des 2 dimensions pour respecter cette contrainte).
+
+        Ainsi, `Feuille.fenetre` renvoie la fenêtre telle que définie par
+        l'utilisateur, tandis que `Fenetre.fenetre_reellement_affichee()`
+        renvoie la fenêtre réellement affichée à l'écran.
+        """
+        fenetre = self.fenetre
+        rat = self.ratio # x:y -> x/y
+        # ratio est le rapport "unité en abscisse/unité en ordonnée"
+        if rat is not None:
+            w, h = self._dimensions_en_pixels()
+            coeff0 = rat*(fenetre[1] - fenetre[0])/w
+            coeff1 = (fenetre[3] - fenetre[2])/h
+            xmin, xmax, ymin, ymax = fenetre
+            xcoeff = (coeff1/coeff0 if coeff0 < coeff1 else 1)
+            ycoeff = (1 if coeff0 < coeff1 else coeff0/coeff1)
+            x, y, rx, ry = (xmin+xmax)/2., (ymin+ymax)/2., (xmax-xmin)/2., (ymax-ymin)/2.
+            return x - xcoeff*rx, x + xcoeff*rx, y - ycoeff*ry, y + ycoeff*ry
+        return fenetre
+
     @property2
     def canvas(self, val = None):
         if val is None:
             if self.__canvas is not None:
                 return self.__canvas
-            elif getattr(getattr(self.classeur, 'parent', None), 'canvas', None) is not None:
-                return self.classeur.parent.canvas
+            else:
+                # canvas = self.classeur.parent.canvas
+                canvas = getattr(getattr(self.classeur, 'parent', None), 'canvas', None)
+                if canvas is not None:
+                    self.__canvas = canvas
+                    return canvas
             return _pseudocanvas
 
         self.__canvas = val
@@ -1222,8 +1269,8 @@ class Feuille(object):
             x = array(x)
         if isinstance(y, (list, tuple)):
             y = array(y)
-        l, h = self.dimensions_en_pixels
-        fenetre = self.fenetre
+        l, h = self._dimensions_en_pixels()
+        fenetre = self.fenetre_reellement_affichee()
         px = l*(x - fenetre[0])/(fenetre[1] - fenetre[0])
         py = h*(fenetre[3] - y)/(fenetre[3] - fenetre[2])
         return px, py
@@ -1234,8 +1281,8 @@ class Feuille(object):
             px = array(px)
         if isinstance(py, (list, tuple)):
             py = array(py)
-        l, h = self.dimensions_en_pixels
-        fenetre = self.fenetre
+        l, h = self._dimensions_en_pixels()
+        fenetre = self.fenetre_reellement_affichee()
         x = px*(fenetre[1] - fenetre[0])/l + fenetre[0]
         y = py*(fenetre[2] - fenetre[3])/h + fenetre[3]
 #        print x,  y,  -x,  -y
@@ -1243,16 +1290,16 @@ class Feuille(object):
 
     def dcoo2pix(self, dx, dy):
         u"""Convertit un déplacement exprimé en coordonnées en un déplacement en pixels."""
-        l, h = self.dimensions_en_pixels
-        fenetre = self.fenetre
+        l, h = self._dimensions_en_pixels()
+        fenetre = self.fenetre_reellement_affichee()
         dpx = l*dx/(fenetre[1] - fenetre[0])
         dpy = h*dy/(fenetre[2] - fenetre[3])
         return dpx, dpy
 
     def dpix2coo(self, dpx, dpy):
         u"""Convertit un déplacement exprimé en pixels en un déplacement exprimé en coordonnées."""
-        l, h = self.dimensions_en_pixels
-        fenetre = self.fenetre
+        l, h = self._dimensions_en_pixels()
+        fenetre = self.fenetre_reellement_affichee()
         dx = dpx*(fenetre[1] - fenetre[0])/l
         dy = dpy*(fenetre[2] - fenetre[3])/h
         return dx, dy

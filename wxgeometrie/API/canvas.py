@@ -174,7 +174,9 @@ class Canvas(FigureCanvasAgg):
         afficher_objets_caches = self.afficher_objets_caches
         self.afficher_objets_caches = False
 
-        self.graph.exporter(fichier=fichier, format=format, dpi=dpi, zone=zone, echelle=echelle, taille=taille, keep_ratio=keep_ratio)
+        self.graph.exporter(fichier=fichier, format=format, dpi=dpi,
+                            zone=zone, echelle=echelle, taille=taille,
+                            keep_ratio=keep_ratio)
 
         self.afficher_objets_caches = afficher_objets_caches
         self.selection_en_gras()
@@ -374,8 +376,6 @@ def gerer_parametre_%(_nom_)s(self, afficher = None):
 
     # Paramètres gérés directement par la feuille
     for _nom_ in Feuille._parametres_repere:
-        if _nom_ == "dimensions_en_pixels":
-            continue
         exec('''assert "%(_nom_)s" not in locals(), "Erreur: %(_nom_)s est deja defini !"
 @property2
 def %(_nom_)s(self, valeur = no_argument):
@@ -392,20 +392,7 @@ def %(_nom_)s(self, valeur = no_argument):
 
 
     def _get_fenetre(self):
-        fenetre = self.feuille_actuelle.fenetre
-        rat = self.ratio # x:y -> x/y
-        # ratio est le rapport "unité en abscisse/unité en ordonnée"
-        if rat is not None:
-            w, h = self.dimensions
-            coeff0 = rat*(fenetre[1] - fenetre[0])/w
-            coeff1 = (fenetre[3] - fenetre[2])/h
-            xmin, xmax, ymin, ymax = fenetre
-            xcoeff = (coeff1/coeff0 if coeff0 < coeff1 else 1)
-            ycoeff = (1 if coeff0 < coeff1 else coeff0/coeff1)
-            x, y, rx, ry = (xmin+xmax)/2., (ymin+ymax)/2., (xmax-xmin)/2., (ymax-ymin)/2.
-            return x - xcoeff*rx, x + xcoeff*rx, y - ycoeff*ry, y + ycoeff*ry
-        return fenetre
-
+        return self.feuille_actuelle.fenetre_reellement_affichee()
 
     def _set_fenetre(self, xmin_xmax_ymin_ymax):
         self.feuille_actuelle.fenetre = xmin_xmax_ymin_ymax
@@ -743,8 +730,6 @@ def %(_nom_)s(self, valeur = no_argument):
     def rafraichir_affichage(self, dessin_temporaire = False, rafraichir_axes = None):
         if rafraichir_axes is not None:
             self.feuille_actuelle._repere_modifie = rafraichir_axes
-        if rafraichir_axes:
-            self.feuille_actuelle.dimensions_en_pixels = self.dimensions
         self.feuille_actuelle.affichage_perime()
         self._dessin_temporaire = dessin_temporaire
 

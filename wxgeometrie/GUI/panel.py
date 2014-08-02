@@ -325,7 +325,9 @@ class Panel_API_graphique(Panel_simple):
             fgeo.contenu["Affichage"][0][parametre] = [repr(getattr(self.canvas, parametre))]
 
         fgeo.contenu["Meta"] = [{}]
-        feuille.infos(modification = time.strftime("%d/%m/%Y - %H:%M:%S",time.localtime()))
+        feuille.infos(modification=time.strftime("%d/%m/%Y - %H:%M:%S",time.localtime()))
+        feuille.infos(dpi=repr(self.canvas.dpi_ecran))
+        feuille.infos(dimensions=repr(self.canvas.dimensions))
         for nom, info in feuille.infos().items():
             fgeo.contenu["Meta"][0][nom] = [info]
         #fgeo.contenu["Meta"][0]["modification"] = [time.strftime("%d/%m/%Y - %H:%M:%S",time.localtime())]
