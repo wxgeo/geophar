@@ -376,3 +376,15 @@ def test_NuageFonction():
     f = Fonction('x^2+3')
     m = Nuage(f, 0.5, 1, 2, 3, 4)
     assert (2, 2**2+3) in m
+
+def test_Centre_alias():
+    u"Centre et Centre_gravite sont interchangeables."
+    A = rand_pt()
+    B = rand_pt()
+    C = rand_pt()
+    G = Centre(Triangle(A, B, C))
+    assertAlmostEqual(G.x, (A.x + B.x + C.x)/3)
+    assertAlmostEqual(G.y, (A.y + B.y + C.y)/3)
+    ce = Cercle(A, 1)
+    G = Centre_gravite(ce)
+    assertAlmostEqual(G.xy, A.xy)

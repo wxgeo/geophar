@@ -726,6 +726,13 @@ class Centre_gravite(Centre_polygone_generique):
 
     polygone = __polygone = Argument("Polygone_generique")
 
+    def __new__(cls, *args, **kw):
+        from .cercles import Cercle_generique
+        if len(args) == 1 and isinstance(args[0], Cercle_generique):
+            # Centre_gravite(cercle) -> Centre(cercle).
+            return Centre(*args, **kw)
+        return object.__new__(cls)
+
     def __init__(self, polygone, **styles):
         self.__polygone = polygone = Ref(polygone)
         Centre_polygone_generique.__init__(self, polygone, **styles)
@@ -816,6 +823,13 @@ class Centre(Point_generique):
     _prefixe_nom = "O"
 
     cercle = __cercle = Argument("Cercle_generique")
+
+    def __new__(cls, *args, **kw):
+        from .polygones import Polygone_generique
+        if len(args) == 1 and isinstance(args[0], Polygone_generique):
+            # Centre(polygone) -> Centre_gravite(polygone).
+            return Centre_gravite(*args, **kw)
+        return object.__new__(cls)
 
     def __init__(self, cercle, **styles):
         self.__cercle = cercle = Ref(cercle)
