@@ -1346,7 +1346,7 @@ class Feuille(object):
 
     def exporter(self, backend_name, **options):
         from .backends import backends_dict
-        backends_dict[backend_name].exporter(self, **options)
+        return backends_dict[backend_name].exporter(self, **options)
 
 
 

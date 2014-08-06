@@ -176,7 +176,7 @@ class Ligne_generique(Objet_avec_equation):
         """
         # Attention, il faut impérativement récupérer la fenêtre **sur le canevas**,
         # dans le cas d'un repère orthonormé.
-        xmin, xmax, ymin, ymax = self.canvas.fenetre
+        xmin, xmax, ymin, ymax = self.feuille.fenetre_reellement_affichee()
         eps = contexte['tolerance']
         dx = eps*(xmax - xmin)
         dy = eps*(ymax - ymin)
@@ -970,7 +970,7 @@ class Demiplan(Objet_avec_equation):
         # Intersection de la droite frontière avec le cadre de la fenêtre :
         points = self.__droite._points_extremes()
         couleur, niveau = self.style(('couleur', 'niveau'))
-        xmin, xmax, ymin, ymax = self.canvas.fenetre
+        xmin, xmax, ymin, ymax = self.feuille.fenetre_reellement_affichee()
         # Liste des coins de la fenêtre en tournant dans le sens direct.
         coins = [(xmin, ymin), (xmax, ymin), (xmax, ymax), (xmin, ymax)]
         sommets = [coin for coin in coins if (coin in self)]

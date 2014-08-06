@@ -99,7 +99,7 @@ class Courbe(Courbe_generique):
     def _creer_figure(self):
 ##        self.__canvas__.graph.supprimer(self._representation)
         self._representation = []
-        fenetre = self.canvas.fenetre
+        fenetre = self.feuille.fenetre_reellement_affichee()
         pas = self.canvas.pas()
         self._xarray = ()
         self._yarray = ()
