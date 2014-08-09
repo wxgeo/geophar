@@ -250,7 +250,7 @@ class MenuActionsObjet(PopUpMenu):
                 mode = 'texte'
             else:
                 mode = 'nom'
-        self.executer(u"%s.label(mode = %s)" %(select.nom, mode))
+        self.executer(u"%s.label(mode = %r)" % (select.nom, mode))
 
     def mode_formatage(self):
         select = self.canvas.select
