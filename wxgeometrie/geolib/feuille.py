@@ -681,6 +681,9 @@ class Interprete_feuille(object):
 
         Voir aussi `commande_executee()`.
         """
+        if commande.startswith('#'):
+            return u'Commentaire ignoré : %s' % commande
+
         if parser:
             commande = self.parser(commande)
 
