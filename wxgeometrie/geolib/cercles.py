@@ -288,14 +288,15 @@ class Arc_generique(Cercle_Arc_generique):
         O = self.__centre
         a, b = self._intervalle()
         vec = vect(O, M)
-        if hypot(*vec) < contexte['tolerance']: # M et O sont (quasi) confondus
-            return self.rayon < contexte['tolerance'] # alors M appartient (quasiment) à l'arc ssi l'arc est de rayon (quasi) nul
+        eps = contexte['tolerance']
+        if hypot(*vec) < eps: # M et O sont (quasi) confondus
+            return self.rayon < eps # alors M appartient (quasiment) à l'arc ssi l'arc est de rayon (quasi) nul
         else:
             c = angle_vectoriel(G.vecteur_unite, vec)
             if c < a:
                 c += 2*pi
     #        print "Test tolerance arc cercle",  abs(distance(O, M) - self.rayon),  a < c < b
-            return abs(distance(O, M) - self.rayon) < contexte['tolerance'] and a - contexte['tolerance'] < c < b + contexte['tolerance']
+            return abs(distance(O, M) - self.rayon) < eps and a - eps < c < b + eps
 
 
 
@@ -527,8 +528,11 @@ class Cercle_generique(Cercle_Arc_generique):
 
 
     def _longueur(self):
-        rayon = self.rayon
-        return 2*rayon*pi_()
+        r = self.rayon
+        if contexte['exact'] and issympy(r):
+            return 2*r*PI
+        else:
+            return 2*r*pi
 
     perimetre = property(_longueur)
 
@@ -777,12 +781,11 @@ class Disque(Cercle_generique):
         x, y = self._Cercle_generique__centre.coordonnees
         r = self.rayon
         t = fullrange(0, 2*pi , self.canvas.pas())
-        fill.xy = zip(x + r*ncos(t), y + r*nsin(t))
-        fill._alpha = self.style("alpha")
-        fill._color = self.style("couleur")
-        fill._linestyle = FILL_STYLES.get(self.style("style"), "solid")
-        fill._linewidth = self.style("epaisseur")
-        fill.zorder = self.style("niveau")
+        fill.set(xy = zip(x + r*ncos(t), y + r*nsin(t)),
+                alpha = self.style("alpha"), color = self.style("couleur"),
+                linestyle = FILL_STYLES.get(self.style("style"), "solid"),
+                linewidth = self.style("epaisseur"),
+                zorder = self.style("niveau"))
 
 
     @property
@@ -798,7 +801,11 @@ class Disque(Cercle_generique):
 
     @property
     def aire(self):
-        return self.rayon**2*pi_()
+        r = self.rayon
+        if contexte['exact'] and issympy(r):
+            return r**2*PI
+        else:
+            return r**2*pi
 
     @property
     def info(self):

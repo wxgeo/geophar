@@ -30,7 +30,7 @@ from math import pi
 from sympy import pi as PI
 
 from .labels import Label_angle
-from .objet import Objet_numerique, Objet, Ref, Argument, issympy, contexte, pi_, FILL_STYLES
+from .objet import Objet_numerique, Objet, Ref, Argument, issympy, contexte, FILL_STYLES
 from .points import Point
 from .routines import nice_display, angle_vectoriel
 from .variables import Variable
@@ -58,14 +58,21 @@ class Angle_generique(Objet_numerique):
     @property
     def degre(self):
         if self.existe:
-            val = self.val*180
-            return val/pi if isinstance(val, float) else val/pi_()
+            val = self.val
+            if contexte['exact'] and issympy(val):
+                return val*180/PI
+            else:
+                return val*180/pi
     deg = degre
 
     @property
     def grad(self):
         if self.existe:
-            return self.val*200/pi_()
+            val = self.val
+            if contexte['exact'] and issympy(val):
+                return val*200/PI
+            else:
+                return val*200/pi
 
     @property
     def info(self):

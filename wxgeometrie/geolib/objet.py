@@ -317,13 +317,6 @@ class Cache(object):
         self.__exact.clear()
 
 
-def pi_():
-    return PI if contexte['exact'] else math.pi
-
-def I_():
-    return I if contexte['exact'] else 1j
-
-
 
 class Ref(object):
     u"""Conteneur pour un argument d'un objet.
