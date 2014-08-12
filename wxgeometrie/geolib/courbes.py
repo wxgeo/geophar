@@ -75,7 +75,7 @@ class Courbe_generique(Objet):
 
 
 class Courbe(Courbe_generique):
-    u"""Courbe d'une fonction.
+    u"""Une courbe de fonction.
 
     L'expression doit être donnée en fonction de 'x'.
     Exemple : '2x^2-1/x+1'
@@ -126,7 +126,7 @@ class Courbe(Courbe_generique):
                     x, y = self.supprimer_valeurs_extremes(x, y, fonction)
 
                     self._representation.append(self.rendu.ligne(x, y,
-                        couleur = self.style("couleur"),
+                        color = self.style("couleur"),
                         linestyle = self.style("style"),
                         linewidth = self.style("epaisseur"),
                         zorder = self.style("niveau"),
@@ -219,11 +219,15 @@ class Courbe(Courbe_generique):
 
     def _append_arc(self, x0, y0, vec):
         if self.style("extremites"):
-            self._representation.append(self.rendu.arc(x0, y0, vec, color=self.style("couleur"), linewidth=self.style("epaisseur")))
+            self._representation.append(self.rendu.arc(x0, y0, vec,
+                taille=self.style('taille_extremites'), color=self.style("couleur"),
+                linewidth=self.style("epaisseur")))
 
     def _append_point(self, x0, y0, plein = True):
         if self.style("extremites"):
-            self._representation.append(self.rendu.point(x0, y0, plein=plein, color=self.style("couleur"), markeredgewidth=self.style("epaisseur")))
+            self._representation.append(self.rendu.point(x0, y0, plein=plein,
+                taille=.8*self.style('taille_extremites'), color=self.style("couleur"),
+                markeredgewidth=self.style("epaisseur")))
 
 
     def _supprimer_valeurs_extremes(self, x, y, fonction, i, j):

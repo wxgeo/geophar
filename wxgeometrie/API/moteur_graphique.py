@@ -44,6 +44,67 @@ from .. import param
 ascii_lowercase = list(ascii_lowercase)
 
 
+
+
+
+
+
+
+
+
+class ArcDeCercle(Line2D):
+    x = y = 0
+    vecteur = (1, 0)
+    taille = 4
+    _parametres = ('x', 'y', 'vecteur', 'taille')
+
+    def __init__(self, canvas, **kw):
+        u"""Affiche un petit demi-cercle d'orientation choisie.
+
+        Par ex, pour le vecteur (1,0), ie. ->, l'arc est orienté comme ceci: (
+        Pour le vecteur (-1,0), ie. <-, l'arc est orienté comme ceci: ).
+        On travaille sur les pixels pour faire de la trigonometrie plus simplement
+        (le repere devient ainsi orthonormé)."""
+        Line2D.__init__(self, (), ())
+        self.canvas = canvas
+        self.set(**kw)
+
+    def _maj_data(self):
+        can = self.canvas
+        vecteur = can.dcoo2pix(*self.vecteur)
+        if vecteur[0] == 0:
+            if vecteur[1] > 0:
+                angle = pi/2
+            else:
+                angle = -pi/2
+        else:
+            angle = atan(vecteur[1]/vecteur[0])
+            if vecteur[0] < 0:
+                angle += pi
+        # donne l'angle d'incidence à l'extrémité
+        t = arange(angle - pi/2, angle + pi/2, 0.05)
+        R = self.taille
+
+        px, py = can.coo2pix(self.x, self.y)
+        x, y = can.pix2coo(px + R*(ncos(t) - cos(angle)), py + R*(nsin(t) - sin(angle)))
+        Line2D.set(self, xdata=x, ydata=y)
+
+
+    def set(self, **kw):
+        maj = kw.pop('maj', True)
+        for nom in self._parametres:
+            if kw.has_key(nom):
+                setattr(self, nom, kw.pop(nom))
+        if kw:
+            Line2D.set(self, **kw)
+        if maj:
+            self._maj_data()
+
+
+
+
+
+
 class LigneDecoree(LineCollection):
     taille = NotImplemented
 
@@ -484,6 +545,9 @@ class ZoomArtistes(object):
                             artiste.set_markersize(ms*self.zoom_ligne)
                             mw = self.markeredgewidth[ID] = artiste.get_markeredgewidth()
                             artiste.set_markeredgewidth(mw*self.zoom_ligne)
+                            if isinstance(artiste, ArcDeCercle):
+                                taille = self.taille[ID] = artiste.taille
+                                artiste.set(taille=self.zoom_ligne*taille)
                         elif isinstance(artiste, LineCollection):
                             lws = self.linewidth[ID] = artiste.get_linewidth()
                             artiste.set_linewidth(tuple(lw*self.zoom_ligne for lw in lws))
@@ -524,6 +588,8 @@ class ZoomArtistes(object):
                             artiste.set_linewidth(self.linewidth[ID])
                             artiste.set_markersize(self.markersize[ID])
                             artiste.set_markeredgewidth(self.markeredgewidth[ID])
+                            if isinstance(artiste, ArcDeCercle):
+                                artiste.set(taille=self.taille[ID])
                         elif isinstance(artiste, LineCollection):
                             artiste.set_linewidth(self.linewidth[ID])
                             if isinstance(artiste, LigneDecoree):
@@ -721,47 +787,22 @@ class Moteur_graphique(object):
 
 
     def arc(self, x, y, vecteur, **kw):
-        u"""Affiche un petit demi-cercle d'orientation choisie.
-
-        Par ex, pour le vecteur (1,0), ie. ->, l'arc est orienté comme ceci: (
-        Pour le vecteur (-1,0), ie. <-, l'arc est orienté comme ceci: ).
-        On travaille sur les pixels pour faire de la trigonometrie plus simplement
-        (le repere devient ainsi orthonorme)"""
-        self._temp_warning_color(kw)
-        vecteur = self.canvas.dcoo2pix(*vecteur)
-        if vecteur[0] == 0:
-            if vecteur[1] > 0:
-                angle = pi/2
-            else:
-                angle = -pi/2
-        else:
-            angle = atan(vecteur[1]/vecteur[0])
-            if vecteur[0] < 0:
-                angle += pi
-        # donne l'angle d'incidence à l'extrémité
-        t = arange(angle - pi/2, angle + pi/2, 0.05)
-        R = self.canvas.taille["("]*self.zoom_ligne
-
-        x, y = self.canvas.coo2pix(x, y)
-        return self.ligne(x + R*(ncos(t) - cos(angle)),
-                          y + R*(nsin(t) - sin(angle)),
-                          pixel=True, **kw)
+        return ArcDeCercle(x=x, y=y, vecteur=vecteur, canvas=self.canvas, **kw)
 
     def ajouter_arc(self, x, y, vecteur, color='k', **kw):
         return self._ajouter_objet(self.arc(x, y, vecteur, color, **kw))
-
-
 
     def point(self, x, y, plein=True, **kw):
         u"Un petit cercle, vide ou plein."
         assert isinstance(plein, bool), str(type(plein)) # Changement d'API
         self._temp_warning_color(kw)
+        if 'taille' in kw:
+            kw['markersize'] = kw.pop('taille', 2)
         couleur = kw.pop('color', 'k')
         kw.setdefault('zorder', 2.1)
         kw.setdefault('markeredgecolor', couleur)
         kw.setdefault('markerfacecolor', couleur if plein else 'w')
         kw.setdefault('markeredgewidth', 1)
-        kw.setdefault('markersize', 2*self.canvas.taille["o"])
         kw.setdefault('marker', 'o')
         return self.ligne([x], [y], **kw)
         # Le zorder doit être supérieur à celui d'une courbe (2 par défaut),

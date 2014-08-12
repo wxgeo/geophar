@@ -249,6 +249,7 @@ courbes = {"couleur": "b",
     "extremites": True,
     "extremites_cachees": (),
     "sous-categorie": "courbes",
+    "taille_extremites": 4,
     }
 vecteurs = {
     "couleur": "g",
