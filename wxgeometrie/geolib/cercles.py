@@ -34,7 +34,7 @@ from .angles import Angle_vectoriel
 from .labels import Label_cercle, Label_arc_cercle
 from .lignes import Segment
 from .objet import Objet, Objet_avec_equation, Ref, Argument, issympy, contexte, \
-                   pi_, FILL_STYLES, TYPES_REELS, G
+                   FILL_STYLES, TYPES_REELS, G
 from .points import Point, Milieu, Centre, Point_generique, Point_equidistant, Glisseur_cercle
 from .routines import nice_display, angle_vectoriel, distance, formatage, trigshift, \
                       carre_distance_point_ellipse, vect

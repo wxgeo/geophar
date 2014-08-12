@@ -80,7 +80,15 @@ RE_NOM_DE_POINT="[A-Z]((_[{][0-9]+[}])|(_[0-9]+)|([']+))?"
 
 
 def issympy(*expressions):
-    return all(isinstance(e, Basic) for e in expressions)
+    from .variables import Variable
+    if len(expressions) > 1:
+        return all(issympy(expr) for expr in expressions)
+    elif not expressions:
+        return None
+    expr = expressions[0]
+    if isinstance(expr, Variable):
+        return isinstance(expr.contenu, Basic)
+    return isinstance(expr, Basic)
 
 
 
