@@ -1,19 +1,19 @@
-Géophar version 14.07
-Publiée le 10/07/2014
+Géophar version 14.08
+Publiée le 12/08/2014
 
 
-* New dialog for geometric basis setup.
-* Fix popup menu position in objects creation dialogs.
-* Fix permission issue in 'linux-install.py' when installing for all users.
-* Add a script for easy installation on most Linux flavours.
-* [FS#10] Add ability to automatically apply an operation to any result in calc.
-* Don't display internal variables in objects list.
-* Fix major break introduced by last commit.
-* Major enhancement of selection mode.
-* Rewrite of mouse events gestion and selection in canvas.
-* Double click on an object to edit properties.
-* Replace `orthonorme` parameter with more general `ratio` parameter.
-* Disable faulty modules on start-up.
-* Improve selection.
-* New dependancies test system.
-* [FS#310] Fix regression in tablatex: the roots of df/dx were not always displayed.
+* Fix disc color problem. Improve discs and circles information display.
+* [FS#523] Add extremities size to curves properties.
+* Tikz backend implementation has no enough substance to be usable.
+* Ignore comments (# ...) in geolib.feuille.Interprete.executer().
+* Fix regression introduced by commit a827e2c1: can't display object label.
+* First working implementation of tikz backend.
+* [geolib] Centre and Centre_gravite are now synonyms.
+* Intersections can't be selected since they can't be moved.
+* Fix angles labels display.
+* Fix many issues with commit d452ad4c (ratio and window management in sheet).
+* [FS#226] Replace unpythonic int constants (like NOM) by strings ('nom' here).
+* Remove constants DEBUT, MILIEU and FIN. Fix major regression from last commit.
+* Dpi and dimensions in pixels are stored directly in the sheet.
+* Proof of concept of sheet export as TikZ.
+* [FS#73] Add text alignment choice in GUI.
