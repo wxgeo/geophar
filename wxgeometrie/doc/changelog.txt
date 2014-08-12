@@ -1,7 +1,9 @@
-Géophar version 14.08
-Publiée le 12/08/2014
+Géophar version 14.08.1
+Publiée le 13/08/2014
 
 
+* Fix regression due to commit 89fba27e3.
+* Version 14.08
 * Fix disc color problem. Improve discs and circles information display.
 * [FS#523] Add extremities size to curves properties.
 * Tikz backend implementation has no enough substance to be usable.
