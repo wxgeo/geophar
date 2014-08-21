@@ -440,6 +440,8 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
         mode = self.mode
         if ctrl_down(event):
             mode = ('select' if alt_down(event) else 'zoom')
+        elif self.select is None:
+            mode = 'select'
         if self.fixe and mode == 'zoom':
             # Zoom interdit (fenêtre d'affichage bloquée).
             mode = 'defaut'
@@ -697,6 +699,7 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
                 menu.etiquette()
             else:
                 self.action_en_cours = self.test_mode(event)
+                self.coordonnees_rectangle_selection = None
 
 
     def onRightDown(self, event):
@@ -738,8 +741,9 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
             return
 
         action = self.action_en_cours
-        if action in ('zoom', 'select'):
-            (x0, y0), (x1, y1) = self.coordonnees_rectangle_selection
+        rect_select = self.coordonnees_rectangle_selection
+        if action in ('zoom', 'select') and rect_select is not None:
+            (x0, y0), (x1, y1) = rect_select
             if (x0, y0) != (x1, y1):
                 # Zoom sur la zone sélectionnée.
                 if action == 'zoom':
