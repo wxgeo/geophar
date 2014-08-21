@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -8,15 +6,15 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Autodoc &mdash; Geophar 14.04 documentation</title>
+    <title>Autodoc &mdash; documentation Geophar 14.08.1</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '',
-        VERSION:     '14.04',
+        URL_ROOT:    './',
+        VERSION:     '14.08.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -27,7 +25,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="_static/translations.js"></script>
     <script type="text/javascript" src="_static/jsMath/easy/load.js"></script>
-    <link rel="top" title="Geophar 14.04 documentation" href="index.html" />
+    <link rel="top" title="documentation Geophar 14.08.1" href="index.html" />
     <link rel="prev" title="Formats de fichiers" href="format.geo.html" /> 
   </head>
   <body>
@@ -43,7 +41,7 @@
         <li class="right" >
           <a href="format.geo.html" title="Formats de fichiers"
              accesskey="P">précédent</a> |</li>
-        <li><a href="index.html">Geophar 14.04 documentation</a> &raquo;</li> 
+        <li><a href="index.html">documentation Geophar 14.08.1</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -119,16 +117,6 @@ grâce au <a class="reference external" href="http://sphinx.pocoo.org/ext/autodo
 <dl class="method">
 <dt id="wxgeometrie.API.canvas.Canvas.coder">
 <tt class="descname">coder</tt><big>(</big><em>event</em><big>)</big><a class="headerlink" href="#wxgeometrie.API.canvas.Canvas.coder" title="Lien permanent vers cette définition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="wxgeometrie.API.canvas.Canvas.coeff">
-<tt class="descname">coeff</tt><big>(</big><em>i</em><big>)</big><a class="headerlink" href="#wxgeometrie.API.canvas.Canvas.coeff" title="Lien permanent vers cette définition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="wxgeometrie.API.canvas.Canvas.coeffs">
-<tt class="descname">coeffs</tt><big>(</big><big>)</big><a class="headerlink" href="#wxgeometrie.API.canvas.Canvas.coeffs" title="Lien permanent vers cette définition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -224,10 +212,10 @@ grâce au <a class="reference external" href="http://sphinx.pocoo.org/ext/autodo
 <li><strong>format</strong> &#8211; le format de l&#8217;image (PNG, SVG, ...).
 Inutile si le nom du fichier est donné avec une extension connue.</li>
 <li><strong>dpi</strong> (<em>int,float</em>) &#8211; résolution souhaitée (en dot par inch)</li>
-<li><strong>zone</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#tuple" title="(in Python v2.7)"><em>tuple</em></a>) &#8211; (xmin, xmax, ymin, ymax) : pour n&#8217;exporter qu&#8217;une partie de la feuille (png seulement).</li>
-<li><strong>echelle</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#tuple" title="(in Python v2.7)"><em>tuple</em></a>) &#8211; (x, y) : nombre de cm pour une unité en abscisse ; en ordonnée</li>
-<li><strong>taille</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#tuple" title="(in Python v2.7)"><em>tuple</em></a>) &#8211; (largeur, hauteur) : taille de l&#8217;image en cm.</li>
-<li><strong>keep_ratio</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) &#8211; indique si le ratio doit être préservé en cas de redimensionnement.</li>
+<li><strong>zone</strong> (<em>tuple</em>) &#8211; (xmin, xmax, ymin, ymax) : pour n&#8217;exporter qu&#8217;une partie de la feuille (png seulement).</li>
+<li><strong>echelle</strong> (<em>tuple</em>) &#8211; (x, y) : nombre de cm pour une unité en abscisse ; en ordonnée</li>
+<li><strong>taille</strong> (<em>tuple</em>) &#8211; (largeur, hauteur) : taille de l&#8217;image en cm.</li>
+<li><strong>keep_ratio</strong> (<em>bool</em>) &#8211; indique si le ratio doit être préservé en cas de redimensionnement.</li>
 </ul>
 </td>
 </tr>
@@ -305,11 +293,6 @@ que des modifications successives apparaissent à l&#8217;écran).</p>
 <tt class="descname">gerer_parametre_orthonorme</tt><big>(</big><em>afficher=None</em><big>)</big><a class="headerlink" href="#wxgeometrie.API.canvas.Canvas.gerer_parametre_orthonorme" title="Lien permanent vers cette définition">¶</a></dt>
 <dd><p>Afficher la figure dans un repère toujours orthonormé.</p>
 </dd></dl>
-
-<dl class="method">
-<dt id="wxgeometrie.API.canvas.Canvas.gestion_zoombox">
-<tt class="descname">gestion_zoombox</tt><big>(</big><em>pixel</em><big>)</big><a class="headerlink" href="#wxgeometrie.API.canvas.Canvas.gestion_zoombox" title="Lien permanent vers cette définition">¶</a></dt>
-<dd></dd></dl>
 
 <dl class="attribute">
 <dt id="wxgeometrie.API.canvas.Canvas.gradu">
@@ -424,9 +407,24 @@ mode 1 : on orthonormalise le repère en élargissant la vue.</p>
 <tt class="descname">rafraichir_affichage</tt><big>(</big><em>dessin_temporaire=False</em>, <em>rafraichir_axes=None</em><big>)</big><a class="headerlink" href="#wxgeometrie.API.canvas.Canvas.rafraichir_affichage" title="Lien permanent vers cette définition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="attribute">
+<dt id="wxgeometrie.API.canvas.Canvas.ratio">
+<tt class="descname">ratio</tt><a class="headerlink" href="#wxgeometrie.API.canvas.Canvas.ratio" title="Lien permanent vers cette définition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="method">
 <dt id="wxgeometrie.API.canvas.Canvas.rectangle">
 <tt class="descname">rectangle</tt><big>(</big><em>**kw</em><big>)</big><a class="headerlink" href="#wxgeometrie.API.canvas.Canvas.rectangle" title="Lien permanent vers cette définition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="wxgeometrie.API.canvas.Canvas.rectangle_selection">
+<tt class="descname">rectangle_selection</tt><big>(</big><em>xy0</em>, <em>xy1</em>, <em>coins=False</em>, <em>coin_actif=None</em><big>)</big><a class="headerlink" href="#wxgeometrie.API.canvas.Canvas.rectangle_selection" title="Lien permanent vers cette définition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="wxgeometrie.API.canvas.Canvas.rectangle_zoom">
+<tt class="descname">rectangle_zoom</tt><big>(</big><em>xy0</em>, <em>xy1</em><big>)</big><a class="headerlink" href="#wxgeometrie.API.canvas.Canvas.rectangle_zoom" title="Lien permanent vers cette définition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -457,11 +455,6 @@ mode 1 : on orthonormalise le repère en élargissant la vue.</p>
 <dl class="method">
 <dt id="wxgeometrie.API.canvas.Canvas.selection_en_gras">
 <tt class="descname">selection_en_gras</tt><big>(</big><big>)</big><a class="headerlink" href="#wxgeometrie.API.canvas.Canvas.selection_en_gras" title="Lien permanent vers cette définition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="wxgeometrie.API.canvas.Canvas.selection_zone">
-<tt class="descname">selection_zone</tt><big>(</big><em>pixel</em><big>)</big><a class="headerlink" href="#wxgeometrie.API.canvas.Canvas.selection_zone" title="Lien permanent vers cette définition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -627,6 +620,36 @@ ymax, height et width. (En pixels).</p>
 <dl class="method">
 <dt id="wxgeometrie.API.moteur_graphique.Angle.set">
 <tt class="descname">set</tt><big>(</big><em>**kw</em><big>)</big><a class="headerlink" href="#wxgeometrie.API.moteur_graphique.Angle.set" title="Lien permanent vers cette définition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="wxgeometrie.API.moteur_graphique.ArcDeCercle">
+<em class="property">class </em><tt class="descclassname">wxgeometrie.API.moteur_graphique.</tt><tt class="descname">ArcDeCercle</tt><big>(</big><em>canvas</em>, <em>**kw</em><big>)</big><a class="headerlink" href="#wxgeometrie.API.moteur_graphique.ArcDeCercle" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><dl class="method">
+<dt id="wxgeometrie.API.moteur_graphique.ArcDeCercle.set">
+<tt class="descname">set</tt><big>(</big><em>**kw</em><big>)</big><a class="headerlink" href="#wxgeometrie.API.moteur_graphique.ArcDeCercle.set" title="Lien permanent vers cette définition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="wxgeometrie.API.moteur_graphique.ArcDeCercle.taille">
+<tt class="descname">taille</tt><em class="property"> = 4</em><a class="headerlink" href="#wxgeometrie.API.moteur_graphique.ArcDeCercle.taille" title="Lien permanent vers cette définition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="wxgeometrie.API.moteur_graphique.ArcDeCercle.vecteur">
+<tt class="descname">vecteur</tt><em class="property"> = (1, 0)</em><a class="headerlink" href="#wxgeometrie.API.moteur_graphique.ArcDeCercle.vecteur" title="Lien permanent vers cette définition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="wxgeometrie.API.moteur_graphique.ArcDeCercle.x">
+<tt class="descname">x</tt><em class="property"> = 0</em><a class="headerlink" href="#wxgeometrie.API.moteur_graphique.ArcDeCercle.x" title="Lien permanent vers cette définition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="wxgeometrie.API.moteur_graphique.ArcDeCercle.y">
+<tt class="descname">y</tt><em class="property"> = 0</em><a class="headerlink" href="#wxgeometrie.API.moteur_graphique.ArcDeCercle.y" title="Lien permanent vers cette définition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -937,12 +960,7 @@ les styles suivants sont définis:
 <dl class="method">
 <dt id="wxgeometrie.API.moteur_graphique.Moteur_graphique.arc">
 <tt class="descname">arc</tt><big>(</big><em>x</em>, <em>y</em>, <em>vecteur</em>, <em>**kw</em><big>)</big><a class="headerlink" href="#wxgeometrie.API.moteur_graphique.Moteur_graphique.arc" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Affiche un petit demi-cercle d&#8217;orientation choisie.</p>
-<p>Par ex, pour le vecteur (1,0), ie. -&gt;, l&#8217;arc est orienté comme ceci: (
-Pour le vecteur (-1,0), ie. &lt;-, l&#8217;arc est orienté comme ceci: ).
-On travaille sur les pixels pour faire de la trigonometrie plus simplement
-(le repere devient ainsi orthonorme)</p>
-</dd></dl>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="wxgeometrie.API.moteur_graphique.Moteur_graphique.cercle">
@@ -1084,7 +1102,7 @@ Renvoie le contenu, ou la nouvelle racine crée (si le contenu était vide).</p>
 
 <dl class="attribute">
 <dt id="wxgeometrie.API.sauvegarde.FichierGEO.defaut">
-<tt class="descname">defaut</tt><em class="property"> = {'nom': '', 'version': '14.04', 'type': 'Fichier WxGeometrie', 'module': '', 'repertoire': ''}</em><a class="headerlink" href="#wxgeometrie.API.sauvegarde.FichierGEO.defaut" title="Lien permanent vers cette définition">¶</a></dt>
+<tt class="descname">defaut</tt><em class="property"> = {'nom': '', 'version': '14.08.1', 'type': 'Fichier WxGeometrie', 'module': '', 'repertoire': ''}</em><a class="headerlink" href="#wxgeometrie.API.sauvegarde.FichierGEO.defaut" title="Lien permanent vers cette définition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -1782,7 +1800,7 @@ cherchées dans le contexte père.</p>
 <span class="target" id="module-wxgeometrie.geolib.courbes"></span><dl class="class">
 <dt id="wxgeometrie.geolib.courbes.Courbe">
 <em class="property">class </em><tt class="descclassname">wxgeometrie.geolib.courbes.</tt><tt class="descname">Courbe</tt><big>(</big><em>fonction</em>, <em>**styles</em><big>)</big><a class="headerlink" href="#wxgeometrie.geolib.courbes.Courbe" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Courbe d&#8217;une fonction.</p>
+<dd><p>Une courbe de fonction.</p>
 <p>L&#8217;expression doit être donnée en fonction de &#8216;x&#8217;.
 Exemple : &#8216;2x^2-1/x+1&#8217;</p>
 <dl class="attribute">
@@ -1991,6 +2009,24 @@ f.charger(commandes)</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="wxgeometrie.geolib.feuille.Feuille.coo2pix">
+<tt class="descname">coo2pix</tt><big>(</big><em>x</em>, <em>y</em><big>)</big><a class="headerlink" href="#wxgeometrie.geolib.feuille.Feuille.coo2pix" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Convertit des coordonnées en pixel.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="wxgeometrie.geolib.feuille.Feuille.dcoo2pix">
+<tt class="descname">dcoo2pix</tt><big>(</big><em>dx</em>, <em>dy</em><big>)</big><a class="headerlink" href="#wxgeometrie.geolib.feuille.Feuille.dcoo2pix" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Convertit un déplacement exprimé en coordonnées en un déplacement en pixels.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="wxgeometrie.geolib.feuille.Feuille.dpix2coo">
+<tt class="descname">dpix2coo</tt><big>(</big><em>dpx</em>, <em>dpy</em><big>)</big><a class="headerlink" href="#wxgeometrie.geolib.feuille.Feuille.dpix2coo" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Convertit un déplacement exprimé en pixels en un déplacement exprimé en coordonnées.</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="wxgeometrie.geolib.feuille.Feuille.effacer">
 <tt class="descname">effacer</tt><big>(</big><big>)</big><a class="headerlink" href="#wxgeometrie.geolib.feuille.Feuille.effacer" title="Lien permanent vers cette définition">¶</a></dt>
 <dd></dd></dl>
@@ -2018,9 +2054,28 @@ f.charger(commandes)</p>
 <dd></dd></dl>
 
 <dl class="method">
+<dt id="wxgeometrie.geolib.feuille.Feuille.exporter">
+<tt class="descname">exporter</tt><big>(</big><em>backend_name</em>, <em>**options</em><big>)</big><a class="headerlink" href="#wxgeometrie.geolib.feuille.Feuille.exporter" title="Lien permanent vers cette définition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="wxgeometrie.geolib.feuille.Feuille.fenetre_modifiee">
 <tt class="descname">fenetre_modifiee</tt><big>(</big><big>)</big><a class="headerlink" href="#wxgeometrie.geolib.feuille.Feuille.fenetre_modifiee" title="Lien permanent vers cette définition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="method">
+<dt id="wxgeometrie.geolib.feuille.Feuille.fenetre_reellement_affichee">
+<tt class="descname">fenetre_reellement_affichee</tt><big>(</big><big>)</big><a class="headerlink" href="#wxgeometrie.geolib.feuille.Feuille.fenetre_reellement_affichee" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Fenêtre réellement affichée à l&#8217;écran.</p>
+<p>Dans le cas où le ratio abscisse/ordonnée est fixe (par exemple,
+si l&#8217;utilisateur impose un repère orthonormé), les valeurs
+de xmin, xmax, ymin et ymax définies par l&#8217;utilisateur ne
+peuvent plus correspondre en général à la fenêtre d&#8217;affichage réelle
+(qui élargie dans une des 2 dimensions pour respecter cette contrainte).</p>
+<p>Ainsi, <cite>Feuille.fenetre</cite> renvoie la fenêtre telle que définie par
+l&#8217;utilisateur, tandis que <cite>Fenetre.fenetre_reellement_affichee()</cite>
+renvoie la fenêtre réellement affichée à l&#8217;écran.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="wxgeometrie.geolib.feuille.Feuille.infos">
@@ -2123,6 +2178,12 @@ Sinon, un préfixe aléatoire est généré.</p>
 <dd></dd></dl>
 
 <dl class="method">
+<dt id="wxgeometrie.geolib.feuille.Feuille.pix2coo">
+<tt class="descname">pix2coo</tt><big>(</big><em>px</em>, <em>py</em><big>)</big><a class="headerlink" href="#wxgeometrie.geolib.feuille.Feuille.pix2coo" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Convertit un pixel en coordonnées.</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="wxgeometrie.geolib.feuille.Feuille.point_temporaire">
 <tt class="descname">point_temporaire</tt><big>(</big><big>)</big><a class="headerlink" href="#wxgeometrie.geolib.feuille.Feuille.point_temporaire" title="Lien permanent vers cette définition">¶</a></dt>
 <dd></dd></dl>
@@ -2205,12 +2266,13 @@ et de le restaurer ensuite.</p>
 <tt class="descname">archiver</tt><big>(</big><em>signature=None</em><big>)</big><a class="headerlink" href="#wxgeometrie.geolib.feuille.Historique_feuille.archiver" title="Lien permanent vers cette définition">¶</a></dt>
 <dd><p>Sauvegarde l&#8217;état actuel de la feuille.</p>
 <p>Notes concernant l&#8217;implémentation:</p>
-<div class="highlight-python"><pre>* si l'état de la feuille n'a pas changé depuis la dernière sauvegarde,
-  la nouvelle demande de sauvegarde n'est pas prise en compte.
+<div class="highlight-python"><div class="highlight"><pre>* si l&#39;état de la feuille n&#39;a pas changé depuis la dernière sauvegarde,
+  la nouvelle demande de sauvegarde n&#39;est pas prise en compte.
 * si `signature` est différente de `None`, une demande effectuée
   avec la même signature que la précédente écrase la précédente.
   Ceci sert essentiellement pour les zooms avec la molette de la souris,
-  afin d'éviter de saturer l'historique.</pre>
+  afin d&#39;éviter de saturer l&#39;historique.
+</pre></div>
 </div>
 </dd></dl>
 
@@ -2391,7 +2453,7 @@ l&#8217;abscisse xl.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Paramètres:</th><td class="field-body"><strong>derivee</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#list" title="(in Python v2.7)"><em>list</em></a>) &#8211; value of the diff number at each point</td>
+<tr class="field-odd field"><th class="field-name">Paramètres:</th><td class="field-body"><strong>derivee</strong> (<em>list</em>) &#8211; value of the diff number at each point</td>
 </tr>
 </tbody>
 </table>
@@ -2415,7 +2477,7 @@ l&#8217;abscisse xl.</p>
 
 <dl class="attribute">
 <dt id="wxgeometrie.geolib.interpolations.Interpolation_polynomiale_par_morceaux.strategies">
-<tt class="descname">strategies</tt><em class="property"> = {'moyenne_gauche_droite': &lt;function _strategie_moyenne_gauche_droite at 0x57b7938&gt;, 'pente_minimale': &lt;function _strategie_pente_minimale at 0x57b78c0&gt;, 'pente_moyenne': &lt;function _strategie_pente_moyenne at 0x57b7848&gt;}</em><a class="headerlink" href="#wxgeometrie.geolib.interpolations.Interpolation_polynomiale_par_morceaux.strategies" title="Lien permanent vers cette définition">¶</a></dt>
+<tt class="descname">strategies</tt><em class="property"> = {'moyenne_gauche_droite': &lt;function _strategie_moyenne_gauche_droite at 0x430e75dc&gt;, 'pente_minimale': &lt;function _strategie_pente_minimale at 0x430e75a4&gt;, 'pente_moyenne': &lt;function _strategie_pente_moyenne at 0x430e756c&gt;}</em><a class="headerlink" href="#wxgeometrie.geolib.interpolations.Interpolation_polynomiale_par_morceaux.strategies" title="Lien permanent vers cette définition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -3400,22 +3462,22 @@ sur un pas  self.__canvas__.pas().</p>
 
 </dd></dl>
 
-<span class="target" id="module-wxgeometrie.geolib.objet"></span><dl class="attribute">
+<span class="target" id="module-wxgeometrie.geolib.objet"></span><dl class="class">
 <dt id="wxgeometrie.geolib.objet.Argument">
-<tt class="descclassname">wxgeometrie.geolib.objet.</tt><tt class="descname">Argument</tt><a class="headerlink" href="#wxgeometrie.geolib.objet.Argument" title="Lien permanent vers cette définition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">wxgeometrie.geolib.objet.</tt><tt class="descname">Argument</tt><big>(</big><em>types</em>, <em>get_method=None</em>, <em>set_method=None</em>, <em>defaut=None</em><big>)</big><a class="headerlink" href="#wxgeometrie.geolib.objet.Argument" title="Lien permanent vers cette définition">¶</a></dt>
 <dd><p>Un descripteur pour un argument d&#8217;un objet.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="class">
 <dt id="wxgeometrie.geolib.objet.ArgumentNonModifiable">
-<tt class="descclassname">wxgeometrie.geolib.objet.</tt><tt class="descname">ArgumentNonModifiable</tt><a class="headerlink" href="#wxgeometrie.geolib.objet.ArgumentNonModifiable" title="Lien permanent vers cette définition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">wxgeometrie.geolib.objet.</tt><tt class="descname">ArgumentNonModifiable</tt><big>(</big><em>types</em>, <em>get_method=None</em>, <em>set_method=None</em><big>)</big><a class="headerlink" href="#wxgeometrie.geolib.objet.ArgumentNonModifiable" title="Lien permanent vers cette définition">¶</a></dt>
 <dd><p>Un descripteur pour un argument non modifiable d&#8217;un objet.</p>
 <p>Note : un argument non modifiable n&#8217;est pas encapsulé dans un objet &#8216;Ref&#8217;.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="class">
 <dt id="wxgeometrie.geolib.objet.Arguments">
-<tt class="descclassname">wxgeometrie.geolib.objet.</tt><tt class="descname">Arguments</tt><a class="headerlink" href="#wxgeometrie.geolib.objet.Arguments" title="Lien permanent vers cette définition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">wxgeometrie.geolib.objet.</tt><tt class="descname">Arguments</tt><big>(</big><em>types</em>, <em>get_method=None</em>, <em>set_method=None</em>, <em>defaut=None</em><big>)</big><a class="headerlink" href="#wxgeometrie.geolib.objet.Arguments" title="Lien permanent vers cette définition">¶</a></dt>
 <dd><p>Un descripteur pour une liste d&#8217;arguments d&#8217;un objet.</p>
 </dd></dl>
 
@@ -3454,17 +3516,12 @@ D&#8217;où l&#8217;intérêt du cache.</p>
 
 </dd></dl>
 
-<dl class="attribute">
+<dl class="class">
 <dt id="wxgeometrie.geolib.objet.DescripteurFeuille">
-<tt class="descclassname">wxgeometrie.geolib.objet.</tt><tt class="descname">DescripteurFeuille</tt><a class="headerlink" href="#wxgeometrie.geolib.objet.DescripteurFeuille" title="Lien permanent vers cette définition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">wxgeometrie.geolib.objet.</tt><tt class="descname">DescripteurFeuille</tt><a class="headerlink" href="#wxgeometrie.geolib.objet.DescripteurFeuille" title="Lien permanent vers cette définition">¶</a></dt>
 <dd><p>Descripteur gérant l&#8217;attribut &#8216;.feuille&#8217; de la classe &#8216;Objet&#8217;.</p>
 <p>Usage interne.</p>
 </dd></dl>
-
-<dl class="function">
-<dt id="wxgeometrie.geolib.objet.I_">
-<tt class="descclassname">wxgeometrie.geolib.objet.</tt><tt class="descname">I_</tt><big>(</big><big>)</big><a class="headerlink" href="#wxgeometrie.geolib.objet.I_" title="Lien permanent vers cette définition">¶</a></dt>
-<dd></dd></dl>
 
 <dl class="class">
 <dt id="wxgeometrie.geolib.objet.Nom">
@@ -3645,7 +3702,7 @@ l&#8217;objet:</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">D1</span><span class="o">.</span><span class="n">label</span><span class="p">()</span>
 <span class="go">&#39;&#39;</span>
 
-<span class="gp">&gt;&gt;&gt; </span><span class="n">D1</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="n">NOM</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">D1</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s">&#39;nom&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">D1</span><span class="o">.</span><span class="n">label</span><span class="p">())</span>
 <span class="go">$\mathscr{D}_{1}$</span>
 
@@ -3655,9 +3712,9 @@ l&#8217;objet:</p>
 </pre></div>
 </div>
 <p>Si le texte contient des formules entre accolades, elles
-peuvent également être interprétées, si le mode FORMULE
+peuvent également être interprétées, si le mode &#8216;formule&#8217;
 est activé:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">D1</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s">&quot;A a pour abscisse {A.x}.&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">FORMULE</span><span class="p">)</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">D1</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s">&quot;A a pour abscisse {A.x}.&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s">&#39;formule&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">D1</span><span class="o">.</span><span class="n">label</span><span class="p">()</span>
 <span class="go">u&#39;A a pour abscisse -2,7.&#39;</span>
 </pre></div>
@@ -3714,7 +3771,8 @@ utiliser la méthode <cite>.label()</cite>.</p>
 <tt class="descname">on_register</tt><big>(</big><big>)</big><a class="headerlink" href="#wxgeometrie.geolib.objet.Objet.on_register" title="Lien permanent vers cette définition">¶</a></dt>
 <dd><p>Actions à effectuer lorsque l&#8217;objet est enregistré dans la feuille.</p>
 <p>::note:</p>
-<div class="highlight-python"><pre>"Enregistré" signifie que l'objet est explicitement référencé dans la</pre>
+<div class="highlight-python"><div class="highlight"><pre>&quot;Enregistré&quot; signifie que l&#39;objet est explicitement référencé dans la
+</pre></div>
 </div>
 <p>feuille (il a un nom, et apparaît généralement sur le graphique).</p>
 <p>Cette méthode provoque l&#8217;enregistrement sur la feuille des arguments de
@@ -3825,7 +3883,7 @@ d&#8217;affichage:</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Note :</th><td class="field-body">les propriétés sont stockées en interne dans <tt class="docutils literal"><span class="pre">self._style</span></tt>.</td>
+<tr class="field-odd field"><th class="field-name">Note:</th><td class="field-body">les propriétés sont stockées en interne dans <tt class="docutils literal"><span class="pre">self._style</span></tt>.</td>
 </tr>
 </tbody>
 </table>
@@ -3863,7 +3921,7 @@ Le formatage est respecté (essayez &#8216;un&#8217;, &#8216;UN&#8217;, &#8216;U
 
 <dl class="attribute">
 <dt id="wxgeometrie.geolib.objet.Objet.verrou">
-<tt class="descname">verrou</tt><em class="property"> = &lt;wxgeometrie.geolib.objet.Verrou object at 0x5331ad0&gt;</em><a class="headerlink" href="#wxgeometrie.geolib.objet.Objet.verrou" title="Lien permanent vers cette définition">¶</a></dt>
+<tt class="descname">verrou</tt><em class="property"> = &lt;wxgeometrie.geolib.objet.Verrou object at 0x427d386c&gt;</em><a class="headerlink" href="#wxgeometrie.geolib.objet.Objet.verrou" title="Lien permanent vers cette définition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -4139,11 +4197,6 @@ prendra fin.</p>
 <dl class="function">
 <dt id="wxgeometrie.geolib.objet.issympy">
 <tt class="descclassname">wxgeometrie.geolib.objet.</tt><tt class="descname">issympy</tt><big>(</big><em>*expressions</em><big>)</big><a class="headerlink" href="#wxgeometrie.geolib.objet.issympy" title="Lien permanent vers cette définition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="wxgeometrie.geolib.objet.pi_">
-<tt class="descclassname">wxgeometrie.geolib.objet.</tt><tt class="descname">pi_</tt><big>(</big><big>)</big><a class="headerlink" href="#wxgeometrie.geolib.objet.pi_" title="Lien permanent vers cette définition">¶</a></dt>
 <dd></dd></dl>
 
 <span class="target" id="module-wxgeometrie.geolib.points"></span><dl class="class">
@@ -6267,13 +6320,14 @@ u et v doivent être de type list, tuple, array, ou geolib.Vecteur.</p>
 <dd><p>Affiche ou modifie le label (ou étiquette) de l&#8217;objet.</p>
 <p>Si <cite>texte</cite> ou <cite>mode</cite> est spécifié, modifie le contenu du texte,
 et/ou le mode associé, et ne renvoie rien (<cite>None</cite>).</p>
-<p>(Si aucun mode n&#8217;est spécifié, le mode est fixé à <cite>TEXTE</cite>.)</p>
+<p>(Si aucun mode n&#8217;est spécifié, le mode est fixé à <cite>&#8216;texte&#8217;</cite>.)</p>
 <p>Sinon, renvoie le label de l&#8217;objet.</p>
 <p>La signification de la chaine renvoyée dépendra du mode d&#8217;affichage de l&#8217;objet:</p>
-<div class="highlight-python"><pre>- si mode = 0 (`param.RIEN`), renvoie ''
-- si mode = 1 (`param.NOM`), renvoie le nom de l'objet
-- si mode = 2 (`param.TEXTE`), renvoie le label proprement dit de l'objet
-- si mode = 3  (`param.FORMULE`), renvoie le label interprété comme une formule</pre>
+<div class="highlight-python"><div class="highlight"><pre>- si mode = &#39;rien&#39;, renvoie &#39;&#39;
+- si mode = &#39;&#39;nom&#39;&#39;, renvoie le nom de l&#39;objet
+- si mode = &#39;texte&#39;, renvoie le label proprement dit de l&#39;objet
+- si mode = &#39;formule&#39;, renvoie le label interprété comme une formule
+</pre></div>
 </div>
 <p>Note:</p>
 <p>Le mode d&#8217;affichage est accessible en lecture seule via l&#8217;attribut <cite>.mode_affichage</cite>,
@@ -6947,9 +7001,9 @@ lorsque l&#8217;on clique dessus, via la méthode <cite>onLeftClick</cite>.</p>
 (texte à gauche) et <cite>suffixe</cite> (texte à droite).
 On peut également lui associer un résultat attendu,
 via le mot-clef <cite>attendu</cite>:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">wxgeometrie</span> <span class="kn">import</span> <span class="n">Champ</span><span class="p">,</span> <span class="n">RIEN</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">wxgeometrie</span> <span class="kn">import</span> <span class="n">Champ</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">Champ</span><span class="p">(</span><span class="s">&#39;modifiez moi&#39;</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">prefixe</span><span class="o">=</span><span class="s">&quot;1+1=&quot;</span><span class="p">,</span> <span class="n">attendu</span><span class="o">=</span><span class="s">&quot;2&quot;</span><span class="p">,</span>
-<span class="gp">... </span>           <span class="n">formatage</span><span class="o">=</span><span class="n">RIEN</span><span class="p">,</span> <span class="n">suffixe</span><span class="o">=</span><span class="s">&quot; (entrer le resultat)&quot;</span><span class="p">)</span>
+<span class="gp">... </span>           <span class="n">formatage</span><span class="o">=</span><span class="s">&#39;rien&#39;</span><span class="p">,</span> <span class="n">suffixe</span><span class="o">=</span><span class="s">&quot; (entrer le resultat)&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">style</span><span class="p">(</span><span class="s">&quot;attendu&quot;</span><span class="p">)</span>
 <span class="go">&#39;2&#39;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">texte</span> <span class="o">=</span> <span class="s">&#39;?&#39;</span>
@@ -7326,11 +7380,6 @@ Si init = True, le cache des selections est initialise.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="wxgeometrie.GUI.barre_outils.BarreOutils.selectionner_onmotion">
-<tt class="descname">selectionner_onmotion</tt><big>(</big><em>**kw</em><big>)</big><a class="headerlink" href="#wxgeometrie.GUI.barre_outils.BarreOutils.selectionner_onmotion" title="Lien permanent vers cette définition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
 <dt id="wxgeometrie.GUI.barre_outils.BarreOutils.style">
 <tt class="descname">style</tt><big>(</big><em>type_objet</em><big>)</big><a class="headerlink" href="#wxgeometrie.GUI.barre_outils.BarreOutils.style" title="Lien permanent vers cette définition">¶</a></dt>
 <dd><p>Retourne le style d&#8217;objet défini éventuellement dans les paramètres du module.</p>
@@ -7398,11 +7447,6 @@ de la feuille (la feuille a pu changer, ou un objet être supprimé).</p>
 <tt class="descname">zoombox</tt><big>(</big><em>event=False</em>, <em>**kw</em><big>)</big><a class="headerlink" href="#wxgeometrie.GUI.barre_outils.BarreOutils.zoombox" title="Lien permanent vers cette définition">¶</a></dt>
 <dd><p>Mode zoom.</p>
 </dd></dl>
-
-<dl class="method">
-<dt id="wxgeometrie.GUI.barre_outils.BarreOutils.zoombox_onmotion">
-<tt class="descname">zoombox_onmotion</tt><big>(</big><em>**kw</em><big>)</big><a class="headerlink" href="#wxgeometrie.GUI.barre_outils.BarreOutils.zoombox_onmotion" title="Lien permanent vers cette définition">¶</a></dt>
-<dd></dd></dl>
 
 </dd></dl>
 
@@ -7479,7 +7523,21 @@ Cela sert pour le bouton sauvegarde par exemple.</p>
 <dl class="method">
 <dt id="wxgeometrie.GUI.dialogues_geometrie.Dialogue.ajoute">
 <tt class="descname">ajoute</tt><big>(</big><em>contenu</em>, <em>aide=''</em><big>)</big><a class="headerlink" href="#wxgeometrie.GUI.dialogues_geometrie.Dialogue.ajoute" title="Lien permanent vers cette définition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Ajoute une ligne de contenu dans la boite de dialogue.</p>
+<p>Format du contenu : (&#8220;texte statique&#8221;,(&#8220;nom de champ&#8221;, taille), etc...)
+Exemple : (&#8220;entrez l&#8217;abscisse :&#8221;,(&#8220;absc&#8221;,10),&#8221;cm&#8221;)
+Pour un champ, un 3e argument peut-être indiqué pour donner le type d&#8217;objet,
+s&#8217;il s&#8217;agit d&#8217;un objet géométrique (ou None).
+Un 4e argument peut-etre saisi, pour donner le comportement en cas d&#8217;agrandissement,
+et un 5e, pour indiquer une valeur initiale du champ.
+Le champ créé sera accessible via self.champ(&#8220;abcs&#8221;).</p>
+<p>L&#8217;argument type d&#8217;objet sert à faire des propositions à l&#8217;utilisateur lors d&#8217;un clic du milieu.</p>
+<p>Le type d&#8217;objet peut-être compris dans une liste d&#8217;un seul élement, par exemple : [Point_generique]
+Cela signifie alors que le champ doit contenir une liste de points, et non un seul point.</p>
+<p>A noter qu&#8217;un tuple, comme (Point_generique, Vecteur), par contre,
+correspond au comportement habituel de Python:
+l&#8217;objet est soit un Point_generique, soit un Vecteur</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="wxgeometrie.GUI.dialogues_geometrie.Dialogue.champ">
@@ -7509,7 +7567,7 @@ Cela sert pour le bouton sauvegarde par exemple.</p>
 <dl class="method">
 <dt id="wxgeometrie.GUI.dialogues_geometrie.Dialogue.right_click">
 <tt class="descname">right_click</tt><big>(</big><em>type</em>, <em>champ</em><big>)</big><a class="headerlink" href="#wxgeometrie.GUI.dialogues_geometrie.Dialogue.right_click" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><p>Retourne une fonction qui sera executée lors d&#8217;un clic avec le bouton du milieu sur le champ &#8216;champ&#8217;.</p>
+<dd><p>Retourne une fonction qui sera executée lors d&#8217;un clic droit sur le champ &#8216;champ&#8217;.</p>
 </dd></dl>
 
 </dd></dl>
@@ -8032,21 +8090,6 @@ Cela sert pour le bouton sauvegarde par exemple.</p>
 </dd></dl>
 
 <dl class="class">
-<dt id="wxgeometrie.GUI.dialogues_geometrie.DialogueReperage">
-<em class="property">class </em><tt class="descclassname">wxgeometrie.GUI.dialogues_geometrie.</tt><tt class="descname">DialogueReperage</tt><big>(</big><em>parent</em><big>)</big><a class="headerlink" href="#wxgeometrie.GUI.dialogues_geometrie.DialogueReperage" title="Lien permanent vers cette définition">¶</a></dt>
-<dd><dl class="method">
-<dt id="wxgeometrie.GUI.dialogues_geometrie.DialogueReperage.EvtRestaurer">
-<tt class="descname">EvtRestaurer</tt><big>(</big><big>)</big><a class="headerlink" href="#wxgeometrie.GUI.dialogues_geometrie.DialogueReperage.EvtRestaurer" title="Lien permanent vers cette définition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="wxgeometrie.GUI.dialogues_geometrie.DialogueReperage.commande">
-<tt class="descname">commande</tt><big>(</big><big>)</big><a class="headerlink" href="#wxgeometrie.GUI.dialogues_geometrie.DialogueReperage.commande" title="Lien permanent vers cette définition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="class">
 <dt id="wxgeometrie.GUI.dialogues_geometrie.DialogueRepresentant">
 <em class="property">class </em><tt class="descclassname">wxgeometrie.GUI.dialogues_geometrie.</tt><tt class="descname">DialogueRepresentant</tt><big>(</big><em>parent</em><big>)</big><a class="headerlink" href="#wxgeometrie.GUI.dialogues_geometrie.DialogueRepresentant" title="Lien permanent vers cette définition">¶</a></dt>
 <dd><dl class="attribute">
@@ -8557,7 +8600,7 @@ la classe Panel_API_graphique, plus evoluée que celle-ci.</p>
 
 <dl class="method">
 <dt id="wxgeometrie.GUI.panel.Panel_simple.param">
-<tt class="descname">param</tt><big>(</big><em>parametre</em>, <em>valeur=&lt;wxgeometrie.pylib.fonctions.NoArgument object at 0x450d690&gt;</em>, <em>defaut=False</em><big>)</big><a class="headerlink" href="#wxgeometrie.GUI.panel.Panel_simple.param" title="Lien permanent vers cette définition">¶</a></dt>
+<tt class="descname">param</tt><big>(</big><em>parametre</em>, <em>valeur=&lt;wxgeometrie.pylib.fonctions.NoArgument object at 0x427aef0c&gt;</em>, <em>defaut=False</em><big>)</big><a class="headerlink" href="#wxgeometrie.GUI.panel.Panel_simple.param" title="Lien permanent vers cette définition">¶</a></dt>
 <dd><p>Renvoie la valeur du paramètre <cite>parametre</cite>.</p>
 <p>Recherche la valeur d&#8217;un paramètre d&#8217;abord dans les paramètres du module
 _(paramètres locaux), puis dans ceux de wxgéométrie.
@@ -8636,11 +8679,6 @@ mode = 1: édition de l&#8217;étiquette de l&#8217;objet</p>
 <dd><dl class="method">
 <dt id="wxgeometrie.GUI.qtcanvas.QtCanvas.Copy_to_Clipboard">
 <tt class="descname">Copy_to_Clipboard</tt><big>(</big><em>**kw</em><big>)</big><a class="headerlink" href="#wxgeometrie.GUI.qtcanvas.QtCanvas.Copy_to_Clipboard" title="Lien permanent vers cette définition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="wxgeometrie.GUI.qtcanvas.QtCanvas.OnSelect">
-<tt class="descname">OnSelect</tt><big>(</big><em>x0</em>, <em>x1</em>, <em>y0</em>, <em>y1</em><big>)</big><a class="headerlink" href="#wxgeometrie.GUI.qtcanvas.QtCanvas.OnSelect" title="Lien permanent vers cette définition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -8738,6 +8776,11 @@ le module doit définir :</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="wxgeometrie.GUI.qtcanvas.QtCanvas.interrompre_action_en_cours">
+<tt class="descname">interrompre_action_en_cours</tt><big>(</big><big>)</big><a class="headerlink" href="#wxgeometrie.GUI.qtcanvas.QtCanvas.interrompre_action_en_cours" title="Lien permanent vers cette définition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="wxgeometrie.GUI.qtcanvas.QtCanvas.keyPressEvent">
 <tt class="descname">keyPressEvent</tt><big>(</big><em>event</em><big>)</big><a class="headerlink" href="#wxgeometrie.GUI.qtcanvas.QtCanvas.keyPressEvent" title="Lien permanent vers cette définition">¶</a></dt>
 <dd></dd></dl>
@@ -8753,19 +8796,14 @@ le module doit définir :</p>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="wxgeometrie.GUI.qtcanvas.QtCanvas.left_down">
-<tt class="descname">left_down</tt><big>(</big><em>event</em><big>)</big><a class="headerlink" href="#wxgeometrie.GUI.qtcanvas.QtCanvas.left_down" title="Lien permanent vers cette définition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="wxgeometrie.GUI.qtcanvas.QtCanvas.left_up">
-<tt class="descname">left_up</tt><big>(</big><em>event</em><big>)</big><a class="headerlink" href="#wxgeometrie.GUI.qtcanvas.QtCanvas.left_up" title="Lien permanent vers cette définition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
 <dt id="wxgeometrie.GUI.qtcanvas.QtCanvas.message">
 <tt class="descname">message</tt><big>(</big><em>txt</em>, <em>lieu=0</em>, <em>temporaire=True</em><big>)</big><a class="headerlink" href="#wxgeometrie.GUI.qtcanvas.QtCanvas.message" title="Lien permanent vers cette définition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Affiche un message dans la barre d&#8217;état.</p>
+<p>Par défaut, le message est temporaire, c&#8217;est-à-dire qu&#8217;il sera effacé
+dès que l&#8217;utilisateur bougera la souris, pour laisser la place au
+message « permanent », qui indique généralement le mode actif.</p>
+<p>Cette méthode retourne le message « permanent » actuel.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="wxgeometrie.GUI.qtcanvas.QtCanvas.mouseDoubleClickEvent">
@@ -8788,6 +8826,31 @@ le module doit définir :</p>
 <dd></dd></dl>
 
 <dl class="method">
+<dt id="wxgeometrie.GUI.qtcanvas.QtCanvas.onLeftDown">
+<tt class="descname">onLeftDown</tt><big>(</big><em>event</em><big>)</big><a class="headerlink" href="#wxgeometrie.GUI.qtcanvas.QtCanvas.onLeftDown" title="Lien permanent vers cette définition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="wxgeometrie.GUI.qtcanvas.QtCanvas.onLeftUp">
+<tt class="descname">onLeftUp</tt><big>(</big><em>event</em><big>)</big><a class="headerlink" href="#wxgeometrie.GUI.qtcanvas.QtCanvas.onLeftUp" title="Lien permanent vers cette définition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="wxgeometrie.GUI.qtcanvas.QtCanvas.onRightDown">
+<tt class="descname">onRightDown</tt><big>(</big><em>event</em><big>)</big><a class="headerlink" href="#wxgeometrie.GUI.qtcanvas.QtCanvas.onRightDown" title="Lien permanent vers cette définition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="wxgeometrie.GUI.qtcanvas.QtCanvas.onRightUp">
+<tt class="descname">onRightUp</tt><big>(</big><em>event</em><big>)</big><a class="headerlink" href="#wxgeometrie.GUI.qtcanvas.QtCanvas.onRightUp" title="Lien permanent vers cette définition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="wxgeometrie.GUI.qtcanvas.QtCanvas.onSelect">
+<tt class="descname">onSelect</tt><big>(</big><big>)</big><a class="headerlink" href="#wxgeometrie.GUI.qtcanvas.QtCanvas.onSelect" title="Lien permanent vers cette définition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="wxgeometrie.GUI.qtcanvas.QtCanvas.param">
 <tt class="descname">param</tt><big>(</big><em>*args</em>, <em>**kw</em><big>)</big><a class="headerlink" href="#wxgeometrie.GUI.qtcanvas.QtCanvas.param" title="Lien permanent vers cette définition">¶</a></dt>
 <dd></dd></dl>
@@ -8798,24 +8861,27 @@ le module doit définir :</p>
 <dd></dd></dl>
 
 <dl class="method">
+<dt id="wxgeometrie.GUI.qtcanvas.QtCanvas.regler_repere">
+<tt class="descname">regler_repere</tt><big>(</big><em>event=None</em><big>)</big><a class="headerlink" href="#wxgeometrie.GUI.qtcanvas.QtCanvas.regler_repere" title="Lien permanent vers cette définition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="wxgeometrie.GUI.qtcanvas.QtCanvas.resizeEvent">
 <tt class="descname">resizeEvent</tt><big>(</big><em>event</em><big>)</big><a class="headerlink" href="#wxgeometrie.GUI.qtcanvas.QtCanvas.resizeEvent" title="Lien permanent vers cette définition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="wxgeometrie.GUI.qtcanvas.QtCanvas.right_down">
-<tt class="descname">right_down</tt><big>(</big><em>event</em><big>)</big><a class="headerlink" href="#wxgeometrie.GUI.qtcanvas.QtCanvas.right_down" title="Lien permanent vers cette définition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="wxgeometrie.GUI.qtcanvas.QtCanvas.right_up">
-<tt class="descname">right_up</tt><big>(</big><em>event</em><big>)</big><a class="headerlink" href="#wxgeometrie.GUI.qtcanvas.QtCanvas.right_up" title="Lien permanent vers cette définition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="wxgeometrie.GUI.qtcanvas.QtCanvas.signal">
 <tt class="descname">signal</tt><big>(</big><em>event=None</em><big>)</big><a class="headerlink" href="#wxgeometrie.GUI.qtcanvas.QtCanvas.signal" title="Lien permanent vers cette définition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="method">
+<dt id="wxgeometrie.GUI.qtcanvas.QtCanvas.test_mode">
+<tt class="descname">test_mode</tt><big>(</big><em>event</em><big>)</big><a class="headerlink" href="#wxgeometrie.GUI.qtcanvas.QtCanvas.test_mode" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Retourne le mode (&#8216;defaut&#8217;, &#8216;select&#8217; ou &#8216;zoom&#8217;).</p>
+<p>La méthode <cite>.test_mode()</cite> ne tient pas seulement compte de self.mode,
+mais aussi des touches pressées (CTRL, ALT...), et de self.fixe.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="wxgeometrie.GUI.qtcanvas.QtCanvas.wheelEvent">
@@ -10130,7 +10196,7 @@ affichées), la fonction renvoie False, sinon, True.</p>
             <p class="logo"><a href="index.html">
               <img class="logo" src="_static/geophar-icone.png" alt="Logo"/>
             </a></p>
-  <h3><a href="index.html">Table des matières</a></h3>
+  <h3><a href="index.html">Table des Matières</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Autodoc</a><ul>
 <li><a class="reference internal" href="#module-wxgeometrie">wxgeo</a></li>
@@ -10181,12 +10247,12 @@ affichées), la fonction renvoie False, sinon, True.</p>
         <li class="right" >
           <a href="format.geo.html" title="Formats de fichiers"
              >précédent</a> |</li>
-        <li><a href="index.html">Geophar 14.04 documentation</a> &raquo;</li> 
+        <li><a href="index.html">documentation Geophar 14.08.1</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2005-2012, N.Pourcelot.
-      Créé avec <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+      Créé avec <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
     </div>
   </body>
 </html>

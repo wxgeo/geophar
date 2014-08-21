@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -8,15 +6,15 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Manuel de l’utilisateur &mdash; Geophar 14.04 documentation</title>
+    <title>Manuel de l’utilisateur &mdash; documentation Geophar 14.08.1</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '',
-        VERSION:     '14.04',
+        URL_ROOT:    './',
+        VERSION:     '14.08.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -27,7 +25,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="_static/translations.js"></script>
     <script type="text/javascript" src="_static/jsMath/easy/load.js"></script>
-    <link rel="top" title="Geophar 14.04 documentation" href="index.html" />
+    <link rel="top" title="documentation Geophar 14.08.1" href="index.html" />
     <link rel="next" title="Manuel du développeur" href="api.html" />
     <link rel="prev" title="Documentation de Geophar" href="index.html" /> 
   </head>
@@ -47,7 +45,7 @@
         <li class="right" >
           <a href="index.html" title="Documentation de Geophar"
              accesskey="P">précédent</a> |</li>
-        <li><a href="index.html">Geophar 14.04 documentation</a> &raquo;</li> 
+        <li><a href="index.html">documentation Geophar 14.08.1</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -57,61 +55,54 @@
           <div class="body">
             
   <div class="section" id="manuel-de-l-utilisateur">
-<h1><a class="toc-backref" href="#id14">Manuel de l&#8217;utilisateur</a><a class="headerlink" href="#manuel-de-l-utilisateur" title="Lien permanent vers ce titre">¶</a></h1>
+<h1><a class="toc-backref" href="#id9">Manuel de l&#8217;utilisateur</a><a class="headerlink" href="#manuel-de-l-utilisateur" title="Lien permanent vers ce titre">¶</a></h1>
 <p><em>Copyright © 2005-2013 Nicolas Pourcelot</em></p>
 <p>Informations complémentaires : <a class="reference external" href="http://">http://</a><a class="reference external" href="http://wxgeo.free.fr">wxgeo.free.fr</a></p>
 <div class="contents topic" id="sommaire">
 <p class="topic-title first"><strong>Sommaire :</strong></p>
 <ul class="simple">
-<li><a class="reference internal" href="#manuel-de-l-utilisateur" id="id14">Manuel de l&#8217;utilisateur</a><ul>
-<li><a class="reference internal" href="#licence" id="id15">Licence</a></li>
-<li><a class="reference internal" href="#installation" id="id16">Installation</a></li>
-<li><a class="reference internal" href="#description-des-differents-modules" id="id17">Description des différents modules</a><ul>
-<li><a class="reference internal" href="#le-module-de-geometrie-dynamique" id="id18">Le module de géométrie dynamique</a><ul>
-<li><a class="reference internal" href="#pilotage-avec-la-souris" id="id19">Pilotage avec la souris</a></li>
-<li><a class="reference internal" href="#creation-d-objets-via-le-menu-creer" id="id20">Création d&#8217;objets via le menu «Créer»</a></li>
-<li><a class="reference internal" href="#choisir-le-mode-d-affichage-de-l-etiquette-d-un-objet" id="id21">Choisir le mode d&#8217;affichage de l&#8217;étiquette d&#8217;un objet</a></li>
-<li><a class="reference internal" href="#la-ligne-de-commande" id="id22">La ligne de commande</a></li>
+<li><a class="reference internal" href="#manuel-de-l-utilisateur" id="id9">Manuel de l&#8217;utilisateur</a><ul>
+<li><a class="reference internal" href="#licence" id="id10">Licence</a></li>
+<li><a class="reference internal" href="#installation" id="id11">Installation</a><ul>
+<li><a class="reference internal" href="#sous-windows" id="id12">Sous Windows</a></li>
+<li><a class="reference internal" href="#sous-macos-x" id="id13">Sous MacOS X</a></li>
+<li><a class="reference internal" href="#sous-linux" id="id14">Sous Linux</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#le-traceur-de-courbes" id="id23">Le traceur de courbes</a></li>
-<li><a class="reference internal" href="#la-calculatrice" id="id24">La calculatrice</a></li>
-<li><a class="reference internal" href="#le-module-statistiques" id="id25">Le module statistiques</a><ul>
-<li><a class="reference internal" href="#diagrammes-en-barres" id="id26">Diagrammes en barres :</a></li>
-<li><a class="reference internal" href="#diagrammes-en-batons" id="id27">Diagrammes en bâtons :</a></li>
-<li><a class="reference internal" href="#histogrammes" id="id28">Histogrammes :</a></li>
-<li><a class="reference internal" href="#diagrammes-en-boites" id="id29">Diagrammes en boites :</a></li>
-<li><a class="reference internal" href="#pour-aller-plus-loin" id="id30">Pour aller plus loin :</a></li>
+<li><a class="reference internal" href="#description-des-differents-modules" id="id15">Description des différents modules</a><ul>
+<li><a class="reference internal" href="#pilotage-avec-la-souris" id="id16">Pilotage avec la souris</a></li>
+<li><a class="reference internal" href="#creation-d-objets-via-le-menu-creer" id="id17">Création d&#8217;objets via le menu «Créer»</a></li>
+<li><a class="reference internal" href="#choisir-le-mode-d-affichage-de-l-etiquette-d-un-objet" id="id18">Choisir le mode d&#8217;affichage de l&#8217;étiquette d&#8217;un objet</a></li>
+<li><a class="reference internal" href="#la-ligne-de-commande" id="id19">La ligne de commande</a><ul>
+<li><a class="reference internal" href="#le-traceur-de-courbes" id="id20">Le traceur de courbes</a></li>
+<li><a class="reference internal" href="#la-calculatrice" id="id21">La calculatrice</a></li>
+<li><a class="reference internal" href="#le-module-statistiques" id="id22">Le module statistiques</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#le-generateur-d-arbres-de-probabilites" id="id31">Le générateur d&#8217;arbres de probabilités</a></li>
-<li><a class="reference internal" href="#le-generateur-de-tableaux-latex" id="id32">Le générateur de tableaux LaTeX</a><ul>
-<li><a class="reference internal" href="#presentation-generale" id="id33">Présentation générale</a></li>
-<li><a class="reference internal" href="#tableaux-de-variations" id="id34">Tableaux de variations</a></li>
-<li><a class="reference internal" href="#tableaux-de-signes" id="id35">Tableaux de signes</a></li>
-<li><a class="reference internal" href="#tableau-de-valeurs" id="id36">Tableau de valeurs</a><ul>
-<li><a class="reference internal" href="#mode-automatique" id="id37">Mode automatique</a></li>
-<li><a class="reference internal" href="#mode-expert" id="id38">Mode « expert »</a></li>
+<li><a class="reference internal" href="#diagrammes-en-barres" id="id23">Diagrammes en barres :</a></li>
+<li><a class="reference internal" href="#diagrammes-en-batons" id="id24">Diagrammes en bâtons :</a></li>
+<li><a class="reference internal" href="#histogrammes" id="id25">Histogrammes :</a></li>
+<li><a class="reference internal" href="#diagrammes-en-boites" id="id26">Diagrammes en boites :</a></li>
+<li><a class="reference internal" href="#pour-aller-plus-loin" id="id27">Pour aller plus loin :</a><ul>
+<li><a class="reference internal" href="#le-generateur-d-arbres-de-probabilites" id="id28">Le générateur d&#8217;arbres de probabilités</a></li>
+<li><a class="reference internal" href="#le-generateur-de-tableaux-latex" id="id29">Le générateur de tableaux LaTeX</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#presentation-generale" id="id30">Présentation générale</a></li>
+<li><a class="reference internal" href="#tableaux-de-variations" id="id31">Tableaux de variations</a></li>
+<li><a class="reference internal" href="#tableaux-de-signes" id="id32">Tableaux de signes</a></li>
+<li><a class="reference internal" href="#tableau-de-valeurs" id="id33">Tableau de valeurs</a></li>
 </ul>
 </li>
-</ul>
-</li>
-<li><a class="reference internal" href="#utilisation-avancee" id="id39">Utilisation avancée</a><ul>
-<li><a class="reference internal" href="#le-fichier-param-py" id="id40">Le fichier param.py</a></li>
-<li><a class="reference internal" href="#debogage" id="id41">Débogage</a></li>
-<li><a class="reference internal" href="#id10" id="id42">La ligne de commande</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#comment-contribuer" id="id43">Comment contribuer ?</a></li>
-<li><a class="reference internal" href="#remerciements" id="id44">Remerciements</a></li>
+<li><a class="reference internal" href="#utilisation-avancee" id="id34">Utilisation avancée</a></li>
+<li><a class="reference internal" href="#comment-contribuer" id="id35">Comment contribuer ?</a></li>
+<li><a class="reference internal" href="#remerciements" id="id36">Remerciements</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="section" id="licence">
-<h2><a class="toc-backref" href="#id15">Licence</a><a class="headerlink" href="#licence" title="Lien permanent vers ce titre">¶</a></h2>
+<h2><a class="toc-backref" href="#id10">Licence</a><a class="headerlink" href="#licence" title="Lien permanent vers ce titre">¶</a></h2>
 <p>Géophar, anciennement nommé WxGéométrie, est un <strong>logiciel libre</strong> : vous êtes encouragés à le partager autour de vous, ou même le modifier, selon les termes de la licence ci-dessous (GNU Public License version 2).</p>
 <p><em>This program is free software; you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free Software
@@ -137,42 +128,56 @@ temps que ce programme. Si ce n&#8217;est pas le cas, écrivez a l&#8217;adresse
 02110-1301</em></p>
 </div>
 <div class="section" id="installation">
-<h2><a class="toc-backref" href="#id16">Installation</a><a class="headerlink" href="#installation" title="Lien permanent vers ce titre">¶</a></h2>
-<p>Pour fonctionner, ce programme nécessite la configuration logicielle suivante:</p>
-<ul>
-<li><p class="first">Windows XP ou supérieur, ou une distribution Linux récente.</p>
-<p><em>L&#8217;installation sous MacOs X est possible mais un peu  technique semble-t-il</em>.</p>
-</li>
-<li><p class="first">Les logiciels suivants, tous libres et gratuits:</p>
-<ul class="simple">
-<li>le logiciel <a class="reference external" href="http://www.python.org">Python</a>, version 2.6 ou supérieure.</li>
-</ul>
-<p><em>Sous Linux, une version récente est en principe déjà présente</em>.</p>
-<ul class="simple">
-<li>La librairie graphique <a class="reference external" href="http://www.riverbankcomputing.co.uk/software/pyqt/download">PyQt</a>, version 4.6 ou supérieure.</li>
-</ul>
-<ul class="simple">
-<li>La librairie mathématique <a class="reference external" href="http://sourceforge.net/projects/numpy/">numpy</a></li>
-</ul>
-<ul class="simple">
-<li>La librairie mathématique <a class="reference external" href="http://www.sourceforge.net/projects/matplotlib">Matplotlib</a>, version 1.0 ou supérieure</li>
-</ul>
-</li>
-</ul>
-<p><em>Remarque</em> : ces logiciels doivent être installés dans l&#8217;ordre mentionné.</p>
-<p>Sous Windows, un redémarrage du système est conseillé après ces installations.</p>
-<p>Après avoir téléchargé la dernière version de <a class="reference external" href="http://www.sourceforge.net/projects/geophar">Géophar</a>, dézippez l&#8217;archive dans
-un répertoire sur lequel vous avez les permissions nécessaires.
-Vous pouvez lancer le programme en double-cliquant sur le fichier <em>wxgeometrie.pyw</em> .</p>
-<p><em>Sous Windows :</em></p>
-<p>La version conseillée est désormais la version <strong>sans installation</strong>,
-qui ne nécessite <strong>pas</strong> d&#8217;avoir installé Python ni les logiciels précédemment mentionnés.</p>
-<p>Il suffit de récupérer un fichier archive, qui va s&#8217;extraire automatiquement en double-cliquant dessus.</p>
-<p>Cette version peut fonctionner facilement sur une simple clé USB, ou sur un ordinateur
-sur lequel on n&#8217;a pas la permission d&#8217;installer des programmes.</p>
+<h2><a class="toc-backref" href="#id11">Installation</a><a class="headerlink" href="#installation" title="Lien permanent vers ce titre">¶</a></h2>
+<p>Téléchargez la dernière version de Géophar sur <a class="reference external" href="http://sourceforge.net/projects/geophar/files/latest/download">Sourceforge</a>.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>Une version sans installation est proposée par défaut sous Windows et Mac.
+Son usage est vivement conseillé.</p>
+<p class="last">Cette version peut fonctionner facilement sur une simple clé USB
+ou sur un ordinateur sur lequel on n&#8217;a pas la permission
+d&#8217;installer des programmes.</p>
+</div>
+<div class="section" id="sous-windows">
+<h3><a class="toc-backref" href="#id12">Sous Windows</a><a class="headerlink" href="#sous-windows" title="Lien permanent vers ce titre">¶</a></h3>
+<p>Double cliquez sur le fichier téléchargé et choisissez dans quel répertoire
+vous souhaitez extraire le programme.</p>
+<p>Entrez alors dans le dossier <cite>geophar</cite> du répertoire choisi précédemment et lancez <cite>geophar.exe</cite>.</p>
+</div>
+<div class="section" id="sous-macos-x">
+<h3><a class="toc-backref" href="#id13">Sous MacOS X</a><a class="headerlink" href="#sous-macos-x" title="Lien permanent vers ce titre">¶</a></h3>
+<p>Géophar est fourni directement sous forme de fichier DMG.</p>
+<p>Il suffit donc de double cliquer sur le fichier téléchargé.</p>
+</div>
+<div class="section" id="sous-linux">
+<h3><a class="toc-backref" href="#id14">Sous Linux</a><a class="headerlink" href="#sous-linux" title="Lien permanent vers ce titre">¶</a></h3>
+<p>Vous pouvez commencer par tester Géophar sans l&#8217;installer.</p>
+<p>Placez vous dans le répertoire où se trouve l&#8217;archive téléchargée.</p>
+<p>Tapez alors les commandes suivantes dans le terminal :</p>
+<div class="highlight-python"><div class="highlight"><pre>tar -zxvf geophar_*.gz
+cd geophar
+python geophar.pyw
+</pre></div>
+</div>
+<p>Si des librairies manquent, leur installation sera automatiquement proposée.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>Si vous souhaitez installer Géophar (création d&#8217;un raccourci
+sur le bureau, reconnaissance des fichiers .geo, etc.),
+placez vous dans le répertoire où se trouve Géophar.</p>
+<p>Tapez alors la commande suivante dans le terminal :</p>
+<div class="highlight-python"><div class="highlight"><pre>python tools/linux-install.py
+</pre></div>
+</div>
+<p>Vous pourrez ensuite le désinstaller à l&#8217;aide de la commande suivante :</p>
+<div class="last highlight-python"><div class="highlight"><pre>python tools/linux-uninstall.py
+</pre></div>
+</div>
+</div>
+</div>
 </div>
 <div class="section" id="description-des-differents-modules">
-<h2><a class="toc-backref" href="#id17">Description des différents modules</a><a class="headerlink" href="#description-des-differents-modules" title="Lien permanent vers ce titre">¶</a></h2>
+<h2><a class="toc-backref" href="#id15">Description des différents modules</a><a class="headerlink" href="#description-des-differents-modules" title="Lien permanent vers ce titre">¶</a></h2>
 <p>Géophar est composée de plusieurs modules ; il contient entre autres les modules suivant :</p>
 <ul class="simple">
 <li>Un module de géométrie dynamique.</li>
@@ -187,10 +192,8 @@ sur lequel on n&#8217;a pas la permission d&#8217;installer des programmes.</p>
 Toutes les fonctionnalités du module de géométrie dynamique sont utilisables
 dans le traceur de courbes ; elles sont aussi (en partie) utilisables dans le
 module de statistiques.</p>
-<div class="section" id="le-module-de-geometrie-dynamique">
-<h3><a class="toc-backref" href="#id18">Le module de géométrie dynamique</a><a class="headerlink" href="#le-module-de-geometrie-dynamique" title="Lien permanent vers ce titre">¶</a></h3>
 <div class="section" id="pilotage-avec-la-souris">
-<h4><a class="toc-backref" href="#id19">Pilotage avec la souris</a><a class="headerlink" href="#pilotage-avec-la-souris" title="Lien permanent vers ce titre">¶</a></h4>
+<h3><a class="toc-backref" href="#id16">Pilotage avec la souris</a><a class="headerlink" href="#pilotage-avec-la-souris" title="Lien permanent vers ce titre">¶</a></h3>
 <p>Vous pouvez pour l&#8217;instant faire les actions suivantes :</p>
 <ul class="simple">
 <li>créer une nouvelle feuille</li>
@@ -233,7 +236,7 @@ choisir par exemple &#8220;Super&#8221; comme &#8220;touche de mouvement&#8221;)
 </div>
 </div>
 <div class="section" id="creation-d-objets-via-le-menu-creer">
-<h4><a class="toc-backref" href="#id20">Création d&#8217;objets via le menu «Créer»</a><a class="headerlink" href="#creation-d-objets-via-le-menu-creer" title="Lien permanent vers ce titre">¶</a></h4>
+<h3><a class="toc-backref" href="#id17">Création d&#8217;objets via le menu «Créer»</a><a class="headerlink" href="#creation-d-objets-via-le-menu-creer" title="Lien permanent vers ce titre">¶</a></h3>
 <p>Pour la création des objets géométriques, il existe une abondante aide
 contextuelle dans chaque fenêtre de création d&#8217;objet.</p>
 <p>Cliquez sur le point d&#8217;interrogation en haut de la fenêtre, puis sur un
@@ -249,7 +252,7 @@ champ, pour obtenir une aide détaillée.</p>
 </div>
 </div>
 <div class="section" id="choisir-le-mode-d-affichage-de-l-etiquette-d-un-objet">
-<h4><a class="toc-backref" href="#id21">Choisir le mode d&#8217;affichage de l&#8217;étiquette d&#8217;un objet</a><a class="headerlink" href="#choisir-le-mode-d-affichage-de-l-etiquette-d-un-objet" title="Lien permanent vers ce titre">¶</a></h4>
+<h3><a class="toc-backref" href="#id18">Choisir le mode d&#8217;affichage de l&#8217;étiquette d&#8217;un objet</a><a class="headerlink" href="#choisir-le-mode-d-affichage-de-l-etiquette-d-un-objet" title="Lien permanent vers ce titre">¶</a></h3>
 <p>Vous remarquerez que chaque objet possède quatre modes d&#8217;affichage : nom,
 texte, formule, ou aucun.</p>
 <img alt="&quot;Fenêtre de propriété&quot;" class="align-center" src="_images/ptes_objets.png" />
@@ -279,7 +282,7 @@ blocs à interpréter entre { }.</p>
 </ul>
 </div>
 <div class="section" id="la-ligne-de-commande">
-<h4><a class="toc-backref" href="#id22">La ligne de commande</a><a class="headerlink" href="#la-ligne-de-commande" title="Lien permanent vers ce titre">¶</a></h4>
+<h3><a class="toc-backref" href="#id19">La ligne de commande</a><a class="headerlink" href="#la-ligne-de-commande" title="Lien permanent vers ce titre">¶</a></h3>
 <p>Elle permet de créer rapidement des objet géométriques. (Personnellement, je
 l&#8217;utilise fréquemment).</p>
 <p>Elle fonctionne dans le module géométrie, dans le module traceur, et dans le
@@ -317,10 +320,8 @@ module statistiques.</p>
 <p>Les droites, les cercles et les courbes de fonctions peuvent également être créés par la donnée d&#8217;une équation.</p>
 <p><em>Exemple :</em></p>
 <p>« <tt class="docutils literal"><span class="pre">y</span> <span class="pre">=</span> <span class="pre">2x</span> <span class="pre">+</span> <span class="pre">1</span></tt> », « <tt class="docutils literal"><span class="pre">y</span> <span class="pre">=</span> <span class="pre">ln(x)</span></tt> », « <tt class="docutils literal"><span class="pre">x²</span> <span class="pre">-</span> <span class="pre">6x</span> <span class="pre">+</span> <span class="pre">y²</span> <span class="pre">+</span> <span class="pre">2y</span> <span class="pre">+</span> <span class="pre">5</span> <span class="pre">=</span> <span class="pre">0</span></tt> »</p>
-</div>
-</div>
 <div class="section" id="le-traceur-de-courbes">
-<h3><a class="toc-backref" href="#id23">Le traceur de courbes</a><a class="headerlink" href="#le-traceur-de-courbes" title="Lien permanent vers ce titre">¶</a></h3>
+<h4><a class="toc-backref" href="#id20">Le traceur de courbes</a><a class="headerlink" href="#le-traceur-de-courbes" title="Lien permanent vers ce titre">¶</a></h4>
 <p>Vous pouvez pour l&#8217;instant faire les actions suivantes :</p>
 <ul class="simple">
 <li>régler la fenêtre d&#8217;affichage</li>
@@ -356,7 +357,7 @@ deuxième avec l&#8217;intervalle de définition, c&#8217;est-à-dire <cite>R-{0
 </div>
 </div>
 <div class="section" id="la-calculatrice">
-<h3><a class="toc-backref" href="#id24">La calculatrice</a><a class="headerlink" href="#la-calculatrice" title="Lien permanent vers ce titre">¶</a></h3>
+<h4><a class="toc-backref" href="#id21">La calculatrice</a><a class="headerlink" href="#la-calculatrice" title="Lien permanent vers ce titre">¶</a></h4>
 <p>Son fonctionnement sera assez familier pour quiconque a déjà utilisé une calculatrice scientifique.
 Elle permet de travailler sur des nombres réels ou complexes, et de faire du calcul formel de niveau lycée.</p>
 <p>En particulier, on peut développer, factoriser, dériver, intégrer, et résoudre des (in)équations ou des systèmes linéaires :</p>
@@ -404,7 +405,7 @@ Les différents arguments des fonctions sont séparés par des points-virgules
 entre 1,2 et 1,7, lorsque X suit une loi normale N(0;1).</div></blockquote>
 </div>
 <div class="section" id="le-module-statistiques">
-<h3><a class="toc-backref" href="#id25">Le module statistiques</a><a class="headerlink" href="#le-module-statistiques" title="Lien permanent vers ce titre">¶</a></h3>
+<h4><a class="toc-backref" href="#id22">Le module statistiques</a><a class="headerlink" href="#le-module-statistiques" title="Lien permanent vers ce titre">¶</a></h4>
 <p>Ce module sert essentiellement à tracer des diagrammes, qui n&#8217;existent pas
 toujours sur tableur, ou qui y sont incorrectement définis.
 A l&#8217;origine, ma motivation était essentiellement de pouvoir tracer des
@@ -414,8 +415,10 @@ Il fait aussi la différence entre diagrammes en barres et en bâtons
 (contrairement à ce qu&#8217;on peut lire souvent, la différence essentielle n&#8217;est
 pas esthétique).</p>
 <p>Voici une présentation des principaux types de graphiques :</p>
+</div>
+</div>
 <div class="section" id="diagrammes-en-barres">
-<h4><a class="toc-backref" href="#id26">Diagrammes en barres :</a><a class="headerlink" href="#diagrammes-en-barres" title="Lien permanent vers ce titre">¶</a></h4>
+<h3><a class="toc-backref" href="#id23">Diagrammes en barres :</a><a class="headerlink" href="#diagrammes-en-barres" title="Lien permanent vers ce titre">¶</a></h3>
 <p><em>Utilisés en particulier pour des séries à caractère qualitatif.</em></p>
 <p><em>Exemple :</em> la répartition des voyelles dans l&#8217;alphabet.</p>
 <p>On sélectionne le mode :</p>
@@ -432,7 +435,7 @@ Le résultat est le suivant :</p>
 <img alt="_images/diag_barres.png" class="align-center" src="_images/diag_barres.png" />
 </div>
 <div class="section" id="diagrammes-en-batons">
-<h4><a class="toc-backref" href="#id27">Diagrammes en bâtons :</a><a class="headerlink" href="#diagrammes-en-batons" title="Lien permanent vers ce titre">¶</a></h4>
+<h3><a class="toc-backref" href="#id24">Diagrammes en bâtons :</a><a class="headerlink" href="#diagrammes-en-batons" title="Lien permanent vers ce titre">¶</a></h3>
 <p><em>Utilisés pour des séries à caractère quantitatif discret.</em></p>
 <p><em>Exemple :</em> la répartition des pointures de chaussures chez les femmes
 françaises adultes (2005).</p>
@@ -446,7 +449,7 @@ Le résultat est le suivant :</p>
 <img alt="_images/diag_baton_2.png" class="align-center" src="_images/diag_baton_2.png" />
 </div>
 <div class="section" id="histogrammes">
-<h4><a class="toc-backref" href="#id28">Histogrammes :</a><a class="headerlink" href="#histogrammes" title="Lien permanent vers ce titre">¶</a></h4>
+<h3><a class="toc-backref" href="#id25">Histogrammes :</a><a class="headerlink" href="#histogrammes" title="Lien permanent vers ce titre">¶</a></h3>
 <p>Utilisés pour des séries à caractère quantitatif continu.</p>
 <p>On va reprendre l&#8217;exemple précédent, en regroupant les pointures par classe.</p>
 <p>On sélectionne le mode :</p>
@@ -460,10 +463,10 @@ nature de l&#8217;unité d&#8217;aire.</p>
 <img alt="_images/histo_3.png" class="align-center" src="_images/histo_3.png" />
 </div>
 <div class="section" id="diagrammes-en-boites">
-<h4><a class="toc-backref" href="#id29">Diagrammes en boites :</a><a class="headerlink" href="#diagrammes-en-boites" title="Lien permanent vers ce titre">¶</a></h4>
+<h3><a class="toc-backref" href="#id26">Diagrammes en boites :</a><a class="headerlink" href="#diagrammes-en-boites" title="Lien permanent vers ce titre">¶</a></h3>
 <p>Également appelés boîtes à moustache.</p>
 <p>Il est possible depuis peu d&#8217;afficher sur le même axe plusieurs diagrammes en boîtes, pour comparer plusieurs séries.</p>
-<p>Il suffit de séparer les séries par des <a href="#id7"><span class="problematic" id="id8">|</span></a>.</p>
+<p>Il suffit de séparer les séries par des <a href="#id3"><span class="problematic" id="id4">|</span></a>.</p>
 <img alt="_images/saisie_donnees_diag_boite.png" class="align-center" src="_images/saisie_donnees_diag_boite.png" />
 <p>Et on appuye sur [Entrée].</p>
 <img alt="_images/diagrammes_boite.png" class="align-center" src="_images/diagrammes_boite.png" />
@@ -473,7 +476,7 @@ nature de l&#8217;unité d&#8217;aire.</p>
 </div>
 </div>
 <div class="section" id="pour-aller-plus-loin">
-<h4><a class="toc-backref" href="#id30">Pour aller plus loin :</a><a class="headerlink" href="#pour-aller-plus-loin" title="Lien permanent vers ce titre">¶</a></h4>
+<h3><a class="toc-backref" href="#id27">Pour aller plus loin :</a><a class="headerlink" href="#pour-aller-plus-loin" title="Lien permanent vers ce titre">¶</a></h3>
 <ul>
 <li><p class="first">A la place des valeurs numériques, on peut tout à fait insérer des formules.</p>
 <p><em>Exemple :</em></p>
@@ -507,10 +510,8 @@ nature de l&#8217;unité d&#8217;aire.</p>
 <p class="last">Vous pouvez éditer le fichier <em>experience.py</em> dans
 <em>modules/statistiques</em>/, pour y ajouter de nouvelles fonctions.</p>
 </div>
-</div>
-</div>
 <div class="section" id="le-generateur-d-arbres-de-probabilites">
-<h3><a class="toc-backref" href="#id31">Le générateur d&#8217;arbres de probabilités</a><a class="headerlink" href="#le-generateur-d-arbres-de-probabilites" title="Lien permanent vers ce titre">¶</a></h3>
+<h4><a class="toc-backref" href="#id28">Le générateur d&#8217;arbres de probabilités</a><a class="headerlink" href="#le-generateur-d-arbres-de-probabilites" title="Lien permanent vers ce titre">¶</a></h4>
 <img alt="_images/arbre.png" class="align-center" src="_images/arbre.png" />
 <p>Les arbres de probabilité sont codés de la manière suivante :</p>
 <ul>
@@ -518,9 +519,10 @@ nature de l&#8217;unité d&#8217;aire.</p>
 <p><em>Exemple :</em></p>
 </li>
 </ul>
-<div class="highlight-python"><pre>    ||Premier tirage|Deuxième tirage
+<div class="highlight-python"><div class="highlight"><pre>    ||Premier tirage|Deuxième tirage
 
-*(Note : l'ajout de barres verticales supplémentaires (AltGr+6) décale la légende vers la droite.)*</pre>
+*(Note : l&#39;ajout de barres verticales supplémentaires (AltGr+6) décale la légende vers la droite.)*
+</pre></div>
 </div>
 <ul class="simple">
 <li>Les lignes suivantes correspondent à l&#8217;arbre proprement dit.</li>
@@ -528,7 +530,7 @@ nature de l&#8217;unité d&#8217;aire.</p>
 <li>La syntaxe est la suivante : « Nom de l&#8217;évènement » : « Probabilité de l&#8217;évènement »</li>
 </ul>
 <p><em>Exemple :</em></p>
-<div class="highlight-python"><pre>omega
+<div class="highlight-python"><div class="highlight"><pre>omega
 &gt; A:1/4
 &gt;&gt; B:1/5
 &gt;&gt; J:2/5
@@ -536,7 +538,8 @@ nature de l&#8217;unité d&#8217;aire.</p>
 &gt; &amp;A :3/4
 &gt;&gt; B:...
 &gt;&gt; J:...
-&gt;&gt; V:...</pre>
+&gt;&gt; V:...
+</pre></div>
 </div>
 <p>Le <strong>symbole &amp;</strong> indique qu&#8217;il s&#8217;agit de l&#8217;évènement contraire : <tt class="docutils literal"><span class="pre">&amp;A</span></tt> est ainsi
 l&#8217;évènement «A barre».</p>
@@ -546,16 +549,18 @@ l&#8217;évènement «A barre».</p>
 </div>
 </div>
 <div class="section" id="le-generateur-de-tableaux-latex">
-<h3><a class="toc-backref" href="#id32">Le générateur de tableaux LaTeX</a><a class="headerlink" href="#le-generateur-de-tableaux-latex" title="Lien permanent vers ce titre">¶</a></h3>
+<h4><a class="toc-backref" href="#id29">Le générateur de tableaux LaTeX</a><a class="headerlink" href="#le-generateur-de-tableaux-latex" title="Lien permanent vers ce titre">¶</a></h4>
+</div>
+</div>
 <div class="section" id="presentation-generale">
-<h4><a class="toc-backref" href="#id33">Présentation générale</a><a class="headerlink" href="#presentation-generale" title="Lien permanent vers ce titre">¶</a></h4>
+<h3><a class="toc-backref" href="#id30">Présentation générale</a><a class="headerlink" href="#presentation-generale" title="Lien permanent vers ce titre">¶</a></h3>
 <p>Ce module permet de générer des tableaux de signes, tableaux de variations et tableaux de valeurs au format LaTeX.</p>
 <p>Pour les tableaux de variations et de signes, dans la majorité des cas, il suffit de donner la fonction et son intervalle de définition.</p>
 <p><em>Exemple :</em></p>
 <img alt="_images/tableaux_latex.png" class="align-center" src="_images/tableaux_latex.png" />
 </div>
 <div class="section" id="tableaux-de-variations">
-<h4><a class="toc-backref" href="#id34">Tableaux de variations</a><a class="headerlink" href="#tableaux-de-variations" title="Lien permanent vers ce titre">¶</a></h4>
+<h3><a class="toc-backref" href="#id31">Tableaux de variations</a><a class="headerlink" href="#tableaux-de-variations" title="Lien permanent vers ce titre">¶</a></h3>
 <p>Dans la ligne des options, il est possible de choisir si l&#8217;on veut afficher ou les limites, ainsi que la ligne comportant le signe de la dérivée.</p>
 <img alt="_images/tableaux_latex_options.png" class="align-center" src="_images/tableaux_latex_options.png" />
 <p>Si le logiciel n&#8217;arrive pas à déterminer les variations de la fonction, ou si l&#8217;on souhaite obtenir un tableau donné, il est possible de spécifier manuellement les variations de la fonction.</p>
@@ -578,7 +583,7 @@ l&#8217;évènement «A barre».</p>
 </ol>
 </div>
 <div class="section" id="tableaux-de-signes">
-<h4><a class="toc-backref" href="#id35">Tableaux de signes</a><a class="headerlink" href="#tableaux-de-signes" title="Lien permanent vers ce titre">¶</a></h4>
+<h3><a class="toc-backref" href="#id32">Tableaux de signes</a><a class="headerlink" href="#tableaux-de-signes" title="Lien permanent vers ce titre">¶</a></h3>
 <p>Dans les options, il est conseillé d&#8217;activer le mode <cite>cellspace</cite>, qui permet d&#8217;améliorer la gestion par LaTeX des espacement lorsque le tableau contient des fractions.
 Il faut bien sûr que le paquet <cite>cellspace</cite> soit installé au préalable.</p>
 <img alt="_images/cellspace.png" class="align-center" src="_images/cellspace.png" />
@@ -615,24 +620,11 @@ Il faut bien sûr que le paquet <cite>cellspace</cite> soit installé au préala
 <div><p>« <tt class="docutils literal"><span class="pre">x:-oo;+oo</span> <span class="pre">//</span> <span class="pre">f(x):</span> <span class="pre">--</span> <span class="pre">5</span> <span class="pre">++</span> <span class="pre">//</span> <span class="pre">g(x):</span> <span class="pre">++</span> <span class="pre">\alpha=2,1</span> <span class="pre">--</span></tt>»</p>
 <p>On indique que α vaut environ 2,1 et doit donc être placé après 5.</p>
 <p>Tableau correspondant~:</p>
-<dl class="docutils">
-<dt>..image:: img/tabsigne_alpha.png</dt>
-<dd><table class="first last docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">align:</th><td class="field-body">center</td>
-</tr>
-</tbody>
-</table>
-</dd>
-</dl>
+<img alt="_images/tabsigne_alpha.png" class="align-center" src="_images/tabsigne_alpha.png" />
 </div></blockquote>
 </div>
 <div class="section" id="tableau-de-valeurs">
-<h4><a class="toc-backref" href="#id36">Tableau de valeurs</a><a class="headerlink" href="#tableau-de-valeurs" title="Lien permanent vers ce titre">¶</a></h4>
-<div class="section" id="mode-automatique">
-<h5><a class="toc-backref" href="#id37">Mode automatique</a><a class="headerlink" href="#mode-automatique" title="Lien permanent vers ce titre">¶</a></h5>
+<h3><a class="toc-backref" href="#id33">Tableau de valeurs</a><a class="headerlink" href="#tableau-de-valeurs" title="Lien permanent vers ce titre">¶</a></h3>
 <p>Comme pour les tableaux de variations et de signes, il est possible de générer
 automatiquement le tableau de valeur, en rentrant la fonction, l&#8217;intervalle et
 éventuellement le pas (1 par défaut).</p>
@@ -641,9 +633,6 @@ automatiquement le tableau de valeur, en rentrant la fonction, l&#8217;intervall
 <blockquote>
 <div><img alt="_images/tabvalx2.png" class="align-center" src="_images/tabvalx2.png" />
 </div></blockquote>
-</div>
-<div class="section" id="mode-expert">
-<h5><a class="toc-backref" href="#id38">Mode « expert »</a><a class="headerlink" href="#mode-expert" title="Lien permanent vers ce titre">¶</a></h5>
 <p>Pour obtenir un tableau de valeur plus personnalisé, il faut utiliser la syntaxe avancée.</p>
 <p>Il faut saisir la fonction, les antécédents (séparés par des points-virgules), et (éventuellement) la précision souhaitée.</p>
 <p>La syntaxe est la suivante : <em>fonction: valeur1 ; valeur2 ; valeur3 ; ...</em> ou encore <em>fonction: [precision]: valeur1 ; valeur2 ; valeur3 ; ...</em></p>
@@ -663,12 +652,8 @@ automatiquement le tableau de valeur, en rentrant la fonction, l&#8217;intervall
 </ol>
 </div>
 </div>
-</div>
-</div>
 <div class="section" id="utilisation-avancee">
-<h2><a class="toc-backref" href="#id39">Utilisation avancée</a><a class="headerlink" href="#utilisation-avancee" title="Lien permanent vers ce titre">¶</a></h2>
-<div class="section" id="le-fichier-param-py">
-<h3><a class="toc-backref" href="#id40">Le fichier param.py</a><a class="headerlink" href="#le-fichier-param-py" title="Lien permanent vers ce titre">¶</a></h3>
+<h2><a class="toc-backref" href="#id34">Utilisation avancée</a><a class="headerlink" href="#utilisation-avancee" title="Lien permanent vers ce titre">¶</a></h2>
 <p>Un grand nombre de paramètres peuvent être modifiés dans le fichier
 <em>param.py</em> avec un simple éditeur de textes.</p>
 <p><em>Exemple :</em></p>
@@ -677,17 +662,11 @@ ne soient plus affichés par défaut.</p>
 <p>Note : il peut être parfois nécessaire d&#8217;effacer le dossier <em>/preferences</em>
 (qui contient les paramètres de la session précédente) pour que les
 changements soient pris en compte.</p>
-</div>
-<div class="section" id="debogage">
-<h3><a class="toc-backref" href="#id41">Débogage</a><a class="headerlink" href="#debogage" title="Lien permanent vers ce titre">¶</a></h3>
 <p>Dans le menu <em>Avancé&gt;Déboguer</em>, sélectionner « <em>Déboguer</em> » pour faire apparaître
 une fenêtre contenant entre autres tous les rapports d&#8217;erreurs.</p>
 <p>Par ailleurs,
 le répertoire <em>/log</em> contient les fichiers .log générés lors de la dernière
 exécution (actions effectuées, messages d&#8217;erreurs, etc.)</p>
-</div>
-<div class="section" id="id10">
-<h3><a class="toc-backref" href="#id42">La ligne de commande</a><a class="headerlink" href="#id10" title="Lien permanent vers ce titre">¶</a></h3>
 <p><em>Introduction:</em></p>
 <p>La ligne de commande sert essentiellement à débuguer le programme.
 (Ou à réaliser certaines opérations internes, etc...)
@@ -730,9 +709,8 @@ code source.</p>
 </li>
 </ol>
 </div>
-</div>
 <div class="section" id="comment-contribuer">
-<h2><a class="toc-backref" href="#id43">Comment contribuer ?</a><a class="headerlink" href="#comment-contribuer" title="Lien permanent vers ce titre">¶</a></h2>
+<h2><a class="toc-backref" href="#id35">Comment contribuer ?</a><a class="headerlink" href="#comment-contribuer" title="Lien permanent vers ce titre">¶</a></h2>
 <p><strong>Vous pouvez par exemple :</strong></p>
 <ul>
 <li><p class="first">m&#8217;envoyer un mail à l&#8217;adresse suivante :
@@ -793,7 +771,7 @@ prendre. ;-)</p>
 </ol>
 </div>
 <div class="section" id="remerciements">
-<h2><a class="toc-backref" href="#id44">Remerciements</a><a class="headerlink" href="#remerciements" title="Lien permanent vers ce titre">¶</a></h2>
+<h2><a class="toc-backref" href="#id36">Remerciements</a><a class="headerlink" href="#remerciements" title="Lien permanent vers ce titre">¶</a></h2>
 <p>Sans prétention d&#8217;exhaustivité, je voudrais remercier :</p>
 <ul class="simple">
 <li><strong>Boris Mauricette</strong>, pour avoir contribué au module de Statistiques
@@ -834,49 +812,42 @@ retours, en particulier <strong>Dominique Pommier</strong>.</li>
             <p class="logo"><a href="index.html">
               <img class="logo" src="_static/geophar-icone.png" alt="Logo"/>
             </a></p>
-  <h3><a href="index.html">Table des matières</a></h3>
+  <h3><a href="index.html">Table des Matières</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Manuel de l&#8217;utilisateur</a><ul>
 <li><a class="reference internal" href="#licence">Licence</a></li>
-<li><a class="reference internal" href="#installation">Installation</a></li>
+<li><a class="reference internal" href="#installation">Installation</a><ul>
+<li><a class="reference internal" href="#sous-windows">Sous Windows</a></li>
+<li><a class="reference internal" href="#sous-macos-x">Sous MacOS X</a></li>
+<li><a class="reference internal" href="#sous-linux">Sous Linux</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#description-des-differents-modules">Description des différents modules</a><ul>
-<li><a class="reference internal" href="#le-module-de-geometrie-dynamique">Le module de géométrie dynamique</a><ul>
 <li><a class="reference internal" href="#pilotage-avec-la-souris">Pilotage avec la souris</a></li>
 <li><a class="reference internal" href="#creation-d-objets-via-le-menu-creer">Création d&#8217;objets via le menu «Créer»</a></li>
 <li><a class="reference internal" href="#choisir-le-mode-d-affichage-de-l-etiquette-d-un-objet">Choisir le mode d&#8217;affichage de l&#8217;étiquette d&#8217;un objet</a></li>
-<li><a class="reference internal" href="#la-ligne-de-commande">La ligne de commande</a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#la-ligne-de-commande">La ligne de commande</a><ul>
 <li><a class="reference internal" href="#le-traceur-de-courbes">Le traceur de courbes</a></li>
 <li><a class="reference internal" href="#la-calculatrice">La calculatrice</a></li>
-<li><a class="reference internal" href="#le-module-statistiques">Le module statistiques</a><ul>
+<li><a class="reference internal" href="#le-module-statistiques">Le module statistiques</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#diagrammes-en-barres">Diagrammes en barres :</a></li>
 <li><a class="reference internal" href="#diagrammes-en-batons">Diagrammes en bâtons :</a></li>
 <li><a class="reference internal" href="#histogrammes">Histogrammes :</a></li>
 <li><a class="reference internal" href="#diagrammes-en-boites">Diagrammes en boites :</a></li>
-<li><a class="reference internal" href="#pour-aller-plus-loin">Pour aller plus loin :</a></li>
+<li><a class="reference internal" href="#pour-aller-plus-loin">Pour aller plus loin :</a><ul>
+<li><a class="reference internal" href="#le-generateur-d-arbres-de-probabilites">Le générateur d&#8217;arbres de probabilités</a></li>
+<li><a class="reference internal" href="#le-generateur-de-tableaux-latex">Le générateur de tableaux LaTeX</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#le-generateur-d-arbres-de-probabilites">Le générateur d&#8217;arbres de probabilités</a></li>
-<li><a class="reference internal" href="#le-generateur-de-tableaux-latex">Le générateur de tableaux LaTeX</a><ul>
 <li><a class="reference internal" href="#presentation-generale">Présentation générale</a></li>
 <li><a class="reference internal" href="#tableaux-de-variations">Tableaux de variations</a></li>
 <li><a class="reference internal" href="#tableaux-de-signes">Tableaux de signes</a></li>
-<li><a class="reference internal" href="#tableau-de-valeurs">Tableau de valeurs</a><ul>
-<li><a class="reference internal" href="#mode-automatique">Mode automatique</a></li>
-<li><a class="reference internal" href="#mode-expert">Mode « expert »</a></li>
+<li><a class="reference internal" href="#tableau-de-valeurs">Tableau de valeurs</a></li>
 </ul>
 </li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a class="reference internal" href="#utilisation-avancee">Utilisation avancée</a><ul>
-<li><a class="reference internal" href="#le-fichier-param-py">Le fichier param.py</a></li>
-<li><a class="reference internal" href="#debogage">Débogage</a></li>
-<li><a class="reference internal" href="#id10">La ligne de commande</a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#utilisation-avancee">Utilisation avancée</a></li>
 <li><a class="reference internal" href="#comment-contribuer">Comment contribuer ?</a></li>
 <li><a class="reference internal" href="#remerciements">Remerciements</a></li>
 </ul>
@@ -926,12 +897,12 @@ retours, en particulier <strong>Dominique Pommier</strong>.</li>
         <li class="right" >
           <a href="index.html" title="Documentation de Geophar"
              >précédent</a> |</li>
-        <li><a href="index.html">Geophar 14.04 documentation</a> &raquo;</li> 
+        <li><a href="index.html">documentation Geophar 14.08.1</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2005-2012, N.Pourcelot.
-      Créé avec <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+      Créé avec <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
     </div>
   </body>
 </html>

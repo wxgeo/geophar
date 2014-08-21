@@ -54,52 +54,70 @@ temps que ce programme. Si ce n'est pas le cas, écrivez a l'adresse suivante
 Installation
 ============
 
-Pour fonctionner, ce programme nécessite la configuration logicielle suivante:
+Téléchargez la dernière version de Géophar sur Sourceforge__.
 
--   Windows XP ou supérieur, ou une distribution Linux récente.
-
-    *L'installation sous MacOs X est possible mais un peu  technique semble-t-il*.
-
--   Les logiciels suivants, tous libres et gratuits:
-
-    + le logiciel Python__, version 2.6 ou supérieure.
-
-    .. __: http://www.python.org
-
-    *Sous Linux, une version récente est en principe déjà présente*.
-
-    +   La librairie graphique PyQt__, version 4.6 ou supérieure.
-
-    .. __: http://www.riverbankcomputing.co.uk/software/pyqt/download
-
-    + La librairie mathématique numpy__
-
-    .. __: http://sourceforge.net/projects/numpy/
-
-    +   La librairie mathématique Matplotlib__, version 1.0 ou supérieure
-
-    .. __: http://www.sourceforge.net/projects/matplotlib
+.. __: http://sourceforge.net/projects/geophar/files/latest/download
 
 
-*Remarque* : ces logiciels doivent être installés dans l'ordre mentionné.
+.. note::   Une version sans installation est proposée par défaut sous Windows et Mac.
+            Son usage est vivement conseillé.
 
-Sous Windows, un redémarrage du système est conseillé après ces installations.
+            Cette version peut fonctionner facilement sur une simple clé USB
+            ou sur un ordinateur sur lequel on n'a pas la permission
+            d'installer des programmes.
 
-Après avoir téléchargé la dernière version de Géophar__, dézippez l'archive dans
-un répertoire sur lequel vous avez les permissions nécessaires.
-Vous pouvez lancer le programme en double-cliquant sur le fichier *wxgeometrie.pyw* .
 
-.. __: http://www.sourceforge.net/projects/geophar
+Sous Windows
+------------
 
-*Sous Windows :*
+Double cliquez sur le fichier téléchargé et choisissez dans quel répertoire
+vous souhaitez extraire le programme.
 
-La version conseillée est désormais la version **sans installation**,
-qui ne nécessite **pas** d'avoir installé Python ni les logiciels précédemment mentionnés.
+Entrez alors dans le dossier `geophar` du répertoire choisi précédemment et lancez `geophar.exe`.
 
-Il suffit de récupérer un fichier archive, qui va s'extraire automatiquement en double-cliquant dessus.
 
-Cette version peut fonctionner facilement sur une simple clé USB, ou sur un ordinateur
-sur lequel on n'a pas la permission d'installer des programmes.
+Sous MacOS X
+------------
+
+Géophar est fourni directement sous forme de fichier DMG.
+
+Il suffit donc de double cliquer sur le fichier téléchargé.
+
+
+Sous Linux
+----------
+
+Vous pouvez commencer par tester Géophar sans l'installer.
+
+Placez vous dans le répertoire où se trouve l'archive téléchargée.
+
+Tapez alors les commandes suivantes dans le terminal :
+
+::
+
+    tar -zxvf geophar_*.gz
+    cd geophar
+    python geophar.pyw
+
+Si des librairies manquent, leur installation sera automatiquement proposée.
+
+.. note::   Si vous souhaitez installer Géophar (création d'un raccourci
+            sur le bureau, reconnaissance des fichiers .geo, etc.),
+            placez vous dans le répertoire où se trouve Géophar.
+
+            Tapez alors la commande suivante dans le terminal :
+
+            ::
+
+                python tools/linux-install.py
+
+            Vous pourrez ensuite le désinstaller à l'aide de la commande suivante :
+
+            ::
+
+                python tools/linux-uninstall.py
+
+
 
 
 
@@ -751,7 +769,7 @@ On peut modifier manuellement leur position dans le tableau en leur attributant 
 
     Tableau correspondant~:
 
-    ..image:: img/tabsigne_alpha.png
+    .. image:: img/tabsigne_alpha.png
         :align: center
 
 

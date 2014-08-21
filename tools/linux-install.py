@@ -51,8 +51,13 @@ while True:
         choice = 'local'
         break
     elif choice in ('o', 'O'):
-        # FIXME: tester si on a bien les droits, sinon demander de relancer
-        # le script avec sudo.
+        if not os.access(paths['root'], os.W_OK):
+            print("\n\033[1;31m*** ERREUR ***\033[0m")
+            print("Vous n'avez pas la permission d'installer pour "
+                  "tous les utilisateurs.")
+            print("Tapez '\033[0;32msudo python tools/linux-install.py\033[0m' pour une "
+                  "installation multi-utilisateurs.")
+            sys.exit(1)
         choice = 'root'
         break
     else:
