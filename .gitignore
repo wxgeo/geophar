@@ -58,7 +58,6 @@ wxgeometrie/test.py
 tools/linux-uninstall.py
 
 # À ne pas inclure **pour l'instant**
-tools/isympy
 tools/others/
 tools/isympy_
 tools/strip_whitespace.py
@@ -68,5 +67,3 @@ wxgeometrie/exemples/
 wxgeometrie/geolib/FICHIER param A CREER
 wxgeometrie/geolib/librairies.dia
 wxgeometrie/geolib/librairies.png
-wxgeometrie/setup.py
-setup.py
