@@ -350,7 +350,10 @@ class Avance(QWidget):
 
     def EvtAppliquerResultat(self, event=None):
         val = self.traitement.text().strip()
-        if val == '_':
+        if not val:
+            self.traitement.setText('_')
+            val = None
+        elif val == '_':
             val = None
         self.parent.param("appliquer_au_resultat", val)
 
