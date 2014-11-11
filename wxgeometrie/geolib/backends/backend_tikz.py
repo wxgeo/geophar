@@ -36,7 +36,8 @@ class BackendTikz(object):
 
     _arrow = '-{Stealth[scale=1.7]}'
 
-    _dict_styles_traits = {':': 'dotted', '--': 'dashed', '-': 'solid'}
+    _dict_styles_traits = {':': 'dotted', '--': 'dashed', '-': 'solid',
+                           '.-': 'dashdotted', '-.': 'dashdotted'}
 
     _dict_couleurs = {'g': 'green', 'r': 'red', 'b': 'blue', 'y': 'yellow',
                      'k': 'black', 'c': 'cyan', 'm': 'magenta', 'w': 'white'}
@@ -66,6 +67,8 @@ class BackendTikz(object):
             options.append('color=' + self._couleur(style['couleur']))
         if 'style' in style:
             options.append(self._style_trait(style['style']))
+        if 'epaisseur' in style:
+            options.append('line width=' + self._epaisseur(style['epaisseur']))
         if arrow:
             options.append(self._arrow)
         if node:
@@ -73,7 +76,10 @@ class BackendTikz(object):
         self._add(r'\draw[%s] %s%s;' % (', '.join(filter(None, options)), path, node))
 
     def exporter(self, feuille, **options):
-        self._lignes = [r'\begin{tikzpicture}']
+        deb = r'\begin{tikzpicture}'
+        if options.get('echelle') is not None:
+            deb += '[scale=%s]' % options['echelle']
+        self._lignes = [deb]
         self._export_repere(feuille)
         for objet in feuille.liste_objets(objets_caches=False, etiquettes=False):
             for classe in objet.__class__.__mro__:
