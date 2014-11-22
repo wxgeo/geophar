@@ -115,7 +115,7 @@ class LigneCommande(QWidget):
         key = event.key()
         commande = self.text()
 
-        if key == Qt.Key_Up:
+        if key == Qt.Key_Up and self.historique:
             # On remonte dans l'historique (-> entrées plus anciennes)
             if self.position is None:
                 # cas d'une commande en cours d'édition :
@@ -130,7 +130,7 @@ class LigneCommande(QWidget):
                 self.position -= 1
                 self.texte.setText(self.historique[self.position])
 
-        elif key == Qt.Key_Down:
+        elif key == Qt.Key_Down and self.historique:
             # On redescend dans l'historique (-> entrées plus récentes)
             if self.position is None or self.position == len(self.historique) - 1:
                 if commande and commande != self.historique[-1]:
