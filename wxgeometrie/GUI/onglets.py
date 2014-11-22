@@ -283,10 +283,17 @@ class Onglets(QTabWidget):
 
 
     def actualiser_liste_onglets(self):
+        # On commence par vérifier que la liste des modules à charger n'est pas vide
+        modules_a_charger = [nom for nom, val in param.modules_actifs.iteritems() if val]
+        print u"Modules à charger :", modules_a_charger
+        if not modules_a_charger:
+            # On affiche l'onglet de bienvenue par défaut.
+            modules_a_charger = ['bienvenue']
+
         # `pos` indique la progression du classement:
         # tous les onglets situés avant `pos` sont déjà classés.
         pos = 0
-        for nom in param.modules:
+        for nom in modules_a_charger:
             try:
                 module = modules.importer_module(nom)
                 if module is not None:
@@ -315,7 +322,6 @@ class Onglets(QTabWidget):
                 # méthode .close() à l'intérieur de la méthode .__init__()
                 # ne fonctionne pas).
                 param._restart = True
-
 
         # Supprimer tous les onglets qui sont situés après pos
         while pos < self.count():

@@ -34,70 +34,69 @@ from ..pylib import print_error, str2, path2
 
 def importer_module(nom_module):
     u"Retourne le module si l'import a réussi, None sinon."
-    if param.modules_actifs[nom_module]:
-        if param.verbose:
-            print("Import du module '%s'..." %nom_module)
-        try:
-            wxgeometrie = __import__('wxgeometrie.modules.' + nom_module, level=2)
-            module = getattr(wxgeometrie.modules, nom_module)
-            if hasattr(module, '_menu_'):
-                # Module déjà importé -> rien à faire.
-                return module
-
-            module._nom_ = module.__name__.split('.')[-1]
-
-            menus = [cls for cls in module.__dict__.itervalues() if isinstance(cls, type)
-                     and issubclass(cls, MenuBar) and cls not in (MenuBar, ExerciceMenuBar)]
-            if len(menus) > 1 and param.debug:
-                ##print menus
-                raise IndexError, str2(u"Plusieurs classes héritent de MenuBar dans le module %s: " %nom_module
-                                       + ', '.join(m.__name__ for m in menus))
-            if len(menus) == 0 and param.debug:
-                raise IndexError, str2(u"Aucune classe n'hérite de MenuBar dans le module %s." %nom_module)
-            module._menu_ = menus[0]
-
-
-            panels = [cls for cls in module.__dict__.itervalues() if isinstance(cls, type)
-                      and issubclass(cls, Panel_simple) and cls not in (Panel_simple, Panel_API_graphique, Exercice)]
-            if len(panels) > 1 and param.debug:
-                ##print panels
-                raise IndexError, str2(u"Plusieurs classes héritent de Panel_simple dans le module %s: " %nom_module
-                                    + ', '.join(p.__name__ for p in panels))
-            if len(panels) == 0 and param.debug:
-                raise IndexError, str2(u"Aucune classe n'hérite de Panel_simple dans le module %s." %nom_module)
-            panel = module._panel_ = panels[0]
-            try:
-                param_pth = 'wxgeometrie.modules.%s._param_' %nom_module
-                wxgeometrie = __import__(param_pth, level=2)
-                panel._param_ = eval(param_pth)
-                copie = panel._param_.__dict__.copy()
-                copie.pop("__builtins__", None)
-                setattr(panel._param_, "_parametres_par_defaut", copie)
-                path = path2(param.emplacements['preferences'] + "/" + nom_module + "/parametres.xml")
-                if param.sauver_preferences and param.charger_preferences and os.path.exists(path):
-                    try:
-                        a_verifier = dict((dicname, getattr(param, dicname)) for dicname in param.a_mettre_a_jour)
-                        actualiser_module(panel._param_, path)
-                        # certains paramètres peuvent avoir besoin d'une mise à jour
-                        # (en cas de changement de version de wxgéométrie par exemple)
-                        # cela concerne en particulier les dictionnaires, qui peuvent gagner de nouvelles clés.
-                        for dicname in param.a_mettre_a_jour:
-                            for key, val in a_verifier[dicname].iteritems():
-                                if hasattr(panel._param_, dicname):
-                                    # (pour l'instant) param.a_mettre_a_jour s'applique à tout wxgéométrie,
-                                    # mais tous les paramètres ne concernent pas tous les modules.
-                                    getattr(panel._param_, dicname).setdefault(key, val)
-                    except:
-                        print_error(u"\n\nImpossible d'actualiser les préférences du module '%s'" %nom_module)
-
-            except ImportError:
-                print_error(u"\n\nImpossible d'importer les paramètres du module '%s'" %nom_module)
-            except:
-                print_error(u"\n\nImpossible d'importer les paramètres du module '%s'" %nom_module)
-
-        except:
-            print_error(u"\nError: Impossible d'importer le module '%s'" %nom_module)
-            # On désactive les modules non chargés.
-            param.modules_actifs[nom_module] = False
-        else:
+    if param.verbose:
+        print("Import du module '%s'..." %nom_module)
+    try:
+        wxgeometrie = __import__('wxgeometrie.modules.' + nom_module, level=2)
+        module = getattr(wxgeometrie.modules, nom_module)
+        if hasattr(module, '_menu_'):
+            # Module déjà importé -> rien à faire.
             return module
+
+        module._nom_ = module.__name__.split('.')[-1]
+
+        menus = [cls for cls in module.__dict__.itervalues() if isinstance(cls, type)
+                 and issubclass(cls, MenuBar) and cls not in (MenuBar, ExerciceMenuBar)]
+        if len(menus) > 1 and param.debug:
+            ##print menus
+            raise IndexError, str2(u"Plusieurs classes héritent de MenuBar dans le module %s: " %nom_module
+                                   + ', '.join(m.__name__ for m in menus))
+        if len(menus) == 0 and param.debug:
+            raise IndexError, str2(u"Aucune classe n'hérite de MenuBar dans le module %s." %nom_module)
+        module._menu_ = menus[0]
+
+
+        panels = [cls for cls in module.__dict__.itervalues() if isinstance(cls, type)
+                  and issubclass(cls, Panel_simple) and cls not in (Panel_simple, Panel_API_graphique, Exercice)]
+        if len(panels) > 1 and param.debug:
+            ##print panels
+            raise IndexError, str2(u"Plusieurs classes héritent de Panel_simple dans le module %s: " %nom_module
+                                + ', '.join(p.__name__ for p in panels))
+        if len(panels) == 0 and param.debug:
+            raise IndexError, str2(u"Aucune classe n'hérite de Panel_simple dans le module %s." %nom_module)
+        panel = module._panel_ = panels[0]
+        try:
+            param_pth = 'wxgeometrie.modules.%s._param_' %nom_module
+            wxgeometrie = __import__(param_pth, level=2)
+            panel._param_ = eval(param_pth)
+            copie = panel._param_.__dict__.copy()
+            copie.pop("__builtins__", None)
+            setattr(panel._param_, "_parametres_par_defaut", copie)
+            path = path2(param.emplacements['preferences'] + "/" + nom_module + "/parametres.xml")
+            if param.sauver_preferences and param.charger_preferences and os.path.exists(path):
+                try:
+                    a_verifier = dict((dicname, getattr(param, dicname)) for dicname in param.a_mettre_a_jour)
+                    actualiser_module(panel._param_, path)
+                    # certains paramètres peuvent avoir besoin d'une mise à jour
+                    # (en cas de changement de version de wxgéométrie par exemple)
+                    # cela concerne en particulier les dictionnaires, qui peuvent gagner de nouvelles clés.
+                    for dicname in param.a_mettre_a_jour:
+                        for key, val in a_verifier[dicname].iteritems():
+                            if hasattr(panel._param_, dicname):
+                                # (pour l'instant) param.a_mettre_a_jour s'applique à tout wxgéométrie,
+                                # mais tous les paramètres ne concernent pas tous les modules.
+                                getattr(panel._param_, dicname).setdefault(key, val)
+                except:
+                    print_error(u"\n\nImpossible d'actualiser les préférences du module '%s'" %nom_module)
+
+        except ImportError:
+            print_error(u"\n\nImpossible d'importer les paramètres du module '%s'" %nom_module)
+        except:
+            print_error(u"\n\nImpossible d'importer les paramètres du module '%s'" %nom_module)
+
+    except:
+        print_error(u"\nError: Impossible d'importer le module '%s'" %nom_module)
+        # On désactive les modules non chargés.
+        param.modules_actifs[nom_module] = False
+    else:
+        return module
