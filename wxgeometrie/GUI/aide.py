@@ -169,7 +169,7 @@ class Credits(QWidget):
         sizer = QVBoxLayout()
         texte = \
         u"""<h3>Contributeurs :</h3>
-        <p><i>Les personnes suivantes ont contribuées au code de %(NOMPROG)s</i></p>
+        <p><i>Les personnes suivantes ont contribué au code de %(NOMPROG)s</i></p>
         <ul>
         <li><i>Boris Mauricette</i> : statistiques, interpolation (2011-2012)</li>
         <li><i>Christophe Gragnic</i> : gestion de la documentation (2012)</li>
