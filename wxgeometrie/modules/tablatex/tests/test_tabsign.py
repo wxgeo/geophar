@@ -419,3 +419,36 @@ $f(x)g(x)$ &           & $-$ &    0     &  +  &  0  & $-$ &           \\
 % x:-oo;+oo // f(x): -- 5 ++ // g(x): ++ \alpha=2,1 --
 '''
     assert_tabsign(s, tab)
+
+def test_approche():
+    s = "f(x)=x^2-3x-5"
+    tab = \
+r'''\begin{center}
+\begin{tabular}{|c|ccccccc|}
+\hline
+$x$           & $-\infty$ &   & $-\frac{\sqrt{29}}{2}+\frac{3}{2}$ &     & $\frac{3}{2}+\frac{\sqrt{29}}{2}$ &   & $+\infty$ \\
+\hline
+$f(x)$        &           & + &                 0                  & $-$ &                 0                 & + &           \\
+\hline
+\end{tabular}
+\end{center}
+% x: -oo;+oo// x^2-3 x-5: ++ -sqrt(29)/2 + 3/2 -- 3/2 + sqrt(29)/2 ++ // f(x)
+% f(x)=x^2-3x-5
+'''
+    assert_tabsign(s, tab)
+
+    options = {'approche': True, "decimales": 2}
+    tab = \
+r'''\begin{center}
+\begin{tabular}{|c|ccccccc|}
+\hline
+$x$           & $-\infty$ &   & $-1,19$ &     & $4,19$ &   & $+\infty$ \\
+\hline
+$f(x)$        &           & + &    0    & $-$ &   0    & + &           \\
+\hline
+\end{tabular}
+\end{center}
+% x: -oo;+oo// x^2-3 x-5: ++ -1,19 -- 4,19 ++ // f(x)
+% f(x)=x^2-3x-5
+'''
+    assert_tabsign(s, tab, **options)

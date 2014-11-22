@@ -25,7 +25,7 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 import re
 
-from sympy import oo, nan, Symbol
+from sympy import oo, nan, Symbol, Float, Rational
 
 from .tablatexlib import convertir_en_latex, traduire_latex, test_parentheses,\
                          maths, extraire_facteurs, nice_str
@@ -36,13 +36,22 @@ from ...mathlib.interprete import Interprete
 from ...mathlib.parsers import VAR
 from ... import param
 
-def _auto_tabsign(chaine, cellspace = False):
+def _auto_tabsign(chaine, cellspace=False, decimales=3, approche=False):
     u"""Génère le code du tableau de signe à partir d'une expression à variable réelle.
 
     On suppose que l'expression est continue sur tout intervalle de son
     ensemble de définition.
     Par ailleurs, ses zéros doivent être calculables pour la librairie sympy.
+
+    Pour les valeurs approchées, on conserve par défaut 3 chiffres après la virgule.
+    En mettant `decimales=2`, on peut par exemple afficher seulement 2 chiffres
+    après la virgule, etc.
     """
+    def nice_str2(x):
+        if (isinstance(x, (float, Float)) and not isinstance(x, Rational)
+                or approche and x not in (-oo, oo)):
+            x = round(x, decimales)
+        return nice_str(x)
 
     chaine_initiale = chaine
 
@@ -100,8 +109,8 @@ def _auto_tabsign(chaine, cellspace = False):
         sup = intervalle.sup
         if not intervalle.sup_inclus:
             valeurs_interdites.append(sup)
-        code += ': ' + ('' if (intervalle.inf_inclus or inf == -oo) else '!') + nice_str(inf) + ';' \
-                     + ('' if (intervalle.sup_inclus or sup == oo) else '!') + nice_str(sup)
+        code += ': ' + ('' if (intervalle.inf_inclus or inf == -oo) else '!') + nice_str2(inf) + ';' \
+                     + ('' if (intervalle.sup_inclus or sup == oo) else '!') + nice_str2(sup)
     xmax = sup
 
 
@@ -127,9 +136,9 @@ def _auto_tabsign(chaine, cellspace = False):
         code += facteur + ':'
         for i, valeur in enumerate(liste_valeurs):
             if valeurs[valeur] == 0:
-                code += nice_str(valeur)
+                code += nice_str2(valeur)
             elif valeurs[valeur] == nan:
-                code += '!' + nice_str(valeur)
+                code += '!' + nice_str2(valeur)
 
             if i != len(liste_valeurs) - 1:
                 valeur_suivante = liste_valeurs[i + 1]
@@ -171,7 +180,7 @@ def _augmenter(val):
     return val + eps
 
 
-def tabsign(chaine = '', cellspace = False):
+def tabsign(chaine = '', cellspace=False, decimales=3, approche=False):
     u"""Indiquer ligne par ligne le signe de chaque facteur.
 La dernière ligne (produit ou quotient) est générée automatiquement.
 
@@ -190,7 +199,7 @@ Le point d'exclamation avant une expression signifie qu'elle correspond à un d�
         if ':' in lignes[0]:
             lignes = [''] + lignes
         else:
-            return _auto_tabsign(lignes[0], cellspace = cellspace)
+            return _auto_tabsign(lignes[0], cellspace=cellspace, approche=approche, decimales=decimales)
 
     # 'resultat' est la dernière ligne, sauf si elle contient ':'
     # (Dans ce cas, 'resultat' sera généré automatiquement plus tard, à partir des autres lignes).

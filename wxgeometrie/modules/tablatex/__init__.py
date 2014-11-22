@@ -100,16 +100,16 @@ class TabLaTeX(Panel_simple):
         self.sizer_type.addSpacing(10)
         self.sizer_type.addWidget(self.limites)
 
-        self.decimales_tabvar = QSpinBox()
-        self.decimales_tabvar.setRange(-1, 20)
-        self.decimales_tabvar.setSuffix(u" décimales")
-        self.decimales_tabvar.setSpecialValueText(u"Valeurs exactes")
-        self.decimales_tabvar.setValue(self._param_.decimales_tabvar)
-        ##self.decimales_tabvar.setAccelerated(True)
+        self.decimales_tabvar_tabsign = QSpinBox()
+        self.decimales_tabvar_tabsign.setRange(-1, 20)
+        self.decimales_tabvar_tabsign.setSuffix(u" décimales")
+        self.decimales_tabvar_tabsign.setSpecialValueText(u"Valeurs exactes")
+        self.decimales_tabvar_tabsign.setValue(self._param_.decimales_tabvar_tabsign)
+        ##self.decimales_tabvar_tabsign.setAccelerated(True)
         aide = u"Nombre de décimales pour l'affichage des extrema, ou valeur exacte."
-        self.decimales_tabvar.setToolTip(aide)
+        self.decimales_tabvar_tabsign.setToolTip(aide)
         self.sizer_type.addSpacing(10)
-        self.sizer_type.addWidget(self.decimales_tabvar)
+        self.sizer_type.addWidget(self.decimales_tabvar_tabsign)
 
         self.decimales_tabval = QSpinBox()
         self.decimales_tabval.setRange(0, 20)
@@ -208,7 +208,7 @@ class TabLaTeX(Panel_simple):
         def regler_decimales(event=None):
             try:
                 self.focus_widget = app.focusWidget()
-                self._param_.decimales_tabvar = self.decimales_tabvar.value()
+                self._param_.decimales_tabvar_tabsign = self.decimales_tabvar_tabsign.value()
                 self._param_.decimales_tabval = self.decimales_tabval.value()
                 self.valider()
             finally:
@@ -217,7 +217,7 @@ class TabLaTeX(Panel_simple):
         self.derivee.stateChanged.connect(regler_parametres)
         self.limites.stateChanged.connect(regler_parametres)
         self.formatage_images.editingFinished.connect(regler_parametres)
-        self.decimales_tabvar.valueChanged.connect(regler_decimales)
+        self.decimales_tabvar_tabsign.valueChanged.connect(regler_decimales)
         self.decimales_tabval.valueChanged.connect(regler_decimales)
 
         self.focus_widget = self.entree
@@ -239,10 +239,12 @@ class TabLaTeX(Panel_simple):
             if self._param_.mode == 0:
                 code_latex = tabvar(commande, derivee=self._param_.derivee,
                                     limites=self._param_.limites,
-                                    decimales=self._param_.decimales_tabvar,
-                                    approche=(self._param_.decimales_tabvar != -1))
+                                    decimales=self._param_.decimales_tabvar_tabsign,
+                                    approche=(self._param_.decimales_tabvar_tabsign != -1))
             elif self._param_.mode == 1:
-                code_latex = tabsign(commande, cellspace=self._param_.utiliser_cellspace)
+                code_latex = tabsign(commande, cellspace=self._param_.utiliser_cellspace,
+                                    decimales=self._param_.decimales_tabvar_tabsign,
+                                    approche=(self._param_.decimales_tabvar_tabsign != -1))
             elif self._param_.mode == 2:
                 code_latex = tabval(commande,
                     formatage_antecedents=self._param_.formatage_antecedents,
@@ -273,7 +275,7 @@ class TabLaTeX(Panel_simple):
             self.utiliser_cellspace.hide()
             self.derivee.show()
             self.limites.show()
-            self.decimales_tabvar.show()
+            self.decimales_tabvar_tabsign.show()
             self.formatage_images.hide()
             self.lbl_formatage.hide()
             self.decimales_tabval.hide()
@@ -284,7 +286,7 @@ class TabLaTeX(Panel_simple):
             self.limites.hide()
             self.formatage_images.hide()
             self.lbl_formatage.hide()
-            self.decimales_tabvar.hide()
+            self.decimales_tabvar_tabsign.show()
             self.decimales_tabval.hide()
             self.entree.setToolTip(tabsign.__doc__)
             if self._param_.utiliser_cellspace:
@@ -296,7 +298,7 @@ class TabLaTeX(Panel_simple):
             self.utiliser_cellspace.hide()
             self.derivee.hide()
             self.limites.hide()
-            self.decimales_tabvar.hide()
+            self.decimales_tabvar_tabsign.hide()
             self.decimales_tabval.show()
             self.lbl_formatage.show()
             self.formatage_images.show()

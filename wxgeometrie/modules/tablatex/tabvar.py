@@ -26,7 +26,7 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 import re
 
-from sympy import sympify, oo, nan, limit, Symbol, Float, Rational, Wild, sqrt, S
+from sympy import oo, limit, Symbol, Float, Rational, Wild, sqrt, S
 
 from .tablatexlib import convertir_en_latex, test_parentheses, nice_str
 from ...mathlib.solvers import ensemble_definition
@@ -135,7 +135,7 @@ def _auto_tabvar(chaine='', derivee=True, limites=True, decimales=3, approche=Fa
                 if x in infs:
                     droite = nice_str2(limit(expr, var, x, dir = '+'))
             fx = '%s%s%s' % (gauche, symb, droite)
-            
+
         # Affichage de f'(x) (seulement si f'(x)=0 ou f'(x) non défini).
         if x in (-oo, oo):
             dfx = ''
@@ -147,7 +147,7 @@ def _auto_tabvar(chaine='', derivee=True, limites=True, decimales=3, approche=Fa
             return '(%s;%s;%s)' % (nice_str2(x), fx, dfx)
         else:
             return '(%s;%s)' % (nice_str2(x), fx)
-            
+
     def _code_inter(a, b):
         u"Retourne les variations entre a et b."
         if a == -oo and b == +oo:

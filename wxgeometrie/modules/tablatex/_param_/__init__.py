@@ -11,5 +11,5 @@ limites = True
 formatage_antecedents = r"\nombre{VAL}"
 formatage_images = r"\nombre{VAL}"
 # Nombre de décimales, ou None pour les valeurs exactes
-decimales_tabvar = -1
+decimales_tabvar_tabsign = -1
 decimales_tabval = 2
