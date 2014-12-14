@@ -150,8 +150,8 @@ class Graphes(Panel_API_graphique):
             end = max(self.graph.nodes)
         if ask:
             while True:
-                txt, ok = QInputDialog.getText(self, "Précisez le départ et l'arrivée.",
-                        "Entrez le sommet départ et le sommet d'arrivée (séparés par un espace).",
+                txt, ok = QInputDialog.getText(self, u"Précisez le départ et l'arrivée.",
+                        u"Entrez le sommet de départ et le sommet d'arrivée (séparés par un espace).",
                         QLineEdit.Normal, '%s %s' % (start, end))
                 if not ok:
                     return
