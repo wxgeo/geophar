@@ -205,15 +205,9 @@ omega
 
             def formater_texte(texte):
                 if texte:
-                    if param.latex:
-                        if texte.startswith("&"):
-                            texte = r"\overline{" + texte[1:] + "}"
-                        texte = texte.replace("&{", r"\overline{")
-                        texte = texte.replace("&", r"\bar ")
-                    else:
-                        if texte.startswith("&"):
-                            texte = r"\bar{" + texte[1:] + "}"
-                        texte = texte.replace("&", r"\bar ")
+                    if texte.startswith("&"):
+                        texte = r"\overline{" + texte[1:] + "}"
+                    texte = texte.replace("&", r"\overline ")
                     texte = "$" + texte + "$" if texte[0] != '$' else texte
                     if param.latex:
                         texte = "$" + texte + "$" # passage en mode "display" de LaTeX
