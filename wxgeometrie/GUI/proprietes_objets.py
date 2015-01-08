@@ -487,7 +487,8 @@ class ProprietesAffichage(QWidget):
                         self.canvas.executer(u"%s.label(%s, %s)" %(objet.nom, repr(label), repr(mode)))
                         self.radios[mode].setChecked(True)
                         # Le texte a pu changer (ajout automatique des accolades en mode formule)
-                        self.etiquette.setText(objet.legende)
+                        if hasattr(self, "etiquette"):
+                            self.etiquette.setText(objet.legende)
                     if changements:
                         if self.islabel:
                             self.canvas.executer(u"%s.etiquette.style(**%s)" %(objet.parent.nom, changements))
