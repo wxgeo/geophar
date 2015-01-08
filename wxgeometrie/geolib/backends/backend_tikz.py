@@ -148,7 +148,7 @@ class BackendTikz(object):
     def _export_Segment(self, segment, **options):
         self._draw(segment.extremites, **segment.style())
 
-    def _export_Droite(self, droite, **options):
+    def _export_Droite_generique(self, droite, **options):
         points = droite._points_extremes()
         if len(points) == 2:
             # Sinon, la droite ne coupe pas la fenêtre (ou seulement en un point)
@@ -179,7 +179,7 @@ class BackendTikz(object):
                 xm = float(max(xmin, I.inf))
                 xM = float(min(xmax, I.sup))
                 self._draw(r'plot ({%s}, {%s})' % (x_, fx),
-                                options=['domain=%s:%s,smooth,samples=500,variable=%s' % (xm, xM, x_)],
+                                options=['domain=%s:%s,smooth,samples=500,variable=%s,restrict y to domain={%s:%s}' % (xm, xM, x_, float(ymin), float(ymax))],
                                 **courbe.style())
             for val, symb in Df.extremites(xmin, xmax):
                 if symb == '.':
