@@ -204,7 +204,7 @@ class MenuActionsObjet(PopUpMenu):
                 try:
                     nom = select.nom
                     txt = repr(dlg.text.toPlainText())
-                    mode = ('formule' if dlg.cb.isChecked() else 'texte')
+                    mode = repr('formule' if dlg.cb.isChecked() else 'texte')
                     self.executer(u"%s.label(%s, %s)" %(nom, txt, mode))
                 except:
                     # Au cas où une formule incorrecte fasse buguer l'affichage (?)
