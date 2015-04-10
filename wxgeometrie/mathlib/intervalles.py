@@ -431,6 +431,8 @@ def preformatage_ensemble(chaine):
     chaine = re.sub(r"\\(infty|e|pi|sin|cos|tan|ln|exp)", lambda m:m.group()[1:], chaine)
     # conversion de \frac, \dfrac et \tfrac
     chaine = _convertir_latex_frac(chaine)
+    # [1~;~3] -> [1;3] et [1\,;\,3] -> [1;3], etc.
+    chaine = chaine.replace('~', '').replace(r'\,', '').replace(r'\;', '').replace(r'\:', '')
     # TODO: tests unitaires pour le LaTeX
 
     chaine = chaine.replace('infty', 'oo').replace('inf', 'oo')
