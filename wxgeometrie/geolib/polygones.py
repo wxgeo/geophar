@@ -1124,7 +1124,8 @@ class PrevisualisationPolygone(Polygone_generique):
         fill.xy = xy
         plot.set_data(x, y)
         fill._alpha = self.style("alpha")
-        fill._edgecolor = fill._facecolor = plot._color = self.style("couleur")
+        # Following line fails with matplotlib 1.3.1.
+        #fill._edgecolor = fill._facecolor = plot._color = self.style("couleur")
         fill.zorder = niveau - 0.01
         plot._linestyle = self.style("style")
         fill._linestyle = FILL_STYLES.get(self.style("style"), "solid")
