@@ -148,6 +148,16 @@ class Graph(dict):
             return k*len(self[nodes[i]].get(nodes[j], ()))
         return Matrix(n, n, f)
 
+    # Matrice avec coeffs=poids aretes
+    def matrix2(self, default=0):
+        n = self.order
+        nodes = sorted(self)
+        def f(i, j):
+            # In an unoriented graph, loops are counted twice.
+            k = (1 if self.oriented or i != j else 2)
+            return min(self[nodes[i]].get(nodes[j], [default]))
+        return Matrix(n, n, f)
+
     def degree(self, node):
         if self.oriented:
             return sum(len(edges) for node2, edges in self[node].items() if node2)

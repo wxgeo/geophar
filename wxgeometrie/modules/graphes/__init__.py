@@ -57,7 +57,8 @@ class GraphesMenuBar(MenuBar):
                         [u"Latex -> Presse-papier",
                             [u"Dijkstra", u"Recherche d'un trajet minimal entre deux points.", None, self.panel.latex_Dijkstra],
                             [u"Welsh & Powell", u"Coloriage par l'algorithme de Welsh & Powell.", None, self.panel.latex_WelshPowell],
-                            [u"Matrice", u"Matrice du graphe.", None, self.panel.latex_Matrix],
+                            [u"Matrice", u"Matrice du graphe.", None, self.panel.latex_matrix],
+                            [u"Matrice (poids)", u"Matrice de graphe pondéré.", None, self.panel.latex_matrix_poids],
                             ],
                         [u"options"],
                         )
@@ -93,28 +94,39 @@ class Graphes(Panel_API_graphique):
             except Exception:
                 return 1
 
+        sommets = [s for s in self.feuille_actuelle.objets.points if s.visible]
+        # On utilise les étiquettes des points si elles sont uniques,
+        # sinon le nom des points par défaut.
+        if len(set(filter(None, (s.label() for s in sommets)))) == len(sommets):
+            def nom(sommet):
+                return sommet.label()
+        else:
+            def nom(sommet):
+                return sommet.nom
+
         dic = {}
         # Ex: {"A": {"B":[1], "C":[2, 5]}, "B": {}, "C": {"A": [2], "C": [1]}}
-        for sommet in self.feuille_actuelle.objets.points:
-            if sommet.visible:
-                d_sommet = defaultdict(list)
-                for arete in aretes:
-                    A, B = arete.extremites
-                    if sommet is A:
-                        d_sommet[B.nom].append(poids(arete))
-                    elif sommet is B:
-                        d_sommet[A.nom].append(poids(arete))
-                for arete in aretes_orientees:
-                    A, B = arete.extremites
-                    if sommet is A:
-                        d_sommet[B.nom].append(poids(arete))
-                dic[sommet.nom] = d_sommet
+        for sommet in sommets:
+            d_sommet = defaultdict(list)
+            for arete in aretes:
+                A, B = arete.extremites
+                if sommet is A:
+                    d_sommet[nom(B)].append(poids(arete))
+                elif sommet is B:
+                    d_sommet[nom(A)].append(poids(arete))
+            for arete in aretes_orientees:
+                A, B = arete.extremites
+                if sommet is A:
+                    d_sommet[nom(B)].append(poids(arete))
+            dic[nom(sommet)] = d_sommet
 
         self.graph = Graph(dic, oriented=bool(aretes_orientees))
 
-    def matrice(self, event=None, creer=True):
+    def matrice(self, event=None, creer=True, poids=False):
         if creer:
             self.creer_graphe()
+        if poids:
+            return self.graph.matrix2(default=0)
         return self.graph.matrix
 
     def chaine_eulerienne(self, event=None, chaine=None):
@@ -172,8 +184,12 @@ class Graphes(Panel_API_graphique):
         self.vers_presse_papier(latex_)
         self.code_copie()
 
-    def latex_Matrix(self, event=None, creer=True):
+    def latex_matrix(self, event=None, creer=True):
         self.vers_presse_papier(latex(self.matrice(creer=creer)))
+        self.code_copie()
+
+    def latex_matrix_poids(self, event=None, creer=True):
+        self.vers_presse_papier(latex(self.matrice(creer=creer, poids=True)))
         self.code_copie()
 
     def code_copie(self):
