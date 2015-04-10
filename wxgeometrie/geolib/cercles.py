@@ -767,9 +767,10 @@ class Disque(Cercle_generique):
     _style_defaut = param.polygones
     _prefixe_nom = "d"
 
-    cercle = __cercle = Argument("Cercle_generique", defaut = Cercle)
+    cercle = __cercle = Argument("Cercle_generique", defaut=Cercle)
 
     def __init__(self, cercle = None, **styles):
+        styles.setdefault('couleur', cercle.style('couleur'))
         self.__cercle = cercle = Ref(cercle)
         Cercle_generique.__init__(self, Centre(cercle), **styles)
 
