@@ -441,7 +441,11 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
         if ctrl_down(event):
             mode = ('select' if alt_down(event) else 'zoom')
         elif self.select is None:
-            mode = 'select'
+            # Passera automatiquement en mode selection si la zone sélectionnée
+            # est assez grande (cela évite de créer une sélection alors que
+            # l'utilisateur a juste légèrement bougé la souris en cliquant !)
+            # Reste en mode selection si on y était déjà.
+            mode = ('auto_select' if self.action_en_cours != 'select' else 'select')
         if self.fixe and mode == 'zoom':
             # Zoom interdit (fenêtre d'affichage bloquée).
             mode = 'defaut'
@@ -509,13 +513,28 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
                 # lors de la sélection de la zone de zoom).
                 self.interrompre_action_en_cours()
 
+            px, py = lieu(event)
+            if self.action_en_cours == 'auto_select':
+                # Quand on clique dans le canevas, on déplace souvent légèrement la souris entre
+                # le moment où on enfonce le bouton de la souris et le moment ou on le relâche.
+                # Le canevas peut alors croire qu'on veut sélectionner une zone.
+                # Pour éviter ce problème, on choisit une taille de sélection minimale (abs(dx)+abs(dy)).
+                # Nota: une fois la sélection déclenchée, on peut éventuellement réduire la zone
+                # en deçà de cette taille minimale.
+                px0, py0 = self.pixels_left_down
+                if abs(px - px0) + abs(py - py0) > param.taille_selection_minimale:
+                    self.action_en_cours = 'select'
+
+            # Dans toutes les actions suivantes, on évite d'utiliser la méthode self.coordonnees()
+            # qui tient compte de l'aimantation de la grille, ce qui n'est pas souhaitable ici.
+
             if self.action_en_cours == 'select':
                 # Sélection simultanée de tous les objets d'une zone.
-                self.rectangle_selection(self.coordonnees_left_down, self.coordonnees(event))
+                self.rectangle_selection(self.coordonnees_left_down, self.pix2coo(px, py))
 
             elif self.action_en_cours == 'zoom':
                 # Sélection d'une zone pour zoomer.
-                self.rectangle_zoom(self.coordonnees_left_down, self.coordonnees(event))
+                self.rectangle_zoom(self.coordonnees_left_down, self.pix2coo(px, py))
 
             elif alt_down(event) or meta_down(event):
                 # Déplacement de l'étiquette d'un objet.
@@ -527,7 +546,7 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
                                 if objet.etiquette.distance_inf(x, y, param.precision_selection):
                                     self.etiquette_selectionnee = objet.etiquette
                                     x, y = self.etiquette_selectionnee.coordonnees
-                                    x1, y1 = self.coordonnees(event)
+                                    x1, y1 = self.pix2coo(px, py)
                                     self.decalage_coordonnees = x - x1, y - y1
                                     break
                             except:
@@ -686,7 +705,8 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
             # Cela permet :
             # - de savoir si un objet a été déplacé ("drag") ou non lors du clic.
             # - de sélectionner une zone.
-            self.coordonnees_left_down = x_clic, y_clic = self.coordonnees(event)
+            self.pixels_left_down = pxy = lieu(event)
+            self.coordonnees_left_down = x_clic, y_clic = self.pix2coo(*pxy)
             self.setFocus()
             if self.deplacable(self.select):
                 x, y = self.select.coordonnees

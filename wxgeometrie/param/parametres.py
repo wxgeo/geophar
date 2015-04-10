@@ -560,6 +560,14 @@ dimensions_en_pixels = (800, 600)
 # Tableau récapitulatif des résolutions les plus courantes :
 # http://forum.notebookreview.com/notebook-dummy-guide-articles/124093-guide-screen-sizes-dots-per-inch-dpi.html
 
+# Quand on clique dans le canevas, on déplace souvent légèrement la souris entre
+# le moment où on enfonce le bouton de la souris et le moment ou on le relâche.
+# Le canevas peut alors croire qu'on veut sélectionner une zone.
+# Pour éviter ce problème, on choisit une taille de sélection minimale (abs(dx)+abs(dy)).
+# Nota: une fois la sélection déclenchée, on peut éventuellement réduire la zone
+# en deçà de cette taille minimale.
+taille_selection_minimale = 25
+
 
 # Export / Sauvegarde
 dpi_export = 200 # resolution utilisee lors de l'exportation des images
