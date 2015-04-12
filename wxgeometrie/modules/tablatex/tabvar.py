@@ -337,8 +337,11 @@ x;\\sqrt{x};(\\sqrt{x})': 0;0;| << +oo;+oo"""
     portion = 0 # indique la derniere portion traitee (les portions sont delimitees par les bornes de l'ensemble de definition et les valeurs interdites)
     debut = True
 
-    def en_latex(chaine):
-        return convertir_en_latex(chaine)[1:-1]
+    def en_latex(chaine, stretch=False):
+        if stretch:
+            return convertir_en_latex(chaine)[1:-1]
+        else:
+            return '\\TVstretch{%s}' % convertir_en_latex(chaine)[1:-1]
 
     # Deuxieme et dernier balayage :
     # on parcourt maintenant la liste pour construire colonne par colonne le tableau de variations.
@@ -380,20 +383,23 @@ x;\\sqrt{x};(\\sqrt{x})': 0;0;| << +oo;+oo"""
             # les limites a gauche et a droite, separees par un "|". (Idem pour f'(x)).
 
 
+            # largeur : nombre de colonnes à créer pour la valeur.
+            # Si c'est une valeur simple, 1 colonne suffit.
+            # Par contre, si x est une valeur interdite pour f ou f', il faudra
+            # 3 colonnes (limite à gauche, double barre, limite à droite).
             largeur = max((3 if "|" in val else 1) for val in valeurs)
-            # 3 si x est une valeur interdite pour f ou f' (ie. une valeur contient un "|"), 1 sinon.
 
             if largeur == 3: # x est une valeur interdite pour f(x) ou f'(x)
-                ligne_variable += " &" + en_latex(valeurs[0]) + "& "
+                ligne_variable += " &" + en_latex(valeurs[0], stretch=True) + "& "
 
                 vals_fonc = valeurs[1].split("|")
                 if len(vals_fonc) == 2: # x est une valeur interdite pour f(x)
                     portion += 1 # on change de portion
-                    ligne_fonction += en_latex(vals_fonc[0]) + "&\\dbarre&" \
+                    ligne_fonction += en_latex(vals_fonc[0], stretch=True) + "&\\dbarre&" \
                                     + "\\niveau{" + str(1 - niveaux[portion][0]) +"}{" + str(ecart_maximal + 1) + "}" \
-                                    + en_latex(vals_fonc[1])
+                                    + en_latex(vals_fonc[1], stretch=True)
                 else:
-                    ligne_fonction += " &" + en_latex(vals_fonc[0]) + "&"
+                    ligne_fonction += " &" + en_latex(vals_fonc[0], stretch=True) + "&"
 
                 if len(valeurs) < 3: # le nombre derive n'est pas specifie
                     valeurs.append("|") # si la fonction n'est pas definie en x, sa derivee non plus
