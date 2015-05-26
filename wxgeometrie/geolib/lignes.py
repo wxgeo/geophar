@@ -465,11 +465,13 @@ class Droite_generique(Ligne_generique):
         if not self._representation:
             self._representation = [self.rendu.ligne()]
         points = self._points_extremes()
+        plot = self._representation[0]
         if len(points) < 2:
             # La droite ne coupe pas la fenêtre (ou seulement en un point)
+            plot._visible = False
             return
         (x1, y1), (x2, y2) = points
-        plot = self._representation[0]
+        plot._visible = True
         plot.set_data((x1, x2), (y1, y2))
         plot.set(color = self.style("couleur"), linestyle = self.style("style"),
                  linewidth = self.style("epaisseur"), zorder = self.style("niveau"))
