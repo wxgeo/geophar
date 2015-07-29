@@ -327,8 +327,8 @@ class Interprete(object):
                         .replace("*ou-", " ou -").replace("*et-", " et -")\
                         .replace("*ou+", " ou +").replace("*et+", " et +")
             deb, bloc, fin = split_around_parenthesis(formule, i)
-            formule = ('%s("%s", local_dict=__local_dict__, ensemble=%s)'
-                       % (deb, bloc[1:-1], repr(self.ensemble)))
+            formule = ('%s("%s", local_dict=__local_dict__, ensemble=%s)%s'
+                       % (deb, bloc[1:-1], repr(self.ensemble), fin))
         if self.verbose or (self.verbose is None and param.debug):
             print "Debugging resoudre(): ", i, formule
         formule = re.sub("(?<![A-Za-z0-9_])(factor|factorise)[(]", "factoriser(", formule)

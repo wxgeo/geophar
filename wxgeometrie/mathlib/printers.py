@@ -300,7 +300,9 @@ class CustomLatexPrinter(MyCustomPrinter, LatexPrinter):
         return LatexPrinter._print_Mul(self, expr)
 
     def _print_set(self, expr):
-        return r'\left{%s\right}' % '\,;\,'.join(self._print(val) for val in expr)
+        if expr:
+            return r'\left\{%s\right\}' % '\,;\,'.join(self._print(val) for val in expr)
+        return r"\emptyset"
 
     def _print_Intervalle(self, expr):
         if expr.vide:
