@@ -12,6 +12,7 @@ def assert_tabvar(chaine, code_latex, **options):
 
 def test_mode_manuel():
     s = "x;f(x);f'(x):0;2;|>>1;0;1<<2;3;0"
+    options = {"stretch": False}
     tab = \
 r"""\[\begin{tabvar}{|C|CCCCCCC|}
 \hline
@@ -24,7 +25,7 @@ f'(x)                                &&\dbarre&        &-       &1&+     &0\\
 \end{tabvar}\]
 % x;f(x);f'(x):0;2;|>>1;0;1<<2;3;0
 """
-    assert_tabvar(s, tab)
+    assert_tabvar(s, tab, **options)
 
     s = "x;f(x);f'(x):(0;2;|) >> (1;0;1) << (2;3;0)"
     tab = \
@@ -39,7 +40,7 @@ f'(x)                                &&\dbarre&        &-       &1&+     &0\\
 \end{tabvar}\]
 % x;f(x);f'(x):(0;2;|) >> (1;0;1) << (2;3;0)
 """
-    assert_tabvar(s, tab)
+    assert_tabvar(s, tab, **options)
 
     s = "x;f(x):-oo;+oo>>0;-oo|+oo>>+oo;-oo"
     tab = \
@@ -54,7 +55,7 @@ f'(x)                                &                    &-       &&\dbarre&   
 \end{tabvar}\]
 % x;f(x):-oo;+oo>>0;-oo|+oo>>+oo;-oo
 """
-    assert_tabvar(s, tab)
+    assert_tabvar(s, tab, **options)
 
     s = "x;f(x): (-oo;+oo)>>(0;-oo|+oo)>>(+oo;-oo)"
     tab = \
@@ -69,9 +70,10 @@ f'(x)                                &                    &-       &&\dbarre&   
 \end{tabvar}\]
 % x;f(x): (-oo;+oo)>>(0;-oo|+oo)>>(+oo;-oo)
 """
-    assert_tabvar(s, tab)
+    assert_tabvar(s, tab, **options)
 
 def test_manuel_zone_interdite():
+    options = {"stretch": False}
     s = "x;f(x);f'(x):(0;2;|) >> (1;-oo) || (2;+oo) << (+oo;3)"
     tab = \
 r"""\[\begin{tabvar}{|C|CCCCCUCCC|}
@@ -85,7 +87,7 @@ f'(x)                                &&\dbarre&        &-       &0      &       
 \end{tabvar}\]
 % x;f(x);f'(x):(0;2;|) >> (1;-oo) || (2;+oo) << (+oo;3)
 """
-    assert_tabvar(s, tab)
+    assert_tabvar(s, tab, **options)
     # Syntaxe alternative : XX au lieu de ||.
     s = "x;f(x);f'(x):(0;2;|) >> (1;-oo) XX (2;+oo) << (+oo;3)"
     tab = \
@@ -100,11 +102,12 @@ f'(x)                                &&\dbarre&        &-       &0      &       
 \end{tabvar}\]
 % x;f(x);f'(x):(0;2;|) >> (1;-oo) XX (2;+oo) << (+oo;3)
 """
-    assert_tabvar(s, tab)
+    assert_tabvar(s, tab, **options)
 
 
 
 def test_mode_auto():
+    options = {"stretch": False}
     s = 'f(x)=(x+1)/(3x-2)'
     tab = \
 r"""\[\begin{tabvar}{|C|CCCCCCC|}
@@ -119,7 +122,7 @@ f'(x)                                &                        &-       &&\dbarre
 % x;f(x):(-oo;1/3) >> (2/3;-oo|+oo;|) >> (+oo;1/3)
 % f(x)=(x+1)/(3x-2)
 """
-    assert_tabvar(s, tab)
+    assert_tabvar(s, tab, **options)
 
     s = "(x+1)(x+2)"
     tab = \
@@ -135,7 +138,7 @@ f'(x)                             &                    &-       &0           &+ 
 % x;f:(-oo;+oo) >> (-3/2;-1/4;0) << (+oo;+oo)
 % (x+1)(x+2)
 """
-    assert_tabvar(s, tab)
+    assert_tabvar(s, tab, **options)
 
     s = "f(x)=5*ln(x)/x+3"
     tab = \
@@ -151,7 +154,7 @@ f'(x)                                &&\dbarre&                                 
 % x;f(x):(0;|-oo;|) << (e;5*exp(-1) + 3;0) >> (+oo;3)
 % f(x)=5*ln(x)/x+3
 """
-    assert_tabvar(s, tab)
+    assert_tabvar(s, tab, **options)
 
 
 def test_intervalle():
@@ -227,7 +230,7 @@ f'(x)                             &              &+     &0            &-       &
 
 def test_options():
     s = 'f(x)=4 x^{2} - 24 x + 11'
-    options = {'derivee': False, 'limites': False}
+    options = {'derivee': False, 'limites': False, 'stretch': False}
     tab = \
 r'''\[\begin{tabvar}{|C|CCCCC|}
 \hline
@@ -245,7 +248,7 @@ r'''\[\begin{tabvar}{|C|CCCCC|}
 def test_issue_189():
     # Tableaux de signes et de variation avec des décimaux
     s = 'f(x) = (x -4)\e^{-0,25x+5} sur [4;20]'
-    options = {'derivee': False, 'decimales': 3}
+    options = {'derivee': False, 'decimales': 3, 'stretch': False}
     tab = \
 r'''\[\begin{tabvar}{|C|CCCCC|}
 \hline
@@ -258,7 +261,7 @@ r'''\[\begin{tabvar}{|C|CCCCC|}
 % f(x) = (x -4)\e^{-0,25x+5} sur [4;20]
 '''
     assert_tabvar(s, tab, **options)
-    options = {'derivee': False, 'decimales': 2}
+    options = {'derivee': False, 'decimales': 2, 'stretch': False}
     tab = \
 r'''\[\begin{tabvar}{|C|CCCCC|}
 \hline
@@ -274,7 +277,7 @@ r'''\[\begin{tabvar}{|C|CCCCC|}
 
 def test_valeur_approchee():
     s = "f(x)=1/x sur [4;6]"
-    options = {'derivee': True, 'decimales': 4, 'approche': True}
+    options = {'derivee': True, 'decimales': 4, 'approche': True, 'stretch': False}
     tab = \
 r'''\[\begin{tabvar}{|C|CCC|}
 \hline
@@ -293,7 +296,7 @@ f'(x)                                &                 &-       & \\
 
 def test_issue_187():
     s = "5x+31+(1500x+100)/(x^2)"
-    options = {'derivee': True, 'decimales': 2, 'approche': True}
+    options = {'derivee': True, 'decimales': 2, 'approche': True, 'stretch': False}
     tab = \
 r'''\[\begin{tabvar}{|C|CCCCCCCCCCCCC|}
 \hline
@@ -312,7 +315,7 @@ f'(x)                             &                    &+     &0      &-       &
 
 def test_issue_249():
     s = r"f(x) = 0,5x + \text{e}^{-0,5x + 0,4}"
-    options = {'derivee': True, 'decimales': 2, 'approche': True}
+    options = {'derivee': True, 'decimales': 2, 'approche': True, 'stretch': False}
     tab = \
 r'''\[\begin{tabvar}{|C|CCCCC|}
 \hline
@@ -331,7 +334,7 @@ f'(x)                                &                    &-       &0  &+     & 
 
 def test_constante():
     s = "g(x)=5"
-    options = {'derivee': True}
+    options = {'derivee': True, 'stretch': False}
     tab = \
 r'''\[\begin{tabvar}{|C|CCC|}
 \hline
@@ -350,7 +353,7 @@ g'(x)            &              &0         & \\
 
 def test_abs():
     s = "abs(x**2-5)"
-    options = {'derivee': True, 'limites':True}
+    options = {'derivee': True, 'limites':True, 'stretch': False}
     tab = \
 r'''\[\begin{tabvar}{|C|CCCCCCCCCCCCC|}
 \hline
@@ -369,7 +372,7 @@ f'(x)                             &                    &-       &&\dbarre&    &+
 
 def test_issue_286():
     s = 'sqrt{x^2 - 1}'
-    options = {'derivee': True}
+    options = {'derivee': True, 'stretch': False}
     tab = \
 r'''\[\begin{tabvar}{|C|CCCCCUCCCCC|}
 \hline
@@ -384,10 +387,10 @@ f'(x)                             &                    &-       &&\dbarre&&     
 % sqrt{x^2 - 1}
 '''
     assert_tabvar(s, tab, **options)
-    
+
 def test_zeros_derivee():
     s = 'f(x)=x^3'
-    options = {'derivee': True}
+    options = {'derivee': True, 'stretch': False}
     tab = \
 r'''\[\begin{tabvar}{|C|CCCCC|}
 \hline

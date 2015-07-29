@@ -37,7 +37,7 @@ from ...mathlib.parsers import VAR
 from ... import param
 
 
-def _auto_tabvar(chaine='', derivee=True, limites=True, decimales=3, approche=False, parse_only=False):
+def _auto_tabvar(chaine='', derivee=True, limites=True, decimales=3, approche=False, parse_only=False, stretch=True):
     u"""Génère le code du tableau de variations d'une fonction à variable réelle.
 
     On suppose que la fonction est de classe C1 sur tout intervalle ouvert de son
@@ -212,13 +212,13 @@ def _auto_tabvar(chaine='', derivee=True, limites=True, decimales=3, approche=Fa
         print 'Code TABVar:', code
     if parse_only:
         return code
-    return tabvar(code, derivee=derivee) + '% ' + chaine_initiale + '\n'
+    return tabvar(code, derivee=derivee, stretch=stretch) + '% ' + chaine_initiale + '\n'
 
 
 
 
 
-def tabvar(chaine="", derivee=True, limites=True, decimales=3, approche=False):
+def tabvar(chaine="", derivee=True, limites=True, decimales=3, approche=False, stretch=True):
     u"""Indiquer les variations de la fonction.
 
 Exemples :
@@ -229,9 +229,8 @@ x;\\sqrt{x};(\\sqrt{x})': 0;0;| << +oo;+oo"""
 
 
     #ligne_variable = ligne_derivee = ligne_fonction = ""
-
     if not ':' in chaine and not '>>' in chaine and not '==' in chaine and not '<<' in chaine:
-        return _auto_tabvar(chaine, derivee=derivee, limites=limites, decimales=decimales, approche=approche)
+        return _auto_tabvar(chaine, derivee=derivee, limites=limites, decimales=decimales, approche=approche, stretch=stretch)
 
     chaine = chaine.replace("-oo", "-\\infty").replace("+oo", "+\\infty")
 
@@ -339,9 +338,9 @@ x;\\sqrt{x};(\\sqrt{x})': 0;0;| << +oo;+oo"""
 
     def en_latex(chaine, stretch=False):
         if stretch:
-            return convertir_en_latex(chaine)[1:-1]
-        else:
             return '\\TVstretch{%s}' % convertir_en_latex(chaine)[1:-1]
+        else:
+            return convertir_en_latex(chaine)[1:-1]
 
     # Deuxieme et dernier balayage :
     # on parcourt maintenant la liste pour construire colonne par colonne le tableau de variations.
@@ -390,16 +389,16 @@ x;\\sqrt{x};(\\sqrt{x})': 0;0;| << +oo;+oo"""
             largeur = max((3 if "|" in val else 1) for val in valeurs)
 
             if largeur == 3: # x est une valeur interdite pour f(x) ou f'(x)
-                ligne_variable += " &" + en_latex(valeurs[0], stretch=True) + "& "
+                ligne_variable += " &" + en_latex(valeurs[0], stretch=stretch) + "& "
 
                 vals_fonc = valeurs[1].split("|")
                 if len(vals_fonc) == 2: # x est une valeur interdite pour f(x)
                     portion += 1 # on change de portion
-                    ligne_fonction += en_latex(vals_fonc[0], stretch=True) + "&\\dbarre&" \
+                    ligne_fonction += en_latex(vals_fonc[0], stretch=stretch) + "&\\dbarre&" \
                                     + "\\niveau{" + str(1 - niveaux[portion][0]) +"}{" + str(ecart_maximal + 1) + "}" \
-                                    + en_latex(vals_fonc[1], stretch=True)
+                                    + en_latex(vals_fonc[1], stretch=stretch)
                 else:
-                    ligne_fonction += " &" + en_latex(vals_fonc[0], stretch=True) + "&"
+                    ligne_fonction += " &" + en_latex(vals_fonc[0], stretch=stretch) + "&"
 
                 if len(valeurs) < 3: # le nombre derive n'est pas specifie
                     valeurs.append("|") # si la fonction n'est pas definie en x, sa derivee non plus
