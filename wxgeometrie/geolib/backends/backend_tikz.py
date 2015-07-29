@@ -77,8 +77,9 @@ class BackendTikz(object):
 
     def exporter(self, feuille, **options):
         deb = r'\begin{tikzpicture}'
-        if options.get('echelle') is not None:
-            deb += '[scale=%s]' % options['echelle']
+        tikz_options = options.get('tikz', {})
+        tikz_options['scale'] = options['echelle']
+        deb += '[%s]' % ','.join('%s=%s' %(key, val) for (key, val) in tikz_options.iteritems())
         self._lignes = [deb]
         self._export_repere(feuille)
         for objet in feuille.liste_objets(objets_caches=False, etiquettes=False):

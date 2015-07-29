@@ -127,4 +127,4 @@ a_mettre_a_jour = (
 
 del os, platform, sys
 
-print(u'Import des paramètres terminé.')
+#print(u'Import des paramètres terminé.')
