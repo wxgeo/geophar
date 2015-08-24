@@ -349,6 +349,19 @@ def mat(*args):
             expr = expr(li, co)
         return Matrix(FunctionMatrix(args[0], args[1], Lambda((li, co), expr)))
 
+def transpose(M):
+  u"Transposée de la matrice M."
+  return M.T
+  
+def det(M):
+  u"Déterminant de la matrice M."
+  return M.det()
+  
+def valeurs_propres(M):
+  return M.eigenvals()
+  
+def vecteurs_propres(M):
+  return M.eigenvects()
 
 def together(expression):
     return cancel(together_(expression))

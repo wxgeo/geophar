@@ -35,6 +35,7 @@ __classement__ = OrderedDict((
     (u"Symboles", []),
     (u"Arithmétique", []),
     (u"Statistiques", []),
+    (u"Matrices", []),
     (u"Divers", []),
 ##    (u"LaTeX", []),
 ))
@@ -134,9 +135,17 @@ __classement__[u"Algèbre"].append((u"Produit", "produit", u"Calculer un produit
 
 __classement__[u"Algèbre"].append(None)
 
-from .sympy_functions import mat
+from .sympy_functions import mat, transpose, det, vecteurs_propres, valeurs_propres
 Matrice = Matrix = Mat = matrix = matrice = mat
-__classement__[u"Algèbre"].append((u"Matrice", "mat", u"Génère une matrice. ex: mat([[1;2];[3;4]]); mat(4;4;0); mat(4;4;2*li+3*co)"))
+vep = vecteurs_propres
+vap = valeurs_propres
+determinant = det
+tr = transposee = transpose
+__classement__[u"Matrices"].append((u"Matrice", "mat", u"Créer une matrice. ex: mat([[1;2];[3;4]]); mat(4;4;0); mat(4;4;2*li+3*co)"))
+__classement__[u"Matrices"].append((u"Transpose", "tr", u"Transpose une matrice. ex: tr(M)"))
+__classement__[u"Matrices"].append((u"Déterminant", "det", u"Calcul le déterminant d'une matrice. ex: det(M)"))
+__classement__[u"Matrices"].append((u"Valeurs propres", "vap", u"Valeurs propres d'une matrice avec ordre de multiplicité. ex: vap(M)"))
+__classement__[u"Matrices"].append((u"Vecteurs propres", "vep", u"Base de vecteurs propres d'une matrice. ex: vep(M)"))
 
 
 from sympy import isprime
