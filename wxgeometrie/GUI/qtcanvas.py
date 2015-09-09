@@ -44,6 +44,11 @@ from ..geolib.objet import Objet
 #~ from ..geolib.constantes import NOM
 
 class MiniEditeur:
+    u"""Le mini éditeur de texte permet de taper du texte directement
+    dans le canevas, sans utiliser une boîte de dialogue.
+    Il est utilisé lorsqu'on crée un texte avec la souris,
+    ou lorsqu'on crée un objet géométrique (point, cercle...) qu'on
+    peut ainsi aussitôt nommer."""
     def __init__(self, parent):
         self.parent = parent
         self.objet = None
@@ -76,6 +81,12 @@ class MiniEditeur:
         self._display(self.texte)
 
     def cancel(self):
+        if self.objet._style.get('nouveau_texte'):
+            # Le pseudo-style `nouveau_texte` est utilisé pour indiquer qu'un texte
+            # vient juste d'être créé. Ceci permet que, lorsque l'utilisateur clique
+            # quelque part pour créer un texte, puis appuie sur [ESC], le texte
+            # soit aussitôt supprimé, au lieu de créer un texte vide.
+            self.parent.executer("%s.supprimer()" % self.objet.nom)
         self._display(None)
         self.objet = None
 
@@ -84,7 +95,12 @@ class MiniEditeur:
         canvas = self.parent
         panel = canvas.parent
         # NB: si aucun nom n'est rentré, [ENTREE] est un équivalent de [ECHAP].
-        if self.texte:
+        if not self.texte:
+            if self.objet._style.get('nouveau_texte'):
+                self.parent.executer("%s.supprimer()" % self.objet.nom)
+        else:
+            self.objet._style.pop('nouveau_texte', None)
+
             try: # si possible, on change le nom de l'objet ; sinon, on change son label.
                 nom = self.objet.nom
                 if isinstance(self.objet, Texte) or not re.match("""[A-Za-z_][A-Za-z0-9_'"`]*$""", self.texte):
@@ -106,7 +122,8 @@ class MiniEditeur:
             except:
                 self.display()
                 raise
-        self.cancel()
+        self._display(None)
+        self.objet = None
 
 
     def key(self, key, txt, modifiers):

@@ -1243,10 +1243,14 @@ class BarreOutils(QWidget):
 
     def texte(self, event = False, **kw):
         if event is not False:
-            self.interagir(self.texte, u"Cliquez à l'emplacement souhaité.")
+            self.interagir(self.texte, u"Cliquez à l'emplacement voulu puis tapez le texte souhaité.")
         elif self.test(**kw):
             position = kw["position"]
-            self.executer(u"Texte('', %s, %s)" % position, init = False)
+            # Le pseudo-style `nouveau_texte` est utilisé pour indiquer qu'un texte
+            # vient juste d'être créé. Ceci permet que, lorsque l'utilisateur clique
+            # quelque part pour créer un texte, puis appuie sur [ESC], le texte
+            # soit aussitôt supprimé, au lieu de créer un texte vide.
+            self.executer(u"Texte('', %s, %s, nouveau_texte=True)" % position, init = False)
 
 
 
