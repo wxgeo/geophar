@@ -118,9 +118,15 @@ Si des librairies manquent, leur installation sera automatiquement proposée.
                 python tools/linux-uninstall.py
 
 
+.. note::   Depuis fin 2014, Géophar est également présent dans les dépôts Ubuntu/Debian.
+             
+            Pour l'installer, tapez simplement dans le terminal :
+             
+            ::
+            
+                sudo apt-get install geophar
 
-
-
+            La version installée par cette méthode n'est cependant pas forcément la dernière.
 
 ==================================
 Description des différents modules
@@ -135,7 +141,7 @@ Géophar est composée de plusieurs modules ; il contient entre autres les modul
 -   Une calculatrice formelle.
 -   Un module graphique de statistiques.
 -   Un générateur d'arbres de probabilités.
--   Un générateur
+-   Un générateur de tableaux LaTeX (variations, signes...)
 
 Les autres modules présents sont fournis à titre expérimental, et ne sont donc pas documentés ici.
 
