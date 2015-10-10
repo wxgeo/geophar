@@ -1,7 +1,9 @@
-Géophar version 15.10
-Publiée le 09/10/2015
+Géophar version 15.10.1
+Publiée le 10/10/2015
 
 
+* Fix failing tests.
+* Version 15.10
 * [FS#313] ESC key cancels text creation, so no empty text is created.
 * Add a menu for matrices in calc.
 * [Calc] Minor improvements in request parsing and LaTeX output.
