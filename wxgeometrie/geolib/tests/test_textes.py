@@ -15,4 +15,4 @@ def test_style_temporaire():
     # quelque part pour créer un texte, puis appuie sur [ESC], le texte
     # soit aussitôt supprimé, au lieu de créer un texte vide.
     t = Texte("blabla", nouveau_texte=True)
-    del t._styles['nouveau_texte']
+    del t._style['nouveau_texte']

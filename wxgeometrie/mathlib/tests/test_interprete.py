@@ -135,14 +135,14 @@ def test_ensemble_complexe():
     i = Interprete(verbose=VERBOSE, ensemble='C')
     r, l = i.evaluer("resoudre(x^2=-1")
     assert r in ('{i ; -i}', '{-i ; i}')
-    assert l in (r'$\left{- \mathrm{i}\,;\,\mathrm{i}\right}$',
-                 r'$\left{\mathrm{i}\,;\,- \mathrm{i}\right}$')
+    assert l in (r'$\left\{- \mathrm{i}\,;\,\mathrm{i}\right\}$',
+                 r'$\left\{\mathrm{i}\,;\,- \mathrm{i}\right\}$')
     r, l = i.evaluer("resoudre(2+\i=\dfrac{2\i z}{z-1}")
     assertEqual(r, '{3/5 + 4 i/5}')
-    assertEqual(l, r'$\left{\frac{3}{5} + \frac{4}{5} \mathrm{i}\right}$')
+    assertEqual(l, r'$\left\{\frac{3}{5} + \frac{4}{5} \mathrm{i}\right\}$')
     r, l = i.evaluer("resoudre(x^2=-1 et 2x=-2i")
     assertEqual(r, '{-i}')
-    assertEqual(l, r'$\left{- \mathrm{i}\right}$')
+    assertEqual(l, r'$\left\{- \mathrm{i}\right\}$')
     r, l = i.evaluer('factorise(x^2+7x+53)')
     assertEqual(r, '(x + 7/2 - sqrt(163)i/2)(x + 7/2 + sqrt(163)i/2)')
     assertEqual(l, r'$\left(x + \frac{7}{2} - \frac{\sqrt{163} \mathrm{i}}{2}\right) '
