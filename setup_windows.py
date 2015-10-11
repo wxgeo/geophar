@@ -50,7 +50,7 @@ install = True''')
 # preparation des options
 # path = sys.path.append(os.path.join("..", "..", "biblio"))
 # includes = ["printx", "bibconcours"]
-includes = ['sys', 'six']
+includes = ['sys', 'six', 'timeit', 'colorsys']
 excludes = ['Tkinter', 'wx']
 packages = []
 # A cause du système dynamique de chargement des modules, la version de wxgeometrie contenue dans librairie.zip ne suffit pas.

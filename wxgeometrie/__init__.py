@@ -5,14 +5,12 @@
 from os.path import dirname, realpath, abspath, join
 import sys
 
-from .dependances import tester_dependances, configurer_dependances
-tester_dependances()
-configurer_dependances()
 
+frozen_with_cx_freeze = (getattr(sys, 'frozen', False) and sys.platform == "win32")
 
 # VERSION COMPILEE AVEC CX_FREEZE
 # -------------------------------
-if getattr(sys, 'frozen', False) and sys.platform == "win32":
+if frozen_with_cx_freeze:
     application_path = dirname(sys.executable)
     # XXX: Hack temporaire, permettant de préférer la version locale de sympy.
     sympy_path = join(application_path, 'library.zip', 'wxgeometrie')
@@ -28,9 +26,14 @@ if getattr(sys, 'frozen', False) and sys.platform == "win32":
     # On range également les fichiers .dll dans `wxgeometrie/dll`.
     # os.environ['PATH'] = ';'.join([dll_directory, os.environ['PATH']])
 
+
+from .dependances import tester_dependances, configurer_dependances
+tester_dependances()
+configurer_dependances()
+
 # CAS GENERAL
 # -----------
-else:
+if not frozen_with_cx_freeze:
     # XXX: Hack temporaire, permettant de préférer la version locale de sympy.
     # Attention, on ne peut pas toujours utiliser `sys._geophar_path`
     # (car `geophar.pyw` peut être placé ailleurs dans l'arborescence,
