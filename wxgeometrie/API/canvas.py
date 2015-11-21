@@ -285,7 +285,11 @@ class Canvas(FigureCanvasAgg):
 
         Retourne un objet Bbox, possédant des attributs xmin, xmax, ymin,
         ymax, height et width. (En pixels)."""
-        return matplotlib_text.get_window_extent(self.get_renderer())
+        size = matplotlib_text.get_size()
+        matplotlib_text.set_size(size*self.zoom_texte)
+        box = matplotlib_text.get_window_extent(self.get_renderer())
+        matplotlib_text.set_size(size)
+        return box
 
     def coo2pix(self, x, y):
         u"""Convertit des coordonnées en pixel."""
