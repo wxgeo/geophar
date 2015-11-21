@@ -86,7 +86,11 @@ class MiniEditeur:
             # vient juste d'être créé. Ceci permet que, lorsque l'utilisateur clique
             # quelque part pour créer un texte, puis appuie sur [ESC], le texte
             # soit aussitôt supprimé, au lieu de créer un texte vide.
-            self.parent.executer("%s.supprimer()" % self.objet.nom)
+            nom = self.objet.nom
+            # Vérifier que l'objet ait bien un nom (ie. qu'il n'ait pas été
+            # supprimé entre temps par l'utilisateur).
+            if nom:
+                self.parent.executer("%s.supprimer()" % nom)
         self._display(None)
         self.objet = None
 
@@ -141,7 +145,10 @@ class MiniEditeur:
                     self.ok()
             ##elif key == 10: # Ctrl + Entree (à tester sous Linux !)
                 ### XXX: Technique non portable, à modifier !
-            elif 32 <= key <= 255:
+            elif key == Qt.Key_Dead_Circumflex:
+                self.texte += "^"
+                self.display()
+            elif 32 <= key <= 65535:
                 self.texte += txt
                 self.display()
             else:
