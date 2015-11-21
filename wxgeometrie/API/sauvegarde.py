@@ -59,7 +59,7 @@ class FichierGEO(object):
     @property
     def repertoire(self):    return self.infos['repertoire']
     @property
-    def module(self):    return self.infos['module']
+    def module(self):    return self.infos['module'].lower()
     @property
     def type(self):    return self.infos['type']
     @property
