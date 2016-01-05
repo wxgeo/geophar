@@ -1,39 +1,12 @@
-Géophar version 15.10.2
-Publiée le 11/10/2015
+Géophar version 16.01
+Publiée le 05/01/2016
 
 
+* [Tablatex] Fix issue with new version of tabvar.sty.
+* Improve compatibility of files created with old wxgeometrie/geophar versions.
+* Fix small bug in text editor.
+* Adapt text selection area to zoom_text value.
+* Version 15.10.2
 * Fix ``compilation`` issue on Windows.
 * Version 15.10.1
 * Fix failing tests.
-* Version 15.10
-* [FS#313] ESC key cancels text creation, so no empty text is created.
-* Add a menu for matrices in calc.
-* [Calc] Minor improvements in request parsing and LaTeX output.
-* [Tablatex] All tests pass again.
-* Enable passing options directly to tikz in tikz backend.
-* Update help.rst
-* Fix issue with lines display in geolib.
-* [Tablatex] Add \TVstretch{} when necessary to latex generated code in tabvar.
-* Disk color defaults to surrounding circle one.
-* Fix small previsualisation bug when creating polygons.
-* Improve selection mode, which is much more user-friendly.
-* [Graphs] Add new matrix type for weighted graphs.
-* Improve latex handling for intervals.
-* Update .gitignore file.
-* Fix severe bug when editing text object (figure couldn't be saved anymore).
-* Small enhancement in tikz backend.
-* Fix small bug when modifying properties of differents objects simultaneously.
-* [Proba] Use \overline{} instead of \bar{} to draw a bar above events name.
-* [Graph module] Fix dialog typo.
-* Add option for rounded values in tabsign.
-* Fix some minor bug when history was empty.
-* Open 'bienvenue' as default tab to avoid an empty tabwidget.
-* Fix typo in aide.py.
-* Add some enhancements to Tikz backend (still in alpha phase).
-* [Calc] Add tooltips.
-* [Calc] In post-treatment field, set '_' as default value.
-* Add customized tools/isympy and setup.py.
-* Update doc.
-* Make selection easier in GUI (no modifier key required anymore).
-* Version 14.08.1
-* Fix regression due to commit 89fba27e3.
