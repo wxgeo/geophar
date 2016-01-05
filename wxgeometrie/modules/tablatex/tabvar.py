@@ -62,9 +62,16 @@ def _auto_tabvar(chaine='', derivee=True, limites=True, decimales=3, approche=Fa
     # Ensemble de définition rentré par l'utilisateur
     if ' sur ' in chaine:
         chaine, ens_def = chaine.split(' sur ')
+        if ens_def[0] == ens_def[-1] == "$":
+            # On enlève les $ autour de l'expression LateX
+            ens_def = ens_def[1:-1]
         ens_def = conversion_chaine_ensemble(ens_def, utiliser_sympy = True)
     else:
         ens_def = R
+
+    if chaine[0] == chaine[-1] == "$":
+        # On enlève les $ autour de l'expression LateX
+        chaine = chaine[1:-1]
 
     # Nom de la fonction
     if '=' in chaine:
@@ -425,15 +432,25 @@ x;\\sqrt{x};(\\sqrt{x})': 0;0;| << +oo;+oo"""
             colonnes += largeur*'C'
 
 
-
-    code = "\\[\\begin{tabvar}{|" + colonnes + "|}\n\\hline\n"
-    code += ligne_variable + "\\\\\n"
+    # La première ligne redéfinit \TVextraheight pour corriger une régression
+    # de la dernière version de tabvar.sty. (v1.7)
+    # L'inconvénient est qu'on ne peut plus utiliser \TVstretch{},
+    # introduit justement par cette dernière version.
+    code = [r"\setlength{\TVextraheight}{\baselineskip}",
+            r"\[\begin{tabvar}{|%s|}" % colonnes,
+            r"\hline",
+            ligne_variable + r"\\"]
 
     if derivee:
-        code += "\\hline\n" + ligne_derivee + "\\\\\n"
+        code.extend([r"\hline",
+                     ligne_derivee + r"\\"])
 
-    code += "\\hline\n" + ligne_fonction + "\\\\\n"
+    code.extend([r"\hline",
+                 ligne_fonction + r"\\"])
 
-    code += "\\hline\n\\end{tabvar}\\]\n% " + chaine_originale + "\n"
+    code.extend([r"\hline",
+                 r"\end{tabvar}\]",
+                 "% " + chaine_originale,
+                 ""])
 
-    return code
+    return "\n".join(code)

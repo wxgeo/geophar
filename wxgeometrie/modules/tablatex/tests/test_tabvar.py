@@ -14,7 +14,8 @@ def test_mode_manuel():
     s = "x;f(x);f'(x):0;2;|>>1;0;1<<2;3;0"
     options = {"stretch": False}
     tab = \
-r"""\[\begin{tabvar}{|C|CCCCCCC|}
+r"""\setlength{\TVextraheight}{\baselineskip}
+\[\begin{tabvar}{|C|CCCCCCC|}
 \hline
 \,\,x\,\,                            & &0&             &        &1&      &2\\
 \hline
@@ -29,7 +30,8 @@ f'(x)                                &&\dbarre&        &-       &1&+     &0\\
 
     s = "x;f(x);f'(x):(0;2;|) >> (1;0;1) << (2;3;0)"
     tab = \
-r"""\[\begin{tabvar}{|C|CCCCCCC|}
+r"""\setlength{\TVextraheight}{\baselineskip}
+\[\begin{tabvar}{|C|CCCCCCC|}
 \hline
 \,\,x\,\,                            & &0&             &        &1&      &2\\
 \hline
@@ -44,7 +46,8 @@ f'(x)                                &&\dbarre&        &-       &1&+     &0\\
 
     s = "x;f(x):-oo;+oo>>0;-oo|+oo>>+oo;-oo"
     tab = \
-r"""\[\begin{tabvar}{|C|CCCCCCC|}
+r"""\setlength{\TVextraheight}{\baselineskip}
+\[\begin{tabvar}{|C|CCCCCCC|}
 \hline
 \,\,x\,\,                            &-\infty             &        & &0&                                &        &+\infty\\
 \hline
@@ -59,7 +62,8 @@ f'(x)                                &                    &-       &&\dbarre&   
 
     s = "x;f(x): (-oo;+oo)>>(0;-oo|+oo)>>(+oo;-oo)"
     tab = \
-r"""\[\begin{tabvar}{|C|CCCCCCC|}
+r"""\setlength{\TVextraheight}{\baselineskip}
+\[\begin{tabvar}{|C|CCCCCCC|}
 \hline
 \,\,x\,\,                            &-\infty             &        & &0&                                &        &+\infty\\
 \hline
@@ -76,7 +80,8 @@ def test_manuel_zone_interdite():
     options = {"stretch": False}
     s = "x;f(x);f'(x):(0;2;|) >> (1;-oo) || (2;+oo) << (+oo;3)"
     tab = \
-r"""\[\begin{tabvar}{|C|CCCCCUCCC|}
+r"""\setlength{\TVextraheight}{\baselineskip}
+\[\begin{tabvar}{|C|CCCCCUCCC|}
 \hline
 \,\,x\,\,                            & &0&             &        &1      &\hspace*{15mm}&2      &      &+\infty\\
 \hline
@@ -91,7 +96,8 @@ f'(x)                                &&\dbarre&        &-       &0      &       
     # Syntaxe alternative : XX au lieu de ||.
     s = "x;f(x);f'(x):(0;2;|) >> (1;-oo) XX (2;+oo) << (+oo;3)"
     tab = \
-r"""\[\begin{tabvar}{|C|CCCCCUCCC|}
+r"""\setlength{\TVextraheight}{\baselineskip}
+\[\begin{tabvar}{|C|CCCCCUCCC|}
 \hline
 \,\,x\,\,                            & &0&             &        &1      &\hspace*{15mm}&2      &      &+\infty\\
 \hline
@@ -110,7 +116,8 @@ def test_mode_auto():
     options = {"stretch": False}
     s = 'f(x)=(x+1)/(3x-2)'
     tab = \
-r"""\[\begin{tabvar}{|C|CCCCCCC|}
+r"""\setlength{\TVextraheight}{\baselineskip}
+\[\begin{tabvar}{|C|CCCCCCC|}
 \hline
 \,\,x\,\,                            &-\infty                 &        & &\frac{2}{3}&                      &        &+\infty\\
 \hline
@@ -126,7 +133,8 @@ f'(x)                                &                        &-       &&\dbarre
 
     s = "(x+1)(x+2)"
     tab = \
-r"""\[\begin{tabvar}{|C|CCCCC|}
+r"""\setlength{\TVextraheight}{\baselineskip}
+\[\begin{tabvar}{|C|CCCCC|}
 \hline
 \,\,x\,\,                         &-\infty             &        &-\frac{3}{2}&      &+\infty\\
 \hline
@@ -142,7 +150,8 @@ f'(x)                             &                    &-       &0           &+ 
 
     s = "f(x)=5*ln(x)/x+3"
     tab = \
-r"""\[\begin{tabvar}{|C|CCCCCCC|}
+r"""\setlength{\TVextraheight}{\baselineskip}
+\[\begin{tabvar}{|C|CCCCCCC|}
 \hline
 \,\,x\,\,                            & &0&                                      &      &\e          &        &+\infty\\
 \hline
@@ -160,7 +169,8 @@ f'(x)                                &&\dbarre&                                 
 def test_intervalle():
     s = "x^2 sur [1;+oo["
     tab = \
-r"""\[\begin{tabvar}{|C|CCC|}
+r"""\setlength{\TVextraheight}{\baselineskip}
+\[\begin{tabvar}{|C|CCC|}
 \hline
 \,\,x\,\,                         &1             &      &+\infty\\
 \hline
@@ -178,7 +188,8 @@ f'(x)                             &              &+     & \\
 def test_latex():
     s = "f(x)=3e^{2x}-12e^{x}+5"
     tab = \
-r"""\[\begin{tabvar}{|C|CCCCC|}
+r"""\setlength{\TVextraheight}{\baselineskip}
+\[\begin{tabvar}{|C|CCCCC|}
 \hline
 \,\,x\,\,                            &-\infty       &        &\ln(2)&      &+\infty\\
 \hline
@@ -192,11 +203,30 @@ f'(x)                                &              &-       &0     &+     & \\
 """
     assert_tabvar(s, tab)
 
+    s = "$f(x)=(2x+3)\e^x$ sur $[0\,;\,+\oo[$"
+    tab = \
+r'''\setlength{\TVextraheight}{\baselineskip}
+\[\begin{tabvar}{|C|CCC|}
+\hline
+\,\,x\,\,                            &0             &      &+\infty\\
+\hline
+f'(x)                                &              &+     & \\
+\hline
+\niveau{1}{2}\raisebox{0.5em}{$f(x)$}&\niveau{1}{2}3&\croit&+\infty\\
+\hline
+\end{tabvar}\]
+% x;f(x):(0;3) << (+oo;+oo)
+% $f(x)=(2x+3)\e^x$ sur $[0\,;\,+\oo[$
+'''
+    assert_tabvar(s, tab)
+
+
 
 def test_issue_194():
     s = "<< -1/ln(2) >>"
     tab = \
-r"""\[\begin{tabvar}{|C|CCCCC|}
+r"""\setlength{\TVextraheight}{\baselineskip}
+\[\begin{tabvar}{|C|CCCCC|}
 \hline
 \,\,x\,\,                         &-\infty      &      &-\frac{1}{\ln(2)}&        &+\infty\\
 \hline
@@ -213,7 +243,8 @@ f'(x)                             &             &+     &0                &-     
 def test_issue_pi():
     s = 'sin(x) sur [-pi;pi]'
     tab = \
-r'''\[\begin{tabvar}{|C|CCCCC|}
+r'''\setlength{\TVextraheight}{\baselineskip}
+\[\begin{tabvar}{|C|CCCCC|}
 \hline
 \,\,x\,\,                         &-\pi          &      &\frac{\pi}{2}&        &\pi\\
 \hline
@@ -232,7 +263,8 @@ def test_options():
     s = 'f(x)=4 x^{2} - 24 x + 11'
     options = {'derivee': False, 'limites': False, 'stretch': False}
     tab = \
-r'''\[\begin{tabvar}{|C|CCCCC|}
+r'''\setlength{\TVextraheight}{\baselineskip}
+\[\begin{tabvar}{|C|CCCCC|}
 \hline
 \,\,x\,\,                            &-\infty      &        &3  &      &+\infty\\
 \hline
@@ -250,7 +282,8 @@ def test_issue_189():
     s = 'f(x) = (x -4)\e^{-0,25x+5} sur [4;20]'
     options = {'derivee': False, 'decimales': 3, 'stretch': False}
     tab = \
-r'''\[\begin{tabvar}{|C|CCCCC|}
+r'''\setlength{\TVextraheight}{\baselineskip}
+\[\begin{tabvar}{|C|CCCCC|}
 \hline
 \,\,x\,\,                            &4             &      &8        &        &20\\
 \hline
@@ -263,7 +296,8 @@ r'''\[\begin{tabvar}{|C|CCCCC|}
     assert_tabvar(s, tab, **options)
     options = {'derivee': False, 'decimales': 2, 'stretch': False}
     tab = \
-r'''\[\begin{tabvar}{|C|CCCCC|}
+r'''\setlength{\TVextraheight}{\baselineskip}
+\[\begin{tabvar}{|C|CCCCC|}
 \hline
 \,\,x\,\,                            &4             &      &8        &        &20\\
 \hline
@@ -279,7 +313,8 @@ def test_valeur_approchee():
     s = "f(x)=1/x sur [4;6]"
     options = {'derivee': True, 'decimales': 4, 'approche': True, 'stretch': False}
     tab = \
-r'''\[\begin{tabvar}{|C|CCC|}
+r'''\setlength{\TVextraheight}{\baselineskip}
+\[\begin{tabvar}{|C|CCC|}
 \hline
 \,\,x\,\,                            &4                &        &6\\
 \hline
@@ -298,7 +333,8 @@ def test_issue_187():
     s = "5x+31+(1500x+100)/(x^2)"
     options = {'derivee': True, 'decimales': 2, 'approche': True, 'stretch': False}
     tab = \
-r'''\[\begin{tabvar}{|C|CCCCCCCCCCCCC|}
+r'''\setlength{\TVextraheight}{\baselineskip}
+\[\begin{tabvar}{|C|CCCCCCCCCCCCC|}
 \hline
 \,\,x\,\,                         &-\infty             &      &-17,25 &        &-0,13   &      & &0&                                &        &17,39 &      &+\infty\\
 \hline
@@ -317,7 +353,8 @@ def test_issue_249():
     s = r"f(x) = 0,5x + \text{e}^{-0,5x + 0,4}"
     options = {'derivee': True, 'decimales': 2, 'approche': True, 'stretch': False}
     tab = \
-r'''\[\begin{tabvar}{|C|CCCCC|}
+r'''\setlength{\TVextraheight}{\baselineskip}
+\[\begin{tabvar}{|C|CCCCC|}
 \hline
 \,\,x\,\,                            &-\infty             &        &0,8&      &+\infty\\
 \hline
@@ -336,7 +373,8 @@ def test_constante():
     s = "g(x)=5"
     options = {'derivee': True, 'stretch': False}
     tab = \
-r'''\[\begin{tabvar}{|C|CCC|}
+r'''\setlength{\TVextraheight}{\baselineskip}
+\[\begin{tabvar}{|C|CCC|}
 \hline
 \,\,x\,\,        &-\infty       &          &+\infty\\
 \hline
@@ -355,7 +393,8 @@ def test_abs():
     s = "abs(x**2-5)"
     options = {'derivee': True, 'limites':True, 'stretch': False}
     tab = \
-r'''\[\begin{tabvar}{|C|CCCCCCCCCCCCC|}
+r'''\setlength{\TVextraheight}{\baselineskip}
+\[\begin{tabvar}{|C|CCCCCCCCCCCCC|}
 \hline
 \,\,x\,\,                         &-\infty             &        & &-\sqrt{5}& &      &0&        & &\sqrt{5}& &      &+\infty\\
 \hline
@@ -374,7 +413,8 @@ def test_issue_286():
     s = 'sqrt{x^2 - 1}'
     options = {'derivee': True, 'stretch': False}
     tab = \
-r'''\[\begin{tabvar}{|C|CCCCCUCCCCC|}
+r'''\setlength{\TVextraheight}{\baselineskip}
+\[\begin{tabvar}{|C|CCCCCUCCCCC|}
 \hline
 \,\,x\,\,                         &-\infty             &        & &-1&    &\hspace*{15mm}& &1&     &      &+\infty\\
 \hline
@@ -392,7 +432,8 @@ def test_zeros_derivee():
     s = 'f(x)=x^3'
     options = {'derivee': True, 'stretch': False}
     tab = \
-r'''\[\begin{tabvar}{|C|CCCCC|}
+r'''\setlength{\TVextraheight}{\baselineskip}
+\[\begin{tabvar}{|C|CCCCC|}
 \hline
 \,\,x\,\,        &-\infty             &      &0&      &+\infty\\
 \hline
