@@ -27,6 +27,7 @@ def test_sympy():
     assert limit(1 + 1/x, x, 0, dir='-') == -oo
     assert limit(1/x**2, x, 0, dir='-') == oo
     assert sympify(u'45') == 45 # issue 2508
+    assert solve((2*x + 8)*exp(-6*x), x) == [-4] # issue 10391 (FS#319)
 
 
 def test_sympy_solving_with_floats():

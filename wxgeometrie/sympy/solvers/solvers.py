@@ -279,6 +279,10 @@ def checksol(f, symbol, sol=None, **flags):
 
         if val == was:
             continue
+        elif val.is_zero:
+            return True
+        elif val.is_nonzero:
+            return False
         elif val.is_Rational:
             return val == 0
         if numerical and not val.free_symbols:
