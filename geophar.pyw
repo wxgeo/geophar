@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------##
@@ -35,7 +35,7 @@ else:
     sys.stdout = getwriter('utf8')(sys.stdout)
 
 if getattr(sys, 'frozen', False):
-    application_path = os.path.dirname(sys.executable)
+    application_path = dirname(sys.executable)
 else:
     application_path = dirname(realpath(sys._getframe().f_code.co_filename))
 
