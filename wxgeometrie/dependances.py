@@ -137,7 +137,7 @@ def configurer_dependances():
         import pyparsing
     except ImportError:
         pass
-    import matplotlib, matplotlib.mathtext
+    import matplotlib
     matplotlib.use(moteur_de_rendu, warn=False)
     matplotlib.rcParams['text.usetex'] = latex
     matplotlib.rcParams["text.latex.unicode"] = latex_unicode
