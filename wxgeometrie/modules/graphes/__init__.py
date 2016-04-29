@@ -95,14 +95,7 @@ class Graphes(Panel_API_graphique):
                 return 1
 
         sommets = [s for s in self.feuille_actuelle.objets.points if s.visible]
-        # On utilise les étiquettes des points si elles sont uniques,
-        # sinon le nom des points par défaut.
-        if len(set(filter(None, (s.label() for s in sommets)))) == len(sommets):
-            def nom(sommet):
-                return sommet.label()
-        else:
-            def nom(sommet):
-                return sommet.nom
+
 
         dic = {}
         # Ex: {"A": {"B":[1], "C":[2, 5]}, "B": {}, "C": {"A": [2], "C": [1]}}
@@ -111,16 +104,17 @@ class Graphes(Panel_API_graphique):
             for arete in aretes:
                 A, B = arete.extremites
                 if sommet is A:
-                    d_sommet[nom(B)].append(poids(arete))
+                    d_sommet[B.nom].append(poids(arete))
                 elif sommet is B:
-                    d_sommet[nom(A)].append(poids(arete))
+                    d_sommet[A.nom].append(poids(arete))
             for arete in aretes_orientees:
                 A, B = arete.extremites
                 if sommet is A:
-                    d_sommet[nom(B)].append(poids(arete))
+                    d_sommet[B.nom].append(poids(arete))
             dic[nom(sommet)] = d_sommet
 
-        self.graph = Graph(dic, oriented=bool(aretes_orientees))
+        self.graph = Graph(dic, oriented=bool(aretes_orientees),
+                           labels = self.correspondance_noms_etiquette())
 
     def matrice(self, event=None, creer=True, poids=False):
         if creer:
@@ -194,3 +188,14 @@ class Graphes(Panel_API_graphique):
 
     def code_copie(self):
         self.canvas.message(u"Code LaTeX copié dans le presse-papier.")
+
+    def correspondance_noms_etiquette(self):
+        # On utilise les étiquettes si elles ne sont pas vides.
+        correspondance = {}
+        for s in self.feuille_actuelle.objets.points:
+            if s.visible:
+                label = s.label()
+                if label != "":
+                    correspondance[s.nom] = label
+        return correspondance
+

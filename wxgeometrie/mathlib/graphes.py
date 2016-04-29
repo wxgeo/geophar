@@ -72,12 +72,18 @@ class Graph(dict):
     >>> k = Graph("A>(B:1,C:2,D:3), B>(A:4,C:2), C>(A:2,B:2), D>(A:3)")
     >>> k.symetric
     True
+
+    Graph nodes may have corresponding labels. A dict should be provided for this.
+    >>> k = Graph("A>(B:1,C:2,D:3), B>(A:4,C:2), C>(A:2,B:2), D>(A:3)",
+                  labels = {"A": "Bus stop", "B": "Office", "C": "Bus stop", "D": "Sweet home")
+
+    Labels are used then in some methods to display meaningful text.
     """  #XXX: doctest fails !!!
 #    teintes = ('bleu', 'rouge', 'vert', 'jaune', 'orange', 'violet',
 #                        'marron', 'rose', 'turquoise', 'cyan', 'magenta', 'ocre',
 #                        'marine', 'indigo', 'pourpre')
 
-    def __init__(self, dictionary = (), oriented = False):
+    def __init__(self, dictionary = (), oriented = False, labels=None):
         # Ex: {"A": {"B":[1], "C":[2, 5]}, "B": {}, "C": {"A": [2], "C": [1]}}
         if isinstance(dictionary, basestring):
             dictionary = self._convert_input(dictionary)
@@ -92,6 +98,7 @@ class Graph(dict):
                 if node not in dictionary:
                     raise GraphError("Edge contain a unknown node: %s." %repr(node))
         self.oriented = oriented
+        self.labels = (labels if labels is not None else {})
         dict.__init__(self, dictionary)
         if not oriented and not self.symetric:
             raise GraphError("Unoriented graph must be symetric.")
