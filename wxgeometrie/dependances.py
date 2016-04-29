@@ -36,6 +36,7 @@ dependances = {'PyQt4': 'python-qt4',
                'matplotlib': 'python-matplotlib',
                'scipy': 'python-scipy',
                'numpy': 'python-numpy',
+               'mpmath': 'python-mpmath',
                'sip': 'python-sip',
                'PyQt4.Qsci': 'python-qscintilla2',
                }
