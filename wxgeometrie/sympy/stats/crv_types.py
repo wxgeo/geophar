@@ -19,6 +19,7 @@ FisherZ
 Frechet
 Gamma
 GammaInverse
+Gompertz
 Kumaraswamy
 Laplace
 Logistic
@@ -30,6 +31,7 @@ Pareto
 QuadraticU
 RaisedCosine
 Rayleigh
+ShiftedGompertz
 StudentT
 Triangular
 Uniform
@@ -41,15 +43,14 @@ WignerSemicircle
 
 from __future__ import print_function, division
 
-from sympy import (exp, log, sqrt, pi, S, Dummy, Interval, S, sympify, gamma,
+from sympy import (log, sqrt, pi, S, Dummy, Interval, sympify, gamma,
                    Piecewise, And, Eq, binomial, factorial, Sum, floor, Abs,
-                   Symbol, log, besseli, Lambda, Basic)
+                   Lambda, Basic)
 from sympy import beta as beta_fn
 from sympy import cos, exp, besseli
 from sympy.stats.crv import (SingleContinuousPSpace, SingleContinuousDistribution,
         ContinuousDistributionHandmade)
 from sympy.stats.rv import _value_check
-from sympy.core.decorators import _sympifyit
 import random
 
 oo = S.Infinity
@@ -71,6 +72,7 @@ __all__ = ['ContinuousRV',
 'Frechet',
 'Gamma',
 'GammaInverse',
+'Gompertz',
 'Kumaraswamy',
 'Laplace',
 'Logistic',
@@ -83,6 +85,7 @@ __all__ = ['ContinuousRV',
 'RaisedCosine',
 'Rayleigh',
 'StudentT',
+'ShiftedGompertz',
 'Triangular',
 'Uniform',
 'UniformSum',
@@ -312,7 +315,7 @@ def Beta(name, alpha, beta):
     ========
 
     >>> from sympy.stats import Beta, density, E, variance
-    >>> from sympy import Symbol, simplify, pprint
+    >>> from sympy import Symbol, simplify, pprint, expand_func
 
     >>> alpha = Symbol("alpha", positive=True)
     >>> beta = Symbol("beta", positive=True)
@@ -323,11 +326,11 @@ def Beta(name, alpha, beta):
     >>> D = density(X)(z)
     >>> pprint(D, use_unicode=False)
      alpha - 1         beta - 1
-    z         *(-z + 1)        *gamma(alpha + beta)
-    -----------------------------------------------
-                gamma(alpha)*gamma(beta)
+    z         *(-z + 1)
+    ---------------------------
+         beta(alpha, beta)
 
-    >>> simplify(E(X, meijerg=True))
+    >>> expand_func(simplify(E(X, meijerg=True)))
     alpha/(alpha + beta)
 
     >>> simplify(variance(X, meijerg=True))  #doctest: +SKIP
@@ -393,9 +396,9 @@ def BetaPrime(name, alpha, beta):
     >>> D = density(X)(z)
     >>> pprint(D, use_unicode=False)
      alpha - 1        -alpha - beta
-    z         *(z + 1)             *gamma(alpha + beta)
-    ---------------------------------------------------
-                  gamma(alpha)*gamma(beta)
+    z         *(z + 1)
+    -------------------------------
+           beta(alpha, beta)
 
     References
     ==========
@@ -751,11 +754,13 @@ def Erlang(name, k, l):
 
     >>> C = cdf(X, meijerg=True)(z)
     >>> pprint(C, use_unicode=False)
-    /  k*lowergamma(k, 0)   k*lowergamma(k, l*z)
-    |- ------------------ + --------------------  for z >= 0
-    <     gamma(k + 1)          gamma(k + 1)
+    /     -2*I*pi*k                       -2*I*pi*k
+    |  k*e         *lowergamma(k, 0)   k*e         *lowergamma(k, l*z)
+    |- ----------------------------- + -------------------------------  for z >= 0
+    <           gamma(k + 1)                     gamma(k + 1)
     |
-    \                     0                       otherwise
+    |                                0                                  otherwise
+    \
 
     >>> simplify(E(X))
     k/l
@@ -915,13 +920,12 @@ def FDistribution(name, d1, d2):
     >>> pprint(D, use_unicode=False)
       d2
       --    ______________________________
-      2    /       d1            -d1 - d2       /d1   d2\
-    d2  *\/  (d1*z)  *(d1*z + d2)         *gamma|-- + --|
-                                                \2    2 /
-    -----------------------------------------------------
-                           /d1\      /d2\
-                    z*gamma|--|*gamma|--|
-                           \2 /      \2 /
+      2    /       d1            -d1 - d2
+    d2  *\/  (d1*z)  *(d1*z + d2)
+    --------------------------------------
+                      /d1  d2\
+                z*beta|--, --|
+                      \2   2 /
 
     References
     ==========
@@ -984,13 +988,12 @@ def FisherZ(name, d1, d2):
                                 d1   d2
         d1   d2               - -- - --
         --   --                 2    2
-        2    2  /    2*z     \           d1*z      /d1   d2\
-    2*d1  *d2  *\d1*e    + d2/         *e    *gamma|-- + --|
-                                                   \2    2 /
-    --------------------------------------------------------
-                           /d1\      /d2\
-                      gamma|--|*gamma|--|
-                           \2 /      \2 /
+        2    2  /    2*z     \           d1*z
+    2*d1  *d2  *\d1*e    + d2/         *e
+    -----------------------------------------
+                       /d1  d2\
+                   beta|--, --|
+                       \2   2 /
 
     References
     ==========
@@ -1228,6 +1231,68 @@ def GammaInverse(name, a, b):
     return rv(name, GammaInverseDistribution, (a, b))
 
 #-------------------------------------------------------------------------------
+# Gompertz distribution --------------------------------------------------------
+
+class GompertzDistribution(SingleContinuousDistribution):
+    _argnames = ('b', 'eta')
+
+    set = Interval(0, oo)
+
+    @staticmethod
+    def check(b, eta):
+        _value_check(b > 0, "b must be positive")
+        _value_check(eta > 0, "eta must be positive")
+
+    def pdf(self, x):
+        eta, b = self.eta, self.b
+        return b*eta*exp(b*x)*exp(eta)*exp(-eta*exp(b*x))
+
+def Gompertz(name, b, eta):
+    r"""
+    Create a Continuous Random Variable with Gompertz distribution.
+
+    The density of the Gompertz distribution is given by
+
+    .. math::
+        f(x) := b \eta e^{b x} e^{\eta} \exp \left(-\eta e^{bx} \right)
+
+    with :math: 'x \in [0, \inf)'.
+
+    Parameters
+    ==========
+
+    b: Real number, 'b > 0' a scale
+    eta: Real number, 'eta > 0' a shape
+
+    Returns
+    =======
+
+    A RandomSymbol.
+
+    Examples
+    ========
+
+    >>> from sympy.stats import Gompertz, density, E, variance
+    >>> from sympy import Symbol, simplify, pprint
+
+    >>> b = Symbol("b", positive=True)
+    >>> eta = Symbol("eta", positive=True)
+    >>> z = Symbol("z")
+
+    >>> X = Gompertz("x", b, eta)
+
+    >>> density(X)(z)
+    b*eta*exp(eta)*exp(b*z)*exp(-eta*exp(b*z))
+
+    References
+    ==========
+
+    .. [1] https://en.wikipedia.org/wiki/Gompertz_distribution
+
+    """
+    return rv(name, GompertzDistribution, (b, eta))
+
+#-------------------------------------------------------------------------------
 # Kumaraswamy distribution -----------------------------------------------------
 
 class KumaraswamyDistribution(SingleContinuousDistribution):
@@ -1243,7 +1308,6 @@ class KumaraswamyDistribution(SingleContinuousDistribution):
     def pdf(self, x):
         a, b = self.a, self.b
         return a * b * x**(a-1) * (1-x**a)**(b-1)
-
 
 def Kumaraswamy(name, a, b):
     r"""
@@ -1339,7 +1403,7 @@ def Laplace(name, mu, b):
     >>> X = Laplace("x", mu, b)
 
     >>> density(X)(z)
-    exp(-Abs(-mu + z)/b)/(2*b)
+    exp(-Abs(mu - z)/b)/(2*b)
 
     References
     ==========
@@ -1991,6 +2055,67 @@ def Rayleigh(name, sigma):
     return rv(name, RayleighDistribution, (sigma, ))
 
 #-------------------------------------------------------------------------------
+# Shifted Gompertz distribution ------------------------------------------------
+
+class ShiftedGompertzDistribution(SingleContinuousDistribution):
+    _argnames = ('b', 'eta')
+
+    set = Interval(0, oo)
+
+    @staticmethod
+    def check(b, eta):
+        _value_check(b > 0, "b must be positive")
+        _value_check(eta > 0, "eta must be positive")
+
+    def pdf(self, x):
+        b, eta = self.b, self.eta
+        return b*exp(-b*x)*exp(-eta*exp(-b*x))*(1+eta*(1-exp(-b*x)))
+
+def ShiftedGompertz(name, b, eta):
+    r"""
+    Create a continuous random variable with a Shifted Gompertz distribution.
+
+    The density of the Shifted Gompertz distribution is given by
+
+    .. math::
+        f(x) := b e^{-b x} e^{-\eta \exp(-b x)} \left[1 + \eta(1 - e^(-bx)) \right]
+
+    with :math: 'x \in [0, \inf)'.
+
+    Parameters
+    ==========
+
+    b: Real number, 'b > 0' a scale
+    eta: Real number, 'eta > 0' a shape
+
+    Returns
+    =======
+
+    A RandomSymbol.
+
+    Examples
+    ========
+    >>> from sympy.stats import ShiftedGompertz, density, E, variance
+    >>> from sympy import Symbol
+
+    >>> b = Symbol("b", positive=True)
+    >>> eta = Symbol("eta", positive=True)
+    >>> x = Symbol("x")
+
+    >>> X = ShiftedGompertz("x", b, eta)
+
+    >>> density(X)(x)
+    b*(eta*(1 - exp(-b*x)) + 1)*exp(-b*x)*exp(-eta*exp(-b*x))
+
+    References
+    ==========
+
+    .. [1] https://en.wikipedia.org/wiki/Shifted_Gompertz_distribution
+
+    """
+    return rv(name, ShiftedGompertzDistribution, (b, eta))
+
+#-------------------------------------------------------------------------------
 # StudentT distribution --------------------------------------------------------
 
 
@@ -2036,17 +2161,17 @@ def StudentT(name, nu):
 
     >>> D = density(X)(z)
     >>> pprint(D, use_unicode=False)
-              nu   1
-            - -- - -
-              2    2
-    /     2\
-    |    z |              /nu   1\
-    |1 + --|        *gamma|-- + -|
-    \    nu/              \2    2/
-    ------------------------------
-         ____   ____      /nu\
-       \/ pi *\/ nu *gamma|--|
-                          \2 /
+                nu   1
+              - -- - -
+                2    2
+      /     2\
+      |    z |
+      |1 + --|
+      \    nu/
+    --------------------
+      ____     /     nu\
+    \/ nu *beta|1/2, --|
+               \     2 /
 
     References
     ==========
@@ -2152,10 +2277,13 @@ class UniformDistribution(SingleContinuousDistribution):
 
     def compute_cdf(self, **kwargs):
         from sympy import Lambda, Min
-        z = Dummy('z', real=True, bounded=True)
-        result = SingleContinuousDistribution.compute_cdf(self, **kwargs)
-        result = result(z).subs({Min(z, self.right): z,
-                                 Min(z, self.left, self.right): self.left})
+        z = Dummy('z', real=True, finite=True)
+        result = SingleContinuousDistribution.compute_cdf(self, **kwargs)(z)
+        reps = {
+            Min(z, self.right): z,
+            Min(z, self.left, self.right): self.left,
+            Min(z, self.left): self.left}
+        result = result.subs(reps)
         return Lambda(z, result)
 
     def expectation(self, expr, var, **kwargs):
@@ -2210,7 +2338,7 @@ def Uniform(name, left, right):
     >>> density(X)(z)
     Piecewise((1/(-a + b), And(a <= z, z <= b)), (0, True))
 
-    >>> cdf(X)(z)
+    >>> cdf(X)(z)  # doctest: +SKIP
     -a/(-a + b) + z/(-a + b)
 
     >>> simplify(E(X))

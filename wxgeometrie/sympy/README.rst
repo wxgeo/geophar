@@ -1,6 +1,18 @@
 SymPy
 =====
 
+|pypi version| |pypi download| |Build status| |Gitter Badge|
+
+.. |pypi version| image:: https://img.shields.io/pypi/v/sympy.svg
+   :target: https://pypi.python.org/pypi/sympy
+.. |pypi download| image:: https://img.shields.io/pypi/dm/sympy.svg
+   :target: https://pypi.python.org/pypi/sympy
+.. |Build status| image:: https://secure.travis-ci.org/sympy/sympy.svg?branch=master
+   :target: http://travis-ci.org/sympy/sympy
+.. |Gitter Badge| image:: https://badges.gitter.im/Join%20Chat.svg
+   :alt: Join the chat at https://gitter.im/sympy/sympy
+   :target: https://gitter.im/sympy/sympy?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
+
 A Python library for symbolic mathematics.
 
 http://sympy.org/
@@ -15,10 +27,11 @@ License: New BSD License (see the LICENSE file for details) covers all files
 in the sympy repository unless stated otherwise.
 
 Our mailing list is at
-https://groups.google.com/forum/?fromgroups#!forum/sympy.  We are also on IRC
-(`#sympy on Freenode <irc://irc.freenode.net/sympy>`_, note, this channel is
-`logged <http://colabti.org/irclogger/irclogger_logs/sympy>`_).  Feel free to
-ask us anything there. We have a very welcoming and helpful community.
+https://groups.google.com/forum/?fromgroups#!forum/sympy.
+
+We have community chat at `Gitter <https://gitter.im/sympy/sympy>`_. Feel free
+to ask us anything there. We have a very welcoming and helpful community.
+
 
 Download
 --------
@@ -32,7 +45,7 @@ To get the git version do
 
     $ git clone git://github.com/sympy/sympy.git
 
-For other options (tarballs, debs, etc.), see See
+For other options (tarballs, debs, etc.), see
 http://docs.sympy.org/dev/install.html.
 
 Documentation and usage
@@ -75,7 +88,13 @@ if SymPy is installed.
 Installation
 ------------
 
-To install SymPy, simply run::
+SymPy has a hard dependency on the `mpmath <http://mpmath.org/>`
+library (version >= 0.19).  You should install it first, please refer to
+the mpmath installation guide:
+
+https://github.com/fredrik-johansson/mpmath#1-download--installation
+
+To install SymPy itself, then simply run::
 
     $ python setup.py install
 
@@ -84,6 +103,20 @@ If you install it system-wide, you may need to prefix the previous command with 
     $ sudo python setup.py install
 
 See http://docs.sympy.org/dev/install.html for more information.
+
+Contributing
+------------
+
+We welcome contributions from anyone, even if you are new to open
+source. Please read our `introduction to contributing
+<https://github.com/sympy/sympy/wiki/Introduction-to-contributing>`_. If you
+are new and looking for some way to contribute a good place to start is to
+look at the issues tagged `Easy to Fix
+<https://github.com/sympy/sympy/issues?q=is%3Aopen+is%3Aissue+label%3A%22Easy+to+Fix%22>`_.
+
+Please note that all participants of this project are expected to follow our
+Code of Conduct. By participating in this project you agree to abide by its
+terms. See `CODE_OF_CONDUCT.md <CODE_OF_CONDUCT.md>`_.
 
 Tests
 -----
@@ -96,10 +129,7 @@ in the current directory.
 
 For more fine-grained running of tests or doctest, use ``bin/test`` or
 respectively ``bin/doctest``. The master branch is automatically tested by
-Travis CI, the results can be seen here:
-
-.. image:: https://secure.travis-ci.org/sympy/sympy.png?branch=master
-    :target: http://travis-ci.org/sympy/sympy
+Travis CI.
 
 To test pull requests, use `sympy-bot <https://github.com/sympy/sympy-bot>`_.
 
@@ -140,11 +170,11 @@ diff``, ``git clean -Xn`` and ``git clean -n`` before doing any of those.
 Bugs
 ----
 
-Our issue tracker is at https://code.google.com/p/sympy/issues/list.  Please
-report any bugs that you find.  Or, even better, fork the repository on GitHub
-and create a pull request.  We welcome all changes, big or small, and we will
-help you make the pull request if you are new to git (just ask on our mailing
-list or IRC).
+Our issue tracker is at https://github.com/sympy/sympy/issues.  Please report
+any bugs that you find.  Or, even better, fork the repository on GitHub and
+create a pull request.  We welcome all changes, big or small, and we will help
+you make the pull request if you are new to git (just ask on our mailing list
+or Gitter).
 
 Brief History
 -------------
@@ -158,7 +188,7 @@ during the summer 2007 as part of the Google Summer of Code. Pearu Peterson
 joined the development during the summer 2007 and he has made SymPy much more
 competitive by rewriting the core from scratch, that has made it from 10x to
 100x faster. Jurjen N.E. Bos has contributed pretty printing and other patches.
-Fredrik Johansson has wrote mpmath and contributed a lot of patches.
+Fredrik Johansson has written mpmath and contributed a lot of patches.
 
 SymPy has participated in every Google Summer of Code since 2007. You can see
 https://github.com/sympy/sympy/wiki#google-summer-of-code for full details.
@@ -168,7 +198,7 @@ from Google Summer of Code students.
 In 2011, Ondřej Čertík stepped down as lead developer, with Aaron Meurer, who
 also started as a Google Summer of Code student, taking his place. Ondřej
 Čertík is still active in the community, but is too busy with work and family
-to play a lead development role
+to play a lead development role.
 
 Since then, a lot more people have joined the development and some people have
 also left. You can see the full list in doc/src/aboutus.rst, or online at:

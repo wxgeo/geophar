@@ -1,20 +1,20 @@
-from sympy import Symbol, exp, Integer, Float, sin, cos, log, Poly, Lambda, \
-    Function, I, S, sqrt, srepr, Rational, Tuple, Matrix, Interval, Add, Mul,\
-    Pow, And, Or, Xor, Not, true, false
+from sympy import (Symbol, exp, Integer, Float, sin, cos, log, Poly, Lambda,
+    Function, I, S, sqrt, srepr, Rational, Tuple, Matrix, Interval, Add, Mul,
+    Pow, Or, true, false, Abs, pi, Range)
 from sympy.abc import x, y
 from sympy.core.sympify import sympify, _sympify, SympifyError, kernS
 from sympy.core.decorators import _sympifyit
-from sympy.utilities.pytest import XFAIL, raises
+from sympy.utilities.pytest import raises
 from sympy.utilities.decorator import conserve_mpmath_dps
 from sympy.geometry import Point, Line
 from sympy.functions.combinatorial.factorials import factorial, factorial2
 from sympy.abc import _clash, _clash1, _clash2
-from sympy.core.compatibility import exec_, HAS_GMPY
+from sympy.core.compatibility import exec_, HAS_GMPY, PY3
 
-from sympy import mpmath
+import mpmath
 
 
-def test_439():
+def test_issue_3538():
     v = sympify("exp(x)")
     assert v == exp(x)
     assert type(v) == type(exp(x))
@@ -25,7 +25,7 @@ def test_sympify1():
     assert sympify("x") == Symbol("x")
     assert sympify("   x") == Symbol("x")
     assert sympify("   x   ") == Symbol("x")
-    # 1778
+    # issue 4877
     n1 = Rational(1, 2)
     assert sympify('--.5') == n1
     assert sympify('-1/2') == -n1
@@ -97,15 +97,15 @@ def test_sympify_mpmath():
 
     mpmath.mp.dps = 12
     assert sympify(
-        mpmath.pi).epsilon_eq(Float("3.14159265359"), Float("1e-12")) is True
+        mpmath.pi).epsilon_eq(Float("3.14159265359"), Float("1e-12")) == True
     assert sympify(
-        mpmath.pi).epsilon_eq(Float("3.14159265359"), Float("1e-13")) is False
+        mpmath.pi).epsilon_eq(Float("3.14159265359"), Float("1e-13")) == False
 
     mpmath.mp.dps = 6
     assert sympify(
-        mpmath.pi).epsilon_eq(Float("3.14159"), Float("1e-5")) is True
+        mpmath.pi).epsilon_eq(Float("3.14159"), Float("1e-5")) == True
     assert sympify(
-        mpmath.pi).epsilon_eq(Float("3.14159"), Float("1e-6")) is False
+        mpmath.pi).epsilon_eq(Float("3.14159"), Float("1e-6")) == False
 
     assert sympify(mpmath.mpc(1.0 + 2.0j)) == Float(1.0) + Float(2.0)*I
 
@@ -225,20 +225,23 @@ def test_sage():
     assert hasattr(log(x), "_sage_")
 
 
-def test_bug496():
+def test_issue_3595():
     assert sympify("a_") == Symbol("a_")
     assert sympify("_a") == Symbol("_a")
 
 
-@XFAIL
 def test_lambda():
     x = Symbol('x')
     assert sympify('lambda: 1') == Lambda((), 1)
+    assert sympify('lambda x: x') == Lambda(x, x)
     assert sympify('lambda x: 2*x') == Lambda(x, 2*x)
     assert sympify('lambda x, y: 2*x+y') == Lambda([x, y], 2*x + y)
 
 
 def test_lambda_raises():
+    raises(SympifyError, lambda: sympify("lambda *args: args")) # args argument error
+    raises(SympifyError, lambda: sympify("lambda **kwargs: kwargs[0]")) # kwargs argument error
+    raises(SympifyError, lambda: sympify("lambda x = 1: x"))    # Keyword argument error
     with raises(SympifyError):
         _sympify('lambda: 1')
 
@@ -398,14 +401,14 @@ def test_evaluate_false():
         assert sympify(case, evaluate=False) == result
 
 
-def test_issue1034():
+def test_issue_4133():
     a = sympify('Integer(4)')
 
     assert a == Integer(4)
     assert a.is_Integer
 
 
-def test_issue883():
+def test_issue_3982():
     a = [3, 2.0]
     assert sympify(a) == [Integer(3), Float(2.0)]
     assert sympify(tuple(a)) == Tuple(Integer(3), Float(2.0))
@@ -417,19 +420,19 @@ def test_S_sympify():
     assert (-2)**(S(1)/2) == sqrt(2)*I
 
 
-def test_issue1689():
+def test_issue_4788():
     assert srepr(S(1.0 + 0J)) == srepr(S(1.0)) == srepr(Float(1.0))
 
 
-def test_issue1699_None():
+def test_issue_4798_None():
     assert S(None) is None
 
 
-def test_issue3218():
+def test_issue_3218():
     assert sympify("x+\ny") == x + y
 
 
-def test_issue1889_builtins():
+def test_issue_4988_builtins():
     C = Symbol('C')
     vars = {}
     vars['C'] = C
@@ -442,9 +445,9 @@ def test_issue1889_builtins():
 
 def test_geometry():
     p = sympify(Point(0, 1))
-    assert p == Point(0, 1) and type(p) == Point
+    assert p == Point(0, 1) and isinstance(p, Point)
     L = sympify(Line(p, (1, 0)))
-    assert L == Line((0, 1), (1, 0)) and type(L) == Line
+    assert L == Line((0, 1), (1, 0)) and isinstance(L, Line)
 
 
 def test_kernS():
@@ -460,7 +463,7 @@ def test_kernS():
         'x', '_kern')
     ss = kernS(s)
     assert ss != -1 and ss.simplify() == -1
-    # issue 3588
+    # issue 6687
     assert kernS('Interval(-1,-2 - 4*(-3))') == Interval(-1, 10)
     assert kernS('_kern') == Symbol('_kern')
     assert kernS('E**-(x)') == exp(-x)
@@ -470,16 +473,32 @@ def test_kernS():
         -y*(2*sin(x)**2 + 2*sin(x)*cos(x))/2
 
 
-def test_issue_3441_3453():
+def test_issue_6540_6552():
     assert S('[[1/3,2], (2/5,)]') == [[Rational(1, 3), 2], (Rational(2, 5),)]
     assert S('[[2/6,2], (2/4,)]') == [[Rational(1, 3), 2], (Rational(1, 2),)]
     assert S('[[[2*(1)]]]') == [[[2]]]
     assert S('Matrix([2*(1)])') == Matrix([2])
 
-def test_issue_2497():
+def test_issue_6046():
     assert str(S("Q & C", locals=_clash1)) == 'And(C, Q)'
     assert str(S('pi(x)', locals=_clash2)) == 'pi(x)'
     assert str(S('pi(C, Q)', locals=_clash)) == 'pi(C, Q)'
     locals = {}
     exec_("from sympy.abc import Q, C", locals)
     assert str(S('C&Q', locals)) == 'And(C, Q)'
+
+
+def test_issue_8821_highprec_from_str():
+    s = str(pi.evalf(128))
+    p = sympify(s)
+    assert Abs(sin(p)) < 1e-127
+
+def test_Range():
+    # Only works in Python 3 where range returns a range type
+    if PY3:
+        builtin_range = range
+    else:
+        builtin_range = xrange
+
+    assert sympify(builtin_range(10)) == Range(10)
+    assert _sympify(builtin_range(10)) == Range(10)

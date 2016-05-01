@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
+import re
+
 from pytest import XFAIL
 
 from tools.testlib import assertRaises, assertAlmostEqual, assertEqual
@@ -414,7 +416,16 @@ def test_issue_263():
 
 def test_issue_259():
     i = Interprete(verbose=VERBOSE)
+    # First part.
     r, l = i.evaluer("normal(140,1 ; 150,3 ; 100 ; 5)")
+    # sympy 1.0 : '5,28725822993202*10^-16'
+    # Wofram Alpha (01/05/2016) : 5/9007199254740992~~5.55112×10^-16
+    # On teste que ce soit en gros correct, sans se focaliser sur les décimales.
+    assert re.match("5,[0-9]+\*10\^\-16$", r)
+    assert re.match(r"\$5,[0-9]+[ ]\\cdot[ ]10\^{-16}\$$", l)
+    # Second part of the issue (scientific notation handling).
+    i.calcul_exact = False
+    r, l = i.evaluer("10,0^-125,0")
     assertEqual(r, "1,0*10^-125")
     assertEqual(l, r"$10^{-125}$")
 

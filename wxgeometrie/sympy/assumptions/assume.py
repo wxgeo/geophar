@@ -1,5 +1,4 @@
 from __future__ import print_function, division
-
 import inspect
 from sympy.core.cache import cacheit
 from sympy.core.singleton import S
@@ -19,18 +18,18 @@ class AssumptionsContext(set):
     Examples
     ========
 
-        >>> from sympy import AppliedPredicate, Q
-        >>> from sympy.assumptions.assume import global_assumptions
-        >>> global_assumptions
-        AssumptionsContext()
-        >>> from sympy.abc import x
-        >>> global_assumptions.add(Q.real(x))
-        >>> global_assumptions
-        AssumptionsContext([Q.real(x)])
-        >>> global_assumptions.remove(Q.real(x))
-        >>> global_assumptions
-        AssumptionsContext()
-        >>> global_assumptions.clear()
+    >>> from sympy import AppliedPredicate, Q
+    >>> from sympy.assumptions.assume import global_assumptions
+    >>> global_assumptions
+    AssumptionsContext()
+    >>> from sympy.abc import x
+    >>> global_assumptions.add(Q.real(x))
+    >>> global_assumptions
+    AssumptionsContext([Q.real(x)])
+    >>> global_assumptions.remove(Q.real(x))
+    >>> global_assumptions
+    AssumptionsContext()
+    >>> global_assumptions.clear()
 
     """
 
@@ -39,11 +38,15 @@ class AssumptionsContext(set):
         for a in assumptions:
             super(AssumptionsContext, self).add(a)
 
+
 global_assumptions = AssumptionsContext()
 
 
 class AppliedPredicate(Boolean):
     """The class of expressions resulting from applying a Predicate.
+
+    Examples
+    ========
 
     >>> from sympy import Q, Symbol
     >>> x = Symbol('x')
@@ -71,11 +74,11 @@ class AppliedPredicate(Boolean):
         Examples
         ========
 
-            >>> from sympy import Q, Symbol
-            >>> x = Symbol('x')
-            >>> a = Q.integer(x + 1)
-            >>> a.arg
-            x + 1
+        >>> from sympy import Q, Symbol
+        >>> x = Symbol('x')
+        >>> a = Q.integer(x + 1)
+        >>> a.arg
+        x + 1
 
         """
         return self._args[1]
@@ -90,7 +93,8 @@ class AppliedPredicate(Boolean):
 
     @cacheit
     def sort_key(self, order=None):
-        return self.class_key(), (2, (self.func.name, self.arg.sort_key())), S.One.sort_key(), S.One
+        return (self.class_key(), (2, (self.func.name, self.arg.sort_key())),
+                S.One.sort_key(), S.One)
 
     def __eq__(self, other):
         if type(other) is AppliedPredicate:
@@ -172,6 +176,10 @@ class Predicate(Boolean):
                 except AttributeError:
                     continue
                 res = eval(expr, assumptions)
+                # Do not stop if value returned is None
+                # Try to check for higher classes
+                if res is None:
+                    continue
                 if _res is None:
                     _res = res
                 elif res is None:
@@ -184,9 +192,13 @@ class Predicate(Boolean):
                 break
         return res
 
+
 @contextmanager
 def assuming(*assumptions):
     """ Context manager for assumptions
+
+    Examples
+    ========
 
     >>> from sympy.assumptions import assuming, Q, ask
     >>> from sympy.abc import x, y

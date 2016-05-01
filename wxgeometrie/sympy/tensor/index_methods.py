@@ -12,9 +12,10 @@
 
 from __future__ import print_function, division
 
+from sympy.core.function import Function
+from sympy.functions import exp, Piecewise
 from sympy.tensor.indexed import Idx, Indexed
-from sympy.functions import exp
-from sympy.core import C
+
 
 from sympy.core.compatibility import reduce
 
@@ -248,10 +249,10 @@ def get_indices(expr):
         elif expr.is_Pow or isinstance(expr, exp):
             return _get_indices_Pow(expr)
 
-        elif isinstance(expr, C.Piecewise):
+        elif isinstance(expr, Piecewise):
             # FIXME:  No support for Piecewise yet
             return set(), {}
-        elif isinstance(expr, C.Function):
+        elif isinstance(expr, Function):
             # Support ufunc like behaviour by returning indices from arguments.
             # Functions do not interpret repeated indices across argumnts
             # as summation
@@ -334,11 +335,11 @@ def get_contraction_structure(expr):
 
     >>> d = get_contraction_structure(x[i]*(y[i] + A[i, j]*x[j]))
     >>> sorted(d.keys(), key=default_sort_key)
-    [x[i]*(y[i] + A[i, j]*x[j]), (i,)]
+    [(x[j]*A[i, j] + y[i])*x[i], (i,)]
     >>> d[(i,)]
-    set([x[i]*(y[i] + A[i, j]*x[j])])
+    set([(x[j]*A[i, j] + y[i])*x[i]])
     >>> d[x[i]*(A[i, j]*x[j] + y[i])]
-    [{None: set([y[i]]), (j,): set([A[i, j]*x[j]])}]
+    [{None: set([y[i]]), (j,): set([x[j]*A[i, j]])}]
 
     Powers with contractions in either base or exponent will also be found as
     keys in the dictionary, mapping to a list of results from recursive calls:
@@ -418,10 +419,10 @@ def get_contraction_structure(expr):
                     result[key] = d[key]
         return result
 
-    elif isinstance(expr, C.Piecewise):
+    elif isinstance(expr, Piecewise):
         # FIXME:  No support for Piecewise yet
         return {None: expr}
-    elif isinstance(expr, C.Function):
+    elif isinstance(expr, Function):
         # Collect non-trivial contraction structures in each argument
         # We do not report repeated indices in separate arguments as a
         # contraction

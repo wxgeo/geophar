@@ -51,17 +51,28 @@ def order_at(a, p, t):
     if p == Poly(t, t):
         return a.as_poly(t).ET()[0][0]
 
-    # TODO: Can this be done more efficiently?
-    # Perhaps using sqf factorization, binary search with an upper bound of
-    # a.degree(t)//p.degree(t), or some other clever method.
-    n = -1
-    p1 = Poly(1, t)
-    r = Poly(0, t)
+    # Uses binary search for calculating the power. power_list collects the tuples
+    # (p^k,k) where each k is some power of 2. After deciding the largest k
+    # such that k is power of 2 and p^k|a the loop iteratively calculates
+    # the actual power.
+    power_list = []
+    p1 = p
+    r = a.rem(p1)
+    tracks_power = 1
     while r.is_zero:
-        n += 1
-        p1 = p1*p
+        power_list.append((p1,tracks_power))
+        p1 = p1*p1
+        tracks_power *= 2
         r = a.rem(p1)
-
+    n = 0
+    product = Poly(1, t)
+    while len(power_list) != 0:
+        final = power_list.pop()
+        productf = product*final[0]
+        r = a.rem(productf)
+        if r.is_zero:
+            n += final[1]
+            product = productf
     return n
 
 
@@ -194,7 +205,6 @@ def special_denom(a, ba, bd, ca, cd, DE, case='auto'):
     else:
         raise ValueError("case must be one of {'exp', 'tan', 'primitive', "
             "'base'}, not %s." % case)
-    # assert a.div(p)[1]
 
     nb = order_at(ba, p, DE.t) - order_at(bd, p, DE.t)
     nc = order_at(ca, p, DE.t) - order_at(cd, p, DE.t)
@@ -373,12 +383,11 @@ def spde(a, b, c, n, DE):
 
     alpha = Poly(1, DE.t)
     beta = Poly(0, DE.t)
-    pow_a = 0
 
     while True:
+        if c.is_zero:
+            return (zero, zero, 0, zero, beta)  # -1 is more to the point
         if (n < 0) is True:
-            if c.is_zero:
-                return (zero, zero, 0, zero, beta)
             raise NonElementaryIntegralException
 
         g = a.gcd(b)
@@ -396,9 +405,9 @@ def spde(a, b, c, n, DE):
         b += derivation(a, DE)
         c = z - derivation(r, DE)
         n -= a.degree(DE.t)
+
+        beta += alpha * r
         alpha *= a
-        beta += (a**pow_a)*r
-        pow_a += 1
 
 def no_cancel_b_large(b, c, n, DE):
     """
@@ -744,6 +753,9 @@ def rischDE(fa, fd, ga, gd, DE):
         n = oo
 
     B, C, m, alpha, beta = spde(A, B, C, n, DE)
-    y = solve_poly_rde(B, C, m, DE)
+    if C.is_zero:
+        y = C
+    else:
+        y = solve_poly_rde(B, C, m, DE)
 
     return (alpha*y + beta, hn*hs)

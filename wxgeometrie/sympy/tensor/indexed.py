@@ -43,7 +43,7 @@
 
     >>> x = IndexedBase('x')
     >>> M[i, j]*x[j]
-    M[i, j]*x[j]
+    x[j]*M[i, j]
 
     If the indexed objects will be converted to component based arrays, e.g.
     with the code printers or the autowrap framework, you also need to provide
@@ -109,7 +109,7 @@
 from __future__ import print_function, division
 
 from sympy.core import Expr, Tuple, Symbol, sympify, S
-from sympy.core.compatibility import is_sequence, string_types, NotIterable
+from sympy.core.compatibility import is_sequence, string_types, NotIterable, range
 
 
 class IndexException(Exception):
@@ -132,20 +132,20 @@ class Indexed(Expr):
     True
 
     """
-    is_commutative = False
+    is_commutative = True
 
-    def __new__(cls, base, *args, **kw_args):
+    def __new__(cls, base, *args):
         from sympy.utilities.misc import filldedent
 
         if not args:
             raise IndexException("Indexed needs at least one index.")
         if isinstance(base, (string_types, Symbol)):
             base = IndexedBase(base)
-        elif not isinstance(base, IndexedBase):
+        elif not hasattr(base, '__getitem__') and not isinstance(base, IndexedBase):
             raise TypeError(filldedent("""
                 Indexed expects string, Symbol or IndexedBase as base."""))
         args = list(map(sympify, args))
-        return Expr.__new__(cls, base, *args, **kw_args)
+        return Expr.__new__(cls, base, *args)
 
     @property
     def base(self):
@@ -323,40 +323,26 @@ class IndexedBase(Expr, NotIterable):
     (o, p)
 
     """
-    is_commutative = False
+    is_commutative = True
 
     def __new__(cls, label, shape=None, **kw_args):
-        if not isinstance(label, (string_types, Symbol)):
+        if isinstance(label, string_types):
+            label = Symbol(label)
+        elif isinstance(label, Symbol):
+            pass
+        else:
             raise TypeError("Base label should be a string or Symbol.")
 
-        label = sympify(label)
-        obj = Expr.__new__(cls, label, **kw_args)
         if is_sequence(shape):
-            obj._shape = Tuple(*shape)
+            shape = Tuple(*shape)
         else:
-            obj._shape = sympify(shape)
+            shape = sympify(shape)
+        if shape is not None:
+            obj = Expr.__new__(cls, label, shape, **kw_args)
+        else:
+            obj = Expr.__new__(cls, label, **kw_args)
+        obj._shape = shape
         return obj
-
-    @property
-    def args(self):
-        """Returns the arguments used to create this IndexedBase object.
-
-        Examples
-        ========
-
-        >>> from sympy import IndexedBase
-        >>> from sympy.abc import x, y
-        >>> IndexedBase('A', shape=(x, y)).args
-        (A, (x, y))
-
-        """
-        if self._shape:
-            return self._args + (self._shape,)
-        else:
-            return self._args
-
-    def _hashable_content(self):
-        return Expr._hashable_content(self) + (self._shape,)
 
     def __getitem__(self, indices, **kw_args):
         if is_sequence(indices):
@@ -444,7 +430,7 @@ class Idx(Expr):
     Examples
     ========
 
-    >>> from sympy.tensor import IndexedBase, Idx
+    >>> from sympy.tensor import Idx
     >>> from sympy import symbols, oo
     >>> n, i, L, U = symbols('n i L U', integer=True)
 
@@ -473,13 +459,6 @@ class Idx(Expr):
     >>> idx = Idx(i, oo); idx.lower, idx.upper
     (0, oo)
 
-    The label can be a literal integer instead of a string/Symbol:
-
-    >>> idx = Idx(2, n); idx.lower, idx.upper
-    (0, n - 1)
-    >>> idx.label
-    2
-
     """
 
     is_integer = True
@@ -490,6 +469,11 @@ class Idx(Expr):
         if isinstance(label, string_types):
             label = Symbol(label, integer=True)
         label, range = list(map(sympify, (label, range)))
+
+        if label.is_Number:
+            if not label.is_integer:
+                raise TypeError("Index is not an integer number.")
+            return label
 
         if not label.is_integer:
             raise TypeError("Idx object requires an integer label.")
@@ -524,8 +508,9 @@ class Idx(Expr):
         ========
 
         >>> from sympy import Idx, Symbol
-        >>> Idx(2).label
-        2
+        >>> x = Symbol('x', integer=True)
+        >>> Idx(x).label
+        x
         >>> j = Symbol('j', integer=True)
         >>> Idx(j).label
         j

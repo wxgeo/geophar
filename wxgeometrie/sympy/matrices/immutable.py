@@ -1,6 +1,6 @@
 from __future__ import print_function, division
 
-from sympy.core import Basic, Integer, Tuple, Dict
+from sympy.core import Basic, Integer, Tuple, Dict, S, sympify
 from sympy.core.sympify import converter as sympify_converter
 
 from sympy.matrices.matrices import MatrixBase
@@ -10,7 +10,7 @@ from sympy.matrices.expressions import MatrixExpr
 
 
 def sympify_matrix(arg):
-    return ImmutableMatrix(arg)
+    return arg.as_immutable()
 sympify_converter[MatrixBase] = sympify_matrix
 
 class ImmutableMatrix(MatrixExpr, DenseMatrix):
@@ -31,6 +31,10 @@ class ImmutableMatrix(MatrixExpr, DenseMatrix):
     ...
     TypeError: Cannot set values of ImmutableDenseMatrix
     """
+
+    # MatrixExpr is set as NotIterable, but we want explicit matrices to be
+    # iterable
+    _iterable = True
 
     _class_priority = 8
 
@@ -63,6 +67,24 @@ class ImmutableMatrix(MatrixExpr, DenseMatrix):
     def __setitem__(self, *args):
         raise TypeError("Cannot set values of ImmutableMatrix")
 
+    def _eval_Eq(self, other):
+        """Helper method for Equality with matrices.
+
+        Relational automatically converts matrices to ImmutableMatrix
+        instances, so this method only applies here.  Returns True if the
+        matrices are definitively the same, False if they are definitively
+        different, and None if undetermined (e.g. if they contain Symbols).
+        Returning None triggers default handling of Equalities.
+
+        """
+        if not hasattr(other, 'shape') or self.shape != other.shape:
+            return S.false
+        if isinstance(other, MatrixExpr) and not isinstance(
+                other, ImmutableMatrix):
+            return None
+        diff = self - other
+        return sympify(diff.is_zero)
+
     adjoint = MatrixBase.adjoint
     conjugate = MatrixBase.conjugate
     # C and T are defined in MatrixExpr...I don't know why C alone
@@ -76,6 +98,7 @@ class ImmutableMatrix(MatrixExpr, DenseMatrix):
     _eval_adjoint = DenseMatrix._eval_adjoint
     _eval_inverse = DenseMatrix._eval_inverse
     _eval_simplify = DenseMatrix._eval_simplify
+    _eval_diff = DenseMatrix._eval_diff
 
     equals = DenseMatrix.equals
     is_Identity = DenseMatrix.is_Identity
@@ -83,15 +106,17 @@ class ImmutableMatrix(MatrixExpr, DenseMatrix):
     __add__ = MatrixBase.__add__
     __radd__ = MatrixBase.__radd__
     __mul__ = MatrixBase.__mul__
+    __matmul__ = MatrixBase.__matmul__
     __rmul__ = MatrixBase.__rmul__
+    __rmatmul__ = MatrixBase.__rmatmul__
     __pow__ = MatrixBase.__pow__
     __sub__ = MatrixBase.__sub__
     __rsub__ = MatrixBase.__rsub__
     __neg__ = MatrixBase.__neg__
     __div__ = MatrixBase.__div__
     __truediv__ = MatrixBase.__truediv__
-# This is included after the class definition as a workaround for issue 4114.
-# See http://code.google.com/p/sympy/issues/detail?id=4114
+# This is included after the class definition as a workaround for issue 7213.
+# See https://github.com/sympy/sympy/issues/7213
 ImmutableMatrix.is_zero = DenseMatrix.is_zero
 
 
@@ -140,5 +165,9 @@ class ImmutableSparseMatrix(Basic, SparseMatrix):
 
     subs = MatrixBase.subs
 
+    xreplace = MatrixBase.xreplace
+
     def __hash__(self):
         return hash((type(self).__name__,) + (self.shape, tuple(self._smat)))
+
+    _eval_Eq = ImmutableMatrix._eval_Eq
