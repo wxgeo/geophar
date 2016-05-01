@@ -9,7 +9,7 @@ from sympy import (Symbol, exp, solve, limit, S, E, Matrix, Integer, oo,
                     sympify, Float, sqrt,
                     )
 
-from tools.testlib import assertAlmostEqual
+from tools.testlib import assertAlmostEqual, assertEqual
 
 # Teste que certains bugs de sympy sont bien ou résolus, ou temporairement patchés
 
@@ -27,7 +27,7 @@ def test_sympy():
     assert limit(1 + 1/x, x, 0, dir='-') == -oo
     assert limit(1/x**2, x, 0, dir='-') == oo
     assert sympify(u'45') == 45 # issue 2508
-    assert solve((2*x + 8)*exp(-6*x), x) == [-4] # issue 10391 (FS#319)
+    assertEqual(solve((2*x + 8)*exp(-6*x), x), [-4]) # issue 10391 (FS#319)
 
 
 def test_sympy_solving_with_floats():
@@ -60,12 +60,11 @@ def test_sympy_files():
     tst('README.rst')
 
 
-@XFAIL
+
 def test_solve_reals():
     x = Symbol('x', real=True)
     assert solve(sqrt(x)) == [0]
 
-@XFAIL
 def test_set():
     assert S(2) == 2
     assert {S(2)} == {2}

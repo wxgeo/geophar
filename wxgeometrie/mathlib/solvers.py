@@ -212,8 +212,14 @@ def positif(expression, variable=None, strict=False, _niveau=0, _changement_vari
             print(u'Fonction périodique %s détectée. Résolution sur [0;%s]' % (expression, T))
 
     # On remplace sqrt(x^2) par |x|.
-    a = Wild('a')
-    expression = expression.replace(sqrt(a**2),Abs(a)).replace(Abs(sqrt(a)),sqrt(a))
+    a = Wild('a', exclude=[expression])
+    dic = expression.match(sqrt(a**2))
+    if dic is not None:
+        sub_expr = dic[a]
+        # On évite de détecter sqrt(x) comme étant sqrt(sqrt(x)**2) !
+        if not (sub_expr.is_Pow and sub_expr.as_base_exp()[1].is_integer):
+            expr.replace(sqrt(a**2),Abs(a))
+    expression = expression.replace(Abs(sqrt(a)),sqrt(a))
     del a
 
     # On factorise au maximum.

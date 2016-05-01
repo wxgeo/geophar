@@ -414,7 +414,7 @@ def test_issue_263():
 
 def test_issue_259():
     i = Interprete(verbose=VERBOSE)
-    r, l = i.evaluer("normal(140,1 ; 50,30)")
+    r, l = i.evaluer("normal(140,1 ; 150,3 ; 100 ; 5)")
     assertEqual(r, "1,0*10^-125")
     assertEqual(l, r"$10^{-125}$")
 

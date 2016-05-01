@@ -11,11 +11,12 @@ from wxgeometrie.mathlib.solvers import resoudre, positif, ensemble_definition
 
 #VERBOSE = False
 
+from tools.testlib import assertEqual
 
-def assertEqual(x, y):
-    if x != y:
-        print "ERREUR:", repr(x), "!=", repr(y)
-    assert(x == y)
+#~ def assertEqual(x, y):
+    #~ if x != y:
+        #~ print "ERREUR:", repr(x), "!=", repr(y)
+    #~ assert(x == y)
 
 def assert_resoudre(x, y):
     assertEqual(str(resoudre(x)), y)

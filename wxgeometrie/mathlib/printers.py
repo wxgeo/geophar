@@ -298,6 +298,7 @@ class CustomLatexPrinter(MyCustomPrinter, LatexPrinter):
                 return LatexPrinter._print_Mul(self, expr)
             return '%s %s' % (self._print(Mul(*args[:-1])), self._print(I))
         return LatexPrinter._print_Mul(self, expr)
+        #return ' '.join(self._print(arg) for arg in expr.args)
 
     def _print_set(self, expr):
         if expr:
