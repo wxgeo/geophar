@@ -1,12 +1,13 @@
-Géophar version 16.01
-Publiée le 05/01/2016
+Géophar version 16.08
+Publiée le 22/08/2016
 
 
-* [Tablatex] Fix issue with new version of tabvar.sty.
-* Improve compatibility of files created with old wxgeometrie/geophar versions.
-* Fix small bug in text editor.
-* Adapt text selection area to zoom_text value.
-* Version 15.10.2
-* Fix ``compilation`` issue on Windows.
-* Version 15.10.1
-* Fix failing tests.
+* Small fix in mathlib.
+* Update sympy version to 1.0
+* Improve compatibility with sympy 1.0
+* mpmath is now an external dependency.
+* [Graphs] Add support for labels in graph nodes.
+* Import mathlib.mathtext later at startup (so as to display splashscreen earlier).
+* Improve debuging messages in testlib.
+* Fix encoding declaration in geophar.pyw.
+* [FS#319] Patch sympy solver.
