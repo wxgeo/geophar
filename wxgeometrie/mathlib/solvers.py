@@ -218,7 +218,7 @@ def positif(expression, variable=None, strict=False, _niveau=0, _changement_vari
         sub_expr = dic[a]
         # On évite de détecter sqrt(x) comme étant sqrt(sqrt(x)**2) !
         if not (sub_expr.is_Pow and sub_expr.as_base_exp()[1].is_integer):
-            expr.replace(sqrt(a**2),Abs(a))
+            expression = expression.replace(sqrt(a**2),Abs(a))
     expression = expression.replace(Abs(sqrt(a)),sqrt(a))
     del a
 
