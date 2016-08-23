@@ -51,7 +51,9 @@ install = True''')
 # path = sys.path.append(os.path.join("..", "..", "biblio"))
 # includes = ["printx", "bibconcours"]
 includes = ['sys', 'six', 'timeit', 'colorsys']
-excludes = ['Tkinter', 'wx']
+# collections.abc: cf. https://openclassrooms.com/forum/sujet/cx-freeze-no-file-named-sys
+excludes = ['Tkinter', 'wx', 'collections.abc']
+
 packages = []
 # A cause du système dynamique de chargement des modules, la version de wxgeometrie contenue dans librairie.zip ne suffit pas.
 include_files = ['wxgeometrie']
