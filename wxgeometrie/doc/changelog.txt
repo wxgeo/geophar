@@ -1,7 +1,11 @@
-Géophar version 16.08
-Publiée le 22/08/2016
+Géophar version 16.08.1
+Publiée le 24/08/2016
 
 
+* Fix for windows compilation process.
+* Fix bug in infos() when there were non ascii caracters in geophar path.
+* Workaround for a bug in external library preventing `compilation` on windows.
+* Version 16.08
 * Small fix in mathlib.
 * Update sympy version to 1.0
 * Improve compatibility with sympy 1.0
