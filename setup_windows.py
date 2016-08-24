@@ -50,7 +50,7 @@ install = True''')
 # preparation des options
 # path = sys.path.append(os.path.join("..", "..", "biblio"))
 # includes = ["printx", "bibconcours"]
-includes = ['sys', 'six', 'timeit', 'colorsys']
+includes = ['sys', 'six', 'timeit', 'colorsys', 'mpmath', 'numpy.core.multiarray']
 # collections.abc: cf. https://openclassrooms.com/forum/sujet/cx-freeze-no-file-named-sys
 excludes = ['Tkinter', 'wx', 'collections.abc']
 
