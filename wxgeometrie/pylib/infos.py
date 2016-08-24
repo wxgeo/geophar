@@ -31,10 +31,10 @@ import locale
 import PyQt4.QtCore as qt
 
 try:
-    from ..param import NOMPROG
+    from ..param import NOMPROG, encodage
 except Exception:
     NOMPROG = u"Logiciel"
-
+    encodage = "utf8"
 
 class dossier(object):
     def __init__(self, titre):
@@ -44,11 +44,18 @@ class dossier(object):
         l = []
         l.append("+ " + self.titre + ":")
         if hasattr(self, "version"):
-            l.append("     Version: " + self.version)
+            l.append(u"     Version: " + self.version)
         for key in self.__dict__:
             if key not in ("titre", "version"):
-                l.append("     %s:  %s" %(key.capitalize(), getattr(self, key)))
-        return "\n".join(l) + "\n\n"
+                content = getattr(self, key)
+                if not isinstance(content, unicode):
+                    if isinstance(content, str):
+                        content = unicode(content, encodage, errors="replace")
+                    else:
+                        # If content isn't a string, specifying encodage raises an error.
+                        content = unicode(content)
+                l.append(u"     %s:  %s" %(key.capitalize(), content))
+        return u"\n".join(l) + u"\n\n"
 
 
 
@@ -92,7 +99,7 @@ def informations_configuration():
     dossier_local.encodage = locale.getpreferredencoding()
 
     dossier_python = dossier("Python")
-    dossier_python.encodage = sys.getdefaultencoding() + " / Noms de fichiers: " + sys.getfilesystemencoding()
+    dossier_python.encodage = sys.getdefaultencoding() + u" / Noms de fichiers: " + sys.getfilesystemencoding()
     dossier_python.version = sys.version
     dossier_python.executable = sys.executable
 
@@ -103,8 +110,8 @@ def informations_configuration():
 
 
     dossier_pyqt = dossier("PyQt")
-    dossier_pyqt.portage = "PyQt %s (%s) %s bits" %(qt.PYQT_VERSION_STR, qt.PYQT_VERSION, qt.QSysInfo.WordSize)
-    dossier_pyqt.version = 'Qt %s (%s)' %(qt.QT_VERSION_STR, qt.QT_VERSION)
+    dossier_pyqt.portage = u"PyQt %s (%s) %s bits" %(qt.PYQT_VERSION_STR, qt.PYQT_VERSION, qt.QSysInfo.WordSize)
+    dossier_pyqt.version = u'Qt %s (%s)' %(qt.QT_VERSION_STR, qt.QT_VERSION)
 
     dossier_matplotlib = dossier("Matplolib")
     dossier_matplotlib.version = matplotlib.__version__
@@ -130,19 +137,19 @@ def informations_configuration():
         try:
             from .. import param
             if param.charger_psyco is False:
-                dossier_psyco.utilisation = "unused"
+                dossier_psyco.utilisation = u"unused"
             elif param.charger_psyco is None:
-                dossier_psyco.utilisation = "profile"
+                dossier_psyco.utilisation = u"profile"
             elif param.charger_psyco is True:
-                dossier_psyco.utilisation = "full"
+                dossier_psyco.utilisation = u"full"
             else:
-                dossier_psyco.utilisation = "inconnue"
+                dossier_psyco.utilisation = u"inconnue"
         except ImportError:
-            dossier_psyco.utilisation = "?"
+            dossier_psyco.utilisation = u"?"
     except ImportError:
-        dossier_psyco.version = "Psyco non trouve."
+        dossier_psyco.version = u"Psyco non trouve."
     except Exception:
-        dossier_psyco.version = "#ERREUR#"
+        dossier_psyco.version = u"#ERREUR#"
 
     dossier_wxgeometrie = dossier(NOMPROG)
     try:
@@ -150,8 +157,8 @@ def informations_configuration():
         dossier_wxgeometrie.version = param.version
         dossier_wxgeometrie.session = param.ID
     except Exception:
-        dossier_wxgeometrie.version = "?"
-        dossier_wxgeometrie.session = "?"
+        dossier_wxgeometrie.version = u"?"
+        dossier_wxgeometrie.session = u"?"
 
     return (dossier_os.contenu() + dossier_local.contenu() + dossier_python.contenu()
                                 + dossier_pyqt.contenu() + dossier_matplotlib.contenu()
