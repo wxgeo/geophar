@@ -50,13 +50,18 @@ install = True''')
 # preparation des options
 # path = sys.path.append(os.path.join("..", "..", "biblio"))
 # includes = ["printx", "bibconcours"]
-includes = ['sys', 'six', 'timeit', 'colorsys', 'mpmath', 'numpy.core.multiarray']
+includes = ['sys', 'six', 'timeit', 'colorsys', 'mpmath']
 # collections.abc: cf. https://openclassrooms.com/forum/sujet/cx-freeze-no-file-named-sys
 excludes = ['Tkinter', 'wx', 'collections.abc']
 
 packages = []
 # A cause du système dynamique de chargement des modules, la version de wxgeometrie contenue dans librairie.zip ne suffit pas.
 include_files = ['wxgeometrie']
+# Bizarement, cx_freeze ne peut pas import mpl_toolkits, sans doute parce qu'il n'a pas de fichier __init__.py.
+# On copie directement le dossier.
+# Remarque: imp.find_module() ne trouve pas non plus mpl_toolkits.
+import mpl_toolkits
+include_files.extend(mpl_toolkits.__path__)
 
 build_exe_options = {#"path": ['.'] + sys.path,
            "includes": includes,
@@ -71,6 +76,7 @@ build_exe_options = {#"path": ['.'] + sys.path,
            'include_files': include_files,
            'append_script_to_exe': True,
            'include_in_shared_zip': False,
+           'init_script': os.path.abspath('tools/resources/ConsoleSetLibPathx.py'),
            }
 
 # Shortcuts for Windows Installer.
@@ -141,7 +147,8 @@ setup(
     version = version,
     description = "Le couteau suisse du prof de maths.",
     author = "Nicolas Pourcelot",
-    options = {"build_exe": build_exe_options, "bdist_msi": bdist_msi_options},
+    options = {"build_exe": build_exe_options,
+               "bdist_msi": bdist_msi_options},
     executables = [cible_1, cible_2],
     license='GNU Public License v2+',
     url='http://wxgeo.free.fr',
@@ -171,14 +178,17 @@ from __future__ import division
 debug = False
 install = False''')
 
-# Pour plus de clarté, on regroupe les fichiers .pyd dans le dossier dll/
+# On rajoute un fichier __init__.py dans mpl_toolkits
+cd("mpl_toolkits")      # DIR: [projet]/build/geophar/mpl_toolkits
+if not os.path.isfile("__init__.py"):
+    open("__init__.py", "w").close()
+cd("..")                # DIR: [projet]/build/geophar
+
+# Pour plus de clarté, on regroupe les fichiers .pyd et .dll dans le dossier dll/
 mkdir('dll')
 mv('*.pyd', 'dll')
-cd('dll')               # DIR: [projet]/build/geophar/dll
-# Etrangement, il semble que les fichiers .pyd utilisés par PyQt doivent être dans le même dossier que geophar.exe.
-mv('PyQt4*.pyd', '..')
-mv('sip.pyd', '..')
-cd('..')                # DIR: [projet]/build/geophar
+mv('*.dll', 'dll')
+mv('*.manifest', 'dll')
 
 # On génère les fichiers .pyc (accélère le premier démarrage du logiciel).
 compileall.compile_dir('wxgeometrie', maxlevels=50)
