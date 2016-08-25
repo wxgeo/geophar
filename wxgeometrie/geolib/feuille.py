@@ -604,7 +604,7 @@ class Dictionnaire_objets(dict):
             return '_'
         nom = self.__convertir_nom(nom)
 
-        if nom in self.__class__.__dict__.keys() \
+        if nom in self.__class__.__dict__ \
                           or any(self.__match(pattern, nom) for pattern in self._noms_interdits):
             return err(u"Nom r\xe9serv\xe9 : " + nom) # Pas d'accent dans le code ici a cause de Pyshell !
         # Les noms contenant '__' sont des noms réservés pour un usage futur éventuel (convention).

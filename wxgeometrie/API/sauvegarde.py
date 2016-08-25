@@ -99,7 +99,7 @@ class FichierGEO(object):
         self.encoding = xml.encoding
         self.document = xml.childNodes[0]
         self.infos = self.defaut.copy() # contient tous les attributs du document
-        for attribut in self.document._attrs.keys():
+        for attribut in self.document._attrs:
             self.infos[attribut] = self.document._attrs[attribut].value
 
         self.contenu = contenu_node(self.document)
@@ -112,7 +112,7 @@ class FichierGEO(object):
     def exporter(self):
         def convertir_contenu(dictionnaire):
             texte = ""
-            for balise in dictionnaire.keys():
+            for balise in dictionnaire:
                 for elt in dictionnaire[balise]:
                     texte += "<%s>\n" %balise
                     if isinstance(elt, (str, unicode)):

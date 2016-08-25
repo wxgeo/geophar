@@ -339,7 +339,7 @@ class Panel_API_graphique(Panel_simple):
         if fgeo.contenu.has_key("Affichage"):
             if fgeo.contenu["Affichage"]:
                 parametres = fgeo.contenu["Affichage"][0]
-                for parametre in parametres.keys():
+                for parametre in parametres:
                     setattr(self.canvas, parametre, eval_safe(parametres[parametre][0]))
 
         if fgeo.contenu.has_key("Figure"):

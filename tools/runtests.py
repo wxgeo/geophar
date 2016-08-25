@@ -348,7 +348,7 @@ class SymPyTests(object):
             # we need to filter only those functions that begin with 'test_'
             # that are defined in the testing file or in the file where
             # is defined the XFAIL decorator
-            funcs = [gl[f] for f in gl.keys() if f.startswith("test_") and
+            funcs = [gl[f] for f in gl if f.startswith("test_") and
                                                  (inspect.isfunction(gl[f])
                                                     or inspect.ismethod(gl[f])) and
                                                  (inspect.getsourcefile(gl[f]) == filename or

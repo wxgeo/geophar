@@ -17,7 +17,7 @@ from wxgeometrie.mathlib.parsers import (traduire_formule, NBR, NBR_SIGNE, VAR,
 from tools.testlib import assertEqual
 
 
-liste_fonctions = [key for key in universal_functions.__dict__.keys() if "_" not in key]
+liste_fonctions = [key for key in universal_functions.__dict__ if "_" not in key]
 liste_fonctions.append("limite")
 liste_fonctions.append("log10")
 liste_fonctions.append("mat")
