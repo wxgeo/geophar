@@ -51,7 +51,7 @@ def _auto_tabval(chaine='', formatage_antecedents='VAL', formatage_images='VAL',
     # NOTA: Pour l'instant, seul un intervalle de la forme [a;b] est supporté.
 
     if m is None:
-        raise ValueError, "Format incorrect."
+        raise ValueError("Format incorrect.")
 
     fonction = m.group('fonction')
     intervalle = m.group('intervalle')

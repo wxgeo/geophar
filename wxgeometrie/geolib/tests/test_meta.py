@@ -68,12 +68,12 @@ def test_toutes_classes():
 def assert_heritage(classe, classe_parente):
     test = issubclass(classe, classe_parente)
     if not test:
-        raise TypeError, "ERREUR: la classe %s N'herite PAS de %s" %(classe, classe_parente)
+        raise TypeError("ERREUR: la classe %s N'herite PAS de %s" %(classe, classe_parente))
 
 def assert_not_heritage(classe, classe_parente):
     test = issubclass(classe, classe_parente)
     if test:
-        raise TypeError, "ERREUR: la classe %s herite de %s" %(classe, classe_parente)
+        raise TypeError("ERREUR: la classe %s herite de %s" %(classe, classe_parente))
 
 
 def test_heritages():
@@ -135,7 +135,7 @@ def test_methode_image_par():
                 and classe.__name__.rsplit(".")[-1] in classes
                 and not hasattr(classe, "image_par")):
             if not issubclass(classe, non_transformable) and not issubclass(classe, non_transformable_actuellement):
-                raise AttributeError, "ATTENTION: " + str(classe) + " n'a pas d'attribut 'image_par' !"
+                raise AttributeError("ATTENTION: " + str(classe) + " n'a pas d'attribut 'image_par' !")
 
 
 

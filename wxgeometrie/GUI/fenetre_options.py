@@ -63,7 +63,7 @@ class FenetreOptions(QDialog):
                         elif isinstance(parametre, basestring):
                             bsizer.addWidget(QLabel(parametre))
                         else:
-                            raise NotImplementedError, repr(type(elt))
+                            raise NotImplementedError(repr(type(elt)))
                     bsizer.addSpacing(3)
                     sizer.addWidget(box)
                 elif isinstance(elt, Parametre):
@@ -72,7 +72,7 @@ class FenetreOptions(QDialog):
                 elif isinstance(elt, basestring):
                     sizer.addWidget(QLabel(elt))
                 else:
-                    raise NotImplementedError, repr(type(elt))
+                    raise NotImplementedError(repr(type(elt)))
 
             boutons = QHBoxLayout()
             ok = QPushButton(u'OK', clicked=self.ok)

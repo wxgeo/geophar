@@ -127,14 +127,14 @@ def _arguments_latex(chaine, nbr_arguments = 2):
     liste = []
     while len(liste) < nbr_arguments:
         if not chaine:
-            raise TypeError, "Il manque des arguments."
+            raise TypeError("Il manque des arguments.")
         if chaine[0] != "{":
             liste.append(chaine[0])
             chaine = chaine[1:]
         else:
             l = split_around_parenthesis(chaine, 0, "{")
             if len(l) != 3:
-                raise TypeError, "Arguments mal formes: il manque des '}'."
+                raise TypeError("Arguments mal formes: il manque des '}'.")
             liste.append(l[1])
             chaine = l[2]
     liste.append(chaine)
@@ -554,7 +554,7 @@ def _fast_closing_bracket_search(string, start=0):
         j = string.find(')', k)
         if i == j == -1:
             # Plus aucune parenthèse.
-            raise ValueError, "No matching parenthesis, or string doesn't start with `(`."
+            raise ValueError("No matching parenthesis, or string doesn't start with `(`.")
         elif i < j and i != -1:
             # La 1ère parenthèse rencontrée est ouvrante `(`.
             level += 1
@@ -591,7 +591,7 @@ def _fast_opening_bracket_search(string):
         j = string.rfind(')', None, k)
         if i == j == -1:
             # Plus aucune parenthèse.
-            raise ValueError, "No matching parenthesis, or string doesn't end with `)`."
+            raise ValueError("No matching parenthesis, or string doesn't end with `)`.")
         elif i > j:
             # La 1ère parenthèse rencontrée est ouvrante `(`.
             level -= 1
@@ -731,7 +731,7 @@ def _convertir_en_latex(chaine):
         while '/' in chaine:
             securite -= 1
             if securite < 0:
-                raise RuntimeError, "Boucle probablement infinie."
+                raise RuntimeError("Boucle probablement infinie.")
             i = chaine.find("/")
             # Début de la fraction
             deb = _rechercher_numerateur(chaine[:i])

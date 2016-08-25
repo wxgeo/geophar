@@ -90,7 +90,7 @@ class Variable(Variable_generique):
                 value = eval(value, {})
         elif isinstance(value, Basic):
             if not value.is_real:
-                raise RuntimeError, "La variable doit etre reelle."
+                raise RuntimeError("La variable doit etre reelle.")
         return value
 
 
@@ -120,7 +120,7 @@ class Variable(Variable_generique):
                     ensemble.add(obj)
                     if self is obj or is_in(self, obj._ancetres()):
                         print self,
-                        raise RuntimeError, "Definition circulaire dans %s : l'objet %s se retrouve dependre de lui-meme." %(self, obj)
+                        raise RuntimeError("Definition circulaire dans %s : l'objet %s se retrouve dependre de lui-meme." %(self, obj))
             return liste, ensemble
         return None, None
 
@@ -238,7 +238,7 @@ class Variable(Variable_generique):
             else:
                 self.val = objet.val
         else:
-            raise TypeError, "l'objet n'est pas une variable."
+            raise TypeError("l'objet n'est pas une variable.")
 
 
 

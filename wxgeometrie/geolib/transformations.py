@@ -93,7 +93,7 @@ class Transformation_generique(Objet):
                 return self.__call__(objet.objet)
         elif hasattr(objet, "image_par"):
             return objet.image_par(self)
-        raise NotImplementedError,  "L'image de %s par %s n'est pas definie." %(objet.nom_complet, self.nom_complet)
+        raise NotImplementedError("L'image de %s par %s n'est pas definie." %(objet.nom_complet, self.nom_complet))
 
 
 
@@ -178,7 +178,7 @@ class Translation(Transformation_generique):
     def _convertir(objet):
         if isinstance(objet, Vecteur_generique):
             return Translation(objet)
-        raise TypeError, "%s must be of type 'Vecteur_generique'." %objet
+        raise TypeError("%s must be of type 'Vecteur_generique'." % objet)
 
 
 

@@ -78,7 +78,7 @@ class Vecteur_generique(Objet_avec_coordonnees):
     def __add__(self, y):
         if isinstance(y, Vecteur_generique):
             return Somme_vecteurs([self, y])
-        raise TypeError, "vecteur attendu"
+        raise TypeError("vecteur attendu")
 
     def __sub__(self, y):
         return self + (-y)
@@ -125,7 +125,7 @@ class Vecteur_generique(Objet_avec_coordonnees):
                 return Vecteur(a, b)
             else:
                 return Vecteur_libre(a, b)
-        raise TypeError, "'" + str(type(objet)) + "' object is not iterable"
+        raise TypeError("'" + str(type(objet)) + "' object is not iterable")
 
 
 
@@ -222,7 +222,7 @@ class Vecteur(Vecteur_generique):
     def _convertir(objet):
         if hasattr(objet,  "__iter__"):
             return Vecteur(*objet)
-        raise TypeError, "'" + str(type(objet)) + "' object is not iterable"
+        raise TypeError("'" + str(type(objet)) + "' object is not iterable")
 
     def image_par(self, transformation):
         return Vecteur(self.__point1.image_par(transformation), self.__point2.image_par(transformation))
@@ -276,7 +276,7 @@ class Vecteur_libre(Objet_avec_coordonnees_modifiables, Vecteur_generique):
         if isinstance(objet, Vecteur_libre):
             self.coordonnees = objet.coordonnees
         else:
-            raise TypeError, "l'objet n'est pas un vecteur libre."
+            raise TypeError("l'objet n'est pas un vecteur libre.")
 
 
 

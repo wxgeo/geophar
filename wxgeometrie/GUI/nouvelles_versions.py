@@ -86,7 +86,7 @@ class Gestionnaire_mises_a_jour(QObject):
             version = f.read(60)
             f.close()
             if len(version) > 50 or not version.replace(" ", "").replace(".", "").isalnum():
-                raise Exception, "Incorrect file format, unable to find current version."
+                raise Exception("Incorrect file format, unable to find current version.")
             success = True
             if version.split(".") > param.version.split('.'):
                 update = True

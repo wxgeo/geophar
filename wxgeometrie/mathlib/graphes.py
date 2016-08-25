@@ -358,7 +358,7 @@ class Graph(dict):
             nodes = sorted(self)
         else:
             if set(nodes) != set(self):
-                raise ValueError, "Nodes do not match."
+                raise ValueError("Nodes do not match.")
         code = u"On applique l'algorithme de Moore-Dijkstra~:\n\n"
         code += r'\begin{tabular}{|*{%s}{c|}}\hline' %len(self)
         code += '\n' + '&'.join(('$%s$' %node) for node in nodes) + r'\\\hline\hline' + '\n'

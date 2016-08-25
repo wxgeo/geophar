@@ -984,7 +984,7 @@ class Moteur_graphique(object):
         y0, y1 = max(0, min(y0, y1)), min(h, max(y0, y1))
 
         if x1 <= x0 or y1 <= y0:
-            raise RuntimeError, "Erreur: image de dimensions nulles !"
+            raise RuntimeError("Erreur: image de dimensions nulles !")
         return Bbox(((x0, y0), (x1, y1)))
 
 

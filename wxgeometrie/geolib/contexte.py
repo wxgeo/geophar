@@ -59,7 +59,7 @@ class Contexte(dict):
             return dict.__getitem__(self, key)
         elif self.__parent is not None:
             return self.__parent[key]
-        raise KeyError, key
+        raise KeyError(key)
 
     def get(self, key, default=None):
         try:

@@ -126,7 +126,7 @@ class Point_generique(Objet_avec_coordonnees):
         from .vecteurs import Vecteur_generique
         if isinstance(y, Vecteur_generique):
             return Point_final(self, [y])
-        raise TypeError, "vecteur attendu"
+        raise TypeError("vecteur attendu")
 
     # A>B est un alias de Vecteur(A,B) - attention aux parentheses pour 2*(A>B) !
     # A ne pas utiliser en interne (code peu lisible)
@@ -186,7 +186,7 @@ class Point_generique(Objet_avec_coordonnees):
     def _convertir(objet):
         if hasattr(objet, "__iter__"):
             return Point(*objet)
-        raise TypeError, "'" + str(type(objet)) + "' object is not iterable"
+        raise TypeError("'" + str(type(objet)) + "' object is not iterable")
 
 
 
@@ -259,7 +259,7 @@ class Point(Objet_avec_coordonnees_modifiables, Point_generique):
             self.x = objet.x
             self.y = objet.y
         else:
-            raise TypeError, "L'objet n'est pas un point."
+            raise TypeError("L'objet n'est pas un point.")
 
 
 
@@ -277,7 +277,7 @@ class Point_pondere(Objet):
             return Point_pondere(objet)
         elif hasattr(objet, "__iter__"):
             return Point_pondere(*objet)
-        raise TypeError, "'" + str(type(objet)) + "' object is not iterable"
+        raise TypeError("'" + str(type(objet)) + "' object is not iterable")
 
     def __init__(self, point = None, coefficient = None, **styles):
 ##        if coefficient is None:
@@ -1207,7 +1207,7 @@ class Point_interpolation(Point_generique):
             return Point_interpolation(objet)
         elif hasattr(objet, "__iter__"):
             return Point_interpolation(*objet)
-        raise TypeError, "'" + str(type(objet)) + "' object is not iterable"
+        raise TypeError("'" + str(type(objet)) + "' object is not iterable")
 
     def __init__(self, point=None, derivee=None, **styles):
         self.__point = point = Ref(point)

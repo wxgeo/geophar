@@ -35,7 +35,7 @@ try:
 except ImportError:
     scipy_found = False
     def PiecewisePolynomial(*args, **kw):
-        raise NotImplementedError, 'Error: scipy library not found !'
+        raise NotImplementedError('Error: scipy library not found !')
 
 from .objet import Ref, Argument, Arguments
 

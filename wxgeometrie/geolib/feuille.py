@@ -1647,11 +1647,11 @@ class Feuille(object):
                 self.log.append(messg)
 
 
-    def erreur(self, message, erreur = None):
+    def erreur(self, message, erreur=None):
         self.message(u"Erreur : " + uu(message))
         if erreur is None:
             erreur = RuntimeError
-        raise erreur, str3(message)
+        raise erreur(message)
 
 
     def save_log(self, log):
@@ -1768,11 +1768,11 @@ class Feuille(object):
             if nom is not None:
                 return nom
             prefixe = ''.join(choice(letters) for i in xrange(8))
-        raise RuntimeError, "Impossible de trouver un nom convenable apres 1000 essais !"
+        raise RuntimeError("Impossible de trouver un nom convenable apres 1000 essais !")
 
 
 
     def pause(self):
         Objet.souffler()
         if self._stop:
-            raise RuntimeError, "Interruption de la macro."
+            raise RuntimeError("Interruption de la macro.")

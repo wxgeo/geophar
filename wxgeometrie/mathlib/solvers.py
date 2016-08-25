@@ -714,7 +714,7 @@ def resoudre(chaine, variables=(), local_dict=None, ensemble='R'):
         expression = evaluer(gauche + "-(" + droite + ")")
         return nul(expression, variable, ensemble=ensemble)
     else:
-        raise TypeError, "'" + chaine + "' must be an (in)equation."
+        raise TypeError("'" + chaine + "' must be an (in)equation.")
 
 
 def systeme(chaine, variables = (), local_dict = None):

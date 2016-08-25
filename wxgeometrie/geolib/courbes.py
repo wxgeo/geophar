@@ -348,4 +348,4 @@ class Courbe(Courbe_generique):
         if isinstance(objet, Courbe):
             self.fonction = objet.fonction
         else:
-            raise TypeError, "L'objet n'est pas une courbe."
+            raise TypeError("L'objet n'est pas une courbe.")

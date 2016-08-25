@@ -131,7 +131,7 @@ class CreerSuite(MyMiniFrame):
             fonction = courbe.fonction
         else:
             # TODO: afficher un vrai message d'erreur
-            raise KeyError,  "courbe inexistante : %s" %nom_courbe
+            raise KeyError("courbe inexistante : %s" %nom_courbe)
 
 
         if self.mode.currentIndex() == 0: # cas des suites définies par récurrence

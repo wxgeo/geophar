@@ -63,7 +63,7 @@ class LocalDict(dict):
     def __setitem__(self, name, value):
         # Pour éviter que l'utilisateur redéfinisse pi, i, e, etc. par mégarde.
         if self.globals.has_key(name) or (name.startswith('_') and name[1:].isalnum()):
-            raise NameError, "%s est un nom reserve" %name
+            raise NameError("%s est un nom reserve" %name)
         if isinstance(value, str):
             # exec/eval encodent les chaînes crées en utf8.
             value = value.decode("utf8").encode(param.encodage)
@@ -367,7 +367,7 @@ class Interprete(object):
         if securite.keywords_interdits_presents(instruction):
             self.warning += ('Les mots-clefs %s sont interdits.'
                                % ', '.join(sorted(securite.keywords_interdits)))
-            raise RuntimeError, "Mots-clefs interdits."
+            raise RuntimeError("Mots-clefs interdits.")
 
         try:
             exec(instruction, self.globals, loc)

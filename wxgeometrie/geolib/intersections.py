@@ -44,7 +44,7 @@ def Intersection(objet1, objet2, **styles):
     elif case((Cercle_generique, Arc_generique), (Cercle_generique, Arc_generique)):
         return Intersection_cercles(objet1, objet2, **styles)
     else:
-        raise TypeError, "Intersection d'objets non supportes."
+        raise TypeError("Intersection d'objets non supportes.")
 
 
 

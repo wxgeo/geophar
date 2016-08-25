@@ -109,7 +109,7 @@ class Ligne_generique(Objet_avec_equation):
     def _parallele(self, ligne):
         u"Indique si la ligne est parallèle à une autre ligne."
         if not isinstance(ligne, Ligne_generique):
-            raise TypeError, "L'objet doit etre une ligne."
+            raise TypeError("L'objet doit etre une ligne.")
         a, b, c = self.equation
         a0, b0, c0 = ligne.equation
         return abs(a*b0 - b*a0) < contexte['tolerance']
@@ -117,7 +117,7 @@ class Ligne_generique(Objet_avec_equation):
     def _perpendiculaire(self, ligne):
         u"Indique si la ligne est perpendiculaire à une autre ligne."
         if not isinstance(ligne, Ligne_generique):
-            raise TypeError, "L'objet doit etre une ligne."
+            raise TypeError("L'objet doit etre une ligne.")
         a, b, c = self.equation
         a0, b0, c0 = ligne.equation
         return abs(a*a0 + b*b0) < contexte['tolerance']
@@ -155,7 +155,7 @@ class Ligne_generique(Objet_avec_equation):
         elif x is None and y is not None:
             a = self.copente
             return (a*(y - y1) + x1, y)
-        raise TypeError, 'x ou y doivent etre definis.'
+        raise TypeError('x ou y doivent etre definis.')
 
     @property
     def pente(self):
@@ -314,7 +314,7 @@ class Segment(Ligne_generique):
     def _convertir(objet):
         if hasattr(objet,  "__iter__"):
             return Segment(*objet)
-        raise TypeError, "'" + str(type(objet)) + "' object is not iterable"
+        raise TypeError("'" + str(type(objet)) + "' object is not iterable")
 
 
 
@@ -431,7 +431,7 @@ class Demidroite(Ligne_generique):
     def _convertir(objet):
         if hasattr(objet,  "__iter__"):
             return Demidroite(*objet)
-        raise TypeError, "'" + str(type(objet)) + "' object is not iterable"
+        raise TypeError("'" + str(type(objet)) + "' object is not iterable")
 
 
 class Droite_generique(Ligne_generique):
@@ -526,7 +526,7 @@ class Droite_generique(Ligne_generique):
     def _convertir(objet):
         if hasattr(objet,  "__iter__"):
             return Droite(*objet)
-        raise TypeError, "'" + str(type(objet)) + "' object is not iterable"
+        raise TypeError("'" + str(type(objet)) + "' object is not iterable")
 
 
 

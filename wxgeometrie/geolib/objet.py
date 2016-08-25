@@ -440,7 +440,7 @@ class BaseArgument(object):
         # En effet, la méthode '_convertir()' peut être celle d'une sous-classe du type voulu, et donc ne pas convertir exactement l'objet dans le bon type.
         # Par exemple, pour un Vecteur_libre, c'est la méthode Vecteur_generique._convertir() qui est utilisée ; on obtient donc un objet de type 'Vecteur_generique', mais pas forcément de type 'Vecteur_libre'.
         if not isinstance(objet, self.types):
-            raise TypeError, "%s should be of type %s, and not %s." %(objet, self.types, type(objet))
+            raise TypeError("%s should be of type %s, and not %s." %(objet, self.types, type(objet)))
         return objet
 
 
@@ -451,7 +451,7 @@ class BaseArgument(object):
             # de valeur, et qui ont été initialisés avec une valeur par défaut.
             obj._valeurs_par_defaut = []
         if not isinstance(value, Ref):
-            raise TypeError, "l'argument doit etre encapsule dans un objet 'Ref' lors d'une premiere definition."
+            raise TypeError("l'argument doit etre encapsule dans un objet 'Ref' lors d'une premiere definition.")
         if value.objet is None and self.defaut is not None:
             # Du fait des dépendances circulaires, self.defaut est parfois rentré
             # sous forme de chaine. À la première utilisation, il est converti.
@@ -473,16 +473,16 @@ class BaseArgument(object):
 
     def _redefinir(self, obj, value):
         if isinstance(value, Ref):
-            raise TypeError, "l'argument ne doit pas etre encapsule dans un objet 'Ref' lors d'une redefinition."
+            raise TypeError("l'argument ne doit pas etre encapsule dans un objet 'Ref' lors d'une redefinition.")
         if self.rattachement is not type(obj):
-            raise AttributeError, "on ne peut pas redefinir un argument d'une sous-classe"
+            raise AttributeError("on ne peut pas redefinir un argument d'une sous-classe")
         value = self._verifier_type(value)
         # La première étape, c'est d'éliminer les dépendances circulaires.
         # Par exemple, u = Variable(3); A = Point("u", "2*u"); u("A.x")
         # A deviendrait alors à la fois héritier de u (ie. on a besoin de u pour calculer A), et ancêtre de u (ie. on a besoin de A pour calculer u !)
         if value is obj or is_in(value, obj._heritiers()):
 #            self.erreur(u"Définition circulaire dans %s : l'objet %s se retrouve dépendre de lui-même." %(obj, obj))
-            raise RuntimeError, "Definition circulaire dans %s : l'objet %s se retrouve dependre de lui-meme." %(obj, obj)
+            raise RuntimeError("Definition circulaire dans %s : l'objet %s se retrouve dependre de lui-meme." %(obj, obj))
         # La valeur a été fixée par l'utilisateur, elle n'est donc plus définie par défaut :
         if self.nom in obj._valeurs_par_defaut:
             obj._valeurs_par_defaut.remove(self.nom)
@@ -570,7 +570,7 @@ class ArgumentNonModifiable(BaseArgument):
                         if param.verbose:
                             print_error("Conversion impossible :")
         if not isinstance(value, self.types):
-            raise TypeError, "%s should be of type %s, and not %s." %(value, self.types, type(value))
+            raise TypeError("%s should be of type %s, and not %s." %(value, self.types, type(value)))
         if isinstance(value, Objet) and value.feuille is None:
             value.feuille = obj.feuille
         return value
@@ -586,7 +586,7 @@ class ArgumentNonModifiable(BaseArgument):
         value = self._set(obj, value, premiere_definition = True)
         # 1er cas : Redéfinition d'un argument (self.__contenu__ contient déjà une référence à l'instance.
         if is_in(obj, self.__contenu__):
-            raise AttributeError, "Argument non modifiable."
+            raise AttributeError("Argument non modifiable.")
 
         # 2ème cas : Définition d'un nouvel argument
         else:
@@ -611,7 +611,7 @@ class Arguments(BaseArgument): # au pluriel !
         if is_in(obj, self.__contenu__):
             objets = tuple(self._redefinir(obj, self._set(obj, elt)) for elt in value)
             if len(objets) != len(self.__contenu__[obj]):
-                raise RuntimeError, "Impossible (actuellement) de modifier la taille d'une liste d'arguments."
+                raise RuntimeError("Impossible (actuellement) de modifier la taille d'une liste d'arguments.")
             for elt, objet in zip(self.__contenu__[obj], objets):
                 elt._changer_objet(objet)
 ##            self._rafraichir(obj)
@@ -809,7 +809,7 @@ class Objet(object):
                        au début de la classe `%s`, avec une ligne de\n \
                        commentaire expliquant le rôle de cet attribut."
                        % (name, self.__class__.__name__))
-            raise AttributeError, "Attribut " + repr(name) + " doesn't exist."
+            raise AttributeError("Attribut " + repr(name) + " doesn't exist.")
         object.__setattr__(self, name, value)
 
 
@@ -927,7 +927,7 @@ class Objet(object):
         """
         if kw:
             if 'label' in kw or 'legende' in kw:
-                raise DeprecationWarning, 'Styles desuets: `legende` et `label`.'
+                raise DeprecationWarning('Styles desuets: `legende` et `label`.')
             ##mode = kw.pop('mode', None)
             ##if mode is not None:
                 ##self.etiquette.style(mode=mode)
@@ -937,7 +937,7 @@ class Objet(object):
                 self.etiquette.figure_perimee()
         if nom_style:
             if 'nom_style' in ('label', 'legende'):
-                raise DeprecationWarning, 'Styles desuets: `legende` et `label`.'
+                raise DeprecationWarning('Styles desuets: `legende` et `label`.')
             if isinstance(nom_style, basestring):
                 return self._style.get(nom_style)
             return [self._style.get(nom) for nom in nom_style]
@@ -1303,7 +1303,7 @@ class Objet(object):
         if self.feuille is not None:
             self.feuille.erreur(message)
         else:
-            raise RuntimeError, str2(message)
+            raise RuntimeError(message)
 
 
     @staticmethod
@@ -1756,13 +1756,13 @@ class Objet_avec_coordonnees(Objet):
             elif len(args) == 2:
                 self.coordonnees = args
             else:
-                raise TypeError, "Trop d'arguments."
+                raise TypeError("Trop d'arguments.")
         return self.coordonnees
 
     def __iter__(self): # definit tuple(objet) si l'objet renvoie des coordonnees
         if self.existe:
             return iter(self.coordonnees)
-        raise TypeError, str2(u"Conversion impossible, l'objet n'est pas defini.")
+        raise TypeError(u"Conversion impossible, l'objet n'est pas defini.")
 
 
     @property
@@ -1871,7 +1871,7 @@ class Objet_avec_coordonnees_modifiables(Objet_avec_coordonnees):
         elif i == 1:
             self.__y = valeur
         else:
-            raise IndexError, "L'objet n'a que deux coordonnees."
+            raise IndexError("L'objet n'a que deux coordonnees.")
 
 
 
@@ -1895,7 +1895,7 @@ class Objet_avec_equation(Objet):
     def __iter__(self): # definit tuple(objet) si l'objet renvoie une équation
         if self.existe:
             return iter(self.equation)
-        raise TypeError, str2(u"Conversion impossible, l'objet n'est pas defini.")
+        raise TypeError(u"Conversion impossible, l'objet n'est pas defini.")
 
     @property
     def equation_approchee(self):

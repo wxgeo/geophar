@@ -87,9 +87,9 @@ def recursive_replace(main_string, old_string, new_string = "", max_loops = 1000
         chaine = main_string
         main_string = main_string.replace(old_string, new_string)
         if loops > max_loops:
-            raise RuntimeError, "Nombre de passes superieur au maximum autorise."
+            raise RuntimeError("Nombre de passes superieur au maximum autorise.")
         if len(main_string) > max_len:
-            raise OverflowError, "Taille de la chaine superieure au maximum autorise."
+            raise OverflowError("Taille de la chaine superieure au maximum autorise.")
     return main_string
 
 
@@ -121,9 +121,9 @@ def recursive_mreplace(main_string, list_of_strings, new_string = "", max_loops 
         chaine = main_string
         main_string = mreplace(main_string, list_of_strings, new_string)
         if loops > max_loops:
-            raise RuntimeError, "Nombre de passes superieur au maximum autorise."
+            raise RuntimeError("Nombre de passes superieur au maximum autorise.")
         if len(main_string) > max_len:
-            raise OverflowError, "Taille de la chaine superieure au maximum autorise."
+            raise OverflowError("Taille de la chaine superieure au maximum autorise.")
     return main_string
 
 
@@ -279,7 +279,7 @@ class WeakList(weakref.WeakValueDictionary):
             if value is valeur:
                 del self[key] # il faut qu'il s'agisse du même objet
                 return
-        raise ValueError,  repr(valeur) + " is not in WeakList"
+        raise ValueError(repr(valeur) + " is not in WeakList")
 
     def compare_and_remove(self, valeur):
         u"""Supprime la valeur de la liste.
@@ -292,7 +292,7 @@ class WeakList(weakref.WeakValueDictionary):
             if value == valeur:
                 del self[key] # un objet égal suffit
                 return
-        raise ValueError,  repr(valeur) + " not in WeakList"
+        raise ValueError(repr(valeur) + " not in WeakList")
 
     def remove_all(self, valeur):
         u"""Supprime la valeur de la liste.
@@ -506,7 +506,7 @@ def find_closing_bracket(expr, start = 0, brackets = '{}'):
     else:
         return start + index - 1 # last caracter is the searched bracket :-)
 
-    raise ValueError, 'unbalanced brackets (%s) while scanning %s...' %(balance, repr(expr_deb))
+    raise ValueError('unbalanced brackets (%s) while scanning %s...' %(balance, repr(expr_deb)))
 
 
 def warning(message, type_warning = Warning, level=0):

@@ -76,4 +76,4 @@ def assertRaises(error, f, *args, **kw):
     except Exception as e:
         assert type(e) == error
     else:
-        raise AssertionError, '%s should be raised.' %type(e).__name__
+        raise AssertionError('%s should be raised.' %type(e).__name__)

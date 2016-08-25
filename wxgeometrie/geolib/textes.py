@@ -287,7 +287,7 @@ class Texte_editable_generique(Texte_generique):
 
         elif mode is not None:
             if mode not in self._modes:
-                raise ValueError, ('Mode inconnu (%s)' % mode)
+                raise ValueError('Mode inconnu (%s)' % mode)
             self.style(mode=mode)
 
         else:
@@ -408,7 +408,7 @@ class Texte(Texte_editable_generique, Objet_avec_coordonnees_modifiables):
             return Texte(objet)
         if hasattr(objet, "__iter__"):
             return Texte(*objet)
-        raise TypeError, "object is not iterable."
+        raise TypeError("object is not iterable.")
 
 
     def _update(self, objet):
@@ -422,7 +422,7 @@ class Texte(Texte_editable_generique, Objet_avec_coordonnees_modifiables):
             self.label(objet.texte)
             self.coordonnees = objet.coordonnees
         else:
-            raise TypeError, "l'objet n'est pas un texte."
+            raise TypeError("l'objet n'est pas un texte.")
 
 
     def _set_feuille(self):

@@ -152,7 +152,7 @@ class Fonction(Objet_numerique):
                             objets.add(obj)
                             if self is obj or is_in(self, obj._ancetres()):
                                 print self,
-                                raise RuntimeError, "Definition circulaire dans %s : l'objet %s se retrouve dependre de lui-meme." %(self, obj)
+                                raise RuntimeError("Definition circulaire dans %s : l'objet %s se retrouve dependre de lui-meme." %(self, obj))
                     for i in xrange(1, len(liste_ensemble), 2):
                         obj = self.feuille.objets[liste_ensemble[i]]
                         if isinstance(obj, Objet):
@@ -160,7 +160,7 @@ class Fonction(Objet_numerique):
                             objets.add(obj)
                             if self is obj or is_in(self, obj._ancetres()):
                                 print self,
-                                raise RuntimeError, "Definition circulaire dans %s : l'objet %s se retrouve dependre de lui-meme." %(self, obj)
+                                raise RuntimeError("Definition circulaire dans %s : l'objet %s se retrouve dependre de lui-meme." %(self, obj))
                     return liste_expression, liste_ensemble, objets
             except KeyError:
                 if deuxieme_essai:
@@ -238,7 +238,7 @@ class Fonction(Objet_numerique):
         for i in xrange(len(self.__unions)):
             if valeur in self.__unions[i]:
                 return self.__fonctions[i](valeur)
-        raise ValueError, "math domain error"
+        raise ValueError("math domain error")
 
 
 
@@ -250,4 +250,4 @@ class Fonction(Objet_numerique):
                 objet.feuille = self.feuille
             self.modifier_expression_et_ensemble(objet.expression, objet.ensemble)
         else:
-            raise TypeError, "l'objet n'est pas une fonction."
+            raise TypeError("l'objet n'est pas une fonction.")

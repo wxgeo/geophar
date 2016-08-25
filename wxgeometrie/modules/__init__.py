@@ -49,10 +49,10 @@ def importer_module(nom_module):
                  and issubclass(cls, MenuBar) and cls not in (MenuBar, ExerciceMenuBar)]
         if len(menus) > 1 and param.debug:
             ##print menus
-            raise IndexError, str2(u"Plusieurs classes héritent de MenuBar dans le module %s: " %nom_module
+            raise IndexError(u"Plusieurs classes héritent de MenuBar dans le module %s: " %nom_module
                                    + ', '.join(m.__name__ for m in menus))
         if len(menus) == 0 and param.debug:
-            raise IndexError, str2(u"Aucune classe n'hérite de MenuBar dans le module %s." %nom_module)
+            raise IndexError(u"Aucune classe n'hérite de MenuBar dans le module %s." %nom_module)
         module._menu_ = menus[0]
 
 
@@ -60,10 +60,10 @@ def importer_module(nom_module):
                   and issubclass(cls, Panel_simple) and cls not in (Panel_simple, Panel_API_graphique, Exercice)]
         if len(panels) > 1 and param.debug:
             ##print panels
-            raise IndexError, str2(u"Plusieurs classes héritent de Panel_simple dans le module %s: " %nom_module
+            raise IndexError(u"Plusieurs classes héritent de Panel_simple dans le module %s: " %nom_module
                                 + ', '.join(p.__name__ for p in panels))
         if len(panels) == 0 and param.debug:
-            raise IndexError, str2(u"Aucune classe n'hérite de Panel_simple dans le module %s." %nom_module)
+            raise IndexError(u"Aucune classe n'hérite de Panel_simple dans le module %s." %nom_module)
         panel = module._panel_ = panels[0]
         try:
             param_pth = 'wxgeometrie.modules.%s._param_' %nom_module

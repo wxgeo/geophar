@@ -125,10 +125,10 @@ class Fonction(ObjetMathematique):
     def __call__(self, *args, **kw):
         if kw:
             if args:
-                raise TypeError, "les arguments sont entres de deux facons differentes."
+                raise TypeError("les arguments sont entres de deux facons differentes.")
             return self._substituer(self.expression, [(Symbol(key), value) for key, value in kw.iteritems()])
         if len(args) > len(self.variables):
-            raise TypeError, "il y a plus d'arguments que de variables."
+            raise TypeError("il y a plus d'arguments que de variables.")
         return self._substituer(self.expression, zip(self.variables[:len(args)], args))
 
     def _variables(self):
@@ -149,7 +149,7 @@ class Fonction(ObjetMathematique):
                 elif not self.variables:
                     return Fonction(y.variables, getattr(self.expression, op)(y.expression),)
                 else:
-                    raise ValueError, "les deux fonctions n'ont pas les memes variables."
+                    raise ValueError("les deux fonctions n'ont pas les memes variables.")
             else:
                 return Fonction(self.variables, getattr(self.expression, op)(y),)
         exec("%s=__op__" %op)

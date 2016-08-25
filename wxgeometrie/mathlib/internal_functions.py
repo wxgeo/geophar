@@ -68,7 +68,7 @@ def poly_factor(polynome, variable, corps = None, approchee = None):
     else:
         if corps == "R":
             if not all(coeff.is_real for coeff in coeffs):
-                raise ValueError, "factorisation dans 'R' impossible."
+                raise ValueError("factorisation dans 'R' impossible.")
         elif corps is None:
             if all(coeff.is_real for coeff in coeffs):
                 corps = "R"

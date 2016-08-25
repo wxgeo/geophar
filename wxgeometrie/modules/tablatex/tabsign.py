@@ -85,7 +85,7 @@ def _auto_tabsign(chaine, cellspace=False, decimales=3, approche=False):
     if len(variables) > 1:
         # Il est impossible de dresser le tableau de variations avec des
         # variables non définies (sauf cas très particuliers, comme f(x)=a).
-        raise ValueError, "Il y a plusieurs variables dans l'expression !"
+        raise ValueError("Il y a plusieurs variables dans l'expression !")
     elif not variables:
         # Variable par défaut.
         variables = [Symbol('x')]
@@ -176,7 +176,7 @@ def _augmenter(val):
     while val + eps <= val:
         eps *= 10
         if eps > 1e200:
-            raise OverflowError, "Can't find value bigger than %s." % val
+            raise OverflowError("Can't find value bigger than %s." % val)
     return val + eps
 
 
