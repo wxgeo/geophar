@@ -19,6 +19,7 @@ sys.path = sys.path[:4]
 
 sys.path.append('dll')
 sys.path.append(os.path.join(DIR_NAME, 'dll'))
+sys.path.append(os.path.join(DIR_NAME, 'wxgeometrie'))
 #print(sys.path)
 #print(os.environ["PATH"])
 

@@ -71,7 +71,7 @@ build_exe_options = {#"path": ['.'] + sys.path,
            "create_shared_zip": True,
            # Ne fonctionne pas
            # "replace_paths": [('*', 'local\\')],
-           'icon' : 'wxgeometrie\\images\\icone.ico',
+           'icon' : 'tools\\resources\\wxgeometrie-icone_new.ico',
            'include_msvcr': True,
            'include_files': include_files,
            'append_script_to_exe': True,
