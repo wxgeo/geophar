@@ -25,6 +25,7 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ## Cette librairie contient des fonctions mathématiques à usage interne
 
+from functools import reduce
 from numpy import roots as nroots
 
 from sympy import Mul, Float, Basic, roots, sympify, div, Symbol

@@ -29,6 +29,7 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 ## Elle modifie si nécessaire le comportement de fonctions sympy.
 
 from types import FunctionType
+from functools import reduce
 
 from sympy import (Basic, expand as expand_, apart, Function, Integer, factorint, Symbol,
                     diff as diff_, divisors as divisors_, cancel, together as together_,
@@ -352,14 +353,14 @@ def mat(*args):
 def transpose(M):
   u"Transposée de la matrice M."
   return M.T
-  
+
 def det(M):
   u"Déterminant de la matrice M."
   return M.det()
-  
+
 def valeurs_propres(M):
   return M.eigenvals()
-  
+
 def vecteurs_propres(M):
   return M.eigenvects()
 

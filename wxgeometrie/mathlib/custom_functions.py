@@ -27,6 +27,7 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 import math
 from types import FunctionType
+from functools import reduce
 
 from sympy import (pi, E, Rational, Symbol, diff, log, floor,
                     sqrt, sympify, Float, nsimplify, Basic, S, Wild,
