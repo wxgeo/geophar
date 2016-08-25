@@ -1,7 +1,10 @@
-Géophar version 16.08.1
-Publiée le 24/08/2016
+Géophar version 16.08.2
+Publiée le 25/08/2016
 
 
+* Installer for Windows is working at last !
+* Improve `compilation` on windows.
+* Version 16.08.1
 * Fix for windows compilation process.
 * Fix bug in infos() when there were non ascii caracters in geophar path.
 * Workaround for a bug in external library preventing `compilation` on windows.
