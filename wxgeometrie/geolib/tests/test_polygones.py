@@ -325,3 +325,33 @@ def test_cotes_sommets():
     f.objets.c1 = Cote(p, 0)
     assert f.objets.S1 is p.sommets[3]
     assert f.objets.c1 is p.cotes[0]
+
+
+def test_proprietes():
+    A = Point(0, 0)
+    B = Point(2, 0)
+    C = Point(2, 1)
+    D = Point(0, 1)
+    p = Polygone(A, B, C, D)
+    assert p.rectangle
+    assert not p.losange
+    assert not p.carre
+    assert p.parallelogramme
+    assert p.trapeze
+    C.x = 3
+    assert not p.rectangle
+    assert not p.losange
+    assert not p.carre
+    assert not p.parallelogramme
+    assert p.trapeze
+    C.y = 4
+    A = Point(0, 0)
+    B = Point(1, -2)
+    C = Point(2, 0)
+    D = Point(1, 2)
+    p = Polygone(A, B, C, D)
+    assert not p.rectangle
+    assert p.losange
+    assert not p.carre
+    assert p.parallelogramme
+    assert p.trapeze

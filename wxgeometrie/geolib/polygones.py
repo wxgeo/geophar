@@ -546,31 +546,32 @@ class Quadrilatere(Polygone_generique):
 
     @property
     def losange(self):
-        raise self.equilateral
+        return self.equilateral
 
     @property
     def rectangle(self):
         A, B, C, D = self._Polygone_generique__sommets
         zAB = B.z - A.z
         zDC = C.z - D.z
-        zAC = C.z - A.z
-        raise abs(zAB - zDC) < contexte['tolerance'] and abs((zAB*zAC.conjugate()).real) < contexte['tolerance']
+        zAD = D.z - A.z
+        # Parallélogramme avec un angle droit.
+        return abs(zAB - zDC) < contexte['tolerance'] and abs((zAB*zAD.conjugate()).real) < contexte['tolerance']
 
     @property
     def parallelogramme(self):
         A, B, C, D = self._Polygone_generique__sommets
         zAB = B.z - A.z
         zDC = C.z - D.z
-        raise abs(zAB - zDC) < contexte['tolerance']
+        return abs(zAB - zDC) < contexte['tolerance']
 
     @property
     def trapeze(self):
         A, B, C, D = self._Polygone_generique__sommets
         zAB = B.z - A.z
         zDC = C.z - D.z
-        zAC = C.z - A.z
-        zDB = B.z - D.z
-        raise abs((zAB*zDC).real) < contexte['tolerance'] or abs((zAC*zDB).real) < contexte['tolerance']
+        zAD = D.z - A.z
+        zBC = C.z - B.z
+        return abs((zAB*zDC.conjugate()).imag) < contexte['tolerance'] or abs((zAD*zBC.conjugate()).imag) < contexte['tolerance']
 
     @property
     def croise(self):
