@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
+from __future__ import print_function
+from __future__ import absolute_import
+from __future__ import unicode_literals
 
 #    WxGeometrie
 #    Dynamic geometry, graph plotter, and more for french mathematic teachers.
@@ -87,7 +90,7 @@ def traiter_arguments(options, args):
 
     if options.lister_modules:
         print(u"\nListe des modules détectés :\n----------------------------")
-        print '  '.join(param.modules)
+        print('  '.join(param.modules))
         exit()
 
     if options.modules:
@@ -120,8 +123,8 @@ def traiter_arguments(options, args):
                 parametres_additionnels[nom] = eval(valeur) # pas sensass question sécurité... :-( (?)
             except Exception:
                 #raise
-                print "Erreur: Parametre incorrect :", parametre
-                print sys.exc_info()[0].__name__, ": ", sys.exc_info()[1]
+                print("Erreur: Parametre incorrect :", parametre)
+                print(sys.exc_info()[0].__name__, ": ", sys.exc_info()[1])
 
     if options.recompile:
         for root, dirs, files in os.walk(os.getcwdu()):

@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import division
+from __future__ import print_function
+from __future__ import absolute_import
+from __future__ import unicode_literals
 
 import os, sys, subprocess
 
@@ -39,7 +42,7 @@ def command(string, quiet=True):
         sys.stdout.write(output)
     out.close()
     if not quiet:
-        print "Commande '%s' executee." % string
+        print("Commande '%s' executee." % string)
     return output
 
 def verifier(fichier):

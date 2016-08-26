@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 from __future__ import with_statement
+from __future__ import print_function
+from __future__ import absolute_import
+from __future__ import unicode_literals
 
 ##-------------------------------------------#######
 #                   Statistiques                   #
@@ -1194,7 +1197,7 @@ class Statistiques(Panel_API_graphique):
 
     def _ouvrir(self, fgeo):
         Panel_API_graphique._ouvrir(self, fgeo)
-        if fgeo.contenu.has_key("Diagramme"):
+        if "Diagramme" in fgeo.contenu:
             diagramme = fgeo.contenu["Diagramme"][0]
             serie = diagramme["serie"][0]
             valeurs = serie["valeurs"][0]
@@ -1222,7 +1225,7 @@ class Statistiques(Panel_API_graphique):
             self.onglets_bas.tab_graduation.origine_y.setText(origine_y)
             self.onglets_bas.tab_donnees.valeurs.setText(valeurs)
             self.onglets_bas.tab_donnees.classes.setText(classes)
-            print('mode_graphique', mode_graphique)
+            print(('mode_graphique', mode_graphique))
             self.graph = mode_graphique
 
         self.actualiser()

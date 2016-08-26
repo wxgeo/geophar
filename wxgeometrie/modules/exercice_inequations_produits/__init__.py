@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 from __future__ import with_statement
+from __future__ import print_function
+from __future__ import absolute_import
+from __future__ import unicode_literals
 
 #    .-----------------------------------------------------.
 #    |    Exercices : inéquations produits et quotients    |
@@ -182,14 +185,14 @@ class ExercicesTableauxSignes(Panel_API_graphique):
         # XXX: intégrer cette fonctionnalité directement au Panel.
         self.fermer_feuilles()
         Panel_API_graphique._ouvrir(self, fgeo)
-        if fgeo.contenu.has_key(u"expression"):
+        if u"expression" in fgeo.contenu:
             self.generer_expression(expr=fgeo.contenu[u"expression"][0])
             ##self.dessiner_tableau()
-        if fgeo.contenu.has_key(u"niveau"):
+        if u"niveau" in fgeo.contenu:
             self.niveau = int(fgeo.contenu[u"niveau"][0])
-        if fgeo.contenu.has_key(u"score"):
+        if u"score" in fgeo.contenu:
             self.score = int(fgeo.contenu[u"score"][0])
-        if fgeo.contenu.has_key(u"erreurs"):
+        if u"erreurs" in fgeo.contenu:
             self.erreurs = int(fgeo.contenu[u"erreurs"][0])
         self.update_panneau()
 

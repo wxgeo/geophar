@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 from __future__ import with_statement
+from __future__ import print_function
+from __future__ import absolute_import
+from __future__ import unicode_literals
 
 #    WxGeometrie
 #    Dynamic geometry, graph plotter, and more for french mathematic teachers.
@@ -93,7 +96,7 @@ class ArcDeCercle(Line2D):
     def set(self, **kw):
         maj = kw.pop('maj', True)
         for nom in self._parametres:
-            if kw.has_key(nom):
+            if nom in kw:
                 setattr(self, nom, kw.pop(nom))
         if kw:
             Line2D.set(self, **kw)
@@ -124,7 +127,7 @@ class LigneDecoree(LineCollection):
     def set(self, **kw):
         maj = kw.pop('maj', True)
         for nom in self._parametres:
-            if kw.has_key(nom):
+            if nom in kw:
                 setattr(self, nom, kw.pop(nom))
         if kw:
             LineCollection.set(self, **kw)
@@ -363,7 +366,7 @@ class Angle(Polygon):
     def set(self, **kw):
         maj = kw.pop('maj', True)
         for nom in self._parametres:
-            if kw.has_key(nom):
+            if nom in kw:
                 setattr(self, nom, kw.pop(nom))
         if kw:
             Polygon.set(self, **kw)
@@ -662,7 +665,7 @@ class AjusterEchelle(object):
                 y *= xscale/yscale
             elif yscale < xscale:
                 x *= yscale/xscale
-            print x,y, x_, y_
+            print(x,y, x_, y_)
 
         # Conversion en inches : 1 inch = 2.54 cm
         x /= 2.54
@@ -1288,29 +1291,29 @@ class Moteur_graphique(object):
 
     def infos(self):
         u"Informations utiles pour le débogage."
-        print "---------------"
+        print("---------------")
         print("+ Repere")
         for rubrique in self._artistes_repere:
-            print " -> " + rubrique
+            print(" -> " + rubrique)
             for artiste in self._artistes_repere[rubrique]:
-                print '  * ' + self._info_artiste(artiste)
+                print('  * ' + self._info_artiste(artiste))
         print("+ Objet deplace ?")
-        print getattr(self._dernier_objet_deplace, 'info', 'None')
-        print "+ Objets fixes:"
+        print(getattr(self._dernier_objet_deplace, 'info', 'None'))
+        print("+ Objets fixes:")
         for artiste in self._objets_fixes:
-            print '  * ' + self._info_artiste(artiste)
-        print "+ Objets mobiles:"
+            print('  * ' + self._info_artiste(artiste))
+        print("+ Objets mobiles:")
         for artiste in self._objets_mobiles:
-            print '  * ' + self._info_artiste(artiste)
-        print "+ Autres artistes:"
+            print('  * ' + self._info_artiste(artiste))
+        print("+ Autres artistes:")
         for rubrique in self._artistes_dessin:
-            print " -> " + rubrique
+            print(" -> " + rubrique)
             for artiste in self._artistes_dessin[rubrique]:
                 if not is_in(artiste, self._objets_mobiles) \
                         and not is_in(artiste, self._objets_fixes)\
                         and not any(is_in(artiste, liste) for liste in self._artistes_repere.itervalues()):
-                    print '  * ' + self._info_artiste(artiste)
-        print "---------------"
+                    print('  * ' + self._info_artiste(artiste))
+        print("---------------")
 
     # TESTS pour débogage
     # TODO: avoir une image de référence pour comparer

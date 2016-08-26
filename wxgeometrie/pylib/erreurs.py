@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
+from __future__ import print_function
+from __future__ import absolute_import
+from __future__ import unicode_literals
 
 ##--------------------------------------#######
 #                  Erreurs                    #
@@ -61,7 +64,6 @@ in the future.""",
     ReferenceError: u"""Référence non trouvée (référence faible).""",
     RuntimeError: u"""Unspecified run-time error.""",
     RuntimeWarning: u"""Base class for warnings about dubious runtime behavior.""",
-    StandardError: u"""Base class for all standard Python exceptions that do not represent interpreter exiting.""",
     StopIteration: u"""Fin d'itération.""",
     SyntaxError: u"""Erreur de syntaxe.""",
     SyntaxWarning: u"""Base class for warnings about dubious syntax.""",

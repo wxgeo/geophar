@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 from __future__ import with_statement
+from __future__ import print_function
+from __future__ import absolute_import
+from __future__ import unicode_literals
 
 #    .----------------------------------------.
 #    |    Exercices : Équations de droites    |
@@ -93,15 +96,15 @@ class ExercicesEquationsDroites(Exercice):
             reponse = 'x=' + str(xA)
         else:
             reponse = ('y=%s*x+%s' % self.eq_reduite(pointA, pointB))
-        print('fen::', self.canvas.fenetre)
+        print(('fen::', self.canvas.fenetre))
         xmin, xmax, ymin, ymax = self.canvas.fenetre
-        print 'Fenetre::', self.canvas.fenetre, '--', xmin, ymin
+        print('Fenetre::', self.canvas.fenetre, '--', xmin, ymin)
         champ = Champ('', xmin, ymin, couleur_fond='#ffffb5',
                     prefixe=(ur"Dans le repère $(O;\,\vec\imath,\,\vec\jmath)$, "
                              u"la droite $(AB)$ a pour équation "),
                     alignement_horizontal='left', alignement_vertical='bottom',
                     attendu=reponse)
-        print 'xy::', champ.xy
+        print('xy::', champ.xy)
         champ.valider = self.valider_eq
         champ.evt_valider = self.compter_points
         self.feuille_actuelle.objets['champ1'] = champ
@@ -177,7 +180,7 @@ class ExercicesEquationsDroites(Exercice):
                     break
             # On calcule l'ordonnée à l'origine (sous forme de fraction sympy).
             a, b = self.eq_reduite((xA, yA), (xB, yB))
-            print b
+            print(b)
             if b.q not in (1, 2):
                 # Le dénominateur de l'ordonnée à l'origine ne doit pas être 1 ou 2.
                 break
@@ -189,7 +192,7 @@ class ExercicesEquationsDroites(Exercice):
         self.canvas.ratio = 4
         self.canvas.quadrillages = (((.25, 1), ':', 0.5, 'k'),)
         self.canvas.fenetre = -4.5, 4.5, -10, 8
-        print('fen::', self.canvas.fenetre)
+        print(('fen::', self.canvas.fenetre))
         xmin, xmax, ymin, ymax = self.canvas.fenetre
         self.feuille_actuelle.objets['champ1'].xy = xmin, ymin
 
@@ -262,7 +265,7 @@ class ExercicesEquationsDroites(Exercice):
             if all((A[0] - C[0], A[1] - C[1], B[0] - C[0], B[1] - C[1])):
                 break
         if param.debug:
-            print 'A,B,C:', A, B, C
+            print('A,B,C:', A, B, C)
         # on génère les deux équations de droite
         x = S('x')
         ##def eq_latex(pt1, pt2):
@@ -307,7 +310,7 @@ class ExercicesEquationsDroites(Exercice):
 
 
     def verifier_feuille(self, eq1, eq2):
-        print eq1, eq2
+        print(eq1, eq2)
         for nom, eq in (('d1', eq1), ('d2', eq2)):
             if nom in self.feuille_actuelle.objets.noms:
                 d = self.feuille_actuelle.objets[nom]
@@ -323,7 +326,7 @@ class ExercicesEquationsDroites(Exercice):
                     if nom == 'd1':
                         msg += ' Construisez maintenant d2.'
                 else:
-                    print self.eq_reduite(*d), eq
+                    print(self.eq_reduite(*d), eq)
                     d.style(couleur='r')
                     # On peut mettre n'importe quoi différent de ok dans
                     # champ, l'idée étant que si la droite est fausse mais

@@ -1,3 +1,7 @@
+from __future__ import print_function
+from __future__ import division
+from __future__ import absolute_import
+from __future__ import unicode_literals
 import encodings
 import os
 import sys
@@ -37,7 +41,7 @@ else:
     moduleName = "%s__main__" % name
 
 code = importer.get_code(moduleName)
-exec code in m.__dict__
+exec(code, m.__dict__)
 
 versionInfo = sys.version_info[:3]
 if versionInfo >= (2, 5, 0) and versionInfo <= (2, 6, 4):

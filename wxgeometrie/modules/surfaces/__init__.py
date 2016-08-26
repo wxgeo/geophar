@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 from __future__ import with_statement
+from __future__ import print_function
+from __future__ import absolute_import
+from __future__ import unicode_literals
 
 ##--------------------------------------#######
 #                  Surfaces                   #
@@ -250,7 +253,7 @@ class Surfaces(Panel_API_graphique):
         Panel_API_graphique._ouvrir(self, fgeo)
         # TODO: implémenter sauvegarde
         return
-        if fgeo.contenu.has_key(u"Courbe"):
+        if u"Courbe" in fgeo.contenu:
             for i in range(min(len(fgeo.contenu[u"Courbe"]), self.nombre_courbes)):
                 self.equations[i].SetValue(fgeo.contenu[u"Courbe"][i][u"Y"][0])
                 self.intervalles[i].SetValue(fgeo.contenu[u"Courbe"][i][u"intervalle"][0])
@@ -323,7 +326,7 @@ class Surfaces(Panel_API_graphique):
             a = 1/delta
             b = -zmin/delta
         seuils = [0] + [a*z + b for z in seuils if zmin < z < zmax] + [1] # NB: < et pas <=
-        print seuils
+        print(seuils)
         cdict = {'red': [], 'green': [], 'blue': []}
         def add_col(val, color1, color2):
             cdict['red'].append((val, color1[0], color2[0]))

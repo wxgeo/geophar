@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
+from __future__ import print_function
+from __future__ import absolute_import
+from __future__ import unicode_literals
 
 ##--------------------------------------##
 #              WxGeometrie               #
@@ -93,7 +96,7 @@ def _auto_tabsign(chaine, cellspace=False, decimales=3, approche=False):
     # Récupération de l'ensemble de définition
     ens_def *= ensemble_definition(expr, var)
     if param.debug and param.verbose:
-        print '-> Ensemble de definition:', ens_def
+        print('-> Ensemble de definition:', ens_def)
 
     code = str(var) # chaîne retournée, respectant la syntaxe de tabsign()
     valeurs_interdites = []
@@ -159,7 +162,7 @@ def _auto_tabsign(chaine, cellspace=False, decimales=3, approche=False):
 
     code += '// ' + legende
     if param.debug and param.verbose:
-        print 'Code TABSign:', code
+        print('Code TABSign:', code)
     return tabsign(code, cellspace = cellspace) + '% ' + chaine_initiale + '\n'
 
 

@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
+from __future__ import print_function
+from __future__ import absolute_import
+from __future__ import unicode_literals
 
 ##--------------------------------------#######
 #                        Geolib                     #
@@ -53,7 +56,7 @@ class Contexte(dict):
     def __getitem__(self, key):
         # On cherche d'abord dans les contextes locaux (en commençant par le dernier)
         for dico in reversed(self.__local_dicts):
-            if dico.has_key(key):
+            if key in dico:
                 return dico[key]
         if dict.has_key(self, key):
             return dict.__getitem__(self, key)

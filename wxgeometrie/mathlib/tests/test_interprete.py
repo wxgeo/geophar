@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
+from __future__ import print_function
+from __future__ import absolute_import
+from __future__ import unicode_literals
 
 import re
 
@@ -19,12 +22,12 @@ def assert_resultat(s, resultat, latex = None, **parametres):
     if r != resultat:
         i = Interprete(verbose = True, **parametres)
         r, l = i.evaluer(s)
-        print "\nERREUR (" + s + "):\n", r, "\n!=\n",  resultat, '\n'
+        print("\nERREUR (" + s + "):\n", r, "\n!=\n",  resultat, '\n')
     assert(r == resultat)
     if latex is not None:
         latex = "$" + latex + "$"
         if l != latex:
-            print "\nERREUR (" + s + "):\n", l, "\n!=\n",  latex, '\n'
+            print("\nERREUR (" + s + "):\n", l, "\n!=\n",  latex, '\n')
         assert(l == latex)
 
 def assert_resoudre(s, *args, **kw):

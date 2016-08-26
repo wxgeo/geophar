@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
+from __future__ import print_function
+from __future__ import absolute_import
+from __future__ import unicode_literals
 
 from wxgeometrie.mathlib.internal_functions import poly_factor
 from sympy import Symbol, sqrt, S, I as i, expand, Integer
@@ -20,12 +23,12 @@ def assert_factor(poly, *args, **kw):
     s.update(convert(-arg) for arg in poly_args)
     TEST1 = set(convert(arg) for arg in args).issubset(s)
     if not TEST1:
-        print "ERREUR: ", set(args), " n'est pas inclus dans ",  s
-        print "Difference: ", set(args).difference(s)
-        print [type(obj) for obj in set(args).difference(s)]
+        print("ERREUR: ", set(args), " n'est pas inclus dans ",  s)
+        print("Difference: ", set(args).difference(s))
+        print([type(obj) for obj in set(args).difference(s)])
     TEST2 = (expand(facteurs) == expand(poly))
     if not TEST2:
-        print "ERREUR: ", expand(facteurs), " != ", expand(poly)
+        print("ERREUR: ", expand(facteurs), " != ", expand(poly))
     assert(TEST1)
     assert(TEST2)
 

@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
+from __future__ import print_function
+from __future__ import absolute_import
+from __future__ import unicode_literals
 
 ##--------------------------------------#######
 #           Mathlib 2 (sympy powered)         #
@@ -227,7 +230,7 @@ def positif(expression, variable=None, strict=False, _niveau=0, _changement_vari
         expression = factor(expression, variable, "R", decomposer_entiers = False)
     except NotImplementedError:
         if param.debug:
-            print "Warning: Factorisation impossible de ", expression
+            print("Warning: Factorisation impossible de ", expression)
 
     if expression.is_Pow and expression.as_base_exp()[1].is_rational:
         base, p = expression.as_base_exp()

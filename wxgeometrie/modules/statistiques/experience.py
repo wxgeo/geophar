@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
+from __future__ import print_function
+from __future__ import absolute_import
+from __future__ import unicode_literals
 
 ##------------------------------------------#######
 #                   Experience                   #
@@ -107,7 +110,7 @@ class ExperienceFrame(MyMiniFrame):
         n = self.sc.value()
         exp = self.experience.text()
         vals = msplit(self.valeurs.text(), (" ", ",", ";"))
-        print alea
+        print(alea)
         if exp:
             self.parent.experience(exp, n, [eval(val, DIC) for val in vals if val])
 

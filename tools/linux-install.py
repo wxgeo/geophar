@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 from __future__ import with_statement, print_function
+from __future__ import absolute_import
+from __future__ import unicode_literals
 
 #    WxGeometrie
 #    Dynamic geometry, graph plotter, and more for french mathematic teachers.
@@ -24,7 +26,7 @@ from __future__ import with_statement, print_function
 
 import os, sys, stat
 from os.path import join, expanduser, isdir
-from scriptlib import command, cd, cp
+from .scriptlib import command, cd, cp
 
 _module_path = os.path.split(os.path.realpath(sys._getframe().f_code.co_filename))[0]
 

@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
+from __future__ import print_function
+from __future__ import absolute_import
+from __future__ import unicode_literals
 
 ##--------------------------------------##
 #              WxGeometrie               #
@@ -216,7 +219,7 @@ def _auto_tabvar(chaine='', derivee=True, limites=True, decimales=3, approche=Fa
 
 
     if param.debug and param.verbose:
-        print 'Code TABVar:', code
+        print('Code TABVar:', code)
     if parse_only:
         return code
     return tabvar(code, derivee=derivee, stretch=stretch) + '% ' + chaine_initiale + '\n'

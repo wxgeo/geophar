@@ -3,12 +3,14 @@
 
 # Documentation : http://cx-freeze.readthedocs.org/en/latest/distutils.html
 
+from __future__ import print_function, division, absolute_import, unicode_literals
 import sys, os
 import compileall
 from cx_Freeze import setup, Executable
 
 from tools.scriptlib import cd, mv, mkdir, rmdir, cp, rm, zip7
 
+version = None # for Pyflakes
 execfile(os.path.join('wxgeometrie', 'version.py'))
 
 # install = True -> enregistrer les paramètres dans `Documents and Settings`.

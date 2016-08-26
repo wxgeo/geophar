@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 from __future__ import with_statement
+from __future__ import print_function
+from __future__ import absolute_import
+from __future__ import unicode_literals
 
 ##--------------------------------------#######
 #                  Feuille                    #
@@ -349,7 +352,7 @@ class Dictionnaire_objets(dict):
         # Bien sûr, il faut en particulier que la valeur soit un objet de meme type.
         # (A = Variable(3) n'est pas valide si A est un point !)
 
-        if self.has_key(nom):
+        if nom in self:
             try:
                 # Ne PAS rattacher la feuille à l'objet tant qu'il n'est pas enregistré
                 # sur la feuille. En particulier, pour un polygone, rattacher la feuille
@@ -641,7 +644,7 @@ class Dictionnaire_objets(dict):
     def _objet_renommable(self, objet, nom):
         u"Vérifie que le nom peut-être attribué (c-à-d. qu'il est bien formé, et non utilisé)."
         nom = self.__verifier_syntaxe_nom(objet, nom)
-        if self.has_key(nom):
+        if nom in self:
             self.erreur(u"Ce nom est déjà utilisé.", NameError)
         return nom
 
@@ -1403,14 +1406,14 @@ class Feuille(object):
                 try:
                     exec(commandes, self.objets)
                 except:
-                    print "Liste des commandes:"
-                    print "--------------------"
-                    print commandes
-                    print "--------------------"
+                    print("Liste des commandes:")
+                    print("--------------------")
+                    print(commandes)
+                    print("--------------------")
                     try:
                         print_error()
                     except:
-                        print u"Affichage de l'erreur impossible !"
+                        print(u"Affichage de l'erreur impossible !")
                     self.erreur(u"Chargement incomplet de la feuille.")
                 finally:
                     for action in self._actions:
@@ -1482,7 +1485,7 @@ class Feuille(object):
         objets = self.liste_objets(True)
         if param.debug:
             for obj in objets:
-                print "- " + obj.nom + " : " + repr(obj) + " (" + obj.type() + ")"
+                print("- " + obj.nom + " : " + repr(obj) + " (" + obj.type() + ")")
         liste = [u"%s (%s%s)" % (uu(obj.nom_complet), uu(obj.titre(point_final=False)),
                  ('' if obj.style("visible") else u" invisible")) for obj in objets
                  if not isinstance(obj, (Variable_affichage, Pixel_unite))]

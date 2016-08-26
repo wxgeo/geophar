@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 from __future__ import with_statement
+from __future__ import print_function
+from __future__ import absolute_import
+from __future__ import unicode_literals
 
 import re
 from math import cos, pi, e, sqrt
@@ -22,7 +25,7 @@ def test_issue_186():
     f = Feuille()
     f.executer("c=Cercle")
     assertRaises(NameError, f.executer, "C_'=_")
-    assert(f.objets.has_key("c"))
+    assert("c" in f.objets)
 
 def test_issue_176():
     f = Feuille()

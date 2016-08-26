@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
+from __future__ import print_function
+from __future__ import absolute_import
+from __future__ import unicode_literals
 
 ##--------------------------------------#######
 #                   Cercles                   #
@@ -231,7 +234,7 @@ class Arc_generique(Cercle_Arc_generique):
             intersection = []
             if a < v:
                 c = min(b, v)
-                print a, c
+                print(a, c)
                 intersection.append(fullrange(a, c, self.canvas.pas()))
             u += 2*pi
             v += 2*pi
@@ -589,7 +592,7 @@ class Cercle_rayon(Cercle_generique):
         Cercle_generique.__init__(self, centre, **styles)
 
     def image_par(self, transformation):
-        from transformations import Homothetie, Rotation, Translation, Reflexion
+        from .transformations import Homothetie, Rotation, Translation, Reflexion
         if isinstance(transformation, Homothetie):
             return Cercle_rayon(self.__centre.image_par(transformation), Mul(Rayon(self), transformation.rapport))
         elif isinstance(transformation, (Rotation, Translation, Reflexion)):

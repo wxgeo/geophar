@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
+from __future__ import print_function
+from __future__ import absolute_import
+from __future__ import unicode_literals
 
 ##--------------------------------------#######
 #                Objets CALC                  #
@@ -169,7 +172,7 @@ def _ajouter_mult_manquants(formule, fonctions = (), verbose = None, mots_cles =
         fonctions = [key for key, val in fonctions.items() if hasattr(val, "__call__") and not isinstance(val, Expr)]
 
     if verbose:
-        print '1', formule
+        print('1', formule)
 
     # Le code qui suit remplace les expressions style 3x ou 2.5cos(x) par 3*x et 2.5*cos(x).
     formule = regsub(NBR + "[ ]?(?=[a-zA-Z_])", formule, lambda s: s.rstrip() + '*')
@@ -179,7 +182,7 @@ def _ajouter_mult_manquants(formule, fonctions = (), verbose = None, mots_cles =
     formule = formule.replace(")(",")*(")
 
     if verbose:
-        print '2', formule
+        print('2', formule)
 
     # Si a, b, c... ne sont pas des fonctions, on remplace "a(" par "a*(", etc...
     def f1(s):
@@ -196,7 +199,7 @@ def _ajouter_mult_manquants(formule, fonctions = (), verbose = None, mots_cles =
     formule = regsub("[.]?" + NBR_OR_VAR + "[ ]?(?=[(])", formule, f1)
 
     if verbose:
-        print '3', formule
+        print('3', formule)
 
     # "f x" devient "f(x)" si f est une fonction, "f*x" sinon ;
     # de même, "f 2.5" devient "f(2.5)" si f est une fonction, et "f*2.5" sinon.
@@ -217,7 +220,7 @@ def _ajouter_mult_manquants(formule, fonctions = (), verbose = None, mots_cles =
         i += 1
 
     if verbose:
-        print '4', formule
+        print('4', formule)
 
     # On remplace ")x" par ")*x"
     formule = regsub("[)][ ]?\w", formule, lambda s: s[0] + '*' + s[-1])
@@ -357,7 +360,7 @@ def traduire_formule(formule='', fonctions=(), OOo=True, LaTeX=True,
 
 
     if verbose:
-        print '0', formule
+        print('0', formule)
 
     # Différentes façons de rentrer les puissances :
     formule = formule.replace("^", "**").replace(u'²',"**2").replace(u'³',"**3")
@@ -465,7 +468,7 @@ def traduire_formule(formule='', fonctions=(), OOo=True, LaTeX=True,
     formule = _ajouter_mult_manquants(formule, fonctions = fonctions, verbose = verbose, mots_cles = mots_cles)
 
     if verbose:
-        print '5', formule
+        print('5', formule)
 
     # n! devient factoriel(n).
     formule = regsub("\w+[!]", formule, (lambda s: 'factoriel(%s)' % s[:-1]))
@@ -476,7 +479,7 @@ def traduire_formule(formule='', fonctions=(), OOo=True, LaTeX=True,
                        lambda s: 'binomial(%s)' % ",".join(s[1:-1].split()))
 
     if verbose:
-        print '6', formule
+        print('6', formule)
 
     # f' devient derivee(f), f'' devient derivee(derivee(f)), etc.
     def prime2derivee(s):
@@ -488,7 +491,7 @@ def traduire_formule(formule='', fonctions=(), OOo=True, LaTeX=True,
     formule = formule.replace("`", "'")
 
     if verbose:
-        print '7', formule
+        print('7', formule)
 
     if simpify:
         def transformer(chaine):

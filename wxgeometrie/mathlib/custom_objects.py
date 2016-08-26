@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
+from __future__ import print_function
+from __future__ import absolute_import
+from __future__ import unicode_literals
 
 ##--------------------------------------#######
 #   Mathlib 2 (sympy powered) #
@@ -84,7 +87,7 @@ def _compatible(meth):
     u"Modifie la méthode `meth` pour qu'elle prenne en compte le type Decim()."
     # La méthode doit avoir exactement 2 arguments.
     # Exemple type : .__add__(self, other).
-    assert meth.func_code.co_argcount == 2
+    assert meth.__code__.co_argcount == 2
     def new_meth(self, other):
         result = meth(self, other)
         prec = None

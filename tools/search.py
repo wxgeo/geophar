@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
+from __future__ import print_function
+from __future__ import absolute_import
+from __future__ import unicode_literals
 
 ##--------------------------------------##
 #              WxGeometrie               #
@@ -223,7 +226,7 @@ def gs(chaine='', case=True, exclude_comments=True, extensions=(".py", ".pyw"),
 
 def usage():
     u"Affiche l'aide."
-    print u"""\n    === Usage ===\n
+    print(u"""\n    === Usage ===\n
     - Rechercher la chaîne 'hello' dans le code (hors commentaires) :
         $ ./tools/search.py "hello"
     - Remplacer partout la chaîne 'hello' par la chaîne 'world':
@@ -243,7 +246,7 @@ def usage():
         $ ./tools/search.py -k "hello world!"
     - Rechercher la chaîne 'hello' dans le code, y compris dans les commentaires :
         $ ./tools/search.py -a "hello"
-        """
+        """)
     exit()
 
 
@@ -327,5 +330,5 @@ if __name__ == "__main__":
     title = "\n=== Recherche de %s ===\n" % repr(args[0])
     if sys.platform.startswith('linux'):
         title = '\033[1;37m' + title + '\033[0m'
-    print title
-    print gs(args[0], **kw)
+    print(title)
+    print(gs(args[0], **kw))

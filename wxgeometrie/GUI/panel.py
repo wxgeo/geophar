@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 from __future__ import with_statement
+from __future__ import print_function
+from __future__ import absolute_import
+from __future__ import unicode_literals
 
 ##--------------------------------------#######
 #                   Panel                     #
@@ -159,14 +162,14 @@ class Panel_simple(QWidget):
             setattr(self._param_, parametre, valeur)
         if self._param_ is not None and hasattr(self._param_, parametre):
             if defaut:
-                if self._param_._parametres_par_defaut.has_key(parametre):
+                if parametre in self._param_._parametres_par_defaut:
                     return self._param_._parametres_par_defaut[parametre]
-                elif param._parametres_par_defaut.has_key(parametre):
+                elif parametre in param._parametres_par_defaut:
                     return param._parametres_par_defaut[parametre]
             return getattr(self._param_, parametre)
 
         elif hasattr(param, parametre):
-            if defaut and param._parametres_par_defaut.has_key(parametre):
+            if defaut and parametre in param._parametres_par_defaut:
                 return param._parametres_par_defaut[parametre]
             return getattr(param, parametre)
         else:
@@ -336,18 +339,18 @@ class Panel_API_graphique(Panel_simple):
 
 
     def _ouvrir(self, fgeo):
-        if fgeo.contenu.has_key("Affichage"):
+        if "Affichage" in fgeo.contenu:
             if fgeo.contenu["Affichage"]:
                 parametres = fgeo.contenu["Affichage"][0]
                 for parametre in parametres:
                     setattr(self.canvas, parametre, eval_safe(parametres[parametre][0]))
 
-        if fgeo.contenu.has_key("Figure"):
+        if "Figure" in fgeo.contenu:
             for figure in fgeo.contenu["Figure"]:
                 feuille = self.creer_feuille()
                 feuille.charger(figure, mode_tolerant = True)
 
-        if fgeo.contenu.has_key("Meta"): # obligatoirement APRES la creation du document, donc après "Figure"
+        if "Meta" in fgeo.contenu: # obligatoirement APRES la creation du document, donc après "Figure"
             infos = fgeo.contenu["Meta"][0]
             for key, value in infos.items():
                 self.feuille_actuelle.infos(key = value[0])
@@ -357,7 +360,7 @@ class Panel_API_graphique(Panel_simple):
             code = macro["code"][0]
             autostart = (macro["autostart"][0].strip().capitalize() == "True")
             mode_avance = (macro["mode_avance"][0].strip().capitalize() == "True")
-            print "mode avance", mode_avance
+            print("mode avance", mode_avance)
             nom = macro["nom"][0]
             self.feuille_actuelle.macros[nom] = {"code": code, "autostart": autostart, "mode_avance": mode_avance}
             if autostart:

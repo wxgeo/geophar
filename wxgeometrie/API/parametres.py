@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
+from __future__ import print_function
+from __future__ import absolute_import
+from __future__ import unicode_literals
 
 ##########################################################################
 #
@@ -67,7 +70,7 @@ def actualiser_module(module, fichier):
             for key in parametres:
                 setattr(module, key, eval_safe(parametres[key][-1]))
         except:
-            print module, key
+            print(module, key)
             print_error()
 
 

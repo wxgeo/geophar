@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
+from __future__ import print_function
+from __future__ import absolute_import
+from __future__ import unicode_literals
 
 ##########################################################################
 #
@@ -32,7 +35,7 @@ from ..pylib import advanced_split
 from .. import param
 
 
-def _avertissement(*arg, **kw): print u"Instruction interdite en mode securisé."
+def _avertissement(*arg, **kw): print(u"Instruction interdite en mode securisé.")
 #fonctions_interdites = ["eval", "compile", "execfile", "file", "open", "write", "getattr", "setattr"]
 
 liste_blanche = set(('False', 'None', 'True', 'abs', 'all', 'any', 'basestring', 'bool',  'callable', 'chr', 'close', \

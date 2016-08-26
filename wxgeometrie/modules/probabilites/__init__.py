@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 from __future__ import with_statement
+from __future__ import print_function
+from __future__ import absolute_import
+from __future__ import unicode_literals
 
 ##--------------------------------------#######
 #                Probabilités                 #
@@ -113,7 +116,7 @@ omega
 
     def _ouvrir(self, fgeo):
         Panel_API_graphique._ouvrir(self, fgeo)
-        if fgeo.contenu.has_key(u"Instructions"):
+        if u"Instructions" in fgeo.contenu:
             self.instructions.setPlainText(fgeo.contenu[u"Instructions"][0])
 
 
@@ -189,7 +192,7 @@ omega
                 ligne_precedente[colonne] += 1
                 for i in xrange(colonne + 1, nbr_colonnes):
                     ligne_precedente[i] = -1
-            print arbre
+            print(arbre)
 
             # on parcourt l'arbre pour compter le nombre de ramifications
 
@@ -368,7 +371,7 @@ omega
                 lignes.insert(i, niveau*">" + evt2)
                 lignes.insert(i, niveau*">" + evt1)
 
-        print "test", "\n".join(lignes)
+        print("test", "\n".join(lignes))
         self.instructions.setPlainText("\n".join(lignes))
 
 

@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
+from __future__ import print_function
+from __future__ import absolute_import
+from __future__ import unicode_literals
 
 ##--------------------------------------##
 #              WxGeometrie               #
@@ -68,7 +71,7 @@ def _auto_tabval(chaine='', formatage_antecedents='VAL', formatage_images='VAL',
     code = "%s:[%s]:%s,%s..%s" % (fonction, precision, a, a + pas, b)
 
     if param.debug and param.verbose:
-        print 'Code TABVal:', code
+        print('Code TABVal:', code)
     return tabval(code, formatage_antecedents=formatage_antecedents, formatage_images=formatage_images) + '% ' + chaine_initiale + '\n'
 
 

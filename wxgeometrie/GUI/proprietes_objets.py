@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 from __future__ import with_statement
+from __future__ import print_function
+from __future__ import absolute_import
+from __future__ import unicode_literals
 
 ##--------------------------------------#######
 #                 Fenetres                              #
@@ -690,12 +693,12 @@ class OngletsProprietes(QTabWidget):
 class Proprietes(QDialog):
     def __init__(self, parent, objets, islabel = False):
         u"Le paramètre 'label' indique si l'objet à éditer est un label"
-        print "OBJETS:"
-        print objets
-        print unicode(objets[0])
-        print repr(objets[0])
-        print objets[0].__class__
-        print isinstance(objets[0], str)
+        print("OBJETS:")
+        print(objets)
+        print(unicode(objets[0]))
+        print(repr(objets[0]))
+        print(objets[0].__class__)
+        print(isinstance(objets[0], str))
         objets[0].titre_complet("du", False)
         self.parent = parent
         self.islabel = islabel

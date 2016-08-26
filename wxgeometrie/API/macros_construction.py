@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
+from __future__ import print_function
+from __future__ import absolute_import
+from __future__ import unicode_literals
 
 ##--------------------------------------#######
 #              Macros de construction         #
@@ -43,12 +46,12 @@ class Macro_construction(object):
 
     def ouvrir(self, path):
         self.fichier.ouvrir(path)
-        if self.fichier.has_key("Figure"):
+        if "Figure" in self.fichier:
             self.figure = self.fichier.contenu["Figure"][0] # code python correspondant à la figure
         else:
             self.figure = ""
 
-        if self.fichier.has_key("Parametres_macro"):
+        if "Parametres_macro" in self.fichier:
             self.parametres = self.fichier.contenu["Parametres_macro"][0]
 #            self.nom = self.parametres["nom"][0].strip()
             self.arguments = self.parametres["arguments"][0].strip().split(",") # arguments de la macro (ex: 3 points pour un triangle)

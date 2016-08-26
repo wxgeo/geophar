@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
+from __future__ import print_function
+from __future__ import absolute_import
+from __future__ import unicode_literals
 
 ##--------------------------------------#######
 #   Mathlib 2 (sympy powered) #
@@ -62,7 +65,7 @@ class LocalDict(dict):
 
     def __setitem__(self, name, value):
         # Pour éviter que l'utilisateur redéfinisse pi, i, e, etc. par mégarde.
-        if self.globals.has_key(name) or (name.startswith('_') and name[1:].isalnum()):
+        if name in self.globals or (name.startswith('_') and name[1:].isalnum()):
             raise NameError("%s est un nom reserve" %name)
         if isinstance(value, str):
             # exec/eval encodent les chaînes crées en utf8.
@@ -225,13 +228,13 @@ class Interprete(object):
 ##        calcul = calcul.replace("'", "`").replace('"', '``')
 
         if self.verbose:
-            print "Traitement ({[]}) :  ", calcul
+            print("Traitement ({[]}) :  ", calcul)
 
         if calcul and calcul[0] in "><!=^*/%+":
             calcul = "_" + calcul
 
         if self.verbose:
-            print "Traitement ><!=^*/%+ :  ", calcul
+            print("Traitement ><!=^*/%+ :  ", calcul)
 
         if self.formatage_LaTeX and calcul.rstrip().endswith("\\approx"):
             calcul = calcul.rstrip()[:-7] + ">>evalf"
@@ -243,7 +246,7 @@ class Interprete(object):
                 calcul = s + "(" + calcul + ")"
 
         if self.verbose:
-            print "Traitement >> :  ", calcul
+            print("Traitement >> :  ", calcul)
 
         if calcul.startswith('?'):
             calcul = 'aide(%s)' %calcul[1:]
@@ -330,7 +333,7 @@ class Interprete(object):
             formule = ('%s("%s", local_dict=__local_dict__, ensemble=%s)%s'
                        % (deb, bloc[1:-1], repr(self.ensemble), fin))
         if self.verbose or (self.verbose is None and param.debug):
-            print "Debugging resoudre(): ", i, formule
+            print("Debugging resoudre(): ", i, formule)
         formule = re.sub("(?<![A-Za-z0-9_])(factor|factorise)[(]", "factoriser(", formule)
         i = formule.find("factoriser(")
         if i != -1:
@@ -338,7 +341,7 @@ class Interprete(object):
             formule = ('%s(%s, ensemble=%s)'
                        % (deb, bloc[1:-1], repr(self.ensemble)))
         if self.verbose or (self.verbose is None and param.debug):
-            print "Debugging factor(): ", formule
+            print("Debugging factor(): ", formule)
         return formule
 
 
@@ -402,7 +405,7 @@ class Interprete(object):
 
     def save_state(self):
         def repr2(expr):
-            if isinstance(expr, (types.BuiltinFunctionType, types.TypeType, types.FunctionType)):
+            if isinstance(expr, (types.BuiltinFunctionType, type, types.FunctionType)):
                 return expr.__name__
             return repr(expr).replace('\n', ' ')
         variables = '\n'.join(k + ' = ' + repr2(v) for k, v in self.locals.items())

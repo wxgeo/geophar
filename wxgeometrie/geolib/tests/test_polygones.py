@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import division, absolute_import # 1/2 == .5 (par defaut, 1/2 == 0)
+from __future__ import print_function
+from __future__ import unicode_literals
 
 from math import pi, sin, cos, sqrt
 from random import random

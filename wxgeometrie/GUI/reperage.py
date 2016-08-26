@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
+from __future__ import absolute_import
+from __future__ import print_function
+from __future__ import unicode_literals
 
 ##--------------------------------------##
 #              WxGeometrie               #
@@ -24,8 +27,8 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 from PyQt4.QtGui import QDialog, QDialogButtonBox
 
-from reperage_ui import Ui_DialogReperage
-from calibrage_ui import Ui_DialogCalibrage
+from .reperage_ui import Ui_DialogReperage
+from .calibrage_ui import Ui_DialogCalibrage
 
 from .. import param
 

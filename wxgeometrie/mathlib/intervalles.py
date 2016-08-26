@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
+from __future__ import print_function
+from __future__ import absolute_import
+from __future__ import unicode_literals
 
 ##--------------------------------------#######
 #                Intervalles                  #
@@ -563,7 +566,7 @@ def conversion_chaine_ensemble(chaine, utiliser_sympy = False):
             #print str2(chaine), dico
             return sympify(chaine, dico)
         except (SympifyError, TypeError) as e:
-            print "Warning: %s in %s." %(e, str2(chaine))
+            print("Warning: %s in %s." %(e, str2(chaine)))
             print_error()
     return eval(chaine, dico, dico)
 

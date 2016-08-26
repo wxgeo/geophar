@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
+from __future__ import print_function
+from __future__ import absolute_import
+from __future__ import unicode_literals
 
 ##--------------------------------------#######
 #                   Objets                    #
@@ -341,14 +344,14 @@ class Tetraedre(Polyedre_generique):
 
 
     def _tester_aretes(self):
-        print "Test aretes 1", self.__point1.coordonnees
-        print "Test aretes 2", self.__point2.coordonnees
-        print "Test aretes 3", self.__point3.coordonnees
-        print "Test aretes 4", self.__point4.coordonnees
+        print("Test aretes 1", self.__point1.coordonnees)
+        print("Test aretes 2", self.__point2.coordonnees)
+        print("Test aretes 3", self.__point3.coordonnees)
+        print("Test aretes 4", self.__point4.coordonnees)
         # Ce qui suit doit être géré *avant* l'affichage du polyèdre, et de ses arêtes.
         if point_dans_polygone(self.__point4.coordonnees,
                 [self.__point1.coordonnees, self.__point2.coordonnees, self.__point3.coordonnees]):
-            print "3 cachees -> ok"
+            print("3 cachees -> ok")
             self._Polyedre_generique__aretes[3].cachee = True
             self._Polyedre_generique__aretes[4].cachee = True
             self._Polyedre_generique__aretes[5].cachee = True
@@ -388,7 +391,6 @@ class Sommet_cube(Point_generique):
         zA = self.__point1.z
         zB = self.__point2.z
         zE = k*cexp(1j*a)*(zB - zA) + zA
-        print "HHeLiBeBCNOFNe", k*cexp(1j*a), (zB - zA), zA, zE
         return zE.real, zE.imag
 
     def _set_coordonnees(self, x, y):

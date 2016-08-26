@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
+from __future__ import print_function
+from __future__ import absolute_import
+from __future__ import unicode_literals
 
 ##--------------------------------------#######
 #                   Fonctions                    #
@@ -151,7 +154,7 @@ class Fonction(Objet_numerique):
                             liste_expression[i] = obj
                             objets.add(obj)
                             if self is obj or is_in(self, obj._ancetres()):
-                                print self,
+                                print(self, end=' ')
                                 raise RuntimeError("Definition circulaire dans %s : l'objet %s se retrouve dependre de lui-meme." %(self, obj))
                     for i in xrange(1, len(liste_ensemble), 2):
                         obj = self.feuille.objets[liste_ensemble[i]]
@@ -159,7 +162,7 @@ class Fonction(Objet_numerique):
                             liste_ensemble[i] = obj
                             objets.add(obj)
                             if self is obj or is_in(self, obj._ancetres()):
-                                print self,
+                                print(self, end=' ')
                                 raise RuntimeError("Definition circulaire dans %s : l'objet %s se retrouve dependre de lui-meme." %(self, obj))
                     return liste_expression, liste_ensemble, objets
             except KeyError:

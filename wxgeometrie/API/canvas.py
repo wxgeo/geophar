@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 from __future__ import with_statement
+from __future__ import print_function
+from __future__ import absolute_import
+from __future__ import unicode_literals
 
 #    WxGeometrie
 #    Dynamic geometry, graph plotter, and more for french mathematic teachers.
@@ -59,7 +62,7 @@ class GelAffichage(object):
 @decorator
 def track(meth, self, *args, **kw):
     if param.debug:
-        s = "%s - Args: %s, %s" % (meth.func_name, args, kw)
+        s = "%s - Args: %s, %s" % (meth.__name__, args, kw)
         self.parent.action_effectuee(s)
     return meth(self, *args, **kw)
 
@@ -69,8 +72,8 @@ def track(meth, self, *args, **kw):
 @decorator
 def partial_track(meth, self, *args, **kw):
     if param.debug:
-        s = "%s - Args: %s, %s" % (meth.func_name, args, kw)
-        self.parent.action_effectuee(s, signature = meth.func_name)
+        s = "%s - Args: %s, %s" % (meth.__name__, args, kw)
+        self.parent.action_effectuee(s, signature = meth.__name__)
     return meth(self, *args, **kw)
 
 
@@ -473,7 +476,7 @@ def %(_nom_)s(self, valeur = no_argument):
         objets = self.feuille_actuelle.liste_objets(objets_caches=False,
                                                     etiquettes=True)
         xxyy = zip(*(obj.espace_vital for obj in objets if obj.espace_vital))
-        print 'xxyy', xxyy
+        print('xxyy', xxyy)
 
         if xxyy:
             def num_only(item):
@@ -492,7 +495,7 @@ def %(_nom_)s(self, valeur = no_argument):
             for nom, liste, defaut in listes_extremas:
                 liste_filtree = filter(num_only, liste)
                 if param.debug:
-                    print 'zoom_auto - valeurs obtenues:', nom, liste_filtree
+                    print('zoom_auto - valeurs obtenues:', nom, liste_filtree)
                 if liste_filtree:
                     if nom.endswith('min'):
                         extremas[nom] = min(liste_filtree)
@@ -503,7 +506,7 @@ def %(_nom_)s(self, valeur = no_argument):
                     ajuster[nom] = False
 
             if param.debug:
-                print 'zoom_auto - propositions:', extremas
+                print('zoom_auto - propositions:', extremas)
 
             for axe in 'xy':
                 nom_min = axe + 'min'
@@ -526,7 +529,7 @@ def %(_nom_)s(self, valeur = no_argument):
 
             self.fenetre = tuple(extremas[nom] for nom in noms)
             if param.debug:
-                print "ZOOM AUTO :", self.fenetre
+                print("ZOOM AUTO :", self.fenetre)
 
 
     @track
@@ -750,13 +753,13 @@ def %(_nom_)s(self, valeur = no_argument):
             s = "Actualisation"
             if self.feuille_actuelle._repere_modifie:
                 s += " complete"
-            print s + str(_n) + ": " + self.parent.titre
+            print(s + str(_n) + ": " + self.parent.titre)
             _n[0] += 1
         # </DEBUG>
         if 0 in self.dimensions:
             # Fenêtre pas encore affichée (initialisation du programme).
             if param.debug:
-                print u"Actualisation différée (fenêtre non chargée : " + self.parent.titre + ")"
+                print(u"Actualisation différée (fenêtre non chargée : " + self.parent.titre + ")")
             return
         try:
             self.graph.dessiner(dessin_temporaire = self._dessin_temporaire,

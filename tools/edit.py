@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
+from __future__ import print_function
+from __future__ import absolute_import
+from __future__ import unicode_literals
 
 ##--------------------------------------##
 #              WxGeometrie               #
@@ -71,10 +74,10 @@ def edit(file_and_line, editor=DEFAULT_EDITOR):
 
 def usage():
     u"Affiche l'aide."
-    print u"""\n    === Usage ===\n
+    print(u"""\n    === Usage ===\n
     - Éditer le fichier '~/wxgeometrie/filename.py' à la ligne 257 :
         $ ./tools/edit.py 'File "~/wxgeometrie/filename.py", line 257'
-        """
+        """)
     exit()
 
 

@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
+from __future__ import print_function
+from __future__ import absolute_import
+from __future__ import unicode_literals
 
 ##--------------------------------------#######
 #           Mathlib 2 (sympy powered)         #
@@ -279,7 +282,7 @@ def simplifier_racines(expression):
     except Exception:
         # sqrtdenest() renvoie assez souvent des erreurs.
         if param.debug:
-            print "Warning: error occured during expression denesting:", expression
+            print("Warning: error occured during expression denesting:", expression)
         return expression
 
 def mat(*args):

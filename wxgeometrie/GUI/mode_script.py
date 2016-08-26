@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
+from __future__ import print_function
+from __future__ import absolute_import
+from __future__ import unicode_literals
 
 ##--------------------------------------##
 #              WxGeometrie            #
@@ -73,7 +76,7 @@ def mode_script(input = None, output = None):
             output = raw_input(u'Adresse du fichier de sortie (png/svg/...) :')
 
         try:
-            print canvas.fenetre
+            print(canvas.fenetre)
             canvas.exporter(output, echelle = param.echelle_cm)
         except IOError:
             print_error()

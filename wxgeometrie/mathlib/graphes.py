@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
+from __future__ import print_function
+from __future__ import absolute_import
+from __future__ import unicode_literals
 
 ##--------------------------------------#######
 #                Graphes                  #
@@ -31,7 +34,7 @@ import collections, copy
 from sympy import oo, Matrix
 from ..pylib import OrderedDict, advanced_split
 
-class GraphError(StandardError):
+class GraphError(Exception):
     pass
 
 # http://www.chansonsdewallonie.be/PAGES/COULEURS/CouleursTeintes.htm
@@ -125,7 +128,7 @@ class Graph(dict):
                     else:
                         node2, distance = edge, '1'
                     node2 = node2.strip()
-                    if not dic[node].has_key(node2):
+                    if node2 not in dic[node]:
                         dic[node][node2] = []
                     dic[node][node2].append(float(distance) if '.' in distance else int(distance))
                     #TODO: support exact calculus
@@ -183,7 +186,7 @@ class Graph(dict):
         return copy.deepcopy(dict(self))
 
     def adjacents(self, node1, node2):
-        return self[node1].has_key(node2) or self[node2].has_key(node1)
+        return node2 in self[node1] or node1 in self[node2]
 
     @property
     def connected(self):
@@ -334,7 +337,7 @@ class Graph(dict):
                     elif new_distance == distance:
                         visited[neighbor][1].append(current)
             current = min(visited.items(), key = lambda x:x[1][0])[0]
-        if visited.has_key(current):
+        if current in visited:
             archived[current] = visited.pop(current)
             in_progress = set([(current,)])
             final_paths = set()
@@ -410,7 +413,7 @@ class Graph(dict):
 
         code += '&'.join(format(node) for node in nodes) + r'\\\hline' + '\n'
         code += '\\end{tabular}\n'
-        if visited.has_key(current):
+        if current in visited:
             archived[current] = visited.pop(current)
             in_progress = set([(current,)])
             final_paths = set()

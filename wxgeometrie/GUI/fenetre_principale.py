@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
+from __future__ import print_function
+from __future__ import absolute_import
+from __future__ import unicode_literals
 
 ##--------------------------------------##
 #              WxGeometrie               #
@@ -247,7 +250,7 @@ class FenetrePrincipale(QMainWindow):
         sys.stderr = sys.__stderr__
         if hasattr(self, "fenetre_sortie"):
             self.fenetre_sortie.close()
-        print "On ferme !"
+        print("On ferme !")
 
 
     def restart(self):

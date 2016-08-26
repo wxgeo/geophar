@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
+from __future__ import print_function
+from __future__ import absolute_import
+from __future__ import unicode_literals
 
 #    WxGeometrie
 #    Dynamic geometry, graph plotter, and more for french mathematic teachers.
@@ -100,10 +103,10 @@ def tester_dependances():
                 iface = dbus.Interface(proxy, 'org.freedesktop.PackageKit.Modify')
                 iface.InstallPackageNames(dbus.UInt32(0), paquets, "show-confirm-search,hide-finished", timeout=1000)
                 modules_manquants = []
-            except dbus.DBusException, e:
-                print 'Unable to use PackageKit: %s' % str(e)
-        except dbus.DBusException, e:
-            print 'Unable to connect to dbus: %s' % str(e)
+            except dbus.DBusException as e:
+                print('Unable to use PackageKit: %s' % str(e))
+        except dbus.DBusException as e:
+            print('Unable to connect to dbus: %s' % str(e))
 
     if modules_manquants:
         print(u'** Erreur fatale **\nLes modules suivants sont introuvables !')

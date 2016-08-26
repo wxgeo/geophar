@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 from __future__ import with_statement
+from __future__ import print_function
+from __future__ import absolute_import
+from __future__ import unicode_literals
 
 ##--------------------------------------#######
 #                   Objet                     #
@@ -1297,7 +1300,7 @@ class Objet(object):
         if self.feuille:
             self.feuille.message(message)
         else:
-            print message
+            print(message)
 
     def erreur(self, message):
         if self.feuille is not None:
@@ -1686,7 +1689,7 @@ class Objet(object):
         a_copier = (objet.style().copy() if objet is not None else {})
         a_copier.update(**kw)
         for key, value in a_copier.iteritems():
-            if style.has_key(key):
+            if key in style:
                 if key in param.styles_a_signification_variable:
                     #print "clef:", key, style["categorie"], objet.style("categorie")
                     if style["categorie"] == a_copier["categorie"]:

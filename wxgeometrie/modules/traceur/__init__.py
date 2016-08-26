@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
+from __future__ import print_function
+from __future__ import absolute_import
+from __future__ import unicode_literals
 
 #    :--------------------------------------------:
 #    :                  Traceur                   :
@@ -161,10 +164,10 @@ class Traceur(Panel_API_graphique):
 
         Lors de l'ouverture d'un fichier, ou d'un changement de feuille,
         ou lorsqu'une commande est exécutée dans la feuille."""
-        print "Synchronisation des champs..."
+        print("Synchronisation des champs...")
         for i in xrange(self.nombre_courbes):
             nom_courbe = 'Cf' + str(i + 1)
-            if self.feuille_actuelle.objets.has_key(nom_courbe):
+            if nom_courbe in self.feuille_actuelle.objets:
                 objet = self.feuille_actuelle.objets[nom_courbe]
                 self.boites[i].setChecked(objet.style('visible'))
                 expression = objet.fonction.expression
@@ -207,11 +210,11 @@ class Traceur(Panel_API_graphique):
             if not expr.strip():
                 visible = False
 #                self.boites[i].Disable()
-            if self.feuille_actuelle.objets.has_key(nom_fonction):
+            if nom_fonction in self.feuille_actuelle.objets:
                 objets[nom_fonction].modifier_expression_et_ensemble(expression=expr, ensemble=ensemble)
             else:
                 objets[nom_fonction] = Fonction(expr, ensemble, 'x')
-            if self.feuille_actuelle.objets.has_key(nom_courbe):
+            if nom_courbe in self.feuille_actuelle.objets:
                 objets[nom_courbe].style(visible = visible)
             else:
                 f = objets[nom_fonction]

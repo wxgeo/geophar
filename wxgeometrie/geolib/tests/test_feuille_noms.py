@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 from __future__ import with_statement
+from __future__ import print_function
+from __future__ import absolute_import
+from __future__ import unicode_literals
 
 import re
 from math import cos, pi, e, sqrt
@@ -23,12 +26,12 @@ def test_abreviations():
     f = Feuille(titre = u"Feuille de travail n°1")
     o = f.objets
 
-    assert(o.has_key("Point"))
-    assert(o.has_key("Variable"))
-    assert(o.has_key("Texte"))
-    assert(o.has_key("point"))
-    assert(o.has_key("variable"))
-    assert(o.has_key("texte"))
+    assert("Point" in o)
+    assert("Variable" in o)
+    assert("Texte" in o)
+    assert("point" in o)
+    assert("variable" in o)
+    assert("texte" in o)
 
     o.txt = ["salut"]
     assert(isinstance(o.txt, Texte))

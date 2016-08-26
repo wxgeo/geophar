@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
+from __future__ import print_function
+from __future__ import absolute_import
+from __future__ import unicode_literals
 
 #    WxGeometrie
 #    Dynamic geometry, graph plotter, and more for french mathematic teachers.
@@ -206,12 +209,12 @@ if getattr(sys, '_launch_geophar', False):
     try:
         # à faire avant d'importer API
         if param.verbose:
-            print u'Arguments de la ligne de commande :', parametres_additionnels, arguments
+            print(u'Arguments de la ligne de commande :', parametres_additionnels, arguments)
             if options.script:
-                print u"--- Mode script activé. ---"
+                print(u"--- Mode script activé. ---")
 
         if param.frozen:
-            print sys.path
+            print(sys.path)
             sys.path.extend(('library.zip\\matplotlib', 'library.zip\\' + GUIlib))
 
         if param.charger_psyco is not False:
@@ -274,7 +277,7 @@ if getattr(sys, '_launch_geophar', False):
                 from .GUI.mode_script import mode_script
                 msg = mode_script(options.input, options.output)
                 if msg:
-                    print msg
+                    print(msg)
 
             else:
                 # param._restart est mis à True si l'application doit être redémarrée.

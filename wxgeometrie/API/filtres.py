@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
+from __future__ import print_function
+from __future__ import absolute_import
+from __future__ import unicode_literals
 
 ##--------------------------------------#######
 #                    Filtres                    #
@@ -31,14 +34,14 @@ import re
 
 
 def filtre_versions_anterieures(fgeo, version):
-    if fgeo.contenu.has_key("Affichage"):
+    if "Affichage" in fgeo.contenu:
         if fgeo.contenu["Affichage"]:
             parametres = fgeo.contenu["Affichage"][0]
             # 0.109
             if version < [0, 109]:
                 parametres["taille"][0] = parametres["taille"][0][:-1] + ', "|":8}'
 
-    if fgeo.contenu.has_key("Figure"):
+    if "Figure" in fgeo.contenu:
         figures = fgeo.contenu["Figure"]
         for i in xrange(len(figures)):
             # 0.106
@@ -279,7 +282,7 @@ def filtre_versions_anterieures(fgeo, version):
                                                     ".style(mode = %s)" % repr(new))
 
     if version < [13, 1]:
-        if fgeo.contenu.has_key("Diagramme") and fgeo.module == "statistiques":
+        if "Diagramme" in fgeo.contenu and fgeo.module == "statistiques":
             diag = fgeo.contenu["Diagramme"][0]
             origine = diag.setdefault("origine", [{}])[0]
             origine.setdefault('x', [''])
@@ -304,7 +307,7 @@ def filtre_versions_anterieures(fgeo, version):
             except ValueError:
                 pass
 
-    if fgeo.contenu.has_key("Courbe") and fgeo.module == 'traceur':
+    if "Courbe" in fgeo.contenu and fgeo.module == 'traceur':
         courbes = fgeo.contenu["Courbe"]
         figures = fgeo.contenu["Figure"]
         for i, courbe in enumerate(courbes):

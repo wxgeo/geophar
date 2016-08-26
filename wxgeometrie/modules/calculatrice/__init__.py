@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
+from __future__ import print_function
+from __future__ import absolute_import
+from __future__ import unicode_literals
 
 ##--------------------------------------#######
 #                Calculatrice                 #
@@ -465,7 +468,7 @@ class Calculatrice(Panel_simple):
 
 
     def _ouvrir(self, fgeo):
-        if fgeo.contenu.has_key("Calculatrice"):
+        if "Calculatrice" in fgeo.contenu:
             calc = fgeo.contenu["Calculatrice"][0]
             self.initialiser()
 

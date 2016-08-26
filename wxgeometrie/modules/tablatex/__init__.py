@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
+from __future__ import print_function
+from __future__ import absolute_import
+from __future__ import unicode_literals
 
 ##--------------------------------------#######
 #                Calculatrice                 #
@@ -258,7 +261,7 @@ class TabLaTeX(Panel_simple):
                 self.vers_presse_papier(texte = code_latex)
             self.focus_widget.setFocus()
             self.message(u"Le code LaTeX a bien été généré.")
-        except BaseException, erreur:
+        except BaseException as erreur:
             self.message(u"Impossible de générer le code LaTeX. " + message(erreur))
             self.code_tableau.setText(u"<i><b>Erreur.</b> Impossible de générer le code LaTeX.</i>")
             self.entree.setFocus()

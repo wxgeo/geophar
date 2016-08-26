@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
+from __future__ import print_function
+from __future__ import absolute_import
+from __future__ import unicode_literals
 
 ##########################################################################
 #
@@ -733,16 +736,16 @@ def debug(*messages):
 @decorator
 def trace(f, *args, **kw):
     if param.debug:
-        print "Calling %s with args %s, %s" % (f.func_name, args, kw)
+        print("Calling %s with args %s, %s" % (f.__name__, args, kw))
     return f(*args, **kw)
 
 @decorator
 def full_trace(f, *args, **kw):
     if param.debug:
-        print '** Debugging info **'
+        print('** Debugging info **')
         traceback.print_stack()
-        print "Calling %s with args %s, %s" % (f.func_name, args, kw)
-        print '-------------------\n'
+        print("Calling %s with args %s, %s" % (f.__name__, args, kw))
+        print('-------------------\n')
     return f(*args, **kw)
 
 
@@ -782,7 +785,7 @@ def traceit(frame, event, arg):
             filename = filename[:-1]
         name = frame.f_globals["__name__"]
         line = linecache.getline(filename, lineno)
-        print "%s:%s: %s" % (name, lineno, line.rstrip())
+        print("%s:%s: %s" % (name, lineno, line.rstrip()))
     return traceit
 
 

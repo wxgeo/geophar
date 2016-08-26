@@ -11,6 +11,10 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
+from __future__ import print_function
+from __future__ import division
+from __future__ import absolute_import
+from __future__ import unicode_literals
 import sys, os
 
 # If extensions (or modules to document with autodoc) are in another directory,
@@ -19,7 +23,7 @@ import sys, os
 #sys.path.append(os.path.abspath('.'))
 
 sys.path.append(os.path.abspath('../..'))
-print 'PATH::', os.path.abspath('../..')
+print('PATH::', os.path.abspath('../..'))
 
 from wxgeometrie.param import version
 

@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
+from __future__ import print_function
+from __future__ import absolute_import
+from __future__ import unicode_literals
 
 # o-----------------------------------------------------------o
 # |              Barre d'outils pour la géométrie             |
@@ -371,12 +374,12 @@ class BarreOutils(QWidget):
 
     def style(self, type_objet):
         u"Retourne le style d'objet défini éventuellement dans les paramètres du module."
-        print 'coucou', type_objet
+        print('coucou', type_objet)
         if not type_objet:
             return {}
         val = getattr(self.parent._param_, type_objet, {})
         assert isinstance(val, dict)
-        print val
+        print(val)
         return val
 
 

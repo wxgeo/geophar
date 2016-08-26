@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
+from __future__ import print_function
+from __future__ import absolute_import
+from __future__ import unicode_literals
 
 from sympy import sqrt, pi
 
@@ -12,8 +15,8 @@ from wxgeometrie.mathlib.intervalles import Intervalle, Ensemble, \
 def assert_intervalle_preformater(x, y):
     y_ = intervalles.preformatage_ensemble(x)
     if y_ != y:
-        print "/!\\ Formule: ", x
-        print "ERREUR: ",  y_, " != ", y
+        print("/!\\ Formule: ", x)
+        print("ERREUR: ",  y_, " != ", y)
     assert(y_ == y)
 
 def test_preformater():

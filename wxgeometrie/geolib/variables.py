@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
+from __future__ import print_function
+from __future__ import absolute_import
+from __future__ import unicode_literals
 
 ##--------------------------------------#######
 #                  Variable                   #
@@ -119,7 +122,7 @@ class Variable(Variable_generique):
                     liste[i] = obj
                     ensemble.add(obj)
                     if self is obj or is_in(self, obj._ancetres()):
-                        print self,
+                        print(self, end=' ')
                         raise RuntimeError("Definition circulaire dans %s : l'objet %s se retrouve dependre de lui-meme." %(self, obj))
             return liste, ensemble
         return None, None

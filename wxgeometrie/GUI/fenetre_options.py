@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
+from __future__ import print_function
+from __future__ import absolute_import
+from __future__ import unicode_literals
 
 #    WxGeometrie
 #    Dynamic geometry, graph plotter, and more for french mathematic teachers.
@@ -112,7 +115,7 @@ class FenetreOptions(QDialog):
             widget = QComboBox(panel)
             widget.addItems(type_)
         else:
-            print type_
+            print(type_)
             raise NotImplementedError
         self.widgets[parametre.nom] = widget
         widget.parametre = parametre
@@ -134,7 +137,7 @@ class FenetreOptions(QDialog):
         elif isinstance(type_, list):
             widget.setCurrentIndex(widget.findText(valeur))
         else:
-            print type_
+            print(type_)
             raise NotImplementedError
 
     def get_value(self, widget):
@@ -148,7 +151,7 @@ class FenetreOptions(QDialog):
         elif isinstance(type_, list):
             return widget.currentText()
         else:
-            print type_
+            print(type_)
             raise NotImplementedError
 
     def defaut(self):

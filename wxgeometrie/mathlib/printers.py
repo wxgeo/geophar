@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
+from __future__ import print_function
+from __future__ import absolute_import
+from __future__ import unicode_literals
 
 ##--------------------------------------#######
 #           Mathlib 2 (sympy powered)         #
@@ -331,7 +334,7 @@ class CustomLatexPrinter(MyCustomPrinter, LatexPrinter):
         return self._do_exponent(tex, exp)
 
     def _print_function(self, expr):
-        return r"\mathrm{Fonction}\, " + expr.func_name
+        return r"\mathrm{Fonction}\, " + expr.__name__
 
     def _print_Decim(self, expr):
         return self._print_Float(Float(expr, prec=expr.prec))

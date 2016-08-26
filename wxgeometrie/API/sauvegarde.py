@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
+from __future__ import print_function
+from __future__ import absolute_import
+from __future__ import unicode_literals
 
 ##--------------------------------------#######
 #                 Sauvegarde                  #
@@ -88,7 +91,7 @@ class FichierGEO(object):
             for elt in node.childNodes:
                 if elt.__class__.__name__ == "Element":
                     contenu = contenu_node(elt)
-                    if dico.has_key(elt.nodeName):
+                    if elt.nodeName in dico:
                         dico[elt.nodeName] += [contenu]
                     else:
                         dico[elt.nodeName] = [contenu]
@@ -138,7 +141,7 @@ class FichierGEO(object):
         if contenu is None:
             contenu = {}
 
-        if not racine.has_key(nom):
+        if nom not in racine:
             racine[nom] = []
         racine[nom].append(contenu)
         return contenu

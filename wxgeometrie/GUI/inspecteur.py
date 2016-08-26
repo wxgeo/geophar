@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
+from __future__ import print_function
+from __future__ import absolute_import
+from __future__ import unicode_literals
 
 ##--------------------------------------#######
 #                 Fenetres                              #
@@ -34,7 +37,7 @@ class EditeurPython(PythonSTC):
         self.parent = parent
 
     def keyPressEvent(self, event):
-        print "test!!!"
+        print("test!!!")
         key = event.key()
         if key == Qt.Key_Escape:
             self.parent.close()

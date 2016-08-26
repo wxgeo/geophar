@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 from __future__ import with_statement
+from __future__ import print_function
+from __future__ import absolute_import
+from __future__ import unicode_literals
 
 ##--------------------------------------##
 #                  Onglets               #
@@ -285,7 +288,7 @@ class Onglets(QTabWidget):
     def actualiser_liste_onglets(self):
         # On commence par vérifier que la liste des modules à charger n'est pas vide
         modules_a_charger = [nom for nom, val in param.modules_actifs.iteritems() if val]
-        print u"Modules à charger :", modules_a_charger
+        print(u"Modules à charger :", modules_a_charger)
         if not modules_a_charger:
             # On affiche l'onglet de bienvenue par défaut.
             modules_a_charger = ['bienvenue']

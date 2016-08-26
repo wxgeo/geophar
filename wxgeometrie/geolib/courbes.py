@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
+from __future__ import print_function
+from __future__ import absolute_import
+from __future__ import unicode_literals
 
 ##--------------------------------------#######
 #                   Interpolation                    #
@@ -140,14 +143,14 @@ class Courbe(Courbe_generique):
                         if ancien_intervalle is None:
                             self._creer_debut_morceau(x, y, intervalle, e_cach)
                         else:
-                            print intervalle, y[0], abs(y[0] - ancien_y[-1]), abs(x[0] - ancien_x[-1]), contexte['tolerance'] , pas
+                            print(intervalle, y[0], abs(y[0] - ancien_y[-1]), abs(x[0] - ancien_x[-1]), contexte['tolerance'] , pas)
                             fusion = abs(x0 - ancien_xN) < contexte['tolerance'] \
                                     and (abs(y0 - ancien_yN) < contexte['tolerance']  or (isnan(y0) and isnan(ancien_yN)))
                             if fusion:
                                 #Fusion
-                                print 'Fusion', y0
+                                print('Fusion', y0)
                                 if isnan(y0):
-                                    print u'Fusion avancée'
+                                    print(u'Fusion avancée')
                                     for i in xrange(10, 70, 10):
                                         try:
                                             val1 = ancienne_fonction(ancien_xN - 8**(-i))
@@ -162,7 +165,7 @@ class Courbe(Courbe_generique):
                                     else:
                                         fusion = False
                                 elif not(ancien_intervalle.sup_inclus or intervalle.inf_inclus):
-                                    print 'Fusion classique'
+                                    print('Fusion classique')
                                     self._append_point(x[0], y[0], plein = False)
 
                             if not fusion:

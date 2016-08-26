@@ -28,6 +28,10 @@
 Decorator module, see http://pypi.python.org/pypi/decorator
 for the documentation.
 """
+from __future__ import print_function
+from __future__ import division
+from __future__ import absolute_import
+from __future__ import unicode_literals
 
 __all__ = ["decorator", "FunctionMaker", "partial",
            "deprecated", "getinfo", "new_wrapper"]
@@ -83,7 +87,7 @@ class FunctionMaker(object):
         func.__name__ = self.name
         func.__doc__ = getattr(self, 'doc', None)
         func.__dict__ = getattr(self, 'dict', {})
-        func.func_defaults = getattr(self, 'defaults', ())
+        func.__defaults__ = getattr(self, 'defaults', ())
         callermodule = sys._getframe(3).f_globals.get('__name__', '?')
         func.__module__ = getattr(self, 'module', callermodule)
         func.__dict__.update(kw)
@@ -105,10 +109,10 @@ class FunctionMaker(object):
             src += '\n'
         try:
             code = compile(src, '<string>', 'single')
-            exec code in evaldict
+            exec(code, evaldict)
         except:
-            print >> sys.stderr, 'Error in generated code:'
-            print >> sys.stderr, src
+            print('Error in generated code:', file=sys.stderr)
+            print(src, file=sys.stderr)
             raise
         func = evaldict[name]
         if addsource:
@@ -206,9 +210,9 @@ def getinfo(func):
     signature = inspect.formatargspec(regargs, varargs, varkwargs, defaults,
                                       formatvalue=lambda value: "")[1:-1]
     return dict(name=func.__name__, argnames=argnames, signature=signature,
-                defaults = func.func_defaults, doc=func.__doc__,
+                defaults = func.__defaults__, doc=func.__doc__,
                 module=func.__module__, dict=func.__dict__,
-                globals=func.func_globals, closure=func.func_closure)
+                globals=func.__globals__, closure=func.__closure__)
 
 @deprecated
 def update_wrapper(wrapper, model, infodict=None):
@@ -218,7 +222,7 @@ def update_wrapper(wrapper, model, infodict=None):
     wrapper.__doc__ = infodict['doc']
     wrapper.__module__ = infodict['module']
     wrapper.__dict__.update(infodict['dict'])
-    wrapper.func_defaults = infodict['defaults']
+    wrapper.__defaults__ = infodict['defaults']
     wrapper.undecorated = model
     return wrapper
 

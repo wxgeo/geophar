@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
+from __future__ import absolute_import
+from __future__ import print_function
+from __future__ import unicode_literals
 
 ##--------------------------------------#######
 #           Mathlib 2 (sympy powered)         #
@@ -319,7 +322,7 @@ def aide(fonction):
             hlp += '\n' + ligne.lstrip()
         return hlp
     else:
-        from end_user_functions import __classement__
+        from .end_user_functions import __classement__
         for val in __classement__.itervalues():
             if val[1] == getattr(fonction, '__name__', str(fonction)):
                 hlp = "\n== Aide sur %s ==\n" %fonction.__name__
