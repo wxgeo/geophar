@@ -44,8 +44,8 @@ dependances = {'PyQt4': 'python-qt4',
                'PyQt4.Qsci': 'python-qscintilla2',
                }
 
-python_version_min = (2, 6)
-python_version_max = (2, 7)
+python_version_min = (3, 5)
+python_version_max = (3, 5)
 
 plateforme = platform.system() #'Windows' ou 'Linux' par exemple.
 

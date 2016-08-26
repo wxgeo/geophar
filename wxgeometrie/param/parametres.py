@@ -39,8 +39,6 @@ from __future__ import unicode_literals
 from locale import getdefaultlocale
 from math import pi
 
-python_min = (2, 6) # version minimale requise
-
 # debuguage (affichage des erreurs + diverses infos)
 debug = True
 # Le logiciel est-il installé ?
