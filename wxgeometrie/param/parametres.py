@@ -72,11 +72,6 @@ style_Qt = None
 # jeu de caractère à utiliser
 encodage = getdefaultlocale()[1] or "utf8"
 
-# Utiliser pysco si disponible (JIT compiler qui accélère le code python)
-# True -> tout compiler : psyco.full()
-# None -> compilation optimisée : psyco.profile()
-# False -> ne pas essayer d'importer psyco
-charger_psyco = False
 
 # Modules activés par défaut
 modules_par_defaut = (

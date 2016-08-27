@@ -213,17 +213,6 @@ if getattr(sys, '_launch_geophar', False):
             print(sys.path)
             sys.path.extend(('library.zip\\matplotlib', 'library.zip\\' + GUIlib))
 
-        if param.charger_psyco is not False:
-            try:
-                import psyco
-                if param.charger_psyco is True:
-                    psyco.full()
-                else:
-                    psyco.profile()
-            except ImportError:
-                pass
-
-
 
         def initialiser():
             from .API.parametres import actualiser_module
