@@ -377,7 +377,7 @@ class Texte(Texte_editable_generique, Objet_avec_coordonnees_modifiables):
 
     Un texte à afficher"""
 
-    texte = __texte = Argument("unicode", _get_texte, _set_texte)
+    texte = __texte = Argument("str", _get_texte, _set_texte)
     abscisse = x = __x = Argument("Variable_generique", defaut = lambda: normalvariate(0,10))
     ordonnee = y = __y = Argument("Variable_generique", defaut = lambda: normalvariate(0,10))
 

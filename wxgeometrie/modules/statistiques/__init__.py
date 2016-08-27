@@ -67,7 +67,6 @@ class Classe(tuple):
 
     def __str__(self):         return "[%s ; %s[" % (self[0], self[-1])
     def __repr__(self):        return str(self)
-    def __unicode__(self):     return uu(str(self))
     def __int__(self):         return int(self.milieu())
     def __add__(self, y):      return self.milieu() + y
     def __mul__(self, y):      return self.milieu()*y

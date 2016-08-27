@@ -144,7 +144,7 @@ class Interprete(object):
 
         # On importe les fonctions python qui peuvent avoir une utilité éventuelle
         # (et ne présentent pas de problème de sécurité)
-        a_importer = ['all', 'unicode', 'isinstance', 'dict', 'oct', 'sorted',
+        a_importer = ['all', 'isinstance', 'dict', 'oct', 'sorted',
                       'list', 'iter', 'set', 'reduce', 'issubclass', 'getattr',
                       'hash', 'len', 'frozenset', 'ord', 'filter', 'pow',
                       'float', 'divmod', 'enumerate', 'basestring', 'zip',

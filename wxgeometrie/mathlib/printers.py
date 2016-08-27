@@ -122,9 +122,6 @@ class CustomStrPrinter(MyCustomPrinter, StrPrinter):
     def _print_str(self, expr):
         return '"%s"' % expr.replace('"', r'\"')
 
-    def _print_unicode(self, expr):
-        return '"%s"' % expr.replace('"', r'\"')
-
     def _print_Exp1(self, expr):
         return 'e'
 

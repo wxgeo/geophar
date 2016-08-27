@@ -31,7 +31,7 @@ from ..pylib import advanced_split
 from .. import param
 
 
-def _avertissement(*arg, **kw): 
+def _avertissement(*arg, **kw):
     print("Instruction interdite en mode securisé.")
 
 #fonctions_interdites = ["eval", "compile", "execfile", "file", "open", "write", "getattr", "setattr"]
@@ -40,7 +40,7 @@ liste_blanche = set(('False', 'None', 'True', 'abs', 'all', 'any', 'basestring',
             'cmp', 'coerce', 'complex', 'dict', 'divmod', 'enumerate', 'filter', 'float', 'frozenset', 'globals', 'hash', 'hex', \
             'id', 'int', 'isinstance', 'issubclass', 'iter', 'len', 'list', 'locals', 'long', 'map', 'max', 'min', 'object', 'oct', \
             'ord', 'pow', 'range', 'reduce', 'repr', 'reversed', 'round', 'set', 'slice', 'sorted', 'str', 'sum', \
-            'tuple', 'type', 'unichr', 'unicode', 'xrange', 'zip'\
+            'tuple', 'type', 'unichr', 'zip'\
             'IndexError', 'SyntaxError', 'NameError', 'StandardError', 'UnicodeDecodeError', 'RuntimeWarning', \
             'Warning', 'FloatingPointError', 'FutureWarning', 'ImportWarning', 'TypeError', 'KeyboardInterrupt', \
             'UserWarning', 'SystemError', 'BaseException', 'RuntimeError', 'GeneratorExit', 'StopIteration', \
@@ -105,7 +105,6 @@ def eval_restricted(s, dico_perso = None):
     """eval_restricted(s) évalue s dans un contexte vierge et sécurisé.
 
     Toutes les fonctions disponibles par défaut sont filtrées.
-    L'évalution de chaînes unicodes se fait en utilisant l'encodage système, et non l'utf8.
 
     Note: eval_restricted est le plus securisée possible, mais contrairement
     à eval_safe, il utilise la fonction eval ; il peut donc y avoir des failles
@@ -123,7 +122,7 @@ def eval_restricted(s, dico_perso = None):
 
 def eval_safe(s):
     """eval_safe(repr(x)) retourne x pour les types les plus usuels
-    (int, long, str, unicode, float, bool, None, list, tuple, dict.)
+    (int, long, str, float, bool, None, list, tuple, dict.)
     Mais aucune évaluation n'est faite, ce qui évite d'éxécuter un code dangereux.
     Le type de s est detecté, et la transformation appropriée appliquée.
 

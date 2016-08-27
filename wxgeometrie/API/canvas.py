@@ -147,7 +147,7 @@ class Canvas(FigureCanvasAgg):
     def exporter(self, fichier, format=None, dpi=None, zone=None, echelle=None, taille=None, keep_ratio=False):
         """Export de la feuille sous forme d'un fichier (png, eps, ...).
 
-        :param string,unicode,file fichier: le fichier lui-même, ou son emplacement.
+        :param string,file fichier: le fichier lui-même, ou son emplacement.
         :param format: le format de l'image (PNG, SVG, ...).
                        Inutile si le nom du fichier est donné avec une extension connue.
         :param int,float dpi: résolution souhaitée (en dot par inch)

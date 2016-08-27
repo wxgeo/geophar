@@ -44,7 +44,7 @@ class Label_generique(Texte_editable_generique):
     _utiliser_coordonnees_approchees = True
 
     __parent = parent = Argument(Objet)
-    __texte = texte = Argument("unicode", _get_texte, _set_texte)
+    __texte = texte = Argument("str", _get_texte, _set_texte)
 
     def __init__(self, parent, texte='', **styles):
         self.__texte = texte = Ref(texte)
@@ -169,7 +169,7 @@ class Label_point(Label_generique):
     _style_defaut = {'mode': 'nom'}
 
     __parent = parent = Argument('Point_generique')
-    __texte = texte = Argument("unicode", _get_texte, _set_texte)
+    __texte = texte = Argument("str", _get_texte, _set_texte)
 
     def __init__(self, parent, texte='', **styles):
         self.__texte = texte = Ref(texte)
@@ -211,7 +211,7 @@ class Label_glisseur(Label_generique):
     glisseur = NotImplemented
 
     __parent = parent = Argument(Objet)
-    __texte = texte = Argument("unicode", _get_texte, _set_texte)
+    __texte = texte = Argument("str", _get_texte, _set_texte)
 
     def __init__(self, parent, texte='', **styles):
         self.__texte = texte = Ref(texte)
@@ -249,7 +249,7 @@ class Label_segment(Label_glisseur):
     glisseur = Glisseur_segment
 
     __parent = parent = Argument('Segment')
-    __texte = texte = Argument("unicode", _get_texte, _set_texte)
+    __texte = texte = Argument("str", _get_texte, _set_texte)
 
     def __init__(self, parent, texte='', **styles):
         self.__texte = texte = Ref(texte)
@@ -263,7 +263,7 @@ class Label_vecteur(Label_glisseur):
     glisseur = Glisseur_vecteur
 
     __parent = parent = Argument('Vecteur_generique')
-    __texte = texte = Argument("unicode", _get_texte, _set_texte)
+    __texte = texte = Argument("str", _get_texte, _set_texte)
 
     def __init__(self, parent, texte='', **styles):
         self.__texte = texte = Ref(texte)
@@ -277,7 +277,7 @@ class Label_droite(Label_glisseur):
     glisseur = Glisseur_droite
 
     __parent = parent = Argument('Droite_generique')
-    __texte = texte = Argument("unicode", _get_texte, _set_texte)
+    __texte = texte = Argument("str", _get_texte, _set_texte)
 
     def __init__(self, parent, texte='', **styles):
         self.__texte = texte = Ref(texte)
@@ -291,7 +291,7 @@ class Label_demidroite(Label_glisseur):
     glisseur = Glisseur_demidroite
 
     __parent = parent = Argument('Demidroite')
-    __texte = texte = Argument("unicode", _get_texte, _set_texte)
+    __texte = texte = Argument("str", _get_texte, _set_texte)
 
     def __init__(self, parent, texte='', **styles):
         self.__texte = texte = Ref(texte)
@@ -306,7 +306,7 @@ class Label_cercle(Label_glisseur):
     glisseur = Glisseur_cercle
 
     __parent = parent = Argument('Cercle_generique')
-    __texte = texte = Argument("unicode", _get_texte, _set_texte)
+    __texte = texte = Argument("str", _get_texte, _set_texte)
 
     def __init__(self, parent, texte='', **styles):
         self.__texte = texte = Ref(texte)
@@ -320,7 +320,7 @@ class Label_arc_cercle(Label_glisseur):
     glisseur = Glisseur_arc_cercle
 
     __parent = parent = Argument('Arc_generique')
-    __texte = texte = Argument("unicode", _get_texte, _set_texte)
+    __texte = texte = Argument("str", _get_texte, _set_texte)
 
     def __init__(self, parent, texte='', **styles):
         self.__texte = texte = Ref(texte)
@@ -339,7 +339,7 @@ class Label_polygone(Label_generique):
 
     __parent = parent = Argument('Polygone_generique')
 
-    __texte = texte = Argument("unicode", _get_texte, _set_texte)
+    __texte = texte = Argument("str", _get_texte, _set_texte)
 
     def __init__(self, parent, texte='', **styles):
         self.__texte = texte = Ref(texte)
@@ -377,7 +377,7 @@ class Label_angle(Label_generique):
                      'alignement_horizontal': 'center',}
 
     __parent = parent = Argument("Angle_generique")
-    __texte = texte = Argument("unicode", _get_texte, _set_texte)
+    __texte = texte = Argument("str", _get_texte, _set_texte)
 
     def __init__(self, parent, texte='', **styles):
         self.__texte = texte = Ref(texte)

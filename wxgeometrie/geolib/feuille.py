@@ -172,7 +172,7 @@ class Liste_objets(object):
     def __str__(self):
         return self.classe.__name__.split("_")[0] + 's: ' + ', '.join(obj.nom for obj in self)
 
-    __unicode__ = __repr__ = __str__
+    __repr__ = __str__
 
 
 class ModeTolerant(object):
