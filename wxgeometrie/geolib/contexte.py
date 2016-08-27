@@ -54,7 +54,7 @@ class Contexte(dict):
         for dico in reversed(self.__local_dicts):
             if key in dico:
                 return dico[key]
-        if dict.has_key(self, key):
+        if key in self:
             return dict.__getitem__(self, key)
         elif self.__parent is not None:
             return self.__parent[key]

@@ -2076,25 +2076,17 @@ class Objet_numerique(Reel, Objet_avec_valeur):
     def __neg__(self):
         return 0 - self
 
-#    def __pos__(self):
-#        return 0 + self
-
     def __eq__(self, y):
         return self.val == y
-##        return hasattr(y, "__float__") and abs(float(self) - float(y)) < param.tolerance
 
-#    def __ne__(self, y):
-#        return not self == y
+    def __hash__(self):
+        return hash(self.val)
 
     def __bool__(self):
         return self != 0
 
     def __gt__(self, y):
         return self.val > y
-##        return hasattr(y, "__float__") and float(self) > float(y)
-
-#    def __ge__(self, y):
-#        return self > y or self == y
 
 
 

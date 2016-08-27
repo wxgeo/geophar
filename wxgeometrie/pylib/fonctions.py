@@ -642,15 +642,11 @@ class WeakRef(weakref.ref):
             return False
         if self() is None or y() is None:
             return self is y
-        return  self() is y()
+        return self() is y()
 
-    # For debuging purpose only:
-    #~ def __hash__(self):
-        #~ try:
-            #~ weakref.ref.__hash__(self)
-        #~ except TypeError:
-            #~ print(self)
-            #~ raise
+    def __hash__(self):
+        return id(self())
+
 
 class CustomWeakKeyDictionary(weakref.WeakKeyDictionary):
     """WeakKeyDictionary utilisant Weakref au lieu de weakref.ref.
@@ -792,33 +788,41 @@ def exec_(s, globals, locals):
     exec(s, globals, locals)
 
 
+def _archive(string):
+    return zlib.compress(string.encode('utf8'))
+
+def _extract(data):
+    return zlib.decompress(data).decode('utf8')
+
+
 class CompressedList(list):
     def append(self, s):
-        list.append(self, zlib.compress(s))
+        list.append(self, _archive(s))
 
     def __getitem__(self, i):
-        return zlib.decompress(list.__getitem__(self, i))
+        return _extract(list.__getitem__(self, i))
 
     def __setitem__(self, i, s):
-        list.__setitem__(self, i, zlib.compress(s))
+        list.__setitem__(self, i, _archive(s))
 
     def remove(self, s):
-        list.remove(self, zlib.compress(s))
+        list.remove(self, _archive(s))
 
     def count(self, s):
-        return list.count(self, zlib.compress(s))
+        return list.count(self, _archive(s))
 
     def extend(self, iterable):
-        list.extend(self, (zlib.compress(s) for s in iterable))
+        list.extend(self, (_archive(s) for s in iterable))
 
     def index(self, s):
-        list.index(self, zlib.compress(s))
+        list.index(self, _archive(s))
 
     def insert(self, i, s):
-        list.insert(self, i, zlib.compress(s))
+        list.insert(self, i, _archive(s))
 
     def pop(self, i = -1):
-        return zlib.decompress(list.pop(self, i))
+        return _extract(list.pop(self, i))
+
 
 def pstfunc(chaine):
     args = []
