@@ -33,7 +33,7 @@ from .parametres import modules_par_defaut
 
 # Modules a importer
 # ----------------
-_skip_dir = ('OLD',)
+_skip_dir = ('OLD', '__pycache__')
 _modules_dir = os.path.normpath(os.path.join(__file__, '..', '..', 'modules'))
 
 def _detecter_modules():
