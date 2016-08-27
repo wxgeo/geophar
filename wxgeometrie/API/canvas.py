@@ -25,7 +25,7 @@ from matplotlib.backends.backend_agg import FigureCanvasAgg
 from matplotlib.figure import Figure
 
 from .moteur_graphique import Moteur_graphique
-from ..pylib import decorator, property2, print_error, WeakList, str2, no_argument
+from ..pylib import decorator, property2, print_error, WeakList, no_argument
 from ..geolib import Feuille
 from .. import param
 

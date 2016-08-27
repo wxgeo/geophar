@@ -30,7 +30,7 @@ from sympy import I, pi as PI, Basic, Integer
 
 from ..mathlib.internal_objects import Reel
 # à intégrer dans geolib ??
-from ..pylib import property2, uu, str2, print_error, \
+from ..pylib import property2, uu, print_error, \
                     is_in, WeakList, CustomWeakKeyDictionary, warning
 from ..mathlib.parsers import mathtext_parser
 from .routines import nice_display

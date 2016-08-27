@@ -538,16 +538,16 @@ def deprecation(message, level=0):
 
 
 
-def conv2bytes(string, encodage=None):
-    """Convertit en bytes si besoin est, avec l'encodage de 'param.encodage' par défaut.
+#~ def conv2bytes(string, encodage=None):
+    #~ """Convertit en bytes si besoin est, avec l'encodage de 'param.encodage' par défaut.
 
-    Si l'argument n'est pas de type string, il est tout d'abord converti en string,
-    sauf s'il est de type byte."""
-    if isinstance(string, bytes):
-        return bytes
-    if not isinstance(string, str):
-        string = str(string)
-    return string.encode(encodage if encodage else param.encodage)
+    #~ Si l'argument n'est pas de type string, il est tout d'abord converti en string,
+    #~ sauf s'il est de type byte."""
+    #~ if isinstance(string, bytes):
+        #~ return bytes
+    #~ if not isinstance(string, str):
+        #~ string = str(string)
+    #~ return string.encode(encodage if encodage else param.encodage)
 
 
 
@@ -571,8 +571,8 @@ def universal_unicode_string(chaine):
         except UnicodeError:
             chaine = str(chaine)
     if not isinstance(chaine, str):
-        for encodage in [param.encodage, sys.getdefaultencoding(), 'utf-8', 'latin1', 'cp1250', 
-                         'mac_roman', 'latin2']: 
+        for encodage in [param.encodage, sys.getdefaultencoding(), 'utf-8', 'latin1', 'cp1250',
+                         'mac_roman', 'latin2']:
             try:
                 return str(chaine, encodage)
             except UnicodeError:

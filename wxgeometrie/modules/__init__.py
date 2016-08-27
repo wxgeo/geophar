@@ -28,7 +28,7 @@ from ..GUI.panel import Panel_simple, Panel_API_graphique
 from ..GUI.exercice import Exercice, ExerciceMenuBar
 from ..API.parametres import actualiser_module
 from .. import param
-from ..pylib import print_error, str2, path2
+from ..pylib import print_error, path2
 
 
 def importer_module(nom_module):

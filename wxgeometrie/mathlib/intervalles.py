@@ -29,7 +29,7 @@ from sympy import oo, sympify, S, Symbol
 from sympy.core.sympify import SympifyError
 import sympy
 
-from ..pylib import print_error, str2
+from ..pylib import print_error
 from .. import param
 from .parsers import _convertir_latex_frac
 from .printers import custom_str as str
@@ -551,13 +551,11 @@ def conversion_chaine_ensemble(chaine, utiliser_sympy = False):
             "Symbol": mySymbol,
             })
 
-    chaine = str2(chaine)
     if utiliser_sympy:
         try:
-            #print str2(chaine), dico
             return sympify(chaine, dico)
         except (SympifyError, TypeError) as e:
-            print("Warning: %s in %s." %(e, str2(chaine)))
+            print("Warning: %s in %s." %(e, chaine))
             print_error()
     return eval(chaine, dico, dico)
 
