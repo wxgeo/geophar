@@ -49,7 +49,7 @@ def _detecter_modules():
                     compile(nom + '=0', '', 'single') # On teste si le nom est valide
                     try:
                         d = {}
-                        run_path(description_file, d)
+                        d = run_path(description_file, d)
                         if d['description']['groupe'] != "Modules":
                             # Sert à désactiver les modules en construction.
                             continue
