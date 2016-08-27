@@ -212,8 +212,7 @@ class Dictionnaire_objets(dict):
     les inscrire dans `_noms_interdits`.
     """
 
-    __slots__ = ('feuille', '__timestamp', '__renommer_au_besoin', '__tmp_dict',
-                 '_noms_restreints', '_noms_interdits', '_suppression_impossible')
+    __slots__ = ('feuille', '__timestamp', '__renommer_au_besoin', '__tmp_dict')
 
     _noms_restreints = {re.compile('f[0-9]+(_prime)*$'): Fonction, 'xmin': XMinVar,
                       'xmax': XMaxVar, 'ymin': YMinVar, 'ymax': YMaxVar, 'dpx': Dpx,
