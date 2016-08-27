@@ -1,8 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
-from __future__ import print_function
-from __future__ import absolute_import
-from __future__ import unicode_literals
 
 #    WxGeometrie
 #    Dynamic geometry, graph plotter, and more for french mathematic teachers.
@@ -109,7 +105,7 @@ for _obj in vars().values():
     if isinstance(_obj, type) and issubclass(_obj, Objet):
         prefixe = "_" + _obj.__name__ + "__"
         _noms_arguments = []
-        for key, value in vars(_obj).iteritems():
+        for key, value in vars(_obj).items():
             if isinstance(value, BaseArgument) and key.startswith(prefixe):
                 # Chaque argument récupère son nom...
                 value.nom = key

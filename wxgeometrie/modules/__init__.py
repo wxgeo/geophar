@@ -1,8 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
-from __future__ import print_function
-from __future__ import absolute_import
-from __future__ import unicode_literals
 
 ##########################################
 #            Modules
@@ -36,7 +32,7 @@ from ..pylib import print_error, str2, path2
 
 
 def importer_module(nom_module):
-    u"Retourne le module si l'import a réussi, None sinon."
+    "Retourne le module si l'import a réussi, None sinon."
     if param.verbose:
         print("Import du module '%s'..." %nom_module)
     try:
@@ -48,25 +44,25 @@ def importer_module(nom_module):
 
         module._nom_ = module.__name__.split('.')[-1]
 
-        menus = [cls for cls in module.__dict__.itervalues() if isinstance(cls, type)
+        menus = [cls for cls in module.__dict__.values() if isinstance(cls, type)
                  and issubclass(cls, MenuBar) and cls not in (MenuBar, ExerciceMenuBar)]
         if len(menus) > 1 and param.debug:
             ##print menus
-            raise IndexError(u"Plusieurs classes héritent de MenuBar dans le module %s: " %nom_module
+            raise IndexError("Plusieurs classes héritent de MenuBar dans le module %s: " %nom_module
                                    + ', '.join(m.__name__ for m in menus))
         if len(menus) == 0 and param.debug:
-            raise IndexError(u"Aucune classe n'hérite de MenuBar dans le module %s." %nom_module)
+            raise IndexError("Aucune classe n'hérite de MenuBar dans le module %s." %nom_module)
         module._menu_ = menus[0]
 
 
-        panels = [cls for cls in module.__dict__.itervalues() if isinstance(cls, type)
+        panels = [cls for cls in module.__dict__.values() if isinstance(cls, type)
                   and issubclass(cls, Panel_simple) and cls not in (Panel_simple, Panel_API_graphique, Exercice)]
         if len(panels) > 1 and param.debug:
             ##print panels
-            raise IndexError(u"Plusieurs classes héritent de Panel_simple dans le module %s: " %nom_module
+            raise IndexError("Plusieurs classes héritent de Panel_simple dans le module %s: " %nom_module
                                 + ', '.join(p.__name__ for p in panels))
         if len(panels) == 0 and param.debug:
-            raise IndexError(u"Aucune classe n'hérite de Panel_simple dans le module %s." %nom_module)
+            raise IndexError("Aucune classe n'hérite de Panel_simple dans le module %s." %nom_module)
         panel = module._panel_ = panels[0]
         try:
             param_pth = 'wxgeometrie.modules.%s._param_' %nom_module
@@ -84,21 +80,21 @@ def importer_module(nom_module):
                     # (en cas de changement de version de wxgéométrie par exemple)
                     # cela concerne en particulier les dictionnaires, qui peuvent gagner de nouvelles clés.
                     for dicname in param.a_mettre_a_jour:
-                        for key, val in a_verifier[dicname].iteritems():
+                        for key, val in a_verifier[dicname].items():
                             if hasattr(panel._param_, dicname):
                                 # (pour l'instant) param.a_mettre_a_jour s'applique à tout wxgéométrie,
                                 # mais tous les paramètres ne concernent pas tous les modules.
                                 getattr(panel._param_, dicname).setdefault(key, val)
                 except:
-                    print_error(u"\n\nImpossible d'actualiser les préférences du module '%s'" %nom_module)
+                    print_error("\n\nImpossible d'actualiser les préférences du module '%s'" %nom_module)
 
         except ImportError:
-            print_error(u"\n\nImpossible d'importer les paramètres du module '%s'" %nom_module)
+            print_error("\n\nImpossible d'importer les paramètres du module '%s'" %nom_module)
         except:
-            print_error(u"\n\nImpossible d'importer les paramètres du module '%s'" %nom_module)
+            print_error("\n\nImpossible d'importer les paramètres du module '%s'" %nom_module)
 
     except:
-        print_error(u"\nError: Impossible d'importer le module '%s'" %nom_module)
+        print_error("\nError: Impossible d'importer le module '%s'" %nom_module)
         # On désactive les modules non chargés.
         param.modules_actifs[nom_module] = False
     else:

@@ -1,8 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
-from __future__ import print_function
-from __future__ import absolute_import
-from __future__ import unicode_literals
 
 from math import sqrt, sin, cos
 from random import random
@@ -145,7 +141,7 @@ def test_Disque():
     assert(Point(-500, -500) not in d)
 
 def test_equation_formatee():
-    assert Cercle((10, 0), (1, 5)).equation_formatee == u'x\xb2 + y\xb2 - 20 x - 6 = 0'
+    assert Cercle((10, 0), (1, 5)).equation_formatee == 'x\xb2 + y\xb2 - 20 x - 6 = 0'
 
 def test_Rayon():
     c = Cercle((1, 1), (4, 5))

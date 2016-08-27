@@ -1,8 +1,8 @@
 """py.test hacks to support XFAIL/XPASS"""
-from __future__ import print_function
-from __future__ import division
-from __future__ import absolute_import
-from __future__ import unicode_literals
+
+
+
+
 
 # XXX this should be integrated into py.test
 # XXX but we can't force everyone to install py-lib trunk

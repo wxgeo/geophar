@@ -1,8 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
-from __future__ import print_function
-from __future__ import absolute_import
-from __future__ import unicode_literals
 
 ##--------------------------------------##
 #              WxGeometrie               #
@@ -40,7 +36,7 @@ from ...mathlib.parsers import VAR
 from ... import param
 
 def _auto_tabsign(chaine, cellspace=False, decimales=3, approche=False):
-    u"""Génère le code du tableau de signe à partir d'une expression à variable réelle.
+    """Génère le code du tableau de signe à partir d'une expression à variable réelle.
 
     On suppose que l'expression est continue sur tout intervalle de son
     ensemble de définition.
@@ -168,7 +164,7 @@ def _auto_tabsign(chaine, cellspace=False, decimales=3, approche=False):
 
 
 def _augmenter(val):
-    u"""Retourne une valeur numérique *légèrement* supérieure à la valeur rentrée.
+    """Retourne une valeur numérique *légèrement* supérieure à la valeur rentrée.
 
     La valeur retournée est aussi proche que possible de la valeur rentrée, tout
     en s'assurant que _augmenter(val)>val.
@@ -184,7 +180,7 @@ def _augmenter(val):
 
 
 def tabsign(chaine = '', cellspace=False, decimales=3, approche=False):
-    u"""Indiquer ligne par ligne le signe de chaque facteur.
+    """Indiquer ligne par ligne le signe de chaque facteur.
 La dernière ligne (produit ou quotient) est générée automatiquement.
 
 Exemples:
@@ -392,7 +388,7 @@ Le point d'exclamation avant une expression signifie qu'elle correspond à un d�
         lignes[i] = ligne.ljust(n)
 
     def latex_signe(val, co, li):
-        u"Retourne le signe à afficher dans le tableau, selon la valeur (et la colonne)."
+        "Retourne le signe à afficher dans le tableau, selon la valeur (et la colonne)."
         if val == nan:
             return '\\geopharDB{%s}' % titres[li]
         elif val > 0:
@@ -408,8 +404,8 @@ Le point d'exclamation avant une expression signifie qu'elle correspond à un d�
     # On génère maintenant le code LaTeX correspondant au tableau proprement dit.
     # On procède colonne par colonne.
     nbr_colonnes = 2*len(valeurs)
-    for co in xrange(1, nbr_colonnes):
-        colonne = ['' for i in xrange(len(donnees_expressions) + 2)]
+    for co in range(1, nbr_colonnes):
+        colonne = ['' for i in range(len(donnees_expressions) + 2)]
 
         signe = 1
         # (1 pour positif, -1 pour négatif, nan pour valeur interdite -> cf. latex_signe())
@@ -430,7 +426,7 @@ Le point d'exclamation avant une expression signifie qu'elle correspond à un d�
         # Autres lignes
         for li, donnees in enumerate(donnees_expressions):
             # À quel endroit de la ligne sommes-nous ? (3 cas)
-            valeurs_precedentes = [k for k, val in enumerate(donnees) if not isinstance(val, basestring) and val[0]<=valeur_num]
+            valeurs_precedentes = [k for k, val in enumerate(donnees) if not isinstance(val, str) and val[0]<=valeur_num]
             if valeurs_precedentes:
                 # position de la dernière valeur de la ligne
                 position = valeurs_precedentes[-1]

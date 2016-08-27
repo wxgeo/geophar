@@ -1,8 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
-from __future__ import print_function
-from __future__ import absolute_import
-from __future__ import unicode_literals
 
 #    WxGeometrie
 #    Dynamic geometry, graph plotter, and more for french mathematic teachers.
@@ -65,16 +61,16 @@ def tester_dependances():
     # Make sure I have the right Python version.
     version_python_supportee = True
     if sys.version_info[:2] < python_version_min:
-        print(u" ** Erreur fatale **")
-        print(NOMPROG + u" nécessite Python %d.%d au minimum." % python_version_min)
+        print(" ** Erreur fatale **")
+        print(NOMPROG + " nécessite Python %d.%d au minimum." % python_version_min)
         version_python_supportee = False
     elif sys.version_info[:2] > python_version_max:
-        print(u" ** Erreur fatale **")
-        print(NOMPROG + u" supporte Python %d.%d au maximum." % python_version_max)
+        print(" ** Erreur fatale **")
+        print(NOMPROG + " supporte Python %d.%d au maximum." % python_version_max)
         version_python_supportee = False
 
     if not version_python_supportee:
-        print(u"Python %d.%d détecté." % sys.version_info[:2])
+        print("Python %d.%d détecté." % sys.version_info[:2])
         sys.exit(-1)
 
     # Test for dependencies:
@@ -109,8 +105,8 @@ def tester_dependances():
             print('Unable to connect to dbus: %s' % str(e))
 
     if modules_manquants:
-        print(u'** Erreur fatale **\nLes modules suivants sont introuvables !')
-        print(u'MODULE(S) MANQUANT(S): %s.' % ', '.join(modules_manquants))
+        print('** Erreur fatale **\nLes modules suivants sont introuvables !')
+        print('MODULE(S) MANQUANT(S): %s.' % ', '.join(modules_manquants))
         sys.exit(-1)
 
 

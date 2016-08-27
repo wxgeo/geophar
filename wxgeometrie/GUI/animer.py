@@ -1,8 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
-from __future__ import print_function
-from __future__ import absolute_import
-from __future__ import unicode_literals
 
 ##--------------------------------------#######
 #                    Suites                   #
@@ -42,14 +38,14 @@ Objet.souffler = QCoreApplication.processEvents
 class DialogueAnimation(QDialog):
     def __init__(self, parent):
         QDialog.__init__(self, parent)
-        self.setWindowTitle(u"Créer une animation")
+        self.setWindowTitle("Créer une animation")
         self.parent = parent
         self.feuille_actuelle = self.parent.onglet_actuel.feuille_actuelle
 
         self.sizer = sizer = QVBoxLayout()
 
         terme = QHBoxLayout()
-        terme.addWidget(QLabel(u"Variable :"))
+        terme.addWidget(QLabel("Variable :"))
         self.var = var = QLineEdit()
         var.setMinimumWidth(50)
         var.setContextMenuPolicy(Qt.CustomContextMenu)
@@ -62,17 +58,17 @@ class DialogueAnimation(QDialog):
         ##sizer.addWidget(line)
 
         terme = QHBoxLayout()
-        terme.addWidget(QLabel(u"Début :"))
+        terme.addWidget(QLabel("Début :"))
         self.deb = QLineEdit()
         self.deb.setText("0")
         self.deb.setMinimumWidth(25)
         terme.addWidget(self.deb)
-        terme.addWidget(QLabel(u"Fin :"))
+        terme.addWidget(QLabel("Fin :"))
         self.fin = QLineEdit()
         self.fin.setText("1")
         self.fin.setMinimumWidth(25)
         terme.addWidget(self.fin)
-        terme.addWidget(QLabel(u"Pas :"))
+        terme.addWidget(QLabel("Pas :"))
         self.pas = QLineEdit()
         self.pas.setText("0.05")
         self.pas.setMinimumWidth(25)
@@ -80,7 +76,7 @@ class DialogueAnimation(QDialog):
         sizer.addLayout(terme)
 
         terme = QHBoxLayout()
-        terme.addWidget(QLabel(u"Période (s) :"))
+        terme.addWidget(QLabel("Période (s) :"))
         self.periode = QLineEdit()
         self.periode.setText("0.1")
         self.periode.setMinimumWidth(50)
@@ -92,10 +88,10 @@ class DialogueAnimation(QDialog):
         ##sizer.addWidget(line)
 
         boutons = QHBoxLayout()
-        self.btn_lancer = QPushButton(u"Animer", clicked=self.Animer)
+        self.btn_lancer = QPushButton("Animer", clicked=self.Animer)
         boutons.addWidget(self.btn_lancer)
         boutons.addStretch(1)
-        fermer = QPushButton(u"Fermer", clicked=self.close)
+        fermer = QPushButton("Fermer", clicked=self.close)
         boutons.addWidget(fermer)
         sizer.addLayout(boutons)
 
@@ -117,7 +113,7 @@ class DialogueAnimation(QDialog):
         self.btn_lancer.setText('Animer')
 
     def propositions(self):
-        u"Liste des noms de variables de la feuille actuelle."
+        "Liste des noms de variables de la feuille actuelle."
         self.var.setFocus()
         liste_objets = self.feuille_actuelle.objets.lister(False, type = Variable)
         liste_objets.sort(key=attrgetter('nom')) # ordre alphabétique

@@ -1,7 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division, absolute_import # 1/2 == .5 (par defaut, 1/2 == 0)
-from __future__ import print_function
-from __future__ import unicode_literals
 
 from math import pi, sin, cos, sqrt
 from random import random
@@ -177,8 +174,8 @@ def test_Polygone_regulier_centre():
     assert(p.centre is O)
     for Mi in p.sommets:
         assertAlmostEqual(Segment(O, Mi).longueur, Segment(O, M).longueur)
-    for i in xrange(10):
-        coeffs = tuple(random() for i in xrange(15))
+    for i in range(10):
+        coeffs = tuple(random() for i in range(15))
         G = Barycentre(*zip(p.sommets, coeffs))
         assert(G in p)
     # cas particuliers :
@@ -217,7 +214,7 @@ def test_Polygone_regulier():
     p = Polygone_regulier(O, M, 15)
     assert(len(p.cotes) == 15)
     assert(p.centre in Mediatrice(O, M))
-    for i in xrange(15):
+    for i in range(15):
         assertAlmostEqual(Segment(p.sommets[i%15], p.sommets[(i+1)%15]).longueur, Segment(p.sommets[(i+2)%15], p.sommets[(i+3)%15]).longueur)
     p = Polygone_regulier(O, M, 3)
     assert(isinstance(p,  Triangle))
@@ -264,7 +261,7 @@ def test_Triangle_isocele():
     a = Angle(B, A, C)
     assertAlmostEqual(a.radian, 2*pi/13)
     assertAlmostEqual(Segment(A, B).longueur, Segment(A, C).longueur)
-    t1 = Triangle_isocele((0, 0), (1, 1), u'90°')
+    t1 = Triangle_isocele((0, 0), (1, 1), '90°')
     assertAlmostEqual(t1.point3.xy, (-1, 1))
     t2 = Triangle_isocele((0, 0), (2, 0), pi/3)
     assertAlmostEqual(t2.point3.xy, (2*cos(pi/3), 2*sin(pi/3)))

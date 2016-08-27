@@ -1,8 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
-from __future__ import print_function
-from __future__ import absolute_import
-from __future__ import unicode_literals
 
 ##--------------------------------------##
 #              WxGeometrie               #
@@ -54,7 +50,7 @@ def traduire_latex(expression):
 
 
 def test_parentheses(chaine):
-    u"""Retourne True si le parenthésage est correct, False sinon.
+    """Retourne True si le parenthésage est correct, False sinon.
 
     Note: il s'agit d'un test rapide (on ne tient pas compte des guillemets, crochets...)"""
     count = 0

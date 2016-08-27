@@ -1,8 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
-from __future__ import print_function
-from __future__ import absolute_import
-from __future__ import unicode_literals
 
 ##--------------------------------------#######
 #                   Points                    #
@@ -48,7 +44,7 @@ from .. import param
 
 
 class Point_generique(Objet_avec_coordonnees):
-    u"""Un point générique.
+    """Un point générique.
 
     Usage interne : la classe mère pour tous les types de points (libres, barycentres, intersection...)."""
 
@@ -193,7 +189,7 @@ class Point_generique(Objet_avec_coordonnees):
 
 
 class Point(Objet_avec_coordonnees_modifiables, Point_generique):
-    u"""Un point libre.
+    """Un point libre.
 
     >>> from wxgeometrie.geolib import Point
     >>> A = Point(7, 3)
@@ -223,7 +219,7 @@ class Point(Objet_avec_coordonnees_modifiables, Point_generique):
             # Par contre, si l'objet sélectionné est un texte, il n'y a pas de
             # glisseur correspondant, donc on ne tient pas compte de l'objet
             # sélectionné, et on construit simplement un point 'normal'.
-            for type_objet, type_glisseur in cls._glisseurs.iteritems():
+            for type_objet, type_glisseur in cls._glisseurs.items():
                 if isinstance(args[0], getattr(geolib, type_objet)):
                     return getattr(geolib, type_glisseur)(*args, **kw)
         return object.__new__(cls)
@@ -266,7 +262,7 @@ class Point(Objet_avec_coordonnees_modifiables, Point_generique):
 
 
 class Point_pondere(Objet):
-    u"""Un point pondéré.
+    """Un point pondéré.
 
     Usage interne : les points pondérés sont utilisés dans la définition des barycentres."""
 
@@ -293,7 +289,7 @@ class Point_pondere(Objet):
 
 
 class Barycentre(Point_generique):
-    u"""Un barycentre.
+    """Un barycentre.
 
     Un barycentre de n points."""
 
@@ -308,7 +304,7 @@ class Barycentre(Point_generique):
 
 
     def _get_coordonnees(self):
-        u"Coordonnées du barycentre en fonction de celles des points."
+        "Coordonnées du barycentre en fonction de celles des points."
         total = self._cache.get('somme_coeff', self.__somme_coeffs)
         return sum(coeff*point.x for point, coeff in self.__points_ponderes)/total, \
                     sum(coeff*point.y for point, coeff in self.__points_ponderes)/total
@@ -327,7 +323,7 @@ class Barycentre(Point_generique):
 
 
 class Milieu(Barycentre):
-    u"""Un milieu.
+    """Un milieu.
 
     Le milieu de 2 points"""
 
@@ -349,7 +345,7 @@ class Milieu(Barycentre):
 
 
 class Point_final(Point_generique):
-    u"""Un point défini par une relation vectorielle.
+    """Un point défini par une relation vectorielle.
 
     Point défini par une relation vectorielle.
                               ->      ->     ->
@@ -395,7 +391,7 @@ class Point_final(Point_generique):
 
 
 class Point_translation(Point_generique):
-    u"""Une image d'un point par translation."""
+    """Une image d'un point par translation."""
 
     point = __point = Argument("Point_generique")
     translation = __translation = Argument("Translation")
@@ -412,7 +408,7 @@ class Point_translation(Point_generique):
 
 
 class Point_rotation(Point_generique):
-    u"""Une image d'un point par rotation.
+    """Une image d'un point par rotation.
 
     Point construit à partir d'un autre via une rotation d'angle et de centre donné."""
 
@@ -448,7 +444,7 @@ class Point_rotation(Point_generique):
 
 
 class Point_homothetie(Point_generique):
-    u"""Une image d'un point par homothétie.
+    """Une image d'un point par homothétie.
 
     Point construit à partir d'un autre via une homothétie de rapport et de centre donné."""
 
@@ -472,7 +468,7 @@ class Point_homothetie(Point_generique):
 
 
 class Point_reflexion(Point_generique):
-    u"""Une image d'un point par réflexion.
+    """Une image d'un point par réflexion.
 
     Point construit à partir d'un autre via une symétrie d'axe donné."""
 
@@ -505,7 +501,7 @@ class Point_reflexion(Point_generique):
 
 
 class Projete_generique(Point_generique):
-    u"""Un projeté générique.
+    """Un projeté générique.
 
     Classe mère des différents types de projetés orthogonaux (sur droite, sur cercle ou sur segment)."""
 
@@ -525,7 +521,7 @@ class Projete_generique(Point_generique):
 
 
 class Projete_droite(Projete_generique):
-    u"""Un projeté orthogonal sur une droite.
+    """Un projeté orthogonal sur une droite.
 
     Projeté orthogonal d'un point sur une droite."""
 
@@ -557,7 +553,7 @@ class Projete_droite(Projete_generique):
 
 
 class Projete_cercle(Projete_generique):
-    u"""Un projeté orthogonal sur un cercle.
+    """Un projeté orthogonal sur un cercle.
 
     Projeté orthogonal d'un point sur un cercle."""
 
@@ -591,7 +587,7 @@ class Projete_cercle(Projete_generique):
 
 
 class Projete_arc_cercle(Projete_generique):
-    u"""Un projeté orthogonal sur un arc de cercle.
+    """Un projeté orthogonal sur un arc de cercle.
 
     Projeté orthogonal d'un point sur un arc de cercle."""
 
@@ -641,7 +637,7 @@ class Projete_arc_cercle(Projete_generique):
 
 
 class Projete_segment(Projete_generique):
-    u"""Un projeté orthogonal sur un segment.
+    """Un projeté orthogonal sur un segment.
 
     Projeté orthogonal d'un point sur un segment."""
 
@@ -674,7 +670,7 @@ class Projete_segment(Projete_generique):
 
 
 class Projete_demidroite(Projete_generique):
-    u"""Un projeté orthogonal sur une demi-droite.
+    """Un projeté orthogonal sur une demi-droite.
 
     Projeté orthogonal d'un point sur une demi-droite."""
 
@@ -705,7 +701,7 @@ class Projete_demidroite(Projete_generique):
 
 
 class Centre_polygone_generique(Point_generique):
-    u"""Un centre d'un triangle.
+    """Un centre d'un triangle.
 
     Classe mère des différents centres d'un triangle."""
 
@@ -720,7 +716,7 @@ class Centre_polygone_generique(Point_generique):
 
 
 class Centre_gravite(Centre_polygone_generique):
-    u"""Un centre de gravité.
+    """Un centre de gravité.
 
     Centre de gravité d'un polygone (l'intersection des médianes dans le cas d'un triangle)."""
 
@@ -751,7 +747,7 @@ class Centre_gravite(Centre_polygone_generique):
 
 
 class Orthocentre(Centre_polygone_generique):
-    u"""Un orthocentre.
+    """Un orthocentre.
 
     Orthocentre d'un triangle (intersection des hauteurs)."""
 
@@ -774,7 +770,7 @@ class Orthocentre(Centre_polygone_generique):
 
 
 class Centre_cercle_circonscrit(Centre_polygone_generique):
-    u"""Un centre du cercle circonscrit.
+    """Un centre du cercle circonscrit.
 
     Centre du cercle circonscrit d'un triangle (intersection des médiatrices)."""
 
@@ -797,7 +793,7 @@ class Centre_cercle_circonscrit(Centre_polygone_generique):
 
 
 class Centre_cercle_inscrit(Centre_polygone_generique):
-    u"""Un centre du cercle inscrit.
+    """Un centre du cercle inscrit.
 
     Centre du cercle inscrit d'un triangle (intersection des bissectrices)."""
 
@@ -820,7 +816,7 @@ class Centre_cercle_inscrit(Centre_polygone_generique):
 
 
 class Centre(Point_generique):
-    u"""Un centre de cercle."""
+    """Un centre de cercle."""
 
     _prefixe_nom = "O"
 
@@ -849,7 +845,7 @@ class Centre(Point_generique):
 
 
 class Point_equidistant(Point_generique):
-    u"""Point équidistant de 3 points.
+    """Point équidistant de 3 points.
 
     Utilisé surtout pour un usage interne, le calcul des coordonnées est plus rapide qu'en passant par les médiatrices."""
 
@@ -907,7 +903,7 @@ class Point_equidistant(Point_generique):
 
 
 class Glisseur_generique(Point_generique):
-    u"""Un glisseur générique.
+    """Un glisseur générique.
 
     Classe mère des différents types de glisseurs"""
 
@@ -932,7 +928,7 @@ class Glisseur_generique(Point_generique):
 
 
 class Glisseur_vecteur(Glisseur_generique):
-    u"""Un glisseur sur vecteur."""
+    """Un glisseur sur vecteur."""
 
     vecteur = __vecteur = Argument("Vecteur")
     parametre = k = __k = Argument("Variable_generique", None, lambda obj, value: max(min(value, 1), 0))
@@ -957,7 +953,7 @@ class Glisseur_vecteur(Glisseur_generique):
 
 
 class Glisseur_ligne_generique(Glisseur_generique):
-    u"""Un glisseur générique sur ligne.
+    """Un glisseur générique sur ligne.
 
     Classe mère des différents types de glisseurs sur ligne (ie. droite, segment, demi-droite)"""
 
@@ -980,7 +976,7 @@ class Glisseur_ligne_generique(Glisseur_generique):
 
 
 class Glisseur_droite(Glisseur_ligne_generique):
-    u"""Un point sur une droite.
+    """Un point sur une droite.
 
     Point pouvant 'glisser' sur une droite. k est un coefficient barycentrique.
     Si A et B sont les deux points de référence de la droite, k le coefficient,
@@ -1005,7 +1001,7 @@ class Glisseur_droite(Glisseur_ligne_generique):
 
 
 class Glisseur_segment(Glisseur_ligne_generique):
-    u"""Un point sur un segment.
+    """Un point sur un segment.
 
     Point pouvant 'glisser' sur un segment. k est un coefficient barycentrique.
     Si A et B sont les deux points de référence de la droite, k le coefficient,
@@ -1030,7 +1026,7 @@ class Glisseur_segment(Glisseur_ligne_generique):
 
 
 class Glisseur_demidroite(Glisseur_ligne_generique):
-    u"""Un point sur une demi-droite.
+    """Un point sur une demi-droite.
 
     Point pouvant 'glisser' sur un segment. k est un coefficient barycentrique.
     Si A et B sont les deux points de référence de la droite, k le coefficient,
@@ -1055,7 +1051,7 @@ class Glisseur_demidroite(Glisseur_ligne_generique):
 
 
 class Glisseur_cercle(Glisseur_generique):
-    u"""Un point sur un cercle.
+    """Un point sur un cercle.
 
     Point pouvant 'glisser' sur un cercle. k est un angle.
     Si O et r sont les centres et rayons du cercle, k l'angle,
@@ -1095,7 +1091,7 @@ class Glisseur_cercle(Glisseur_generique):
 
 
 class Glisseur_arc_cercle(Glisseur_generique):
-    u"""Un point sur un arc de cercle.
+    """Un point sur un arc de cercle.
 
     Point pouvant 'glisser' sur un cercle. k est un angle.
     Si O et r sont les centres et rayons de l'arc, k un coefficient compris entre 0 et 1,
@@ -1156,7 +1152,7 @@ class Glisseur_arc_cercle(Glisseur_generique):
 
 
 class Glisseur_courbe(Glisseur_generique):
-    u"""Un point sur une courbe.
+    """Un point sur une courbe.
 
     Point pouvant 'glisser' sur une courbe d'interpolation ou de fonction::
 
@@ -1172,7 +1168,7 @@ class Glisseur_courbe(Glisseur_generique):
     """
 
     def _set_x(self, val):
-        u"L'abscisse du glisseur est entre les abscisses extrêmes de la courbe."
+        "L'abscisse du glisseur est entre les abscisses extrêmes de la courbe."
         return max(min(val, self.courbe.xmax), self.courbe.xmin)
 
     courbe = __courbe = Argument("Interpolation_polynomiale_par_morceaux, Courbe")
@@ -1195,7 +1191,7 @@ class Glisseur_courbe(Glisseur_generique):
 
 
 class Point_interpolation(Point_generique):
-    u"""Un point avec une pente associée.
+    """Un point avec une pente associée.
 
     Usage interne : les points d'interpolation sont utilisés pour la construction
     des courbes d'interpolation."""
@@ -1224,7 +1220,7 @@ class Point_interpolation(Point_generique):
 
 
 class Nuage_generique(Objet):
-    u"""Un nuage de points generique.
+    """Un nuage de points generique.
 
     Usage interne : la classe mère de tous les nuages de points."""
 
@@ -1250,7 +1246,7 @@ class Nuage_generique(Objet):
 
 
 class Nuage(Nuage_generique):
-    u"""Un nuage de points.
+    """Un nuage de points.
 
     Le nuage est défini par la donnée de ses points.
     """
@@ -1275,7 +1271,7 @@ class Nuage(Nuage_generique):
 
 
 class NuageFonction(Nuage_generique):
-    u"""Un nuage de points de coordonnées (x; f(x)).
+    """Un nuage de points de coordonnées (x; f(x)).
 
     Le nuage est défini par la donnée de la fonction f,
     et d'une liste d'abscisses.

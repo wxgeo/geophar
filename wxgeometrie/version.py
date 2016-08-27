@@ -1,10 +1,6 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
-from __future__ import print_function
-from __future__ import absolute_import
-from __future__ import unicode_literals
 
-NOMPROG = u"Géophar"
+NOMPROG = "Géophar"
 NOMPROG2 = 'Geophar' # sans accent
 
 # Numéro de version (et date de sa sortie)

@@ -11,10 +11,6 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
-from __future__ import print_function
-from __future__ import division
-from __future__ import absolute_import
-from __future__ import unicode_literals
 import sys, os
 
 # If extensions (or modules to document with autodoc) are in another directory,
@@ -46,8 +42,8 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'Geophar'
-copyright = u'2005-2012, N.Pourcelot'
+project = 'Geophar'
+copyright = '2005-2012, N.Pourcelot'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -182,8 +178,8 @@ htmlhelp_basename = 'Geophardoc'
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'Geophar.tex', u'Geophar Documentation',
-   u'N.Pourcelot', 'manual'),
+  ('index', 'Geophar.tex', 'Geophar Documentation',
+   'N.Pourcelot', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of

@@ -1,9 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
-from __future__ import with_statement
-from __future__ import print_function
-from __future__ import absolute_import
-from __future__ import unicode_literals
 
 import re
 from math import cos, pi, e, sqrt
@@ -23,7 +18,7 @@ from wxgeometrie.geolib.feuille import parse_equation, is_equation
 
 
 def test_abreviations():
-    f = Feuille(titre = u"Feuille de travail n°1")
+    f = Feuille(titre = "Feuille de travail n°1")
     o = f.objets
 
     assert("Point" in o)
@@ -36,9 +31,9 @@ def test_abreviations():
     o.txt = ["salut"]
     assert(isinstance(o.txt, Texte))
     assert(o.txt.texte == "salut")
-    o.s = [u"Hé, ça marche !"]
+    o.s = ["Hé, ça marche !"]
     assert(isinstance(o.s, Texte))
-    assert(o.s.texte == u"Hé, ça marche !")
+    assert(o.s.texte == "Hé, ça marche !")
 
     o.A = (1, 2)
     o.k = 7
@@ -61,12 +56,12 @@ def test_abreviations():
     assert(o.C.z == 2-3j)
     o.C.x = "A.x"
     #print 'o.C.x.val:', o.C.x.val, type(o.C.x.val)
-    assert(isinstance(o.C.x.val, (float, int, long)))
+    assert(isinstance(o.C.x.val, (float, int)))
     assert(o.C.x == o.A.x)
     o.A.coordonnees = -11, 3
     assert(o.C.coordonnees[0] == -11)
     o.B.x = "A.x + 1"
-    assert(isinstance(o.B.x.val, (float, int, long)))
+    assert(isinstance(o.B.x.val, (float, int)))
     assert(o.B.x == o.A.x + 1)
     o.A.coordonnees = 30, -5
     assert(o.B.coordonnees[0] == 31)
@@ -182,9 +177,9 @@ def test_acces_objets():
     o.A_prime = (7, -1.5)
     assert(o["A`"] is o.A_prime)
     exec("b=Vecteur_libre()", o)
-    assert("b" in o.keys())
+    assert("b" in o)
     exec("del b", o)
-    assert("b" not in o.keys())
+    assert("b" not in keys)
 
 
 def test_noms_latex():
@@ -235,21 +230,21 @@ def test_info():
     o = f.objets
     with contexte(decimales = 2):
         A = o.A = Point(5, 7)
-        assert(A.info == u"Point A de coordonnées (5 ; 7)")
+        assert(A.info == "Point A de coordonnées (5 ; 7)")
         B = o.B = Point(6.5, 9.3)
-        assert(B.info == u"Point B de coordonnées (6,5 ; 9,3)")
+        assert(B.info == "Point B de coordonnées (6,5 ; 9,3)")
         s = o.s = Segment(A, B)
-        assert(s.info == u"Segment s de longueur 2,75")
+        assert(s.info == "Segment s de longueur 2,75")
         c = o.c = Cercle(s)
-        assert(c.info == u"Cercle c de rayon 1,37")
+        assert(c.info == "Cercle c de rayon 1,37")
         d = o.d = Droite(A, B)
-        assert(d.info == u"Droite d d'équation -2,3 x + 1,5 y + 1 = 0")
+        assert(d.info == "Droite d d'équation -2,3 x + 1,5 y + 1 = 0")
         C = o.C = Point(-1.5, 2.7)
         a = o.a = Arc_cercle(A, B, C)
-        assert(a.info == u'Arc a de longueur 7,5')
+        assert(a.info == 'Arc a de longueur 7,5')
         alpha = o.alpha = Angle(A, B, C)
-        assertEqual(alpha.info, u'Angle alpha de valeur 0,3 rad')
+        assertEqual(alpha.info, 'Angle alpha de valeur 0,3 rad')
     with contexte(decimales = 3):
-        assert(a.info == u'Arc a de longueur 7,505')
+        assert(a.info == 'Arc a de longueur 7,505')
 
 

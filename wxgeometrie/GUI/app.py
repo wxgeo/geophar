@@ -1,8 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
-from __future__ import print_function
-from __future__ import absolute_import
-from __future__ import unicode_literals
 
 ##--------------------------------------##
 #              WxGeometrie               #
@@ -36,7 +32,7 @@ class App(QApplication):
     # afin qu'on puisse facilement la retrouver.
     fenetre_principale = None
 
-    _print_signal = pyqtSignal(basestring)
+    _print_signal = pyqtSignal(str)
 
     def __init__(self, args=[], **kw):
         QApplication.__init__(self, args)
@@ -64,7 +60,7 @@ class App(QApplication):
         return True
 
     def safe_print(self, texte):
-        u"""Thread-safe print().
+        """Thread-safe print().
 
         En dehors de la thread principale, il faut impérativement utiliser
         cette méthode au lieu de `print()` (notamment parce que print()
@@ -73,7 +69,7 @@ class App(QApplication):
         self._print_signal.emit(texte)
 
     def safe_print_error(self):
-        u"""Thread-safe print_error().
+        """Thread-safe print_error().
 
         En dehors de la thread principale, il faut impérativement utiliser
         cette méthode au lieu de `print_error()`.
@@ -93,7 +89,7 @@ white_palette.setColor(QPalette.Window, white)
 white_palette.setColor(QPalette.AlternateBase, white)
 
 def splash(path):
-    u"Create and display the splash screen. Credits: Eli Bendersky (eliben@gmail.com)"
+    "Create and display the splash screen. Credits: Eli Bendersky (eliben@gmail.com)"
     splash_pix = QPixmap(path)
     splash = QSplashScreen(splash_pix, Qt.WindowStaysOnTopHint)
     ##splash.setAttribute(Qt.WA_TranslucentBackground)

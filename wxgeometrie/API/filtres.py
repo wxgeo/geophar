@@ -1,8 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
-from __future__ import print_function
-from __future__ import absolute_import
-from __future__ import unicode_literals
 
 ##--------------------------------------#######
 #                    Filtres                    #
@@ -25,7 +21,7 @@ from __future__ import unicode_literals
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-__doc__ = u"""Gère l'import de fichiers de versions antérieures de WxGéométrie.
+__doc__ = """Gère l'import de fichiers de versions antérieures de WxGéométrie.
 
 À terme, on devrait aussi pouvoir importer ou exporter des fichiers Géogébra par exemple.
 """
@@ -43,7 +39,7 @@ def filtre_versions_anterieures(fgeo, version):
 
     if "Figure" in fgeo.contenu:
         figures = fgeo.contenu["Figure"]
-        for i in xrange(len(figures)):
+        for i in range(len(figures)):
             # 0.106
             if version < [0, 106]:
                 figures[i] = figures[i].replace("'label': None, ", "'label': '', 'legende': 1, ")
@@ -51,10 +47,10 @@ def filtre_versions_anterieures(fgeo, version):
             # 0.108
             if version < [0, 108]:
                 lignes = figures[i].split("\n")
-                reg = re.compile(u"[A-Za-z_][A-Za-z_0-9]*[=](Point|Intersection|Glisseur|Projete|Barycentre|Milieu|Centre|Orthocentre)")
+                reg = re.compile("[A-Za-z_][A-Za-z_0-9]*[=](Point|Intersection|Glisseur|Projete|Barycentre|Milieu|Centre|Orthocentre)")
                 for j in range(len(lignes)):
                     if not re.match(reg, lignes[j]):
-                        lignes[j] = lignes[j].replace(u"'legende': 1", u"'legende': 2")
+                        lignes[j] = lignes[j].replace("'legende': 1", "'legende': 2")
                 figures[i] = "\n".join(lignes)
 
             # 0.120 alpha 1
@@ -117,7 +113,7 @@ def filtre_versions_anterieures(fgeo, version):
             # t, x, y sont maintenant des noms réservés pour un usage futur.
             if version < [0, 120, -2, 6]:
                 lignes = figures[i].split("\n")
-                for num_ligne in xrange(len(lignes)):
+                for num_ligne in range(len(lignes)):
                     if len(lignes[num_ligne]) > 1 and lignes[num_ligne][0] in "txy" and lignes[num_ligne][1] in "=.":
                         lignes[num_ligne] = "Objet_" + lignes[num_ligne]
                 figures[i] = "\n".join(lignes)

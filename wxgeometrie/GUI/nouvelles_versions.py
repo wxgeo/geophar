@@ -1,8 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
-from __future__ import print_function
-from __future__ import absolute_import
-from __future__ import unicode_literals
 
 #    WxGeometrie
 #    Dynamic geometry, graph plotter, and more for french mathematic teachers.
@@ -24,7 +20,7 @@ from __future__ import unicode_literals
 
 
 import webbrowser
-from urllib2 import urlopen
+from urllib.request import urlopen
 
 from PyQt4.QtCore import QObject, pyqtSignal
 from PyQt4.QtGui import QMessageBox
@@ -45,29 +41,29 @@ class Gestionnaire_mises_a_jour(QObject):
         self.derniere_version = None
         self.sent.connect(self.termine)
 
-    sent = pyqtSignal(bool, bool, unicode, unicode)
+    sent = pyqtSignal(bool, bool, str, str)
 
 
     def termine(self, success, update, version, msg):
         if success:
             if update:
                 self.derniere_version = version
-                QMessageBox.information(self.parent, u"Une mise à jour a été trouvée.",
-                        (u"La version %s de %s est sortie.\n"
-                        u"Vous allez être redirigé vers la page de téléchargement.")
+                QMessageBox.information(self.parent, "Une mise à jour a été trouvée.",
+                        ("La version %s de %s est sortie.\n"
+                        "Vous allez être redirigé vers la page de téléchargement.")
                         % (version, param.NOMPROG))
                 webbrowser.open(self.url_telechargement)
             else:
-                QMessageBox.information(self.parent, u"Aucune mise à jour trouvée.",
-                        u"Aucune mise à jour n'est disponible actuellement.<br>"
-                        u"Consultez <a href='http://wxgeo.free.fr/wordpress/'>"
-                        u"http://wxgeo.free.fr</a> pour plus d'informations.")
+                QMessageBox.information(self.parent, "Aucune mise à jour trouvée.",
+                        "Aucune mise à jour n'est disponible actuellement.<br>"
+                        "Consultez <a href='http://wxgeo.free.fr/wordpress/'>"
+                        "http://wxgeo.free.fr</a> pour plus d'informations.")
         else:
-            print(u'Connexion impossible à ' + self.url_version + ' : ' + msg)
-            QMessageBox.warning(self.parent, u"Connexion impossible",
-                    u"Impossible de vérifier si une nouvelle version existe.<br>"
-                    u"Consultez <a href='http://wxgeo.free.fr/wordpress/'>"
-                    u"http://wxgeo.free.fr</a> pour plus d'informations.")
+            print('Connexion impossible à ' + self.url_version + ' : ' + msg)
+            QMessageBox.warning(self.parent, "Connexion impossible",
+                    "Impossible de vérifier si une nouvelle version existe.<br>"
+                    "Consultez <a href='http://wxgeo.free.fr/wordpress/'>"
+                    "http://wxgeo.free.fr</a> pour plus d'informations.")
 
 
     def verifier_version(self, event=None):
@@ -81,7 +77,7 @@ class Gestionnaire_mises_a_jour(QObject):
         version = '?'
         success = False
         update = False
-        msg = u'Unknown error.'
+        msg = 'Unknown error.'
         try:
             if param.debug:
                 app.safe_print("Checking %s..." % self.url_version)

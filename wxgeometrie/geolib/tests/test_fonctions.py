@@ -1,8 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
-from __future__ import print_function
-from __future__ import absolute_import
-from __future__ import unicode_literals
 
 from pytest import XFAIL
 
@@ -14,7 +10,7 @@ _VAL0 = -5.156557933
 
 @XFAIL
 def test_Fonction():
-    u"Test sans feuille."
+    "Test sans feuille."
     g = Fonction('2x+7')
     assert g(17) == 41
     # La fonction n'est compilée que s'il y a une feuille.

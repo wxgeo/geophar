@@ -1,8 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
-from __future__ import print_function
-from __future__ import absolute_import
-from __future__ import unicode_literals
 
 import os, math
 
@@ -29,7 +25,7 @@ def test_sympy():
     assert solve(-(1 + x)/(2 + x)**2 + 1/(2 + x), x) == [] # issue 1694
     assert limit(1 + 1/x, x, 0, dir='-') == -oo
     assert limit(1/x**2, x, 0, dir='-') == oo
-    assert sympify(u'45') == 45 # issue 2508
+    assert sympify('45') == 45 # issue 2508
     assertEqual(solve((2*x + 8)*exp(-6*x), x), [-4]) # issue 10391 (FS#319)
 
 

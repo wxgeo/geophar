@@ -1,11 +1,7 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
-from __future__ import print_function
-from __future__ import absolute_import
-from __future__ import unicode_literals
 
 ##--------------------------------------#######
-#                   Objets                    #
+#                   Lignes                    #
 ##--------------------------------------#######
 #    WxGeometrie
 #    Dynamic geometry, graph plotter, and more for french mathematic teachers.
@@ -56,7 +52,7 @@ from sympy import Rational
 
 
 class Ligne_generique(Objet_avec_equation):
-    u"""Une ligne générique.
+    """Une ligne générique.
 
     Usage interne : la classe mère pour les droites, segments, demi-droites."""
 
@@ -84,7 +80,7 @@ class Ligne_generique(Objet_avec_equation):
 
 
     def _get_equation(self):
-        u"Retourne un triplet (a, b, c), tel que ax + by + c = 0 soit une équation de droite de la ligne."
+        "Retourne un triplet (a, b, c), tel que ax + by + c = 0 soit une équation de droite de la ligne."
         xA, yA = self.__point1.coordonnees
         xB, yB = self.__point2.coordonnees
         a, b, c = yA - yB, xB - xA, xA*yB - yA*xB
@@ -96,7 +92,7 @@ class Ligne_generique(Objet_avec_equation):
 
     @property
     def equation_reduite(self):
-        u"""Retourne (a, b) si la droite a une équation de la forme y=ax+b ; et (c,) si la droite a une équation de la forme x=c.
+        """Retourne (a, b) si la droite a une équation de la forme y=ax+b ; et (c,) si la droite a une équation de la forme x=c.
 
         Ceci permet de comparer facilement deux droites, ce qui n'est pas le cas avec la propriété .équation (puisqu'une droite a une infinité d'équations) : si d1._equation_reduite() ~ d2._equation_reduite, d1 et d2 sont (à peu près) confondues.
         """
@@ -110,7 +106,7 @@ class Ligne_generique(Objet_avec_equation):
             return (-c/a, )
 
     def _parallele(self, ligne):
-        u"Indique si la ligne est parallèle à une autre ligne."
+        "Indique si la ligne est parallèle à une autre ligne."
         if not isinstance(ligne, Ligne_generique):
             raise TypeError("L'objet doit etre une ligne.")
         a, b, c = self.equation
@@ -118,7 +114,7 @@ class Ligne_generique(Objet_avec_equation):
         return abs(a*b0 - b*a0) < contexte['tolerance']
 
     def _perpendiculaire(self, ligne):
-        u"Indique si la ligne est perpendiculaire à une autre ligne."
+        "Indique si la ligne est perpendiculaire à une autre ligne."
         if not isinstance(ligne, Ligne_generique):
             raise TypeError("L'objet doit etre une ligne.")
         a, b, c = self.equation
@@ -130,7 +126,7 @@ class Ligne_generique(Objet_avec_equation):
 
 
     def _creer_nom_latex(self):
-        u"""Crée le nom formaté en LaTeX. Ex: M1 -> $M_1$."""
+        """Crée le nom formaté en LaTeX. Ex: M1 -> $M_1$."""
         Objet._creer_nom_latex(self)
         nom = self.nom_latex[1:-1]
         if re.match("(" + RE_NOM_DE_POINT + "){2}",  nom):
@@ -140,7 +136,7 @@ class Ligne_generique(Objet_avec_equation):
             self.nom_latex = "$" + nom + "$"
 
     def xy(self, x = None, y = None):
-        u"""Retourne les coordonnées du point de la droite d'abscisse ou d'ordonnée donnée.
+        """Retourne les coordonnées du point de la droite d'abscisse ou d'ordonnée donnée.
 
         x ou y doivent être définis, mais bien sûr pas les deux.
 
@@ -173,7 +169,7 @@ class Ligne_generique(Objet_avec_equation):
         return (x2 - x1)/(y2 - y1) if (y2 - y1) else inf
 
     def _points_extremes(self):
-        u"""Donne les points d'intersection de la droite avec les bords de la fenêtre.
+        """Donne les points d'intersection de la droite avec les bords de la fenêtre.
 
         Retourne une liste de deux points au maximum.
         """
@@ -213,7 +209,7 @@ class Ligne_generique(Objet_avec_equation):
             return points
 
     def angle_affichage(self):
-        u"Angle, à l'écran, de la ligne par rapport l'horizontale, en radians."
+        "Angle, à l'écran, de la ligne par rapport l'horizontale, en radians."
         x1, y1 = self.__point1.coordonnees
         x2, y2 = self.__point2.coordonnees
         dx, dy = self.feuille.dcoo2pix(x2 - x1, y2 - y1)
@@ -222,7 +218,7 @@ class Ligne_generique(Objet_avec_equation):
 
 
 class Segment(Ligne_generique):
-    u"""Un segment.
+    """Un segment.
 
     Un segment défini par deux points"""
 
@@ -299,7 +295,7 @@ class Segment(Ligne_generique):
 
     @property
     def longueur(self):
-        u"""Longueur du segment.
+        """Longueur du segment.
 
         Alias de _longueur, disponible pour indiquer que l'objet a vraiment une longueur
         au sens mathématique du terme (pas comme une droite !)"""
@@ -311,7 +307,7 @@ class Segment(Ligne_generique):
 
     @property
     def info(self):
-        return self.nom_complet + u' de longueur ' + nice_display(self.longueur)
+        return self.nom_complet + ' de longueur ' + nice_display(self.longueur)
 
     @staticmethod
     def _convertir(objet):
@@ -322,7 +318,7 @@ class Segment(Ligne_generique):
 
 
 class Demidroite(Ligne_generique):
-    u"""Une demi-droite.
+    """Une demi-droite.
 
     Une demi-droite définie par son origine et un deuxième point"""
 
@@ -406,10 +402,10 @@ class Demidroite(Ligne_generique):
 
     @property
     def equation_formatee(self):
-        u"Equation sous forme lisible par l'utilisateur."
+        "Equation sous forme lisible par l'utilisateur."
         eq = self.equation
         if eq is None:
-            return u"L'objet n'est pas défini."
+            return "L'objet n'est pas défini."
         # on ne garde que quelques chiffres après la virgule
         a, b, c = (nice_display(coeff) for coeff in eq)
         eps = contexte['tolerance']
@@ -419,14 +415,14 @@ class Demidroite(Ligne_generique):
             elif (self.__point.ordonnee - self.__origine.ordonnee) < eps:
                 ajout = "y < " + nice_display(self.__origine.ordonnee)
             else:
-                return u"Précision insuffisante."
+                return "Précision insuffisante."
         else: # droite plutôt verticale
             if (self.__point.abscisse - self.__origine.abscisse) > eps:
                 ajout = "x > " + nice_display(self.__origine.abscisse)
             elif (self.__point.abscisse - self.__origine.abscisse) < eps:
                 ajout = "x < " + nice_display(self.__origine.abscisse)
             else:
-                return u"Précision insuffisante."
+                return "Précision insuffisante."
         return formatage("%s x + %s y + %s = 0 et %s" %(a, b, c, ajout))
 
 
@@ -438,7 +434,7 @@ class Demidroite(Ligne_generique):
 
 
 class Droite_generique(Ligne_generique):
-    u"""Une droite générique.
+    """Une droite générique.
 
     Usage interne : la classe mère pour toutes les droites."""
 
@@ -499,17 +495,17 @@ class Droite_generique(Ligne_generique):
 
     @property
     def equation_formatee(self):
-        u"Equation sous forme lisible par l'utilisateur."
+        "Equation sous forme lisible par l'utilisateur."
         eq = self.equation
         if eq is None:
-            return u"L'objet n'est pas défini."
+            return "L'objet n'est pas défini."
         # On ne garde que quelques chiffres après la virgule pour l'affichage.
         a, b, c = (nice_display(coeff) for coeff in eq)
         return formatage("%s x + %s y + %s = 0" %(a, b, c))
 
     @property
     def info(self):
-        return self.nom_complet + u" d'équation " + self.equation_formatee
+        return self.nom_complet + " d'équation " + self.equation_formatee
 
     def __eq__(self,  y):
         if self.existe and isinstance(y, Droite_generique) and y.existe:
@@ -534,7 +530,7 @@ class Droite_generique(Ligne_generique):
 
 
 class Droite(Droite_generique):
-    u"""Une droite.
+    """Une droite.
 
     Une droite définie par deux points"""
 
@@ -543,7 +539,7 @@ class Droite(Droite_generique):
     point2 = __point2 = Argument("Point_generique", defaut = Point)
 
     def __new__(cls, *args, **kw):
-        if len(args) == 1  and isinstance(args[0], basestring):
+        if len(args) == 1  and isinstance(args[0], str):
             newclass = Droite_equation
         elif len(args) == 2  and isinstance(args[1], Vecteur_generique):
             newclass = Droite_vectorielle
@@ -561,7 +557,7 @@ class Droite(Droite_generique):
 
 
 class Point_droite(Point_generique):
-    u"""Un des deux points servant à construire une droite d'équation donnée.
+    """Un des deux points servant à construire une droite d'équation donnée.
 
     Usage interne.
     Ceci sert pour les droites qui ne sont pas définies à l'aide de points, mais directement à l'aide d'une équation.
@@ -592,7 +588,7 @@ class Point_droite(Point_generique):
 
 
 class Droite_vectorielle(Droite_generique):
-    u"""Une droite dirigée par un vecteur.
+    """Une droite dirigée par un vecteur.
 
     Une droite définie par un point et un vecteur directeur."""
 
@@ -617,7 +613,7 @@ class Droite_vectorielle(Droite_generique):
 
 
 class Parallele(Droite_generique):
-    u"""Une parallèle.
+    """Une parallèle.
 
     La parallèle à une droite passant par un point."""
 
@@ -662,7 +658,7 @@ class Parallele(Droite_generique):
 
 
 class Perpendiculaire(Droite_generique):
-    u"""Une perpendiculaire.
+    """Une perpendiculaire.
 
     Une droite perpendiculaire à une autre passant par un point."""
 
@@ -685,7 +681,7 @@ class Perpendiculaire(Droite_generique):
 
 
 class Mediatrice(Perpendiculaire):
-    u"""Une médiatrice.
+    """Une médiatrice.
 
     La médiatrice d'un segment (ou d'un bipoint, ...)
 
@@ -719,7 +715,7 @@ class Mediatrice(Perpendiculaire):
 
 
 class Droite_equation(Droite_generique):
-    u"""Une droite définie par une équation.
+    """Une droite définie par une équation.
 
     Une droite d'équation donnée sous forme d'un triplet (a, b, c). (ax + by + c = 0)"""
 
@@ -748,7 +744,7 @@ class Droite_equation(Droite_generique):
         return a, b, c
 
     def __init__(self, a = 1,  b = -1,  c = 0, **styles):
-        if isinstance(a, basestring):
+        if isinstance(a, str):
             membre_gauche, membre_droite = a.replace(" ", "").split("=")
             a, b, c = self.__extraire_coeffs(membre_gauche)
             a_, b_, c_ = self.__extraire_coeffs(membre_droite)
@@ -808,7 +804,7 @@ class Droite_equation(Droite_generique):
 
 
 class Bissectrice(Droite_vectorielle):
-    u"""Une bissectrice.
+    """Une bissectrice.
 
     La bissectrice d'un angle défini par 3 points.
     On peut, au choix, entrer un angle ou 3 points comme argument."""
@@ -837,7 +833,7 @@ class Bissectrice(Droite_vectorielle):
 
 
 class Point_tangence(Point_generique):
-    u"""Un point de tangence.
+    """Un point de tangence.
 
     Le point de tangence d'un cercle et d'une droite tangente au cercle passant par un point donné.
     Usage interne."""
@@ -866,7 +862,7 @@ class Point_tangence(Point_generique):
 
 
 class Tangente(Perpendiculaire):    # À REDÉFINIR ?
-    u"""Une tangente.
+    """Une tangente.
 
     Une des deux tangentes à un cercle passant par un point extérieur au cercle.
     Le dernier paramètre (True/False) sert à distinguer les deux tangentes.
@@ -912,7 +908,7 @@ class Tangente(Perpendiculaire):    # À REDÉFINIR ?
 
 
 class Demiplan(Objet_avec_equation):
-    u"""Un demi-plan.
+    """Un demi-plan.
 
     Le demi-plan délimité par la droite d et contenant le point M."""
 
@@ -938,17 +934,17 @@ class Demiplan(Objet_avec_equation):
 
     @property
     def equation_formatee(self):
-        u"Equation sous forme lisible par l'utilisateur."
+        "Equation sous forme lisible par l'utilisateur."
         eq = self.equation
         if eq is None:
-            return u"Le demi-plan n'est pas défini."
+            return "Le demi-plan n'est pas défini."
         test = self._signe()
         if test < 0:
             symbole = '<'
         elif test > 0:
             symbole = '>'
         else:
-            return u"Le demi-plan n'est pas défini."
+            return "Le demi-plan n'est pas défini."
         a, b, c = (nice_display(coeff) for coeff in eq)
         # on ne garde que quelques chiffres après la virgule pour l'affichage
         if self.__droite_incluse:
@@ -1010,7 +1006,7 @@ class Demiplan(Objet_avec_equation):
 
 
 class Axe(Droite):
-    u"""Un axe orienté.
+    """Un axe orienté.
 
     Un axe orienté servant au repérage.
     Cette classe sert essentiellement à construire les axes (Ox) et (Oy).
@@ -1255,7 +1251,7 @@ class Axe(Droite):
 
 
 class Repere(Objet):
-    u"""Un repère du plan.
+    """Un repère du plan.
 
     Un repère du plan défini par deux axes de même origine."""
 
@@ -1333,7 +1329,7 @@ class Repere(Objet):
 
 
 class Tangente_glisseur_interpolation(Droite_equation):
-    u"""Une tangente à une courbe de type interpolation polynomiale par morceau, et qui glisse.
+    """Une tangente à une courbe de type interpolation polynomiale par morceau, et qui glisse.
 
     Le coefficient directeur est estimé par approximation numérique avec taux de variation
     sur un pas  self.__canvas__.pas().

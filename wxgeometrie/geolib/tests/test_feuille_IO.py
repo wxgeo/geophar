@@ -1,9 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
-from __future__ import with_statement
-from __future__ import print_function
-from __future__ import absolute_import
-from __future__ import unicode_literals
 
 import re
 from math import cos, pi, e, sqrt
@@ -177,7 +172,7 @@ def test_sauvegarde_label():
     f1.objets.A = (1, 2)
     A = f1.objets.A
     A.etiquette.style(couleur="b")
-    legende = u"Pour qui sont ces serpents qui sifflent sur nos têtes."
+    legende = "Pour qui sont ces serpents qui sifflent sur nos têtes."
     A.label(legende)
     assertEqual(A.etiquette.style("couleur"), "b")
     assertEqual(A.label(), legende)

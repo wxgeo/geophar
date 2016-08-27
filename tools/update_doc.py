@@ -1,9 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
-from __future__ import print_function
-from __future__ import absolute_import
-from __future__ import unicode_literals
 
 ##--------------------------------------##
 #              WxGeometrie               #
@@ -52,10 +48,10 @@ subprocess.call(command, shell=True)
 # -------------------------
 
 class MyFTP(FTP):
-    u"""FTP avec une interface de plus haut niveau."""
+    """FTP avec une interface de plus haut niveau."""
 
     def is_rdir(self, name):
-        u"Indique s'il s'agit ou non d'un répertoire distant."
+        "Indique s'il s'agit ou non d'un répertoire distant."
         try:
             self.cwd(name)
             self.cwd('..')
@@ -64,7 +60,7 @@ class MyFTP(FTP):
             return False
 
     def remove_r(self, rpath):
-        u"Efface un fichier ou un répertoire, même non vide."
+        "Efface un fichier ou un répertoire, même non vide."
         if self.is_rdir(rpath):
             for pth in self.nlst(rpath)[2:]:
                 self.remove_r(pth)
@@ -74,7 +70,7 @@ class MyFTP(FTP):
 
 
     def copy_r(self, lpath, rdest):
-        u"""Copie récursivement un répertoire local à l'emplacement distant indiqué.
+        """Copie récursivement un répertoire local à l'emplacement distant indiqué.
 
         L'emplacement distant est créé lors de la copie, et ne doit pas exister
         au préalable (contrairement au `cp -r` de UNIX).
@@ -90,7 +86,7 @@ class MyFTP(FTP):
 
 
     def miroir(self, lpath, rdest):
-        u"""Crée un clône du répertoire local à l'emplacement distant.
+        """Crée un clône du répertoire local à l'emplacement distant.
 
         Si l'emplacement distant existe déjà, il est supprimé au préalable."""
         if self.is_rdir(rdest):
@@ -103,8 +99,8 @@ if isfile(FTPCONFIG):
     with open(FTPCONFIG) as _file:
         LOGIN, PASSWORD = _file.read(1000).split()
 else:
-    LOGIN = raw_input('login:')
-    PASSWORD = raw_input('password:')
+    LOGIN = input('login:')
+    PASSWORD = input('password:')
 
 ftp = MyFTP(HOST)
 
@@ -115,9 +111,9 @@ while LOGIN or PASSWORD:
         break
     except error_perm:
         print('\n*** Login incorrect. ***\n')
-        LOGIN = raw_input('login:')
-        PASSWORD = raw_input('password:')
+        LOGIN = input('login:')
+        PASSWORD = input('password:')
 
 ftp.miroir(LOCAL_PATH, REMOTE_PATH)
 ftp.quit()
-print(u'\n\033[32mLa doc a été mise à jour avec succès !\033[0m\n')
+print('\n\033[32mLa doc a été mise à jour avec succès !\033[0m\n')

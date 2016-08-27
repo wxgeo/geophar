@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
-from __future__ import print_function
-from __future__ import absolute_import
-from __future__ import unicode_literals
+
+
+
 
 from wxgeometrie.modules.tablatex.tests.tabtestlib import assert_tableau
 from wxgeometrie.modules.tablatex.tabsign import tabsign
@@ -372,7 +371,7 @@ $f(x)$ &           & + &           \\
 
 
 def test_issue_247():
-    u"FS#247 - Accepter la syntaxe suivant : 'f(x): -- -8 ++ -2 -- 5 ++'."
+    "FS#247 - Accepter la syntaxe suivant : 'f(x): -- -8 ++ -2 -- 5 ++'."
     s = "f(x): -- -8 ++ -2 -- 5 ++"
     tab = \
 r'''\begin{center}

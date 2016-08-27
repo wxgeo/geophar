@@ -1,8 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
-from __future__ import print_function
-from __future__ import absolute_import
-from __future__ import unicode_literals
 
 #    WxGeometrie
 #    Dynamic geometry, graph plotter, and more for french mathematic teachers.
@@ -22,7 +18,7 @@ from __future__ import unicode_literals
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-import urllib
+import urllib.request, urllib.parse
 import cgi
 
 from .. import param
@@ -52,10 +48,10 @@ def rapporter(titre='', auteur='', email='', description='', historique='',
         data[key] = cgi.escape(uu(value)).replace("\n", "\n<br>\n").encode("iso-8859-1", 'xmlcharrefreplace')
     msg = 'Erreur inconnue.'
     try:
-        filename, headers = urllib.urlretrieve("http://wxgeo.free.fr/wordpress/contact")
+        filename, headers = urllib.request.urlretrieve("http://wxgeo.free.fr/wordpress/contact")
         with open(filename) as f:
             adresse = f.read(300)
-        remote = urllib.urlopen(adresse, urllib.urlencode(data))
+        remote = urllib.request.urlopen(adresse, urllib.parse.urlencode(data))
         msg = remote.read()
         remote.close()
         return True, uu(msg)

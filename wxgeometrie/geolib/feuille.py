@@ -1,9 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
-from __future__ import with_statement
-from __future__ import print_function
-from __future__ import absolute_import
-from __future__ import unicode_literals
 
 ##--------------------------------------#######
 #                  Feuille                    #
@@ -70,7 +65,7 @@ PatternType = type(re.compile(''))
 
 
 def is_equation(chaine):
-    u"""Teste si une chaîne correspond bien à une équation."""
+    """Teste si une chaîne correspond bien à une équation."""
     if chaine.count('=') != 1:
         return False
     left, right = chaine.split('=')
@@ -90,7 +85,7 @@ def is_equation(chaine):
 #assert geo.Objet is Objet
 
 def parse_equation(chaine):
-    u"""Associe à une équation l'objet géométrique correspondant.
+    """Associe à une équation l'objet géométrique correspondant.
 
     Vérifie que la chaîne est une équation, et retourne une chaîne
     correspondant à l'objet géométrique correspondant le cas échéant.
@@ -104,7 +99,7 @@ def parse_equation(chaine):
 
     left, right = chaine.split('=')
     chaine = left + '-(' + right + ')'
-    chaine = traduire_formule(chaine, fonctions=mathlib.universal_functions.__dict__.keys())
+    chaine = traduire_formule(chaine, fonctions=list(mathlib.universal_functions.__dict__.keys()))
     try:
         expr = sympify(chaine).expand()
     except Exception:
@@ -181,7 +176,7 @@ class Liste_objets(object):
 
 
 class ModeTolerant(object):
-    u'''Mode d'exécution tolérant aux erreurs.
+    '''Mode d'exécution tolérant aux erreurs.
     Cela sert essentiellement à charger un fichier d'une ancienne version de WxGéométrie.'''
     def __init__(self, feuille, mode = True):
         self.feuille = feuille
@@ -196,7 +191,7 @@ class ModeTolerant(object):
 
 
 class Dictionnaire_objets(dict):
-    u"""Cette classe est un conteneur pour les objets de la feuille, qui sont tous ses attributs,
+    """Cette classe est un conteneur pour les objets de la feuille, qui sont tous ses attributs,
     sauf ceux précédés de __ (attributs reserves pour tous les objets de la classe).
     Elle contient aussi tous les objets geometriques.
     Certaines methodes standard (comme __setattr__) sont aussi interceptées ou redefinies.
@@ -244,7 +239,7 @@ class Dictionnaire_objets(dict):
 
 
     def clear(self):
-        u"""Réinitialise le dictionnaire des objets.
+        """Réinitialise le dictionnaire des objets.
 
         Ne pas utiliser directement, mais utiliser plutôt `Feuille.effacer()`
         qui rafraichit correctement l'affichage."""
@@ -256,14 +251,14 @@ class Dictionnaire_objets(dict):
         dict.update(self, **_tmp)
         # On ajoute au dictionnaire courant les objets géométriques, et uniquement eux
         # (pas toutes les classes de geolib !)
-        self.update((key, val) for key, val in G.__dict__.iteritems() \
+        self.update((key, val) for key, val in G.__dict__.items() \
                     if isinstance(val, type) and issubclass(val, Objet))
         # Les noms de classe peuvent aussi être tapés en minuscules (c'est plus rapide à taper)
-        self.update((key.lower(), val) for key, val in G.__dict__.iteritems() \
+        self.update((key.lower(), val) for key, val in G.__dict__.items() \
                     if isinstance(val, type) and issubclass(val, Objet))
 
         # On ajoute au dictionnaire les fonctions mathématiques courantes
-        self.update((key, val) for key, val in mathlib.universal_functions.__dict__.iteritems() \
+        self.update((key, val) for key, val in mathlib.universal_functions.__dict__.items() \
                     if key[0] != "_" and key != "division")
 
         self.update(pi = PI, e = E, oo = oo, \
@@ -293,7 +288,7 @@ class Dictionnaire_objets(dict):
 
 
     def add(self, valeur, nom_suggere=''):
-        u"""Ajoute l'objet `valeur` à la feuille.
+        """Ajoute l'objet `valeur` à la feuille.
 
         Si `nom_suggere` est donné, et que le nom suggéré n'est pas déjà
         utilisé, l'objet est référencé sous ce nom.
@@ -305,7 +300,7 @@ class Dictionnaire_objets(dict):
 
 
     def _dereferencer(self, objet):
-        u"Commande de bas niveau. Ne pas utiliser directement !"
+        "Commande de bas niveau. Ne pas utiliser directement !"
         if objet._nom:
             self.pop(objet._nom)
             # Important: pour que l'objet soit bien considéré non référencé
@@ -314,7 +309,7 @@ class Dictionnaire_objets(dict):
 
 
     def __setitem__(self, nom, valeur):
-        u"""Crée un objet de la feuille nommé `nom`, et ayant pour valeur `valeur`.
+        """Crée un objet de la feuille nommé `nom`, et ayant pour valeur `valeur`.
 
         Remarque: les syntaxes `objets['a'] = 3` et `objets.a = 3` sont équivalentes.
 
@@ -371,7 +366,7 @@ class Dictionnaire_objets(dict):
                         print("Warning: '%s' renommé en '%s'." %(nom, new))
                     nom = self.__tmp_dict[nom] = new
                 else:
-                    self.erreur(u"Ce nom est d\xe9ja utilis\xe9 : " + nom, NameError)
+                    self.erreur("Ce nom est déjà utilisé : " + nom, NameError)
 
 
         if not isinstance(valeur, Objet):
@@ -390,7 +385,7 @@ class Dictionnaire_objets(dict):
 
             # Par convénience, certains types sont automatiquement convertis :
             # - Variable
-            elif isinstance(valeur, (int, long, float, str, unicode)): # u=3 cree une variable
+            elif isinstance(valeur, (int, float, str)): # u=3 cree une variable
                 valeur = Variable(valeur)
 
             # - Point
@@ -400,7 +395,7 @@ class Dictionnaire_objets(dict):
             elif hasattr(valeur, "__iter__"):
                 valeur = tuple(valeur)
                 # - Texte
-                if len(valeur) in (1, 3) and isinstance(tuple(valeur)[0], basestring):
+                if len(valeur) in (1, 3) and isinstance(tuple(valeur)[0], str):
                     # t=["Bonjour!"] cree un texte
                     # t=('Bonjour!', 2, 3) également
                     valeur = Texte(*valeur)
@@ -461,7 +456,7 @@ class Dictionnaire_objets(dict):
 
 
     def __getitem(self, nom):
-        u"""Usage interne: code commun aux méthodes `.__getitem__()` et `.get()`."""
+        """Usage interne: code commun aux méthodes `.__getitem__()` et `.get()`."""
         # renommage temporaire :
         nom = self.__tmp_dict.get(nom, nom)
         # (utilisé en cas de chargement d'un fichier ancien lors d'un conflit de nom).
@@ -485,7 +480,7 @@ class Dictionnaire_objets(dict):
                 contexte['afficher_messages'] = False
             else:
                 assert 'erreur' in self
-                self.erreur(u"Objet introuvable sur la feuille : " + nom, KeyError)
+                self.erreur("Objet introuvable sur la feuille : " + nom, KeyError)
 
     def get(self, nom, defaut=None):
         try:
@@ -520,7 +515,7 @@ class Dictionnaire_objets(dict):
 
 
     def lister(self, objets_caches=True, etiquettes=False, **kw):
-        u"""Retourne la liste des objets géométriques.
+        """Retourne la liste des objets géométriques.
 
         Le paramètre `objets_caches` indique s'il faut inclure les objets cachés.
 
@@ -557,7 +552,7 @@ class Dictionnaire_objets(dict):
 
 
     def supprimer(self, *objets):
-        u"""Supprime plusieurs objets dans le bon ordre.
+        """Supprime plusieurs objets dans le bon ordre.
 
         Supprime successivement plusieurs objets après les avoir classé
         hiérarchiquement. Cela évite d'avoir des erreurs avec certains
@@ -580,7 +575,7 @@ class Dictionnaire_objets(dict):
 
     @staticmethod
     def __convertir_nom(nom):
-        u'''Convertit les noms contenant des `, ', ou " en noms python corrects.'''
+        '''Convertit les noms contenant des `, ', ou " en noms python corrects.'''
         return nom.replace('`', '_prime').replace('"', '_prime_prime').replace("'", "_prime")
 
 
@@ -591,14 +586,14 @@ class Dictionnaire_objets(dict):
             return nom == pattern
 
     def __verifier_syntaxe_nom(self, objet, nom, **kw):
-        u"Vérifie que le nom est correct (ie. bien formé) et le modifie le cas échéant."
+        "Vérifie que le nom est correct (ie. bien formé) et le modifie le cas échéant."
 
         def err(msg):
             if kw.get('skip_err'):
                 return
             if self.__renommer_au_besoin:
                 new = self.feuille.nom_aleatoire(objet)
-                print(u"Warning: '%s' renommé en '%s'." %(nom, new))
+                print("Warning: '%s' renommé en '%s'." %(nom, new))
                 return new
             else:
                 self.erreur(msg, NameError)
@@ -609,43 +604,43 @@ class Dictionnaire_objets(dict):
 
         if nom in self.__class__.__dict__ \
                           or any(self.__match(pattern, nom) for pattern in self._noms_interdits):
-            return err(u"Nom r\xe9serv\xe9 : " + nom) # Pas d'accent dans le code ici a cause de Pyshell !
+            return err("Nom réservé : " + nom) # Pas d'accent dans le code ici a cause de Pyshell !
         # Les noms contenant '__' sont des noms réservés pour un usage futur éventuel (convention).
         if "__" in nom:
-            return err(u'Un nom ne peut pas contenir "__".')
+            return err('Un nom ne peut pas contenir "__".')
         if not re.match("""[A-Za-z_][A-Za-z0-9_'"`]*$""", nom):
-            return err(u"'%s' n'est pas un nom d'objet valide." %nom)
+            return err("'%s' n'est pas un nom d'objet valide." %nom)
 
         # Certains noms sont réservés à des usages spécifiques.
         # Par ex., les noms f1, f2... sont réservés aux fonctions (cf. module Traceur).
-        for pattern, types in self._noms_restreints.iteritems():
+        for pattern, types in self._noms_restreints.items():
             if self.__match(pattern, nom):
                 if isinstance(objet, types):
                     break
-                return err(u"Le nom %s est r\xe9serv\xe9 à certains types d'objets." %nom)
+                return err("Le nom %s est réservé à certains types d'objets." % nom)
 
         # Gestion des ' (qui servent pour les dérivées)
         if nom.endswith('_prime'):
             if isinstance(objet, Fonction):
-                return err(u'Nom interdit : %s est r\xe9serv\xe9 pour la d\xe9riv\xe9e.' %nom)
+                return err('Nom interdit : %s est réservé pour la dérivée.' % nom)
             else:
                 base = rstrip_(nom, '_prime')
                 if isinstance(self.get(base, None), Fonction):
-                    return err(u'Nom interdit : %s d\xe9signe d\xe9j\xe0 la d\xe9riv\xe9e de %s.' %(nom, base))
+                    return err('Nom interdit : %s désigne déjà la dérivée de %s.' % (nom, base))
         elif isinstance(objet, Fonction):
             # Si la fonction doit s'appeller f, on vérifie que f', f'', f''', etc. ne correspondent pas déjà à des objets.
             for existant in self:
                 if existant.startswith(nom) and rstrip_(existant, '_prime') == nom:
-                    return err(u'Ambiguit\xe9 : un objet %s existe d\xe9j\xe0.' %existant)
+                    return err('Ambiguité : un objet %s existe déjà.' % existant)
 
         return nom
 
 
     def _objet_renommable(self, objet, nom):
-        u"Vérifie que le nom peut-être attribué (c-à-d. qu'il est bien formé, et non utilisé)."
+        "Vérifie que le nom peut-être attribué (c-à-d. qu'il est bien formé, et non utilisé)."
         nom = self.__verifier_syntaxe_nom(objet, nom)
         if nom in self:
-            self.erreur(u"Ce nom est déjà utilisé.", NameError)
+            self.erreur("Ce nom est déjà utilisé.", NameError)
         return nom
 
 
@@ -658,7 +653,7 @@ class Dictionnaire_objets(dict):
                     + "': " + repr(self.noms)
 
     def __derniere_valeur(self):
-        u"Dernier objet créé."
+        "Dernier objet créé."
         return max(self.feuille.liste_objets(True), key = lambda obj:obj._timestamp)
 
 
@@ -667,7 +662,7 @@ class Dictionnaire_objets(dict):
 
 
 class Interprete_feuille(object):
-    u"""Exécute des commandes dans la feuille.
+    """Exécute des commandes dans la feuille.
 
     Reformule également les commandes avant de les exécuter."""
 
@@ -675,7 +670,7 @@ class Interprete_feuille(object):
         self.feuille = feuille
 
     def executer(self, commande, parser=True, signature=None):
-        u"""Exécute la commande dans la feuille.
+        """Exécute la commande dans la feuille.
 
         Si `parser=False`, les facilités de syntaxe (abréviations, etc.)
         sont désactivées pour plus de rapidité.
@@ -685,7 +680,7 @@ class Interprete_feuille(object):
         Voir aussi `commande_executee()`.
         """
         if commande.startswith('#'):
-            return u'Commentaire ignoré : %s' % commande
+            return 'Commentaire ignoré : %s' % commande
 
         if parser:
             commande = self.parser(commande)
@@ -701,9 +696,9 @@ class Interprete_feuille(object):
             val = eval(code, self.feuille.objets)
             if isinstance(val, Variable):
                 if val._type == "simple":
-                    retour = unicode(val.val)
+                    retour = str(val.val)
                 else:
-                    retour = '"' + val.contenu + '" : ' + unicode(val.val)
+                    retour = '"' + val.contenu + '" : ' + str(val.val)
             elif isinstance(val, (list, tuple, set)):
                 # Améliore la lisibilité de l'affichage pour une liste d'objets
                 # en affichant le nom des objets au lieu des objets eux-mêmes
@@ -729,17 +724,17 @@ class Interprete_feuille(object):
                 else:
                     retour += ')'
             else:
-                retour = unicode(val)
+                retour = str(val)
         except SyntaxError:
             exec(commande + '\n', self.feuille.objets)
             # Le + '\n' final contourne un bug de Python 2.5 avec with_statement
-            retour = u'Commande exécutée.'
+            retour = 'Commande exécutée.'
         finally:
             self.commande_executee(signature = signature)
         return retour
 
     def commande_executee(self, signature = None):
-        u"""Méthode appelée automatiquement après avoir exécuté une commande dans la feuille.
+        """Méthode appelée automatiquement après avoir exécuté une commande dans la feuille.
         Si l'on n'a pas utilisé la méthode executer(), il faut alors l'appeler manuellement."""
         self.feuille.historique.archiver(signature = signature)
         # TODO: A déplacer dans la console graphique d'exécution ?
@@ -753,7 +748,7 @@ class Interprete_feuille(object):
 
     @staticmethod
     def parser(commande):
-        u"""Convertit la commande en code Python.
+        """Convertit la commande en code Python.
 
         >>> from wxgeometrie.geolib.feuille import Interprete_feuille
         >>> Interprete_feuille.parser("[A B]")
@@ -835,7 +830,7 @@ class Interprete_feuille(object):
 
 
 class Historique_feuille(object):
-    u"""Historique de la feuille.
+    """Historique de la feuille.
 
     Permet d'enregistrer l'état de la feuille à un instant donné,
     et de le restaurer ensuite."""
@@ -853,7 +848,7 @@ class Historique_feuille(object):
 
 
     def archiver(self, signature=None):
-        u"""Sauvegarde l'état actuel de la feuille.
+        """Sauvegarde l'état actuel de la feuille.
 
         Notes concernant l'implémentation::
 
@@ -893,10 +888,10 @@ class Historique_feuille(object):
             if len(self.etats_annules) > self.n:
                 self.etats_annules.pop(0) # plus rapide que "self.etats_annules = self.etats_annules[-self.n:]"
             self.restaurer(self.etats[-1])
-            self.feuille.message(u"Action annulée.")
+            self.feuille.message("Action annulée.")
             self.feuille.modifiee = True
         else:
-            self.feuille.message(u"Impossible d'annuler.")
+            self.feuille.message("Impossible d'annuler.")
 
 
     def refaire(self):
@@ -906,10 +901,10 @@ class Historique_feuille(object):
             if len(self.etats) > self.n:
                 self.etats.pop(0) # plus rapide que "self.etats = self.etats[-self.n:]"
             self.restaurer(etat)
-            self.feuille.message(u"Action restaurée.")
+            self.feuille.message("Action restaurée.")
             self.feuille.modifiee = True
         else:
-            self.feuille.message(u"Impossible de restaurer.")
+            self.feuille.message("Impossible de restaurer.")
 
 
     def restaurer(self, txt):
@@ -926,7 +921,7 @@ class Historique_feuille(object):
 
 
 class Feuille(object):
-    u"""Feuille de travail.
+    """Feuille de travail.
 
     L'objet 'log' doit être une liste destinée à contenir tous les messages.
     """
@@ -1030,7 +1025,7 @@ class Feuille(object):
             self._actions.append(action)
 
     def affichage_perime(self):
-        u"""Indique que l'affichage doit être actualisé.
+        """Indique que l'affichage doit être actualisé.
 
         Très rapide (inutile d'optimiser les appels), car aucune actualisation
         n'a lieu, mais la feuille est juste marquée comme étant à actualiser."""
@@ -1056,7 +1051,7 @@ class Feuille(object):
             return self._infos[_key_]
 
     def _rafraichir_figures(self, tous_les_objets = False):
-        u"""Recrée les figures des objets sensibles à la fenêtre d'affichage.
+        """Recrée les figures des objets sensibles à la fenêtre d'affichage.
 
         Si tous_les_objets = True, les figure des objets non sensibles sont
         aussi récréées.
@@ -1137,12 +1132,12 @@ class Feuille(object):
         ymax = ymax if ymax is not None else self.fenetre[3]
         epsilon = 100*contexte['tolerance']
         if abs(xmax - xmin) < epsilon:
-            self.erreur((u"Le réglage de la fenêtre est incorrect (xmin=%s et xmax=%s sont trop proches).\n"
-                         u"(Les paramètres doivent être dans cet ordre: xmin, xmax, ymin, ymax.)")
+            self.erreur(("Le réglage de la fenêtre est incorrect (xmin=%s et xmax=%s sont trop proches).\n"
+                         "(Les paramètres doivent être dans cet ordre: xmin, xmax, ymin, ymax.)")
                         % (xmin, xmax), ValueError)
         elif abs(ymax - ymin) < epsilon:
-            self.erreur((u"Le réglage de la fenêtre est incorrect (ymin=%s et ymax=%s sont trop proches).\n"
-                         u"(Les paramètres doivent être dans cet ordre: xmin, xmax, ymin, ymax.)")
+            self.erreur(("Le réglage de la fenêtre est incorrect (ymin=%s et ymax=%s sont trop proches).\n"
+                         "(Les paramètres doivent être dans cet ordre: xmin, xmax, ymin, ymax.)")
                          % (ymin, ymax), ValueError)
         # Les 'float()' servent à contourner un bug de numpy 1.1.x et numpy 1.2.x (repr de float64)
         return float(min(xmin, xmax)), float(max(xmin, xmax)), float(min(ymin, ymax)), float(max(ymin, ymax))
@@ -1187,7 +1182,7 @@ class Feuille(object):
 
 
     def liste_objets(self, objets_caches=None, tri=False, etiquettes=False):
-        u"""Liste des objets, triés éventuellement selon le style 'niveau'.
+        """Liste des objets, triés éventuellement selon le style 'niveau'.
 
         NB: un système de mise en cache est utilisé si possible, contrairement à .objets.lister().
         """
@@ -1220,14 +1215,14 @@ class Feuille(object):
 #########################################################################################
 
     def _dimensions_en_pixels(self):
-        u"Dimensions en pixels de la feuille affichée par le canevas."
+        "Dimensions en pixels de la feuille affichée par le canevas."
         if self.canvas is not _pseudocanvas:
             return self.canvas.dimensions
         else:
             return eval(self._infos['dimensions-pixels'])
 
     def fenetre_reellement_affichee(self):
-        u"""Fenêtre réellement affichée à l'écran.
+        """Fenêtre réellement affichée à l'écran.
 
         Dans le cas où le ratio abscisse/ordonnée est fixe (par exemple,
         si l'utilisateur impose un repère orthonormé), les valeurs
@@ -1270,7 +1265,7 @@ class Feuille(object):
 
 
     def coo2pix(self, x, y):
-        u"""Convertit des coordonnées en pixel."""
+        """Convertit des coordonnées en pixel."""
         if isinstance(x, (list, tuple)):
             x = array(x)
         if isinstance(y, (list, tuple)):
@@ -1282,7 +1277,7 @@ class Feuille(object):
         return px, py
 
     def pix2coo(self, px, py):
-        u"""Convertit un pixel en coordonnées."""
+        """Convertit un pixel en coordonnées."""
         if isinstance(px, (list, tuple)):
             px = array(px)
         if isinstance(py, (list, tuple)):
@@ -1295,7 +1290,7 @@ class Feuille(object):
         return x, y
 
     def dcoo2pix(self, dx, dy):
-        u"""Convertit un déplacement exprimé en coordonnées en un déplacement en pixels."""
+        """Convertit un déplacement exprimé en coordonnées en un déplacement en pixels."""
         l, h = self._dimensions_en_pixels()
         fenetre = self.fenetre_reellement_affichee()
         dpx = l*dx/(fenetre[1] - fenetre[0])
@@ -1303,7 +1298,7 @@ class Feuille(object):
         return dpx, dpy
 
     def dpix2coo(self, dpx, dpy):
-        u"""Convertit un déplacement exprimé en pixels en un déplacement exprimé en coordonnées."""
+        """Convertit un déplacement exprimé en pixels en un déplacement exprimé en coordonnées."""
         l, h = self._dimensions_en_pixels()
         fenetre = self.fenetre_reellement_affichee()
         dx = dpx*(fenetre[1] - fenetre[0])/l
@@ -1324,7 +1319,7 @@ class Feuille(object):
 
     @property
     def nom(self):
-        u"Destiné à être affiché."
+        "Destiné à être affiché."
         nom = self.infos("titre")
         if self.sauvegarde["nom"]:
            nom += ' - ' + self.sauvegarde["nom"]
@@ -1333,7 +1328,7 @@ class Feuille(object):
 
     @property
     def nom_complet(self):
-        u"Destiné à être affiché en haut de la fenêtre."
+        "Destiné à être affiché en haut de la fenêtre."
         nom = self.modifiee and "* " or ""
         liste = self.sauvegarde["nom"], self.infos("titre")
         nom += " - ".join(s for s in liste if s)
@@ -1357,7 +1352,7 @@ class Feuille(object):
 
 
     def sauvegarder(self, _as_list=False):
-        u"""Renvoie l'ensemble des commandes python qui permettra de recréer
+        """Renvoie l'ensemble des commandes python qui permettra de recréer
         la figure avec tous ses objets.
 
         La figure pourra ensuite être restaurée à l'aide la commande `charger()`.
@@ -1392,7 +1387,7 @@ class Feuille(object):
 
     def charger(self, commandes, rafraichir = True, archiver = True,
                                  mode_tolerant = False):
-        u"""Exécute un ensemble de commandes dans la feuille.
+        """Exécute un ensemble de commandes dans la feuille.
 
         Usage:
         f = Feuille()
@@ -1413,8 +1408,8 @@ class Feuille(object):
                     try:
                         print_error()
                     except:
-                        print(u"Affichage de l'erreur impossible !")
-                    self.erreur(u"Chargement incomplet de la feuille.")
+                        print("Affichage de l'erreur impossible !")
+                    self.erreur("Chargement incomplet de la feuille.")
                 finally:
                     for action in self._actions:
                         action()
@@ -1438,7 +1433,7 @@ class Feuille(object):
             if isinstance(arg, Objet):
                 for heritier in heritiers:
                     if arg is heritier:
-                        self.erreur(u"Définition circulaire dans %s : \
+                        self.erreur("Définition circulaire dans %s : \
                                    l'objet %s se retrouve dépendre de lui-même."
                                    %(valeur, nom))
                         #raise RuntimeError, "Definition circulaire dans %s : l'objet %s se retrouve dependre de lui-meme." %(valeur, nom)
@@ -1478,7 +1473,7 @@ class Feuille(object):
                 i += 1
         else:
             self.historique.restaurer(backup)
-            self.erreur(u"Erreur lors de la redéfinition de %s." %nom)
+            self.erreur("Erreur lors de la redéfinition de %s." %nom)
 
 
     def inventaire(self):
@@ -1486,14 +1481,14 @@ class Feuille(object):
         if param.debug:
             for obj in objets:
                 print("- " + obj.nom + " : " + repr(obj) + " (" + obj.type() + ")")
-        liste = [u"%s (%s%s)" % (uu(obj.nom_complet), uu(obj.titre(point_final=False)),
-                 ('' if obj.style("visible") else u" invisible")) for obj in objets
+        liste = ["%s (%s%s)" % (uu(obj.nom_complet), uu(obj.titre(point_final=False)),
+                 ('' if obj.style("visible") else " invisible")) for obj in objets
                  if not isinstance(obj, (Variable_affichage, Pixel_unite))]
         liste.sort()
         return liste
 
     def nettoyer(self):
-        u"""Supprime les objets cachés inutiles.
+        """Supprime les objets cachés inutiles.
 
         Un objet caché est inutile si aucun objet visible ne dépend de lui.
         Les textes vides sont également supprimés."""
@@ -1506,13 +1501,13 @@ class Feuille(object):
                     obj.supprimer()
 
     def effacer_codage(self):
-        u"Efface tous les codages sur les segments, angles et arcs de cercles."
+        "Efface tous les codages sur les segments, angles et arcs de cercles."
         for obj in self.liste_objets(True):
             if obj.style("codage") is not None:
                 obj.style(codage = "")
 
     def coder(self):
-        u"Codage automatique de la figure (longueurs égales, angles égaux, et angles droits)."
+        "Codage automatique de la figure (longueurs égales, angles égaux, et angles droits)."
         def test(groupe, liste, i):
             if len(groupe) is 1:
                 groupe[0]["objet"].style(codage = "")
@@ -1523,8 +1518,8 @@ class Feuille(object):
                         elt["objet"].style(codage = liste[i])
                     return True
                 except IndexError:
-                    self.message(u"Le nombre de codages disponibles est insuffisant.")
-                    print_error(u"Le nombre de codages disponibles est insuffisant.")
+                    self.message("Le nombre de codages disponibles est insuffisant.")
+                    print_error("Le nombre de codages disponibles est insuffisant.")
 
         objets = self.objets.lister(False, type = (Segment, Arc_generique))
         lignes = [{"longueur": obj._longueur(), "objet": obj} for obj in objets]
@@ -1593,7 +1588,7 @@ class Feuille(object):
         Teste rapidement si l'objet est répertorié dans la feuille.
         (Ne cherche pas parmi les objets temporaires.)"""
 
-        return is_in(objet, self.objets.values())
+        return is_in(objet, list(self.objets.values()))
 
 
     def contient_objet_temporaire(self, objet):
@@ -1614,15 +1609,15 @@ class Feuille(object):
         return self.__point_temporaire__
 
     def start(self):
-        u"Autorise le lancement d'animations."
+        "Autorise le lancement d'animations."
         self._stop = False
 
     def stop(self):
-        u"Arrête toutes les animations en cours."
+        "Arrête toutes les animations en cours."
         self._stop = True
 
     def animer(self, nom, debut = 0, fin = 1, pas = 0.02, periode = 0.03):
-        u"""Anime la variable nommée `nom`.
+        """Anime la variable nommée `nom`.
 
         :param nom: nom de la variable dont on souhaite faire varier la valeur.
         :param debut: valeur initiale de la variable.
@@ -1651,7 +1646,7 @@ class Feuille(object):
 
 
     def erreur(self, message, erreur=None):
-        self.message(u"Erreur : " + uu(message))
+        self.message("Erreur : " + message)
         if erreur is None:
             erreur = RuntimeError
         raise erreur(message)
@@ -1671,7 +1666,7 @@ class Feuille(object):
 
 
     def lister_figures(self):
-        u"""Renvoie deux listes de figures (artistes matplotlib).
+        """Renvoie deux listes de figures (artistes matplotlib).
 
         La seconde est celle des figures qui vont bouger avec l'objet deplacé ;
         et la première, des autres qui vont rester immobiles.
@@ -1714,13 +1709,13 @@ class Feuille(object):
 
 
     def effacer_traces(self):
-        u"Efface toutes les traces (sans enlever le mode trace des objets)."
+        "Efface toutes les traces (sans enlever le mode trace des objets)."
         for objet in self.liste_objets():
             objet.effacer_trace()
         self.affichage_perime()
 
     def objets_en_gras(self, *objets):
-        u"""Met en gras les objets indiqués, et remet les autres objets en état "normal" le cas échéant."""
+        """Met en gras les objets indiqués, et remet les autres objets en état "normal" le cas échéant."""
 
         changements = False
         for objet in self.liste_objets(True):
@@ -1757,20 +1752,20 @@ class Feuille(object):
 
 
     def nom_aleatoire(self, objet, prefixe=None):
-        u"""Génère un nom d'objet non encore utilisé.
+        """Génère un nom d'objet non encore utilisé.
 
         Si possible, le nom sera de la forme 'prefixe' + chiffres.
         Sinon, un préfixe aléatoire est généré."""
         prefixe = (prefixe if prefixe else objet._prefixe_nom)
         existants = self.objets.noms
-        for i in xrange(1000):
+        for i in range(1000):
             n = len(prefixe)
             numeros = [int(s[n:]) for s in existants if re.match(prefixe + "[0-9]+$", s)]
             nom = prefixe + (str(max(numeros) + 1) if numeros else '1')
             nom = self.objets._Dictionnaire_objets__verifier_syntaxe_nom(objet, nom, skip_err=True)
             if nom is not None:
                 return nom
-            prefixe = ''.join(choice(letters) for i in xrange(8))
+            prefixe = ''.join(choice(letters) for i in range(8))
         raise RuntimeError("Impossible de trouver un nom convenable apres 1000 essais !")
 
 

@@ -1,8 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
-from __future__ import print_function
-from __future__ import absolute_import
-from __future__ import unicode_literals
 
 from random import random
 
@@ -381,7 +377,7 @@ def test_NuageFonction():
     assert (2, 2**2+3) in m
 
 def test_Centre_alias():
-    u"Centre et Centre_gravite sont interchangeables."
+    "Centre et Centre_gravite sont interchangeables."
     A = rand_pt()
     B = rand_pt()
     C = rand_pt()

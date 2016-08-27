@@ -1,8 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
-from __future__ import print_function
-from __future__ import absolute_import
-from __future__ import unicode_literals
 
 ##--------------------------------------#######
 #                  Feuille                                  #
@@ -35,7 +31,7 @@ from .. import param
 
 
 class Bouton(Texte_editable_generique, Objet_avec_coordonnees_modifiables):
-    u"""Un bouton cliquable.
+    """Un bouton cliquable.
 
     Un bouton avec texte. Typiquement, on lui associe une action
     lorsque l'on clique dessus, via la méthode `onLeftClick`.
@@ -168,7 +164,7 @@ class Bouton(Texte_editable_generique, Objet_avec_coordonnees_modifiables):
 
 
 class Champ(Texte):
-    u"""Un champ de texte.
+    """Un champ de texte.
 
     Un champ de texte éditable en double-cliquant dessus.
 
@@ -338,9 +334,9 @@ class Champ(Texte):
         else:
             txt.set(visible=True, x=x, y=y, va='top', ha='left')
             if self.correct:
-                txt.set(text=u'\u2713', color='g') # 263A  00D8
+                txt.set(text='\u2713', color='g') # 263A  00D8
             else:
-                txt.set(text=u'\u2639', color='r') #u'\u26A0'
+                txt.set(text='\u2639', color='r') #u'\u26A0'
             ##if getattr(self, 'evt_valider', None) is not None and lbl != self.__label_old:
                 ##self.evt_valider(champ=self, correct=correct,
                                  ##correct_old=self.__correct_old)

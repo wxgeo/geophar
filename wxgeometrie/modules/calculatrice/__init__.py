@@ -1,9 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
-from __future__ import print_function
-from __future__ import absolute_import
-from __future__ import unicode_literals
 
 ##--------------------------------------#######
 #                Calculatrice                 #
@@ -53,22 +49,22 @@ from ... import param
 class CalculatriceMenuBar(MenuBar):
     def __init__(self, panel):
         MenuBar.__init__(self, panel)
-        self.ajouter(u"Fichier", [u"Réinitialiser",
-                                    u"Réinitialiser la calculatrice.", "Ctrl+N",
+        self.ajouter("Fichier", ["Réinitialiser",
+                                    "Réinitialiser la calculatrice.", "Ctrl+N",
                                     self.panel.initialiser],
-                                [u"ouvrir"], [u"enregistrer"],
-                                [u"enregistrer_sous"], ['session'], None, ["quitter"])
-        self.ajouter(u"Affichage", ["onglet"], ["plein_ecran"])
+                                ["ouvrir"], ["enregistrer"],
+                                ["enregistrer_sous"], ['session'], None, ["quitter"])
+        self.ajouter("Affichage", ["onglet"], ["plein_ecran"])
         for rubrique in __classement__:
             self.ajouter(rubrique, *(self.formater(contenu, rubrique != "Symboles") for contenu in __classement__[rubrique]))
             # pas de parenthese apres un symbole
-        self.ajouter(u"Outils",
-                        [u"Mémoriser le résultat", u"Copie le resultat du calcul dans le presse-papier, afin de pouvoir l'utiliser ailleurs.", "Ctrl+M", self.panel.vers_presse_papier],
-                        [u"options"],
+        self.ajouter("Outils",
+                        ["Mémoriser le résultat", "Copie le resultat du calcul dans le presse-papier, afin de pouvoir l'utiliser ailleurs.", "Ctrl+M", self.panel.vers_presse_papier],
+                        ["options"],
                         )
-        self.ajouter(u"Avancé",
-                        [u"État interne de l'interprète", u"État de l'interprète de commandes.", u"Ctrl+H", self.panel.EtatInterne],
-                        [u"ligne_commande"],
+        self.ajouter("Avancé",
+                        ["État interne de l'interprète", "État de l'interprète de commandes.", "Ctrl+H", self.panel.EtatInterne],
+                        ["ligne_commande"],
                         ["debug"],
                         )
         self.ajouter("?")
@@ -84,8 +80,8 @@ class CalculatriceMenuBar(MenuBar):
 
 class BoutonValider(QToolButton):
 
-    modes = [('exact', u'résultats exacts'), ('approche', u'résultats approchés'),
-             ('scientifique', u'résultats en écriture scientifique')]
+    modes = [('exact', 'résultats exacts'), ('approche', 'résultats approchés'),
+             ('scientifique', 'résultats en écriture scientifique')]
 
     def __init__(self, parent):
         QToolButton.__init__(self)
@@ -183,7 +179,7 @@ class PaveNumerique(QWidget):
     def touche_2nde(self, event=None):
         self.seconde = not self.seconde
         if self.seconde:
-            self.message(u"Touche [2nde] activée.")
+            self.message("Touche [2nde] activée.")
         else:
             self.message("")
 
@@ -213,43 +209,43 @@ class Options(QWidget):
         self.pave = QVBoxLayout()
 
         # Chiffres significatifs
-        box = QGroupBox(u"Mode calcul approché")
+        box = QGroupBox("Mode calcul approché")
         box_layout = QVBoxLayout()
         box.setLayout(box_layout)
 
         ligne = QHBoxLayout()
         box_layout.addLayout(ligne)
-        ligne.addWidget(QLabel(u"Afficher "))
+        ligne.addWidget(QLabel("Afficher "))
         self.sc_precision_affichage = sc = QSpinBox(self)
         # param.precision_calcul = 60 par défaut
         sc.setRange(1, 50)
         sc.setValue(prm("precision_affichage"))
         sc.valueChanged.connect(self.EvtPrecisionAffichage)
         ligne.addWidget(sc)
-        ligne.addWidget(QLabel(u" chiffre(s) significatif(s)."))
+        ligne.addWidget(QLabel(" chiffre(s) significatif(s)."))
         ligne.addStretch()
 
         self.pave.addWidget(box)
 
         # Nombre de décimales
-        box = QGroupBox(u"Mode écriture scientifique")
+        box = QGroupBox("Mode écriture scientifique")
         box_layout = QVBoxLayout()
         box.setLayout(box_layout)
 
         ligne = QHBoxLayout()
         box_layout.addLayout(ligne)
-        ligne.addWidget(QLabel(u"Arrondir les résultats à "))
+        ligne.addWidget(QLabel("Arrondir les résultats à "))
         self.sc_decimales = sc = QSpinBox(self)
         sc.setRange(0, 11)
         sc.setValue(prm("ecriture_scientifique_decimales"))
         sc.valueChanged.connect(self.EvtDecimales)
         ligne.addWidget(sc)
-        ligne.addWidget(QLabel(u" décimale(s)."))
+        ligne.addWidget(QLabel(" décimale(s)."))
         ligne.addStretch()
 
         self.pave.addWidget(box)
 
-        box = QGroupBox(u"Copie Automatique")
+        box = QGroupBox("Copie Automatique")
         box_layout = QVBoxLayout()
         box.setLayout(box_layout)
         # Copie du résultat dans le presse-papier
@@ -258,9 +254,9 @@ class Options(QWidget):
         self.cb_copie_automatique = cb = QCheckBox(self)
         cb.setChecked(prm("copie_automatique"))
         cb.stateChanged.connect(self.EvtCopieAutomatique)
-        cb.setToolTip(u"Copier automatiquement le résultat du calcul dans le presse-papier.")
+        cb.setToolTip("Copier automatiquement le résultat du calcul dans le presse-papier.")
         ligne.addWidget(cb)
-        ligne.addWidget(QLabel(u"Copie du résultat dans le presse-papier."))
+        ligne.addWidget(QLabel("Copie du résultat dans le presse-papier."))
         ligne.addStretch()
 
         # En mode LaTeX
@@ -268,25 +264,25 @@ class Options(QWidget):
         box_layout.addLayout(ligne)
         self.cb_copie_automatique_LaTeX = cb = QCheckBox(self)
         cb.setChecked(prm("copie_automatique_LaTeX"))
-        cb.setToolTip(u"Copier le résultat du calcul au format LaTeX dans le presse-papier.")
+        cb.setToolTip("Copier le résultat du calcul au format LaTeX dans le presse-papier.")
         ligne.addWidget(cb)
         cb.stateChanged.connect(self.EvtCopieAutomatiqueLatex)
-        self.st_copie_automatique_LaTeX = st = QLabel(u"Copie au format LaTeX (si possible).")
+        self.st_copie_automatique_LaTeX = st = QLabel("Copie au format LaTeX (si possible).")
         ligne.addWidget(st)
         ligne.addStretch()
 
         self.pave.addWidget(box)
         #~ self.pave.addStretch()
 
-        box = QGroupBox(u"Ensemble de résolution")
+        box = QGroupBox("Ensemble de résolution")
         box_layout = QVBoxLayout()
         box.setLayout(box_layout)
         ligne = QHBoxLayout()
         box_layout.addLayout(ligne)
-        ligne.addWidget(QLabel(u'Résoudre et factoriser dans '))
+        ligne.addWidget(QLabel('Résoudre et factoriser dans '))
         self.cb_ensemble = cb = QComboBox()
         ligne.addWidget(cb)
-        cb.addItems((u'R (réels)', u'C (complexes)'))
+        cb.addItems(('R (réels)', 'C (complexes)'))
         cb.setCurrentIndex(self.ensembles.index(prm('ensemble')))
         cb.currentIndexChanged.connect(self.EvtEnsemble)
         self.pave.addWidget(box)
@@ -337,15 +333,15 @@ class Avance(QWidget):
         ### Liste des options avancées de la calculatrice ###
         self.pave = QVBoxLayout()
 
-        box = QGroupBox(u"Post-traitement")
+        box = QGroupBox("Post-traitement")
         box_layout = QVBoxLayout()
         box.setLayout(box_layout)
-        box_layout.addWidget(QLabel(u"Traitement automatiquement du résultat :"))
+        box_layout.addWidget(QLabel("Traitement automatiquement du résultat :"))
         self.traitement = QLineEdit()
         traitement = self.parent.param("appliquer_au_resultat") or '_'
         self.traitement.setText(traitement)
         self.traitement.setMinimumWidth(100)
-        self.traitement.setToolTip(u"Fonction ou opérations à appliquer automatiquement au résultat (représenté par _). Ex: 'factoriser(_)'.")
+        self.traitement.setToolTip("Fonction ou opérations à appliquer automatiquement au résultat (représenté par _). Ex: 'factoriser(_)'.")
         self.traitement.editingFinished.connect(self.EvtAppliquerResultat)
         box_layout.addWidget(self.traitement)
         self.pave.addWidget(box)
@@ -368,9 +364,9 @@ class Avance(QWidget):
 class OngletsCalc(QTabWidget):
     def __init__(self, parent):
         QTabWidget.__init__(self, parent)
-        self.addTab(PaveNumerique(parent), u' Pavé numérique ')
-        self.addTab(Options(parent), u'Options')
-        self.addTab(Avance(parent), u'Avancé')
+        self.addTab(PaveNumerique(parent), ' Pavé numérique ')
+        self.addTab(Options(parent), 'Options')
+        self.addTab(Avance(parent), 'Avancé')
         self.setTabPosition(QTabWidget.South)
         self.setStyleSheet("""
         QTabBar::tab:selected {
@@ -401,7 +397,7 @@ class OngletsCalc(QTabWidget):
 
 
 class Calculatrice(Panel_simple):
-    titre = u"Calculatrice" # Donner un titre a chaque module
+    titre = "Calculatrice" # Donner un titre a chaque module
 
     def __init__(self, *args, **kw):
         Panel_simple.__init__(self, *args, **kw)
@@ -418,10 +414,10 @@ class Calculatrice(Panel_simple):
                                 )
 
         bouton = BoutonValider(self)
-        bouton.setToolTip(u"Laissez appuyé pour changer de mode.")
+        bouton.setToolTip("Laissez appuyé pour changer de mode.")
         self.entree = entree = LigneCommande(self, longueur=550,
                                 action=self.affichage_resultat, bouton=bouton)
-        entree.setToolTip(u"[Maj]+[Entrée] pour une valeur approchée.")
+        entree.setToolTip("[Maj]+[Entrée] pour une valeur approchée.")
         self.entree.texte.setContextMenuPolicy(Qt.CustomContextMenu)
         self.entree.texte.customContextMenuRequested.connect(self.EvtMenu)
 
@@ -482,7 +478,7 @@ class Calculatrice(Panel_simple):
 
 
     def modifier_pp_texte(self, chaine):
-        u"""Modifier le résultat affiché en LaTeX (pretty print)."""
+        """Modifier le résultat affiché en LaTeX (pretty print)."""
         if self.param("latex"):
             # On utilise directement LaTeX pour le rendu
             chaine = "$" + chaine + "$"
@@ -511,7 +507,7 @@ class Calculatrice(Panel_simple):
         # Commandes spéciales:
         if commande in ('clear', 'clear()', 'efface', 'efface()'):
             self.initialiser()
-            self.modifier_pp_texte(u"Calculatrice réinitialisée.")
+            self.modifier_pp_texte("Calculatrice réinitialisée.")
             return
 
         self.modifie = True
@@ -522,7 +518,7 @@ class Calculatrice(Panel_simple):
                     self.interprete.calcul_exact = False
                 resultat, latex = self.interprete.evaluer(commande)
                 if latex == "$?$": # provoque une erreur (matplotlib 0.99.1.1)
-                    latex = u"Désolé, je ne sais pas faire..."
+                    latex = "Désolé, je ne sais pas faire..."
             finally:
                 self.interprete.calcul_exact = self.param('calcul_exact')
                 self.entree.bouton.mode_normal()
@@ -560,19 +556,19 @@ class Calculatrice(Panel_simple):
             if "\n" in resultat and not aide:
                 resultat = "\n" + "\n".join(20*" " + ligne for ligne in resultat.split("\n"))
             self.resultats.moveCursor(QTextCursor.End)
-            self.resultats.insertPlainText(u" Calcul n\xb0" + numero + " :   "
-                                                        + uu(commande) + u"\n Résultat :"
+            self.resultats.insertPlainText(" Calcul n\xb0" + numero + " :   "
+                                                        + uu(commande) + "\n Résultat :"
                                                         + " "*(4+len(numero))
                                                         + resultat + "\n__________________\n\n")
             self.resultats.moveCursor(QTextCursor.End)
-            self.message(u"Calcul effectué." + self.interprete.warning)
+            self.message("Calcul effectué." + self.interprete.warning)
             self.entree.clear()
 #            self.resultats.setCursorPosition(len(self.resultats.plainText()))
 #            self.resultats.setFocus()
 #            self.resultats.ScrollLines(1)
             self.entree.setFocus()
         except Exception:
-            self.message(u"Calcul impossible.")
+            self.message("Calcul impossible.")
             self.entree.setFocus()
             if param.debug:
                 raise
@@ -600,13 +596,13 @@ class Calculatrice(Panel_simple):
 
     def EvtMenu(self, event):
         menu = QMenu()
-        menu.setWindowTitle(u"Fonctions mathématiques")
+        menu.setWindowTitle("Fonctions mathématiques")
         debut = True
         for rubrique in __classement__:
             if not debut:
                 menu.addSeparator()
             debut = False
-            for titre, nom, doc in filter(None, __classement__[rubrique]):
+            for titre, nom, doc in (_f for _f in __classement__[rubrique] if _f):
                 action = menu.addAction(titre, partial(self.insere, nom=nom, parentheses=(rubrique != "Symboles")))
                 # Pas de parenthèses après un symbole.
                 action.setToolTip(doc)
@@ -629,5 +625,5 @@ class Calculatrice(Panel_simple):
 
     def EtatInterne(self, event):
         contenu = self.interprete.save_state()
-        h = FenCode(self, u"État interne de l'inteprète", contenu, self.interprete.load_state)
+        h = FenCode(self, "État interne de l'inteprète", contenu, self.interprete.load_state)
         h.show()

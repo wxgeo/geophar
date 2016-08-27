@@ -1,8 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
-from __future__ import print_function
-from __future__ import absolute_import
-from __future__ import unicode_literals
 
 ##--------------------------------------#######
 #                   Interpolation                    #
@@ -25,7 +21,7 @@ from __future__ import unicode_literals
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-from itertools import izip,chain
+from itertools import chain
 from numpy import isnan, isinf, sign, arange, inf, append
 
 from sympy import oo
@@ -43,7 +39,7 @@ def inf_or_nan(x):
 
 
 class Courbe_generique(Objet):
-    u"""Classe mère de toutes les courbes."""
+    """Classe mère de toutes les courbes."""
 
     _affichage_depend_de_la_fenetre = True
     _style_defaut = param.courbes
@@ -78,7 +74,7 @@ class Courbe_generique(Objet):
 
 
 class Courbe(Courbe_generique):
-    u"""Une courbe de fonction.
+    """Une courbe de fonction.
 
     L'expression doit être donnée en fonction de 'x'.
     Exemple : '2x^2-1/x+1'
@@ -111,7 +107,7 @@ class Courbe(Courbe_generique):
 #        derniere_fonction = None
 #        ancien_x = None
 #        ancien_y = None
-        for fonction, union, e_cach in izip(self.__fonction._Fonction__fonctions,
+        for fonction, union, e_cach in zip(self.__fonction._Fonction__fonctions,
                                                        self.__fonction._Fonction__unions,
                                                        self.__fonction.style('extremites_cachees')):
             for intervalle in union.intervalles:
@@ -150,8 +146,8 @@ class Courbe(Courbe_generique):
                                 #Fusion
                                 print('Fusion', y0)
                                 if isnan(y0):
-                                    print(u'Fusion avancée')
-                                    for i in xrange(10, 70, 10):
+                                    print('Fusion avancée')
+                                    for i in range(10, 70, 10):
                                         try:
                                             val1 = ancienne_fonction(ancien_xN - 8**(-i))
                                             val2 = ancienne_fonction(x0 + 8**(-i))
@@ -234,7 +230,7 @@ class Courbe(Courbe_generique):
 
 
     def _supprimer_valeurs_extremes(self, x, y, fonction, i, j):
-        u"""Lorsque les valeurs aux bornes sont indéterminées (NaN), infinies (+/-Inf)
+        """Lorsque les valeurs aux bornes sont indéterminées (NaN), infinies (+/-Inf)
         ou très éloignées de zéro (2e200), on cherche à les convertir en une valeur
         raisonnable pour la fenêtre d'affichage.
 
@@ -266,7 +262,7 @@ class Courbe(Courbe_generique):
         infini = False
         xi_infini = None
 
-        for xi, yi in izip(xk, yk):
+        for xi, yi in zip(xk, yk):
             if infini:
                 if not inf_or_nan(yi):
                     y_finis.append(yi)
@@ -288,7 +284,7 @@ class Courbe(Courbe_generique):
 
 
     def _rogner_valeur(self, y0):
-        u"Remplace -inf et +inf par des valeurs numériques dépassant la fenêtre."
+        "Remplace -inf et +inf par des valeurs numériques dépassant la fenêtre."
         if isnan(y0):
             return y0
         xmin, xmax, ymin, ymax = self.feuille.fenetre
@@ -332,7 +328,7 @@ class Courbe(Courbe_generique):
         filtre = (xm < xarray) & (xarray < xM)
         xa, ya = self.feuille.coo2pix(xarray[filtre], self.yarray[filtre])
         A = None
-        for x, y in izip(xa, ya):
+        for x, y in zip(xa, ya):
             B = A
             A = x, y
             if distance_segment(P, A, B, d):
@@ -342,7 +338,7 @@ class Courbe(Courbe_generique):
 
     @staticmethod
     def _convertir(objet):
-        u"Convertit un objet en fonction."
+        "Convertit un objet en fonction."
         return NotImplemented
 
     def _update(self, objet):

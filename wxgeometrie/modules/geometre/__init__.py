@@ -1,8 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
-from __future__ import print_function
-from __future__ import absolute_import
-from __future__ import unicode_literals
 
 ##--------------------------------------#######
 #                 Geometre                    #
@@ -32,24 +28,24 @@ from ...GUI.panel import Panel_API_graphique
 class GeometreMenuBar(MenuBar):
     def __init__(self, panel):
         MenuBar.__init__(self, panel)
-        self.ajouter(u"Fichier", [u"nouveau"], [u"ouvrir"], [u"ouvrir ici"], None,
-                    [u"enregistrer"], [u"enregistrer_sous"], [u"exporter"],
-                    [u"exporter&sauver"], None,
-                    ['session'], None, [u"imprimer"], [u"presse-papier"],
-                    None, [u"proprietes"], None, self.panel.doc_ouverts, None,
-                    [u"fermer"], [u"quitter"])
-        self.ajouter(u"Editer", [u"annuler"], [u"refaire"], [u"modifier"], [u"supprimer"])
-        self.ajouter(u"creer")
+        self.ajouter("Fichier", ["nouveau"], ["ouvrir"], ["ouvrir ici"], None,
+                    ["enregistrer"], ["enregistrer_sous"], ["exporter"],
+                    ["exporter&sauver"], None,
+                    ['session'], None, ["imprimer"], ["presse-papier"],
+                    None, ["proprietes"], None, self.panel.doc_ouverts, None,
+                    ["fermer"], ["quitter"])
+        self.ajouter("Editer", ["annuler"], ["refaire"], ["modifier"], ["supprimer"])
+        self.ajouter("creer")
         self.ajouter("affichage")
         self.ajouter("autres")
-        self.ajouter(u"Outils", [u"options"])
-        self.ajouter(u"avance1")
-        self.ajouter(u"?")
+        self.ajouter("Outils", ["options"])
+        self.ajouter("avance1")
+        self.ajouter("?")
 
 
 class Geometre(Panel_API_graphique):
 
-    titre = u"Géométrie dynamique" # Donner un titre à chaque module
+    titre = "Géométrie dynamique" # Donner un titre à chaque module
 
     def __init__(self, *args, **kw):
         Panel_API_graphique.__init__(self, *args, **kw)

@@ -1,8 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
-from __future__ import print_function
-from __future__ import absolute_import
-from __future__ import unicode_literals
 
 from random import random
 
@@ -12,7 +8,7 @@ from wxgeometrie.mathlib.parsers import mathtext_parser
 
 
 def test_operations():
-    for i in xrange(10):
+    for i in range(10):
         a = randint(50) - randint(50)
         b = randint(50) - randint(50)
         if i >= 5:

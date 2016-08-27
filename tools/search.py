@@ -1,9 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
-from __future__ import print_function
-from __future__ import absolute_import
-from __future__ import unicode_literals
 
 ##--------------------------------------##
 #              WxGeometrie               #
@@ -49,7 +45,7 @@ SUPPORTED_EDITORS = ('geany', 'gedit', 'nano', 'vim', 'emacs', 'kate', 'kile')
 def gs(chaine='', case=True, exclude_comments=True, extensions=(".py", ".pyw"),
         maximum=100, codec="utf8", statistiques=False, replace=None,
         color=None, edit_with=None, edit_result=None, skip_ignore=False):
-    u"""Parcourt le répertoire courant et les sous-répertoire, à la recherche
+    """Parcourt le répertoire courant et les sous-répertoire, à la recherche
     des fichiers dont l'extension est comprise dans 'extensions',
     mais passe les répertoires et les fichiers dont le nom commence par
     un préfixe de 'exclude_prefixe', ou finit par un suffixe de
@@ -165,8 +161,8 @@ def gs(chaine='', case=True, exclude_comments=True, extensions=(".py", ".pyw"),
                     s = s[:pos] + blue2(s[pos:pos+len(chaine)]) \
                                 + s[pos+len(chaine):]
                     try:
-                        results.append(u"   " + blue('(' + str(n_lignes + 1) + ')')
-                                          + "  line " + white(unicode(n + 1))
+                        results.append("   " + blue('(' + str(n_lignes + 1) + ')')
+                                          + "  line " + white(str(n + 1))
                                           + ":   " + s.decode(codec))
                     except UnicodeError:
                         if replace is not None:
@@ -176,7 +172,7 @@ def gs(chaine='', case=True, exclude_comments=True, extensions=(".py", ".pyw"),
                             results.append(red('<Warning: encoding error in the following line>')
                                           + '\n   '
                                           + blue('(' + str(n_lignes + 1) + ')')
-                                          + "  line " + white(unicode(n + 1))
+                                          + "  line " + white(str(n + 1))
                                           + ":   " + s.decode('latin1'))
                         except UnicodeError:
                             results.append(red("Can't read result (unknown encoding)"))
@@ -200,7 +196,7 @@ def gs(chaine='', case=True, exclude_comments=True, extensions=(".py", ".pyw"),
                         return red("Maximum output exceeded...!")
 
         if results:
-            print(u" \u2022 in " + green(f[:end_root_pos])
+            print(" \u2022 in " + green(f[:end_root_pos])
                                  + green2(f[end_root_pos:]))
             for result in results:
                 print(result.rstrip())
@@ -218,15 +214,15 @@ def gs(chaine='', case=True, exclude_comments=True, extensions=(".py", ".pyw"),
                 + str(B) + " lignes vides\n"
                 + str(F) + " fichiers")
     if replace is None:
-        return blue(u"\n-> %s occurence(s) trouvée(s)." % occurences)
+        return blue("\n-> %s occurence(s) trouvée(s)." % occurences)
     else:
-        return blue(u"%s occurence(s) de %s remplacée(s) par %s."
+        return blue("%s occurence(s) de %s remplacée(s) par %s."
                     % (occurences, repr(chaine), repr(replace)))
 
 
 def usage():
-    u"Affiche l'aide."
-    print(u"""\n    === Usage ===\n
+    "Affiche l'aide."
+    print("""\n    === Usage ===\n
     - Rechercher la chaîne 'hello' dans le code (hors commentaires) :
         $ ./tools/search.py "hello"
     - Remplacer partout la chaîne 'hello' par la chaîne 'world':

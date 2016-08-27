@@ -1,8 +1,4 @@
 # -*- coding: iso-8859-1 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
-from __future__ import print_function
-from __future__ import absolute_import
-from __future__ import unicode_literals
 
 from random import random, randint as _randint
 from os.path import split, realpath, abspath
@@ -54,7 +50,7 @@ def assertEqual(x, y):
     if x != y:
         rx = repr(x)
         ry = repr(y)
-        if isinstance(x, basestring) and isinstance(y, basestring):
+        if isinstance(x, str) and isinstance(y, str):
             for i in range(min(len(rx), len(ry))):
                 if rx[i] != ry[i]:
                     break

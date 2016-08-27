@@ -1,9 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
-from __future__ import print_function
-from __future__ import absolute_import
-from __future__ import unicode_literals
 
 ##--------------------------------------#######
 #   Mathlib 2 (sympy powered) #
@@ -84,7 +80,7 @@ class Decim(Rational):
 # est de type Decim.
 
 def _compatible(meth):
-    u"Modifie la méthode `meth` pour qu'elle prenne en compte le type Decim()."
+    "Modifie la méthode `meth` pour qu'elle prenne en compte le type Decim()."
     # La méthode doit avoir exactement 2 arguments.
     # Exemple type : .__add__(self, other).
     assert meth.__code__.co_argcount == 2
@@ -112,7 +108,7 @@ del _name, _compatible
 
 
 class Fonction(ObjetMathematique):
-    u"""Une fonction de une ou plusieurs variables."""
+    """Une fonction de une ou plusieurs variables."""
     def __init__(self, variables, expression):
         if not isinstance(variables, (list, tuple)):
             variables = (variables,)
@@ -129,10 +125,10 @@ class Fonction(ObjetMathematique):
         if kw:
             if args:
                 raise TypeError("les arguments sont entres de deux facons differentes.")
-            return self._substituer(self.expression, [(Symbol(key), value) for key, value in kw.iteritems()])
+            return self._substituer(self.expression, [(Symbol(key), value) for key, value in kw.items()])
         if len(args) > len(self.variables):
             raise TypeError("il y a plus d'arguments que de variables.")
-        return self._substituer(self.expression, zip(self.variables[:len(args)], args))
+        return self._substituer(self.expression, list(zip(self.variables[:len(args)], args)))
 
     def _variables(self):
         return tuple(str(arg) for arg in self.variables)
@@ -178,13 +174,13 @@ class Fonction(ObjetMathematique):
 
 
 class ProduitEntiers(long):
-    u"""Usage interne : destiné à être utilisé avec sympy.factorint."""
+    """Usage interne : destiné à être utilisé avec sympy.factorint."""
 
     def __new__(cls, *couples):
         val = 1
         for (m, p) in couples:
             val *= m**p
-        self = long.__new__(cls, val)
+        self = int.__new__(cls, val)
         self.couples = couples
         return self
 
@@ -207,7 +203,7 @@ class ProduitEntiers(long):
 # Note: this must wrap all special methods
 # http://docs.python.org/reference/datamodel.html#more-attribute-access-for-new-style-classes
 class MesureDegres(GenericWrapper):
-    u"""Usage interne : destiné à être utilisé avec deg."""
+    """Usage interne : destiné à être utilisé avec deg."""
 
     __slots__ = ('__val',)
 
@@ -216,9 +212,6 @@ class MesureDegres(GenericWrapper):
 
     def __repr__(self):
         return repr(self.__val) + '°'
-
-    def __unicode__(self):
-        return unicode(self.__val) + u'°'
 
 
 

@@ -1,9 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
-from __future__ import with_statement
-from __future__ import print_function
-from __future__ import absolute_import
-from __future__ import unicode_literals
 
 ##--------------------------------------#######
 #                Pseudo-canvas                  #
@@ -29,7 +24,7 @@ from __future__ import unicode_literals
 from .. import param
 
 class PseudoContexte(object):
-    u"Contexte bidon ne faisant absolument rien."
+    "Contexte bidon ne faisant absolument rien."
 
     def __enter__(self):
         pass
@@ -39,7 +34,7 @@ class PseudoContexte(object):
 
 
 class PseudoCanvas(object):
-    u"""Faux canvas utilisé par défaut par la feuille de travail.
+    """Faux canvas utilisé par défaut par la feuille de travail.
 
     Permet de faire appel à l'objet canvas et à ses méthodes sans générer d'erreur
     lorsqu'il n'y a pas de canvas."""
@@ -61,7 +56,7 @@ class PseudoCanvas(object):
 ##    def actualiser(self, *args, **kw):
 ##        pass
 
-    def __nonzero__(self):
+    def __bool__(self):
         return False
 
     def __bool__(self):

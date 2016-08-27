@@ -1,9 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
-from __future__ import print_function
-from __future__ import absolute_import
-from __future__ import unicode_literals
 
 ##--------------------------------------#######
 #           Mathlib 2 (sympy powered)         #
@@ -61,7 +57,7 @@ def expand(expression, variable = None):
 
 
 def evalf(expression, precision=60):
-    u"""Evalue l'expression en respectant sa structure.
+    """Evalue l'expression en respectant sa structure.
 
     Par exemple, un polynôme factorisé reste factorisé après évaluation.
 
@@ -93,9 +89,9 @@ def evalf(expression, precision=60):
 
 
 def factor(expression, variable = None, ensemble = None, decomposer_entiers = True):
-    if isinstance(expression, (int, long, Integer)):
+    if isinstance(expression, (int, Integer)):
         if decomposer_entiers:
-            return ProduitEntiers(*factorint(expression).iteritems())
+            return ProduitEntiers(*factorint(expression).items())
         else:
             return expression
 
@@ -286,7 +282,7 @@ def simplifier_racines(expression):
         return expression
 
 def mat(*args):
-    u"""Crée une matrice.
+    """Crée une matrice.
 
     * Si une liste est donné en argument, la liste est convertie en matrice::
 
@@ -354,11 +350,11 @@ def mat(*args):
         return Matrix(FunctionMatrix(args[0], args[1], Lambda((li, co), expr)))
 
 def transpose(M):
-  u"Transposée de la matrice M."
+  "Transposée de la matrice M."
   return M.T
 
 def det(M):
-  u"Déterminant de la matrice M."
+  "Déterminant de la matrice M."
   return M.det()
 
 def valeurs_propres(M):

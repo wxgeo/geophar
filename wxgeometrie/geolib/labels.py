@@ -1,9 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
-from __future__ import with_statement
-from __future__ import print_function
-from __future__ import absolute_import
-from __future__ import unicode_literals
 
 ##--------------------------------------#######
 #                   Labels                    #
@@ -39,7 +34,7 @@ from ..pylib import property2
 
 
 class Label_generique(Texte_editable_generique):
-    u"""Un label (étiquette accolée à l'objet)
+    """Un label (étiquette accolée à l'objet)
 
     Le label est crée automatiquement lors de la création de l'objet.
     Le label n'est pas un 'vrai' objet, il n'est pas enregistré sur la feuille."""
@@ -87,7 +82,7 @@ class Label_generique(Texte_editable_generique):
         raise NotImplementedError    # sera implemente differemment pour chaque type de label
 
     def _creer_trace(self):
-        u"Pas de trace pour les étiquettes."
+        "Pas de trace pour les étiquettes."
         pass
 
     def figure_perimee(self):
@@ -135,7 +130,7 @@ class Label_generique(Texte_editable_generique):
     y = __y
 
     def angle(self):
-        u"""L'angle d'affichage du texte.
+        """L'angle d'affichage du texte.
 
         Pour les objets qui ont une pente (droites, segments), si
         style('angle') == 'auto', alors l'angle retourné est celui correspondant
@@ -154,7 +149,7 @@ class Label_generique(Texte_editable_generique):
         return angle
 
     def alignement_vertical(self):
-        u"""L'alignement vertical du texte ('top', 'bottom' ou 'center').
+        """L'alignement vertical du texte ('top', 'bottom' ou 'center').
 
         Pour les objets qui ont une pente (droites, segments), si
         style('alignement_vertical') == 'auto', alors l'alignement retourné est
@@ -169,7 +164,7 @@ class Label_generique(Texte_editable_generique):
 
 
 class Label_point(Label_generique):
-    u"L'étiquette d'un point."
+    "L'étiquette d'un point."
 
     _style_defaut = {'mode': 'nom'}
 
@@ -208,7 +203,7 @@ class Label_point(Label_generique):
 
 
 class Label_glisseur(Label_generique):
-    u"""Classe mère de tous les labels utilisant un objet glisseur.
+    """Classe mère de tous les labels utilisant un objet glisseur.
 
     `classe` doit contenir le type de glisseur utilisé.
     """
@@ -249,7 +244,7 @@ class Label_glisseur(Label_generique):
 
 
 class Label_segment(Label_glisseur):
-    u"""L'étiquette d'un segment."""
+    """L'étiquette d'un segment."""
 
     glisseur = Glisseur_segment
 
@@ -263,7 +258,7 @@ class Label_segment(Label_glisseur):
 
 
 class Label_vecteur(Label_glisseur):
-    u"""L'étiquette d'un vecteur."""
+    """L'étiquette d'un vecteur."""
 
     glisseur = Glisseur_vecteur
 
@@ -277,7 +272,7 @@ class Label_vecteur(Label_glisseur):
 
 
 class Label_droite(Label_glisseur):
-    u"""L'étiquette d'une droite."""
+    """L'étiquette d'une droite."""
 
     glisseur = Glisseur_droite
 
@@ -340,7 +335,7 @@ class Label_arc_cercle(Label_glisseur):
 
 
 class Label_polygone(Label_generique):
-    u"L'étiquette d'un polygone."
+    "L'étiquette d'un polygone."
 
     __parent = parent = Argument('Polygone_generique')
 
@@ -375,7 +370,7 @@ class Label_polygone(Label_generique):
 
 
 class Label_angle(Label_generique):
-    u"L'étiquette d'un angle."
+    "L'étiquette d'un angle."
 
     _style_defaut = {'_rayon_': param.codage["rayon"] + 20,
                      'alignement_vertical': 'center',
@@ -399,7 +394,7 @@ class Label_angle(Label_generique):
         i = (1, 0)
         a = angle_vectoriel(i, u)
         b = angle_vectoriel(i, v)
-        if parent.sens == u"non défini" and parent._sens() < 0:
+        if parent.sens == "non défini" and parent._sens() < 0:
             a, b = b, a
         if b < a:
             b += 2*pi
@@ -422,7 +417,7 @@ class Label_angle(Label_generique):
                 i = (1, 0)
                 a = angle_vectoriel(i, u)
                 b = angle_vectoriel(i, v)
-                if parent.sens == u"non défini" and parent._sens() < 0:
+                if parent.sens == "non défini" and parent._sens() < 0:
                     a, b = b, a
                 c = angle_vectoriel(i, (-rx, -ry))
                 if a != b:

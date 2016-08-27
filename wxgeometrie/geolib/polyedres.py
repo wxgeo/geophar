@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
-from __future__ import print_function
-from __future__ import absolute_import
-from __future__ import unicode_literals
+ # 1/2 == .5 (par defaut, 1/2 == 0)
+
+
+
 
 ##--------------------------------------#######
-#                   Objets                    #
+#                  Polyèdres                  #
 ##--------------------------------------#######
 #    WxGeometrie
 #    Dynamic geometry, graph plotter, and more for french mathematic teachers.
@@ -52,7 +52,7 @@ from .. import param
 
 
 class Arete(Segment):
-    u"""Une arête.
+    """Une arête.
 
     Une arête d'un polyèdre, reliant le point numero 'n' au point numero 'p'.
     Note: n et p commencent à 0.
@@ -111,7 +111,7 @@ class Arete(Segment):
 
 
 class Sommet_polyedre(Point_generique):
-    u"""Un sommet.
+    """Un sommet.
 
     Le nième sommet d'un polyèdre.
     Note: n commence à 0.
@@ -165,7 +165,7 @@ class Sommet_polyedre(Point_generique):
         Objet._modifier_hierarchie(self, self.__polyedre._hierarchie + (self.__n + 1)/(3*N + 2))
 
     def _lier_sommet(self, point):
-        u"""Lie le sommet à un point, en le rendant déplaçable."""
+        """Lie le sommet à un point, en le rendant déplaçable."""
         self._point_lie = point
         self.style(couleur = "m")
 
@@ -179,7 +179,7 @@ class Sommet_polyedre(Point_generique):
 
 
 class Polyedre_generique(Objet):
-    u"""Un polyèdre générique.
+    """Un polyèdre générique.
 
     Classe mère de toutes les représentations de polyèdres."""
 
@@ -194,7 +194,7 @@ class Polyedre_generique(Objet):
         self.__centre = Barycentre(*(Point_pondere(point, 1) for point in points))
         Objet.__init__(self, **styles)
 #        self.etiquette = Label_polyedre(self)
-        self.__sommets = tuple(Sommet_polyedre(self, i) for i in xrange(n))
+        self.__sommets = tuple(Sommet_polyedre(self, i) for i in range(n))
         # 'aretes' contient la liste des arêtes sous la forme de couples de numéros de sommets.
         # ex: [(0, 1), (0, 2), (0,3), (1, 2), (1, 3), (2, 3)] pour un tétraèdre.
         aretes = styles.pop("aretes", [])
@@ -210,7 +210,7 @@ class Polyedre_generique(Objet):
 
 
     def on_register(self):
-        u"""Enregistre les arêtes et les sommets du polyedre dans la feuille lors
+        """Enregistre les arêtes et les sommets du polyedre dans la feuille lors
         de l'enregistrement du polyedre."""
         # On enregistre toutes les arêtes dans la feuille.
         for arete in self.__aretes:
@@ -315,14 +315,14 @@ class Polyedre_generique(Objet):
 
 
     def _tester_aretes(self):
-        u"Méthode à surclasser."
+        "Méthode à surclasser."
         raise NotImplementedError
 
 
 
 
 class Tetraedre(Polyedre_generique):
-    u"""Un tétraèdre.
+    """Un tétraèdre.
 
     La projection d'un tétraèdre."""
 
@@ -367,7 +367,7 @@ class Tetraedre(Polyedre_generique):
 
 
 class Sommet_cube(Point_generique):
-    u"""Un sommet d'un rectangle.
+    """Un sommet d'un rectangle.
 
     (Usage interne)."""
 
@@ -408,7 +408,7 @@ class Sommet_cube(Point_generique):
 
 
 class Cube(Polyedre_generique):
-    u"""Un cube.
+    """Un cube.
 
     La projection d'un cube."""
 

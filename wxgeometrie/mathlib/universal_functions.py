@@ -1,8 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
-from __future__ import print_function
-from __future__ import absolute_import
-from __future__ import unicode_literals
 
 ##--------------------------------------#######
 #   Mathlib 2 (sympy powered) #
@@ -130,7 +126,7 @@ _math.abs = _cmath.abs = _sympy.abs = abs
 
 def sinh(*args, **kw):
     arg0 = args[0]
-    if isinstance(arg0, (int, float, long)):
+    if isinstance(arg0, (int, float)):
         return _math.sinh(*args,**kw)
     elif isinstance(arg0, complex):
         return _cmath.sinh(*args,**kw)
@@ -142,7 +138,7 @@ def sinh(*args, **kw):
 
 def asin(*args, **kw):
     arg0 = args[0]
-    if isinstance(arg0, (int, float, long)):
+    if isinstance(arg0, (int, float)):
         return _math.asin(*args,**kw)
     elif isinstance(arg0, complex):
         return _cmath.asin(*args,**kw)
@@ -154,7 +150,7 @@ def asin(*args, **kw):
 
 def cos(*args, **kw):
     arg0 = args[0]
-    if isinstance(arg0, (int, float, long)):
+    if isinstance(arg0, (int, float)):
         return _math.cos(*args,**kw)
     elif isinstance(arg0, complex):
         return _cmath.cos(*args,**kw)
@@ -166,7 +162,7 @@ def cos(*args, **kw):
 
 def log(*args, **kw):
     arg0 = args[0]
-    if isinstance(arg0, (int, float, long)):
+    if isinstance(arg0, (int, float)):
         return _math.log10(*args,**kw)
     elif isinstance(arg0, complex):
         return _cmath.log10(*args,**kw)
@@ -178,7 +174,7 @@ def log(*args, **kw):
 
 def atan(*args, **kw):
     arg0 = args[0]
-    if isinstance(arg0, (int, float, long)):
+    if isinstance(arg0, (int, float)):
         return _math.atan(*args,**kw)
     elif isinstance(arg0, complex):
         return _cmath.atan(*args,**kw)
@@ -190,7 +186,7 @@ def atan(*args, **kw):
 
 def floor(*args, **kw):
     arg0 = args[0]
-    if isinstance(arg0, (int, float, long)):
+    if isinstance(arg0, (int, float)):
         return _math.floor(*args,**kw)
     elif isinstance(arg0, complex):
         return _cmath.floor(*args,**kw)
@@ -202,7 +198,7 @@ def floor(*args, **kw):
 
 def ln(*args, **kw):
     arg0 = args[0]
-    if isinstance(arg0, (int, float, long)):
+    if isinstance(arg0, (int, float)):
         return _math.log(*args,**kw)
     elif isinstance(arg0, complex):
         return _cmath.log(*args,**kw)
@@ -214,7 +210,7 @@ def ln(*args, **kw):
 
 def tanh(*args, **kw):
     arg0 = args[0]
-    if isinstance(arg0, (int, float, long)):
+    if isinstance(arg0, (int, float)):
         return _math.tanh(*args,**kw)
     elif isinstance(arg0, complex):
         return _cmath.tanh(*args,**kw)
@@ -226,7 +222,7 @@ def tanh(*args, **kw):
 
 def sqrt(*args, **kw):
     arg0 = args[0]
-    if isinstance(arg0, (int, float, long)):
+    if isinstance(arg0, (int, float)):
         return _math.sqrt(*args,**kw)
     elif isinstance(arg0, complex):
         return _cmath.sqrt(*args,**kw)
@@ -238,7 +234,7 @@ def sqrt(*args, **kw):
 
 def cosh(*args, **kw):
     arg0 = args[0]
-    if isinstance(arg0, (int, float, long)):
+    if isinstance(arg0, (int, float)):
         return _math.cosh(*args,**kw)
     elif isinstance(arg0, complex):
         return _cmath.cosh(*args,**kw)
@@ -250,7 +246,7 @@ def cosh(*args, **kw):
 
 def exp(*args, **kw):
     arg0 = args[0]
-    if isinstance(arg0, (int, float, long)):
+    if isinstance(arg0, (int, float)):
         return _math.exp(*args,**kw)
     elif isinstance(arg0, complex):
         return _cmath.exp(*args,**kw)
@@ -262,7 +258,7 @@ def exp(*args, **kw):
 
 def acos(*args, **kw):
     arg0 = args[0]
-    if isinstance(arg0, (int, float, long)):
+    if isinstance(arg0, (int, float)):
         return _math.acos(*args,**kw)
     elif isinstance(arg0, complex):
         return _cmath.acos(*args,**kw)
@@ -274,7 +270,7 @@ def acos(*args, **kw):
 
 def ceil(*args, **kw):
     arg0 = args[0]
-    if isinstance(arg0, (int, float, long)):
+    if isinstance(arg0, (int, float)):
         return _math.ceil(*args,**kw)
     elif isinstance(arg0, complex):
         return _cmath.ceil(*args,**kw)
@@ -286,7 +282,7 @@ def ceil(*args, **kw):
 
 def sin(*args, **kw):
     arg0 = args[0]
-    if isinstance(arg0, (int, float, long)):
+    if isinstance(arg0, (int, float)):
         return _math.sin(*args,**kw)
     elif isinstance(arg0, complex):
         return _cmath.sin(*args,**kw)
@@ -298,7 +294,7 @@ def sin(*args, **kw):
 
 def tan(*args, **kw):
     arg0 = args[0]
-    if isinstance(arg0, (int, float, long)):
+    if isinstance(arg0, (int, float)):
         return _math.tan(*args,**kw)
     elif isinstance(arg0, complex):
         return _cmath.tan(*args,**kw)
@@ -310,7 +306,7 @@ def tan(*args, **kw):
 
 def abs(*args, **kw):
     arg0 = args[0]
-    if isinstance(arg0, (int, float, long)):
+    if isinstance(arg0, (int, float)):
         return _math.abs(*args,**kw)
     elif isinstance(arg0, complex):
         return _cmath.abs(*args,**kw)
@@ -323,7 +319,7 @@ def abs(*args, **kw):
 # Code écrit à la main (ne pas effacer donc !)
 
 def arg(complexe):
-    if isinstance(complexe, (int, complex, long, float)):
+    if isinstance(complexe, (int, complex, float)):
         return _cmath.log(complexe).imag
     elif isinstance(complexe, _sympy.Basic):
         return _sympy.arg(complexe)

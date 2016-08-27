@@ -1,8 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
-from __future__ import print_function
-from __future__ import absolute_import
-from __future__ import unicode_literals
 
 ##--------------------------------------##
 #              WxGeometrie               #
@@ -41,7 +37,7 @@ from ... import param
 
 
 def _auto_tabvar(chaine='', derivee=True, limites=True, decimales=3, approche=False, parse_only=False, stretch=True):
-    u"""Génère le code du tableau de variations d'une fonction à variable réelle.
+    """Génère le code du tableau de variations d'une fonction à variable réelle.
 
     On suppose que la fonction est de classe C1 sur tout intervalle ouvert de son
     ensemble de définition.
@@ -130,7 +126,7 @@ def _auto_tabvar(chaine='', derivee=True, limites=True, decimales=3, approche=Fa
     infs = [S(intervalle.inf) for intervalle in ens_def]
 
     def _code_val(x):
-        u"Génère le code correspondant à une valeur `x` remarquable."
+        "Génère le code correspondant à une valeur `x` remarquable."
         if x in ens_def:
             # On calcule simplement f(x).
             fx = nice_str2(expr.subs(var, x))
@@ -159,7 +155,7 @@ def _auto_tabvar(chaine='', derivee=True, limites=True, decimales=3, approche=Fa
             return '(%s;%s)' % (nice_str2(x), fx)
 
     def _code_inter(a, b):
-        u"Retourne les variations entre a et b."
+        "Retourne les variations entre a et b."
         if a == -oo and b == +oo:
             a = b = 0
         elif a == -oo:
@@ -229,7 +225,7 @@ def _auto_tabvar(chaine='', derivee=True, limites=True, decimales=3, approche=Fa
 
 
 def tabvar(chaine="", derivee=True, limites=True, decimales=3, approche=False, stretch=True):
-    u"""Indiquer les variations de la fonction.
+    """Indiquer les variations de la fonction.
 
 Exemples :
 f: (-oo;3) << (1;2;0) << (3;+oo|-oo) << (5;2) >> (+oo;-oo)
@@ -354,7 +350,7 @@ x;\\sqrt{x};(\\sqrt{x})': 0;0;| << +oo;+oo"""
 
     # Deuxieme et dernier balayage :
     # on parcourt maintenant la liste pour construire colonne par colonne le tableau de variations.
-    for i in xrange(len(sequence)):
+    for i in range(len(sequence)):
         # on justifie apres chaque etape, ce qui rend une eventuelle relecture du tableau plus agreable
         n = max(len(ligne_variable), len(ligne_derivee), len(ligne_fonction))
         ligne_variable = ligne_variable.ljust(n)

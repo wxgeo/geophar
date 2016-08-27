@@ -1,9 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
-from __future__ import with_statement
-from __future__ import print_function
-from __future__ import absolute_import
-from __future__ import unicode_literals
 
 #    WxGeometrie
 #    Dynamic geometry, graph plotter, and more for french mathematic teachers.
@@ -62,18 +57,18 @@ class Rapport(list):
             self.archiver()
 
     def _contenu(self):
-        u"Récupère le contenu récent (c-à-d. non archivé)."
+        "Récupère le contenu récent (c-à-d. non archivé)."
         return '\n'.join(self) + '\n'
 
     def archiver(self):
-        u"Copie les derniers enregistrements vers le fichier log."
+        "Copie les derniers enregistrements vers le fichier log."
         if self.fichier_log is not None:
             with open(self.fichier_log, 'a') as f:
                 f.write(uu(self._contenu()).encode('utf8'))
                 self[:] = []
 
     def contenu(self):
-        u"Récupère le contenu complet, y compris ce qui a déjà été archivé."
+        "Récupère le contenu complet, y compris ce qui a déjà été archivé."
         if self.fichier_log is None:
             return self._contenu()
         else:

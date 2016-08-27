@@ -1,8 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
-from __future__ import print_function
-from __future__ import absolute_import
-from __future__ import unicode_literals
 
 ##--------------------------------------#######
 #                Intervalles                  #
@@ -41,7 +37,7 @@ from .printers import custom_str as str
 
 class Ensemble(object):
     def __new__(cls, *args, **kw):
-        if len(args) == 1 and isinstance(args[0], basestring):
+        if len(args) == 1 and isinstance(args[0], str):
             return conversion_chaine_ensemble(args[0], utiliser_sympy = True)
         instance = object.__new__(cls)
         instance._initialiser(*args, **kw)
@@ -49,7 +45,7 @@ class Ensemble(object):
 
 
 class Union(Ensemble):
-    u"""Une union finie d'intervalles réels. Les valeurs numériques isolées sont converties en singletons.
+    """Une union finie d'intervalles réels. Les valeurs numériques isolées sont converties en singletons.
     Lors de l'initialisation, elle est reecrite sous forme d'union disjointe et ordonnée.
 
     Les opération sur les unions d'intervalles sont :
@@ -168,11 +164,11 @@ class Union(Ensemble):
     def __repr__(self):
         return "Ensemble(%s)" %repr(str(self))
 
-    def __nonzero__(self):
+    def __bool__(self):
         return not self.vide
 
     def __neg__(self):
-        u"complémentaire"
+        "complémentaire"
         return reduce(lambda x, y: x*y, [-intervalle for intervalle in self.intervalles], Intervalle())
 
     def __pos__(self):
@@ -210,7 +206,7 @@ class Union(Ensemble):
 
 
     def extremites(self, _min, _max):
-        u"""Retourne les extrémités de chaque intervalle.
+        """Retourne les extrémités de chaque intervalle.
 
         Chaque extrémité est donnée sous la forme de couples (_float, _str),
         où _str peut prendre les valeurs ".", ")", "(" ou "o".
@@ -234,12 +230,12 @@ class Union(Ensemble):
 
     @property
     def adherence(self):
-        u"L'adhérence de l'ensemble (ie. le plus petit ensemble fermé qui le contienne)."
+        "L'adhérence de l'ensemble (ie. le plus petit ensemble fermé qui le contienne)."
         return Union(Intervalle(intervalle.inf, intervalle.sup, True, True)
                                 for intervalle in self.intervalles)
 
     def asarray(self, _min, _max, pas):
-        u"""Génère une liste d'objets 'array', correspondant à chaque intervalle.
+        """Génère une liste d'objets 'array', correspondant à chaque intervalle.
 
         On se limite à des valeurs comprises entre '_min' et '_max', avec le pas 'pas'."""
         arrays = []
@@ -257,7 +253,7 @@ class Union(Ensemble):
 
 
     def evalf(self, n = 15, round_=None, **options):
-        u"Convertit les bornes de chaque intervalle en float."
+        "Convertit les bornes de chaque intervalle en float."
         union = vide
         def evalf(nbr):
             if nbr in (-oo, +oo):
@@ -283,7 +279,7 @@ class Union(Ensemble):
 
 
 class Intervalle(Union):
-    u"""Un intervalle réel non vide.
+    """Un intervalle réel non vide.
     Les opération sur les intervalles sont :
     - l'union : symbole "A+B"
     - l'intersection : symbole "A*B"
@@ -330,7 +326,7 @@ class Intervalle(Union):
 
 
     def __mul__(self, y):
-        u"intersection"
+        "intersection"
         if not isinstance(y, Union):
             y = Union(y)
 
@@ -378,16 +374,11 @@ class Intervalle(Union):
 
     def __str__(self):
         if self.vide:
-            return "{}"
+            return "\u00D8" # "Ø" ; u"\u2205" ne fonctionne pas sous Windows XP
         elif self.inf == self.sup:
             return "{%s}" %str(self.inf)
         return (self.inf_inclus and "[" or "]") + str(self.inf) + ";" + str(self.sup) + (self.sup_inclus and "]" or "[")
 
-    def __unicode__(self):
-        if self.vide:
-            return u"\u00D8" # "Ø" ; u"\u2205" ne fonctionne pas sous Windows XP
-        else:
-            return unicode(str(self))
 
     def __copy__(self):
         return Intervalle(self.inf, self.sup, self._inf_inclus, self._sup_inclus)
@@ -406,7 +397,7 @@ class Intervalle(Union):
 
 
 def _remplacer_virgule(chaine):
-    u"""Remplacement intelligent de la virgule par un point ou un point-virgule.
+    """Remplacement intelligent de la virgule par un point ou un point-virgule.
 
     Dans la mesure du possible, essaie de deviner si la virgule est utilisée
     comme séparateur décimal, ou entre deux valeurs.
@@ -416,17 +407,17 @@ def _remplacer_virgule(chaine):
         return chaine
     elif ';' in chaine and '.' not in chaine:
         if param.debug:
-            print(u"Warning (autocorrection): '" + chaine + "'\n"
+            print("Warning (autocorrection): '" + chaine + "'\n"
                 "Utilisation incorrecte d'une virgule.\n"
-                u"Utilisez le point comme séparateur décimal, ou modifiez les options.\n"
-                u"Enfin, ne mélangez pas les virgules et les points virgules.")
+                "Utilisez le point comme séparateur décimal, ou modifiez les options.\n"
+                "Enfin, ne mélangez pas les virgules et les points virgules.")
         return chaine.replace(',', '.')
     else:
         return chaine.replace(',', ';')
 
 
 def preformatage_ensemble(chaine):
-    u"""Formatage léger (qui reste humainement lisible)."""
+    """Formatage léger (qui reste humainement lisible)."""
     chaine = chaine.replace(" ", "")
 
     # Traduction du LaTeX
@@ -459,7 +450,7 @@ def preformatage_ensemble(chaine):
 
 
 def preformatage_geolib_ensemble(chaine):
-    u"""Cette fonction est destinée à un usage très spécifique dans geolib.
+    """Cette fonction est destinée à un usage très spécifique dans geolib.
 
     Elle accepte une syntaxe beaucoup plus souple que la précédente,
     et indique si les extrémités des intervalles doivent être affichés ou non.
@@ -515,7 +506,7 @@ def preformatage_geolib_ensemble(chaine):
 
 
 def formatage_ensemble(chaine, preformatage = True, utiliser_sympy = False):
-    u"""Les symboles à utiliser sont 'U' pour l'union, '^' pour l'intersection,
+    """Les symboles à utiliser sont 'U' pour l'union, '^' pour l'intersection,
     '-' ou '\\' pour la soustraction.
     R, R+, R*+, R-, R*- sont aussi acceptés."""
 

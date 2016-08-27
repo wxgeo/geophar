@@ -1,8 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
-from __future__ import print_function
-from __future__ import absolute_import
-from __future__ import unicode_literals
 
 ##########################################################################
 #
@@ -35,7 +31,9 @@ from ..pylib import advanced_split
 from .. import param
 
 
-def _avertissement(*arg, **kw): print(u"Instruction interdite en mode securisé.")
+def _avertissement(*arg, **kw): 
+    print("Instruction interdite en mode securisé.")
+
 #fonctions_interdites = ["eval", "compile", "execfile", "file", "open", "write", "getattr", "setattr"]
 
 liste_blanche = set(('False', 'None', 'True', 'abs', 'all', 'any', 'basestring', 'bool',  'callable', 'chr', 'close', \
@@ -104,7 +102,7 @@ def expression_affectable(chaine):
 # exec(string, dico)
 
 def eval_restricted(s, dico_perso = None):
-    u"""eval_restricted(s) évalue s dans un contexte vierge et sécurisé.
+    """eval_restricted(s) évalue s dans un contexte vierge et sécurisé.
 
     Toutes les fonctions disponibles par défaut sont filtrées.
     L'évalution de chaînes unicodes se fait en utilisant l'encodage système, et non l'utf8.
@@ -120,13 +118,11 @@ def eval_restricted(s, dico_perso = None):
         dico.update(dico_perso)
     for module in ("os", "sys", "securite"):
         dico.pop(module, None)
-    if isinstance(s, unicode):
-        s = s.encode(param.encodage)
     return eval(s, dico)
 
 
 def eval_safe(s):
-    u"""eval_safe(repr(x)) retourne x pour les types les plus usuels
+    """eval_safe(repr(x)) retourne x pour les types les plus usuels
     (int, long, str, unicode, float, bool, None, list, tuple, dict.)
     Mais aucune évaluation n'est faite, ce qui évite d'éxécuter un code dangereux.
     Le type de s est detecté, et la transformation appropriée appliquée.

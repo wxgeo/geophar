@@ -28,10 +28,6 @@
 Decorator module, see http://pypi.python.org/pypi/decorator
 for the documentation.
 """
-from __future__ import print_function
-from __future__ import division
-from __future__ import absolute_import
-from __future__ import unicode_literals
 
 __all__ = ["decorator", "FunctionMaker", "partial",
            "deprecated", "getinfo", "new_wrapper"]
@@ -102,7 +98,7 @@ class FunctionMaker(object):
         name = mo.group(1) # extract the function name
         reserved_names = set([name] + [
             arg.strip(' *') for arg in self.signature.split(',')])
-        for n, v in evaldict.iteritems():
+        for n, v in evaldict.items():
             if n in reserved_names:
                 raise NameError('%s is overridden in\n%s' % (n, src))
         if not src.endswith('\n'): # add a newline just for safety

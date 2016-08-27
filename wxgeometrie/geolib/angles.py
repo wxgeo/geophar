@@ -1,8 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
-from __future__ import print_function
-from __future__ import absolute_import
-from __future__ import unicode_literals
 
 ##--------------------------------------#######
 #                   Objets                    #
@@ -44,7 +40,7 @@ from ..pylib import warning
 
 
 class Angle_generique(Objet_numerique):
-    u"""Un angle générique (en radian).
+    """Un angle générique (en radian).
 
     Classe mère des angles orientés ou non."""
 
@@ -81,18 +77,18 @@ class Angle_generique(Objet_numerique):
     def info(self):
         unite = contexte['unite_angle']
         if unite == 'd':
-            val = nice_display(self.degre) + u'\u00B0'
+            val = nice_display(self.degre) + '\u00B0'
         elif unite == 'g':
             val = nice_display(self.grad) + " grad"
         else:
             val = nice_display(self.rad) + " rad"
-        return self.nom_complet.rstrip() + u" de valeur " + val
+        return self.nom_complet.rstrip() + " de valeur " + val
 
 
     @staticmethod
     def _convertir(objet):
         unite = contexte['unite_angle']
-        if isinstance(objet, basestring) and objet[-1]  == u'\u00B0':
+        if isinstance(objet, str) and objet[-1]  == '\u00B0':
             objet = objet[:-1]
             unite = 'd'
         if not isinstance(objet, Variable):
@@ -102,7 +98,7 @@ class Angle_generique(Objet_numerique):
 
 
 class Secteur_angulaire(Angle_generique):
-    u"Classe mère de tous les angles 'affichables'."
+    "Classe mère de tous les angles 'affichables'."
 
     _style_defaut = param.angles
     _affichage_depend_de_la_fenetre = True
@@ -218,7 +214,7 @@ class Secteur_angulaire(Angle_generique):
 
 
 class Angle_oriente(Secteur_angulaire):
-    u"""Un angle orienté.
+    """Un angle orienté.
 
     Un angle orienté défini par 3 points A, B, C -> angle (BA>, BC>)."""
 
@@ -240,7 +236,7 @@ class Angle_oriente(Secteur_angulaire):
 
 
 class Angle(Secteur_angulaire):
-    u"""Un angle.
+    """Un angle.
 
     Un angle non orienté, défini par 3 points A, B, C -> angle /ABC\."""
 
@@ -260,7 +256,7 @@ class Angle(Secteur_angulaire):
 
     @property
     def sens(self):
-        return u"non défini" # attention en cas de modification : cette valeur est utilisée dans la classe Label_angle
+        return "non défini" # attention en cas de modification : cette valeur est utilisée dans la classe Label_angle
 
     def image_par(self, transformation):
         return Angle(self.__point1.image_par(transformation), self.__point2.image_par(transformation), self.__point3.image_par(transformation))
@@ -270,7 +266,7 @@ class Angle(Secteur_angulaire):
 
 
 class Angle_libre(Angle_generique):
-    u"""Un angle libre.
+    """Un angle libre.
 
     Un angle défini par sa valeur numérique (en radian)."""
 
@@ -281,17 +277,17 @@ class Angle_libre(Angle_generique):
         if unite is None:
             unite = contexte['unite_angle']
         else:
-            if unite == u'\u00B0' or unite.startswith('deg'):
+            if unite == '\u00B0' or unite.startswith('deg'):
                 unite = 'd'
             elif unite.startswith('gr'):
                 unite = 'g'
 
-        if isinstance(variable, basestring):
+        if isinstance(variable, str):
             variable = variable.strip()
-            if variable[-1]  == u'\u00B0':
+            if variable[-1]  == '\u00B0':
                 unite = 'd'
                 variable = variable[:-1]
-                if variable[-1] == u'\u00c2':
+                if variable[-1] == '\u00c2':
                     # Problème fréquent d'encodage (utf8 interprété comme latin1)
                     if param.debug:
                         warning('Angle: encodage incorrect (utf8/latin1).')
@@ -307,7 +303,7 @@ class Angle_libre(Angle_generique):
             coeff = 180 if unite == 'd' else 200
             if isinstance(variable, Variable):
                 variable = variable.contenu
-            if isinstance(variable, basestring):
+            if isinstance(variable, str):
                 variable = '(' + variable + ')*pi/%s' %coeff
             elif issympy(variable):
                 variable *= PI/coeff
@@ -336,7 +332,7 @@ class Angle_libre(Angle_generique):
 
 
 class Angle_vectoriel(Angle_generique):
-    u"""Un angle défini par des vecteurs.
+    """Un angle défini par des vecteurs.
 
     Un angle orienté défini par deux vecteurs (non affiché)."""
     vecteur1 = __vecteur1 = Argument("Vecteur_generique", defaut = Vecteur_libre)

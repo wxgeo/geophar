@@ -1,9 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
-from __future__ import with_statement
-from __future__ import print_function
-from __future__ import absolute_import
-from __future__ import unicode_literals
 
 #    .----------------------------------------.
 #    |    Exercices : Équations de droites    |
@@ -55,22 +50,22 @@ class ExerciceMenuBar(MenuBar):
     def __init__(self, panel):
         MenuBar.__init__(self, panel)
 
-        self.ajouter(u"Fichier", [u"Recommencer", u"Recommencer au niveau 0.", u"Ctrl+N", panel.reinitialiser],
-                    [u"ouvrir"],
-                    [u"enregistrer"], [u"enregistrer_sous"], [u"exporter"],
-                    [u"exporter&sauver"], None, [u"imprimer"], [u"presse-papier"],
-                    None, [u"proprietes"], None, ["fermer"], ["quitter"])
-        self.ajouter(u"Editer", ["annuler"], ["refaire"])
-        self.ajouter(u"Affichage", ["onglet"], ["plein_ecran"], None, ["zoom_texte"], ["zoom_ligne"], ["zoom_general"])
-        self.ajouter(u"Outils", [u"options"])
-        self.ajouter(u"avance1")
-        self.ajouter(u"?")
+        self.ajouter("Fichier", ["Recommencer", "Recommencer au niveau 0.", "Ctrl+N", panel.reinitialiser],
+                    ["ouvrir"],
+                    ["enregistrer"], ["enregistrer_sous"], ["exporter"],
+                    ["exporter&sauver"], None, ["imprimer"], ["presse-papier"],
+                    None, ["proprietes"], None, ["fermer"], ["quitter"])
+        self.ajouter("Editer", ["annuler"], ["refaire"])
+        self.ajouter("Affichage", ["onglet"], ["plein_ecran"], None, ["zoom_texte"], ["zoom_ligne"], ["zoom_general"])
+        self.ajouter("Outils", ["options"])
+        self.ajouter("avance1")
+        self.ajouter("?")
 
 
 
 class Exercice(Panel_API_graphique):
 
-    titre = u"Exercice" # À adapter pour chaque module
+    titre = "Exercice" # À adapter pour chaque module
 
     def __init__(self, *args, **kw):
         Panel_API_graphique.__init__(self, *args, **kw)
@@ -86,7 +81,7 @@ class Exercice(Panel_API_graphique):
         self.entrees.addWidget(self.felicitations)
 
         self.entrees.addSpacing(30)
-        self.btn_niveau = QPushButton(u"Niveau suivant", self)
+        self.btn_niveau = QPushButton("Niveau suivant", self)
         self.btn_niveau.clicked.connect(self.niveau_suivant)
         self.entrees.addWidget(self.btn_niveau)
         self.entrees.addSpacing(50)
@@ -100,7 +95,7 @@ class Exercice(Panel_API_graphique):
 
 
     def reinitialiser(self):
-        u"""Revient au 1er niveau, et remet tous les réglages par défaut.
+        """Revient au 1er niveau, et remet tous les réglages par défaut.
 
         Chaque niveau peut bien sûr modifier ces réglages.
 
@@ -124,7 +119,7 @@ class Exercice(Panel_API_graphique):
 
         # Réinitialisation du score et retour au niveau 1
         if param.debug:
-            print(u'Module %s: réinitialisation...' % self.nom)
+            print('Module %s: réinitialisation...' % self.nom)
         self.score = 0
         self.niveau = 0
         self.erreurs = 0
@@ -161,24 +156,24 @@ class Exercice(Panel_API_graphique):
             border-radius: 5px; border-color:%s; background-color: %s }"""
             %(QColor(30, 144, 255).name(), QColor(176, 226, 255).name())
                         )
-        self.panneau.setText((u"<p><b><i>Niveau :</i> %s</b></p>" % self.niveau) +
-                                 (u"<p><b><i>Points :</i> %s</b></p>" % self.score) +
-                                 (u"<p><i>Erreurs :</i> %s</p>" % self.erreurs))
+        self.panneau.setText(("<p><b><i>Niveau :</i> %s</b></p>" % self.niveau) +
+                                 ("<p><b><i>Points :</i> %s</b></p>" % self.score) +
+                                 ("<p><i>Erreurs :</i> %s</p>" % self.erreurs))
         champs = self.feuille_actuelle.objets.lister(type=Champ)
         if champs and all(obj.correct for obj in champs):
             if hasattr(self, 'niveau' + str(self.niveau + 1)):
                 self.btn_niveau.setEnabled(True)
                 self.btn_niveau.setFocus(True)
-                self.felicitations.setText(u'<p><b>Félicitations !</b></p>' +
-                                           u'<p>Passer au niveau %s</p>' %(self.niveau + 1))
+                self.felicitations.setText('<p><b>Félicitations !</b></p>' +
+                                           '<p>Passer au niveau %s</p>' %(self.niveau + 1))
                 self.felicitations.setStyleSheet(
                     """QLabel {background-color: %s; padding: 5px;
                        border-radius: 5px;
                        color:white;}""" %QColor(255, 153, 0).name())
 
             else:
-                self.felicitations.setText(u'<p><b>Félicitations !</b></p>' +
-                                           u'<p>Dernier niveau terminé !</p>')
+                self.felicitations.setText('<p><b>Félicitations !</b></p>' +
+                                           '<p>Dernier niveau terminé !</p>')
                 self.felicitations.setStyleSheet(
                     """QLabel {background-color: %s; padding: 5px; border-radius: 5px;
                     color:white;}""" %QColor(102, 205, 0).name())
@@ -220,20 +215,20 @@ class Exercice(Panel_API_graphique):
         return 2*randint(0, 1) - 1
 
     def naturel(self, n=15):
-        u'''Retourne un entier entre 2 et `n`.'''
+        '''Retourne un entier entre 2 et `n`.'''
         return randint(2, n)
 
     def relatif(self, n=15):
-        u'''Retourne un entier entre -`n` et -2, ou entre 2 et `n`.'''
+        '''Retourne un entier entre -`n` et -2, ou entre 2 et `n`.'''
         # signe: 1 ou -1
         return self.signe()*self.naturel(n)
 
     def decimal(self, chiffres=2):
-        u'''Retourne un nombre décimal, `chiffres` est le nombre de chiffres.'''
+        '''Retourne un nombre décimal, `chiffres` est le nombre de chiffres.'''
         return  S('%s.%s' % (self.relatif(), self.naturel()))
 
     def rationnel(self, n=7):
-        u'''Retourne un quotient d'entiers.'''
+        '''Retourne un quotient d'entiers.'''
         while True:
             p = self.naturel(n)
             q = self.naturel(n)
@@ -242,11 +237,11 @@ class Exercice(Panel_API_graphique):
         return self.signe()*S(p)/S(q)
 
     def couple(self, m=7, n=7):
-        u"""Retourne un couple d'entiers relatifs."""
+        """Retourne un couple d'entiers relatifs."""
         return self.relatif(m), self.relatif(n)
 
     def autocompleter(self):
-        u"""Compléter automatiquement avec les bonnes réponses
+        """Compléter automatiquement avec les bonnes réponses
         pour pouvoir passer au niveau suivant.
         Essentiellement pour déboguer."""
         ##if self.btn_niveau.isEnabled():
@@ -260,7 +255,7 @@ class Exercice(Panel_API_graphique):
     a = property(autocompleter)
 
     def bonus(self, expr):
-        u"""À surclasser pour accorder un bonus si l'expression vérifie
+        """À surclasser pour accorder un bonus si l'expression vérifie
         certaines conditions.
         Par exemple, on peut tester que le résultat est bien simplifié."""
         return False

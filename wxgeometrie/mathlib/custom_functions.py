@@ -1,9 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
-from __future__ import absolute_import
-from __future__ import print_function
-from __future__ import unicode_literals
 
 ##--------------------------------------#######
 #           Mathlib 2 (sympy powered)         #
@@ -47,7 +43,7 @@ from .printers import custom_str
 #    return .MesureDegres(x)
 
 def deg(x):
-    u'Conversion radians -> degrés.'
+    'Conversion radians -> degrés.'
     return x*180/pi
 
 #def rad(x):
@@ -55,16 +51,16 @@ def deg(x):
 #    return x*sympy.pi/180
 
 def jhms(s):
-    u"Convertit un temps en secondes en jours-heures-minutes-secondes."
+    "Convertit un temps en secondes en jours-heures-minutes-secondes."
     return Temps(s = s)
 
 
 def cbrt(x):
-    u"Racine cubique de x."
+    "Racine cubique de x."
     return cmp(x, 0)*math.exp(math.log(abs(x))/3)
 
 def root(x, n):
-    u"""Racine nième de x.
+    """Racine nième de x.
 
     N'est définie pour x négatif que si n est pair."""
     if n%2:
@@ -76,7 +72,7 @@ def prod(facteurs):
 
 
 def gcd(a, b):
-    u"pgcd de a et de b"
+    "pgcd de a et de b"
     # algorithme d'Euclide
     a, b = max(abs(a),abs(b)), min(abs(a),abs(b))
     while b:
@@ -84,22 +80,22 @@ def gcd(a, b):
     return a
 
 def lcm(a, b):
-    u"ppcm de a et de b"
+    "ppcm de a et de b"
     return a*b//gcd(a,b)
 
 def pgcd(*termes):
-    u"Le plus grand dénominateur commun à un nombre quelconque d'entiers."
+    "Le plus grand dénominateur commun à un nombre quelconque d'entiers."
     return reduce(lambda x,y:gcd(x,y), termes)
 
 
 def ppcm(*termes):
-    u"Le plus petit multiple commun à un nombre quelconque d'entiers."
+    "Le plus petit multiple commun à un nombre quelconque d'entiers."
     return reduce(lambda x,y:lcm(x,y), termes)
 
 
 
 def n_premiers(n = 100, maximum = 50000): # securite face aux erreurs de frappe...!
-    u"Donne la liste des n premiers nombres premiers."
+    "Donne la liste des n premiers nombres premiers."
     liste = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97]
     m = liste[-1] + 2
     if n > maximum:
@@ -119,19 +115,19 @@ def n_premiers(n = 100, maximum = 50000): # securite face aux erreurs de frappe.
 # Approximation rationnelle par fractions continues
 # cf. http://fr.wikipedia.org/wiki/Fraction_continue
 def frac(valeur, n = 20, epsilon = 1e-15):
-    u"Donne une fraction approximativement égale à la valeur."
+    "Donne une fraction approximativement égale à la valeur."
     if isinstance(valeur, Rational):
         if isinstance(valeur, Decim):
             valeur = valeur.to_Rational()
     elif isinstance(valeur, Basic) and valeur.is_number \
-            or isinstance(valeur, (float, int, long)):
+            or isinstance(valeur, (float, int)):
         assert epsilon > 0
         p_ = 0
         p = 1
         q_ = 1
         q = 0
         x = valeur
-        for i in xrange(n):
+        for i in range(n):
             a = int(x)
             p, p_ = a*p + p_, p
             q, q_ = a*q + q_, q
@@ -151,7 +147,7 @@ def frac(valeur, n = 20, epsilon = 1e-15):
 
 
 def bin(n):
-    u"Conversion en binaire."
+    "Conversion en binaire."
     s = ""
     while n:
         s = str(n%2) + s
@@ -160,7 +156,7 @@ def bin(n):
 
 
 def floats2rationals(expr):
-    u"""Convertit tous les flottants d'une expression sympy en rationnels.
+    """Convertit tous les flottants d'une expression sympy en rationnels.
 
     Si l'expression est de type `list` ou `tuple`, la fonction est appelée
     récursivement.
@@ -179,7 +175,7 @@ def floats2rationals(expr):
 
 
 def rationals2floats(expr, precision=None):
-    u"""Convertit tous les rationnels d'une expression sympy en flottants.
+    """Convertit tous les rationnels d'une expression sympy en flottants.
 
     On peut spécifier via `precision` le nombre de chiffres significatifs.
 
@@ -200,7 +196,7 @@ def rationals2floats(expr, precision=None):
     return expr.subs(dico)
 
 def _Pow2list(expression):
-    u"""On décompose une puissance en liste de facteurs."""
+    """On décompose une puissance en liste de facteurs."""
     base, puissance = expression.as_base_exp()
     if puissance.is_integer:
         return int(puissance)*[base]
@@ -211,7 +207,7 @@ def _Pow2list(expression):
     return [expression]
 
 def _Mul2list(expression):
-    u"""On décompose un produit en une liste de facteurs ; les puissances sont converties préalablement en produits."""
+    """On décompose un produit en une liste de facteurs ; les puissances sont converties préalablement en produits."""
     liste = []
     if expression.is_Mul:
         for facteur in expression.args:
@@ -221,7 +217,7 @@ def _Mul2list(expression):
 
 
 def auto_collect(expression):
-    u"""Factorise une expression en utilisant sympy.collect, sans préciser manuellement ce par quoi factoriser."""
+    """Factorise une expression en utilisant sympy.collect, sans préciser manuellement ce par quoi factoriser."""
     if expression.is_Add:
         dico = {}
         liste0 = _Mul2list(expression.args[0])
@@ -256,30 +252,30 @@ def _convertir_frequences(frequences, serie):
         return frequences
 
 def moyenne(serie, coeffs = None):
-    u"Calcule l'espérance de la série des (xi, fi)."
+    "Calcule l'espérance de la série des (xi, fi)."
     frequences = _convertir_frequences(coeffs, serie)
     return sum(xi*fi for xi, fi in zip(serie, frequences))
 
 def variance(serie, coeffs = None):
-    u"Calcule la variance de la serie des (xi, fi)"
+    "Calcule la variance de la serie des (xi, fi)"
     frequences = _convertir_frequences(coeffs, serie)
     M = moyenne(serie, frequences)
     return sum(fi*(xi - M)**2 for xi, fi in zip(serie, frequences))
 
 def ecart_type(serie, coeffs = None):
-    u"Retourne l'écart-type de la série des (xi, fi)."
+    "Retourne l'écart-type de la série des (xi, fi)."
     return sqrt(variance(serie, coeffs))
 
 def covariance(serie1, serie2, coeffs = None):
-    u"Retourne la covariance des deux séries."
-    assert len(serie1) == len(serie2), u"Les deux séries doivent avoir le même nombre de valeurs."
+    "Retourne la covariance des deux séries."
+    assert len(serie1) == len(serie2), "Les deux séries doivent avoir le même nombre de valeurs."
     frequences = _convertir_frequences(coeffs, serie1)
     x_ = moyenne(serie1, frequences)
     y_ = moyenne(serie2, frequences)
     return sum(fi*(xi - x_)*(yi - y_) for xi, yi, fi in zip(serie1, serie2, frequences))
 
 def linreg(serie1, serie2, coeffs = None):
-    u"""Droite de régression par la méthode des moindres carrés.
+    """Droite de régression par la méthode des moindres carrés.
 
     Retourne les coefficients a et b de l'équation y=ax+b
      de la droite de régression par la méthode des moindres carrés.
@@ -294,7 +290,7 @@ def linreg(serie1, serie2, coeffs = None):
 
 
 def pstfunc(chaine):
-    u"Convertit une chaine représentant une fonction pst-trick en une fonction "
+    "Convertit une chaine représentant une fonction pst-trick en une fonction "
     args = []
     dict_op = {'mul':'*','add':'+','exp':'**','div':'/','sub':'-'}
     dict_fn = {'ln':'ln'}
@@ -315,7 +311,7 @@ def pstfunc(chaine):
     return custom_str(sympify(args[0]))
 
 def aide(fonction):
-    u"Retourne (si possible) de l'aide sur la fonction saisie."
+    "Retourne (si possible) de l'aide sur la fonction saisie."
     if getattr(fonction, '__name__', None) and getattr(fonction, '__doc__', None):
         hlp = "\n== Aide sur %s ==" %fonction.__name__
         for ligne in fonction.__doc__.split('\n'):
@@ -323,7 +319,7 @@ def aide(fonction):
         return hlp
     else:
         from .end_user_functions import __classement__
-        for val in __classement__.itervalues():
+        for val in __classement__.values():
             if val[1] == getattr(fonction, '__name__', str(fonction)):
                 hlp = "\n== Aide sur %s ==\n" %fonction.__name__
                 hlp += val[2]
@@ -338,7 +334,7 @@ def arrondir(valeur, chiffres = 0):
 
 
 def canonique(polynome):
-    u"Met un polynôme du second degré sous forme canonique."
+    "Met un polynôme du second degré sous forme canonique."
     a = Wild('a')
     b = Wild('b')
     c = Wild('c')
@@ -355,7 +351,7 @@ def canonique(polynome):
 
 
 def discriminant(polynome):
-    u"Calcule le discriminant d'un polynôme du second degré."
+    "Calcule le discriminant d'un polynôme du second degré."
     a = Wild('a')
     b = Wild('b')
     c = Wild('c')
@@ -438,7 +434,7 @@ def inv_normal(p):
 
 
 def fluctu(probabilite, taille=1000, seuil=None):
-    u"""Intervalle de fluctuation.
+    """Intervalle de fluctuation.
 
     Retourne l'intervalle de fluctuation correspondant à un échantillon de taille
     `taille`, lorsque la probabilité est `probabilite`.
@@ -458,7 +454,7 @@ def fluctu(probabilite, taille=1000, seuil=None):
 
 
 def confiance(frequence, taille=1000, seuil=None):
-    u"""Intervalle de confiance au seuil de 95%.
+    """Intervalle de confiance au seuil de 95%.
 
     Retourne l'intervalle de confiance correspondant à un échantillon de taille
     `taille`, lorsque la fréquence observée sur l'échantillon est `frequence`.
@@ -473,14 +469,14 @@ def confiance(frequence, taille=1000, seuil=None):
 
 
 def normal(a, b, mu=0, sigma=1):
-    u"""Retourne P(a < X < b), où X suit la loi normale N(mu, sigma²).
+    """Retourne P(a < X < b), où X suit la loi normale N(mu, sigma²).
     """
     X = Normal('X', mu, sigma)
     return (proba(X <= b) - proba(X < a)).evalf()
 
 
 def binomial(a, b, n, p):
-    u"""Retourne P(a <= X <= b), où X suit la loi binomiale B(n, p).
+    """Retourne P(a <= X <= b), où X suit la loi binomiale B(n, p).
 
     ..note:: Taper binomial(a, a, n, p) pour calculer P(X = a).
     """

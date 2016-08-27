@@ -1,8 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
-from __future__ import print_function
-from __future__ import absolute_import
-from __future__ import unicode_literals
 
 ##--------------------------------------#######
 #                    Texte                    #
@@ -42,7 +38,7 @@ from .. import param
 
 
 class Texte_generique(Objet_avec_coordonnees):
-    u"""Un texte générique.
+    """Un texte générique.
 
     La classe mère de tous les objets Texte. (Usage interne)."""
 
@@ -169,13 +165,13 @@ class Texte_generique(Objet_avec_coordonnees):
         return xmin, xmax, ymin, ymax
 
     def angle(self):
-        u"""Angle du texte.
+        """Angle du texte.
 
         À surclasser éventuellement pour implémenter un mode 'auto'."""
         return self.style('angle')
 
     def alignement_vertical(self):
-        u"""Angle du texte.
+        """Angle du texte.
 
         À surclasser éventuellement pour implémenter un mode 'auto'."""
         return self.style('alignement_vertical')
@@ -193,7 +189,7 @@ class Texte_generique(Objet_avec_coordonnees):
 
 
 class Texte_editable_generique(Texte_generique):
-    u"""Un texte éditable générique.
+    """Un texte éditable générique.
 
     La classe mère de tous les textes éditables.
     (Usage interne).
@@ -218,8 +214,8 @@ class Texte_editable_generique(Texte_generique):
         return value
 
     def _set_texte(self, value):
-        if not isinstance(value, unicode):
-            value = uu(value)
+        if not isinstance(value, str):
+            value = str(value)
         value = value.replace("_prime", "'")
         if self._initialise and self._style['mode'] == 'formule':
             self.formule = value
@@ -228,7 +224,7 @@ class Texte_editable_generique(Texte_generique):
         self._label_correct = None
         return value
 
-    texte = __texte = Argument("unicode", _get_texte, _set_texte)
+    texte = __texte = Argument("str", _get_texte, _set_texte)
 
     # Contiendra éventuellement une formule (si le mode formule est activé).
     _formule = None
@@ -236,8 +232,8 @@ class Texte_editable_generique(Texte_generique):
     _modes = ('rien', 'nom', 'texte', 'formule')
 
     def __init__(self, texte='', **styles):
-        if not isinstance(texte, (Ref, unicode)):
-            texte = uu(texte)
+        if not isinstance(texte, (Ref, str)):
+            texte = str(texte)
 
         self.__texte = texte = Ref(texte)
 
@@ -254,7 +250,7 @@ class Texte_editable_generique(Texte_generique):
 
 
     def label(self, texte=None, mode=None):
-        u"""Affiche ou modifie le label (ou étiquette) de l'objet.
+        """Affiche ou modifie le label (ou étiquette) de l'objet.
 
         Si `texte` ou `mode` est spécifié, modifie le contenu du texte,
         et/ou le mode associé, et ne renvoie rien (`None`).
@@ -304,7 +300,7 @@ class Texte_editable_generique(Texte_generique):
                 label = self.texte
             elif mode == 'formule':
                 # Retourne le texte avec les expressions évaluées
-                label = unicode(self.formule)
+                label = str(self.formule)
             elif mode == 'rien':
                 return ""
 
@@ -335,7 +331,7 @@ class Texte_editable_generique(Texte_generique):
 
     @property
     def legende(self):
-        u"""Renvoie le texte brut associé à l'objet.
+        """Renvoie le texte brut associé à l'objet.
 
         Permet d'avoir une interface unique pour les objets avec
         étiquette, et les textes (qui sont eux-mêmes leur propre
@@ -344,7 +340,7 @@ class Texte_editable_generique(Texte_generique):
         return self.texte
 
     def style(self, nom_style=None, **kw):
-        u"""Renvoie le ou les styles demandés, ou modifie les styles de l'objet.
+        """Renvoie le ou les styles demandés, ou modifie les styles de l'objet.
 
         * ``nom_style`` est un nom de style, ou une liste de noms de styles:
         La propriété correspondante est recherchée dans self._style.
@@ -367,7 +363,7 @@ class Texte_editable_generique(Texte_generique):
 
     @property
     def mode_affichage(self):
-        u"Assure une interface commune entre les objets avec étiquette et les textes."
+        "Assure une interface commune entre les objets avec étiquette et les textes."
         return self.style('mode')
 
 _get_texte = Texte_editable_generique._get_texte
@@ -377,7 +373,7 @@ _set_texte = Texte_editable_generique._set_texte
 
 
 class Texte(Texte_editable_generique, Objet_avec_coordonnees_modifiables):
-    u"""Un texte.
+    """Un texte.
 
     Un texte à afficher"""
 
@@ -407,7 +403,7 @@ class Texte(Texte_editable_generique, Objet_avec_coordonnees_modifiables):
 
     @staticmethod
     def _convertir(objet):
-        if isinstance(objet, basestring):
+        if isinstance(objet, str):
             return Texte(objet)
         if hasattr(objet, "__iter__"):
             return Texte(*objet)
@@ -416,7 +412,7 @@ class Texte(Texte_editable_generique, Objet_avec_coordonnees_modifiables):
 
     def _update(self, objet):
         if not isinstance(objet, Texte):
-            if hasattr(objet, "__iter__") and len(objet) == 1 and isinstance(objet[0], basestring):
+            if hasattr(objet, "__iter__") and len(objet) == 1 and isinstance(objet[0], str):
                 self.label(objet[0])
                 return
             else:
@@ -470,7 +466,7 @@ class Texte(Texte_editable_generique, Objet_avec_coordonnees_modifiables):
 
 
 class Texte_transformation_generique(Texte_generique):
-    u"""Une image d'un texte par transformation.
+    """Une image d'un texte par transformation.
 
     Classe mère de toutes les images de textes par transformation. (Usage interne)."""
 
@@ -491,7 +487,7 @@ class Texte_transformation_generique(Texte_generique):
 
 
 class Texte_rotation(Texte_transformation_generique):
-    u"""Une image d'un texte par rotation.
+    """Une image d'un texte par rotation.
 
     Texte construit à partir d'un autre via une rotation d'angle et de centre donné."""
 
@@ -519,7 +515,7 @@ class Texte_rotation(Texte_transformation_generique):
 
 
 class Texte_translation(Texte_transformation_generique):
-    u"""Une image d'un texte par translation.
+    """Une image d'un texte par translation.
 
     Texte construit à partir d'un autre via une translation d'angle et de centre donné."""
 
@@ -539,7 +535,7 @@ class Texte_translation(Texte_transformation_generique):
 
 
 class Texte_homothetie(Texte_transformation_generique):
-    u"""Une image d'un texte par homothetie.
+    """Une image d'un texte par homothetie.
 
     Texte construit à partir d'un autre via une homothetie d'angle et de centre donné."""
 
@@ -561,7 +557,7 @@ class Texte_homothetie(Texte_transformation_generique):
 
 
 class Texte_reflexion(Texte_transformation_generique):
-    u"""Une image d'un texte par reflexion.
+    """Une image d'un texte par reflexion.
 
     Texte construit à partir d'un autre via une reflexion d'angle et de centre donné."""
 

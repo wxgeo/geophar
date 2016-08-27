@@ -3,15 +3,15 @@
 
 # Documentation : http://cx-freeze.readthedocs.org/en/latest/distutils.html
 
-from __future__ import print_function, division, absolute_import, unicode_literals
+from runpy import runpath
+
 import sys, os
 import compileall
 from cx_Freeze import setup, Executable
 
 from tools.scriptlib import cd, mv, mkdir, rmdir, cp, rm, zip7
 
-version = None # for Pyflakes
-execfile(os.path.join('wxgeometrie', 'version.py'))
+version = runpath(os.path.join('wxgeometrie', 'version.py'))['version']
 
 # install = True -> enregistrer les paramètres dans `Documents and Settings`.
 with open('wxgeometrie/param/personnaliser.py', 'w') as f:
@@ -142,7 +142,7 @@ cible_2 = Executable(
 #############################################################################
 # creation du setup
 
-print(u"\nCreation de l'installeur...")
+print("\nCreation de l'installeur...")
 
 setup(
     name = "Geophar",
@@ -160,7 +160,7 @@ setup(
 #############################################################################
 # Optimisation et empaquetage de la version sans installation
 
-print(u"\nCreation de la version sans installation...")
+print("\nCreation de la version sans installation...")
 
 python_version = '%s.%s' % (sys.version_info.major, sys.version_info.minor)
 
@@ -211,11 +211,11 @@ cd('..')                # DIR: [projet]
 mv('build', 'dist/Geophar')
 
 # On crée un fichier 7zip auto-extractible.
-print(u'\nCompression...')
+print('\nCompression...')
 cd('dist')              # DIR: [projet]/dist
 # cp('../tools/resources/sfx7z.sfx', 'sfx7z.sfx')
 zip7(r'a -sfx7z.sfx Geophar-sans-installation-%s.exe Geophar' %version)
 # rm('sfx7z.sfx')
-print(u"Version autonome finalisee !")
+print("Version autonome finalisee !")
 
 

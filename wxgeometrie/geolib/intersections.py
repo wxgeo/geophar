@@ -1,11 +1,7 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
-from __future__ import print_function
-from __future__ import absolute_import
-from __future__ import unicode_literals
 
 ##--------------------------------------#######
-#                   Objets                    #
+#               Intersections                 #
 ##--------------------------------------#######
 #    WxGeometrie
 #    Dynamic geometry, graph plotter, and more for french mathematic teachers.
@@ -52,7 +48,7 @@ def Intersection(objet1, objet2, **styles):
 
 
 class Intersection_generique(Point_generique):
-    u"""Une intersection générique.
+    """Une intersection générique.
 
     La classe mère des différents types d'intersections"""
 
@@ -72,7 +68,7 @@ class Intersection_generique(Point_generique):
 
     @property
     def intersections(self):
-        u"""Liste de coordonnées correspondant aux points d'intersections possibles.
+        """Liste de coordonnées correspondant aux points d'intersections possibles.
 
         Le premier couple correspond aux coordonnées du point lui-même.
         Attention, tous ces points ne sont pas forcément des points d'intersection.
@@ -84,7 +80,7 @@ class Intersection_generique(Point_generique):
 
     @staticmethod
     def _tester_solution(solution, *ensembles):
-        u"""Effectue des tests pour valider une solution potentielle.
+        """Effectue des tests pour valider une solution potentielle.
 
         Plus précisément, on vérifie que la solution appartient aux ensembles
         indiqués, mais seulement pour certains types d'ensemble:
@@ -107,7 +103,7 @@ class Intersection_generique(Point_generique):
 
 
     def _get_coordonnees(self):
-        u"Ne pas appeler directement (erreurs possibles)."
+        "Ne pas appeler directement (erreurs possibles)."
         return self._cache.get('intersections_possibles', self._intersections_possibles)[0]
 
 
@@ -120,7 +116,7 @@ class Intersection_generique(Point_generique):
 
 
 class Intersection_droites(Intersection_generique):
-    u"""Une intersection de droites.
+    """Une intersection de droites.
 
     L'intersection de 2 droites, segments, demi-droites..."""
 
@@ -134,7 +130,7 @@ class Intersection_droites(Intersection_generique):
         Intersection_generique.__init__(self, objet1 = droite1, objet2 = droite2, **styles)
 
     def _intersections_possibles(self):
-        u"""Liste de coordonnées correspondant aux points d'intersections possibles.
+        """Liste de coordonnées correspondant aux points d'intersections possibles.
 
         Le premier couple correspond aux coordonnées du point lui-même.
         Attention, tous ces points ne sont pas forcément des points d'intersection.
@@ -158,7 +154,7 @@ class Intersection_droites(Intersection_generique):
 
 
 class Intersection_droite_cercle(Intersection_generique): # ATTENTION, il y a des modifications à faire avant de surclasser !
-    u"""Une intersection d'une droite et d'un cercle.
+    """Une intersection d'une droite et d'un cercle.
 
     Un des deux points M et N d'intersection d'une droite et d'un cercle.
     Supposons qu'on le note M, et que la droite soit (AB).
@@ -192,7 +188,7 @@ class Intersection_droite_cercle(Intersection_generique): # ATTENTION, il y a de
 
 
     def _intersections_possibles(self):
-        u"""Liste de coordonnées correspondant aux points d'intersections possibles.
+        """Liste de coordonnées correspondant aux points d'intersections possibles.
 
         Le premier couple correspond aux coordonnées du point lui-même.
         Attention, tous ces points ne sont pas forcément des points d'intersection.
@@ -246,7 +242,7 @@ class Intersection_droite_cercle(Intersection_generique): # ATTENTION, il y a de
 
 
 class Intersection_cercles(Intersection_generique): # ATTENTION, il y a des modifications à faire avant de surclasser !
-    u"""Une intersection de cercles.
+    """Une intersection de cercles.
 
     Un des deux points M et N d'intersection des deux cercles.
     L'argument angle_positif permet de distinguer les deux points.
@@ -278,7 +274,7 @@ class Intersection_cercles(Intersection_generique): # ATTENTION, il y a des modi
 
 
     def _intersections_possibles(self):
-        u"""Liste de coordonnées correspondant aux points d'intersections possibles.
+        """Liste de coordonnées correspondant aux points d'intersections possibles.
 
         Le premier couple correspond aux coordonnées du point lui-même.
         Attention, tous ces points ne sont pas forcément des points d'intersection.

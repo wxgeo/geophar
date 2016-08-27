@@ -1,9 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
-from __future__ import with_statement
-from __future__ import print_function
-from __future__ import absolute_import
-from __future__ import unicode_literals
 
 ##--------------------------------------#######
 #                Probabilités                 #
@@ -42,48 +37,48 @@ class ProbaMenuBar(MenuBar):
     def __init__(self, panel):
         MenuBar.__init__(self, panel)
 
-        self.ajouter(u"Fichier", [u"nouveau"], [u"ouvrir"], [u"ouvrir ici"], None,
-                    [u"enregistrer"], [u"enregistrer_sous"], [u"exporter"],
-                    [u"exporter&sauver"], None, ['session'], None,
-                    [u"imprimer"], [u"presse-papier"], None,
-                    [u"proprietes"], None, self.panel.doc_ouverts, None,
+        self.ajouter("Fichier", ["nouveau"], ["ouvrir"], ["ouvrir ici"], None,
+                    ["enregistrer"], ["enregistrer_sous"], ["exporter"],
+                    ["exporter&sauver"], None, ['session'], None,
+                    ["imprimer"], ["presse-papier"], None,
+                    ["proprietes"], None, self.panel.doc_ouverts, None,
                     ["fermer"], ["quitter"])
-        self.ajouter(u"Editer", ["annuler"], ["refaire"], ["modifier"], ["supprimer"])
-        self.ajouter(u"creer")
-        self.ajouter(u"Affichage", ["onglet"], ["plein_ecran"], None, ["repere"], ["quadrillage"],
+        self.ajouter("Editer", ["annuler"], ["refaire"], ["modifier"], ["supprimer"])
+        self.ajouter("creer")
+        self.ajouter("Affichage", ["onglet"], ["plein_ecran"], None, ["repere"], ["quadrillage"],
                                    ["orthonorme"], None, ["zoom_texte"],
                                    ["zoom_ligne"], ["zoom_general"], None,
                                    ["fenetre"], ["zoomer"], ["dezoomer"],
-                                   ["orthonormaliser"], [u"zoom_auto"])
-        self.ajouter(u"Autres actions", [u"detecter"],
-                                   [u"Répétition d'expériences indépendantes",
-                                    u"Construire un arbre correspondant à la répétition d'expériences aléatoires indépendantes.",
+                                   ["orthonormaliser"], ["zoom_auto"])
+        self.ajouter("Autres actions", ["detecter"],
+                                   ["Répétition d'expériences indépendantes",
+                                    "Construire un arbre correspondant à la répétition d'expériences aléatoires indépendantes.",
                                     None, self.panel.repeter_experiences_independantes])
-        self.ajouter(u"Outils", [u"Style des sommets", u"Modifier le style des sommets de l'arbre.",
+        self.ajouter("Outils", ["Style des sommets", "Modifier le style des sommets de l'arbre.",
                                  None, self.panel.proprietes_sommets],
-                                [u"Style des arêtes", u"Modifier le style des arêtes de l'arbre.",
+                                ["Style des arêtes", "Modifier le style des arêtes de l'arbre.",
                                  None, self.panel.proprietes_aretes],
-                                [u"Style de la légende", u"Modifier le style des titres de chaque niveau.",
+                                ["Style de la légende", "Modifier le style des titres de chaque niveau.",
                                  None, self.panel.proprietes_titres],
                                 None,
-                                [u"options"])
+                                ["options"])
 ##        self.ajouter(u"Avancé", [u"historique"], [u"securise"], [u"ligne_commande"], [u"debug"])
-        self.ajouter(u"avance1")
-        self.ajouter(u"?")
+        self.ajouter("avance1")
+        self.ajouter("?")
 
 
 
 
 class Probabilites(Panel_API_graphique):
 
-    titre = u"Arbre de probabilités" # Donner un titre a chaque module
+    titre = "Arbre de probabilités" # Donner un titre a chaque module
 
     def __init__(self, *args, **kw):
         Panel_API_graphique.__init__(self, *args, **kw)
 
         self.entrees = QVBoxLayout()
 
-        self.entrees.addWidget(QLabel(u" Instructions :"))
+        self.entrees.addWidget(QLabel(" Instructions :"))
 
         self.instructions = QTextEdit(self)
         self.instructions.setMinimumSize(200, 300)
@@ -99,7 +94,7 @@ omega
 >>>H
 >>&E:0,9""")
         self.entrees.addWidget(self.instructions)
-        self.appliquer = QPushButton(u"Générer l'arbre", self)
+        self.appliquer = QPushButton("Générer l'arbre", self)
         self.appliquer.clicked.connect(self.Appliquer)
         self.entrees.addWidget(self.appliquer)
 
@@ -111,13 +106,13 @@ omega
 
     def _sauvegarder(self, fgeo, feuille = None):
         Panel_API_graphique._sauvegarder(self, fgeo, feuille)
-        fgeo.contenu[u"Instructions"] = [self.instructions.toPlainText()]
+        fgeo.contenu["Instructions"] = [self.instructions.toPlainText()]
 
 
     def _ouvrir(self, fgeo):
         Panel_API_graphique._ouvrir(self, fgeo)
-        if u"Instructions" in fgeo.contenu:
-            self.instructions.setPlainText(fgeo.contenu[u"Instructions"][0])
+        if "Instructions" in fgeo.contenu:
+            self.instructions.setPlainText(fgeo.contenu["Instructions"][0])
 
 
     def Appliquer(self, event):
@@ -163,7 +158,7 @@ omega
                 instructions = [""] + instructions
             nbr_colonnes += 1
             nbr_lignes = []
-            for i in xrange(nbr_colonnes):
+            for i in range(nbr_colonnes):
                 nbr_lignes.append(len([instruction for instruction in instructions if instruction.startswith(i*">") and not instruction.startswith((i+1)*">")]))
 
             #intersection, union : \cap \cup
@@ -182,15 +177,15 @@ omega
             # [{'liste': [{'liste': [{'liste': [], 'texte': u'B'}, {'liste': [], 'texte': u'C'}], 'texte': u'A'}, {'liste': [{'liste': [{'liste': [], 'texte': u'F'}, {'liste': [], 'texte': u'G'}], 'texte': u'E'}, {'liste': [], 'texte': u'H'}], 'texte': u'D'}, {'liste': [], 'texte': u'E'}], 'texte': ''}]
 
             arbre = []
-            ligne_precedente = [-1 for i in xrange(nbr_colonnes)] # numéro de ligne atteint pour chaque colonne
+            ligne_precedente = [-1 for i in range(nbr_colonnes)] # numéro de ligne atteint pour chaque colonne
             for instruction in instructions:
                 colonne = len(instruction) - len(instruction.lstrip(">"))
                 branche = arbre
-                for i in xrange(colonne): # on se déplace de branche en branche ;)
+                for i in range(colonne): # on se déplace de branche en branche ;)
                     branche = branche[ligne_precedente[i]]["liste"]
                 branche.append({"texte": instruction.lstrip(">"), "liste": []})
                 ligne_precedente[colonne] += 1
-                for i in xrange(colonne + 1, nbr_colonnes):
+                for i in range(colonne + 1, nbr_colonnes):
                     ligne_precedente[i] = -1
             print(arbre)
 
@@ -247,7 +242,7 @@ omega
                     style.update(alignement_vertical='auto', fond=False,
                                  alignement_horizontal='right', angle=0)
                 else:
-                    print(u"Placement: mode '%s' non reconnu." % placement)
+                    print("Placement: mode '%s' non reconnu." % placement)
                 s.etiquette.style(**style)
                 return s
 
@@ -290,19 +285,19 @@ omega
                         break
                     decalage += .5
                 legende = legende.strip("|").split("|")
-                for n in xrange(len(legende)):
+                for n in range(len(legende)):
                     t = Texte(legende[n], (n + decalage)/(nbr_colonnes - 1), 1.1)
                     self.feuille_actuelle.objets.add(t)
 
             self.feuille_actuelle.interprete.commande_executee()
 
     def info_proprietes(self, titre):
-        QMessageBox.warning(self, titre, u"Créez l'arbre au préalable.")
+        QMessageBox.warning(self, titre, "Créez l'arbre au préalable.")
 
     def proprietes_sommets(self, event = None):
         objets = self.feuille_actuelle.objets.lister(type=Point)
         if not objets:
-            self.info_proprietes(u'Aucun sommet.')
+            self.info_proprietes('Aucun sommet.')
             return
         win = Proprietes(self, objets)
         win.show()
@@ -312,7 +307,7 @@ omega
     def proprietes_aretes(self, event = None):
         objets = self.feuille_actuelle.objets.lister(type=Segment)
         if not objets:
-            self.info_proprietes(u'Aucune arête.')
+            self.info_proprietes('Aucune arête.')
             return
         win = Proprietes(self, objets)
         win.show()
@@ -321,7 +316,7 @@ omega
     def proprietes_titres(self, event = None):
         objets = self.feuille_actuelle.objets.lister(type=Texte)
         if not objets:
-            self.info_proprietes(u'Aucun titre.')
+            self.info_proprietes('Aucun titre.')
             return
         win = Proprietes(self, objets)
         win.show()
@@ -355,7 +350,7 @@ omega
 
             niveau += 1
 
-            for i in xrange(len(lignes) - 1, -1, -1):
+            for i in range(len(lignes) - 1, -1, -1):
                 if evt2 is None:
                     if ":" in evt1:
                         evt, proba = evt1.rsplit(":", 1)

@@ -1,8 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
-from __future__ import print_function
-from __future__ import absolute_import
-from __future__ import unicode_literals
 
 ##--------------------------------------#######
 #                 Geometre                    #
@@ -35,15 +31,15 @@ from ...GUI.panel import Panel_simple
 class AccueilMenuBar(MenuBar):
     def __init__(self, panel):
         MenuBar.__init__(self, panel)
-        self.ajouter(u"Fichier", [u"ouvrir"], ['session'], None, [u"quitter"])
-        self.ajouter(u"Affichage", [u"onglet"], ["plein_ecran"])
-        self.ajouter(u"Outils", [u"options"])
-        self.ajouter(u"?")
+        self.ajouter("Fichier", ["ouvrir"], ['session'], None, ["quitter"])
+        self.ajouter("Affichage", ["onglet"], ["plein_ecran"])
+        self.ajouter("Outils", ["options"])
+        self.ajouter("?")
 
 
 class Accueil(Panel_simple):
 
-    titre = u"Bienvenue !" # Donner un titre à chaque module
+    titre = "Bienvenue !" # Donner un titre à chaque module
 
     def __init__(self, *args, **kw):
         Panel_simple.__init__(self, *args, **kw)
@@ -51,7 +47,7 @@ class Accueil(Panel_simple):
 
         newtab = path2("%/wxgeometrie/images/newtab3.png")
         closetab = path2("%/wxgeometrie/images/closetab.png")
-        texte = u"""
+        texte = """
         <html><head/>
         <body style='font-size:12pt;'>
         <table bgcolor='#FFFCD6' style='border-color:#FFCF8C;border-style:solid;'>

@@ -13,10 +13,8 @@ identically)
 * portable
 
 """
-from __future__ import print_function
-from __future__ import division
-from __future__ import absolute_import
-from __future__ import unicode_literals
+
+from runpy import run_path
 import os
 import sys
 import inspect
@@ -338,7 +336,7 @@ class SymPyTests(object):
         self._count += 1
         gl = {'__file__':filename}
         try:
-            execfile(filename, gl)
+            gl = run_path(filename, gl)
         except (ImportError, SyntaxError):
             self._reporter.import_error(filename, sys.exc_info())
             return
@@ -455,7 +453,7 @@ class SymPyDocTests(object):
     def test_file(self, filename):
 
         import unittest
-        from StringIO import StringIO
+        from io import StringIO
 
         rel_name = filename[len(self._root_dir)+1:]
         module = rel_name.replace(os.sep, '.')[:-3]
@@ -600,7 +598,7 @@ class SymPyDocTestFinder(DocTestFinder):
                                      (type(valname),))
                 if not (inspect.isfunction(val) or inspect.isclass(val) or
                         inspect.ismethod(val) or inspect.ismodule(val) or
-                        isinstance(val, basestring)):
+                        isinstance(val, str)):
                     raise ValueError("SymPyDocTestFinder.find: __test__ values "
                                      "must be strings, functions, methods, "
                                      "classes, or modules: %r" %
@@ -640,7 +638,7 @@ class SymPyDocTestFinder(DocTestFinder):
         """
         # Extract the object's docstring.  If it doesn't have one,
         # then return None (no test for this object).
-        if isinstance(obj, basestring):
+        if isinstance(obj, str):
             docstring = obj
         else:
             try:
@@ -648,7 +646,7 @@ class SymPyDocTestFinder(DocTestFinder):
                     docstring = ''
                 else:
                     docstring = obj.__doc__
-                    if not isinstance(docstring, basestring):
+                    if not isinstance(docstring, str):
                         docstring = str(docstring)
             except (TypeError, AttributeError):
                 docstring = ''

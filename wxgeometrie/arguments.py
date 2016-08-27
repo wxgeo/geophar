@@ -1,8 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
-from __future__ import print_function
-from __future__ import absolute_import
-from __future__ import unicode_literals
 
 #    WxGeometrie
 #    Dynamic geometry, graph plotter, and more for french mathematic teachers.
@@ -39,7 +35,7 @@ nomprog = NOMPROG2.lower()
 #     NOMPROG2, version = .split(' version ')
 
 def lire_arguments():
-    u"""On récupère les options éventuelles passées au programme.
+    """On récupère les options éventuelles passées au programme.
 
     -a ou --all : essaie de détecter tous les modules possibles pour les intégrer au démarrage
     ex: python wxgeometrie.pyw --all monfichier1.geo monfichier2.geo
@@ -77,7 +73,7 @@ def lire_arguments():
 
 
 def traiter_arguments(options, args):
-    u"""Modification des paramètres en fonction des arguments passés.
+    """Modification des paramètres en fonction des arguments passés.
 
     Le traitement des arguments est séparé de leur lecture,
     afin que le splash screen puisse être affiché le plus tôt possible."""
@@ -89,7 +85,7 @@ def traiter_arguments(options, args):
         param.charger_preferences = False
 
     if options.lister_modules:
-        print(u"\nListe des modules détectés :\n----------------------------")
+        print("\nListe des modules détectés :\n----------------------------")
         print('  '.join(param.modules))
         exit()
 
@@ -127,7 +123,7 @@ def traiter_arguments(options, args):
                 print(sys.exc_info()[0].__name__, ": ", sys.exc_info()[1])
 
     if options.recompile:
-        for root, dirs, files in os.walk(os.getcwdu()):
+        for root, dirs, files in os.walk(os.getcwd()):
             for file in files:
                 if file.endswith(".pyc"):
                     os.remove(os.path.join(root,file))
@@ -150,6 +146,6 @@ def traiter_arguments(options, args):
 
     for nom in parametres_additionnels:
         if not hasattr(param, nom):
-            print(u"Attention: Paramètre inconnu : " + nom)
+            print("Attention: Paramètre inconnu : " + nom)
 
     return parametres_additionnels, arguments, options

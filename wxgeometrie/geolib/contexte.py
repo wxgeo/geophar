@@ -1,8 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
-from __future__ import print_function
-from __future__ import absolute_import
-from __future__ import unicode_literals
 
 ##--------------------------------------#######
 #                        Geolib                     #
@@ -30,7 +26,7 @@ from .. import param
 
 
 class Contexte(dict):
-    u"""Gestionnaire de contexte.
+    """Gestionnaire de contexte.
 
     Exemple d'usage:
     >>> from wxgeometrie.geolib.contexte import Contexte
@@ -71,14 +67,14 @@ class Contexte(dict):
             return default
 
     def new(self):
-        u"""Crée un nouveau contexte-fils, qui hérite de celui-ci.
+        """Crée un nouveau contexte-fils, qui hérite de celui-ci.
 
         Toutes les clés non trouvées du contexte-fils sont ensuite
         cherchées dans le contexte père."""
         return self.__class__(parent=self)
 
     def __call__(self, **kw):
-        u"""Cette méthode ne doit *JAMAIS* être appelée en dehors d'un contexte 'with'.
+        """Cette méthode ne doit *JAMAIS* être appelée en dehors d'un contexte 'with'.
 
         Exemple d'usage:
         >>> from wxgeometrie.geolib.contexte import Contexte

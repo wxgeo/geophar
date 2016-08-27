@@ -1,8 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
-from __future__ import print_function
-from __future__ import absolute_import
-from __future__ import unicode_literals
 
 from sympy import sqrt, pi
 
@@ -66,8 +62,8 @@ def test_asarray():
     assert tuple(i.asarray(-10,10,.1)[0]) == (2,)
 
 def test_conversion_chaine_ensemble():
-    chaine = u'{-(-216*2^(2/3)+4*(-3616+64*sqrt(8113))^(1/3)+2^(1/3)' \
-             u'*(-3616+64*sqrt(8113))^(2/3))/(16*(-3616+64*sqrt(8113))^(1/3))}'
+    chaine = '{-(-216*2^(2/3)+4*(-3616+64*sqrt(8113))^(1/3)+2^(1/3)' \
+             '*(-3616+64*sqrt(8113))^(2/3))/(16*(-3616+64*sqrt(8113))^(1/3))}'
     attendu = "Ensemble('{(-2^(1/3)*(-3616 + 64*sqrt(8113))^(2/3) " \
                "- 4*(-3616 + 64*sqrt(8113))^(1/3) + 216*2^(2/3))" \
                "/(16*(-3616 + 64*sqrt(8113))^(1/3))}')"

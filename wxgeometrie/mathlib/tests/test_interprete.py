@@ -1,8 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
-from __future__ import print_function
-from __future__ import absolute_import
-from __future__ import unicode_literals
 
 import re
 
@@ -120,7 +116,7 @@ def test_ecriture_decimale_periodique():
 
 @XFAIL
 def test_issue_270():
-    u"""Bug 270: les décimaux s'affichent parfois en écriture scientifique.
+    """Bug 270: les décimaux s'affichent parfois en écriture scientifique.
 
     Exemple avec 3 chiffres significatifs:
 
@@ -242,7 +238,7 @@ def test_session():
 
     # Affichage des chaînes en mode text (et non math)
     i.evaluer('"Bonjour !"')
-    assert i.latex_dernier_resultat == u'\u201CBonjour !\u201D'
+    assert i.latex_dernier_resultat == '\u201CBonjour !\u201D'
 
     # Virgule comme séparateur décimal
     resultat, latex = i.evaluer('1,2')
@@ -256,7 +252,7 @@ def test_session():
     i.evaluer('?aide')
     i.evaluer('aide?')
     i.evaluer('aide(aide)')
-    msg_aide = u"\n== Aide sur aide ==\nRetourne (si possible) de l'aide sur la fonction saisie."
+    msg_aide = "\n== Aide sur aide ==\nRetourne (si possible) de l'aide sur la fonction saisie."
     resultats = i.derniers_resultats
     assert resultats[-3:] == [msg_aide, msg_aide, msg_aide]
 
@@ -298,7 +294,7 @@ def test_issue_185():
 def test_issue_206():
     i = Interprete(verbose=VERBOSE)
     etat_interne = \
-u"""_ = 0
+"""_ = 0
 
 @derniers_resultats = [
     're(x)',
@@ -313,7 +309,7 @@ u"""_ = 0
 def test_issue_206_bis():
     i = Interprete(verbose=VERBOSE)
     etat_interne = \
-u"""_ = 0
+"""_ = 0
 
 @derniers_resultats = [
     'Abs(x)',
@@ -326,7 +322,7 @@ u"""_ = 0
 def test_issue_206_ter():
     i = Interprete(verbose=VERBOSE)
     etat_interne = \
-u"""_ = 0
+"""_ = 0
 
 @derniers_resultats = [
     'atan2(x, y)',
@@ -339,7 +335,7 @@ u"""_ = 0
 def test_load_state():
     i = Interprete(verbose=VERBOSE)
     etat_interne = \
-u"""_ = 2/5
+"""_ = 2/5
 
 @derniers_resultats = [
     'x^2',

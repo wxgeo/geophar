@@ -1,9 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
-from __future__ import with_statement
-from __future__ import print_function
-from __future__ import absolute_import
-from __future__ import unicode_literals
 
 ##--------------------------------------#######
 #                  Surfaces                   #
@@ -48,10 +43,10 @@ class SurfacesMenuBar(MenuBar):
     def __init__(self, panel):
         MenuBar.__init__(self, panel)
 
-        self.ajouter(u"Fichier", [u"exporter"], ['session'], [u"presse-papier"], [u"quitter"])
-        self.ajouter(u"Affichage", [u"onglet"], ["plein_ecran"])#, ["repere"], ["quadrillage"], ["orthonorme"], ["fenetre"], ["zoomer"], ["dezoomer"], ["orthonormaliser"], [u"zoom_auto"])
-        self.ajouter(u"Outils", [u"debug"], [u"options"])
-        self.ajouter(u"?")
+        self.ajouter("Fichier", ["exporter"], ['session'], ["presse-papier"], ["quitter"])
+        self.ajouter("Affichage", ["onglet"], ["plein_ecran"])#, ["repere"], ["quadrillage"], ["orthonorme"], ["fenetre"], ["zoomer"], ["dezoomer"], ["orthonormaliser"], [u"zoom_auto"])
+        self.ajouter("Outils", ["debug"], ["options"])
+        self.ajouter("?")
 
 
 
@@ -92,7 +87,7 @@ class MyAxes3D(Axes3D):
 
 class Surfaces(Panel_API_graphique):
 
-    titre = u"Surfaces" # Donner un titre a chaque module
+    titre = "Surfaces" # Donner un titre a chaque module
 
     def __init__(self, *args, **kw):
         Panel_API_graphique.__init__(self, *args, **kw)
@@ -136,7 +131,7 @@ class Surfaces(Panel_API_graphique):
 
 
         ligne = QHBoxLayout()
-        box = QGroupBox(u"Equation")
+        box = QGroupBox("Equation")
         box.setLayout(ligne)
         ligne.addWidget(QLabel("Z = "))
         self.equation = QLineEdit(self)
@@ -145,7 +140,7 @@ class Surfaces(Panel_API_graphique):
         ligne.addWidget(self.equation)
         self.entrees.addWidget(box)
 
-        box = QGroupBox(u"Abscisse")
+        box = QGroupBox("Abscisse")
         liste = QVBoxLayout()
         box.setLayout(liste)
 
@@ -159,7 +154,7 @@ class Surfaces(Panel_API_graphique):
         liste.addLayout(ligne)
 
         ligne = QHBoxLayout()
-        ligne.addWidget(QLabel(u"Xmax"))
+        ligne.addWidget(QLabel("Xmax"))
         self.xmax = QLineEdit(self)
         self.xmax.setMinimumWidth(160)
         self.xmax.setText("5")
@@ -168,7 +163,7 @@ class Surfaces(Panel_API_graphique):
         liste.addLayout(ligne)
 
         ligne = QHBoxLayout()
-        ligne.addWidget(QLabel(u"Pas"))
+        ligne.addWidget(QLabel("Pas"))
         self.pasX = QLineEdit(self)
         self.pasX.setMinimumWidth(160)
         self.pasX.returnPressed.connect(self.affiche)
@@ -177,12 +172,12 @@ class Surfaces(Panel_API_graphique):
 
         self.entrees.addWidget(box)
 
-        box = QGroupBox(u"Ordonnée")
+        box = QGroupBox("Ordonnée")
         liste = QVBoxLayout()
         box.setLayout(liste)
 
         ligne = QHBoxLayout()
-        ligne.addWidget(QLabel(u"Ymin"))
+        ligne.addWidget(QLabel("Ymin"))
         self.ymin = QLineEdit(self)
         self.ymin.setMinimumWidth(160)
         self.ymin.setText("-5")
@@ -191,7 +186,7 @@ class Surfaces(Panel_API_graphique):
         liste.addLayout(ligne)
 
         ligne = QHBoxLayout()
-        ligne.addWidget(QLabel(u"Ymax"))
+        ligne.addWidget(QLabel("Ymax"))
         self.ymax = QLineEdit(self)
         self.ymax.setMinimumWidth(160)
         self.ymax.setText("5")
@@ -200,7 +195,7 @@ class Surfaces(Panel_API_graphique):
         liste.addLayout(ligne)
 
         ligne = QHBoxLayout()
-        ligne.addWidget(QLabel(u"Pas"))
+        ligne.addWidget(QLabel("Pas"))
         self.pasY = QLineEdit(self)
         self.pasY.setMinimumWidth(160)
         self.pasY.returnPressed.connect(self.affiche)
@@ -209,7 +204,7 @@ class Surfaces(Panel_API_graphique):
 
         self.entrees.addWidget(box)
 
-        box = QGroupBox(u"Seuils")
+        box = QGroupBox("Seuils")
         liste = QVBoxLayout()
         box.setLayout(liste)
 
@@ -246,18 +241,18 @@ class Surfaces(Panel_API_graphique):
         Panel_API_graphique._sauvegarder(self, fgeo, feuille)
         # TODO: implémenter sauvegarde
         return
-        fgeo.contenu[u"Courbe"] = [{"Y" : [self.equations[i].text()], u"intervalle" : [self.intervalles[i].text()], u"active" : [str(self.boites[i].text())]} for i in range(self.nombre_courbes)]
+        fgeo.contenu["Courbe"] = [{"Y" : [self.equations[i].text()], "intervalle" : [self.intervalles[i].text()], "active" : [str(self.boites[i].text())]} for i in range(self.nombre_courbes)]
 
 
     def _ouvrir(self, fgeo):
         Panel_API_graphique._ouvrir(self, fgeo)
         # TODO: implémenter sauvegarde
         return
-        if u"Courbe" in fgeo.contenu:
-            for i in range(min(len(fgeo.contenu[u"Courbe"]), self.nombre_courbes)):
-                self.equations[i].SetValue(fgeo.contenu[u"Courbe"][i][u"Y"][0])
-                self.intervalles[i].SetValue(fgeo.contenu[u"Courbe"][i][u"intervalle"][0])
-                self.boites[i].SetValue(fgeo.contenu[u"Courbe"][i][u"active"][0] == u"True")
+        if "Courbe" in fgeo.contenu:
+            for i in range(min(len(fgeo.contenu["Courbe"]), self.nombre_courbes)):
+                self.equations[i].SetValue(fgeo.contenu["Courbe"][i]["Y"][0])
+                self.intervalles[i].SetValue(fgeo.contenu["Courbe"][i]["intervalle"][0])
+                self.boites[i].SetValue(fgeo.contenu["Courbe"][i]["active"][0] == "True")
         self.affiche()
 
 
@@ -279,7 +274,7 @@ class Surfaces(Panel_API_graphique):
             pasX = eval_safe(pasX)
         if pasX < self._param_.resolution_minimale*max(xmax - xmin, ymax - ymin):
             pasX = self._param_.resolution_minimale*max(xmax - xmin, ymax - ymin)
-            self.canvas.message(u"Attention, le pas est trop petit !")
+            self.canvas.message("Attention, le pas est trop petit !")
         pasY = self.pasY.text().strip()
         if not pasY:
             pasY = self._param_.resolution*(xmax - xmin)
@@ -287,7 +282,7 @@ class Surfaces(Panel_API_graphique):
             pasY = eval_safe(pasY)
         if pasY < self._param_.resolution_minimale*max(xmax - xmin, ymax - ymin):
             pasY = self._param_.resolution_minimale*max(xmax - xmin, ymax - ymin)
-            self.canvas.message(u"Attention, le pas est trop petit !")
+            self.canvas.message("Attention, le pas est trop petit !")
         with BusyCursor():
             X = fullrange(xmin, xmax, pasX)
             Y = fullrange(ymin, ymax, pasY)

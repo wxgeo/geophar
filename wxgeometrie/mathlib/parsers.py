@@ -1,8 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
-from __future__ import print_function
-from __future__ import absolute_import
-from __future__ import unicode_literals
 
 ##--------------------------------------#######
 #                Objets CALC                  #
@@ -109,7 +105,7 @@ MATRICE = r"\[ ?(%s ?, ?)*(%s) ?\]" % (LISTE_SIMPLE, LISTE_SIMPLE)
 
 
 def _simplifier(formule):
-    u"""Suppressions d'espaces inutiles."""
+    """Suppressions d'espaces inutiles."""
 #    formule = formule.strip()
     # - un seul caractère d'espacement
 #    formule = regsub("[ ]+", formule, " ")
@@ -119,7 +115,7 @@ def _simplifier(formule):
     return formule
 
 def _arguments_latex(chaine, nbr_arguments = 2):
-    u"""Renvoie les arguments d'une commande LaTeX (ainsi que le reste de la chaîne).
+    """Renvoie les arguments d'une commande LaTeX (ainsi que le reste de la chaîne).
 
     >>> from wxgeometrie.mathlib.parsers import _arguments_latex
     >>> _arguments_latex('2{x+1}+4', 2)
@@ -145,7 +141,7 @@ def _arguments_latex(chaine, nbr_arguments = 2):
 
 
 def _convertir_latex_frac(chaine):
-    u"""Convertit \frac{a}{b}, \dfrac{a}{b} et \tfrac{a}{b} en ((a)/(b)).
+    """Convertit \frac{a}{b}, \dfrac{a}{b} et \tfrac{a}{b} en ((a)/(b)).
 
     >>> from wxgeometrie.mathlib.parsers import _convertir_latex_frac
     >>> _convertir_latex_frac('3+\dfrac{1}{2x+1}+5x+1')
@@ -240,7 +236,7 @@ def _convertir_separateur_decimal(s):
 
 
 def extraire_chaines(chaine):
-    u"""Extrait les chaînes de caractères trouvées dans `chaine`.
+    """Extrait les chaînes de caractères trouvées dans `chaine`.
 
     Chaque chaîne interne est remplacée par <@> (et le symbole @ lui-même
     est remplacé par @@).
@@ -268,7 +264,7 @@ def extraire_chaines(chaine):
 
     chaine = chaine.replace('@', '@@')
 
-    for i in xrange(10000):
+    for i in range(10000):
         if mode is None:
             # On recherche le début de la chaîne interne.
             debut1 = chaine.find("'", position)
@@ -363,15 +359,15 @@ def traduire_formule(formule='', fonctions=(), OOo=True, LaTeX=True,
         print('0', formule)
 
     # Différentes façons de rentrer les puissances :
-    formule = formule.replace("^", "**").replace(u'²',"**2").replace(u'³',"**3")
-    formule = formule.replace(u'\u2074',"**4").replace(u'\u2075',"**5").replace(u'\u2076',"**6")
-    formule = formule.replace(u'\u2077',"**7").replace(u'\u2078',"**8").replace(u'\u2079',"**9")
+    formule = formule.replace("^", "**").replace('²',"**2").replace('³',"**3")
+    formule = formule.replace('\u2074',"**4").replace('\u2075',"**5").replace('\u2076',"**6")
+    formule = formule.replace('\u2077',"**7").replace('\u2078',"**8").replace('\u2079',"**9")
 
     # Caractères unicode.
     # Soustraction: remplace le tiret long en '-'.
-    formule = formule.replace(u'\u2013', "-").replace(u'\u2212', "-")
+    formule = formule.replace('\u2013', "-").replace('\u2212', "-")
     # Division et multiplication
-    formule = formule.replace(u"\u00D7", "*").replace(u"\u00F7", "/")
+    formule = formule.replace("\u00D7", "*").replace("\u00F7", "/")
 
 
     # Conversion écriture décimale infinie périodique -> fraction
@@ -399,7 +395,7 @@ def traduire_formule(formule='', fonctions=(), OOo=True, LaTeX=True,
     formule = formule.replace("+)", ",'+')").replace("-)", ",'-')")
 
     # conversion degrés -> radians
-    formule = formule.replace(u'°', '*pi/180')
+    formule = formule.replace('°', '*pi/180')
 
     if OOo:
         # Gestion des matrices.
@@ -536,7 +532,7 @@ def simplifier_ecriture(formule):
 
 
 def _fast_closing_bracket_search(string, start=0):
-    u"""Recherche rudimentaire de la parenthèse fermante correspondante.
+    """Recherche rudimentaire de la parenthèse fermante correspondante.
 
     Les parenthèses imbriquées sont gérées, mais pas la détection des chaînes de
     caractères qui peuvent fausser les résultats.
@@ -571,7 +567,7 @@ def _fast_closing_bracket_search(string, start=0):
 
 
 def _fast_opening_bracket_search(string):
-    u"""Recherche rudimentaire de la parenthèse ouvrante correspondante.
+    """Recherche rudimentaire de la parenthèse ouvrante correspondante.
 
     Puisqu'on cherche la parenthèse ouvrante, la recherche s'effectue donc
     de droite à gauche.
@@ -608,7 +604,7 @@ def _fast_opening_bracket_search(string):
 
 
 def _strip_parenthesis(string):
-    u"""Supprime les parenthèses autour de l'expression, si elles correspondent."""
+    """Supprime les parenthèses autour de l'expression, si elles correspondent."""
     while string and string[0] == '(':
         if _fast_closing_bracket_search(string) == len(string):
             string = string[1:-1]
@@ -618,7 +614,7 @@ def _strip_parenthesis(string):
 
 
 def _rechercher_numerateur(chaine):
-    u"""Part de la fin de la chaîne, et remonte la chaîne pour chercher
+    """Part de la fin de la chaîne, et remonte la chaîne pour chercher
     le plus grand groupe possible pouvant correspondre à un numérateur.
 
     Retourne la position du début du numérateur dans la chaîne.
@@ -660,7 +656,7 @@ def _rechercher_numerateur(chaine):
 
 
 def _rechercher_denominateur(chaine):
-    u"""Part de la fin de la chaîne, et remonte la chaîne pour chercher
+    """Part de la fin de la chaîne, et remonte la chaîne pour chercher
     le plus grand groupe possible pouvant correspondre à un numérateur.
 
     Retourne la position du début du numérateur dans la chaîne.
@@ -813,7 +809,7 @@ def _convertir_en_latex(chaine):
 
 
 def convertir_en_latex(chaine, mode='$'):
-    u"""Convertit une chaine représentant un calcul en Python, en du code LaTeX.
+    """Convertit une chaine représentant un calcul en Python, en du code LaTeX.
 
     modes actuels: '$', None
 
@@ -828,7 +824,7 @@ def convertir_en_latex(chaine, mode='$'):
 
 
 def latex2mathtext(chaine):
-    u"""Convertit la chaîne pour qu'elle puisse être affichée par mathtext.
+    """Convertit la chaîne pour qu'elle puisse être affichée par mathtext.
 
     Matplotlib offre 2 possibilités pour l'affichage de chaînes LaTeX :
 
@@ -865,7 +861,7 @@ def mathtext_parser(txt):
 
 
 def tex_dollars(txt):
-    u"Rajoute des $ si l'expression LaTeX ainsi obtenue est correcte."
+    "Rajoute des $ si l'expression LaTeX ainsi obtenue est correcte."
     try:
         mathtext_parser('$' + txt + '$')
         return '$' + txt + '$'

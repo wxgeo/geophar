@@ -1,8 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
-from __future__ import absolute_import
-from __future__ import print_function
-from __future__ import unicode_literals
 
 #    WxGeometrie
 #    Dynamic geometry, graph plotter, and more for french mathematic teachers.
@@ -44,7 +40,7 @@ import numpy
 
 
 def fullrange(a, b, pas):
-    u'''Comme range(), mais avec des flottants, et contient en dernière valeur 'b'.
+    '''Comme range(), mais avec des flottants, et contient en dernière valeur 'b'.
 
     Équivalent de numpy.append(numpy.arrange(a, b, pas), b).'''
     return numpy.append(numpy.arange(a, b, pas), b)

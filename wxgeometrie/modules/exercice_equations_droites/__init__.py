@@ -1,9 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
-from __future__ import with_statement
-from __future__ import print_function
-from __future__ import absolute_import
-from __future__ import unicode_literals
 
 #    .----------------------------------------.
 #    |    Exercices : Équations de droites    |
@@ -58,14 +53,14 @@ class EqMenuBar(ExerciceMenuBar):
 
 class ExercicesEquationsDroites(Exercice):
 
-    titre = u"Équations de droites" # Donner un titre a chaque module
+    titre = "Équations de droites" # Donner un titre a chaque module
 
     def __init__(self, *args, **kw):
         Exercice.__init__(self, BarreOutils = BarreOutilsExEqDte, *args, **kw)
 
 
     def reinitialiser(self):
-        u"""Paramètres par défaut."""
+        """Paramètres par défaut."""
         Exercice.reinitialiser(self)
         self.canvas.afficher_axes = True
         self.canvas.quadrillage_defaut()
@@ -78,7 +73,7 @@ class ExercicesEquationsDroites(Exercice):
     # ------------------------------------------------------
 
     def exercice_lire_equation_AB(self, pointA, pointB):
-        u"""Lire graphiquement l'équation de la droite (AB).
+        """Lire graphiquement l'équation de la droite (AB).
 
         C'est l'exercice à la base des niveaux 1 à 7.
         """
@@ -100,8 +95,8 @@ class ExercicesEquationsDroites(Exercice):
         xmin, xmax, ymin, ymax = self.canvas.fenetre
         print('Fenetre::', self.canvas.fenetre, '--', xmin, ymin)
         champ = Champ('', xmin, ymin, couleur_fond='#ffffb5',
-                    prefixe=(ur"Dans le repère $(O;\,\vec\imath,\,\vec\jmath)$, "
-                             u"la droite $(AB)$ a pour équation "),
+                    prefixe=(r"Dans le repère $(O;\,\vec\imath,\,\vec\jmath)$, "
+                             "la droite $(AB)$ a pour équation "),
                     alignement_horizontal='left', alignement_vertical='bottom',
                     attendu=reponse)
         print('xy::', champ.xy)
@@ -142,7 +137,7 @@ class ExercicesEquationsDroites(Exercice):
 
 
     def niveau4(self):
-        u"""Droite horizontale."""
+        """Droite horizontale."""
         yA = self.relatif(7)
         while True:
             xA = self.relatif(7)
@@ -153,7 +148,7 @@ class ExercicesEquationsDroites(Exercice):
 
 
     def niveau5(self):
-        u"""Droite verticale."""
+        """Droite verticale."""
         xA = self.relatif(7)
         while True:
             yA = self.relatif(7)
@@ -167,7 +162,7 @@ class ExercicesEquationsDroites(Exercice):
         """Droite oblique ne coupant pas l'axe des ordonnées sur une
         graduation ; il faut donc calculer (ou deviner) l'ordonnée
         à l'origine."""
-        for i in xrange(1000):
+        for i in range(1000):
             while True:
                 xA = self.relatif(n)
                 xB = self.relatif(n)
@@ -219,7 +214,7 @@ class ExercicesEquationsDroites(Exercice):
 
 
     def eq_reduite(self, A, B):
-        u"""Équation réduite exacte de la droite (AB).
+        """Équation réduite exacte de la droite (AB).
 
         La droite ne doit pas être verticale."""
         xA, yA = A
@@ -235,7 +230,7 @@ class ExercicesEquationsDroites(Exercice):
     # --------------------------------------------
 
     def niveau8(self):
-        u"""Résolution graphique de système.
+        """Résolution graphique de système.
 
         Construire deux droites d'équations données.
         Lire les coordonnées du point d'intersection."""
@@ -286,15 +281,15 @@ class ExercicesEquationsDroites(Exercice):
 
         xmin, xmax, ymin, ymax = self.canvas.fenetre
 
-        txt = Texte((u"On note $d_1$ la droite d'équation %s, "
-                  u"et $d_2$ la droite d'équation %s.\n"
-                  u"Construire les droites $d_1$ puis $d_2$ dans le repère ci-dessous.")
+        txt = Texte(("On note $d_1$ la droite d'équation %s, "
+                  "et $d_2$ la droite d'équation %s.\n"
+                  "Construire les droites $d_1$ puis $d_2$ dans le repère ci-dessous.")
                   % (eq1, eq2), "xmin", "ymax", couleur_fond='#ffffb5', fixe=True,
                   alignement_horizontal='left', alignement_vertical='top')
         self.feuille_actuelle.objets['txt1'] = txt
         systeme = r'$\left\{\stackrel{%s}{%s}\right.$' % (eq1.strip('$'), eq2.strip('$'))
         champ = Champ('', "xmin", "ymin",
-                 prefixe=(u"Le couple solution du système %s est (" % systeme),
+                 prefixe=("Le couple solution du système %s est (" % systeme),
                  alignement_vertical='bottom', alignement_horizontal='left',
                  attendu=str(C), couleur_fond='#ffffb5', suffixe=')')
         self.feuille_actuelle.objets['champ1'] = champ
@@ -350,7 +345,7 @@ class ExercicesEquationsDroites(Exercice):
 
 
     def ax_b(self):
-        u"Générer une expression sympy de la forme ax+b, avec a, b dans Z."
+        "Générer une expression sympy de la forme ax+b, avec a, b dans Z."
         return self.relatif()*S('x') + self.relatif()
 
 

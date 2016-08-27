@@ -1,8 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
-from __future__ import print_function
-from __future__ import absolute_import
-from __future__ import unicode_literals
 
 ##--------------------------------------##
 #               Barre d'outils pour la géométrie               #
@@ -37,24 +33,24 @@ class BarreOutilsGraphes(BarreOutils):
 
 
     def creer_boutons(self):
-        self.add("F1", (u"Pointeur", u"fleche4", u"Déplacer ou modifier un objet.", self.curseur),
-                  (u"Zoomer", u"zoombox2", u"Recentrer la zone d'affichage.", self.zoombox),
-                  (u"Sélectionner", u"selection", u"Sélectionner une partie de la feuille.",
+        self.add("F1", ("Pointeur", "fleche4", "Déplacer ou modifier un objet.", self.curseur),
+                  ("Zoomer", "zoombox2", "Recentrer la zone d'affichage.", self.zoombox),
+                  ("Sélectionner", "selection", "Sélectionner une partie de la feuille.",
                   self.selectionner)).select()
-        self.add("F2", (u"Sommet", u"point2",u"Créer un point.", self.point))
-        self.add("F3", (u"Arête", u"segment2", u"Créer une arête droite.", self.segment))
-        self.add("F4", (u"Arête orientée", u"vecteur", u"Créer une arête orientée droite.", self.vecteur),
+        self.add("F2", ("Sommet", "point2","Créer un point.", self.point))
+        self.add("F3", ("Arête", "segment2", "Créer une arête droite.", self.segment))
+        self.add("F4", ("Arête orientée", "vecteur", "Créer une arête orientée droite.", self.vecteur),
                     )
-        self.add("F5", (u"Arête courbe", u"arc_points",
-                    u"Créer une arête courbe (définir 3 points).", self.arc_points),
+        self.add("F5", ("Arête courbe", "arc_points",
+                    "Créer une arête courbe (définir 3 points).", self.arc_points),
                     )
-        self.add("F6", (u"Arête orientée (courbe)", u"arc_oriente",
-                    u"Créer une arête orientée courbe (définir 3 points).", self.arc_oriente),
+        self.add("F6", ("Arête orientée (courbe)", "arc_oriente",
+                    "Créer une arête orientée courbe (définir 3 points).", self.arc_oriente),
                     )
-        self.add("F7", (u"Texte", u"texte", u"Créer un texte.", self.texte))
-        self.add("F8", (u"Masquer", u"masquer", u"Masquer des objets.", self.masque))
-        self.add("F9", (u"Gommer", u"gomme", u"Supprimer des objets.", self.gomme))
-        self.add("Shift+F2", (u"Copier", u"pinceau", u"Copier le style d'un objet.", self.pinceau))
+        self.add("F7", ("Texte", "texte", "Créer un texte.", self.texte))
+        self.add("F8", ("Masquer", "masquer", "Masquer des objets.", self.masque))
+        self.add("F9", ("Gommer", "gomme", "Supprimer des objets.", self.gomme))
+        self.add("Shift+F2", ("Copier", "pinceau", "Copier le style d'un objet.", self.pinceau))
 
 
 
@@ -63,17 +59,17 @@ class BarreOutilsGraphes(BarreOutils):
         if event is False:
             self.arc(Arc_points, nom_style='arc', **kw)
         else:
-            self.interagir(self.arc_points, u"Choisissez ou créez 3 points.")
+            self.interagir(self.arc_points, "Choisissez ou créez 3 points.")
 
     def arc_oriente(self, event = False, **kw):
         if event is False:
             self.arc(Arc_oriente, nom_style='arcs_orientes', **kw)
         else:
-            self.interagir(self.arc_oriente, u"Choisissez ou créez 3 points.")
+            self.interagir(self.arc_oriente, "Choisissez ou créez 3 points.")
 
 
     def arc(self, classe, nom_style = '', **kw):
-        u"Création d'un arc défini par 3 points. Un style spécial est appliqué au point intermédaire."
+        "Création d'un arc défini par 3 points. Un style spécial est appliqué au point intermédaire."
         if self.test(True, **kw):
             self.cache = [obj for obj in self.cache if obj.nom and obj.feuille is self.feuille_actuelle]
             selection = kw["selection"]

@@ -1,9 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
-from __future__ import print_function
-from __future__ import absolute_import
-from __future__ import unicode_literals
 
 ##--------------------------------------#######
 #           Mathlib 2 (sympy powered)         #
@@ -40,7 +36,7 @@ from .custom_objects import Decim
 
 
 class MyCustomPrinter(object):
-    u"""Personnalisation du printer de sympy.
+    """Personnalisation du printer de sympy.
 
     * implémentation de méthodes génériques pour gérer les objets Decim.
     * changement de l'ordre de recherche des méthodes d'impression :
@@ -95,11 +91,11 @@ class MyCustomPrinter(object):
         elif isinstance(expr, (list, tuple)):
             return expr.__class__(conv(item) for item in expr)
         elif isinstance(expr, dict):
-            return dict((conv(key), conv(val)) for key, val in expr.iteritems())
+            return dict((conv(key), conv(val)) for key, val in expr.items())
         return expr
 
     def _float_evalf(self, expr):
-        u"Évalue le flottant en respectant le réglage du printer (nombre de décimales)."
+        "Évalue le flottant en respectant le réglage du printer (nombre de décimales)."
         if self._settings['mode_scientifique']:
             decimales = self._settings['decimales_sci'] + 1
         else:
@@ -191,7 +187,7 @@ class CustomStrPrinter(MyCustomPrinter, StrPrinter):
     def doprint(self, expr):
         # Mieux vaut faire la substitution une seule fois dès le départ.
         expr = self._convert_Decim(expr)
-        return StrPrinter.doprint(self, expr) if not isinstance(expr, unicode) else expr
+        return StrPrinter.doprint(self, expr) if not isinstance(expr, str) else expr
 
 def custom_str(expr, **settings):
     return CustomStrPrinter(settings).doprint(expr)

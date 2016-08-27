@@ -1,9 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
-from __future__ import print_function
-from __future__ import absolute_import
-from __future__ import unicode_literals
 
 ##--------------------------------------#######
 #   Mathlib 2 (sympy powered) #
@@ -76,7 +72,7 @@ class LocalDict(dict):
 
 
 class Interprete(object):
-    u"""Un interprêteur de commandes mathématiques, avec gestion des sessions.
+    """Un interprêteur de commandes mathématiques, avec gestion des sessions.
 
     Les options sont les suivantes::
 
@@ -186,14 +182,14 @@ class Interprete(object):
         self.initialiser()
 
     def _decimal(self, nbr, prec=None):
-        u"""Convertit en fraction avec affichage décimal.
+        """Convertit en fraction avec affichage décimal.
         """
         if prec is None:
             prec = self.precision_calcul
         return Decim(nsimplify(nbr, rational=True), prec=prec)
 
     def _frac(self, arg):
-        u"""Convertit en fraction.
+        """Convertit en fraction.
         """
         return frac(arg)
 
@@ -218,9 +214,9 @@ class Interprete(object):
             difference = calcul.count(parentheses[0][i])-calcul.count(parentheses[1][i])
             if difference > 0:
                 calcul += difference*parentheses[1][i]
-                self.warning += u" Attention, il manque des parenthèses \"" + parentheses[1][i] + "\"."
+                self.warning += " Attention, il manque des parenthèses \"" + parentheses[1][i] + "\"."
             elif difference < 0:
-                self.warning += u" Attention, il y a des parenthèses \"" + parentheses[1][i] + "\" superflues."
+                self.warning += " Attention, il y a des parenthèses \"" + parentheses[1][i] + "\" superflues."
                 if calcul.endswith(abs(difference)*parentheses[1][i]):
                     calcul = calcul[:difference]
 
@@ -289,7 +285,7 @@ class Interprete(object):
                 latex = ''
 
 
-        if self.separateur_decimal != '.' and not isinstance(valeur, basestring):
+        if self.separateur_decimal != '.' and not isinstance(valeur, str):
             resultat = re.sub(r"[ ]*[,;][ ]*", ' ; ', resultat)
             # Éviter de remplacer \, par \; en LaTex.
             latex = re.sub(r"(?<![\\ ])[ ]*,[ ]*", ';', latex)
@@ -299,8 +295,8 @@ class Interprete(object):
             latex = re.sub(NBR, sep, latex)
             # TODO: utiliser un parser, pour détecter les chaînes, et ne pas remplacer à l'intérieur.
 
-        if isinstance(valeur, basestring):
-            latex = u'\u201C%s\u201D' %valeur
+        if isinstance(valeur, str):
+            latex = '\u201C%s\u201D' %valeur
 
         self.latex_dernier_resultat = latex
         if self.simplifier_ecriture_resultat:
@@ -397,7 +393,7 @@ class Interprete(object):
         else:
             n = int(n)
         if self.derniers_resultats: return self.derniers_resultats[n]
-        self.warning += u" Ans(): aucun calcul antérieur."
+        self.warning += " Ans(): aucun calcul antérieur."
         return 0
 
     def clear_state(self):
@@ -415,7 +411,7 @@ class Interprete(object):
 
     def load_state(self, state):
         def evaltry(expr):
-            u"Evalue l'expression. En cas d'erreur, intercepte l'erreur et retourne None."
+            "Evalue l'expression. En cas d'erreur, intercepte l'erreur et retourne None."
             #XXX: ne pas remplacer à l'intérieur d'une chaîne.
             expr = re.sub(NBR_FLOTTANT, (lambda x: "Decim('%s')" % x.group()), expr)
             name_space = self.globals.copy()

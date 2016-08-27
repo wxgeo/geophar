@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
-from __future__ import with_statement
-from __future__ import print_function
-from __future__ import absolute_import
-from __future__ import unicode_literals
+
+
+
+
 
 #    .-----------------------------------------------------.
 #    |    Exercices : inéquations produits et quotients    |
@@ -60,22 +59,22 @@ class TabMenuBar(MenuBar):
     def __init__(self, panel):
         MenuBar.__init__(self, panel)
 
-        self.ajouter(u"Fichier", [u"Recommencer", u"Recommencer au niveau 0.", u"Ctrl+N", panel.reinitialiser],
-                    [u"ouvrir"],
-                    [u"enregistrer"], [u"enregistrer_sous"], [u"exporter"],
-                    [u"exporter&sauver"], None, [u"imprimer"], [u"presse-papier"],
-                    None, [u"proprietes"], None, ["fermer"], ["quitter"])
-        self.ajouter(u"Editer", ["annuler"], ["refaire"], ["modifier"], ["supprimer"])
-        self.ajouter(u"Affichage", ["onglet"], ["plein_ecran"], None, ["zoom_texte"], ["zoom_ligne"], ["zoom_general"])
-        self.ajouter(u"Outils", [u"options"])
-        self.ajouter(u"avance1")
-        self.ajouter(u"?")
+        self.ajouter("Fichier", ["Recommencer", "Recommencer au niveau 0.", "Ctrl+N", panel.reinitialiser],
+                    ["ouvrir"],
+                    ["enregistrer"], ["enregistrer_sous"], ["exporter"],
+                    ["exporter&sauver"], None, ["imprimer"], ["presse-papier"],
+                    None, ["proprietes"], None, ["fermer"], ["quitter"])
+        self.ajouter("Editer", ["annuler"], ["refaire"], ["modifier"], ["supprimer"])
+        self.ajouter("Affichage", ["onglet"], ["plein_ecran"], None, ["zoom_texte"], ["zoom_ligne"], ["zoom_general"])
+        self.ajouter("Outils", ["options"])
+        self.ajouter("avance1")
+        self.ajouter("?")
 
 
 
 class ExercicesTableauxSignes(Panel_API_graphique):
 
-    titre = u"Tableaux de signes" # Donner un titre a chaque module
+    titre = "Tableaux de signes" # Donner un titre a chaque module
 
     def __init__(self, *args, **kw):
         Panel_API_graphique.__init__(self, *args, **kw)
@@ -101,7 +100,7 @@ class ExercicesTableauxSignes(Panel_API_graphique):
         self.entrees.addWidget(self.felicitations)
 
         self.entrees.addSpacing(30)
-        self.btn_niveau = QPushButton(u"Niveau suivant", self)
+        self.btn_niveau = QPushButton("Niveau suivant", self)
         self.btn_niveau.clicked.connect(self.niveau_suivant)
         self.entrees.addWidget(self.btn_niveau)
         self.entrees.addSpacing(50)
@@ -150,24 +149,24 @@ class ExercicesTableauxSignes(Panel_API_graphique):
     n = niveau_suivant
 
     def update_panneau(self):
-        self.panneau.setText((u"<p><b><i>Niveau :</i> %s</b></p>" % self.niveau) +
-                                 (u"<p><b><i>Points :</i> %s</b></p>" % self.score) +
-                                 (u"<p><i>Erreurs :</i> %s</p>" % self.erreurs))
+        self.panneau.setText(("<p><b><i>Niveau :</i> %s</b></p>" % self.niveau) +
+                                 ("<p><b><i>Points :</i> %s</b></p>" % self.score) +
+                                 ("<p><i>Erreurs :</i> %s</p>" % self.erreurs))
         champs = self.feuille_actuelle.objets.lister(type=Champ)
         if champs and all(obj.correct for obj in champs):
             if self.niveau + 1 < len(self.niveaux):
                 self.btn_niveau.setEnabled(True)
                 self.btn_niveau.setFocus(True)
-                self.felicitations.setText(u'<p><b>Félicitations !</b></p>' +
-                                           u'<p>Passer au niveau %s</p>' %(self.niveau + 1))
+                self.felicitations.setText('<p><b>Félicitations !</b></p>' +
+                                           '<p>Passer au niveau %s</p>' %(self.niveau + 1))
                 self.felicitations.setStyleSheet(
                     """QLabel {background-color: %s; padding: 5px;
                        border-radius: 5px;
                        color:white;}""" %QColor(255, 153, 0).name())
 
             else:
-                self.felicitations.setText(u'<p><b>Félicitations !</b></p>' +
-                                           u'<p>Dernier niveau terminé !</p>')
+                self.felicitations.setText('<p><b>Félicitations !</b></p>' +
+                                           '<p>Dernier niveau terminé !</p>')
                 self.felicitations.setStyleSheet(
                     """QLabel {background-color: %s; padding: 5px; border-radius: 5px;
                     color:white;}""" %QColor(102, 205, 0).name())
@@ -175,25 +174,25 @@ class ExercicesTableauxSignes(Panel_API_graphique):
 
     def _sauvegarder(self, fgeo, feuille = None):
         Panel_API_graphique._sauvegarder(self, fgeo, feuille)
-        fgeo.contenu[u"niveau"] = [str(self.niveau)]
-        fgeo.contenu[u"expression"] = [self.raw_expression]
-        fgeo.contenu[u"score"] = [str(self.score)]
-        fgeo.contenu[u"erreurs"] = [str(self.erreurs)]
+        fgeo.contenu["niveau"] = [str(self.niveau)]
+        fgeo.contenu["expression"] = [self.raw_expression]
+        fgeo.contenu["score"] = [str(self.score)]
+        fgeo.contenu["erreurs"] = [str(self.erreurs)]
 
     def _ouvrir(self, fgeo):
         # Il ne doit y avoir qu'une seule feuille ouverte à la fois.
         # XXX: intégrer cette fonctionnalité directement au Panel.
         self.fermer_feuilles()
         Panel_API_graphique._ouvrir(self, fgeo)
-        if u"expression" in fgeo.contenu:
-            self.generer_expression(expr=fgeo.contenu[u"expression"][0])
+        if "expression" in fgeo.contenu:
+            self.generer_expression(expr=fgeo.contenu["expression"][0])
             ##self.dessiner_tableau()
-        if u"niveau" in fgeo.contenu:
-            self.niveau = int(fgeo.contenu[u"niveau"][0])
-        if u"score" in fgeo.contenu:
-            self.score = int(fgeo.contenu[u"score"][0])
-        if u"erreurs" in fgeo.contenu:
-            self.erreurs = int(fgeo.contenu[u"erreurs"][0])
+        if "niveau" in fgeo.contenu:
+            self.niveau = int(fgeo.contenu["niveau"][0])
+        if "score" in fgeo.contenu:
+            self.score = int(fgeo.contenu["score"][0])
+        if "erreurs" in fgeo.contenu:
+            self.erreurs = int(fgeo.contenu["erreurs"][0])
         self.update_panneau()
 
 
@@ -202,21 +201,21 @@ class ExercicesTableauxSignes(Panel_API_graphique):
             self.dessiner_tableau()
 
     def naturel(self, m=None):
-        u'''Retourne un entier entre 2 et 15.'''
+        '''Retourne un entier entre 2 et 15.'''
         return str(randint(2, 15))
 
     def relatif(self, m=None):
-        u'''Retourne un entier entre -15 et -2, ou entre 2 et 15.'''
+        '''Retourne un entier entre -15 et -2, ou entre 2 et 15.'''
         # signe: 1 ou -1
         signe = 2*randint(0, 1) - 1
         return str(signe*randint(2, 15))
 
     def decimal(self, m=None):
-        u'''Retourne un nombre décimal à deux chiffres.'''
+        '''Retourne un nombre décimal à deux chiffres.'''
         return self.relatif() + '.' + self.naturel()
 
     def rationnel(self, m=None):
-        u'''Retourne un quotient d'entiers.'''
+        '''Retourne un quotient d'entiers.'''
         while True:
             p = randint(2, 7)
             q = randint(2, 7)
@@ -232,7 +231,7 @@ class ExercicesTableauxSignes(Panel_API_graphique):
         return expression
 
     def generer_expression(self, expr=None):
-        u"""Génère une expression aléatoire en fonction respectant le format
+        """Génère une expression aléatoire en fonction respectant le format
         en cours.
 
         Si `expr` a une valeur, l'expression reprend la valeur de `expr`.
@@ -380,8 +379,8 @@ class ExercicesTableauxSignes(Panel_API_graphique):
         # Consigne
         # --------
 
-        txt = dessiner_texte(10, 10, u"Résoudre sur $\u211D$ l'inéquation suivante :  $"
-                                  + expression_latex + u'$.',
+        txt = dessiner_texte(10, 10, "Résoudre sur $\u211D$ l'inéquation suivante :  $"
+                                  + expression_latex + '$.',
                                   va='top', weight='bold', backgroundcolor='#ffffb5')
         box = can.txt_box(txt)
         h = 10 + box.height + 4*marge
@@ -390,7 +389,7 @@ class ExercicesTableauxSignes(Panel_API_graphique):
         # Équations préalables au tableau
         # -------------------------------
 
-        choix = [u'décroissante', u'croissante']
+        choix = ['décroissante', 'croissante']
 
         # On écrit au dessus du tableau les équations à résoudre :
         for expression, latex in facteurs_latex.items():
@@ -414,15 +413,15 @@ class ExercicesTableauxSignes(Panel_API_graphique):
                 if facteurs_sympy[expression].has('x'):
                     if not facteurs_diff[expression].has('x'):
                         # C'est une fonction affine.
-                        txt = dessiner_texte(30, h, u'Sur $\u211D$, la fonction affine'
-                                               u' $x\\mapsto %s$ est strictement' %latex)
+                        txt = dessiner_texte(30, h, 'Sur $\u211D$, la fonction affine'
+                                               ' $x\\mapsto %s$ est strictement' %latex)
                         box = can.txt_box(txt)
-                        sens = (u'décroissante' if facteurs_diff[expression] < 0 else u'croissante')
+                        sens = ('décroissante' if facteurs_diff[expression] < 0 else 'croissante')
                         dessiner_champ(35 + box.width, h, ha='left', choix=choix, resultat=sens)
                         h += box.height + 3*marge
                     elif facteurs_sympy[expression].as_base_exp()[1] == 2:
                         # C'est un carré.
-                        txt = dessiner_texte(30, h, u'Sur $\u211D$, un carré est toujours')
+                        txt = dessiner_texte(30, h, 'Sur $\u211D$, un carré est toujours')
                         box = can.txt_box(txt)
                         dessiner_champ(35 + box.width, h, ha='left', resultat='positif')
                         h += box.height + 3*marge
@@ -460,7 +459,7 @@ class ExercicesTableauxSignes(Panel_API_graphique):
         # "facteur". Par ex, si l'expression est juste 2*x+3.
         print_last_line = self.denominateur or len(self.numerateur) > 1
 
-        textes = ['x'] + facteurs_latex.values()
+        textes = ['x'] + list(facteurs_latex.values())
         if print_last_line:
             textes.append(expression_latex)
 
@@ -505,7 +504,7 @@ class ExercicesTableauxSignes(Panel_API_graphique):
         n = len(sols)
         largeur_restante = width - 30 - col1 - 2*marge
         largeur_case = largeur_restante/(n + 1)
-        choix = [' ', '0', u'\u2551']
+        choix = [' ', '0', '\u2551']
         for i, sol in enumerate(sols):
             x = col1 + (i + 1)*largeur_case
             dessiner_ligne_v(x, alpha=.15)
@@ -517,7 +516,7 @@ class ExercicesTableauxSignes(Panel_API_graphique):
                 if sol in facteurs_sols[expr]:
                     resultat = '0'
                     if expr in self.denominateur:
-                        resultat_final = u'\u2551'
+                        resultat_final = '\u2551'
                 else:
                     resultat = ' '
                 ##signe = is sol - 1

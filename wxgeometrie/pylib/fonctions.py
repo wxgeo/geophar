@@ -1,8 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
-from __future__ import print_function
-from __future__ import absolute_import
-from __future__ import unicode_literals
 
 ##########################################################################
 #
@@ -42,7 +38,7 @@ from sympy import sympify
 
 
 def is_in(element, _list):
-    u"""Teste si l'élement est dans la liste, en effectuant un test d'identité (is) et non d'égalité (==)."""
+    """Teste si l'élement est dans la liste, en effectuant un test d'identité (is) et non d'égalité (==)."""
     for elt in _list:
         if elt is element:
             return True
@@ -59,13 +55,13 @@ def is_in(element, _list):
 ##    return any(elt is element for elt in _list)
 
 def mreplace(main_string, list_of_strings, new_string = ""):
-    u"""Remplace, dans "main_string", toutes les sous-chaines de "list_of_strings", par la chaine "new_string"."""
+    """Remplace, dans "main_string", toutes les sous-chaines de "list_of_strings", par la chaine "new_string"."""
     for old_string in list_of_strings:
         main_string = main_string.replace(old_string, new_string)
     return main_string
 
 def recursive_replace(main_string, old_string, new_string = "", max_loops = 10000, max_len = 1000000):
-    u"""Remplace, dans "main_string", la sous-chaîne "old_string" par "new_string", au besoin en plusieurs passes.
+    """Remplace, dans "main_string", la sous-chaîne "old_string" par "new_string", au besoin en plusieurs passes.
 
     En fin de processus, la sous-chaîne old_string ne subsiste plus dans la chaîne.
     Renvoie une erreur si le processus ne semble pas converger.
@@ -97,7 +93,7 @@ def recursive_replace(main_string, old_string, new_string = "", max_loops = 1000
 
 
 def recursive_mreplace(main_string, list_of_strings, new_string = "", max_loops = 10000, max_len = 1000000):
-    u"""Remplace, dans "main_string", toutes les sous-chaines de "list_of_strings" par "new_string", au besoin en plusieurs passes.
+    """Remplace, dans "main_string", toutes les sous-chaines de "list_of_strings" par "new_string", au besoin en plusieurs passes.
 
     En fin de processus, la sous-chaîne old_string ne subsiste plus dans la chaîne.
     Renvoie une erreur si le processus ne semble pas converger.
@@ -143,13 +139,13 @@ def mfind(chaine, car):
 
 
 def msplit(main_string, list_of_separators):
-    u"""Découpe la chaine "main_string", selon les séparateurs définis dans "list_of_separators"."""
+    """Découpe la chaine "main_string", selon les séparateurs définis dans "list_of_separators"."""
     return mreplace(main_string, list_of_separators[1:], list_of_separators[0]).split(list_of_separators[0])
 
 
 
 def removeend(main_string, *substrings):
-    u"Enlève les éventuelles occurences de substring en fin de chaine."
+    "Enlève les éventuelles occurences de substring en fin de chaine."
     if substrings and True not in (sub == "" for sub in substrings): # pour éviter une éventuelle boucle infinie.
         test = True
         while test:
@@ -165,7 +161,7 @@ def removeend(main_string, *substrings):
 
 
 def removestart(main_string, *substrings):
-    u"Enlève les éventuelles occurences de substring en début de chaine."
+    "Enlève les éventuelles occurences de substring en début de chaine."
     if substrings and True not in (sub == "" for sub in substrings): # pour éviter une éventuelle boucle infinie.
         test = True
         while test:
@@ -181,12 +177,12 @@ def removestart(main_string, *substrings):
 
 
 def no_twin(liste):
-    u"""Elimine les doublons dans une liste.
+    """Elimine les doublons dans une liste.
     Si tous les élements de la liste sont 'hashables', mieux vaut utiliser la fonction set."""
     dico = {}
     for elt in liste:
         dico[id(elt)] = elt
-    return dico.values()
+    return list(dico.values())
 
 #def ntwin(l): return dict((id(elt), elt) for elt in l).values() # plus élégant, mais 50% plus lent ?!?
 
@@ -194,7 +190,7 @@ def no_twin(liste):
 
 
 def advanced_split(main_string, separator, keep_empty_str = False, symbols = "([{}])"):
-    u"""Découpe la chaine "main_string" de manière intelligente,
+    """Découpe la chaine "main_string" de manière intelligente,
     en ignorant les séparateurs compris dans un groupe entre parenthèses, crochets, accolades, guillemets.
     Attention, separateur ne peut donc pas être une parenthèse, un crochet, une accolade ou un guillemet !
     Par défaut, supprime également les chaines vides."""
@@ -204,7 +200,7 @@ def advanced_split(main_string, separator, keep_empty_str = False, symbols = "([
     crochets = 0 # idem pour les crochets
     accolades = 0 # idem
     coupures = [-1] # endroits ou il faudra couper la chaine
-    for i in xrange(len(main_string)):
+    for i in range(len(main_string)):
         a = main_string[i]
         if a in ("'", '"'):
             if in_string:
@@ -235,7 +231,7 @@ def advanced_split(main_string, separator, keep_empty_str = False, symbols = "([
 
 
 def regsub(regular_exp, main_string, action = ""):
-    u"""Transforme la chaine "main_string" :
+    """Transforme la chaine "main_string" :
     Il applique aux parties vérifiant "regular_exp" le traitement "action".
 
     >>> from wxgeometrie.pylib.fonctions import regsub
@@ -244,14 +240,14 @@ def regsub(regular_exp, main_string, action = ""):
     >>> regsub("[a-z]+", "hello world !", lambda s: s[1:])
     'ello orld !'
     """
-    if isinstance(action, basestring):
+    if isinstance(action, str):
         return re.sub(regular_exp, action, main_string)
     else:
         return re.sub(regular_exp, lambda x: action(x.group(0)), main_string)
 
 
 class WeakList(weakref.WeakValueDictionary):
-    u"""Une 'liste' de réferences faibles.
+    """Une 'liste' de réferences faibles.
 
     Le terme 'liste' est trompeur, la syntaxe des listes de python n'est pas implémentée,
     exceptée les méthodes append(), et remove(), et la conversion en liste.
@@ -269,10 +265,10 @@ class WeakList(weakref.WeakValueDictionary):
 
     def append(self, valeur):
         u"Ajoute une valeur en fin de liste."
-        self[max(self.keys() or [0]) + 1] = valeur
+        self[max(self.keys(), default=0) + 1] = valeur
 
     def remove(self, valeur):
-        u"""Supprime la valeur de la liste.
+        """Supprime la valeur de la liste.
 
         Un test d'identité (et non d'égalité) est effectué ('is' et non '==').
         Si la valeur est présente plusieurs fois, elle n'est supprimée qu'une seule fois.
@@ -285,7 +281,7 @@ class WeakList(weakref.WeakValueDictionary):
         raise ValueError(repr(valeur) + " is not in WeakList")
 
     def compare_and_remove(self, valeur):
-        u"""Supprime la valeur de la liste.
+        """Supprime la valeur de la liste.
 
         Un test d'égalité est effectué ('==' et non 'is').
         Si la valeur est présente plusieurs fois, elle n'est supprimée qu'une seule fois.
@@ -298,7 +294,7 @@ class WeakList(weakref.WeakValueDictionary):
         raise ValueError(repr(valeur) + " not in WeakList")
 
     def remove_all(self, valeur):
-        u"""Supprime la valeur de la liste.
+        """Supprime la valeur de la liste.
 
         Un test d'identité (et non d'égalité) est effectué ('is' et non '==').
         Toutes les occurences de la valeur sont supprimées.
@@ -307,7 +303,7 @@ class WeakList(weakref.WeakValueDictionary):
             if value is valeur: del self[key] # il faut qu'il s'agisse du même objet
 
     def compare_and_remove_all(self, valeur):
-        u"""Supprime la valeur de la liste.
+        """Supprime la valeur de la liste.
 
         Un test d'égalité est effectué ('==' et non 'is').
         Toutes les occurences de la valeur sont supprimées.
@@ -316,16 +312,16 @@ class WeakList(weakref.WeakValueDictionary):
             if value == valeur: del self[key] # un objet égal suffit
 
     def __str__(self):
-        return str(self.values()) + " (WeakList)"
+        return str(list(self.values())) + " (WeakList)"
 
     def __iter__(self):
-        return self.itervalues()
+        return iter(self.values())
 
     def __getitem__(self, n):
-        return self.values()[n]
+        return list(self.values())[n]
 
     def __contains__(self, item):
-        return item in self.itervalues()
+        return item in self.values()
 
 
 def extract_error(chaine=''):
@@ -347,14 +343,14 @@ def extract_error(chaine=''):
 
 
 def print_error(chaine=''):
-    u"""Affiche l'erreur sans interrompre le programme.
+    """Affiche l'erreur sans interrompre le programme.
     C'est un alias de sys.excepthook, mais qui est plus souple avec les encodages.
     """
     print(extract_error(chaine))
 
 
 def rstrip_(s, end):
-    u"""Supprime récursivement 'end' de la fin de la chaîne 's'.
+    """Supprime récursivement 'end' de la fin de la chaîne 's'.
 
     >>> from wxgeometrie.pylib.fonctions import rstrip_
     >>> rstrip_('blabla_suffixe_fixe_suffixe_suffixe', '_suffixe')
@@ -379,7 +375,7 @@ def rstrip_(s, end):
 
 # http://stackoverflow.com/questions/2556108/rreplace-how-to-replace-the-last-occurence-of-an-expression-in-a-string
 def rreplace(s, old, new, count):
-    u"""rreplace (s, old, new, count) -> string
+    """rreplace (s, old, new, count) -> string
 
     Return a copy of string S with the first count occurrences of substring
     old replaced by new, starting from right to left."""
@@ -388,7 +384,7 @@ def rreplace(s, old, new, count):
 
 
 def split_geoname(name):
-    u"""Tente de décomposer un nom d'objet géométrique en plusieurs noms.
+    """Tente de décomposer un nom d'objet géométrique en plusieurs noms.
 
     Ex:
     1) "AB" -> ("A","B")
@@ -402,7 +398,7 @@ def split_geoname(name):
 
 
 def convert_geoname(name, level = 0):
-    u"""Convertit le nom entré par l'utilisateur en un nom réellement interprétable.
+    """Convertit le nom entré par l'utilisateur en un nom réellement interprétable.
 
     Une conversion de niveau 1 est appliquée dans les boîtes de dialogue.
 
@@ -424,7 +420,7 @@ def convert_geoname(name, level = 0):
 
 
 def split_around_parenthesis(main_string, position = 0, leftbracket = "("):
-    u"""Coupe le premier groupe entre parentheses rencontré, en tenant compte des guillemets.
+    """Coupe le premier groupe entre parentheses rencontré, en tenant compte des guillemets.
 
     'leftbracket' peut prendre les valeurs "(", "[" ou "{"
     La parenthese ouvrante du groupe sera la première trouvée à droite de 'position'
@@ -439,7 +435,7 @@ def split_around_parenthesis(main_string, position = 0, leftbracket = "("):
     rightbracket = {"(": ")", "[": "]", "{": "}"}[leftbracket]
     prefixe = main_string[:position]
     chaine = main_string[position + 1:]
-    for i in xrange(len(chaine)):
+    for i in range(len(chaine)):
         a = chaine[i]
         if a in ("'", '"'):
             if in_string:
@@ -542,39 +538,22 @@ def deprecation(message, level=0):
 
 
 
-def str2(string_or_unicode, encodage = None):
-    u"Convertit en string si besoin est, avec l'encodage de 'param.encodage' par défaut."
-    if isinstance(string_or_unicode, str):
-        return string_or_unicode
-    elif isinstance(string_or_unicode, unicode):
-        return string_or_unicode.encode(encodage or param.encodage)
-    else:
-        return str(string_or_unicode)
+def conv2bytes(string, encodage=None):
+    """Convertit en bytes si besoin est, avec l'encodage de 'param.encodage' par défaut.
 
-def str3(unicode):
-    dict = {
-                'a': (u'à', u'â', u'ä', ),
-                'e': (u'é', u'è', u'ê', u'ë', ),
-                'i': (u'î', u'ï', ),
-                'o': (u'ô', u'ö', ),
-                'u': (u'ù', u'û', u'ü',  ),
-                'c': (u'ç', ),
-                'A': (u'À', u'Â', u'Ä', ),
-                'E': (u'É', u'È', u'Ê', u'Ë', ),
-                'I': (u'Î', u'Ï', ),
-                'O': (u'Ô', u'Ö', ),
-                'U': (u'Ù', u'Û', u'Ü',  ),
-                'C': (u'Ç', ),
-                }
-    for key, liste in dict.items():
-        for item in liste:
-            unicode = unicode.replace(item, key)
-    return str(unicode)
+    Si l'argument n'est pas de type string, il est tout d'abord converti en string,
+    sauf s'il est de type byte."""
+    if isinstance(string, bytes):
+        return bytes
+    if not isinstance(string, str):
+        string = str(string)
+    return string.encode(encodage if encodage else param.encodage)
 
 
 
-def universal_unicode(chaine):
-    u"""Convertit en unicode, sans renvoyer d'erreur.
+
+def universal_unicode_string(chaine):
+    """Convertit en string, sans renvoyer d'erreur.
 
     Tente de détecter l'encodage, en essayant successivement :
         * la valeur de `param.encodage`
@@ -584,27 +563,28 @@ def universal_unicode(chaine):
     Si des erreurs persistent, les caractères intraduisibles sont remplacés
     par des `?`.
     """
-    if not isinstance(chaine, basestring):
+    if isinstance(chaine, str):
+        return chaine
+    elif isinstance(chaine, bytes):
         try:
-            chaine = unicode(chaine)
+            chaine = str(chaine)
         except UnicodeError:
             chaine = str(chaine)
-    if not isinstance(chaine, unicode):
-        try:
-            chaine = chaine.decode(param.encodage)
-        except UnicodeError:
+    if not isinstance(chaine, str):
+        for encodage in [param.encodage, sys.getdefaultencoding(), 'utf-8', 'latin1', 'cp1250', 
+                         'mac_roman', 'latin2']: 
             try:
-                chaine = chaine.decode('utf8')
+                return str(chaine, encodage)
             except UnicodeError:
-                chaine = chaine.decode('iso-8859-1', 'replace')
-    return chaine
+                pass
+    return str(chaine, 'ascii', 'replace')
 
-uu = universal_unicode
+uu = universal_unicode_string
 
 
 
 def path2(chemin):
-    u"""Transforme le chemin en remplaçant les / et \\ selon le séparateur utilisé par le système.
+    """Transforme le chemin en remplaçant les / et \\ selon le séparateur utilisé par le système.
 
     % est remplacé par l'emplacement du programme (contenu dans param.EMPLACEMENT).
     Exemple : path2("%/wxgeometrie/images/archives/old.png").
@@ -652,7 +632,7 @@ def path2(chemin):
 
 
 class WeakRef(weakref.ref):
-    u"""WeakRef surclasse weakref.ref en modifiant sa méthode '__eq__'.
+    """WeakRef surclasse weakref.ref en modifiant sa méthode '__eq__'.
 
     a == b <=> type(a) == type(b) == WeakRef and a() is b().
     Le but est de ne pas appeler les méthodes __eq__ des objets référencés."""
@@ -728,7 +708,7 @@ class CustomWeakKeyDictionary(weakref.WeakKeyDictionary):
 
 
 def debug(*messages):
-    u"""Affiche un (ou plusieurs) message(s) si le déboguage est actif."""
+    """Affiche un (ou plusieurs) message(s) si le déboguage est actif."""
     if param.debug:
         for message in messages:
             print(message)
@@ -772,7 +752,7 @@ def deprecated(message = ''):
 
 
 def traceit(frame, event, arg):
-    u"""'Trace' (suit) une fonction python.
+    """'Trace' (suit) une fonction python.
 
         Usage:
         import sys
@@ -855,7 +835,7 @@ def pstfunc(chaine):
 
 
 class NoArgument(object):
-    u'''Utilisé comme valeur par défaut, pour savoir si un argument optionnel
+    '''Utilisé comme valeur par défaut, pour savoir si un argument optionnel
     a été passé. Une seule instance peut-être crée.'''
     __instance = None
 
@@ -888,7 +868,7 @@ class OrderedDict(dict):
         return iter(self.__keys)
 
     def __repr__(self):
-        return "MyOrderedDict(%s)"%repr(self.items())
+        return "MyOrderedDict(%s)"%repr(list(self.items()))
 
     def keys(self):
         return self.__keys[:]
@@ -900,7 +880,7 @@ class OrderedDict(dict):
         return [(key, self[key]) for key in self.__keys]
 
     def copy(self):
-        return self.__class__(self.iteritems())
+        return self.__class__(iter(self.items()))
 
     def iterkeys(self):
         return iter(self)

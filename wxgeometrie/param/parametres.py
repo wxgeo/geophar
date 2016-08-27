@@ -1,8 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
-from __future__ import print_function
-from __future__ import absolute_import
-from __future__ import unicode_literals
 
 ######################################
 #
@@ -206,7 +202,7 @@ points_deplacables = {
     "couleur": "r",
     "niveau": 10,
     "fixe": False,
-    "sous-categorie": u"points déplaçables",
+    "sous-categorie": "points déplaçables",
     }
 segments = {
     "couleur": "g",
@@ -325,7 +321,7 @@ polygones = {
     "niveau": 0.1,
     "hachures": types_de_hachures[0],
     "categorie": "surfaces",
-    "sous-categorie": u"polygones",
+    "sous-categorie": "polygones",
     }
 cotes = {
     "couleur": "y",
@@ -346,7 +342,7 @@ polyedres = {
     "niveau": 0,
     "hachures": types_de_hachures[0],
     "categorie": "surfaces",
-    "sous-categorie": u"polyèdres",
+    "sous-categorie": "polyèdres",
     }
 aretes = {
     "couleur": "y",
@@ -417,7 +413,7 @@ labels = {
     "mode": 'rien',
     "fixe": False,
     "categorie": "textes",
-    "sous-categorie": u"étiquettes",
+    "sous-categorie": "étiquettes",
     "niveau": 7,
     "alignement_vertical": "bottom",
     "alignement_horizontal": "left",

@@ -1,9 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
-from __future__ import print_function
-from __future__ import absolute_import
-from __future__ import unicode_literals
 
 ##--------------------------------------#######
 #           Mathlib 2 (sympy powered)         #
@@ -46,7 +42,7 @@ from .. import param
 
 
 def nul(expression, variable=None, intervalle=True, ensemble='R'):
-    u"""Retourne l'ensemble sur lequel une expression à variable réelle est nulle.
+    """Retourne l'ensemble sur lequel une expression à variable réelle est nulle.
 
     :param expression: une expression mathématique
     :type expression: string
@@ -138,7 +134,7 @@ def ensemble_definition(expression, variable = None):
 
 
 def periode(expression, variable=None):
-    u"""Retourne la période minimale de la fonction.
+    """Retourne la période minimale de la fonction.
 
     Si la fonction n'est pas périodique (ou si elle n'est pas encore supportée),
     retourne +oo.
@@ -196,7 +192,7 @@ def periode(expression, variable=None):
 
 
 def positif(expression, variable=None, strict=False, _niveau=0, _changement_variable=None):
-    u"""Retourne l'ensemble sur lequel une expression à variable réelle est positive (resp. strictement positive)."""
+    """Retourne l'ensemble sur lequel une expression à variable réelle est positive (resp. strictement positive)."""
     from .sympy_functions import factor
     # L'étude du signe se fait dans R, on indique donc à sympy que la variable est réelle.
     if variable is None:
@@ -212,7 +208,7 @@ def positif(expression, variable=None, strict=False, _niveau=0, _changement_vari
     if T not in (0, oo):
         ens_def &= Intervalle(0, T)
         if param.debug:
-            print(u'Fonction périodique %s détectée. Résolution sur [0;%s]' % (expression, T))
+            print('Fonction périodique %s détectée. Résolution sur [0;%s]' % (expression, T))
 
     # On remplace sqrt(x^2) par |x|.
     a = Wild('a', exclude=[expression])
@@ -273,7 +269,7 @@ def positif(expression, variable=None, strict=False, _niveau=0, _changement_vari
     if expression.is_zero is True and not strict: # == 0
         return ens_def
 
-    if isinstance(expression, (int, float, long)):
+    if isinstance(expression, (int, float)):
         if expression > 0 or (expression == 0 and not strict):
             return ens_def
         else:
@@ -567,8 +563,8 @@ def positif(expression, variable=None, strict=False, _niveau=0, _changement_vari
     # été trouvés par solve(), ce qui n'est pas toujours le cas.
     # C'est pourquoi elle est proposée seulement en dernier recours.
     if param.debug:
-        print(u"Warning: résolution par continuité. Les résultats peuvent être\n"
-              u"faux si certaines racines ne sont pas touvées !")
+        print("Warning: résolution par continuité. Les résultats peuvent être\n"
+              "faux si certaines racines ne sont pas touvées !")
 
     racines = nul(expression, variable, intervalle=False)
     solutions = vide
@@ -604,7 +600,7 @@ def positif(expression, variable=None, strict=False, _niveau=0, _changement_vari
 
 
 def resoudre(chaine, variables=(), local_dict=None, ensemble='R'):
-    u"""Résout une équation ou inéquation, rentrée sous forme de chaîne.
+    """Résout une équation ou inéquation, rentrée sous forme de chaîne.
 
 
     """

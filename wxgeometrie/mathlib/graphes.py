@@ -1,8 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
-from __future__ import print_function
-from __future__ import absolute_import
-from __future__ import unicode_literals
 
 ##--------------------------------------#######
 #                Graphes                  #
@@ -60,7 +56,7 @@ def colors():
 
 
 class Graph(dict):
-    u"""A graph representation.
+    """A graph representation.
 
     Graph are stored as a dictionary:
     >>> from wxgeometrie.mathlib.graphes import Graph
@@ -88,7 +84,7 @@ class Graph(dict):
 
     def __init__(self, dictionary = (), oriented = False, labels=None):
         # Ex: {"A": {"B":[1], "C":[2, 5]}, "B": {}, "C": {"A": [2], "C": [1]}}
-        if isinstance(dictionary, basestring):
+        if isinstance(dictionary, str):
             dictionary = self._convert_input(dictionary)
         elif not isinstance(dictionary, dict):
             dictionary = dict.fromkeys(dictionary, {})
@@ -275,7 +271,7 @@ class Graph(dict):
 
 
     def coloring(self, *first_nodes):
-        u"""Graph colorization using Welsh & Powell algorithm.
+        """Graph colorization using Welsh & Powell algorithm.
 
         By default, nodes are sorted according to their degrees, but you can also
         choose manually the first nodes to be visited.
@@ -315,7 +311,7 @@ class Graph(dict):
         return code
 
     def shortest_path(self, start, end):
-        u"Implementation of Dijkstra-Moore algorithm."
+        "Implementation of Dijkstra-Moore algorithm."
         # current node
         current = start
         # Nodes which have been already visited, but still not archived:
@@ -362,7 +358,7 @@ class Graph(dict):
         else:
             if set(nodes) != set(self):
                 raise ValueError("Nodes do not match.")
-        code = u"On applique l'algorithme de Moore-Dijkstra~:\n\n"
+        code = "On applique l'algorithme de Moore-Dijkstra~:\n\n"
         code += r'\begin{tabular}{|*{%s}{c|}}\hline' %len(self)
         code += '\n' + '&'.join(('$%s$' %node) for node in nodes) + r'\\\hline\hline' + '\n'
         # current node
@@ -431,7 +427,7 @@ class Graph(dict):
         paths = ', '.join('$' + '-'.join(path) + '$' for path in final_paths)
         plur1 = ('x' if len(final_paths) > 1 else '')
         plur2 = ('s' if len(final_paths) > 1 else '')
-        code += u"""
+        code += """
 La distance minimale entre le sommet $%(start)s$ et le sommet $%(end)s$ est de $%(distance)s$.
 Cela correspond au%(plur1)s chemin%(plur2)s %(paths)s.
 """ %locals()

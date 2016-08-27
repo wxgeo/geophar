@@ -1,13 +1,9 @@
 #!/usr/bin/env python
 
-from __future__ import print_function
-from __future__ import division
-from __future__ import absolute_import
-from __future__ import unicode_literals
 from distutils.core import setup
 from wxgeometrie.param import version
 
-long_description = u"""\
+long_description = """\
 Geophar provides various tools for math teachers :
  * dynamic geometry
  * various plots (function curves, histograms, probability trees...)
@@ -19,7 +15,7 @@ It follows french conventions concerning graphics, as taught in french schools.
 Note that Geophar is only avalaible in french currently.
 """
 
-setup(name=u'Geophar',
+setup(name='Geophar',
     version=version,
     description='Dynamic geometry, plots and symbolic calculus for teachers.',
     long_description=long_description,

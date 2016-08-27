@@ -1,9 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
-from __future__ import print_function
-from __future__ import absolute_import
-from __future__ import unicode_literals
 
 ##--------------------------------------#######
 #           Mathlib 2 (sympy powered)         #
@@ -50,7 +46,7 @@ def is_var(expression, variable):
 
 
 def poly_factor(polynome, variable, corps = None, approchee = None):
-    u"""Factorise un polynome à une variable.
+    """Factorise un polynome à une variable.
 
     Le corps peut être R ou C.
     Par défaut, le corps de factorisation est celui des coefficients."""
@@ -78,7 +74,7 @@ def poly_factor(polynome, variable, corps = None, approchee = None):
             else:
                 corps = "C"
         racines_brutes = roots(polynome, variable, cubics=True, quartics=True)
-    racines = list((simplifier_racines(racine), mult) for racine, mult in racines_brutes.iteritems())
+    racines = list((simplifier_racines(racine), mult) for racine, mult in racines_brutes.items())
 
     if approchee:
         nbr_racines = sum(multiplicite for racine, multiplicite in racines)
@@ -147,11 +143,11 @@ def poly_factor(polynome, variable, corps = None, approchee = None):
     return poly_factorise
 
 def syms(expression):
-    u"""Retourne la liste des symboles utilisés par l'expression."""
+    """Retourne la liste des symboles utilisés par l'expression."""
     return tuple(expression.atoms(Symbol))
 
 def extract_var(expression):
-    u"""Retourne la variable de l'expression (renvoie un avertissement s'il y en a plusieurs, et 'x' par défaut s'il n'y en a pas)."""
+    """Retourne la variable de l'expression (renvoie un avertissement s'il y en a plusieurs, et 'x' par défaut s'il n'y en a pas)."""
     if hasattr(expression, "atoms"):
         symboles = expression.atoms(Symbol)
         if len(symboles) == 0:
@@ -164,7 +160,7 @@ def extract_var(expression):
         return Symbol("x")
 
 def count_syms(expression, symbole):
-    u"""Compte le nombre d'occurence de la variable dans l'expression."""
+    """Compte le nombre d'occurence de la variable dans l'expression."""
     if expression.has(symbole):
         if expression.is_Atom:
             return 1

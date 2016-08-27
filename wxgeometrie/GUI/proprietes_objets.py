@@ -1,9 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
-from __future__ import with_statement
-from __future__ import print_function
-from __future__ import absolute_import
-from __future__ import unicode_literals
 
 ##--------------------------------------#######
 #                 Fenetres                              #
@@ -75,7 +70,7 @@ class ProprietesAffichage(QWidget):
                 etiquette.editingFinished.connect(self.EvtEtiquette)
                 ligne.addWidget(etiquette)
             if [objet for objet in self.objets if objet.etiquette is not None]:
-                editer = QPushButton(u"Style")
+                editer = QPushButton("Style")
                 editer.clicked.connect(self.EvtLabelStyle)
                 ligne.addWidget(editer)
             encadre1.addLayout(ligne)
@@ -86,19 +81,19 @@ class ProprietesAffichage(QWidget):
                 legende = QHBoxLayout()
                 self.radios = OrderedDict((
                         ('nom', QRadioButton("Nom")),
-                        ('texte', QRadioButton(u"Texte")),
-                        ('formule', QRadioButton(u"Formule")),
-                        ('rien', QRadioButton(u"Aucun")),
+                        ('texte', QRadioButton("Texte")),
+                        ('formule', QRadioButton("Formule")),
+                        ('rien', QRadioButton("Aucun")),
                               ))
                 if all(objet.mode_affichage == mode for objet in objets):
                     self.radios[mode].setChecked(True)
 
-                for mode, radio in self.radios.iteritems():
+                for mode, radio in self.radios.items():
                     radio.toggled.connect(partial(self.EvtMode, mode))
                     legende.addWidget(radio)
 
                 legende.addStretch()
-                encadre1.addWidget(QLabel(u"Afficher : "))
+                encadre1.addWidget(QLabel("Afficher : "))
                 encadre1.addLayout(legende)
 
         objets = self.objets
@@ -114,14 +109,14 @@ class ProprietesAffichage(QWidget):
         if tous_de_meme_categorie:
             styles_possibles = getattr(param, "styles_de_%s" % categorie, [])
             # On ne peut régler les styles simultanément que pour des objets de même catégorie.
-            if self.add_combo_box(hb, 'style', u"Style de l'objet : ", styles_possibles):
+            if self.add_combo_box(hb, 'style', "Style de l'objet : ", styles_possibles):
                 encadre2.addLayout(hb)
 
         self.add_color_selecter(hb, 'couleur', "Couleur de l'objet")
 
         hb = QHBoxLayout()
         types_de_hachures = getattr(param, "types_de_hachures", [])
-        if self.add_combo_box(hb, 'hachures', u"Style des hâchures : ", types_de_hachures):
+        if self.add_combo_box(hb, 'hachures', "Style des hâchures : ", types_de_hachures):
             encadre2.addLayout(hb)
 
         if tous_de_meme_categorie:
@@ -131,34 +126,34 @@ class ProprietesAffichage(QWidget):
                 encadre2.addLayout(hb)
 
         hb = QHBoxLayout()
-        if self.add_spin_box(hb, 'epaisseur', u'Épaisseur', .1, 1000, .5, ' px'):
+        if self.add_spin_box(hb, 'epaisseur', 'Épaisseur', .1, 1000, .5, ' px'):
             encadre2.addLayout(hb)
 
         hb = QHBoxLayout()
         if tous_de_meme_sous_categorie and sous_categorie in ('vecteurs', 'axes'):
-            legende = u"Taille de la flêche"
+            legende = "Taille de la flêche"
         else:
-            legende = u'Taille'
+            legende = 'Taille'
         if self.add_spin_box(hb, 'taille', legende, .1, 1000, .5, ' px'):
             #~ hb.addStretch()
             encadre2.addLayout(hb)
 
         hb = QHBoxLayout()
-        if self.add_spin_box(hb, 'position', u"Position de la flêche", 0, 100, 5, coeff=100):
+        if self.add_spin_box(hb, 'position', "Position de la flêche", 0, 100, 5, coeff=100):
             #~ hb.addStretch()
             encadre2.addLayout(hb)
 
         hb = QHBoxLayout()
         if tous_de_meme_sous_categorie and sous_categorie in ('vecteurs', 'axes'):
-            legende = u"Angle d'ouverture"
+            legende = "Angle d'ouverture"
         else:
-            legende = u'Angle'
+            legende = 'Angle'
         if self.add_spin_box(hb, 'angle', legende, -180, 180,
-                             suffixe=u'°', wrapping=True, special_value='auto'):
+                             suffixe='°', wrapping=True, special_value='auto'):
             #~ hb.addStretch()
             encadre2.addLayout(hb)
 
-        self.add_checkbox(encadre, 'double_fleche', u"Flêche double")
+        self.add_checkbox(encadre, 'double_fleche', "Flêche double")
 
         if tous_de_meme_categorie:
             hb = QHBoxLayout()
@@ -195,7 +190,7 @@ class ProprietesAffichage(QWidget):
             # Réglage de l'opacité du fond
             # ----------------------------
             hb2 = QHBoxLayout()
-            widgets = self.add_spin_box(hb2, 'alpha_fond', u'Opacité', 0, 100, 5, '%', coeff=100)
+            widgets = self.add_spin_box(hb2, 'alpha_fond', 'Opacité', 0, 100, 5, '%', coeff=100)
 
             # Réglage de la couleur du fond
             # -----------------------------
@@ -215,7 +210,7 @@ class ProprietesAffichage(QWidget):
             # Réglage de l'épaisseur du cadre
             # -------------------------------
             hb2 = QHBoxLayout()
-            widgets = self.add_spin_box(hb2, 'epaisseur_cadre', u'Épaisseur', 0, 100, 0.5, ' px')
+            widgets = self.add_spin_box(hb2, 'epaisseur_cadre', 'Épaisseur', 0, 100, 0.5, ' px')
 
             # Réglage de la couleur du cadre
             # ------------------------------
@@ -265,19 +260,19 @@ class ProprietesAffichage(QWidget):
             # Répéter ou non les valeurs
             # --------------------------
             hb2 = QHBoxLayout()
-            widgets = self.add_checkbox(hb2, 'repeter', u"Afficher régulièrement les valeurs")
+            widgets = self.add_checkbox(hb2, 'repeter', "Afficher régulièrement les valeurs")
 
 
             # Espace entre deux valeurs de l'axe
             # ----------------------------------
             hb3 = QHBoxLayout()
-            widgets.extend(self.add_spin_box(hb3, 'pas_num', u'Afficher les valeurs toutes les',
+            widgets.extend(self.add_spin_box(hb3, 'pas_num', 'Afficher les valeurs toutes les',
                            0, 100, 1, ' graduations'))
 
             # Activation/désactivation des graduations
             # ----------------------------------------
             hb1 = QHBoxLayout()
-            self.add_checkbox(hb1, 'graduations', u"Graduer l'axe", fils=widgets)
+            self.add_checkbox(hb1, 'graduations', "Graduer l'axe", fils=widgets)
             encadre4.addLayout(hb1)
             encadre4.addLayout(hb2)
             encadre4.addLayout(hb3)
@@ -291,25 +286,25 @@ class ProprietesAffichage(QWidget):
         ok.clicked.connect(self.EvtOk)
         boutons.addWidget(ok)
 
-        appliquer = QPushButton(u"Appliquer")
+        appliquer = QPushButton("Appliquer")
         appliquer.clicked.connect(self.EvtAppliquer)
         boutons.addWidget(appliquer)
 
         if not self.islabel:
-            supprimer = QPushButton(u"Supprimer")
+            supprimer = QPushButton("Supprimer")
             supprimer.clicked.connect(self.EvtSupprimer)
             boutons.addWidget(supprimer)
 
-        annuler = QPushButton(u"Annuler")
+        annuler = QPushButton("Annuler")
         annuler.clicked.connect(self.EvtAnnuler)
         boutons.addWidget(annuler)
 
-        self.add_groupbox(encadre, u"Mode d'affichage")
-        self.add_groupbox(encadre1, u"Etiquette")
-        self.add_groupbox(encadre2, u"Styles")
-        self.add_groupbox(encadre5, u"Alignement du texte")
-        self.add_groupbox(encadre3, u"Fond et encadrement")
-        self.add_groupbox(encadre4, u"Graduations")
+        self.add_groupbox(encadre, "Mode d'affichage")
+        self.add_groupbox(encadre1, "Etiquette")
+        self.add_groupbox(encadre2, "Styles")
+        self.add_groupbox(encadre5, "Alignement du texte")
+        self.add_groupbox(encadre3, "Fond et encadrement")
+        self.add_groupbox(encadre4, "Graduations")
         self.sizer.addLayout(boutons)
         self.setLayout(self.sizer)
         ##self.parent.parent.dim1 = self.sizer.CalcMin().Get()
@@ -370,7 +365,7 @@ class ProprietesAffichage(QWidget):
 
     def add_spin_box(self, layout, propriete, titre, min_, max_,
                      step=1, suffixe=None, coeff=1, wrapping=False, special_value=None):
-        u"""Ajouter un widget QSpinBox.
+        """Ajouter un widget QSpinBox.
         """
         assert special_value != ' ' # Réservé au cas où les objets ont des valeurs différentes.
         objets = [objet for objet in self.objets if objet.style(propriete) is not None]
@@ -487,16 +482,16 @@ class ProprietesAffichage(QWidget):
                         if mode is None:
                             # Conserver le mode formule, sinon basculer en mode TEXTE.
                             mode = ('formule' if objet.mode_affichage == 'formule' else 'texte')
-                        self.canvas.executer(u"%s.label(%s, %s)" %(objet.nom, repr(label), repr(mode)))
+                        self.canvas.executer("%s.label(%s, %s)" %(objet.nom, repr(label), repr(mode)))
                         self.radios[mode].setChecked(True)
                         # Le texte a pu changer (ajout automatique des accolades en mode formule)
                         if hasattr(self, "etiquette"):
                             self.etiquette.setText(objet.legende)
                     if changements:
                         if self.islabel:
-                            self.canvas.executer(u"%s.etiquette.style(**%s)" %(objet.parent.nom, changements))
+                            self.canvas.executer("%s.etiquette.style(**%s)" %(objet.parent.nom, changements))
                         else:
-                            self.canvas.executer(u"%s.style(**%s)" %(objet.nom, changements))
+                            self.canvas.executer("%s.style(**%s)" %(objet.nom, changements))
             except:
                 print_error()
 
@@ -504,7 +499,7 @@ class ProprietesAffichage(QWidget):
     def EvtSupprimer(self):
         with self.canvas.geler_affichage(actualiser=True, sablier=True):
             for objet in self.objets:
-                self.canvas.executer(u"del %s" %objet.nom)
+                self.canvas.executer("del %s" %objet.nom)
         self.EvtAnnuler()
 
     def EvtAnnuler(self):
@@ -537,15 +532,15 @@ class UpdatableLineEdit(QLineEdit):
 
     def formater(self, valeur):
         if self.parent.objet.existe:
-            if isinstance(valeur, (str, unicode)):
+            if isinstance(valeur, str):
                 return  valeur
             elif valeur is None:
-                return u"Valeur non définie."
+                return "Valeur non définie."
             elif hasattr(valeur, '__iter__'):
                 return " ; ".join(self.formater(elt) for elt in valeur)
             return nice_display(valeur)
         else:
-            return u"L'objet n'est pas défini."
+            return "L'objet n'est pas défini."
 
     def actualiser(self):
         self.setText(self.formater(getattr(self.parent.objet, self.attribut)))
@@ -570,22 +565,22 @@ class ProprietesInfos(QWidget):
             try:
                 self.ajouter(infos, propriete)
             except:
-                debug(u"Erreur lors de la lecture de la propriété '%s' de l'objet %s." %(propriete, self.objet.nom))
+                debug("Erreur lors de la lecture de la propriété '%s' de l'objet %s." %(propriete, self.objet.nom))
                 print_error()
 
-        self.ajouter(infos, "equation_formatee", u"Equation cartésienne")
+        self.ajouter(infos, "equation_formatee", "Equation cartésienne")
 
 
         if self.textes:
-            infos_box = QGroupBox(u"Informations")
+            infos_box = QGroupBox("Informations")
             infos_box.setLayout(infos)
             self.sizer.addWidget(infos_box)
-            actualiser = QPushButton(u"Actualiser")
+            actualiser = QPushButton("Actualiser")
             actualiser.clicked.connect(self.EvtActualiser)
             self.sizer.addStretch()
             self.sizer.addWidget(actualiser)
         else:
-            self.sizer.addWidget(QLabel(str(len(self.objets)) + u" objets sélectionnés."))
+            self.sizer.addWidget(QLabel(str(len(self.objets)) + " objets sélectionnés."))
 
         self.setLayout(self.sizer)
         ##self.parent.parent.dim2 = self.sizer.CalcMin().Get()
@@ -624,9 +619,9 @@ class ProprietesAvance(QWidget):
             self.objet = self.objets[0]
 
             style = QVBoxLayout()
-            style_box = QGroupBox(u"Style de l'objet")
+            style_box = QGroupBox("Style de l'objet")
             style_box.setLayout(style)
-            style.addWidget(QLabel(u"<span style='color:red;font-style:italic;'>Attention, ne modifiez ce contenu que si vous savez ce que vous faites.</span>"))
+            style.addWidget(QLabel("<span style='color:red;font-style:italic;'>Attention, ne modifiez ce contenu que si vous savez ce que vous faites.</span>"))
             self.avance = QTextEdit()
             self.avance.setMinimumSize(350, 200)
             self.actualiser()
@@ -634,8 +629,8 @@ class ProprietesAvance(QWidget):
             self.sizer.addWidget(style_box)
 
             ok = QPushButton('OK')
-            appliquer = QPushButton(u"Appliquer")
-            actualiser = QPushButton(u"Actualiser")
+            appliquer = QPushButton("Appliquer")
+            actualiser = QPushButton("Actualiser")
             ok.clicked.connect(self.EvtOk)
             appliquer.clicked.connect(self.EvtAppliquer)
             actualiser.clicked.connect(self.actualiser)
@@ -663,9 +658,9 @@ class ProprietesAvance(QWidget):
             dico += key + value + ","
         dico += "}"
         if self.islabel:
-            self.canvas.executer(u"%s.etiquette.style(**%s)" %(self.objet.parent.nom, dico))
+            self.canvas.executer("%s.etiquette.style(**%s)" %(self.objet.parent.nom, dico))
         else:
-            self.canvas.executer(u"%s.style(**%s)" %(self.objet.nom, dico))
+            self.canvas.executer("%s.style(**%s)" %(self.objet.nom, dico))
 
     def actualiser(self, event = None):
         items = (txt.split(':', 1) for txt in advanced_split(str(self.objet.style())[1:-1], ","))
@@ -679,11 +674,11 @@ class OngletsProprietes(QTabWidget):
         self.objets = parent.objets
         QTabWidget.__init__(self, parent)
         self.affichage = ProprietesAffichage(self)
-        self.addTab(self.affichage, u"Affichage")
+        self.addTab(self.affichage, "Affichage")
         self.infos = ProprietesInfos(self)
-        self.addTab(self.infos, u"Informations")
+        self.addTab(self.infos, "Informations")
         self.avance = ProprietesAvance(self)
-        self.addTab(self.avance, u"Avancé")
+        self.addTab(self.avance, "Avancé")
 
 
 
@@ -692,10 +687,10 @@ class OngletsProprietes(QTabWidget):
 
 class Proprietes(QDialog):
     def __init__(self, parent, objets, islabel = False):
-        u"Le paramètre 'label' indique si l'objet à éditer est un label"
+        "Le paramètre 'label' indique si l'objet à éditer est un label"
         print("OBJETS:")
         print(objets)
-        print(unicode(objets[0]))
+        print(str(objets[0]))
         print(repr(objets[0]))
         print(objets[0].__class__)
         print(isinstance(objets[0], str))
@@ -708,17 +703,17 @@ class Proprietes(QDialog):
 
         self.objets = objets
         if self.islabel:
-            titre = u"du label"
+            titre = "du label"
         else:
             if len(objets) == 0:
                 self.close()
             if len(objets) == 1:
                 titre = objets[0].titre_complet("du", False)
             else:
-                titre = u"des objets"
+                titre = "des objets"
 #        wx.MiniFrame.__init__(self, parent, -1, u"Propriétés " + titre, style=wx.DEFAULT_FRAME_STYLE | wx.TINY_CAPTION_HORIZ)
         QDialog.__init__(self, parent)
-        self.setWindowTitle(u"Propriétés " + titre)
+        self.setWindowTitle("Propriétés " + titre)
         self.setPalette(white_palette)
         ##self.SetExtraStyle(wx.WS_EX_BLOCK_EVENTS )
         main = QVBoxLayout()

@@ -1,8 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
-from __future__ import print_function
-from __future__ import absolute_import
-from __future__ import unicode_literals
 
 ##--------------------------------------#######
 #                   Vecteurs                    #
@@ -43,7 +39,7 @@ from .. import param
 
 
 class Vecteur_generique(Objet_avec_coordonnees):
-    u"""Un vecteur générique.
+    """Un vecteur générique.
 
     Usage interne : la classe mère pour les différents vecteurs"""
 
@@ -113,7 +109,7 @@ class Vecteur_generique(Objet_avec_coordonnees):
                 return abs(self.x - y[0]) < contexte['tolerance'] and abs(self.y - y[1]) < contexte['tolerance']
         return False
 
-    def __nonzero__(self):
+    def __bool__(self):
         return tuple(self.coordonnees) != (0, 0)
 
     def __ne__(self, y):
@@ -136,7 +132,7 @@ class Vecteur_generique(Objet_avec_coordonnees):
 
 
 class Vecteur(Vecteur_generique):
-    u"""Un vecteur.
+    """Un vecteur.
 
     Un vecteur défini par deux points."""
 
@@ -147,8 +143,8 @@ class Vecteur(Vecteur_generique):
     point2 = __point2 = Argument("Point_generique", defaut = Point)
 
     def __new__(cls, *args, **kw):
-        if len(args) == 2 and isinstance(args[0], TYPES_REELS + (Variable_generique, basestring, )) \
-                                   and isinstance(args[1], TYPES_REELS + (Variable_generique, basestring, )):
+        if len(args) == 2 and isinstance(args[0], TYPES_REELS + (Variable_generique, str, )) \
+                                   and isinstance(args[1], TYPES_REELS + (Variable_generique, str, )):
             vecteur_libre = Vecteur_libre.__new__(Vecteur_libre, *args, **kw)
             vecteur_libre.__init__(*args, **kw)
             return vecteur_libre
@@ -232,7 +228,7 @@ class Vecteur(Vecteur_generique):
 
 
     def _creer_nom_latex(self):
-        u"""Crée le nom formaté en LaTeX. Ex: M1 -> $M_1$."""
+        """Crée le nom formaté en LaTeX. Ex: M1 -> $M_1$."""
         Objet._creer_nom_latex(self)
         latex = self.nom_latex[1:-1]
         if len(latex) == 1:
@@ -246,7 +242,7 @@ class Vecteur(Vecteur_generique):
 
 
 class Vecteur_libre(Objet_avec_coordonnees_modifiables, Vecteur_generique):
-    u"""Un vecteur libre.
+    """Un vecteur libre.
 
     Un vecteur défini par ses coordonnées."""
 
@@ -289,7 +285,7 @@ class Vecteur_libre(Objet_avec_coordonnees_modifiables, Vecteur_generique):
 
 
 class Vecteur_unitaire(Vecteur_generique):
-    u"""Un vecteur unitaire.
+    """Un vecteur unitaire.
 
     Un vecteur défini en normalisant un autre vecteur.
     Il aura donc même sens et même direction, mais sera de norme 1."""
@@ -314,7 +310,7 @@ class Vecteur_unitaire(Vecteur_generique):
 
 
 class Somme_vecteurs(Vecteur_generique):
-    u"""Une somme de vecteurs.
+    """Une somme de vecteurs.
 
     Les arguments sont des couples coefficient, vecteur
     Exemple: Somme_vecteurs([u,v,A>B], [3,2,-5])."""
@@ -351,7 +347,7 @@ class Somme_vecteurs(Vecteur_generique):
 
 
 class Extremite(Point_generique):
-    u"""L'extrémité d'un représentant de vecteur.abscisse
+    """L'extrémité d'un représentant de vecteur.abscisse
 
     L'objet est créé automatiquement lors de la création du représentant."""
 
@@ -386,7 +382,7 @@ class Extremite(Point_generique):
         Objet._modifier_hierarchie(self, self.__representant._hierarchie + .5)
 
     def _update(self, objet):
-        u"""Pseudo mise à jour: seul un objet identique est accepté.
+        """Pseudo mise à jour: seul un objet identique est accepté.
 
         Cela sert pour les objets créés automatiquement, qui peuvent être enregistrés deux fois dans la feuille."""
         if isinstance(objet, Extremite) and self.__representant is objet._Extremite__representant:
@@ -396,7 +392,7 @@ class Extremite(Point_generique):
 
 
 class Representant(Vecteur):
-    u"""Un représentant d'un vecteur.
+    """Un représentant d'un vecteur.
 
     Un représentant d'un vecteur, ayant pour origine un point donné."""
     vecteur = __vecteur = Argument("Vecteur_generique")
@@ -414,7 +410,7 @@ class Representant(Vecteur):
 
 
     def on_register(self):
-        u"""Lorsque le vecteur est enregistré dans la feuille, on enregistre
+        """Lorsque le vecteur est enregistré dans la feuille, on enregistre
         également son extrémité, et son origine si elle ne l'est pas déjà.
         """
         # On tente de nommer l'origine et l'extrémité du représentant de vecteur intelligemment.

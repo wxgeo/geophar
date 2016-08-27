@@ -1,8 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
-from __future__ import print_function
-from __future__ import absolute_import
-from __future__ import unicode_literals
 
 ######################################
 #
@@ -58,7 +54,7 @@ def rm(*paths, **kw):
     quiet = kw.get('quiet', False)
     recursive = kw.get('recursive', False)
     if recursive:
-        cwd = os.getcwdu()
+        cwd = os.getcwd()
         listcwd = os.listdir('.')
     for path in paths:
         pths = glob.glob(norm(path))
@@ -115,7 +111,7 @@ def append(srcs, dst):
                 dest.write(source.read())
 
 def pause(string = "\n-- pause --\n"):
-    raw_input(string)
+    input(string)
 
 def ls(path = '.'):
     if '*' in path:

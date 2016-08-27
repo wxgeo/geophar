@@ -1,8 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
-from __future__ import print_function
-from __future__ import absolute_import
-from __future__ import unicode_literals
 
 ##--------------------------------------#######
 #                 Fenetres                              #
@@ -48,7 +44,7 @@ class EditeurPython(PythonSTC):
 
 
 class FenCode(QDialog):
-    u"""Permet d'éditer du code Python.
+    """Permet d'éditer du code Python.
 
     En particulier, permet d'éditer le code de la feuille actuelle."""
     def __init__(self, parent, titre, contenu, fonction_modif):
@@ -64,9 +60,9 @@ class FenCode(QDialog):
         sizer.addWidget(self.texte)
 
         boutons = QHBoxLayout()
-        self.btn_modif = QPushButton(u"Modifier - F5")
+        self.btn_modif = QPushButton("Modifier - F5")
         boutons.addWidget(self.btn_modif)
-        self.btn_esc = QPushButton(u"Annuler - ESC")
+        self.btn_esc = QPushButton("Annuler - ESC")
         boutons.addStretch()
         boutons.addWidget(self.btn_esc)
         sizer.addLayout(boutons)

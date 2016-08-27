@@ -1,9 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
-from __future__ import with_statement
-from __future__ import print_function
-from __future__ import absolute_import
-from __future__ import unicode_literals
 
 #    WxGeometrie
 #    Dynamic geometry, graph plotter, and more for french mathematic teachers.
@@ -76,14 +71,14 @@ class MyMiniFrame(QDialog):
         self.setWindowTitle(titre)
 
 def png_pth(nom):
-    u"""Adresse complète de l'image `nom`.png du repertoire 'images/'.
+    """Adresse complète de l'image `nom`.png du repertoire 'images/'.
 
     Le nom doit être indiqué sans l'extension '.png'."""
     return os.path.normpath(os.path.join(uu(param.EMPLACEMENT), 'wxgeometrie/images', nom + ".png"))
 
 
 def png(nom):
-    u"""Charge l'image <nom>.png depuis le repertoire 'images/'.
+    """Charge l'image <nom>.png depuis le repertoire 'images/'.
 
     L'image doit être au format png, et son nom doit indiqué sans l'extension '.png'."""
     pixmap = QPixmap()
@@ -148,7 +143,7 @@ def lieu(event_or_widget):
 
 
 class ColorSelecter(QPushButton):
-    u"A bouton used to select a color."
+    "A bouton used to select a color."
 
     colorSelected = pyqtSignal('QColor')
 
@@ -161,7 +156,7 @@ class ColorSelecter(QPushButton):
         self.setMaximumSize(QSize(25, 25))
 
     def onClick(self):
-        self.setColor(QColorDialog.getColor(self.color, self, u"Choisissez une couleur"))
+        self.setColor(QColorDialog.getColor(self.color, self, "Choisissez une couleur"))
 
     def setColor(self, color):
         if color is None:
@@ -180,15 +175,15 @@ class ColorSelecter(QPushButton):
 
 
 class PopUpMenu(QMenu):
-    u"""Un menu avec un titre visible."""
+    """Un menu avec un titre visible."""
 
     def __init__(self, title, parent, icon=None):
         QMenu.__init__(self, title, parent)
         if icon is None:
-            title = u'\u2022 ' + title
+            title = '\u2022 ' + title
             self._title = self.addAction(title)
         else:
-            if isinstance(icon, basestring):
+            if isinstance(icon, str):
                 ##icon = QIcon(png(icon))
                 icon = QIcon(png_pth(icon))
             self._title = self.addAction(icon, title)

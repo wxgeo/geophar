@@ -1,8 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
-from __future__ import print_function
-from __future__ import absolute_import
-from __future__ import unicode_literals
 
 #    WxGeometrie
 #    Dynamic geometry, graph plotter, and more for french mathematic teachers.
@@ -63,7 +59,7 @@ class FenetreOptions(QDialog):
                         if isinstance(parametre, Parametre):
                             psizer = self.ajouter_parametre(parametre, panel, sizer)
                             bsizer.addLayout(psizer)
-                        elif isinstance(parametre, basestring):
+                        elif isinstance(parametre, str):
                             bsizer.addWidget(QLabel(parametre))
                         else:
                             raise NotImplementedError(repr(type(elt)))
@@ -72,19 +68,19 @@ class FenetreOptions(QDialog):
                 elif isinstance(elt, Parametre):
                     psizer = self.ajouter_parametre(elt, panel, sizer)
                     sizer.addLayout(psizer)
-                elif isinstance(elt, basestring):
+                elif isinstance(elt, str):
                     sizer.addWidget(QLabel(elt))
                 else:
                     raise NotImplementedError(repr(type(elt)))
 
             boutons = QHBoxLayout()
-            ok = QPushButton(u'OK', clicked=self.ok)
+            ok = QPushButton('OK', clicked=self.ok)
             boutons.addWidget(ok)
 
-            defaut = QPushButton(u"Défaut", clicked=self.defaut)
+            defaut = QPushButton("Défaut", clicked=self.defaut)
             boutons.addWidget(defaut)
 
-            annuler = QPushButton(u"Annuler", clicked=self.close)
+            annuler = QPushButton("Annuler", clicked=self.close)
             boutons.addWidget(annuler)
             sizer.addStretch()
             sizer.addLayout(boutons)
@@ -122,7 +118,7 @@ class FenetreOptions(QDialog):
         self.set_value(widget, parametre.valeur)
         psizer.addWidget(widget)
         if type_ is file:
-            parcourir = QPushButton(u'Parcourir', clicked=partial(self.parcourir, widget))
+            parcourir = QPushButton('Parcourir', clicked=partial(self.parcourir, widget))
             psizer.addWidget(parcourir)
         return psizer
 
@@ -155,12 +151,12 @@ class FenetreOptions(QDialog):
             raise NotImplementedError
 
     def defaut(self):
-        for widget in self.widgets.itervalues():
+        for widget in self.widgets.values():
             self.set_value(widget, widget.parametre.defaut)
 
     def ok(self):
         modifs = set()
-        for widget in self.widgets.itervalues():
+        for widget in self.widgets.values():
             new_val = self.get_value(widget)
             if new_val != widget.parametre.valeur:
                 widget.parametre.valeur = new_val
@@ -169,6 +165,6 @@ class FenetreOptions(QDialog):
         self.close()
 
     def parcourir(self, widget):
-        widget.setText(QFileDialog.getExistingDirectory(self, u"Choisissez un répertoire :",
+        widget.setText(QFileDialog.getExistingDirectory(self, "Choisissez un répertoire :",
                                                  widget.text(),
                                                  QFileDialog.ShowDirsOnly))

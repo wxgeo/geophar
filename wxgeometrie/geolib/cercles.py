@@ -1,8 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
-from __future__ import print_function
-from __future__ import absolute_import
-from __future__ import unicode_literals
 
 ##--------------------------------------#######
 #                   Cercles                   #
@@ -57,7 +53,7 @@ from ..pylib import fullrange
 
 
 class Cercle_Arc_generique(Objet_avec_equation):
-    u"""La classe mère de tous les cercles et arcs de cercles."""
+    """La classe mère de tous les cercles et arcs de cercles."""
 
     _affichage_depend_de_la_fenetre = True
     # à cause du codage des longueurs (arcs), et du nombre de points variable des cercles
@@ -69,7 +65,7 @@ class Cercle_Arc_generique(Objet_avec_equation):
         Objet.__init__(self, **styles)
 
     def _get_equation(self):
-        u"""Retourne un triplet (a,b,c) tel que x**2 + y**2 + ax + by + c = 0
+        """Retourne un triplet (a,b,c) tel que x**2 + y**2 + ax + by + c = 0
         soit une équation du cercle."""
         xO, yO = self.__centre.coordonnees
         r = self.rayon
@@ -97,7 +93,7 @@ class Cercle_Arc_generique(Objet_avec_equation):
 
 
 class Arc_generique(Cercle_Arc_generique):
-    u"""La classe mère de tous les arcs de cercles."""
+    """La classe mère de tous les arcs de cercles."""
 
     _style_defaut = param.arcs
     _prefixe_nom = "a"
@@ -129,14 +125,14 @@ class Arc_generique(Cercle_Arc_generique):
 
     @property
     def equation_formatee(self):
-        u"Equation sous forme lisible par l'utilisateur."
+        "Equation sous forme lisible par l'utilisateur."
         eq = self.equation
         if eq is None:
-            return u"L'objet n'est pas défini."
+            return "L'objet n'est pas défini."
         a, b, c = (nice_display(coeff) for coeff in eq)
         # on ne garde que quelques chiffres après la virgule pour l'affichage
         xmin, xmax, ymin, ymax = (nice_display(extremum) for extremum in self._espace_vital())
-        return formatage(u"x² + y² + %s x + %s y + %s = 0 avec %s<x<%s et %s<y<%s" %(a, b, c, xmin, xmax, ymin, ymax))
+        return formatage("x² + y² + %s x + %s y + %s = 0 avec %s<x<%s et %s<y<%s" %(a, b, c, xmin, xmax, ymin, ymax))
 
     #~ def _distance_inf(self, x, y, d):
         #~ x0, y0 = self._pixel(self.__centre)
@@ -173,7 +169,7 @@ class Arc_generique(Cercle_Arc_generique):
 
 
     def _intervalle(self, exact=False):
-        u"Renvoie deux nombres a < b. L'arc est l'ensemble des points (r*cos(t), r*sin(t)) pour t apartenant à [a, b]."
+        "Renvoie deux nombres a < b. L'arc est l'ensemble des points (r*cos(t), r*sin(t)) pour t apartenant à [a, b]."
         raise NotImplementedError
 
     def _sens(self):
@@ -192,12 +188,12 @@ class Arc_generique(Cercle_Arc_generique):
 
     @property
     def extremites(self):
-        u"Extrémités de l'arc."
+        "Extrémités de l'arc."
         raise NotImplementedError
 
     @property
     def info(self):
-        return self.nom_complet + u' de longueur ' + nice_display(self.longueur)
+        return self.nom_complet + ' de longueur ' + nice_display(self.longueur)
 
 
     def _t(self):
@@ -307,7 +303,7 @@ class Arc_generique(Cercle_Arc_generique):
 
 
 class Arc_cercle(Arc_generique):
-    u"""Un arc de cercle.
+    """Un arc de cercle.
 
     Un arc de cercle orienté, défini par son centre et ses extremités(*), dans le sens direct.
 
@@ -350,7 +346,7 @@ class Arc_cercle(Arc_generique):
 
 
 class Arc_points(Arc_generique):
-    u"""Un arc défini par 3 points.
+    """Un arc défini par 3 points.
 
     Un arc de cercle, défini par ses extrémités, et un autre point."""
 
@@ -391,7 +387,7 @@ class Arc_points(Arc_generique):
         return c, a + 2*(PI if issympy(a) else pi)
 
     def _sens(self):
-        u"Sens de parcours de l'arc : direct (1) ou indirect (-1)"
+        "Sens de parcours de l'arc : direct (1) ou indirect (-1)"
         # mesure des angles dans ]-pi;pi]
         a = float(self._angle1)
         b = float(self._angle2)
@@ -415,7 +411,7 @@ class Arc_points(Arc_generique):
 
 
 class Arc_oriente(Arc_points):
-    u"""Un arc de cercle orienté.
+    """Un arc de cercle orienté.
 
     Un arc de cercle orienté, défini par ses extrémités, et un autre point."""
 
@@ -458,7 +454,7 @@ class Arc_oriente(Arc_points):
 
 
 class Demicercle(Arc_cercle):
-    u"""Un demi-cercle.
+    """Un demi-cercle.
 
     Un demi-cercle orienté, défini par ses extrémités, dans le sens direct."""
 
@@ -476,7 +472,7 @@ class Demicercle(Arc_cercle):
 
 
 class Cercle_generique(Cercle_Arc_generique):
-    u"""Un cercle générique.
+    """Un cercle générique.
 
     Usage interne : la classe mère pour tous les types de cercles."""
 
@@ -553,24 +549,24 @@ class Cercle_generique(Cercle_Arc_generique):
 
     @property
     def equation_formatee(self):
-        u"Equation sous forme lisible par l'utilisateur."
+        "Equation sous forme lisible par l'utilisateur."
         eq = self.equation
         if eq is None:
-            return u"L'objet n'est pas défini."
+            return "L'objet n'est pas défini."
         a, b, c = (nice_display(coeff) for coeff in eq)
         # on ne garde que quelques chiffres après la virgule pour l'affichage
-        return formatage(u"x² + y² + %s x + %s y + %s = 0" %(a, b, c))
+        return formatage("x² + y² + %s x + %s y + %s = 0" %(a, b, c))
 
 
     def _creer_nom_latex(self):
-        u"""Crée le nom formaté en LaTeX. Ex: M1 -> $M_1$."""
+        """Crée le nom formaté en LaTeX. Ex: M1 -> $M_1$."""
         Objet._creer_nom_latex(self)
         nom = self.latex_police_cursive(self.nom_latex[1:-1])
         self.nom_latex = "$" + nom + "$"
 
     @property
     def info(self):
-        return self.nom_complet + u' de rayon ' + nice_display(self.rayon)
+        return self.nom_complet + ' de rayon ' + nice_display(self.rayon)
 
 
 
@@ -578,7 +574,7 @@ class Cercle_generique(Cercle_Arc_generique):
 
 
 class Cercle_rayon(Cercle_generique):
-    u"""Un cercle de rayon fixé.
+    """Un cercle de rayon fixé.
 
     Un cercle défini par son centre et son rayon."""
 
@@ -618,7 +614,7 @@ class Cercle_rayon(Cercle_generique):
 
 
 class Cercle(Cercle_generique):
-    u"""Un cercle.
+    """Un cercle.
 
     Un cercle défini par son centre et un point du cercle."""
 
@@ -626,12 +622,12 @@ class Cercle(Cercle_generique):
     point = __point = Argument("Point_generique", defaut = Point)
 
     def __new__(cls, *args, **kw):
-        if len(args) == 1 and isinstance(args[0], basestring):
+        if len(args) == 1 and isinstance(args[0], str):
             newclass = Cercle_equation
         elif len(args) == 1 and isinstance(args[0], Segment):
             newclass = Cercle_diametre
         elif len(args) == 2 and (isinstance(args[1], TYPES_REELS)
-                                or isinstance(args[1], basestring)):
+                                or isinstance(args[1], str)):
             newclass = Cercle_rayon
         elif len(args) == 3 and isinstance(args[0], Point_generique) \
                                       and isinstance(args[1], Point_generique) \
@@ -660,7 +656,7 @@ class Cercle(Cercle_generique):
 
 
 class Cercle_diametre(Cercle_generique):
-    u"""Un cercle défini par un diamètre.
+    """Un cercle défini par un diamètre.
 
     Un cercle défini par un diamètre [AB]."""
 
@@ -687,7 +683,7 @@ class Cercle_diametre(Cercle_generique):
 
 
 class Cercle_points(Cercle_generique):
-    u"""Un cercle défini par 3 points.
+    """Un cercle défini par 3 points.
 
     Un cercle défini par la donnée de 3 points du cercle."""
 
@@ -720,7 +716,7 @@ class Cercle_points(Cercle_generique):
 
 
 class Cercle_equation(Cercle_generique):
-    u"""Un cercle défini par une équation.
+    """Un cercle défini par une équation.
 
     Un cercle d'équation donnée sous forme d'un triplet (a, b, c). (x**2 + y**2 + ax + by + c = 0)"""
 
@@ -743,7 +739,7 @@ class Cercle_equation(Cercle_generique):
 
 
     def _get_equation(self):
-        u"Retourne un triplet (a, b, c), tel que x**2 + y**2 + ax + by + c = 0 soit une équation du cercle."
+        "Retourne un triplet (a, b, c), tel que x**2 + y**2 + ax + by + c = 0 soit une équation du cercle."
         return self.__a, self.__b, self.__c
 
     def _set_equation(self, a = None, b = 0, c = -1):
@@ -763,7 +759,7 @@ class Cercle_equation(Cercle_generique):
 
 
 class Disque(Cercle_generique):
-    u"""Un disque.
+    """Un disque.
 
     Un disque défini par le cercle le délimitant."""
 
@@ -785,7 +781,7 @@ class Disque(Cercle_generique):
         x, y = self._Cercle_generique__centre.coordonnees
         r = self.rayon
         t = fullrange(0, 2*pi , self.canvas.pas())
-        fill.set(xy = zip(x + r*ncos(t), y + r*nsin(t)),
+        fill.set(xy = list(zip(x + r*ncos(t), y + r*nsin(t))),
                 alpha = self.style("alpha"), color = self.style("couleur"),
                 linestyle = FILL_STYLES.get(self.style("style"), "solid"),
                 linewidth = self.style("epaisseur"),
@@ -813,17 +809,17 @@ class Disque(Cercle_generique):
 
     @property
     def info(self):
-        return self.nom_complet + u" d'aire " + nice_display(self.aire)
+        return self.nom_complet + " d'aire " + nice_display(self.aire)
 
 
     @property
     def equation_formatee(self):
-        u"Equation sous forme lisible par l'utilisateur."
+        "Equation sous forme lisible par l'utilisateur."
         eq = self.equation
         if eq is None:
-            return u"L'objet n'est pas défini."
+            return "L'objet n'est pas défini."
         a, b, c = (nice_display(coeff) for coeff in eq)  # on ne garde que quelques chiffres après la virgule pour l'affichage
-        return formatage(u"x² + y² + %s x + %s y + %s <= 0" %(a, b, c))
+        return formatage("x² + y² + %s x + %s y + %s <= 0" %(a, b, c))
 
     def image_par(self, transformation):
         return Disque(self.__cercle.image_par(transformation))
