@@ -24,7 +24,6 @@
 from PyQt4.QtGui import (QWidget, QTabWidget, QGridLayout, QLabel, QLineEdit,
                          QPushButton, QVBoxLayout, QTextEdit, QDialog, QGroupBox)
 
-from ..pylib import uu
 
 
 class ProprietesDescription(QWidget):
@@ -108,11 +107,11 @@ class ProprietesStatistiques(QWidget):
 
         sizer = QVBoxLayout()
         encadre = QVBoxLayout()
-        encadre_box = QGroupBox("Informations sur " + uu(self.feuille.nom) + " :")
+        encadre_box = QGroupBox("Informations sur " + self.feuille.nom + " :")
         encadre_box.setLayout(encadre)
         sizer.addWidget(encadre_box)
-        encadre.addWidget(QLabel("Date de création :  " + uu(self.feuille.infos("creation"))))
-        encadre.addWidget(QLabel("Dernière modification :  " + uu(self.feuille.infos("modification"))))
+        encadre.addWidget(QLabel("Date de création :  " + self.feuille.infos("creation")))
+        encadre.addWidget(QLabel("Dernière modification :  " + self.feuille.infos("modification")))
         encadre.addWidget(QLabel("Nombre d'objets :  " + str(len(self.feuille.liste_objets(True)))))
         sizer.addStretch()
         self.setLayout(sizer)
@@ -135,7 +134,7 @@ class OngletsProprietesFeuille(QTabWidget):
 class ProprietesFeuille(QDialog):
     def __init__(self, parent, feuille):
         QDialog.__init__(self, parent)
-        self.setWindowTitle("Propriétés de " + uu(feuille.nom))
+        self.setWindowTitle("Propriétés de " + feuille.nom)
         self.parent = parent
         self.feuille = feuille
         self.fenetre_principale = self.parent.window()

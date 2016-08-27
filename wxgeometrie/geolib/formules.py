@@ -26,7 +26,6 @@ from weakref import ref
 
 from .routines import nice_display
 
-from ..pylib import uu
 from .. import param
 
 class Formule(object):
@@ -101,7 +100,7 @@ class Formule(object):
             if liste[i].val is not None:
                 liste[i]._cache_formule = str(liste[i])
             liste[i] = "{" + liste[i]._cache_formule + "}"
-        return repr(uu("".join(liste)))
+        return repr("".join(liste))
 
 
     def __str__(self):

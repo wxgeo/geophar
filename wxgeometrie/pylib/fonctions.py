@@ -333,10 +333,10 @@ def extract_error(chaine=''):
     lignes.append('Traceback (most recent call last)')
     for fichier, ligne, fonction, code in tb:
         lignes.append('    File "%s", line %s, in %s'
-                % (uu(fichier), str(ligne), uu(fonction)))
+                % (str(fichier), str(ligne), str(fonction)))
         if code is not None:
-            lignes.append('        ' + uu(code))
-    lignes.append(uu(typ.__name__) + ": " + uu(val))
+            lignes.append('        ' + str(code))
+    lignes.append(typ.__name__ + ": " + str(val))
     lignes.append("Warning: this error was not raised.")
     return '\n'.join(lignes)
 
@@ -590,7 +590,7 @@ def path2(chemin):
     Exemple : path2("%/wxgeometrie/images/archives/old.png").
     ~ fait référence au répertoire personnel de l'utilisateur (ex: /home/SteveB/ sous Linux.
     """
-    return os.path.normpath(os.path.expanduser(uu(chemin).replace("%", uu(param.EMPLACEMENT))))
+    return os.path.normpath(os.path.expanduser(chemin.replace("%", param.EMPLACEMENT)))
 
 
 

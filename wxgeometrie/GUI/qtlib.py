@@ -27,7 +27,6 @@ from PyQt4.QtGui import (QCursor, QDialog, QPixmap, QPushButton, QColorDialog,
                          QDialogButtonBox, QAbstractItemView, QPalette,)
 
 from .. import param
-from ..pylib import uu
 from .app import app
 
 #class PseudoEvent(object):
@@ -74,7 +73,7 @@ def png_pth(nom):
     """Adresse complète de l'image `nom`.png du repertoire 'images/'.
 
     Le nom doit être indiqué sans l'extension '.png'."""
-    return os.path.normpath(os.path.join(uu(param.EMPLACEMENT), 'wxgeometrie/images', nom + ".png"))
+    return os.path.normpath(os.path.join(param.EMPLACEMENT, 'wxgeometrie/images', nom + ".png"))
 
 
 def png(nom):

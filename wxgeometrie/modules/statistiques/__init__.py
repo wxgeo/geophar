@@ -33,7 +33,7 @@ from ...GUI.panel import Panel_API_graphique
 from .experience import LancerDes, Sondage, ExperienceFrame, DIC
 from .onglets_internes import OngletsStatistiques
 from ...geolib.routines import nice_display, arrondir_1_2_5 as arrondir
-from ...pylib import property2, uu, regsub, advanced_split, print_error, eval_restricted
+from ...pylib import property2, regsub, advanced_split, print_error, eval_restricted
 from ... import param
 
 __doc__ = """

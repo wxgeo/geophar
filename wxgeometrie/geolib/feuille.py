@@ -38,7 +38,7 @@ from numpy import array
 
 from sympy import Symbol, Wild, sympify, oo
 
-from ..pylib import uu, is_in, property2, print_error, rstrip_, CompressedList
+from ..pylib import is_in, property2, print_error, rstrip_, CompressedList
 from ..mathlib.intervalles import Union, Intervalle
 from ..mathlib.parsers import VAR, NBR_SIGNE, traduire_formule, \
                         _convertir_separateur_decimal
@@ -1481,7 +1481,7 @@ class Feuille(object):
         if param.debug:
             for obj in objets:
                 print("- " + obj.nom + " : " + repr(obj) + " (" + obj.type() + ")")
-        liste = ["%s (%s%s)" % (uu(obj.nom_complet), uu(obj.titre(point_final=False)),
+        liste = ["%s (%s%s)" % (obj.nom_complet, obj.titre(point_final=False),
                  ('' if obj.style("visible") else " invisible")) for obj in objets
                  if not isinstance(obj, (Variable_affichage, Pixel_unite))]
         liste.sort()

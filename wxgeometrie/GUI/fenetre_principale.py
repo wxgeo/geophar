@@ -28,7 +28,7 @@ from PyQt4.QtGui import (QMainWindow, QApplication, QPlainTextEdit, QIcon, QColo
                         QLabel, QWidget, QVBoxLayout, QMessageBox, QTextCursor)
 from PyQt4.QtCore import QSize, Qt, pyqtSignal
 
-from ..pylib import uu, print_error, path2, debug, warning
+from ..pylib import print_error, path2, debug, warning
 from ..API.console import Console
 from ..API.sauvegarde import FichierSession
 from ..API.parametres import sauvegarder_module
@@ -171,7 +171,7 @@ class FenetrePrincipale(QMainWindow):
     def titre(self, texte=None):
         titre = NOMPROG
         if texte:
-            titre += ' - ' + uu(texte)
+            titre += ' - ' + texte
         self.setWindowTitle(titre)
 
 

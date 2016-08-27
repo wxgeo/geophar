@@ -34,7 +34,7 @@ from matplotlib.axes import Axes
 from numpy import array, arange, concatenate, cos as ncos, sin as nsin
 from math import cos, sin, atan2, pi, hypot, sqrt, atan
 
-from ..pylib import fullrange, is_in, uu, warning, print_error
+from ..pylib import fullrange, is_in, warning, print_error
 from ..mathlib.parsers import tex_dollars
 from .. import param
 
@@ -1281,7 +1281,7 @@ class Moteur_graphique(object):
             infos['xy'] = artiste.get_verts()
             infos['edge-color'] = artiste.get_edgecolor()
             infos['face-color'] = artiste.get_edgecolor()
-        infos_as_str = ', '.join([key + '=' + uu(val) for key, val in infos.items()])
+        infos_as_str = ', '.join([key + '=' + str(val) for key, val in infos.items()])
         return artiste.__class__.__name__ + ' (' + str(id(artiste)) + '):\n' + infos_as_str
 
     def infos(self):

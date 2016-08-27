@@ -42,7 +42,7 @@ from ...mathlib.interprete import Interprete
 from ...mathlib.parsers import latex2mathtext
 from ...mathlib.end_user_functions import __classement__
 
-from ...pylib import print_error, uu, debug, no_argument, eval_safe
+from ...pylib import print_error, debug, no_argument, eval_safe
 from ... import param
 
 
@@ -557,7 +557,7 @@ class Calculatrice(Panel_simple):
                 resultat = "\n" + "\n".join(20*" " + ligne for ligne in resultat.split("\n"))
             self.resultats.moveCursor(QTextCursor.End)
             self.resultats.insertPlainText(" Calcul n\xb0" + numero + " :   "
-                                                        + uu(commande) + "\n Résultat :"
+                                                        + commande + "\n Résultat :"
                                                         + " "*(4+len(numero))
                                                         + resultat + "\n__________________\n\n")
             self.resultats.moveCursor(QTextCursor.End)

@@ -1611,8 +1611,8 @@ class Objet(object):
                 return "[" + ", ".join(formater(item) for item in objet) + "]"
             return str(objet)
 
-        return uu(self.classe() + "(" + ", ".join(key + " = " + formater(val)
-                                 for key, val in self._iter_arguments) + ")")
+        return self.classe() + "(" + ", ".join(key + " = " + formater(val)
+                                 for key, val in self._iter_arguments) + ")"
 
 
     def sauvegarder(self):

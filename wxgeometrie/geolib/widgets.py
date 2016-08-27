@@ -26,7 +26,7 @@ from random import normalvariate
 
 from .objet import Objet_avec_coordonnees_modifiables, Argument, Ref
 from .textes import Texte_editable_generique, Texte
-from ..pylib import uu, print_error
+from ..pylib import print_error
 from .. import param
 
 
@@ -39,13 +39,13 @@ class Bouton(Texte_editable_generique, Objet_avec_coordonnees_modifiables):
 
     _style_defaut = param.boutons
 
-    texte = __texte = Argument("basestring")
+    texte = __texte = Argument("str")
     abscisse = x = __x = Argument("Variable_generique", defaut=0)
     ordonnee = y = __y = Argument("Variable_generique", defaut=0)
 
     def __init__(self, texte=' ', x=None, y=None, **styles):
         x, y, styles = self._recuperer_x_y(x, y, styles)
-        texte = uu(texte)
+        texte = str(texte)
 
         ##if texte != "":
             ##styles["label"] = texte

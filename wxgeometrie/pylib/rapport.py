@@ -19,7 +19,7 @@
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import time
-from ..pylib import uu, print_error
+from ..pylib import print_error
 from .. import param
 
 class Rapport(list):
@@ -63,8 +63,8 @@ class Rapport(list):
     def archiver(self):
         "Copie les derniers enregistrements vers le fichier log."
         if self.fichier_log is not None:
-            with open(self.fichier_log, 'a') as f:
-                f.write(uu(self._contenu()).encode('utf8'))
+            with open(self.fichier_log, 'a', 'utf8') as f:
+                f.write(self._contenu())
                 self[:] = []
 
     def contenu(self):
@@ -73,5 +73,5 @@ class Rapport(list):
             return self._contenu()
         else:
             self.archiver()
-            with open(self.fichier_log, 'r') as f:
-                return uu(f.read())
+            with open(self.fichier_log, 'r', 'utf8') as f:
+                return f.read()
