@@ -63,9 +63,6 @@ class LocalDict(dict):
         # Pour éviter que l'utilisateur redéfinisse pi, i, e, etc. par mégarde.
         if name in self.globals or (name.startswith('_') and name[1:].isalnum()):
             raise NameError("%s est un nom reserve" %name)
-        if isinstance(value, str):
-            # exec/eval encodent les chaînes crées en utf8.
-            value = value.decode("utf8").encode(param.encodage)
         dict.__setitem__(self, name, value)
 
 
