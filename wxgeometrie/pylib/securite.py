@@ -37,7 +37,7 @@ def _avertissement(*arg, **kw):
 #fonctions_interdites = ["eval", "compile", "execfile", "file", "open", "write", "getattr", "setattr"]
 
 liste_blanche = set(('False', 'None', 'True', 'abs', 'all', 'any', 'bool',  'callable', 'chr', 'close', \
-            'cmp', 'coerce', 'complex', 'dict', 'divmod', 'enumerate', 'filter', 'float', 'frozenset', 'globals', 'hash', 'hex', \
+            'coerce', 'complex', 'dict', 'divmod', 'enumerate', 'filter', 'float', 'frozenset', 'globals', 'hash', 'hex', \
             'id', 'int', 'isinstance', 'issubclass', 'iter', 'len', 'list', 'locals', 'long', 'map', 'max', 'min', 'object', 'oct', \
             'ord', 'pow', 'range', 'repr', 'reversed', 'round', 'set', 'slice', 'sorted', 'str', 'sum', \
             'tuple', 'type', 'zip'\

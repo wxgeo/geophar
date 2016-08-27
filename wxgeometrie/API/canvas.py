@@ -664,9 +664,9 @@ def %(_nom_)s(self, valeur = no_argument):
         if respect_ratio and self.ratio is not None:
             rymax = ymax*self.ratio
             if rymax*abs(x0 - x1) > xmax*abs(y0 - y1):
-                y1 = y0 + rymax/xmax*abs(x0 - x1)*cmp(y1, y0)
+                y1 = y0 + rymax/xmax*abs(x0 - x1)*(1 if y1 > y0 else -1)
             else:
-                x1 = x0 + xmax/rymax*abs(y0 - y1)*cmp(x1, x0)
+                x1 = x0 + xmax/rymax*abs(y0 - y1)*(1 if x1 > x0 else -1)
 
         # Exceptionnellement, il faut ici effacer manuellement le graphisme.
         # En effet, il n'est pas garanti qu'il y ait un rafraichissement

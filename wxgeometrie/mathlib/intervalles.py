@@ -129,8 +129,9 @@ class Union(Ensemble):
         ##self.__radd__(y)
 
     def simplifier(self):
-        ints = [intervalle for intervalle in self.intervalles if not intervalle.vide]
-        ints.sort()
+        # On classe les intervalles par borne inférieure (puis supérieure si besoin pour départager).
+        ints = sorted((intervalle for intervalle in self.intervalles if not intervalle.vide),
+               key=(lambda i: (i.inf, i.sup)))
         #print ints
         #print self.intervalles
         for i in range(len(ints) - 1):
@@ -319,11 +320,16 @@ class Intervalle(Union):
             return [self]
 
 
-    def __cmp__(self, y):
-        c = cmp(float(self.inf), float(y.inf))
-        if c:   return c
-        else:   return cmp(float(self.sup), float(y.sup))
+    #~ def __gt__(self, y):
+        #~ if not isinstance(y, Intervalle):
+            #~ raise TypeError("Impossible de comparer un Intervalle avec un objet de type %s." % type(y))
+        #~ if self.inf != y.inf:
+            #~ return float(self.inf) > float(y.inf)
+        #~ else:
+            #~ return float(self.sup) > float(y.sup)
 
+    #~ def __ge__(self, y):
+        #~ return self > y or float(self.inf) == float(y.inf)
 
     def __mul__(self, y):
         "intersection"

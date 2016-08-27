@@ -57,15 +57,20 @@ def jhms(s):
 
 def cbrt(x):
     "Racine cubique de x."
-    return cmp(x, 0)*math.exp(math.log(abs(x))/3)
+    if x == 0:
+        return 0
+    return (1 if x > 0 else -1)*math.exp(math.log(abs(x))/3)
 
 def root(x, n):
     """Racine nième de x.
 
     N'est définie pour x négatif que si n est pair."""
-    if n%2:
-        return cmp(x, 0)*math.exp(math.log(abs(x))/n)
-    return math.exp(math.log(x)/n)
+    if x == 0:
+        return 0
+    if x < 0 and n%2 == 0:
+        raise ValueError("math domain error")
+    return (-1 if x < 0 and n%2 else -1)*math.exp(math.log(abs(x))/n)
+
 
 def prod(facteurs):
     return reduce(lambda x,y:x*y, facteurs, 1)

@@ -289,7 +289,7 @@ class Interpolation_cubique(Interpolation_generique):
                     dy0 = dy1
             if i < n - 2:
                 x2, y2 = self.__points[i+2].coordonnees
-                if cmp(y0, y1) == cmp(y1, y2):
+                if (y0 > y1) is (y1 > y2):
                     dy1 = y2 - y0
                     dx1 = x2 - x0
                 else:

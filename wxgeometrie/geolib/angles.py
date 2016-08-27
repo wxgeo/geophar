@@ -120,7 +120,7 @@ class Secteur_angulaire(Angle_generique):
     def _sens(self):
         x1, y1 = self.__vecteur1
         x2, y2 = self.__vecteur2
-        return cmp(x1*y2 - x2*y1, 0)
+        return (1 if x1*y2 >= x2*y1 else -1)
 
     @property
     def sens(self):

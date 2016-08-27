@@ -954,7 +954,7 @@ class Demiplan(Objet_avec_equation):
     def _signe(self, xy = None):
         x, y = (xy if xy else self.__point.xy)
         a, b, c = self.equation
-        return cmp(a*x + b*y + c, 0)
+        return (1 if a*x + b*y + c >= 0 else -1)
 
     def _contains(self, M):
         signe = self._signe(M)

@@ -60,15 +60,6 @@ class ObjetMathematique(object):
 
     def __pos__(self):      return self
 
-    def __cmp__(self, y):
-        if hasattr(self, "__gt__") and isinstance(y, (ObjetMathematique, float, int)):
-            if self > y:
-                return 1
-            elif self < y:
-                return -1
-            else:
-                return 0
-        return NotImplemented
 
 
 class Reel(ObjetMathematique):
