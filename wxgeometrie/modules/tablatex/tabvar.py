@@ -50,7 +50,7 @@ def _auto_tabvar(chaine='', derivee=True, limites=True, decimales=3, approche=Fa
     def nice_str2(x):
         if (isinstance(x, (float, Float)) and not isinstance(x, Rational)
                 or approche and x not in (-oo, oo)):
-            x = round(x, decimales)
+            x = round(float(x), decimales)
         return nice_str(x)
 
     # ------------------------------------------------------
@@ -285,7 +285,7 @@ x;\\sqrt{x};(\\sqrt{x})': 0;0;| << +oo;+oo"""
     # ex: "-oo;3 << 1;2 >> 3;-oo|+oo << 5;2 << +oo;+oo" devient
     # ["-oo;3", "<<", "1;2", ">>", "3;-oo|+oo", "<<", "5;2", "<<", "+oo;+oo"]
 
-    sequence = re.split(r"(>>|<<|==|\|\||XX|)", chaine.strip())
+    sequence = re.split(r"(>>|<<|==|\|\||XX)", chaine.strip())
 
     if not sequence[0]:
         # en l'absence d'indication, x varie de -oo...

@@ -49,7 +49,7 @@ def _auto_tabsign(chaine, cellspace=False, decimales=3, approche=False):
     def nice_str2(x):
         if (isinstance(x, (float, Float)) and not isinstance(x, Rational)
                 or approche and x not in (-oo, oo)):
-            x = round(x, decimales)
+            x = round(float(x), decimales)
         return nice_str(x)
 
     chaine_initiale = chaine

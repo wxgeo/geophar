@@ -86,12 +86,12 @@ def _compatible(meth):
     assert meth.__code__.co_argcount == 2
     def new_meth(self, other):
         result = meth(self, other)
-        prec = None
+        prec = float('-inf')
         if isinstance(self, Decim):
             prec = self.prec
         if isinstance(other, Decim):
             prec = max(prec, other.prec)
-        if prec is not None:
+        if prec != float('-inf'):
             if isinstance(result, Rational):
                 result = Decim(result, prec=prec)
             else:
