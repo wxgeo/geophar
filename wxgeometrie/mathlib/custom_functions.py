@@ -25,6 +25,7 @@
 ## Cette librairie contient les fonctions de haut niveau non inclues dans sympy.
 
 import math
+from math import isnan, isinf
 from types import FunctionType
 from functools import reduce
 
@@ -503,3 +504,37 @@ def va(loi, *parametres):
         return sympy.stats.__dict__[loi]('X', *parametres)
     except KeyError:
         raise KeyError('Loi "%s" inconnue !' % loi)
+
+
+def round_afz(val, ndigits=0):
+    u"""Round using round-away-from-zero strategy for halfway cases.
+
+    Python 3+ implements round-half-even, and Python 2.7 has a random behaviour
+    from end user point of view (in fact, result depends on internal
+    representation in floating point arithmetic).
+    """
+    ceil = math.ceil
+    floor = math.floor
+    val = float(val)
+    if isnan(val) or isinf(val):
+        return val
+    s = repr(val).rstrip('0')
+    if 'e' in s:
+        # XXX: implement round-away-from-zero in this case too.
+        return round(val, ndigits)
+    sep = s.find('.')
+    pos = sep + ndigits
+    if ndigits <= 0:
+        pos -= 1
+    # Skip dot if needed to reach next digit.
+    next_pos = (pos + 1 if pos + 1 != sep else pos + 2)
+    if next_pos < 0 or next_pos == 0 and s[next_pos] == '-':
+        return 0.
+    if len(s) <= next_pos:
+        # No need to round (no digit after).
+        return val
+    power = 10**ndigits
+    if s[next_pos] in '01234':
+        return (floor(val*power)/power if val > 0 else ceil(val*power)/power)
+    else:
+        return (ceil(val*power)/power if val > 0 else floor(val*power)/power)

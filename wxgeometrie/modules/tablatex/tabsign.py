@@ -33,6 +33,7 @@ from ...mathlib.intervalles import R, conversion_chaine_ensemble
 from ...mathlib.solvers import ensemble_definition
 from ...mathlib.interprete import Interprete
 from ...mathlib.parsers import VAR
+from ...mathlib.custom_functions import round_afz
 from ... import param
 
 def _auto_tabsign(chaine, cellspace=False, decimales=3, approche=False):
@@ -49,7 +50,7 @@ def _auto_tabsign(chaine, cellspace=False, decimales=3, approche=False):
     def nice_str2(x):
         if (isinstance(x, (float, Float)) and not isinstance(x, Rational)
                 or approche and x not in (-oo, oo)):
-            x = round(float(x), decimales)
+            x = round_afz(float(x), decimales)
         return nice_str(x)
 
     chaine_initiale = chaine

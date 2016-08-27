@@ -33,6 +33,7 @@ from ...mathlib.sympy_functions import solve
 from ...mathlib.intervalles import R, conversion_chaine_ensemble
 from ...mathlib.interprete import Interprete
 from ...mathlib.parsers import VAR
+from ...mathlib.custom_functions import round_afz
 from ... import param
 
 
@@ -50,7 +51,7 @@ def _auto_tabvar(chaine='', derivee=True, limites=True, decimales=3, approche=Fa
     def nice_str2(x):
         if (isinstance(x, (float, Float)) and not isinstance(x, Rational)
                 or approche and x not in (-oo, oo)):
-            x = round(float(x), decimales)
+            x = round_afz(x, decimales)
         return nice_str(x)
 
     # ------------------------------------------------------

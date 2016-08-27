@@ -27,6 +27,7 @@ from numpy import arange
 
 from .tablatexlib import traduire_latex, maths
 from ...pylib import print_error
+from ...mathlib.custom_functions import round_afz
 from ... import param
 
 def _eval_math(chaine):
@@ -183,7 +184,14 @@ valeur du résultat.
                 if evaluation in (maths.num_oo, maths.num_nan, -maths.num_oo, maths.oo, maths.nan, -maths.oo):
                     code_expression += "& $\\times$ "
                 else:
-                    code_expression += '&' + formater(precision*round(evaluation/precision), formatage_images)
+                    # Workaround for a strange Python behaviour:
+                    # In [1]: 0.01*113
+                    # Out[1]: 1.1300000000000001
+                    # In [2]: 113/100.0
+                    # Out[2]: 1.13
+                    inv = (1/precision)
+                    val = round_afz(inv*evaluation)/inv
+                    code_expression += '&' + formater(val, formatage_images)
             except:
                 print_error()
                 code_expression += "& $\\times$ "
