@@ -32,7 +32,7 @@ import sympy
 from ..pylib import print_error
 from .. import param
 from .parsers import _convertir_latex_frac
-from .printers import custom_str as str
+from .printers import custom_str as str_
 
 
 class Ensemble(object):
@@ -159,10 +159,10 @@ class Union(Ensemble):
     def __str__(self):
         if self.vide:
             return '{}'
-        return "U".join(str(intervalle) for intervalle in self.intervalles).replace("}U{", " ; ")
+        return "U".join(str_(intervalle) for intervalle in self.intervalles).replace("}U{", " ; ")
 
     def __repr__(self):
-        return "Ensemble(%s)" %repr(str(self))
+        return "Ensemble(%s)" %repr(str_(self))
 
     def __bool__(self):
         return not self.vide
@@ -376,8 +376,8 @@ class Intervalle(Union):
         if self.vide:
             return "\u00D8" # "Ø" ; u"\u2205" ne fonctionne pas sous Windows XP
         elif self.inf == self.sup:
-            return "{%s}" %str(self.inf)
-        return (self.inf_inclus and "[" or "]") + str(self.inf) + ";" + str(self.sup) + (self.sup_inclus and "]" or "[")
+            return "{%s}" %str_(self.inf)
+        return (self.inf_inclus and "[" or "]") + str_(self.inf) + ";" + str_(self.sup) + (self.sup_inclus and "]" or "[")
 
 
     def __copy__(self):

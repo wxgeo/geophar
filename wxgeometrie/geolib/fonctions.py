@@ -45,9 +45,9 @@ class Fonction(Objet_numerique):
     __re = re.compile('(' + VAR_NOT_ATTR + ')')
 
 
-    __expression = Argument("basestring")
-    __ensemble = Argument("basestring")
-    variable = __variable = ArgumentNonModifiable("basestring")
+    __expression = Argument("str")
+    __ensemble = Argument("str")
+    variable = __variable = ArgumentNonModifiable("str")
 
     @property2
     def expression(self, expression = None):

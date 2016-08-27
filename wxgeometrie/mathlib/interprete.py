@@ -145,11 +145,11 @@ class Interprete(object):
         # On importe les fonctions python qui peuvent avoir une utilité éventuelle
         # (et ne présentent pas de problème de sécurité)
         a_importer = ['all', 'isinstance', 'dict', 'oct', 'sorted',
-                      'list', 'iter', 'set', 'reduce', 'issubclass', 'getattr',
+                      'list', 'iter', 'set', 'issubclass', 'getattr',
                       'hash', 'len', 'frozenset', 'ord', 'filter', 'pow',
-                      'float', 'divmod', 'enumerate', 'basestring', 'zip',
+                      'float', 'divmod', 'enumerate', 'zip',
                       'hex', 'chr', 'type', 'tuple', 'reversed', 'hasattr',
-                      'delattr', 'setattr', 'str', 'int', 'unichr', 'any',
+                      'delattr', 'setattr', 'str', 'int', 'any',
                       'min', 'complex', 'bool', 'max', 'True', 'False']
 
         for nom in a_importer:

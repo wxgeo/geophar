@@ -36,11 +36,11 @@ def _avertissement(*arg, **kw):
 
 #fonctions_interdites = ["eval", "compile", "execfile", "file", "open", "write", "getattr", "setattr"]
 
-liste_blanche = set(('False', 'None', 'True', 'abs', 'all', 'any', 'basestring', 'bool',  'callable', 'chr', 'close', \
+liste_blanche = set(('False', 'None', 'True', 'abs', 'all', 'any', 'bool',  'callable', 'chr', 'close', \
             'cmp', 'coerce', 'complex', 'dict', 'divmod', 'enumerate', 'filter', 'float', 'frozenset', 'globals', 'hash', 'hex', \
             'id', 'int', 'isinstance', 'issubclass', 'iter', 'len', 'list', 'locals', 'long', 'map', 'max', 'min', 'object', 'oct', \
-            'ord', 'pow', 'range', 'reduce', 'repr', 'reversed', 'round', 'set', 'slice', 'sorted', 'str', 'sum', \
-            'tuple', 'type', 'unichr', 'zip'\
+            'ord', 'pow', 'range', 'repr', 'reversed', 'round', 'set', 'slice', 'sorted', 'str', 'sum', \
+            'tuple', 'type', 'zip'\
             'IndexError', 'SyntaxError', 'NameError', 'StandardError', 'UnicodeDecodeError', 'RuntimeWarning', \
             'Warning', 'FloatingPointError', 'FutureWarning', 'ImportWarning', 'TypeError', 'KeyboardInterrupt', \
             'UserWarning', 'SystemError', 'BaseException', 'RuntimeError', 'GeneratorExit', 'StopIteration', \

@@ -64,7 +64,7 @@ class Panel_simple(QWidget):
         ##self.nom = self.__class__.__name__.lower()
         self.nom = self.module.__name__.rsplit('.', 1)[-1]
         self.canvas = None
-        path = path2(''.join((param.emplacements['log'], "/", self.nom, "_historique.log"))
+        path = path2(''.join((param.emplacements['log'], "/", self.nom, "_historique.log")))
         self.log = Rapport(path)
         # ._derniere_signature : sert pour les logs (en cas de zoom de souris essentiellement).
         # (cf. geolib/feuille.py pour plus de détails.)

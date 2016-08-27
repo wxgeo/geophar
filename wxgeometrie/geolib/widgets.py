@@ -267,7 +267,7 @@ class Champ(Texte):
         return value
 
 
-    texte = __texte = Argument("basestring", Texte._get_texte, _set_texte)
+    texte = __texte = Argument("str", Texte._get_texte, _set_texte)
     abscisse = x = __x = Argument("Variable_generique", defaut = lambda: normalvariate(0,10))
     ordonnee = y = __y = Argument("Variable_generique", defaut = lambda: normalvariate(0,10))
 
