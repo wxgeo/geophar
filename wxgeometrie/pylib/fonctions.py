@@ -644,7 +644,13 @@ class WeakRef(weakref.ref):
             return self is y
         return  self() is y()
 
-
+    # For debuging purpose only:
+    #~ def __hash__(self):
+        #~ try:
+            #~ weakref.ref.__hash__(self)
+        #~ except TypeError:
+            #~ print(self)
+            #~ raise
 
 class CustomWeakKeyDictionary(weakref.WeakKeyDictionary):
     """WeakKeyDictionary utilisant Weakref au lieu de weakref.ref.
