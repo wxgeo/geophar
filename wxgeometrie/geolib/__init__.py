@@ -100,8 +100,9 @@ from .vecteurs import (Vecteur_generique, Vecteur, Vecteur_libre,
                     )
 from .widgets import Bouton, Champ
 
+_objs = list(vars().values())
 
-for _obj in vars().values():
+for _obj in _objs:
     if isinstance(_obj, type) and issubclass(_obj, Objet):
         prefixe = "_" + _obj.__name__ + "__"
         _noms_arguments = []
@@ -122,7 +123,7 @@ for _obj in vars().values():
         # tuple pour éviter des bugs (partage d'1 même liste entre plusieurs classes par ex.)
         _obj._noms_arguments = tuple(key for compteur, key in _noms_arguments)
 
-del _obj
+del _obj, _objs
 
 G.__dict__.update(locals())
 vecteur_unite = G.vecteur_unite = Vecteur_libre(1, 0)
