@@ -83,7 +83,7 @@ Il est générée via le code suivant::
         _nom_math, _nom_numpy, _nom_sympy = _noms
         print  '''\n\ndef %s(*args, **kw):
         arg0 = args[0]
-        if isinstance(arg0, (int, float, long)):
+        if isinstance(arg0, (int, float)):
             return _math.%s(*args,**kw)
         elif isinstance(arg0, complex):
             return _cmath.%s(*args,**kw)

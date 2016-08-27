@@ -173,7 +173,7 @@ class Fonction(ObjetMathematique):
             return self.expression > y
 
 
-class ProduitEntiers(long):
+class ProduitEntiers(int):
     """Usage interne : destiné à être utilisé avec sympy.factorint."""
 
     def __new__(cls, *couples):

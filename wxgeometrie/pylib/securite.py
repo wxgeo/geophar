@@ -122,7 +122,7 @@ def eval_restricted(s, dico_perso = None):
 
 def eval_safe(s):
     """eval_safe(repr(x)) retourne x pour les types les plus usuels
-    (int, long, str, float, bool, None, list, tuple, dict.)
+    (int, str, float, bool, None, list, tuple, dict.)
     Mais aucune évaluation n'est faite, ce qui évite d'éxécuter un code dangereux.
     Le type de s est detecté, et la transformation appropriée appliquée.
 

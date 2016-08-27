@@ -27,7 +27,7 @@
 
 from keyword import kwlist
 from random import choice
-from string import letters
+from string import ascii_letters
 from math import pi as PI, e as E
 from types import MethodType, GeneratorType
 from operator import attrgetter
@@ -1765,7 +1765,7 @@ class Feuille(object):
             nom = self.objets._Dictionnaire_objets__verifier_syntaxe_nom(objet, nom, skip_err=True)
             if nom is not None:
                 return nom
-            prefixe = ''.join(choice(letters) for i in range(8))
+            prefixe = ''.join(choice(ascii_letters) for i in range(8))
         raise RuntimeError("Impossible de trouver un nom convenable apres 1000 essais !")
 
 
