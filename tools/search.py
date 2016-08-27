@@ -105,104 +105,96 @@ def gs(chaine='', case=True, exclude_comments=True, extensions=(".py", ".pyw"),
     n_lignes = 0
     # Nombre d'occurences trouvées.
     occurences = 0
-    for f in fichiers:
-        if re.search(IGNORE_RE, f) and not skip_ignore:
+    for filename in fichiers:
+        if re.search(IGNORE_RE, filename) and not skip_ignore:
             continue
         F += 1
-        with open(f, "r") as fichier:
+        correct_encoding = True
+        with open(filename) as fichier:
             lignes = []
             results = []
-            for n, s in enumerate(fichier):
-                if replace is not None:
-                    lignes.append(s)
-                if statistiques:
-                    s = s.strip()
-                    if s:
-                        if s[0] != '#':
-                            N += 1
-                        elif s.strip('#'):
-                            C += 1
+            try:
+                for n, s in enumerate(fichier):
+                    if replace is not None:
+                        lignes.append(s)
+                    if statistiques:
+                        s = s.strip()
+                        if s:
+                            if s[0] != '#':
+                                N += 1
+                            elif s.strip('#'):
+                                C += 1
+                            else:
+                                B += 1
                         else:
                             B += 1
-                    else:
-                        B += 1
-                    continue
-                if (exclude_comments and s.lstrip().startswith("#")):
-                    # comment line
-                    continue
-                if not case:
-                    s = s.lower()
-                pos = s.find(chaine)
-                if pos != -1:
-                    if exclude_comments:
-                        substr = s[:pos]
-                        if '#' in substr:
-                            # test if the substring found was inside a comment
-                            # at the end of the line.
-                            # You have to be carefull, because `#` may be
-                            # inside a string...
-                            # TODO: handle triple quotes.
-                            mode = None
-                            for c in substr:
-                                if c in "'\"#":
-                                    if mode is None:
-                                        mode = c
-                                        if c == '#':
-                                            continue
-                                    elif mode == c:
-                                        mode = None
-                            if mode == '#':
-                                # substring found inside a comment
-                                continue
+                        continue
+                    if (exclude_comments and s.lstrip().startswith("#")):
+                        # comment line
+                        continue
+                    if not case:
+                        s = s.lower()
+                    pos = s.find(chaine)
+                    if pos != -1:
+                        if exclude_comments:
+                            substr = s[:pos]
+                            if '#' in substr:
+                                # test if the substring found was inside a comment
+                                # at the end of the line.
+                                # You have to be carefull, because `#` may be
+                                # inside a string...
+                                # TODO: handle triple quotes.
+                                mode = None
+                                for c in substr:
+                                    if c in "'\"#":
+                                        if mode is None:
+                                            mode = c
+                                            if c == '#':
+                                                continue
+                                        elif mode == c:
+                                            mode = None
+                                if mode == '#':
+                                    # substring found inside a comment
+                                    continue
 
-                    occurences += 1
-                    if replace is not None:
-                        lignes[-1] = s.replace(chaine, replace)
-                    s = s[:pos] + blue2(s[pos:pos+len(chaine)]) \
-                                + s[pos+len(chaine):]
-                    try:
+                        occurences += 1
+                        if replace is not None:
+                            lignes[-1] = s.replace(chaine, replace)
+                        s = s[:pos] + blue2(s[pos:pos+len(chaine)]) \
+                                    + s[pos+len(chaine):]
                         results.append("   " + blue('(' + str(n_lignes + 1) + ')')
                                           + "  line " + white(str(n + 1))
-                                          + ":   " + s.decode(codec))
-                    except UnicodeError:
-                        if replace is not None:
-                            # Risk of file corruption !
-                            raise
-                        try:
-                            results.append(red('<Warning: encoding error in the following line>')
-                                          + '\n   '
-                                          + blue('(' + str(n_lignes + 1) + ')')
-                                          + "  line " + white(str(n + 1))
-                                          + ":   " + s.decode('latin1'))
-                        except UnicodeError:
-                            results.append(red("Can't read result (unknown encoding)"))
+                                          + ":   " + s)
 
-                    if edit_with is not None and (edit_result is None
-                                                or edit_result == n_lignes + 1):
-                        if edit_with not in SUPPORTED_EDITORS:
-                            print(edit_with + ' is currently not supported.')
-                            print('Supported editors : '
-                                  + ','.join(SUPPORTED_EDITORS))
-                        elif edit_with in ('geany', 'kate'):
-                            command = '%s -l %s %s' % (edit_with, n + 1, f)
-                        elif edit_with in ('kile',):
-                            command = '%s --line %s %s' % (edit_with, n + 1, f)
-                        else:
-                            command = '%s +%s %s' % (edit_with, n + 1, f)
-                        subprocess.call(command, shell=True)
+                        if edit_with is not None and (edit_result is None
+                                                    or edit_result == n_lignes + 1):
+                            if edit_with not in SUPPORTED_EDITORS:
+                                print(edit_with + ' is currently not supported.')
+                                print('Supported editors : '
+                                      + ','.join(SUPPORTED_EDITORS))
+                            elif edit_with in ('geany', 'kate'):
+                                command = '%s -l %s %s' % (edit_with, n + 1, filename)
+                            elif edit_with in ('kile',):
+                                command = '%s --line %s %s' % (edit_with, n + 1, filename)
+                            else:
+                                command = '%s +%s %s' % (edit_with, n + 1, filename)
+                            subprocess.call(command, shell=True)
 
-                    n_lignes += 1
-                    if n_lignes > maximum:
-                        return red("Maximum output exceeded...!")
+                        n_lignes += 1
+                        if n_lignes > maximum:
+                            return red("Maximum output exceeded...!")
+            except UnicodeDecodeError:
+                correct_encoding = False
+                print(red("ERROR: Can't read %s, encoding isn't %s." % (f, sys.getdefaultencoding())))
 
-        if results:
-            print(" \u2022 in " + green(f[:end_root_pos])
-                                 + green2(f[end_root_pos:]))
+        if correct_encoding and results:
+            print(" \u2022 in " + green(filename[:end_root_pos])
+                                 + green2(filename[end_root_pos:]))
             for result in results:
                 print(result.rstrip())
 
             if replace is not None:
-                with open(f, 'w') as fichier:
+                with open(filename, 'w') as fichier:
                     for l in lignes:
                         fichier.write(l)
 
