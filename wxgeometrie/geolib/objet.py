@@ -22,7 +22,7 @@
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import re, math, types
-from types import FunctionType, BuiltinFunctionType, TypeType
+from types import FunctionType, BuiltinFunctionType
 
 import numpy
 
@@ -455,7 +455,7 @@ class BaseArgument(object):
             # sous forme de chaine. À la première utilisation, il est converti.
             if isinstance(self.defaut, str):
                 self.defaut = eval(self.defaut, G)
-            if isinstance(self.defaut, (FunctionType, BuiltinFunctionType, TypeType)):
+            if isinstance(self.defaut, (FunctionType, BuiltinFunctionType, type)):
                 value._Ref__objet = self.defaut()
             else:
                 value._Ref__objet = self.defaut

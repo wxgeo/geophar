@@ -29,7 +29,7 @@ from keyword import kwlist
 from random import choice
 from string import letters
 from math import pi as PI, e as E
-from types import MethodType, GeneratorType, TypeType
+from types import MethodType, GeneratorType
 from operator import attrgetter
 import re
 import time
@@ -380,7 +380,7 @@ class Dictionnaire_objets(dict):
                 return
 
             # 'A = Point' est un alias de 'A = Point()'
-            elif isinstance(valeur, TypeType) and issubclass(valeur, Objet):
+            elif isinstance(valeur, type) and issubclass(valeur, Objet):
                 valeur = valeur()
 
             # Par convénience, certains types sont automatiquement convertis :
