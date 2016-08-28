@@ -39,7 +39,7 @@ def command(string, quiet=True):
     out.close()
     if not quiet:
         print("Commande '%s' executee." % string)
-    return output
+    return output.decode()
 
 def verifier(fichier):
     # On vérifie que le fichier est bien déclaré en utf-8
