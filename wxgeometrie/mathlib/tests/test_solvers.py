@@ -10,15 +10,22 @@ from wxgeometrie.mathlib.solvers import resoudre, positif, ensemble_definition
 
 #VERBOSE = False
 
-from tools.testlib import assertEqual
+from tools.testlib import assertEqual, assertEqualAny
 
 #~ def assertEqual(x, y):
     #~ if x != y:
         #~ print "ERREUR:", repr(x), "!=", repr(y)
     #~ assert(x == y)
 
+def _red(s):
+    return '\033[0;31m' + s + '\033[0m'
+
 def assert_resoudre(x, y):
-    assertEqual(str(resoudre(x)), y)
+    if not isinstance(y, (list, tuple, set)):
+        y = [y]
+    if not assertEqualAny(str(resoudre(x)), y, _raise=False):
+        print(_red('-> Test failed for %s' % repr(x)))
+        assert False
 
 def assert_positif(x, y):
     assertEqual(str(positif(x)), y)
@@ -32,7 +39,7 @@ def test_resoudre():
     assert_resoudre("(x>4 et x<7) ou (x/2-1>=3)", "]4;7[U[8;+oo[")
     assert_resoudre("(2)*x>0", "]0;+oo[")
     assert_resoudre("2*x+3>5*x-4 et 3*x+1>=4*x-4", ']-oo;7/3[')
-    assert_resoudre("2*x+3*y=4 et 4*x-2*y=1", "{x: 11/16, y: 7/8}")
+    assert_resoudre("2*x+3*y=4 et 4*x-2*y=1", ["{x: 11/16, y: 7/8}", "{y: 7/8, x: 11/16}"])
     assert_resoudre("ln(x)<ln(-2*x+1)", "]0;1/3[")
     assert_resoudre("exp(x^2)-x^2-1>=0", "]-oo;+oo[")
     assert_resoudre("x*(sqrt(64-x^2))=32", "{4*sqrt(2)}")
@@ -51,7 +58,7 @@ def test_resoudre_substitution():
 def test_resoudre_puissances():
     assert_resoudre('sqrt(x)>4', ']16;+oo[')
     assert_resoudre('x^2.3>4', ']2^(20/23);+oo[')
-    assert_resoudre('-3*x^2.3>4', '{}')
+    assert_resoudre('-3*x^2.3>4', ['{}', 'Ø'])
 
 def test_sqrt():
     assert_resoudre('x+sqrt(x)>4', ']-sqrt(17)/2 + 9/2;+oo[')
