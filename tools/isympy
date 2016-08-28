@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # XXX: Don't put a newline here, or it will add an extra line with
 # isympy --help

@@ -45,7 +45,7 @@ def verifier(fichier):
     # On vérifie que le fichier est bien déclaré en utf-8
     with open(fichier, 'rU') as f:
         s = f.read(1000)
-        pos = (22 if s.startswith('#!/usr/bin/env python') else 0)
+        pos = (22 if s.startswith('#!/usr/bin/env python3') else 0)
         if not s.startswith(START, pos):
             return [fichier]
     # On vérifie qu'il est réellement en utf-8 (ou en ascii)

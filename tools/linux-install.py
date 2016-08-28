@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 #    WxGeometrie
@@ -109,7 +109,7 @@ command(update_mime)
 cd(_module_path)
 
 with open('linux-uninstall.py', 'w') as f:
-    f.write('#!/usr/bin/env python\n')
+    f.write('#!/usr/bin/env python3\n')
     f.write('# -*- coding: utf-8 -*-\n')
     f.write('from scriptlib import *\n')
     f.write('rm(%s)\n' % repr(join(locations['desktop_path'], 'geophar.desktop')))
