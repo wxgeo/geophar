@@ -56,7 +56,13 @@ class LocalDict(dict):
             else:
                 if key == len(key)*'_':
                     return self.globals['ans'](-len(key))
-        return self.globals.get(key, sympy.__dict__.get(key, Symbol(key)))
+        if key in self.globals:
+            return self.globals[key]
+        elif key in sympy.__dict__:
+            return sympy.__dict__[key]
+        else:
+            return Symbol(key)
+
 
     def __setitem__(self, name, value):
         # Pour éviter que l'utilisateur redéfinisse pi, i, e, etc. par mégarde.
@@ -115,7 +121,7 @@ class Interprete(object):
         # Dictionnaire global (qui contient les fonctions, variables et constantes prédéfinies).
         self.globals = vars(end_user_functions).copy()
         self.globals.update({
-                "__builtins__": None,
+                "__builtins__": {},
                 "Fonction": Fonction,
                 "Matrice": Matrix,
                 "Temps": Temps,
@@ -304,12 +310,16 @@ class Interprete(object):
         variables = self.globals.copy()
         variables.update(self.locals)
         # La fonction traduire_formule de la librairie formatage permet d'effectuer un certain nombre de conversions.
+        if self.verbose or (self.verbose is None and param.debug):
+            print('Avant traduction: %s' % repr(formule))
         formule = traduire_formule(formule, fonctions = variables,
                         OOo = self.formatage_OOo,
                         LaTeX = self.formatage_LaTeX,
                         simpify = self.simpify,
                         verbose = self.verbose,
                         )
+        if self.verbose or (self.verbose is None and param.debug):
+            print('Après traduction: %s' % repr(formule))
 
         formule = re.sub("(?<![A-Za-z0-9_])(resous|solve)[(]", "resoudre(", formule)
         i = formule.find("resoudre(")

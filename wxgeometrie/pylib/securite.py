@@ -102,13 +102,13 @@ def expression_affectable(chaine):
 # exec(string, dico)
 
 def eval_restricted(s, dico_perso = None):
-    """eval_restricted(s) évalue s dans un contexte vierge et sécurisé.
+    """eval_restricted(s) évalue s dans un contexte vierge et légèrement sécurisé.
 
     Toutes les fonctions disponibles par défaut sont filtrées.
 
     Note: eval_restricted est le plus securisée possible, mais contrairement
-    à eval_safe, il utilise la fonction eval ; il peut donc y avoir des failles
-    de sécurité. Merci de m'en informer.
+    à eval_safe, il utilise la fonction eval ; il existe donc forcément des
+    failles de sécurité.
     """
     dico = {"rand": module_random.random}
     dico.update(dictionnaire_builtins) # supprime certaines fonctions par defaut (en les redefinissant)
@@ -135,7 +135,7 @@ def eval_safe(s):
     NB2: eval_safe est récursif (il peut lire des listes de tuples de ...).
 
     NB3: eval_safe est parfaitement securisé, car il ne fait (presque) jamais appel à une instruction eval.
-    Contrairement à la fonction eval_restricted, qui est 'probablement' securisée."""
+    Contrairement à la fonction eval_restricted, qui est 'légèrement' securisée."""
 
     s = s.strip()
 
@@ -152,10 +152,10 @@ def eval_safe(s):
 
     if len(s) > 1 and s[0] == s[-1] and s[0] in ("'", '"'):    # chaine
         # s est évalué dans un contexte parfaitement vierge.
-        return eval(s, {"__builtins__": None}, {"__builtins__": None})
+        return eval(s, {"__builtins__": {}}, {"__builtins__": {}})
 
     if len(s) > 2 and s[0] == "u" and s[1] == s[-1] and s[1] in ("'", '"'): #unicode
-        return eval(s, {"__builtins__": None}, {"__builtins__": None}) # idem
+        return eval(s, {"__builtins__": {}}, {"__builtins__": {}}) # idem
 
     if s == "None":
         return None

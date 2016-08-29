@@ -69,7 +69,7 @@ def importer_module(nom_module):
             wxgeometrie = __import__(param_pth, level=2)
             panel._param_ = eval(param_pth)
             copie = panel._param_.__dict__.copy()
-            copie.pop("__builtins__", None)
+            copie.pop("__builtins__", {})
             setattr(panel._param_, "_parametres_par_defaut", copie)
             path = path2(param.emplacements['preferences'] + "/" + nom_module + "/parametres.xml")
             if param.sauver_preferences and param.charger_preferences and os.path.exists(path):

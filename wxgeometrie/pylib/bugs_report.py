@@ -27,7 +27,7 @@ from .infos import informations_configuration
 def rapporter(titre='', auteur='', email='', description='', historique='',
               log='', config='', fichier=''):
     parametres = param.__dict__.copy()
-    parametres.pop("__builtins__", None)
+    parametres.pop("__builtins__", {})
     parametres = "\n".join(str(key) + " = " + repr(val) for key, val in parametres.items())
 
     data = {

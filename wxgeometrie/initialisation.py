@@ -231,7 +231,7 @@ if getattr(sys, '_launch_geophar', False):
 
             # On sauvegarde la valeur des paramètres par défaut.
             copie = param.__dict__.copy()
-            copie.pop("__builtins__", None)
+            copie.pop("__builtins__", {})
             setattr(param, "_parametres_par_defaut", copie)
 
             # Mise à jour des paramètres en fonction des préférences de l'utilisateur.

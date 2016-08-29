@@ -216,6 +216,8 @@ def test_session():
 
     # Test des générateurs
     i.evaluer('f(x)=x+3')
+    # La ligne suivante doit simplement s'exécuter sans erreur.
+    i.evaluer('[f for j in range(1, 11)]')
     i.evaluer('[f(j) for j in range(1, 11)]')
     assertDernier(i, '[4, 5, 6, 7, 8, 9, 10, 11, 12, 13]')
     i.evaluer('tuple(i for i in range(7))')

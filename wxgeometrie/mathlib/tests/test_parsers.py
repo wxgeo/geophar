@@ -20,6 +20,7 @@ liste_fonctions = [key for key in universal_functions.__dict__ if "_" not in key
 liste_fonctions.append("limite")
 liste_fonctions.append("log10")
 liste_fonctions.append("mat")
+liste_fonctions.append('range')
 
 
 def assert_formule(x, y, OOo, LaTeX):
@@ -116,18 +117,21 @@ def test_tous_modes():
     # Ne pas rajouter de * devant les parenthèses d'une méthode
     assert_all("A.transpose()", "A.transpose()")
     assert_all("[j for j in liste]", "[j for j in liste]")
-    # Texte entre guillemets "texte" ou """texte""" inchangé.
-    assert_all('"ok"', '"ok"')
-    assert_all('"x(x+1)" x(x+1) """x(x+1) " """', '"x(x+1)"x*(x+1)"""x(x+1) " """')
-    assert_all(r'"\""', r'"\""')
-    assert_all(r'"""\"+1\" ici, et non \"+n\""""', r'"""\"+1\" ici, et non \"+n\""""')
     # Caractères unicode
     assert_all("\u2013x\u22123\u00D7y\u00F7z²", "-x-3*y/z**2")
     # * entre un flottant et une parenthese
     assert_all(".015(x-50)^2-20", ".015*(x-50)**2-20")
     assert_all("-1.015 (x-50)", "-1.015*(x-50)")
     assert_all('5|x+3|+1-|2x|', '5*abs(x+3)+1-abs(2*x)')
+    assert_all('[f for j in range(1, 11)]', '[f for j in range(1,11)]')
 
+def test_texte():
+    # Texte entre guillemets "texte" ou """texte""" inchangé.
+    assert_all("'1.2345'", "'1.2345'")
+    assert_all('"ok"', '"ok"')
+    assert_all('"x(x+1)" x(x+1) """x(x+1) " """', '"x(x+1)"x*(x+1)"""x(x+1) " """')
+    assert_all(r'"\""', r'"\""')
+    assert_all(r'"""\"+1\" ici, et non \"+n\""""', r'"""\"+1\" ici, et non \"+n\""""')
 
 def test_matrice():
     # Rajouter mat() quand il n'y est pas.
@@ -324,3 +328,5 @@ def test_mathtext_parser():
     mathtext_parser("$f'$ est la dérivée")
     mathtext_parser("$1^{er}$ dé")
     mathtext_parser(r"$\left]-\infty;\frac{1}{3}\right]\cup\left[2;5\right[$")
+
+

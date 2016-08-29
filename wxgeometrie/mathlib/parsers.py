@@ -202,7 +202,7 @@ def _ajouter_mult_manquants(formule, fonctions = (), verbose = None, mots_cles =
     # (Si f est un mot-clé (if, then, else, for...), on n'y touche pas.)
     def f2(s):
         l = s.split()
-        if l[0] in mots_cles:
+        if any((elt in mots_cles) for elt in l):
             return s
         elif l[0] in fonctions:
             return l[0] + "(" + l[1] + ")"
@@ -455,7 +455,7 @@ def traduire_formule(formule='', fonctions=(), OOo=True, LaTeX=True,
         formule = regsub("\Wsup\W", formule, lambda s: (s[0] + '**' + s[-1]).strip())
         formule = formule.replace('infinity', 'oo')
 
-    # Conversion des | | **nom imbriqués** en abs().
+    # Conversion des | | **non imbriqués** en abs().
     # NB: il est impossible de convertir des | | imbriqués, car certaines
     # expressions sont ambigues, par exemple |x|y|z| peut être compris comme
     # abs(x)*y*abs(z) ou abs(x*abs(y)*z).

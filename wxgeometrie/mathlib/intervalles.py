@@ -548,7 +548,7 @@ def conversion_chaine_ensemble(chaine, utiliser_sympy = False):
         else:
             return Symbol(nom)
     # À faire en dernier (remplace sympy.Union par intervalles.Union).
-    dico.update({"__builtins__": None,
+    dico.update({"__builtins__": {},
             "Intervalle": Intervalle,
             "Union": Union,
             "oo": oo,
