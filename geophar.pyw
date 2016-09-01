@@ -29,11 +29,6 @@ from codecs import getwriter
 import sys, os
 from os.path import dirname, realpath
 
-if sys.platform == 'win32':
-    sys.stdout = getwriter('cp850')(sys.stdout)
-else:
-    sys.stdout = getwriter('utf8')(sys.stdout)
-
 if getattr(sys, 'frozen', False):
     application_path = dirname(sys.executable)
 else:

@@ -31,7 +31,7 @@ import subprocess
 
 # ----- User config -----
 IGNORE = ('*tmp_*', '*(OLD|BAZAR)*', '*sympy/*', '*modules/traceur/tableau.py',
-          '*/(pyshell|idle).pyw')
+          '*/(pyshell|idle).pyw', '*/rpdb2.py')
 DEFAULT_EDITOR = 'geany'
 # XXX: move this outside the script
 # ------------------------

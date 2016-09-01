@@ -122,8 +122,8 @@ class Licence(QWidget):
         sizer = QVBoxLayout()
 
         texte = QTextEdit(self)
-        with open(path2("%/wxgeometrie/doc/license.txt"), "r") as f:
-            msg = f.read().decode("utf8")
+        with open(path2("%/wxgeometrie/doc/license.txt"), "r", encoding="utf8") as f:
+            msg = f.read()
         texte.setPlainText(msg)
         texte.setMinimumHeight(500)
         texte.setReadOnly(True)
@@ -144,8 +144,8 @@ class Notes(QWidget):
         sizer = QVBoxLayout()
 
         texte = QTextEdit(self)
-        with open(path2("%/wxgeometrie/doc/changelog.txt"), "r") as f:
-            msg = f.read().decode("utf8").replace('\n', '<br>')
+        with open(path2("%/wxgeometrie/doc/changelog.txt"), 'r', encoding='utf8') as f:
+            msg = f.read().replace('\n', '<br>')
         titre = "<b>Changements apportés par la version courante (%s) :</b>" % param.version
         msg = '<br>'.join((titre, '', msg))
         texte.setHtml(msg)

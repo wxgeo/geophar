@@ -106,7 +106,7 @@ if getattr(sys, '_launch_geophar', False):
 
     class SortieTemporaire(list):
         def write(self, chaine):
-            self.append(uu(chaine).encode(param.encodage))
+            self.append(chaine)
 
 
     class SortiesMultiples(object):
@@ -117,17 +117,11 @@ if getattr(sys, '_launch_geophar', False):
             self.total = 0
 
         def write(self, chaine):
-            uni = uu(chaine)
-            chaine = uni.encode(param.encodage)
-    #        default_out = (sys.__stdout__ if not param.py2exe else sys.py2exe_stderr)
-            # Sous Windows, l'encodage se fait en cp1252, sauf dans console où cp850 est utilisé !
-    #        default_out.write(chaine if plateforme != 'Windows' else uni.encode('cp850'))
-            # Sous Windows, l'encodage se fait en cp1252, sauf dans console où cp850 est utilisé !
-            sys.__stdout__.write(chaine if plateforme != 'Windows' else uni.encode('cp850'))
+            sys.__stdout__.write(chaine)
 
             self.total += len(chaine)
             if self.total - len(chaine) < param.taille_max_log <= self.total:
-                chaine = "Sortie saturée !".encode(param.encodage)
+                chaine = "Sortie saturée !"
             for sortie in self.obligatoires:
                 sortie.write(chaine)
             if param.debug:
@@ -184,7 +178,7 @@ if getattr(sys, '_launch_geophar', False):
         try:
             sys.stdout.facultatives.append(SortieTemporaire())
             fichier_log = open(log_filename, 'w')
-            fichier_log.write(NOMPROG.encode(param.encodage) + " version " + param.version + '\n')
+            fichier_log.write(NOMPROG + " version " + param.version + '\n')
             fichier_log.write(time.strftime("%d/%m/%Y - %H:%M:%S") + '\n')
             sys.stdout.obligatoires.append(fichier_log)
         except IOError:

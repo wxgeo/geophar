@@ -64,7 +64,7 @@ class FichierGEO(object):
     @property
     def version(self):    return self.infos['version']
     @property
-    def data(self):     return self.exporter().encode(self.encoding)
+    def data(self):     return self.exporter()
 
 
     def importer(self, texte):
@@ -159,7 +159,7 @@ class FichierGEO(object):
                 f = zipfile.ZipFile(path, "w", zipfile.ZIP_DEFLATED)
                 f.writestr("content.geo", contenu)
             else:
-                f = open(path, "w")
+                f = open(path, "w", encoding=self.encoding)
                 f.write(contenu)
         finally:
             if f is not None:

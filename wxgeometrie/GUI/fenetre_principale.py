@@ -50,7 +50,7 @@ class PyOnDemandOutputWindow(QPlainTextEdit):
     def write(self, s):
         self.show()
         self.moveCursor(QTextCursor.End)
-        self.insertPlainText(s.decode(param.encodage)) # again assuming QPlainTextEdit
+        self.insertPlainText(s) # again assuming QPlainTextEdit
 
 
 

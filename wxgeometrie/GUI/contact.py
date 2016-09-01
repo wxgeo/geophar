@@ -183,8 +183,9 @@ vous êtes invités à signaler tout problème rencontré.</i>""", panel)
             # On tente de se connecter directement au tracker.
             # (Le navigateur par défaut est susceptible d'avoir des paramètres proxy correctement renseignés).
 
-            data = urlencode({'item_summary': self.titre.text().encode('utf8'),
-                            'detailed_desc': self.commentaire.toPlainText().encode('utf8'),
-                            'anon_email': self.mail.text().encode('utf8')})
+            data = urlencode({'item_summary': self.titre.text(),
+                            'detailed_desc': self.commentaire.toPlainText(),
+                            'anon_email': self.mail.text()},
+                            encoding='utf8')
             open_new_tab("http://wxgeo.free.fr/tracker/?do=newtask&project=1&" + data)
 
