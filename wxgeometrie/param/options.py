@@ -29,6 +29,7 @@
 # ['item1', 'blabla2', ...] -> Choice
 
 from copy import deepcopy
+from io import IOBase as file
 
 from .modules import modules as _modules, descriptions_modules
 
