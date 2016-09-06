@@ -24,7 +24,7 @@
 from xml.dom.minidom import parseString
 from xml.parsers.expat import ExpatError
 import tarfile, os, zipfile, re
-from io import StringIO
+from io import BytesIO
 
 from .filtres import filtre_versions_anterieures
 from ..pylib import print_error, eval_safe, removeend
@@ -143,7 +143,7 @@ class FichierGEO(object):
         return contenu
 
 
-    def ecrire(self, path, zip = False):
+    def ecrire(self, path, compressed=False):
         """Ecrit dans un fichier dont l'adresse est donnée par 'path'.
 
         L'encodage est fixé par 'self.encoding'.
@@ -154,30 +154,34 @@ class FichierGEO(object):
         rep = os.path.split(path)[0]
         if not os.path.exists(rep):
             os.makedirs(rep)
-        try:
-            if zip:
-                f = zipfile.ZipFile(path, "w", zipfile.ZIP_DEFLATED)
+        if zip:
+            with zipfile.ZipFile(path, "w", zipfile.ZIP_DEFLATED) as f:
                 f.writestr("content.geo", contenu)
-            else:
-                f = open(path, "w", encoding=self.encoding)
+        else:
+            with open(path, "w", encoding=self.encoding) as f:
                 f.write(contenu)
-        finally:
-            if f is not None:
-                f.close()
 
 
-    def ouvrir(self, path, zip = None):
+    def ouvrir(self, path, compressed=None):
         """Retourne un objet FichierGEO à partir du fichier dont l'adresse est donnée par 'path'.
 
         Si l'attribut 'zip' n'est pas fixé, la détection est automatique."""
 
-        f = None
         if not os.path.exists(path):
             if param.debug:
                 print('Incorrect path: ' + repr(path))
             return None, "Le fichier n'existe pas."
+
+        if compressed is None:
+            compressed = zipfile.is_zipfile(path)
+
         try:
-            f = open(path, "rU")
+            if compressed:
+                with zipfile.ZipFile(path, "r") as f:
+                    texte = f.read("content.geo").decode('utf8')
+            else:
+                with open(path, "r", encoding=self.encoding) as f:
+                    texte = f.read()
         except IOError:
             print_error()
             return None, "L'accès au fichier a été refusé."
@@ -187,18 +191,7 @@ class FichierGEO(object):
         except Exception:
             print_error()
             return None, "Impossible d'ouvrir le fichier."
-        try:
-            texte = f.read()
-        finally:
-            f.close()
-        try:
-            parseString(texte)
-        except ExpatError:
-            try:
-                f = zipfile.ZipFile(path, "r")
-                texte = f.read("content.geo")
-            finally:
-                f.close()
+
         self.importer(texte)
 
         version = self.version_interne()
@@ -278,14 +271,15 @@ class FichierSession(object):
         rep = os.path.split(path)[0]
         if not os.path.exists(rep):
             os.makedirs(rep)
-        tar = tarfile.open(path, mode = 'w:' + ('gz' if compresser else ''))
 
-        def _ajouter(titre, data):
+        def _ajouter(titre, content):
             info = tarfile.TarInfo(titre)
+            data = content.encode('utf8')
             info.size = len(data)
-            tar.addfile(info, StringIO(data))
+            tar.addfile(info, BytesIO(data))
 
-        try:
+        mode = 'w:' + ('gz' if compresser else '')
+        with tarfile.open(path, mode=mode) as tar:
             fichier_info = FichierGEO(type = 'Session WxGeometrie', module = 'main')
             for key, val in self.infos.items():
                 fichier_info.ajouter(key, None, repr(val))
@@ -293,8 +287,6 @@ class FichierSession(object):
             for module, fichiers in self.fichiers.items():
                 for i, fichier in enumerate(fichiers):
                     _ajouter(module + str(i) + '.geo', fichier.data)
-        finally:
-            tar.close()
 
 
     def ouvrir(self, path):
@@ -304,9 +296,8 @@ class FichierSession(object):
         try:
             for member_info in tar.getmembers():
                 nom = member_info.name
-                f = tar.extractfile(member_info)
-                data = f.read()
-                f.close()
+                with tar.extractfile(member_info) as f:
+                    data = f.read().decode('utf8')
                 fichier = FichierGEO().importer(data)
                 if nom == 'session.info':
                     for key in fichier.contenu:

@@ -117,7 +117,7 @@ class Panel_simple(QWidget):
             self._sauvegarder(fgeo, **kw)
             if nom_fichier is None:
                 return fgeo
-            fgeo.ecrire(nom_fichier, zip = nom_fichier.endswith(".geoz"))
+            fgeo.ecrire(nom_fichier, compressed=nom_fichier.endswith(".geoz"))
             self.message("Sauvegarde effectuée.")
         except Exception:
             self.message("Echec de la sauvegarde.")
