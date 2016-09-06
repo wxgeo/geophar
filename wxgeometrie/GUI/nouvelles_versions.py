@@ -81,9 +81,8 @@ class Gestionnaire_mises_a_jour(QObject):
         try:
             if param.debug:
                 app.safe_print("Checking %s..." % self.url_version)
-            f = urlopen(self.url_version)
-            version = f.read(60)
-            f.close()
+            with urlopen(self.url_version) as f:
+                version = f.read(60).decode('utf8')
             if len(version) > 50 or not version.replace(" ", "").replace(".", "").isalnum():
                 raise Exception("Incorrect file format, unable to find current version.")
             success = True
