@@ -22,6 +22,7 @@
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os, sys
+from importlib import import_module
 
 from ..GUI.menu import MenuBar
 from ..GUI.panel import Panel_simple, Panel_API_graphique
@@ -36,8 +37,8 @@ def importer_module(nom_module):
     if param.verbose:
         print("Import du module '%s'..." %nom_module)
     try:
-        wxgeometrie = __import__('wxgeometrie.modules.' + nom_module, level=2)
-        module = getattr(wxgeometrie.modules, nom_module)
+        module = import_module('wxgeometrie.modules.%s' % nom_module)
+
         if hasattr(module, '_menu_'):
             # Module déjà importé -> rien à faire.
             return module
@@ -65,9 +66,7 @@ def importer_module(nom_module):
             raise IndexError("Aucune classe n'hérite de Panel_simple dans le module %s." %nom_module)
         panel = module._panel_ = panels[0]
         try:
-            param_pth = 'wxgeometrie.modules.%s._param_' %nom_module
-            wxgeometrie = __import__(param_pth, level=2)
-            panel._param_ = eval(param_pth)
+            panel._param_ = import_module('wxgeometrie.modules.%s._param_' %nom_module)
             copie = panel._param_.__dict__.copy()
             copie.pop("__builtins__", {})
             setattr(panel._param_, "_parametres_par_defaut", copie)

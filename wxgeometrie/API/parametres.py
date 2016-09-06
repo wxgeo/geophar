@@ -66,7 +66,7 @@ def actualiser_module(module, fichier):
             for key in parametres:
                 setattr(module, key, eval_safe(parametres[key][-1]))
         except:
-            print(module, key)
+            print("Module %s: impossible de lire le paramètre %s !" % (module, repr(key)))
             print_error()
 
 

@@ -43,7 +43,7 @@ time_verification = time_version
 # Détection de la configuration
 repertoire = os.getcwd() # memorise le repertoire de lancement
 python_version = float(sys.version[:3])
-python_version_info = sys.version_info
+python_version_info = tuple(sys.version_info)
 frozen = hasattr(sys, 'frozen') # le programme tourne-t-il en version "executable" ?
 
 # Paramètres détectés dynamiquement lors de l'exécution :

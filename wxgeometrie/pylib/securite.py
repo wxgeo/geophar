@@ -181,4 +181,4 @@ def eval_safe(s):
         return dict
 
 
-    raise TypeError("types int, str, float, bool, ou None requis (ou liste ou tuple de ces types)")
+    raise TypeError("%s: types int, str, float, bool, ou None requis (ou liste ou tuple de ces types)" % repr(s))
