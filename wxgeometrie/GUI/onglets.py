@@ -330,9 +330,11 @@ class Onglets(QTabWidget):
     # Sauvegardes, export
     # -------------------
 
-    filtres_save = ("Fichiers " + NOMPROG + " (*.geo);;"
-                    "Fichiers " + NOMPROG + " compressés (*.geoz);;"
+    filtres_save = ("Fichiers %s non compressés (*.geo)" % NOMPROG,
+                    "Fichiers %s compressés (*.geoz)" % NOMPROG,
                     "Tous les fichiers (*.*)")
+    filtres_open = ("Tous les fichiers %s (*.geo *.geoz)" % NOMPROG,) + filtres_save
+    filtre_compressed = filtres_save[1]
 
     filtre_session = "Session Géophar (*.geos)"
 
@@ -359,9 +361,11 @@ class Onglets(QTabWidget):
                 dir = param.repertoire
             else:
                 dir = param.rep_save
-        filtre = ("Fichiers %s compressés (*.geoz)" if param.compresser_geo else '')
+        filtre = (self.filtre_compressed if param.compresser_geo else '')
         path, filtre = QFileDialog.getSaveFileNameAndFilter(self, "Enregistrer sous ...",
-                                   os.path.join(dir, fichier), self.filtres_save, filtre)
+                                   os.path.join(dir, fichier), ';;'.join(self.filtres_save), filtre)
+
+        compressed = (filtre == self.filtre_compressed or path.endswith('.geoz'))
 
         if path:
             # Sauvegarde le répertoire pour la prochaine fois
@@ -371,7 +375,7 @@ class Onglets(QTabWidget):
             if param.rep_export is None:
                 param.rep_export = param.rep_save
 
-            self.onglet_actuel.sauvegarder(path)
+            self.onglet_actuel.sauvegarder(path, compressed=compressed)
 
 
     def OpenFile(self, _event=None, detecter_module=True):
@@ -383,9 +387,9 @@ class Onglets(QTabWidget):
             dir = param.repertoire
         else:
             dir = param.rep_open
-        filtre = ("Fichiers %s compressés (*.geoz)" if param.compresser_geo else '')
+        filtre = self.filtres_open[0]
         paths, filtre = QFileDialog.getOpenFileNamesAndFilter(self, "Choisissez un fichier", dir,
-                                             self.filtres_save, filtre)
+                                             ';;'.join(self.filtres_open), filtre)
         if paths:
             # Sauvegarde le répertoire pour la prochaine fois
             param.rep_open = os.path.dirname(paths[0])

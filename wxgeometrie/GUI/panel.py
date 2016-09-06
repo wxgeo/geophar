@@ -71,10 +71,10 @@ class Panel_simple(QWidget):
         self._derniere_signature = None
 
 
-    def message(self, texte = ''):
+    def message(self, texte=''):
         self.parent.parent.message(texte)
 
-    def changer_titre(self, texte = ''):
+    def changer_titre(self, texte=''):
         if param.debug:
             print('Nouveau titre: ' + texte)
         self.parent.parent.titre(texte)
@@ -101,10 +101,10 @@ class Panel_simple(QWidget):
         "Nom de sauvegarde gardé en mémoire."
         return self._nom_fichier
 
-    def sauvegarder(self, nom_fichier='', **kw):
+    def sauvegarder(self, nom_fichier='', compressed=None, **kw):
         if nom_fichier:
             nom_fichier = nom_fichier.strip()
-            extension = ('.geoz' if nom_fichier.endswith('.geoz') else '.geo')
+            extension = ('.geoz' if (compressed or nom_fichier.endswith('.geoz')) else '.geo')
             # Eviter les doubles extensions ('monfichier.geo.geo' par exemple).
             nom_fichier = removeend(nom_fichier, ".geo", ".geoz") + extension
             # Par défaut, on sauvegardera sous le même nom ensuite.
@@ -113,11 +113,13 @@ class Panel_simple(QWidget):
             # Dernier nom utilisé pour sauvegarder.
             nom_fichier = self._nom_fichier or "sauvegarde"
         try:
-            fgeo = FichierGEO(module = self.nom)
+            fgeo = FichierGEO(module=self.nom)
             self._sauvegarder(fgeo, **kw)
             if nom_fichier is None:
                 return fgeo
-            fgeo.ecrire(nom_fichier, compressed=nom_fichier.endswith(".geoz"))
+            if compressed is None:
+                compressed = nom_fichier.endswith(".geoz")
+            fgeo.ecrire(nom_fichier, compressed=compressed)
             self.message("Sauvegarde effectuée.")
         except Exception:
             self.message("Echec de la sauvegarde.")
@@ -147,7 +149,7 @@ class Panel_simple(QWidget):
         À surclasser pour chaque module."""
 
 
-    def param(self, parametre, valeur = no_argument, defaut = False):
+    def param(self, parametre, valeur=no_argument, defaut=False):
         """Renvoie la valeur du paramètre `parametre`.
 
         Recherche la valeur d'un paramètre d'abord dans les paramètres du module
@@ -171,7 +173,7 @@ class Panel_simple(QWidget):
             debug("Module %s: Paramètre %s introuvable." %(self.titre, parametre))
 
 
-    def sauver_preferences(self, lieu = None):
+    def sauver_preferences(self, lieu=None):
         if self._param_ is not None:
             try:
                 if lieu is None:
@@ -183,7 +185,7 @@ class Panel_simple(QWidget):
                 print_error()
 
 
-    def action_effectuee(self, log, signature = None):
+    def action_effectuee(self, log, signature=None):
         if self.log is not None:
             if signature is not None and signature == self._derniere_signature and self.log:
                 self.log[-1] = ('ACTION EFFECTUEE: ' + log)
@@ -225,11 +227,11 @@ class Panel_API_graphique(Panel_simple):
     et pas seulement des bibliothèques, mieux vaut utiliser cette classe.
     Cela concerne essentiellement les modules qui ont besoin de tracer des objets géométriques."""
 
-    def __init__(self, parent, module, BarreOutils = BarreOutils):
+    def __init__(self, parent, module, BarreOutils=BarreOutils):
         Panel_simple.__init__(self, parent, module, menu=False)
 
         # IMPORTANT: contruire toujours dans cet ordre.
-        self.feuilles = Classeur(self, log = self.log)
+        self.feuilles = Classeur(self, log=self.log)
         # En particulier, l'initialisation du canvas nécessite qu'il y ait déjà une feuille ouverte.
         self.canvas = QtCanvas(self)
         # La construction du menu nécessite que self.canvas et self.log
