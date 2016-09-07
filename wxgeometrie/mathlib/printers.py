@@ -119,6 +119,9 @@ class CustomStrPrinter(MyCustomPrinter, StrPrinter):
         StrPrinter.__init__(self, settings)
 
     def _print_str(self, expr):
+        # Ne pas utiliser repr(), car on veut tjs avoir des guillemets doubles
+        # à l'extérieur de la chaîne (pour éviter les confusions avec le ' de
+        # la dérivée).
         return '"%s"' % expr.replace('"', r'\"')
 
     def _print_Exp1(self, expr):
@@ -183,7 +186,7 @@ class CustomStrPrinter(MyCustomPrinter, StrPrinter):
     def doprint(self, expr):
         # Mieux vaut faire la substitution une seule fois dès le départ.
         expr = self._convert_Decim(expr)
-        return StrPrinter.doprint(self, expr) if not isinstance(expr, str) else expr
+        return StrPrinter.doprint(self, expr)
 
 def custom_str(expr, **settings):
     return CustomStrPrinter(settings).doprint(expr)

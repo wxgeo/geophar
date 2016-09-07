@@ -172,7 +172,6 @@ def test_resoudre():
     assert_resoudre('x^3-30x^2+112=0', '{-6 sqrt(7) + 14 ; 2 ; 14 + 6 sqrt(7)}',
                 r'\left\{- 6 \sqrt{7} + 14\,;\, 2\,;\, 14 + 6 \sqrt{7}\right\}')
     # assert_resoudre(r'ln(x^2)-ln(x+1)>1', ']-1;e/2 - sqrt(4 e + exp(2))/2[U]e/2 + sqrt(4 e + exp(2))/2;+oo[')
-    assert_resoudre(r'ln(x^2)-ln(x+1)>1', ']-1 ; -sqrt(e + 4)exp(1/2)/2 + e/2[U]e/2 + sqrt(e + 4)exp(1/2)/2 ; +oo[')
     assert_resoudre('0.5 exp(-0.5 x + 0.4)=0.5', '{4/5}')
     assert_resoudre('x > 9 et x < 9', '{}', r'\varnothing')
 
@@ -180,8 +179,8 @@ def test_resoudre():
 #TODO: @SLOW wrapper should be defined, and the test only run in some circonstances
 # (for ex, a 'slow' keyword in tools/tests.py arguments)
 def test_longs():
-    # NB: Test très long (15-20 secondes) !
-    pass
+    # NB: Tests relativement longs (> 5 secondes environ)
+    assert_resoudre(r'ln(x^2)-ln(x+1)>1', ']-1 ; -sqrt(e + 4)exp(1/2)/2 + e/2[U]e/2 + sqrt(e + 4)exp(1/2)/2 ; +oo[')
 
 def test_approches():
     assert_approche('pi-1', '2,14159265358979324', '2,14159265358979324')
@@ -352,6 +351,19 @@ def test_load_state():
     assertDernier(i, '2/5')
     i.evaluer('_1')
     assertDernier(i, 'x**2')
+
+
+def test_load_state2():
+    i = Interprete(verbose=VERBOSE)
+    etat_interne = \
+"""_ = '2.56'
+
+@derniers_resultats = [
+    "'2.56'",
+    ]"""
+    i.load_state(etat_interne)
+    i.evaluer('_')
+    assertDernier(i, "'2.56'")
 
 
 def test_systeme():
