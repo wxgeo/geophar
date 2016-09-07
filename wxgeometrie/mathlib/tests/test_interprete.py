@@ -45,16 +45,17 @@ def assert_ecriture_scientifique(s, resultat, latex=None, decimales=3, **paramet
 def assertDernier(i, s):
     assertEqual(str(i.derniers_resultats[-1]), s)
 
-def test_exemples_de_base():
-    # Nombres
+def test_exemples_de_base_nombres():
     assert_resultat('2+2', '4', '4')
     assert_resultat('0,1^10', '1,0*10^-10', r'10^{-10}')
-    # Symboles
+
+def test_exemples_de_base_symboles():
     assert_resultat('pi+1+2pi', '1 + 3 pi', '1 + 3 \\pi')
     assert_resultat('oo+5*oo', '+oo')
     assert_resultat('i**2-i', '-1 - i', '-1 - \\mathrm{i}')
     assert_resultat('5e-3', '-3 + 5 e', '-3 + 5 \\mathrm{e}')
-    # Analyse
+
+def test_exemples_de_base_analyse():
     assert_resultat('limite(x^2-x+3, +oo)', '+oo', '+\\infty')
     assert_resultat('derive(x^2+2x-3)', '2 x + 2', '2 x + 2')
     assert_resultat('integre(2x+7)', 'x^2 + 7 x', 'x^{2} + 7 x')
@@ -65,7 +66,9 @@ def test_exemples_de_base():
     assert_resultat('cos x>>taylor', \
                 '1 - x^2/2 + x^4/24 + O(x^5)', \
                r'1 - \frac{x^{2}}{2} + \frac{x^{4}}{24} + \mathcal{O}\left(x^{5}\right)')
-    # Algèbre
+    assert_resultat('limit(x^2-x, oo)', '+oo', '+\infty')
+
+def test_exemples_de_base_algebre():
     assert_resultat('developpe((x-3)(x+7)(2y+x+5))', \
                                     'x^3 + 2 x^2 y + 9 x^2 + 8 x y - x - 42 y - 105', \
                                     'x^{3} + 2 x^{2} y + 9 x^{2} + 8 x y - x - 42 y - 105')
@@ -89,7 +92,8 @@ def test_exemples_de_base():
     assert_resultat('somme(x^2, x, 1, 7)', '140', '140')
     assert_resultat('product(x^2, (x, 1, 7))', '25401600', '25401600')
     assert_resultat('product(x^2;x;1;7)', '25401600', '25401600')
-    assert_resultat('limit(x^2-x, oo)', '+oo', '+\infty')
+
+def test_exemples_de_base_supplementaires():
     assert_resultat('abs(pi-5)', '-pi + 5', r'- \pi + 5')
     assert_resultat('abs(x-5)', 'abs(x - 5)', r'\left|{x - 5}\right|')
     assert_resultat('i(1+i)', r'-1 + i',  r'-1 + \mathrm{i}')
