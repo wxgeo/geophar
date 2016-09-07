@@ -624,5 +624,5 @@ class Calculatrice(Panel_simple):
 
     def EtatInterne(self, event):
         contenu = self.interprete.save_state()
-        h = FenCode(self, "État interne de l'inteprète", contenu, self.interprete.load_state)
+        h = FenCode(self, "État interne de l'interprète", contenu, self.interprete.load_state)
         h.show()

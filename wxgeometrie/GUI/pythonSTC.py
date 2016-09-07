@@ -63,7 +63,7 @@ class PythonSTC(QsciScintilla):
         lexer = QsciLexerPython()
         lexer.setDefaultFont(font)
         self.setLexer(lexer)
-        self.SendScintilla(QsciScintilla.SCI_STYLESETFONT, 1, 'Courier')
+        self.SendScintilla(QsciScintilla.SCI_STYLESETFONT, 1, b'Courier')
 
         # Don't want to see the horizontal scrollbar at all
         # Use raw message to Scintilla here (all messages are documented
