@@ -34,7 +34,8 @@ from .custom_objects import Temps, Fonction, ProduitEntiers, Decim
 from . import sympy_functions
 from ..mathlib import end_user_functions
 from ..pylib import print_error, split_around_parenthesis, securite
-from .parsers import simplifier_ecriture, NBR, traduire_formule, NBR_FLOTTANT
+from .parsers import simplifier_ecriture, NBR, traduire_formule, NBR_FLOTTANT, \
+                     extraire_chaines, injecter_chaines
 from .. import param
 
 
@@ -418,8 +419,11 @@ class Interprete(object):
     def load_state(self, state):
         def evaltry(expr):
             "Evalue l'expression. En cas d'erreur, intercepte l'erreur et retourne None."
-            #XXX: ne pas remplacer à l'intérieur d'une chaîne.
-            expr = re.sub(NBR_FLOTTANT, (lambda x: "Decim('%s')" % x.group()), expr)
+            # Remplacer 1.23 par Decim('1.23'), sauf à l'intérieur d'une chaîne.
+            chaine, sous_chaines = extraire_chaines(expr)
+            chaine = re.sub(NBR_FLOTTANT, (lambda x: "Decim('%s')" % x.group()), chaine)
+            expr = injecter_chaines(chaine, sous_chaines)
+
             name_space = self.globals.copy()
             name_space.update(self.locals)
             try:

@@ -4,10 +4,12 @@ import re
 
 from pytest import XFAIL
 
+from sympy import S
+
 from tools.testlib import assertRaises, assertAlmostEqual, assertEqual
 
 from wxgeometrie.mathlib.interprete import Interprete
-from sympy import S
+from wxgeometrie.mathlib.printers import custom_str
 
 VERBOSE = False
 
@@ -43,7 +45,7 @@ def assert_ecriture_scientifique(s, resultat, latex=None, decimales=3, **paramet
     #~ assert(x == y)
 
 def assertDernier(i, s):
-    assertEqual(str(i.derniers_resultats[-1]), s)
+    assertEqual(custom_str(i.derniers_resultats[-1]), s)
 
 def test_exemples_de_base_nombres():
     assert_resultat('2+2', '4', '4')
@@ -293,7 +295,7 @@ def test_issue_185():
     i = Interprete(verbose=VERBOSE)
     i.evaluer("a=1+I")
     i.evaluer("a z")
-    assertDernier(i, 'z*(1 + I)')
+    assertDernier(i, 'z*(1 + i)')
 
 
 def test_issue_206():
@@ -306,9 +308,9 @@ def test_issue_206():
     ]"""
     i.load_state(etat_interne)
     i.evaluer("-1+\i\sqrt{3}")
-    assertDernier(i, '-1 + sqrt(3)*I')
+    assertDernier(i, '-1 + sqrt(3)*i')
     i.evaluer('-x**2 + 2*x - 3>>factor')
-    assertDernier(i, '-x**2 + 2*x - 3')
+    assertDernier(i, '-x^2 + 2*x - 3')
 
 
 def test_issue_206_bis():
@@ -350,7 +352,7 @@ def test_load_state():
     i.evaluer('_')
     assertDernier(i, '2/5')
     i.evaluer('_1')
-    assertDernier(i, 'x**2')
+    assertDernier(i, 'x^2')
 
 
 def test_load_state2():
@@ -363,7 +365,7 @@ def test_load_state2():
     ]"""
     i.load_state(etat_interne)
     i.evaluer('_')
-    assertDernier(i, "'2.56'")
+    assertDernier(i, '"2.56"')
 
 
 def test_systeme():
