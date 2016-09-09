@@ -781,12 +781,6 @@ def tracer_(booleen = True):
 def property2(fonction):
     return property(fonction, fonction)
 
-# Permet de contourner un bug de exec() sous Python 2.5 lorsque with_statement est activé
-assert "with_statement" not in locals()
-assert "with_statement" not in globals()
-def exec_(s, globals, locals):
-    exec(s, globals, locals)
-
 
 def _archive(string):
     return zlib.compress(string.encode('utf8'))
