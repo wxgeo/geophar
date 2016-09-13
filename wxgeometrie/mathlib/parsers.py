@@ -844,8 +844,9 @@ def latex2mathtext(chaine):
             chaine = chaine.replace(r"\end{bmatrix}", r'}\right)')
             chaine = chaine.replace(r"&", r'\,')
         if r'\left' in chaine:
-            chaine = chaine.replace(r'\left\{', r'\left{')
-            chaine = chaine.replace(r'\right\}', r'\right}')
+            if matplotlib.__version__ < '1.5':
+                chaine = chaine.replace(r'\left\{', r'\left{')
+                chaine = chaine.replace(r'\right\}', r'\right}')
             # Test des crochets (intervalles).
             # mathtext n'accepte pas (matplotlib version 1.2) `\left]` ni `\right[`.
             # Pour des questions d'équilibrage, si l'on détecte
