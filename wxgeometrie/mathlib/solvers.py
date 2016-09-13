@@ -608,7 +608,7 @@ def resoudre(chaine, variables=(), local_dict=None, ensemble='R'):
             # sympy se débrouille bien mieux avec des rationnels
             expression = sympify(expression, rational=True)
         else:
-            expression = eval(expression, local_dict.globals, local_dict)
+            expression = eval(expression, local_dict)
             # sympy se débrouille bien mieux avec des rationnels
             expression = floats2rationals(expression)
         return expression
@@ -720,8 +720,8 @@ def systeme(chaine, variables = (), local_dict = None):
     if local_dict is None:
         evaluer = sympify
     else:
-        def evaluer(expression, local_dict = local_dict):
-            return eval(expression, local_dict.globals, local_dict)
+        def evaluer(expression, local_dict=local_dict):
+            return eval(expression, local_dict)
 
     def transformer(eq):
         gauche, droite = eq.split("=")

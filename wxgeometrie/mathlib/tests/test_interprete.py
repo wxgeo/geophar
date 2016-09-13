@@ -230,8 +230,8 @@ def test_session():
     i.evaluer('[j for j in range(7)]')
     assertDernier(i, '[0, 1, 2, 3, 4, 5, 6]')
 
-    # _11 is an alias for ans(11)
-    i.evaluer('_11 == _')
+    # _12 is an alias for ans(12)
+    i.evaluer('_12 == _')
     assertDernier(i, 'True')
     i.evaluer('_7')
     assertDernier(i, "2*x - 7")
@@ -368,11 +368,21 @@ def test_load_state2():
     assertDernier(i, '"2.56"')
 
 
+def test_resolution_avec_fonction():
+    i = Interprete(verbose=VERBOSE)
+    i.evaluer("f(x)=a*x+1")
+    i.evaluer("resoudre(f(3)=7)")
+    res = i.derniers_resultats[-1]
+    # Le type du résultat est actuellement un ensemble, mais cela pourrait changer à l'avenir.
+    assertEqual(res, {S(2)})
+
+
 def test_systeme():
     i = Interprete(verbose=VERBOSE)
     i.evaluer("g(x)=a x^3+b x^2 + c x + d")
     i.evaluer("resoudre(g(-3)=2 et g(1)=6 et g(5)=3 et g'(1)=0)")
     res = i.derniers_resultats[-1]
+    # Le type du résultat est actuellement un dictionnaire, mais cela pourrait changer à l'avenir.
     assert isinstance(res, dict)
     assertEqual(res, {S('a'): S(1)/128, S('b'): -S(31)/128, S('c'): S(59)/128, S('d'): S(739)/128})
 
@@ -417,14 +427,14 @@ def test_issue_263():
     i.evaluer("A = mat([[1;2];[3;4]])")
     i.evaluer("B = mat(2)")
     i.evaluer("C = A*B")
-    assert 'C' in i.vars()
+    assert 'C' in i.vars
     r, l = i.evaluer("C")
     assertEqual(r, "Matrix([\n[1 ; 2] ; \n[3 ; 4]])")
     etat_interne = i.save_state()
     i.clear_state()
-    assert 'C' not in i.vars()
+    assert 'C' not in i.vars
     i.load_state(etat_interne)
-    assert 'C' in i.vars()
+    assert 'C' in i.vars
     r, l = i.evaluer("C")
     assertEqual(r, "Matrix([\n[1 ; 2] ; \n[3 ; 4]])")
     i.evaluer("A=[[0,1 ; 0,8]; [0,5; 0,5]]")
@@ -456,6 +466,12 @@ def test_issue_278():
     i.evaluer('del delta')
     r, l = i.evaluer('delta')
     assertEqual(r, 'delta')
+
+def test_sous_chaines_intactes():
+    i = Interprete(verbose=VERBOSE)
+    sous_chaine = '1.25;2.36,45'
+    i.evaluer("a='%s'" % sous_chaine)
+    assertEqual(i.vars['_'], sous_chaine)
 
 
 def test_proba_stats_basic_API():
