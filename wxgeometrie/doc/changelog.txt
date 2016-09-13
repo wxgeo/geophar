@@ -1,7 +1,12 @@
-Géophar version 16.08.2
-Publiée le 25/08/2016
+Géophar version 16.08.3
+Publiée le 13/09/2016
 
 
+* Fix small issue with matplotlib version 1.5 (incorrect LaTeX rendering).
+* `reduce()` is not a builtin function anymore in python3.
+* Code modernization: remove unneeded .keys().
+* Fix errors when accessing polygons properties.
+* Version 16.08.2
 * Installer for Windows is working at last !
 * Improve `compilation` on windows.
 * Version 16.08.1
