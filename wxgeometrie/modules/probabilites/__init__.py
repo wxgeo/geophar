@@ -33,6 +33,7 @@ from ...GUI.proprietes_objets import Proprietes
 from ...geolib import Segment, Texte, Point
 from ... import param
 from .repetition import DialogRepetition, repetition_experiences
+from ...mathlib.parsers import VAR
 
 
 class ProbaMenuBar(MenuBar):
@@ -208,6 +209,8 @@ omega
                     if texte.startswith("&"):
                         texte = r"\overline{" + texte[1:] + "}"
                     texte = texte.replace("&", r"\overline ")
+                    # P(\overline A) -> P(\overline{A})
+                    texte = re.sub("(\\\\overline)[ ]+(%s)" % VAR, lambda m:'%s{%s}' % (m.group(1), m.group(2)), texte)
                     texte = "$" + texte + "$" if texte[0] != '$' else texte
                     if param.latex:
                         texte = "$" + texte + "$" # passage en mode "display" de LaTeX
