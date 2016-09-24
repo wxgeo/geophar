@@ -40,8 +40,9 @@ def edit(file_and_line, editor=DEFAULT_EDITOR):
     "Edit specified file at specified line, with editor."
 
     file_and_line = file_and_line.strip()
+    #print(repr(file_and_line))
     try:
-        m = re.search('[Ff]ile "?([^"]+[.]py)"?, line ([0-9]+)', file_and_line)
+        m = re.search('[Ff]ile "?([^",]+)"?, line ([0-9]+)', file_and_line)
         if m is None:
             # Format pyflakes
             m = re.search('([^"]+[.]py):([0-9]+)', file_and_line)
