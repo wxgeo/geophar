@@ -185,7 +185,7 @@ def gs(chaine='', case=True, exclude_comments=True, extensions=(".py", ".pyw"),
                             return red("Maximum output exceeded...!")
             except UnicodeDecodeError:
                 correct_encoding = False
-                print(red("ERROR: Can't read %s, encoding isn't %s." % (f, sys.getdefaultencoding())))
+                print(red("ERROR:") + " Can't read %s, encoding isn't %s." % (filename, sys.getdefaultencoding()))
 
         if correct_encoding and results:
             print(" \u2022 in " + green(filename[:end_root_pos])
