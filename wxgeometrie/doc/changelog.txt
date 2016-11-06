@@ -1,7 +1,10 @@
-Géophar version 16.08.3
-Publiée le 13/09/2016
+Géophar version 16.08.4
+Publiée le 06/11/2016
 
 
+* Fix dll issue on Windows.
+* [probas] Accept &B syntax (for \overline{B}) more widely.
+* Version 16.08.3
 * Fix small issue with matplotlib version 1.5 (incorrect LaTeX rendering).
 * `reduce()` is not a builtin function anymore in python3.
 * Code modernization: remove unneeded .keys().
