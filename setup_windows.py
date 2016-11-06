@@ -189,6 +189,8 @@ mkdir('dll')
 mv('*.pyd', 'dll')
 mv('*.dll', 'dll')
 mv('*.manifest', 'dll')
+# python27.dll doit rester dans le répertoire principal.
+mv('dll/python27.dll', 'python27.dll')
 
 # On génère les fichiers .pyc (accélère le premier démarrage du logiciel).
 compileall.compile_dir('wxgeometrie', maxlevels=50)
