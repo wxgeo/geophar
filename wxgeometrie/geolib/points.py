@@ -126,11 +126,13 @@ class Point_generique(Objet_avec_coordonnees):
             return Point_final(self, [y])
         raise TypeError("vecteur attendu")
 
+    # <A SUPPRIMER note="Accepter la syntaxe A->B dans l'interprète par contre.">
     # A>B est un alias de Vecteur(A,B) - attention aux parentheses pour 2*(A>B) !
     # A ne pas utiliser en interne (code peu lisible)
     def __gt__(self, point2):
         from .vecteurs import Vecteur
         return Vecteur(self, point2)
+    # </A SUPPRIMER>
 
 
     def _distance_inf(self, x, y, d):
