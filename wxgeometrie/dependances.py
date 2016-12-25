@@ -31,13 +31,13 @@ import sys, imp, platform
 from .version import NOMPROG
 
 # Les valeurs sont les noms des paquets sous Debian/Ubuntu.
-dependances = {'PyQt4': 'python-qt4',
-               'matplotlib': 'python-matplotlib',
-               'scipy': 'python-scipy',
-               'numpy': 'python-numpy',
-               'mpmath': 'python-mpmath',
-               'sip': 'python-sip',
-               'PyQt4.Qsci': 'python-qscintilla2',
+dependances = {'PyQt4': 'python3-pyqt4',
+               'matplotlib': 'python3-matplotlib',
+               'scipy': 'python3-scipy',
+               'numpy': 'python3-numpy',
+               'mpmath': 'python3-mpmath',
+               'sip': 'python3-sip',
+               'PyQt4.Qsci': 'python3-pyqt4.qsci',
                }
 
 python_version_min = (3, 5)
