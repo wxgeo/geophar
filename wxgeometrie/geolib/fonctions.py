@@ -33,7 +33,7 @@ from ..mathlib.intervalles import preformatage_geolib_ensemble, formatage_ensemb
 from ..mathlib.parsers import VAR_NOT_ATTR, traduire_formule
 from .variables import Variable
 
-class Fonction(Objet_numerique):
+class Fonction(Objet):
     """Une fonction.
 
     Une fonction numérique à une variable; l'argument est une expression sous forme de chaine de caractères.
