@@ -1088,7 +1088,7 @@ class PrevisualisationPolygone(Polygone_generique):
         for pt in self.__points:
             pt.enfants.remove(self)
         for pt in points:
-            pt.enfants.append(self)
+            pt.enfants.add(self)
         # NOTE: self.__points doit être de type tuple et surtout pas liste
         # (une éventuelle modification de la liste ne gererait pas correctement les vassaux)
         self.__points = points

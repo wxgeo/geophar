@@ -19,13 +19,14 @@
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 from math import isinf, isnan
+from weakref import WeakSet
 
 import numpy
 from matplotlib.backends.backend_agg import FigureCanvasAgg
 from matplotlib.figure import Figure
 
 from .moteur_graphique import Moteur_graphique
-from ..pylib import decorator, property2, print_error, WeakList, no_argument
+from ..pylib import decorator, property2, print_error, no_argument
 from ..geolib import Feuille
 from .. import param
 
@@ -128,7 +129,7 @@ class Canvas(FigureCanvasAgg):
                            "utiliser_repere", "quadrillages", "couleur_papier_millimetre",
                            "liste_axes", "ratio", "grille_aimantee", "zoom_texte",
                            "zoom_ligne", "dpi_ecran"]
-        self.liste_objets_en_gras = WeakList()
+        self.objets_en_gras = WeakSet()
         self.initialiser()
 
 
@@ -165,7 +166,7 @@ class Canvas(FigureCanvasAgg):
             # Evite d'exporter la feuille avec un nom d'objet en cours d'édition
             self.editeur.close()
         # De même, aucun objet ne doit être en gras
-        self.feuille_actuelle.objets_en_gras()
+        self.feuille_actuelle.met_objets_en_gras()
         # Les objets invisibles ne doivent pas apparaitre
         afficher_objets_caches = self.afficher_objets_caches
         self.afficher_objets_caches = False
@@ -179,7 +180,7 @@ class Canvas(FigureCanvasAgg):
 
 
     def selection_en_gras(self):
-        self.feuille_actuelle.objets_en_gras(self.select, *self.liste_objets_en_gras)
+        self.feuille_actuelle.met_objets_en_gras(self.select, *self.liste_objets_en_gras)
 
 #   Alias
 ######################

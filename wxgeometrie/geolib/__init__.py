@@ -57,7 +57,7 @@ from .objet import (Nom, Rendu, Cache, Ref, BaseArgument, Argument,
                     ArgumentNonModifiable, Arguments, TupleObjets,
                     DescripteurFeuille, Objet, Objet_avec_coordonnees,
                     Objet_avec_coordonnees_modifiables, Objet_avec_equation,
-                    Objet_avec_valeur, Objet_numerique, G, TYPES_NUMERIQUES
+                    Objet_avec_valeur, G, TYPES_NUMERIQUES
                     )
 from .points import (Point_generique, Point, Point_pondere, Barycentre, Milieu,
                     Point_final, Point_translation, Point_rotation,

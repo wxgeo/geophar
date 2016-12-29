@@ -308,7 +308,7 @@ class BarreOutils(QWidget):
         self.cache = [] # objets en memoire
         # S'il n'y a pas de feuille, on la crée.
         self.feuille_actuelle.objet_temporaire(None)
-        self.canvas.liste_objets_en_gras.clear()
+        self.canvas.objets_en_gras.clear()
         self.canvas.selection_en_gras()
 
 
@@ -1145,7 +1145,7 @@ class BarreOutils(QWidget):
                 self.cache.append(self.point(**kw))
 
             if len(self.cache) >= 1:
-                self.canvas.liste_objets_en_gras.append(self.cache[0])
+                self.canvas.objets_en_gras.add(self.cache[0])
                 self.canvas.selection_en_gras()
 ##                self.cache[0].affiche_en_gras(True)
 
@@ -1282,7 +1282,7 @@ class BarreOutils(QWidget):
                 else:
                     self.canvas.executer("%s.copier_style(%s)" %(selection.nom, self.cache[0].nom))
             if len(self.cache):
-                self.canvas.liste_objets_en_gras.append(self.cache[0])
+                self.canvas.objets_en_gras.add(self.cache[0])
                 self.canvas.selection_en_gras()
 
 

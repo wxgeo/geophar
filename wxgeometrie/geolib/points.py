@@ -140,7 +140,7 @@ class Point_generique(Objet_avec_coordonnees):
         return (x - x0)**2 + (y - y0)**2 < d**2
 
 
-    def __eq__(self, y):
+    def confondu(self, y):
         if self.existe:
             if  isinstance(y, Point_generique) and y.existe:
                 return abs(self.x - y.x) < contexte['tolerance'] and abs(self.y - y.y) < contexte['tolerance']
@@ -319,7 +319,7 @@ class Barycentre(Point_generique):
 
 
     def __somme_coeffs(self):
-        return sum(point_pondere._Point_pondere__coefficient.valeur for point_pondere in self.__points_ponderes)
+        return sum(point_pondere._Point_pondere__coefficient for point_pondere in self.__points_ponderes)
 
 
 

@@ -870,5 +870,5 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
 
     def leaveEvent(self, event):
         # self.execute_on_idle(
-        self.feuille_actuelle.objets_en_gras
+        #self.feuille_actuelle.met_objets_en_gras
         FigureCanvasQTAgg.leaveEvent(self, event)

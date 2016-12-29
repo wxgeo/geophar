@@ -246,6 +246,8 @@ def regsub(regular_exp, main_string, action = ""):
         return re.sub(regular_exp, lambda x: action(x.group(0)), main_string)
 
 
+
+
 class WeakList(weakref.WeakValueDictionary):
     """Une 'liste' de réferences faibles.
 
@@ -322,6 +324,36 @@ class WeakList(weakref.WeakValueDictionary):
 
     def __contains__(self, item):
         return item in self.values()
+
+
+class WeakMultiSet(weakref.WeakKeyDictionary):
+    """A WeakValueDictionary which keeps count of how many times an object was added.
+
+    The interface implements only the methods remove() and add()
+    to emulate a set.
+
+    When an element is removed, the count is actually decrease.
+    If count reaches 0, the element is discarded (key is removed).
+
+    Additionnaly, method remove_completely() discard the element
+    whatever the count.
+
+    This is quite similar to collect.Counter, except that entries are deleted
+    when count reaches 0, and weak refrences are used."""
+    def remove(self, elt):
+        self[elt] -= 1
+        if self[elt] == 0:
+            del self[elt]
+
+    def add(self, elt):
+        if elt in self:
+            self[elt] += 1
+        else:
+            self[elt] = 1
+
+    def remove_completely(self, elt):
+        del self[elt]
+
 
 
 def extract_error(chaine=''):
@@ -594,8 +626,8 @@ def path2(chemin):
 
 
 
-# L'idée de compiler en une fois pour toute les expressions regulières n'est pas avantageuse :
-# le temps gagné ainsi est perdu à rechercher les entrées dans le dictionnaire.
+# L'idée de compiler en une fois pour toute les expressions regulières n'est pas avantageuse,
+# car python le fait déjà automatiquement pour celles utilisées le plus souvent.
 
 #~ def regsub(regular_exp, main_string, action = ""):
     #~ u"""Transforme la chaine "main_string" :
@@ -631,81 +663,81 @@ def path2(chemin):
             #~ return value
 
 
-class WeakRef(weakref.ref):
-    """WeakRef surclasse weakref.ref en modifiant sa méthode '__eq__'.
+#~ class WeakRef(weakref.ref):
+    #~ """WeakRef surclasse weakref.ref en modifiant sa méthode '__eq__'.
 
-    a == b <=> type(a) == type(b) == WeakRef and a() is b().
-    Le but est de ne pas appeler les méthodes __eq__ des objets référencés."""
+    #~ a == b <=> type(a) == type(b) == WeakRef and a() is b().
+    #~ Le but est de ne pas appeler les méthodes __eq__ des objets référencés."""
 
-    def __eq__(self, y):
-        if not (isinstance(self, WeakRef) and isinstance(y, WeakRef)):
-            return False
-        if self() is None or y() is None:
-            return self is y
-        return self() is y()
+    #~ def __eq__(self, y):
+        #~ if not isinstance(y, WeakRef):
+            #~ return False
+        #~ if self() is None or y() is None:
+            #~ return self is y
+        #~ return self() is y()
 
-    def __hash__(self):
-        return id(self())
-
-
-class CustomWeakKeyDictionary(weakref.WeakKeyDictionary):
-    """WeakKeyDictionary utilisant Weakref au lieu de weakref.ref.
-    """
-
-    def __delitem__(self, key):
-        del self.data[WeakRef(key)]
-
-    def __getitem__(self, key):
-        return self.data[WeakRef(key)]
-
-    def __repr__(self):
-        return "<WeakKeyDictionary at %s>" % id(self)
-
-    def __setitem__(self, key, value):
-        self.data[WeakRef(key, self._remove)] = value
-
-    def copy(self):
-        new = CustomWeakKeyDictionary()
-        for key, value in self.data.items():
-            o = key()
-            if o is not None:
-                new[o] = value
-        return new
-
-    def get(self, key, default=None):
-        return self.data.get(WeakRef(key),default)
-
-    def has_key(self, key):
-        try:
-            wr = WeakRef(key)
-        except TypeError:
-            return 0
-        return wr in self.data
-
-    def __contains__(self, key):
-        try:
-            wr = WeakRef(key)
-        except TypeError:
-            return 0
-        return wr in self.data
+    #~ def __hash__(self):
+        #~ return id(self())
 
 
+#~ class CustomWeakKeyDictionary(weakref.WeakKeyDictionary):
+    #~ """WeakKeyDictionary utilisant Weakref au lieu de weakref.ref.
+    #~ """
 
-    def pop(self, key, *args):
-        return self.data.pop(WeakRef(key), *args)
+    #~ def __delitem__(self, key):
+        #~ del self.data[WeakRef(key)]
 
-    def setdefault(self, key, default=None):
-        return self.data.setdefault(WeakRef(key, self._remove),default)
+    #~ def __getitem__(self, key):
+        #~ return self.data[WeakRef(key)]
 
-    def update(self, dict=None, **kwargs):
-        d = self.data
-        if dict is not None:
-            if not hasattr(dict, "items"):
-                dict = type({})(dict)
-            for key, value in dict.items():
-                d[WeakRef(key, self._remove)] = value
-        if len(kwargs):
-            self.update(kwargs)
+    #~ def __repr__(self):
+        #~ return "<WeakKeyDictionary at %s>" % id(self)
+
+    #~ def __setitem__(self, key, value):
+        #~ self.data[WeakRef(key, self._remove)] = value
+
+    #~ def copy(self):
+        #~ new = CustomWeakKeyDictionary()
+        #~ for key, value in self.data.items():
+            #~ o = key()
+            #~ if o is not None:
+                #~ new[o] = value
+        #~ return new
+
+    #~ def get(self, key, default=None):
+        #~ return self.data.get(WeakRef(key),default)
+
+    #~ def has_key(self, key):
+        #~ try:
+            #~ wr = WeakRef(key)
+        #~ except TypeError:
+            #~ return 0
+        #~ return wr in self.data
+
+    #~ def __contains__(self, key):
+        #~ try:
+            #~ wr = WeakRef(key)
+        #~ except TypeError:
+            #~ return 0
+        #~ return wr in self.data
+
+
+
+    #~ def pop(self, key, *args):
+        #~ return self.data.pop(WeakRef(key), *args)
+
+    #~ def setdefault(self, key, default=None):
+        #~ return self.data.setdefault(WeakRef(key, self._remove),default)
+
+    #~ def update(self, dict=None, **kwargs):
+        #~ d = self.data
+        #~ if dict is not None:
+            #~ if not hasattr(dict, "items"):
+                #~ dict = type({})(dict)
+            #~ for key, value in dict.items():
+                #~ d[WeakRef(key, self._remove)] = value
+        #~ if len(kwargs):
+            #~ self.update(kwargs)
 
 
 

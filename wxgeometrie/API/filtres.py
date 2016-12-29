@@ -158,7 +158,7 @@ def filtre_versions_anterieures(fgeo, version):
                                   'Point_reflexion', 'Polygone_regulier_centre',
                                   'Point_rotation', 'Point_droite',
                                   'Interpolation_cubique', 'Interpolation_lineaire',
-                                  'Hexagone', 'Sommet', 'Objet_numerique',
+                                  'Hexagone', 'Sommet',
                                   'Centre_gravite', 'Glisseur_vecteur',
                                   'Intersection_generique', 'PointTangence',
                                   'Mediatrice', 'Rectangle', 'Objet', 'Bissectrice',

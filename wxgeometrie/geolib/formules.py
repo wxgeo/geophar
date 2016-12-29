@@ -65,7 +65,7 @@ class Formule(object):
             var = liste[i] = Variable(cache)
             var._cache_formule = cache
 
-            var.enfants.append(parent if parent.etiquette is None
+            var.enfants.add(parent if parent.etiquette is None
                                       else parent.etiquette)
 ##            # on va maintenant redéfinir la méthode affiche de toutes les variables de la formule :
               # au lieu d'être inactive, la méthode affiche va actualiser l'affichage de l'objet contenant la formule.

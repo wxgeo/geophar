@@ -101,9 +101,9 @@ class Vecteur_generique(Objet_avec_coordonnees):
     def __truediv__(self, y):
         return self.__div__(y)
 
-    def __eq__(self, y):
+    def egal(self, y):
         if self.existe:
-            if  isinstance(y, Vecteur_generique) and y.existe:
+            if isinstance(y, Vecteur_generique) and y.existe:
                 return abs(self.x - y.x) < contexte['tolerance'] and abs(self.y - y.y) < contexte['tolerance']
             elif isinstance(y, (list, tuple, ndarray)) and len(y) == 2:
                 return abs(self.x - y[0]) < contexte['tolerance'] and abs(self.y - y[1]) < contexte['tolerance']
@@ -111,9 +111,6 @@ class Vecteur_generique(Objet_avec_coordonnees):
 
     def __bool__(self):
         return tuple(self.coordonnees) != (0, 0)
-
-    def __ne__(self, y):
-        return not (self == y)
 
 
     @staticmethod

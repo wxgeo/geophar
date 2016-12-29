@@ -24,7 +24,7 @@
 # version unicode
 
 import re
-from .objet import Objet_numerique, Objet, contexte, ArgumentNonModifiable, \
+from .objet import Objet, contexte, ArgumentNonModifiable, \
                    Argument, Ref
 
 #from .. import param
@@ -204,7 +204,7 @@ class Fonction(Objet):
             self._parents = objets
             self._modifier_hierarchie()
             for objet in self._parents:   # l'objet est vassal de chacun des objets dont il depend
-                objet.enfants.append(self)
+                objet.enfants.add(self)
         else:
             for objet in self._parents:
                 objet.enfants.remove(self)

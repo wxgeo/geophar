@@ -22,9 +22,9 @@ from .. import param # parametres du programme
 
 #from fonctions import * # librairie regroupant diverses fonctions "maison"
 #from infos import * # librairie servant a generer des infos sur la configuration (utile pour le debugage)
-from .fonctions import uu, is_in, WeakList, print_error, property2, \
+from .fonctions import uu, is_in, WeakMultiSet, print_error, property2, \
                       CompressedList, rstrip_, no_twin, warning, \
-                      CustomWeakKeyDictionary, debug, no_argument, path2, \
+                      debug, no_argument, path2, \
                       removeend, advanced_split, regsub, split_around_parenthesis,\
                       msplit, OrderedDict, find_closing_bracket
 # outils pour gerer la securite lors d'execution de code (tache delicate !)

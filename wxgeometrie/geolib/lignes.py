@@ -507,7 +507,7 @@ class Droite_generique(Ligne_generique):
     def info(self):
         return self.nom_complet + " d'équation " + self.equation_formatee
 
-    def __eq__(self,  y):
+    def confondu(self,  y):
         if self.existe and isinstance(y, Droite_generique) and y.existe:
             eq1 = self.equation_reduite
             eq2 = y.equation_reduite
@@ -516,10 +516,6 @@ class Droite_generique(Ligne_generique):
             elif len(eq1) == len(eq2) == 2:
                 return abs(eq1[0] - eq2[0]) < contexte['tolerance'] and abs(eq1[1] - eq2[1]) < contexte['tolerance']
         return False
-
-    def __ne__(self, y):
-        return not self == y
-
 
     @staticmethod
     def _convertir(objet):

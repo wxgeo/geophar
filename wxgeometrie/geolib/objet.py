@@ -23,6 +23,7 @@
 
 import re, math, types
 from types import FunctionType, BuiltinFunctionType
+from weakref import WeakValueDictionary, WeakSet, WeakKeyDictionary
 
 import numpy
 
@@ -31,7 +32,7 @@ from sympy import I, pi as PI, Basic, Integer
 from ..mathlib.internal_objects import Reel
 # à intégrer dans geolib ??
 from ..pylib import property2, uu, print_error, \
-                    is_in, WeakList, CustomWeakKeyDictionary, warning
+                    is_in, WeakMultiSet, warning
 from ..mathlib.parsers import mathtext_parser
 from .routines import nice_display
 ##from .formules import Formule
@@ -347,7 +348,7 @@ class Ref(object):
             return objet
         instance = object.__new__(cls)
         instance.__objet = objet
-        instance._utilisateurs = WeakList()
+        instance._utilisateurs = WeakSet()
         return instance
 
     @property
@@ -376,7 +377,7 @@ class Ref(object):
                 if isinstance(ancien_objet, Objet):
                     ancien_objet.enfants.remove(user)
                 if isinstance(nouvel_objet, Objet):
-                    nouvel_objet.enfants.append(user)
+                    nouvel_objet.enfants.add(user)
                 # 2. Il faut les mettre à jour (ainsi que leurs héritiers)
                 user.perime()
 
@@ -388,7 +389,7 @@ class BaseArgument(object):
     _compteur = 0
 
     def __init__(self, types, get_method=None, set_method=None, defaut=None):
-        self.__contenu__ = CustomWeakKeyDictionary()
+        self.__contenu__ = WeakKeyDictionary()
         cls = self.__class__
         cls._compteur += 1
         self._compteur = cls._compteur
@@ -465,8 +466,9 @@ class BaseArgument(object):
         value._changer_objet(self._verifier_type(value.objet), premiere_definition = True)
 #        if isinstance(value.__objet__, Objet) and value.__objet__.__feuille__ is None:
 #            value.__objet__.__feuille__ = obj.__feuille__
-        if not is_in(obj, value._utilisateurs):
-            value._utilisateurs.append(obj)
+        # Nota: inutile de vérifier que l'objet n'y est pas déjà avant de l'ajouter,
+        # vu que _utilisateurs est de type set (WeakSet précisément).
+        value._utilisateurs.add(obj)
         return value
 
     def _redefinir(self, obj, value):
@@ -499,7 +501,9 @@ class BaseArgument(object):
 
     def _get(self, obj, value):
         if self.get_method is not None:
-            return self.get_method(obj, value)
+            value = self.get_method(obj, value)
+        if isinstance(value, G.Variable_generique):
+            value = value.contenu
         return value
 
 
@@ -599,9 +603,11 @@ class Arguments(BaseArgument): # au pluriel !
     def __get__(self, obj, type=None):
         if obj is None:
             return self
-        value = TupleObjets((elt.objet for elt in self.__contenu__[obj]),
-                            objet = obj, arguments = self.__contenu__[obj])
-        return self._get(obj, value)
+
+        values = self._get(obj, [elt.objet for elt in self.__contenu__[obj]])
+        values = ((o.contenu if isinstance(o, G.Variable_generique) else o)
+                            for o in values)
+        return TupleObjets(values, objet=obj, arguments=self.__contenu__[obj])
 
 
     def __set__(self, obj, value):
@@ -617,7 +623,6 @@ class Arguments(BaseArgument): # au pluriel !
         # 2ème cas : Définition d'un nouvel argument
         else:
             self.__contenu__[obj] = tuple(self._definir(obj, self._set(obj, elt, premiere_definition = True)) for elt in value)
-
 
 
 
@@ -642,14 +647,13 @@ class TupleObjets(tuple):
 
 
 
-
 class DescripteurFeuille(object):
     """Descripteur gérant l'attribut '.feuille' de la classe 'Objet'.
 
     Usage interne."""
 
     def __init__(self):
-        self.__contenu__ = CustomWeakKeyDictionary()
+        self.__contenu__ = WeakKeyDictionary()
 
     def __get__(self, obj, type=None):
         if obj is None:
@@ -683,18 +687,22 @@ class DescripteurFeuille(object):
 ## LA CLASSE Objet ET SES HERITIERS DIRECTES
 ##############################
 
-class Objet(object):
+class ObjetType(type):
+    def __call__(cls, *args, **kw):
+        instance = type.__call__(cls, *args, **kw)
+        Objet.identifiers[id(instance)] = instance
+        instance._initialise = True
+        return instance
+
+
+class Objet(metaclass=ObjetType):
     """Un objet géométrique.
 
     La classe Objet est la classe mère de tous les objets géométriques.
     Note : elle n'est pas utilisable en l'état, mais doit être surclassée.
     """
 
-    class __metaclass__(type):
-        def __call__(cls, *args, **kw):
-            instance = type.__call__(cls, *args, **kw)
-            instance._initialise = True
-            return instance
+    identifiers = WeakValueDictionary()
 
     _noms_arguments = () # cf. geolib/__init__.py
     feuille = DescripteurFeuille()
@@ -773,7 +781,7 @@ class Objet(object):
             self.rendu = Rendu(self)
 
             # GESTION DES DEPENDANCES
-            self.enfants = WeakList()   # lors de sa création, l'objet n'a, lui, aucun vassal (aucun objet ne dépend de lui)
+            self.enfants = WeakMultiSet()   # lors de sa création, l'objet n'a, lui, aucun vassal (aucun objet ne dépend de lui)
             # La création d'une WeakList plutôt que d'une liste permet d'éviter les pertes de mémoire.
             # ATTENTION : ne pas utiliser un objet WeakSet.
             # En effet, il se peut qu'un objet apparaisse plusieurs fois comme vassal, si il apparait plusieurs fois comme argument.
@@ -785,7 +793,7 @@ class Objet(object):
             self._recenser_les_parents()
             # L'objet est un enfant pour chacun de ses parents.
             for parent in self._parents:
-                parent.enfants.append(self)
+                parent.enfants.add(self)
         # ---------------------------------------------------------------------
         # PARTIE 2 de l'initialisation :
         # ce qui suit peut être exécuté plusieurs fois en cas d'initialisations multiples
@@ -811,8 +819,6 @@ class Objet(object):
         object.__setattr__(self, name, value)
 
 
-    def __hash__(self):
-        return id(self)
 
     def _nom_alea(self):
         """Retourne un nom disponible sur la feuille, adapté au type d'objet.
@@ -1182,7 +1188,7 @@ class Objet(object):
         self._hierarchie = valeur
         # Il peut arriver (très rarement) que self.enfants soit modifié
         # en même temps. Mieux vaut donc transformer self.enfants en tuple.
-        for obj in tuple(self.enfants):
+        for obj in set(self.enfants):
             obj._modifier_hierarchie()
 
 
@@ -1540,10 +1546,10 @@ class Objet(object):
         for parent in self._parents:
             # Pour chaque parent, l'objet est supprimé de la liste des enfants.
             # (Les "parents" sont les objets dont il dépend.)
-            parent.enfants.remove_all(self)
+            parent.enfants.remove_completely(self)
             # NB: `remove_all()` ne génère jamais d'erreur, même si self n'est
             # pas dans la WeakList (contrairement au `.remove()` d'une liste).
-        for heritier in list(self.enfants):
+        for heritier in set(self.enfants):
             try:
                 heritier._supprime()
             except KeyError:
@@ -1845,7 +1851,7 @@ class Objet_avec_coordonnees_modifiables(Objet_avec_coordonnees):
 
 
     def _get_coordonnees(self):
-        return self.__x.valeur, self.__y.valeur
+        return self.__x, self.__y
 
 
     def _set_coordonnees(self, x = None, y = None):
@@ -1956,137 +1962,134 @@ class Objet_avec_valeur(Objet):
 
 
 
-class Objet_numerique(Reel, Objet_avec_valeur):
-    "Ensemble de méthodes propres aux angles, aux variables, et autres objets numériques."
+#~ class Objet_numerique(Reel, Objet_avec_valeur):
+    #~ "Ensemble de méthodes propres aux angles, aux variables, et autres objets numériques."
 
-    _style_defaut = {} # en cas d'héritage multiple, cela évite que le style de Objet efface d'autres styles
+    #~ _style_defaut = {} # en cas d'héritage multiple, cela évite que le style de Objet efface d'autres styles
 
-    def __init__(self, *args, **kw):
-        Objet.__init__(self, *args, **kw)
+    #~ def __init__(self, *args, **kw):
+        #~ Objet.__init__(self, *args, **kw)
 
-    def __float__(self):
-        return float(self.val)
+    #~ def __float__(self):
+        #~ return float(self.val)
 
-    def __int__(self):
-        return int(self.val)
+    #~ def __int__(self):
+        #~ return int(self.val)
 
-    ## -- code généré automatiquement -- (cf. creer_operations.py)
+    #~ ## -- code généré automatiquement -- (cf. creer_operations.py)
 
-    def __add__(self, y):
-        if isinstance(y, Objet_numerique):
-            return self.val + y.val
-        return self.val + y
+    #~ def __add__(self, y):
+        #~ if isinstance(y, Objet_numerique):
+            #~ return self.val + y.val
+        #~ return self.val + y
 
-    def __radd__(self, y):
-        return y + self.val
+    #~ def __radd__(self, y):
+        #~ return y + self.val
 
-    def __iadd__(self, y):
-        self.val = self.val + (y.val if isinstance(y, Objet_numerique) else y)
-        return self
+    #~ def __iadd__(self, y):
+        #~ self.val = self.val + (y.val if isinstance(y, Objet_numerique) else y)
+        #~ return self
 
-    def __sub__(self, y):
-        if isinstance(y, Objet_numerique):
-            return self.val - y.val
-        return self.val - y
+    #~ def __sub__(self, y):
+        #~ if isinstance(y, Objet_numerique):
+            #~ return self.val - y.val
+        #~ return self.val - y
 
-    def __rsub__(self, y):
-        return y - self.val
+    #~ def __rsub__(self, y):
+        #~ return y - self.val
 
-    def __isub__(self, y):
-        self.val = self.val - (y.val if isinstance(y, Objet_numerique) else y)
-        return self
+    #~ def __isub__(self, y):
+        #~ self.val = self.val - (y.val if isinstance(y, Objet_numerique) else y)
+        #~ return self
 
-    def __mul__(self, y):
-        if isinstance(y, Objet_numerique):
-            return self.val * y.val
-        return self.val * y
+    #~ def __mul__(self, y):
+        #~ if isinstance(y, Objet_numerique):
+            #~ return self.val * y.val
+        #~ return self.val * y
 
-    def __rmul__(self, y):
-        return y * self.val
+    #~ def __rmul__(self, y):
+        #~ return y * self.val
 
-    def __imul__(self, y):
-        self.val = self.val * (y.val if isinstance(y, Objet_numerique) else y)
-        return self
+    #~ def __imul__(self, y):
+        #~ self.val = self.val * (y.val if isinstance(y, Objet_numerique) else y)
+        #~ return self
 
-    def __div__(self, y):
-        if isinstance(y, Objet_numerique):
-            return self.val / y.val
-        return self.val / y
+    #~ def __div__(self, y):
+        #~ if isinstance(y, Objet_numerique):
+            #~ return self.val / y.val
+        #~ return self.val / y
 
-    def __rdiv__(self, y):
-        return y / self.val
+    #~ def __rdiv__(self, y):
+        #~ return y / self.val
 
-    def __idiv__(self, y):
-        self.val = self.val / (y.val if isinstance(y, Objet_numerique) else y)
-        return self
+    #~ def __idiv__(self, y):
+        #~ self.val = self.val / (y.val if isinstance(y, Objet_numerique) else y)
+        #~ return self
 
-    def __truediv__(self, y):
-        if isinstance(y, Objet_numerique):
-            return self.val / y.val
-        return self.val / y
+    #~ def __truediv__(self, y):
+        #~ if isinstance(y, Objet_numerique):
+            #~ return self.val / y.val
+        #~ return self.val / y
 
-    def __rtruediv__(self, y):
-        return y / self.val
+    #~ def __rtruediv__(self, y):
+        #~ return y / self.val
 
-    def __itruediv__(self, y):
-        self.val = self.val / (y.val if isinstance(y, Objet_numerique) else y)
-        return self
+    #~ def __itruediv__(self, y):
+        #~ self.val = self.val / (y.val if isinstance(y, Objet_numerique) else y)
+        #~ return self
 
-    def __pow__(self, y):
-        if isinstance(y, Objet_numerique):
-            return self.val ** y.val
-        return self.val ** y
+    #~ def __pow__(self, y):
+        #~ if isinstance(y, Objet_numerique):
+            #~ return self.val ** y.val
+        #~ return self.val ** y
 
-    def __rpow__(self, y):
-        return y ** self.val
+    #~ def __rpow__(self, y):
+        #~ return y ** self.val
 
-    def __ipow__(self, y):
-        self.val = self.val ** (y.val if isinstance(y, Objet_numerique) else y)
-        return self
+    #~ def __ipow__(self, y):
+        #~ self.val = self.val ** (y.val if isinstance(y, Objet_numerique) else y)
+        #~ return self
 
-    def __mod__(self, y):
-        if isinstance(y, Objet_numerique):
-            return self.val % y.val
-        return self.val % y
+    #~ def __mod__(self, y):
+        #~ if isinstance(y, Objet_numerique):
+            #~ return self.val % y.val
+        #~ return self.val % y
 
-    def __rmod__(self, y):
-        return y % self.val
+    #~ def __rmod__(self, y):
+        #~ return y % self.val
 
-    def __imod__(self, y):
-        self.val = self.val % (y.val if isinstance(y, Objet_numerique) else y)
-        return self
+    #~ def __imod__(self, y):
+        #~ self.val = self.val % (y.val if isinstance(y, Objet_numerique) else y)
+        #~ return self
 
-    def __floordiv__(self, y):
-        if isinstance(y, Objet_numerique):
-            return self.val // y.val
-        return self.val // y
+    #~ def __floordiv__(self, y):
+        #~ if isinstance(y, Objet_numerique):
+            #~ return self.val // y.val
+        #~ return self.val // y
 
-    def __rfloordiv__(self, y):
-        return y // self.val
+    #~ def __rfloordiv__(self, y):
+        #~ return y // self.val
 
-    def __ifloordiv__(self, y):
-        self.val = self.val // (y.val if isinstance(y, Objet_numerique) else y)
-        return self
+    #~ def __ifloordiv__(self, y):
+        #~ self.val = self.val // (y.val if isinstance(y, Objet_numerique) else y)
+        #~ return self
 
-    ## -- fin du code généré automatiquement --
+    #~ ## -- fin du code généré automatiquement --
 
-    def __abs__(self):
-        return abs(self.val)
+    #~ def __abs__(self):
+        #~ return abs(self.val)
 
-    def __neg__(self):
-        return 0 - self
+    #~ def __neg__(self):
+        #~ return 0 - self
 
-    def __eq__(self, y):
-        return self.val == y
+    #~ def __eq__(self, y):
+        #~ return self.val == y
 
-    def __hash__(self):
-        return hash(self.val)
+    #~ def __bool__(self):
+        #~ return self != 0
 
-    def __bool__(self):
-        return self != 0
-
-    def __gt__(self, y):
-        return self.val > y
+    #~ def __gt__(self, y):
+        #~ return self.val > y
 
 
 

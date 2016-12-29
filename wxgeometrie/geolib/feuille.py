@@ -1713,7 +1713,7 @@ class Feuille(object):
             objet.effacer_trace()
         self.affichage_perime()
 
-    def objets_en_gras(self, *objets):
+    def met_objets_en_gras(self, *objets):
         """Met en gras les objets indiqués, et remet les autres objets en état "normal" le cas échéant."""
 
         changements = False

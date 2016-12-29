@@ -29,7 +29,7 @@ from math import pi
 from sympy import pi as PI
 
 from .labels import Label_angle
-from .objet import Objet_numerique, Objet, Ref, Argument, issympy, contexte, FILL_STYLES
+from .objet import Objet_avec_valeur, Objet, Ref, Argument, issympy, contexte, FILL_STYLES
 from .points import Point
 from .routines import nice_display, angle_vectoriel
 from .variables import Variable
@@ -39,7 +39,7 @@ from ..pylib import warning
 
 
 
-class Angle_generique(Objet_numerique):
+class Angle_generique(Objet_avec_valeur):
     """Un angle générique (en radian).
 
     Classe mère des angles orientés ou non."""
@@ -63,6 +63,10 @@ class Angle_generique(Objet_numerique):
             else:
                 return val*180/pi
     deg = degre
+
+    @property
+    def mesure(self):
+        return self.val
 
     @property
     def grad(self):
@@ -165,7 +169,6 @@ class Secteur_angulaire(Angle_generique):
                         )
 
 
-
     def _espace_vital(self):
         x, y = self.__point.coordonnees
         x1, y1, = self.__vecteur1.coordonnees
@@ -175,8 +178,6 @@ class Secteur_angulaire(Angle_generique):
         ymin = min(y, y + y1, y + y2)
         ymax = max(y, y + y1, y + y2)
         return xmin, xmax, ymin, ymax
-
-
 
 
     def _distance_inf(self, x, y, d):
@@ -232,9 +233,6 @@ class Angle_oriente(Secteur_angulaire):
 
 
 
-
-
-
 class Angle(Secteur_angulaire):
     """Un angle.
 
@@ -252,7 +250,6 @@ class Angle(Secteur_angulaire):
 
     def _get_valeur(self):
         return abs(Secteur_angulaire._get_valeur(self))
-
 
     @property
     def sens(self):
@@ -326,7 +323,7 @@ class Angle_libre(Angle_generique):
        self.__variable = val
 
     def _get_valeur(self):
-        return self.__variable.valeur
+        return self.__variable
 
 
 
@@ -343,10 +340,8 @@ class Angle_vectoriel(Angle_generique):
         self.__vecteur2 = vecteur2 = Ref(vecteur2)
         Angle_generique.__init__(self, **styles)
 
-
     def _conditions_existence(self):
         return self.__vecteur1.norme > contexte['tolerance'] and self.__vecteur2.norme > contexte['tolerance']
-
 
     def _get_valeur(self):
         return angle_vectoriel(self.__vecteur1, self.__vecteur2)
