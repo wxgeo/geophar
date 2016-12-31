@@ -29,13 +29,13 @@ EMPLACEMENT = dirname(dirname(realpath(sys._getframe().f_code.co_filename)))
 if getattr(sys, '_launch_geophar', False):
     from .arguments import lire_arguments, traiter_arguments
 
-    options, arguments = lire_arguments()
+    arguments = lire_arguments()
 
 
     # Le splash screen doit être affiché le plus tôt possible.
     # Par contre, il ne doit pas être affiché si le fichier est importé simplement
     # comme module.
-    if not (options.script or options.lister_modules):
+    if not (arguments.script or arguments.lister_modules):
         try:
             from .GUI.app import app, splash
 
@@ -49,7 +49,7 @@ if getattr(sys, '_launch_geophar', False):
             # un peu plus loin lors de la vérification des modules.
             splash_screen = None
 
-    parametres_additionnels, arguments, options = traiter_arguments(options, arguments)
+    parametres_additionnels, arguments, options = traiter_arguments(arguments)
 
     from . import param
     # Attention, les paramètres importés explicitement ici dans l'espace des noms
