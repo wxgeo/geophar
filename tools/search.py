@@ -28,6 +28,7 @@ import os
 import sys
 import re
 import subprocess
+import argparse
 
 # ----- User config -----
 IGNORE = ('*tmp_*', '*(OLD|BAZAR)*', '*sympy/*', '*modules/traceur/tableau.py',
@@ -38,26 +39,32 @@ DEFAULT_EDITOR = 'geany'
 
 #TODO: provide default IGNORE by autodetecting .gitignore content, if any.
 
-IGNORE_RE = re.compile('|'.join('(%s)' % pattern.replace('*', '.*').strip()
-                                 for pattern in IGNORE if pattern))
 SUPPORTED_EDITORS = ('geany', 'gedit', 'nano', 'vim', 'emacs', 'kate', 'kile')
 
-def gs(chaine='', case=True, exclude_comments=True, extensions=(".py", ".pyw"),
-        maximum=100, codec="utf8", statistiques=False, replace=None,
-        color=None, edit_with=None, edit_result=None, skip_ignore=False):
+def gs(string='', case=True, include_comments=False, comment_marker='#', extensions=(".py", ".pyw"),
+        maximum=100, codec="utf8", stats=False, replace_with=None,
+        color=None, edit_with=None, edit_result=None, skip_paths=()):
     """Parcourt le répertoire courant et les sous-répertoire, à la recherche
     des fichiers dont l'extension est comprise dans 'extensions',
     mais passe les répertoires et les fichiers dont le nom commence par
     un préfixe de 'exclude_prefixe', ou finit par un suffixe de
     'exclude_suffixe'.
-    Pour chaque fichier trouvé, renvoie toutes les lignes où 'chaine' se trouve.
+    Pour chaque fichier trouvé, renvoie toutes les lignes où 'string' se trouve.
     (Par défaut, la casse est prise en compte, sinon, il suffit de modifier
     la valeur de 'case'.)
     Le nombre maximal de lignes renvoyées est fixé par 'maximum', afin d'éviter
     de saturer le système.
-    Si ce nombre est dépassé (ie. toutes les occurences de 'chaine' ne sont pas
+    Si ce nombre est dépassé (ie. toutes les occurences de 'string' ne sont pas
     affichées), la fonction renvoie False, sinon, True.
     """
+
+    if skip_paths:
+        IGNORE_RE = re.compile('|'.join('(%s)' % pattern.replace('*', '.*').strip()
+                                 for pattern in skip_paths if pattern))
+    else:
+        IGNORE_RE = None
+
+
     if color is None:
         color = sys.platform.startswith('linux')
     if color:
@@ -78,11 +85,11 @@ def gs(chaine='', case=True, exclude_comments=True, extensions=(".py", ".pyw"),
     else:
         green = blue = white = blue2 = red = green2 = yellow = (lambda s:s)
 
-    if not chaine:
-        statistiques = True
+    if not string:
+        stats = True
     if not case:
-        chaine = chaine.lower()
-    if replace is not None:
+        string = string.lower()
+    if replace_with is not None:
         assert case
     cwd = os.getcwd()
     repertoires = os.walk(cwd)
@@ -106,7 +113,7 @@ def gs(chaine='', case=True, exclude_comments=True, extensions=(".py", ".pyw"),
     # Nombre d'occurences trouvées.
     occurences = 0
     for filename in fichiers:
-        if re.search(IGNORE_RE, filename) and not skip_ignore:
+        if IGNORE_RE is not None and re.search(IGNORE_RE, filename):
             continue
         F += 1
         correct_encoding = True
@@ -115,59 +122,59 @@ def gs(chaine='', case=True, exclude_comments=True, extensions=(".py", ".pyw"),
             results = []
             try:
                 for n, s in enumerate(fichier):
-                    if replace is not None:
+                    if replace_with is not None:
                         lignes.append(s)
-                    if statistiques:
+                    if stats:
                         s = s.strip()
                         if s:
-                            if s[0] != '#':
+                            if s[0] != comment_marker:
                                 N += 1
-                            elif s.strip('#'):
+                            elif s.strip(comment_marker):
                                 C += 1
                             else:
                                 B += 1
                         else:
                             B += 1
                         continue
-                    if (exclude_comments and s.lstrip().startswith("#")):
+                    if not include_comments and s.lstrip().startswith(comment_marker):
                         # comment line
                         continue
                     if not case:
                         s = s.lower()
-                    pos = s.find(chaine)
+                    pos = s.find(string)
                     if pos != -1:
-                        if exclude_comments:
+                        if not include_comments:
                             substr = s[:pos]
-                            if '#' in substr:
+                            if comment_marker in substr:
                                 # test if the substring found was inside a comment
                                 # at the end of the line.
-                                # You have to be carefull, because `#` may be
+                                # You have to be carefull, because `comment_marker` may be
                                 # inside a string...
                                 # TODO: handle triple quotes.
                                 mode = None
                                 for c in substr:
-                                    if c in "'\"#":
+                                    if c in ("'", '"', comment_marker):
                                         if mode is None:
                                             mode = c
-                                            if c == '#':
+                                            if c == comment_marker:
                                                 continue
                                         elif mode == c:
                                             mode = None
-                                if mode == '#':
+                                if mode == comment_marker:
                                     # substring found inside a comment
                                     continue
 
                         occurences += 1
-                        if replace is not None:
-                            lignes[-1] = s.replace(chaine, replace)
-                        s = s[:pos] + blue2(s[pos:pos+len(chaine)]) \
-                                    + s[pos+len(chaine):]
+                        if replace_with is not None:
+                            lignes[-1] = s.replace(string, replace)
+                        s = s[:pos] + blue2(s[pos:pos+len(string)]) \
+                                    + s[pos+len(string):]
                         results.append("   " + blue('(' + str(n_lignes + 1) + ')')
                                           + "  line " + white(str(n + 1))
                                           + ":   " + s)
 
-                        if edit_with is not None and (edit_result is None
-                                                    or edit_result == n_lignes + 1):
+                        if edit_with is not None and (edit_result == ()
+                                                    or ((n_lignes + 1) in edit_result)):
                             if edit_with not in SUPPORTED_EDITORS:
                                 print(edit_with + ' is currently not supported.')
                                 print('Supported editors : '
@@ -193,130 +200,52 @@ def gs(chaine='', case=True, exclude_comments=True, extensions=(".py", ".pyw"),
             for result in results:
                 print(result.rstrip())
 
-            if replace is not None:
+            if replace_with is not None:
                 with open(filename, 'w') as fichier:
                     for l in lignes:
                         fichier.write(l)
 
-    if statistiques:
+    if stats:
         # C - 20*F : on décompte les préambules de tous les fichiers
         return (blue(str(N) + " lignes de code\n")
                 + str(C) + " lignes de commentaires (" + str(C - 20*F)
                 + " hors licence)\n"
                 + str(B) + " lignes vides\n"
                 + str(F) + " fichiers")
-    if replace is None:
+    if replace_with is None:
         return blue("\n-> %s occurence(s) trouvée(s)." % occurences)
     else:
         return blue("%s occurence(s) de %s remplacée(s) par %s."
-                    % (occurences, repr(chaine), repr(replace)))
+                    % (occurences, repr(string), repr(replace_with)))
 
-
-def usage():
-    "Affiche l'aide."
-    print("""\n    === Usage ===\n
-    - Rechercher la chaîne 'hello' dans le code (hors commentaires) :
-        $ ./tools/search.py "hello"
-    - Remplacer partout la chaîne 'hello' par la chaîne 'world':
-        $ ./tools/search.py "hello" -r "world"
-    - Editer le projet à l'endroit où la chaîne "hello world!" se trouve
-        $ ./tools/search.py -e "hello world!"
-    - Editer seulement la 5e occurence de "hello world!" dans le projet
-        $ ./tools/search.py -e5 "hello world!"
-    - Afficher des statistiques concernant le projet:
-        $ ./tools/search.py -s
-    - Retourner 1000 résultats au maximum au lieu de 100 (valeur par défaut):
-        $ ./tools/search.py -m "hello world!"
-    - Personnaliser le nombre maximum de résultats retournés:
-        $ ./tools/search.py -m2500 "hello world!"
-    - Inclure également dans les résultats les répertoires contenus dans
-      la variable de configuration IGNORE (ne pas tenir compte de IGNORE).
-        $ ./tools/search.py -k "hello world!"
-    - Rechercher la chaîne 'hello' dans le code, y compris dans les commentaires :
-        $ ./tools/search.py -a "hello"
-        """)
-    exit()
 
 
 if __name__ == "__main__":
-    args = sys.argv[1:]
-    kw = {}
-    if not args or args[0] in ('-h', '--help'):
-        usage()
-    if '-r' in args:
-        i = args.index('-r')
-        # L'argument suivant est la chaîne de substitution.
-        if len(args) < i + 2:
-            usage()
-        kw['replace'] = args.pop(i + 1)
-        args.pop(i) # on supprimer le '-r'
-    if '-e' in args:
-        args.remove('-e')
-        kw['edit_with'] = DEFAULT_EDITOR
-    else:
-        for i, arg in enumerate(args):
-            if arg.startswith('-e'):
-                args.pop(i)
-                break
-        else:
-            arg = None
-        if arg is not None:
-            arg = arg[2:].lstrip('=:')
-            kw['edit_result'] = int(arg)
-            kw['edit_with'] = DEFAULT_EDITOR
+    parser = argparse.ArgumentParser(argument_default=argparse.SUPPRESS,
+            description='Search recursively for specified string in all the files of a directory.')
+    parser.add_argument('string', metavar='STRING', help='string to search')
+    parser.add_argument('-r', '--replace-with', metavar='REPLACEMENT_STRING',
+                        help='Replace all occurrences of STRING with REPLACEMENT_STRING.')
+    parser.add_argument('-e', '--edit-result', metavar='N', type=int, nargs='*',
+                help='''Open editor and display result number N
+                         (use --edit with no argument to
+                        open all files where searched string was found).''')
+    parser.add_argument('-w', '--edit-with', metavar='EDITOR', choices=SUPPORTED_EDITORS)
+    parser.add_argument('-s', '--stats', help='Display statistics concerning scanned files.')
+    parser.add_argument('-m', '--maximum', type=int, metavar='N', default=100,
+                        help='Display only the first N results.')
+    parser.add_argument('-i', '--include-comments', action='store_true',
+                        help='Search in comments too.')
+    parser.add_argument('-x', '--extensions', metavar='EXTENSION', nargs='+', default=('.py', '.pyw'),
+                        help='Search only files whose name ends with any specified extension.')
+    parser.add_argument('-n', '--no-color', dest='color', action='store_false', help='Disable colors.')
+    parser.add_argument('-k', '--skip-paths', metavar='PATH_TO_SKIP', nargs='*', default=IGNORE, help='Paths to skip.')
+    parser.add_argument('-c', '--discard-case', dest='case', action='store_false', help='Make search case insensitive.')
+    args = parser.parse_args()
 
-    for i, arg in enumerate(args):
-        if arg.startswith('-x'):
-            print('x')
-            args.pop(i)
-            break
-    else:
-        arg = None
-    if arg is not None:
-        arg = arg[2:].lstrip('=:')
-        kw['extensions'] = arg.split(',')
-
-    for i, arg in enumerate(args):
-        if arg.startswith('-w'):
-            args.pop(i)
-            break
-    else:
-        arg = None
-    if arg is not None:
-        arg = arg[2:].lstrip('=:')
-        kw['edit_with'] = arg
-
-    if '-c' in args:
-        args.remove('-c')
-        kw['color'] = True
-    if '-a' in args:
-        args.remove('-a')
-        kw['exclude_comments'] = False
-    if '-k' in args:
-        args.remove('-k')
-        kw['skip_ignore'] = True
-    if '-m' in args:
-        args.remove('-m')
-        kw['maximum'] = 1000
-    else:
-        for i, arg in enumerate(args):
-            if arg.startswith('-m'):
-                args.pop(i)
-                break
-        else:
-            arg = None
-        if arg is not None:
-            arg = arg[2:].lstrip('=:')
-            kw['maximum'] = int(arg)
-    if '-s' in args:
-        args.remove('-s')
-        args.insert(0, '')
-        kw['statistiques'] = True
-    options = (arg.split('=', 1) for arg in args[1:])
-    kw.update((key, eval(val)) for key, val in options)
-    ##print kw
-    title = "\n=== Recherche de %s ===\n" % repr(args[0])
+    title = "\n=== Recherche de %s ===\n" % repr(args.string)
     if sys.platform.startswith('linux'):
         title = '\033[1;37m' + title + '\033[0m'
     print(title)
-    print(gs(args[0], **kw))
+    #~ print(vars(args))
+    print(gs(**vars(args)))
