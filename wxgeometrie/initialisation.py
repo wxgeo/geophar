@@ -60,7 +60,7 @@ if getattr(sys, '_launch_geophar', False):
     # car alors, ``$ geophar -b`` ne prendrait pas en compte le ``-b``
     # lors de l'initialisation.
     from .param import dependances, NOMPROG, NOMPROG2, LOGO, plateforme, GUIlib
-    from .pylib.fonctions import path2, uu
+    from .pylib.fonctions import path2
 
     # Résolution de l'écran en dpi (remarque : 1 inch = 2.54 cm)
     param.dpi_ecran = (app.desktop().physicalDpiX() + app.desktop().physicalDpiY())/2

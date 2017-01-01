@@ -547,71 +547,7 @@ def warning(message, type_warning = Warning, level=0):
 def deprecation(message, level=0):
     warnings.warn(message, DeprecationWarning, stacklevel = (level + 3))
 
-#def unicode2(string_or_unicode, encodage = None):
-#    u"Convertit en unicode si besoin est, avec l'encodage de 'param.encodage' par défaut."
-#    if isinstance(string_or_unicode, str):
-#        try:
-#            return unicode(string_or_unicode, encodage or param.encodage)
-#        except UnicodeDecodeError:
-##            try:
-##                print "chaine :\n", string_or_unicode
-##                print unicode(string_or_unicode, "cp1252")
-##            except Exception:
-##                pass
-#            raise
-#    elif isinstance(string_or_unicode, unicode):
-#        return string_or_unicode
-#    else:
-#        try:
-#            return unicode(string_or_unicode)
-#        except UnicodeDecodeError:
-#            print type(string_or_unicode)
-#            raise
 
-
-
-#~ def conv2bytes(string, encodage=None):
-    #~ """Convertit en bytes si besoin est, avec l'encodage de 'param.encodage' par défaut.
-
-    #~ Si l'argument n'est pas de type string, il est tout d'abord converti en string,
-    #~ sauf s'il est de type byte."""
-    #~ if isinstance(string, bytes):
-        #~ return bytes
-    #~ if not isinstance(string, str):
-        #~ string = str(string)
-    #~ return string.encode(encodage if encodage else param.encodage)
-
-
-
-
-def universal_unicode_string(chaine):
-    """Convertit en string, sans renvoyer d'erreur.
-
-    Tente de détecter l'encodage, en essayant successivement :
-        * la valeur de `param.encodage`
-        * utf-8
-        * latin-1
-
-    Si des erreurs persistent, les caractères intraduisibles sont remplacés
-    par des `?`.
-    """
-    if isinstance(chaine, str):
-        return chaine
-    elif isinstance(chaine, bytes):
-        try:
-            chaine = str(chaine)
-        except UnicodeError:
-            chaine = str(chaine)
-    if not isinstance(chaine, str):
-        for encodage in [param.encodage, sys.getdefaultencoding(), 'utf-8', 'latin1', 'cp1250',
-                         'mac_roman', 'latin2']:
-            try:
-                return str(chaine, encodage)
-            except UnicodeError:
-                pass
-    return str(chaine, 'ascii', 'replace')
-
-uu = universal_unicode_string
 
 
 
