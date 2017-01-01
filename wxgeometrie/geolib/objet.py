@@ -502,8 +502,12 @@ class BaseArgument(object):
     def _get(self, obj, value):
         if self.get_method is not None:
             value = self.get_method(obj, value)
+        # Pour l'utilisateur final, il est bien plus utile d'obtenir
+        # la valeur de la variable que l'objet variable lui-même.
+        # Par ex., si A est un objet de type `Point`, ceci permet
+        # d'écrire `abs(A.x) == 2` plutôt que `abs(A.x.val) == 2`.
         if isinstance(value, G.Variable_generique):
-            value = value.contenu
+            value = value.val
         return value
 
 
@@ -605,7 +609,9 @@ class Arguments(BaseArgument): # au pluriel !
             return self
 
         values = self._get(obj, [elt.objet for elt in self.__contenu__[obj]])
-        values = ((o.contenu if isinstance(o, G.Variable_generique) else o)
+        # Pour l'utilisateur final, il est bien plus utile d'obtenir
+        # la valeur de la variable que l'objet variable lui-même.
+        values = ((o.val if isinstance(o, G.Variable_generique) else o)
                             for o in values)
         return TupleObjets(values, objet=obj, arguments=self.__contenu__[obj])
 
@@ -802,20 +808,32 @@ class Objet(metaclass=ObjetType):
             self.style(**styles)
 
     def __setattr__(self, name, value):
-        """Pour éviter qu'une erreur de frappe (dans la ligne de commande notamment)
-        passe inaperçue, on ne peut pas affecter un attribut s'il n'est pas déclaré
-        auparavant dans la classe."""
-        if self._initialise and not name.startswith('_') and not hasattr(self, name):
-            if param.debug:
-                print("Attention: \n \
-                       Les attributs publiques des classes héritant de `Objet` doivent \n \
-                       être initialisés, soit comme attributs de la classe, \n \
-                       soit dans la méthode `__init__` de la classe.\n \
-                       Concrêtement, rajoutez une ligne `%s = None`\n \
-                       au début de la classe `%s`, avec une ligne de\n \
-                       commentaire expliquant le rôle de cet attribut."
-                       % (name, self.__class__.__name__))
-            raise AttributeError("Attribut " + repr(name) + " doesn't exist.")
+        """On ne peut pas créer de nouvel attribut après l'initialisation.
+
+        Pour éviter qu'une erreur de frappe (dans la ligne de commande notamment)
+        passe inaperçue, on ne peut pas affecter un attribut s'il n'est pas créé
+        auparavant dans la phase d'initialisation.
+
+        Ceci ne concerne pas les attributs privés (commençant par `_`).
+        """
+        # Ne pas utiliser hasattr(self, name) qui peut impliquer
+        # des mises à jour inutiles du cache.
+        if self._initialise and not name.startswith('_') and name not in self.__dict__:
+            for class_ in type(self).mro():
+                if isinstance(vars(class_).get(name),
+                        (BaseArgument, property, DescripteurFeuille)):
+                    break
+            else:
+                if param.debug:
+                    print("Attention: \n \
+                           Les attributs publiques des classes héritant de `Objet` doivent \n \
+                           être initialisés, soit comme attributs de la classe, \n \
+                           soit dans la méthode `__init__` de la classe.\n \
+                           Concrêtement, rajoutez une ligne `%s = None`\n \
+                           dans la méthode __init__() de la classe `%s`, avec une ligne de\n \
+                           commentaire expliquant le rôle de cet attribut."
+                           % (name, self.__class__.__name__))
+                raise AttributeError("Attribut " + repr(name) + " doesn't exist.")
         object.__setattr__(self, name, value)
 
 
@@ -1196,6 +1214,43 @@ class Objet(metaclass=ObjetType):
     def _hierarchie_et_nom(self): # pour classer les objets
         return (self._hierarchie, self.nom)
 
+    def _arg_raw_value(self, name):
+        """Pour la plupart des usages, on effectue simplement `o.name`
+        pour obtenir la valeur de l'argument nommé `name` de l'objet `o`.
+
+        Cependant, la valeur qu'on obtient n'est pas forcément celle stockée
+        en interne :
+        - les arguments (cf. classe BaseArgument) ont la possibilité
+          d'appliquer une fonction personnalisée modifiant la valeur
+          vant qu'elle soit retournée.
+        - les variables ne sont pas renvoyées telles qu'elles, mais on
+          renvoie directement leur contenu.
+          Ceci permet par exemple d'écrire, pour un point `A`,
+          `abs(A.x) == 2`.
+        Lorsqu'en interne, on souhaite accéder directement aux arguments
+        bruts, par exemple pour mettre à jour les dépendances entre les
+        objets (parents et enfants), on utilise donc la méthode
+        `_arg_raw_value()`.
+        """
+        if isinstance(self, G.Variable):
+            assert name == 'contenu'
+            # `Variable.contenu` ne renvoie pas directement à l'argument
+            # mais à un attribut de type `property` de `Variable`.
+            # (Ce méchanisme est *peut-être* à simplifier en définissant une fonction
+            # personnalisée de retour lors de la définition de `contenu`.
+            # Est-ce faisable ??? Pas le temps de me pencher sur la question.)
+            return G.Variable._Variable__contenu.__contenu__[self].objet
+        argument = vars(type(self))[name]
+        value = argument.__contenu__[self]
+        # Attention, value est une référence à un objet (ou un tuple de
+        # références), pas un objet lui-même, sauf s'il s'agit d'un argument
+        # non modifiable (auquel cas, l'objet n'est pas encapsulé dans Ref).
+        if isinstance(argument, ArgumentNonModifiable):
+            return value
+        if isinstance(value, tuple):
+            return tuple(elt.objet for elt in value)
+        else:
+            return value.objet
 
     @property
     def _iter_arguments(self):
@@ -1203,11 +1258,11 @@ class Objet(metaclass=ObjetType):
 
         L'ordre des arguments est respecté.
         """
-        return iter((arg,  getattr(self, arg)) for arg in self._noms_arguments)
+        return iter((arg, self._arg_raw_value(arg)) for arg in self._noms_arguments)
 
     @property
     def _arguments(self):
-        return dict((arg,  getattr(self, arg)) for arg in self._noms_arguments)
+        return dict((arg, self._arg_raw_value(arg)) for arg in self._noms_arguments)
 
 
     def _set_feuille(self):

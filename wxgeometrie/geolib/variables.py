@@ -215,8 +215,8 @@ class Variable(Variable_generique):
     def __str__(self):
         return str(self.contenu)
 
-    def __repr__(self, styles=True):
-        return repr(self.contenu)
+    #~ def __repr__(self, styles=True):
+        #~ return repr(self.contenu)
 
     def _definition(self):
         if self._type == "compose":
