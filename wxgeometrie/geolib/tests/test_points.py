@@ -163,7 +163,7 @@ def test_Projete_arc_cercle():
     M.coordonnees = -17.826266675199999, 11.760911186
     assert(type(P.coordonnees) is tuple)
     assertAlmostEqual(A.coordonnees, P.coordonnees)
-    assertEqual(A, P)
+    assert A.confondu(P)
 
 def test_Projete_segment():
     s = Segment(rand_pt(), rand_pt())
@@ -225,7 +225,7 @@ def test_Centre_cercle_circonscrit():
     A, B, C = rand_pt(), rand_pt(), rand_pt()
     p = Polygone(A, B, C)
     O= Centre_cercle_circonscrit(p)
-    assert(O == Point_equidistant(A, B, C))
+    assert(O.confondu(Point_equidistant(A, B, C)))
 
 def test_Centre_cercle_inscrit():
     A, B, C = rand_pt(), rand_pt(), rand_pt()

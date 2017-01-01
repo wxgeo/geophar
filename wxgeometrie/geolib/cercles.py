@@ -389,9 +389,9 @@ class Arc_points(Arc_generique):
     def _sens(self):
         "Sens de parcours de l'arc : direct (1) ou indirect (-1)"
         # mesure des angles dans ]-pi;pi]
-        a = float(self._angle1)
-        b = float(self._angle2)
-        c = float(self._angle3)
+        a = float(self._angle1.valeur)
+        b = float(self._angle2.valeur)
+        c = float(self._angle3.valeur)
         if b < a:
             b += 2*pi
         if c < a:

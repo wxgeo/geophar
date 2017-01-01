@@ -36,6 +36,32 @@ from ..mathlib.printers import custom_str
 
 
 
+def confondus(M, N):
+    try:
+        (xM, yM), (xN, yN) = M, N
+    except Exception:
+        return False
+    eps = contexte['tolerance']
+    return abs(xN - xM) < eps and abs(yM - yN) < eps
+
+
+def distincts(M, N):
+    try:
+        (xM, yM), (xN, yN) = M, N
+    except Exception:
+        return False
+    eps = contexte['tolerance']
+    return abs(xN - xM) > eps or abs(yM - yN) > eps
+
+
+def distincts2a2(*points):
+    for i, M in enumerate(points):
+        for N in points[i + 1:]:
+            if not distincts(M, N):
+                return False
+    return True
+
+
 def radian(val):
     unite = contexte['unite_angle']
     if unite == 'd':

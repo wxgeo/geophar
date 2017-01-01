@@ -30,7 +30,7 @@ from .objet import Objet_avec_coordonnees, Argument, Ref, Objet, \
                    Objet_avec_coordonnees_modifiables
 from .formules import Formule
 
-from ..pylib import uu, warning, property2, no_argument, print_error
+from ..pylib import warning, property2, no_argument, print_error
 from ..mathlib.parsers import convertir_en_latex, latex2mathtext, mathtext_parser
 from .. import param
 

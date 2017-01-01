@@ -21,7 +21,7 @@
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-import re, math, types
+import re, types
 from types import FunctionType, BuiltinFunctionType
 from weakref import WeakValueDictionary, WeakSet, WeakKeyDictionary
 
@@ -29,9 +29,8 @@ import numpy
 
 from sympy import I, pi as PI, Basic, Integer
 
-from ..mathlib.internal_objects import Reel
 # à intégrer dans geolib ??
-from ..pylib import property2, uu, print_error, \
+from ..pylib import property2, print_error, \
                     is_in, WeakMultiSet, warning
 from ..mathlib.parsers import mathtext_parser
 from .routines import nice_display
@@ -1576,7 +1575,7 @@ class Objet(metaclass=ObjetType):
 ###################
 
     def __contains__(self, y):
-        with contexte(exact = False):
+        with contexte(exact=False):
             return self._contains(y)
 
     def _contains(self, y):

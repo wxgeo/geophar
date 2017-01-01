@@ -24,14 +24,12 @@
 from random import uniform, normalvariate
 from math import cos, sin, pi
 
-from numpy import ndarray
-
 from sympy import cos as scos, sin as ssin
 
 from .objet import Objet_avec_coordonnees, Ref, Argument, Objet, Arguments, \
                    contexte, Objet_avec_coordonnees_modifiables, issympy
 from .routines import angle_vectoriel, vect, carre_distance, produit_scalaire, \
-                      distance
+                      distance, confondus, distincts
 
 from .. import param
 
@@ -139,18 +137,13 @@ class Point_generique(Objet_avec_coordonnees):
         x0, y0 = self._pixel()
         return (x - x0)**2 + (y - y0)**2 < d**2
 
+    def confondu(self, *points):
+        return all(confondus(self, M) for M in points)
 
-    def confondu(self, y):
-        if self.existe:
-            if  isinstance(y, Point_generique) and y.existe:
-                return abs(self.x - y.x) < contexte['tolerance'] and abs(self.y - y.y) < contexte['tolerance']
-            elif isinstance(y, (list, tuple, ndarray)) and len(y) == 2:
-                return abs(self.x - y[0]) < contexte['tolerance'] and abs(self.y - y[1]) < contexte['tolerance']
-        return False
+    egale = egal = confondu
 
-    def __ne__(self, y):
-        return not (self == y)
-
+    def distinct(self, *points):
+        return all(distincts(self, M) for M in points)
 
     def relier_axe_x(self):
         if self.feuille is not None:
@@ -1084,7 +1077,7 @@ class Glisseur_cercle(Glisseur_generique):
     def _conversion_coordonnees_parametre(self, x, y):
         O = self.__cercle.centre
         M = (x, y)
-        if O != M:
+        if O.distinct(M):
             return angle_vectoriel((1, 0), vect(O, M))
         else:
             return  0
@@ -1130,7 +1123,7 @@ class Glisseur_arc_cercle(Glisseur_generique):
     def _conversion_coordonnees_parametre(self, x, y):
         M = (x, y)
         O = self.__arc.centre;
-        if O != M:
+        if O.distinct(M):
             a, b = self.__arc._intervalle()
             c = angle_vectoriel((1, 0), vect(O, M))
             while c < a:

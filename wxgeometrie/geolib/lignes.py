@@ -31,9 +31,9 @@ from .objet import Objet, Objet_avec_equation, Argument, ArgumentNonModifiable, 
                     Ref, contexte, RE_NOM_DE_POINT, G
 from .angles import Secteur_angulaire
 from .points import Point, Point_generique, Centre, Point_translation, Milieu
-from .routines import nice_display, distance, carre_distance, formatage, \
+from .routines import nice_display, distance, formatage, \
                       vect, produit_scalaire, norme, distance_segment, \
-                      arrondir_1_25_5, sign
+                      arrondir_1_25_5, sign, distincts
 from .vecteurs import Vecteur_unitaire, Vecteur, Vecteur_libre, Vecteur_generique
 from .labels import Label_droite, Label_demidroite, Label_segment
 from .transformations import Translation
@@ -289,8 +289,8 @@ class Segment(Ligne_generique):
             k = xv/xu
         elif yu:
             k = yv/yu
-        else:  # A == B
-            return M == A
+        else:  # A et B confondus
+            return M.confondu(A)
         return 0 <= k <= 1
 
     @property
@@ -339,12 +339,10 @@ class Demidroite(Ligne_generique):
         return Demidroite(self.__point1.image_par(transformation), self.__point2.image_par(transformation))
 
     def _conditions_existence(self):
-        return carre_distance(self.__origine, self.__point) > contexte['tolerance']**2
+        return distincts(self.__origine, self.__point)
         # EDIT: les conditions d'existence en amont sont désormais bien définies (ou devraient l'être !!)
         # return [self.point1.coo is not None and self.point2.coo is not None and sum(abs(self.point1.coo - self.point2.coo)) > contexte['tolerance']]
         # si les conditions d'existence en amont sont mal definies, il se peut que les coordonnees d'un point valent None
-
-
 
 
 
@@ -395,8 +393,8 @@ class Demidroite(Ligne_generique):
             k = xv/xu
         elif yu: # (AB) est plutôt verticale
             k = yv/yu
-        else:  # A == B
-            return M == A
+        else:  # A et B confondus
+            return M.confondu(A)
         return 0 <= k
 
 
@@ -457,7 +455,7 @@ class Droite_generique(Ligne_generique):
         return Droite(self.__point1.image_par(transformation), self.__point2.image_par(transformation))
 
     def _conditions_existence(self):
-        return carre_distance(self.__point1, self.__point2) > contexte['tolerance']**2
+        return distincts(self.__point1, self.__point2)
 
 
     def _creer_figure(self):
@@ -485,13 +483,11 @@ class Droite_generique(Ligne_generique):
 
 
     def _contains(self, M):
-        #if not isinstance(M, Point_generique):
-        #    return False
         A = self.__point1
         B = self.__point2
         xu, yu = vect(A, B)
         xv, yv = vect(A, M)
-        return abs(xu*yv-xv*yu) < contexte['tolerance']
+        return abs(xu*yv - xv*yu) < contexte['tolerance']
 
     @property
     def equation_formatee(self):
@@ -507,7 +503,7 @@ class Droite_generique(Ligne_generique):
     def info(self):
         return self.nom_complet + " d'équation " + self.equation_formatee
 
-    def confondu(self,  y):
+    def confondu(self, y):
         if self.existe and isinstance(y, Droite_generique) and y.existe:
             eq1 = self.equation_reduite
             eq2 = y.equation_reduite
@@ -516,6 +512,8 @@ class Droite_generique(Ligne_generique):
             elif len(eq1) == len(eq2) == 2:
                 return abs(eq1[0] - eq2[0]) < contexte['tolerance'] and abs(eq1[1] - eq2[1]) < contexte['tolerance']
         return False
+
+    egal = egale = confondu
 
     @staticmethod
     def _convertir(objet):
@@ -684,7 +682,7 @@ class Mediatrice(Perpendiculaire):
     >>> from wxgeometrie.geolib import Point, Mediatrice, Segment
     >>> A=Point(1,2); B=Point(3,4)
     >>> s=Segment(A,B)
-    >>> Mediatrice(A, B) == Mediatrice(s)
+    >>> Mediatrice(A, B).confondu(Mediatrice(s))
     True
     """
 
@@ -701,7 +699,7 @@ class Mediatrice(Perpendiculaire):
 
 
     def _conditions_existence(self):
-        return carre_distance(self.__point1, self.__point2) > contexte['tolerance']**2
+        return distincts(self.__point1, self.__point2)
 
 
 
@@ -822,9 +820,10 @@ class Bissectrice(Droite_vectorielle):
         Droite_vectorielle.__init__(self, point2, v, **styles)
 
     def _conditions_existence(self):
-        return carre_distance(self.__point1, self.__point2) > contexte['tolerance']**2 and \
-                    carre_distance(self.__point2, self.__point3) > contexte['tolerance']**2
-
+        A = self.__point1
+        O = self.__point2 # sommet
+        B = self.__point3
+        return distincts(O, A) and distincts(O, B)
 
 
 

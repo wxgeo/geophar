@@ -31,7 +31,7 @@ def test_Segment():
     assert(N not in s)
     assert(s.mode_affichage == 'rien')
     K = Point(s, 0.5)
-    assert K == I
+    assert K.confondu(I)
 
 def test_Demidroite():
     A = Point(4.5,  7.3)

@@ -109,6 +109,8 @@ class Vecteur_generique(Objet_avec_coordonnees):
                 return abs(self.x - y[0]) < contexte['tolerance'] and abs(self.y - y[1]) < contexte['tolerance']
         return False
 
+    egale = egal
+
     def __bool__(self):
         return tuple(self.coordonnees) != (0, 0)
 
@@ -210,8 +212,8 @@ class Vecteur(Vecteur_generique):
             k = xv/xu
         elif yu:
             k = yv/yu
-        else:  # A == B
-            return M == A
+        else:  # A et B confondus
+            return M.confondu(A)
         return 0 <= k <= 1
 
     @staticmethod
