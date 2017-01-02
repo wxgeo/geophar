@@ -2015,7 +2015,6 @@ class Objet_avec_valeur(Objet):
 
 
 
-
 #~ class Objet_numerique(Reel, Objet_avec_valeur):
     #~ "Ensemble de méthodes propres aux angles, aux variables, et autres objets numériques."
 

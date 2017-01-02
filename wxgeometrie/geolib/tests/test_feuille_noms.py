@@ -38,7 +38,7 @@ def test_abreviations():
     o.A = (1, 2)
     o.k = 7
     assert(isinstance(o.A, Point))
-    assert(isinstance(o.k, Variable))
+    assert(isinstance(o.k, int))
     o.h = 'A.x'
     o.A.x = 15
     assert(o.h == 15)

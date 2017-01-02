@@ -259,10 +259,10 @@ class Vecteur_libre(Objet_avec_coordonnees_modifiables, Vecteur_generique):
     def _set_feuille(self):
         xmin, xmax, ymin, ymax = self.feuille.fenetre
         if "_Vecteur_libre__x" in self._valeurs_par_defaut:
-            self.__x.val =  uniform(xmin, xmax)
+            self.__x =  uniform(xmin, xmax)
 #            self._valeurs_par_defaut.discard("_Vecteur_libre__x")
         if "_Vecteur_libre__y" in self._valeurs_par_defaut:
-            self.__y.val =  uniform(ymin, ymax)
+            self.__y =  uniform(ymin, ymax)
 #            self._valeurs_par_defaut.discard("_Vecteur_libre__y")
         Objet._set_feuille(self)
 

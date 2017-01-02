@@ -54,7 +54,7 @@ from .textes import Texte, Texte_generique
 ##from .labels import Label_generique
 from .vecteurs import Vecteur_libre
 from .variables import Variable, XMinVar, XMaxVar, YMinVar, YMaxVar, Dpx, Dpy, \
-                       Variable_affichage, Pixel_unite
+                       Variable_affichage, Variable_generique, Pixel_unite
 
 from .pseudo_canvas import _pseudocanvas
 from .. import param
@@ -467,7 +467,10 @@ class Dictionnaire_objets(dict):
             return self.noms
         elif nom == "_":
             return self.__derniere_valeur()
-        return dict.__getitem__(self, self.__convertir_nom(nom))
+        value = dict.__getitem__(self, self.__convertir_nom(nom))
+        if isinstance(value, Variable_generique):
+            return value.val
+        return value
 
 
     def __getitem__(self, nom):
@@ -1167,12 +1170,8 @@ class Feuille(object):
 
 
     def fenetre_modifiee(self):
-        self.objets.xmin.perime()
-        self.objets.xmax.perime()
-        self.objets.ymin.perime()
-        self.objets.ymax.perime()
-        self.objets.dpx.perime()
-        self.objets.dpy.perime()
+        for name in ('xmin', 'xmax', 'ymin', 'ymax', 'dpx', 'dpy'):
+            dict.__getitem__(self.objets, name).perime()
         # XXX: il ne devrait pas y avoir besoin d'appeler la méthode suivante :
         self._rafraichir_figures()
 

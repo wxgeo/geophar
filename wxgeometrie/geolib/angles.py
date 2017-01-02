@@ -49,6 +49,7 @@ class Angle_generique(Objet_avec_valeur):
     def __init__(self, **styles):
         Objet.__init__(self, **styles)
 
+
     @property
     def radian(self):
         return self.val

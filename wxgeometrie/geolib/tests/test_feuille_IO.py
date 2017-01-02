@@ -159,7 +159,7 @@ def test_redefinir():
     f.objets.AB = Segment(A, B)
     f.objets.AB.redefinir('Vecteur(A, B)')
     assert isinstance(f.objets.AB, Vecteur)
-    assert f.objets.AB == Vecteur(A, B)
+    assert f.objets.AB.egale(Vecteur(A, B))
     f.objets.txt = Texte('Hello', 2, 3)
     f.objets.txt.redefinir("Texte('Bonjour', 1, 4)")
     assert isinstance(f.objets.txt, Texte)
