@@ -180,7 +180,7 @@ class Canvas(FigureCanvasAgg):
 
 
     def selection_en_gras(self):
-        self.feuille_actuelle.met_objets_en_gras(self.select, *self.liste_objets_en_gras)
+        self.feuille_actuelle.met_objets_en_gras(self.select, *self.objets_en_gras)
 
 #   Alias
 ######################
