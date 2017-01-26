@@ -173,7 +173,7 @@ def gs(string='', case=True, include_comments=False, comment_marker='#', extensi
                                           + "  line " + white(str(n + 1))
                                           + ":   " + s)
 
-                        if edit_with is not None and (edit_result == ()
+                        if edit_with is not None and edit_result is not None and (len(edit_result) == 0
                                                     or ((n_lignes + 1) in edit_result)):
                             if edit_with not in SUPPORTED_EDITORS:
                                 print(edit_with + ' is currently not supported.')
@@ -185,6 +185,7 @@ def gs(string='', case=True, include_comments=False, comment_marker='#', extensi
                                 command = '%s --line %s %s' % (edit_with, n + 1, filename)
                             else:
                                 command = '%s +%s %s' % (edit_with, n + 1, filename)
+                            #~ print('%s executed...' % command)
                             subprocess.call(command, shell=True)
 
                         n_lignes += 1
@@ -192,7 +193,8 @@ def gs(string='', case=True, include_comments=False, comment_marker='#', extensi
                             return red("Maximum output exceeded...!")
             except UnicodeDecodeError:
                 correct_encoding = False
-                print(red("ERROR:") + " Can't read %s, encoding isn't %s." % (filename, sys.getdefaultencoding()))
+                print(red("ERROR:") + " Can't read %s, encoding isn't %s."
+                                    % (filename, sys.getdefaultencoding()))
 
         if correct_encoding and results:
             print(" \u2022 in " + green(filename[:end_root_pos])
@@ -230,17 +232,22 @@ if __name__ == "__main__":
                 help='''Open editor and display result number N
                          (use --edit with no argument to
                         open all files where searched string was found).''')
-    parser.add_argument('-w', '--edit-with', metavar='EDITOR', choices=SUPPORTED_EDITORS)
+    parser.add_argument('-w', '--edit-with', metavar='EDITOR',
+                        choices=SUPPORTED_EDITORS, default=DEFAULT_EDITOR)
     parser.add_argument('-s', '--stats', help='Display statistics concerning scanned files.')
     parser.add_argument('-m', '--maximum', type=int, metavar='N', default=100,
                         help='Display only the first N results.')
     parser.add_argument('-i', '--include-comments', action='store_true',
                         help='Search in comments too.')
-    parser.add_argument('-x', '--extensions', metavar='EXTENSION', nargs='+', default=('.py', '.pyw'),
+    parser.add_argument('-x', '--extensions', metavar='EXTENSION', nargs='+',
+                        default=('.py', '.pyw'),
                         help='Search only files whose name ends with any specified extension.')
-    parser.add_argument('-n', '--no-color', dest='color', action='store_false', help='Disable colors.')
-    parser.add_argument('-k', '--skip-paths', metavar='PATH_TO_SKIP', nargs='*', default=IGNORE, help='Paths to skip.')
-    parser.add_argument('-c', '--discard-case', dest='case', action='store_false', help='Make search case insensitive.')
+    parser.add_argument('-n', '--no-color', dest='color', action='store_false',
+                        help='Disable colors.')
+    parser.add_argument('-k', '--skip-paths', metavar='PATH_TO_SKIP', nargs='*',
+                        default=IGNORE, help='Paths to skip.')
+    parser.add_argument('-c', '--discard-case', dest='case', action='store_false',
+                        help='Make search case insensitive.')
     args = parser.parse_args()
 
     title = "\n=== Recherche de %s ===\n" % repr(args.string)
