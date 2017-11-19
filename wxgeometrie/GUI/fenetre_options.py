@@ -101,7 +101,7 @@ class FenetreOptions(QDialog):
 
         if type_ is bool:
             widget = QCheckBox(parametre.texte, panel)
-        elif type_ in (file, str):
+        elif type_ in (open, str):
             widget = QLineEdit(panel)
             widget.setMinimumWidth(200)
         elif isinstance(type_, tuple):
@@ -117,7 +117,7 @@ class FenetreOptions(QDialog):
         widget.parametre = parametre
         self.set_value(widget, parametre.valeur)
         psizer.addWidget(widget)
-        if type_ is file:
+        if type_ is open:
             parcourir = QPushButton('Parcourir', clicked=partial(self.parcourir, widget))
             psizer.addWidget(parcourir)
         return psizer
@@ -126,7 +126,7 @@ class FenetreOptions(QDialog):
         type_ = widget.parametre.type
         if type_ is bool:
             widget.setChecked(valeur)
-        elif type_ in (file, str):
+        elif type_ in (open, str):
             widget.setText(valeur)
         elif isinstance(type_, tuple):
             widget.setValue(valeur)
@@ -140,7 +140,7 @@ class FenetreOptions(QDialog):
         type_ = widget.parametre.type
         if type_ is bool:
             return widget.isChecked()
-        elif type_ in (file, str):
+        elif type_ in (open, str):
             return widget.text()
         elif isinstance(type_, tuple):
             return widget.value()

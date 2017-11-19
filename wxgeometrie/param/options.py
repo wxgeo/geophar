@@ -120,7 +120,7 @@ modules.add('Nota: les modules non activés par défaut peuvent être non docume
 
 ## FORMAT
 format = options.add(Theme('Format'))
-format.add(P('Décimales affichées', decimales = (0, 10)))
+format.add(P('Décimales affichées', decimales=(0, 10)))
 
 format.add(P('Unité d\'angle',
              _get = (lambda k: {'d': 'degré', 'r': 'radian', 'g':' grade'}[k]),
@@ -138,12 +138,12 @@ format.add(P('Séparateur décimal',
 ## AVANCÉ
 avance = options.add(Theme('Avancé'))
 export = avance.add(Section("Export"))
-export.add(P("Résolution des images PNG", dpi_export = (10, 10000)))
+export.add(P("Résolution des images PNG", dpi_export=(10, 10000)))
 
 sauvegarde = avance.add(Section("Sauvegarde"))
-sauvegarde.add(P("Compresser les fichiers .geo par défaut.", compresser_geo = bool))
+sauvegarde.add(P("Compresser les fichiers .geo par défaut.", compresser_geo=bool))
 
 empl_pref = avance.add(Section("Répertoires d'enregistrement"))
-empl_pref.add(P("Préférences", emplacements__preferences = file))
-empl_pref.add(P("Session", emplacements__session = file))
-empl_pref.add(P("Rapports d'erreur", emplacements__log = file))
+empl_pref.add(P("Préférences", emplacements__preferences=open))
+empl_pref.add(P("Session", emplacements__session=open))
+empl_pref.add(P("Rapports d'erreur", emplacements__log=open))
