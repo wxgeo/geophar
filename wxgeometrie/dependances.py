@@ -41,7 +41,7 @@ dependances = {'PyQt4': 'python3-pyqt4',
                }
 
 python_version_min = (3, 5)
-python_version_max = (3, 5)
+python_version_max = (3, 99)
 
 plateforme = platform.system() #'Windows' ou 'Linux' par exemple.
 
