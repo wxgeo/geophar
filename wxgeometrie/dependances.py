@@ -88,22 +88,22 @@ def tester_dependances():
             imp.find_module(module, path)
         except ImportError:
             modules_manquants.append(module_name)
-	
-	if modules_manquants:
-		try:
-			# Try to install missing modules using pip.
-			import pip
-			for module in modules_manquants:
-				pip.main(["install", "--user", module])
-			# This allows the modules to be imported during current python session.
-			# See https://stackoverflow.com/questions/40711133/pip-maininstall-user-not-working.
-			home_folder = os.path.expanduser("~")
-			user_site_packages_folder = "{}/.local/lib/python2.7/site-packages".format(home_folder)
-			if user_site_packages_folder not in sys.path:
-				sys.path.append(user_site_packages_folder)
-			modules_manquants = []
-		except ImportError:
-			pass
+
+    if modules_manquants:
+        try:
+            # Try to install missing modules using pip.
+            import pip
+            for module in modules_manquants:
+                pip.main(["install", "--user", module])
+            # This allows the modules to be imported during current python session.
+            # See https://stackoverflow.com/questions/40711133/pip-maininstall-user-not-working.
+            home_folder = os.path.expanduser("~")
+            user_site_packages_folder = "{}/.local/lib/python2.7/site-packages".format(home_folder)
+            if user_site_packages_folder not in sys.path:
+                sys.path.append(user_site_packages_folder)
+            modules_manquants = []
+        except ImportError:
+            pass
 
     if modules_manquants and plateforme == 'Linux':
         paquets = [dependances[module] for module in modules_manquants]
