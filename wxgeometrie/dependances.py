@@ -22,7 +22,7 @@
 # Ce module sert à tester que toutes les dépendances sont satisfaites,
 # et à y remédier dans le cas contraire (si possible).
 
-import sys, imp, platform
+import sys, imp, platform, os, shutil, subprocess
 
 # ------------------------------------------------------------------------------
 # CONFIGURATION
@@ -89,6 +89,22 @@ def tester_dependances():
         except ImportError:
             modules_manquants.append(module_name)
 
+    if modules_manquants and plateforme == 'Linux' and shutil.which('apt'):
+        paquets = [dependances[module] for module in modules_manquants]
+        for paquet in paquets:
+            msg = "WARNING: Le module %s manque." % paquet
+            deco = len(msg)*'*'
+            print(deco)
+            print(msg)
+            print(deco)
+            print("INSTALLATION via apt install...")
+            subprocess.run(['sudo', 'apt', 'install', paquet])
+        print('Des modules indispensables ont été installés.')
+        print('Redémarrage de Géophar...')
+        os.execv(sys.executable, [sys.executable] + sys.argv)
+        sys.exit()
+
+
     if modules_manquants:
         try:
             # Try to install missing modules using pip.
@@ -105,20 +121,21 @@ def tester_dependances():
         except ImportError:
             pass
 
-    if modules_manquants and plateforme == 'Linux':
-        paquets = [dependances[module] for module in modules_manquants]
-        import dbus
-        try:
-            bus = dbus.SessionBus()
-            try:
-                proxy = bus.get_object('org.freedesktop.PackageKit', '/org/freedesktop/PackageKit')
-                iface = dbus.Interface(proxy, 'org.freedesktop.PackageKit.Modify')
-                iface.InstallPackageNames(dbus.UInt32(0), paquets, "show-confirm-search,hide-finished", timeout=1000)
-                modules_manquants = []
-            except dbus.DBusException as e:
-                print('Unable to use PackageKit: %s' % str(e))
-        except dbus.DBusException as e:
-            print('Unable to connect to dbus: %s' % str(e))
+    # ~ if modules_manquants and plateforme == 'Linux':
+        # ~ paquets = [dependances[module] for module in modules_manquants]
+        # ~ import dbus
+        # ~ try:
+            # ~ bus = dbus.SessionBus()
+            # ~ try:
+                # ~ proxy = bus.get_object('org.freedesktop.PackageKit', '/org/freedesktop/PackageKit')
+                # ~ iface = dbus.Interface(proxy, 'org.freedesktop.PackageKit.Modify')
+                # ~ iface.InstallPackageNames(dbus.UInt32(0), paquets, "show-confirm-search,hide-finished", timeout=10000)
+                # ~ modules_manquants = []
+            # ~ except dbus.DBusException as e:
+                # ~ print('Unable to use PackageKit: %s' % str(e))
+        # ~ except dbus.DBusException as e:
+            # ~ print('Unable to connect to dbus: %s' % str(e))
+
 
     if modules_manquants:
         print('** Erreur fatale **\nLes modules suivants sont introuvables !')
