@@ -27,9 +27,9 @@ from functools import partial
 from random import shuffle
 import re
 
-from PyQt4.QtGui import (QVBoxLayout, QInputDialog, QPushButton,
-                         QTextEdit, QGridLayout, QLabel, QLineEdit, QSpacerItem)
-from PyQt4.QtCore import Qt, QTimer
+from PyQt5.QtWidgets import QVBoxLayout, QInputDialog, QPushButton,\
+    QTextEdit, QGridLayout, QLabel, QLineEdit, QSpacerItem
+from PyQt5.QtCore import Qt, QTimer
 
 from ...GUI.menu import MenuBar
 from ...GUI.panel import Panel_simple

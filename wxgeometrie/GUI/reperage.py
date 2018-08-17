@@ -21,7 +21,7 @@
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-from PyQt4.QtGui import QDialog, QDialogButtonBox
+from PyQt5.QtWidgets import QDialog, QDialogButtonBox
 
 from .reperage_ui import Ui_DialogReperage
 from .calibrage_ui import Ui_DialogCalibrage

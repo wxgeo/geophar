@@ -20,11 +20,10 @@
 
 
 import os
-
-from PyQt4.QtCore import Qt, QThread, QEvent, pyqtSignal, QSize
-from PyQt4.QtGui import (QCursor, QDialog, QPixmap, QPushButton, QColorDialog,
-                         QMenu, QFont, QIcon, QVBoxLayout, QLabel, QListWidget,
-                         QDialogButtonBox, QAbstractItemView, QPalette,)
+from PyQt5.QtCore import Qt, QThread, QEvent, pyqtSignal, QSize
+from PyQt5.QtGui import QCursor, QPixmap, QFont, QIcon, QPalette
+from PyQt5.QtWidgets import QVBoxLayout, QDialog, QPushButton, QColorDialog,\
+    QMenu, QLabel, QListWidget, QDialogButtonBox, QAbstractItemView
 
 from .. import param
 from .app import app

@@ -22,7 +22,7 @@
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os, time, _thread
-from PyQt4.QtGui import QWidget, QVBoxLayout, QLayout
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLayout
 
 from .barre_outils import BarreOutils
 from .menu import RSSMenu

@@ -21,7 +21,7 @@
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-from PyQt4.QtGui import (QVBoxLayout, QHBoxLayout, QLabel, QLineEdit,
+from PyQt5.QtWidgets import (QVBoxLayout, QHBoxLayout, QLabel, QLineEdit,
                          QGroupBox)
 
 from mpl_toolkits.mplot3d import Axes3D

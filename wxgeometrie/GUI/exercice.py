@@ -24,8 +24,8 @@
 
 from random import randint
 
-from PyQt4.QtGui import (QVBoxLayout, QLabel, QPushButton, QHBoxLayout,
-                         QColor)
+from PyQt5.QtGui import QColor
+from PyQt5.QtWidgets import QLabel, QPushButton, QVBoxLayout, QHBoxLayout
 
 from sympy import S
 ##from sympy.core.sympify import SympifyError

@@ -21,8 +21,9 @@
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-from PyQt4.QtCore import Qt
-from PyQt4.QtGui import QWidget, QHBoxLayout, QLineEdit, QLabel, QPushButton
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QHBoxLayout, QWidget, QLineEdit, QLabel, QPushButton
+
 
 
 class LigneCommande(QWidget):

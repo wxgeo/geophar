@@ -25,7 +25,7 @@
 import os, re
 from time import sleep
 
-from PyQt4.QtCore import pyqtSignal, QObject
+from PyQt5.QtCore import pyqtSignal, QObject
 
 from ..pylib import print_error, path2, debug, warning
 from ..API.sauvegarde import FichierSession

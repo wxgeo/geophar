@@ -23,9 +23,9 @@
 
 from operator import attrgetter
 
-from PyQt4.QtGui import (QDialog, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QMenu,
-                         QLineEdit, QPushButton, QFrame,)
-from PyQt4.QtCore import Qt, QCoreApplication
+from PyQt5.QtWidgets import QDialog, QWidget, QLabel, QMenu, QLineEdit, \
+    QPushButton, QFrame, QVBoxLayout, QHBoxLayout
+from PyQt5.QtCore import Qt, QCoreApplication
 
 ##from .wxlib import MyMiniFrame
 from ..geolib.variables import Variable, Objet

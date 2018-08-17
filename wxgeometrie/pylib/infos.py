@@ -27,7 +27,7 @@ import matplotlib
 import os
 import platform
 import locale
-import PyQt4.QtCore as qt
+import PyQt5.QtCore as qt
 
 try:
     # infos.py helps debuging, so should almost never fail.

@@ -26,7 +26,7 @@ from collections import defaultdict
 from random import randint
 from itertools import count
 
-from PyQt4.QtGui import QInputDialog, QLineEdit
+from PyQt5.QtWidgets import QInputDialog, QLineEdit
 
 from sympy import latex
 

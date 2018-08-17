@@ -21,8 +21,8 @@
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-from PyQt4.QtGui import (QWidget, QTabWidget, QGridLayout, QLabel, QLineEdit,
-                         QPushButton, QVBoxLayout, QTextEdit, QDialog, QGroupBox)
+from PyQt5.QtWidgets import QWidget, QTabWidget, QGridLayout, QLabel, \
+    QLineEdit, QPushButton, QTextEdit, QDialog, QGroupBox, QVBoxLayout
 
 
 

@@ -22,14 +22,18 @@
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os
+
 from webbrowser import open_new_tab
 from functools import partial
 from io import StringIO
 
-from PyQt4.QtGui import QTabWidget, QToolButton, QIcon, QMessageBox, QFileDialog, \
-                        QDialog, QPainter, QPrintDialog, QPrinter, QFont
-from PyQt4.QtCore import Qt, QPoint, QByteArray, QRectF
-from PyQt4.QtSvg import QSvgRenderer
+from PyQt5.QtGui import QIcon, QPainter, QFont
+from PyQt5.QtPrintSupport import QPrinter, QPrintDialog
+from PyQt5.QtWidgets import QTabWidget, QToolButton, QMessageBox, QFileDialog,\
+    QDialog
+from PyQt5.QtCore import Qt, QPoint, QByteArray, QRectF
+from PyQt5.QtSvg import QSvgRenderer
+
 import matplotlib.backend_bases as backend_bases
 
 from .aide import About, Informations
@@ -362,7 +366,7 @@ class Onglets(QTabWidget):
             else:
                 dir = param.rep_save
         filtre = (self.filtre_compressed if param.compresser_geo else '')
-        path, filtre = QFileDialog.getSaveFileNameAndFilter(self, "Enregistrer sous ...",
+        path, filtre = QFileDialog.getSaveFileName(self, "Enregistrer sous ...",
                                    os.path.join(dir, fichier), ';;'.join(self.filtres_save), filtre)
 
         compressed = (filtre == self.filtre_compressed or path.endswith('.geoz'))
@@ -388,7 +392,7 @@ class Onglets(QTabWidget):
         else:
             dir = param.rep_open
         filtre = self.filtres_open[0]
-        paths, filtre = QFileDialog.getOpenFileNamesAndFilter(self, "Choisissez un fichier", dir,
+        paths, filtre = QFileDialog.getOpenFileNames(self, "Choisissez un fichier", dir,
                                              ';;'.join(self.filtres_open), filtre)
         if paths:
             # Sauvegarde le répertoire pour la prochaine fois
@@ -477,7 +481,7 @@ class Onglets(QTabWidget):
             if filtre.endswith(format + ')'):
                 break
 
-        path, filtre = QFileDialog.getSaveFileNameAndFilter(self, "Exporter l'image",
+        path, filtre = QFileDialog.getSaveFileName(self, "Exporter l'image",
                                            os.path.join(dir, fichier), ';;'.join(filtres),
                                            filtre)
 
@@ -537,7 +541,7 @@ class Onglets(QTabWidget):
     def SauverSession(self):
         filtre = self.filtre_session
         path = self._nom_fichier_session
-        path, filtre = QFileDialog.getSaveFileNameAndFilter(self, "Sauver la session sous ...",
+        path, filtre = QFileDialog.getSaveFileName(self, "Sauver la session sous ...",
                                            path, filtre, filtre)
         if not path.endswith('.geos'):
             path += '.geos'
@@ -550,7 +554,7 @@ class Onglets(QTabWidget):
     def ChargerSession(self):
         filtre = self.filtre_session
         path = self._nom_fichier_session
-        path, filtre = QFileDialog.getOpenFileNameAndFilter(self,
+        path, filtre = QFileDialog.getOpenFileName(self,
                             "Choisissez un fichier de session",
                             path or path2(param.emplacements['session']),
                             filtre, filtre)

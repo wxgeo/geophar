@@ -29,10 +29,12 @@ import sys
 from webbrowser import open_new_tab
 from urllib.parse import urlencode
 
-from PyQt4.QtCore import pyqtSignal
-from PyQt4.QtGui import (QHBoxLayout, QVBoxLayout, QCheckBox, QPushButton, QDialog,
-                         QTextEdit, QLineEdit, QLabel, QComboBox, QGroupBox,
-                         QMessageBox, QWidget,)
+from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtWidgets import QCheckBox, QPushButton, QDialog, QTextEdit, \
+    QLineEdit, QLabel, QComboBox, QGroupBox, QMessageBox, QWidget,\
+    QHBoxLayout, QVBoxLayout
+
+
 from .. import param
 from ..pylib import path2
 from ..pylib.bugs_report import rapporter

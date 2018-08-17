@@ -22,10 +22,13 @@ import re
 from io import StringIO
 from functools import partial
 
-from PyQt4.QtCore import Qt, QTimer
-from PyQt4.QtGui import QCursor, QImage
+from PyQt5.QtCore import Qt, QTimer
+from PyQt5.QtGui import QCursor, QImage
+
 from numpy import array
-from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, FigureCanvasQTAggBase
+from matplotlib.backends.backend_qt5 import FigureCanvasQT
+from matplotlib.backends.backend_agg import FigureCanvasAgg
 
 from ..API.canvas import Canvas
 from .app import app
@@ -179,9 +182,19 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
         self.parent = parent
         # fenetre_principale>onglets>panel>canvas
         self.fenetre_principale = self.parent.parent.parent
+
         # initialisation dans cet ordre (self.figure doit être défini pour initialiser FigureCanvas)
         Canvas.__init__(self, couleur_fond = self.param("couleur_fond"))
-        FigureCanvasQTAgg.__init__(self, self.figure)
+        FigureCanvasQT.__init__(self, figure=self.figure)
+
+        # From matplotlib/backends/backend_qt5agg.py
+        # Calling FigureCanvasQTAggBase.__init__() directly results in a strange error.
+        self.setAttribute(Qt.WA_OpaquePaintEvent)
+        self._agg_draw_pending = False
+        self._bbox_queue = []
+        self._drawRect = None
+
+        FigureCanvasAgg.__init__(self, figure=self.figure)
 
         ##if param.plateforme == "Linux":
             ##self.SetSize(wx.Size(10, 10))
@@ -476,7 +489,7 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
 
     def wheelEvent(self, event):
         "Gestion du zoom par la roulette de la souris."
-        pas = event.delta()/120.
+        pas = event.angleDelta().y()/120.
         if ctrl_down(event):
             # Grossir textes et lignes (ne pas changer la fenêtre).
             if pas > 0:

@@ -24,9 +24,11 @@
 from math import pi
 from functools import partial
 
-from PyQt4.QtGui import (QWidget, QToolButton, QInputDialog, QLineEdit, QHBoxLayout,
-                         QIcon, QMenu, QShortcut)
-##from PyQt4.QtCore import Qt
+from PyQt5.QtGui import QIcon
+from PyQt5.QtWidgets import QWidget, QToolButton, QInputDialog, QLineEdit,\
+    QMenu, QHBoxLayout, QShortcut
+##from PyQt5.QtCore import Qt
+
 
 from .qtlib import png
 from ..pylib import is_in

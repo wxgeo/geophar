@@ -31,13 +31,14 @@ import sys, imp, platform, os, shutil, subprocess
 from .version import NOMPROG
 
 # Les valeurs sont les noms des paquets sous Debian/Ubuntu.
-dependances = {'PyQt4': 'python3-pyqt4',
+dependances = {'PyQt5': 'python3-pyqt5',
                'matplotlib': 'python3-matplotlib',
                'scipy': 'python3-scipy',
                'numpy': 'python3-numpy',
                'mpmath': 'python3-mpmath',
                'sip': 'python3-sip',
-               'PyQt4.Qsci': 'python3-pyqt4.qsci',
+               'PyQt5.Qsci': 'python3-pyqt5.qsci',
+               'PyQt5.QtSvg': 'python3-pyqt5.qtsvg',
                }
 
 python_version_min = (3, 5)
@@ -49,7 +50,7 @@ plateforme = platform.system() #'Windows' ou 'Linux' par exemple.
 # Utiliser une installation LaTeX existante (meilleur rendu mais très lent !)
 latex = False
 latex_unicode = True
-moteur_de_rendu = 'Qt4Agg'
+moteur_de_rendu = 'Qt5Agg'
 
 # ------------------------------------------------------------------------------
 
@@ -162,6 +163,8 @@ def configurer_dependances():
     except ImportError:
         print("Warning: sip not found.")
 
+    import PyQt5
+
     # ---------------------------
     # Configuration de Matplotlib
     # ---------------------------
@@ -171,6 +174,8 @@ def configurer_dependances():
     except ImportError:
         pass
     import matplotlib
+    matplotlib.rcParams['backend'] = 'Qt5Agg'
+    matplotlib.rcParams['backend.qt5'] ='PyQt5'
     matplotlib.use(moteur_de_rendu, warn=False)
     matplotlib.rcParams['text.usetex'] = latex
     matplotlib.rcParams["text.latex.unicode"] = latex_unicode
@@ -181,6 +186,8 @@ def configurer_dependances():
     matplotlib.rcParams['font.serif'] ='STIXGeneral'
     #matplotlib.rcParams['font.monospace'] ='STIXGeneral'
     matplotlib.rcParams['mathtext.fontset'] ='stix'
+
+
 
     # import pylab_ as pylab
     # le fichier pylab_.py est modifie lors d'une "compilation" avec py2exe

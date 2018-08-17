@@ -21,10 +21,8 @@
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-from PyQt4.QtGui import (QPushButton, QWidget, QLabel, QSpinBox,
-                         QHBoxLayout, QVBoxLayout,
-                         QLineEdit, QComboBox, QFrame,
-                         )
+from PyQt5.QtWidgets import QPushButton, QWidget, QLabel, QSpinBox, \
+    QLineEdit, QComboBox, QFrame, QHBoxLayout, QVBoxLayout
 
 from ...GUI.qtlib import MyMiniFrame
 from ...geolib import Point, Segment, Droite

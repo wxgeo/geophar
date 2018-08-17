@@ -20,10 +20,10 @@
 
 from functools import partial
 
-from PyQt4.QtGui import (QDialog, QVBoxLayout, QHBoxLayout, QFrame, QLineEdit,
-                         QInputDialog, QTextEdit, QLabel, QCheckBox, QPushButton,
-                         QMenu,)
-from PyQt4.QtCore import Qt
+from PyQt5.QtWidgets import QDialog, QFrame, QLineEdit, QInputDialog, \
+    QTextEdit, QLabel, QCheckBox, QPushButton, QMenu, QVBoxLayout, QHBoxLayout
+from PyQt5.QtCore import Qt
+
 
 from ..geolib import Texte_generique, Point_generique, Champ, Texte, Polygone_generique
 from .proprietes_objets import Proprietes

@@ -45,7 +45,7 @@ if getattr(sys, '_launch_geophar', False):
             splash_screen.showMessage('Chargement en cours...')
             print("Démarrage GUI...")
         except ImportError:
-            # Il manque très probablement PyQt4, un message d'erreur sera affiché
+            # Il manque très probablement PyQt5, un message d'erreur sera affiché
             # un peu plus loin lors de la vérification des modules.
             splash_screen = None
 

@@ -30,8 +30,9 @@ from random import randint
 from itertools import chain
 from functools import partial
 
-from PyQt4.QtGui import (QVBoxLayout, QLabel, QPushButton, QHBoxLayout,
-                         QMessageBox, QTextEdit, QColor)
+from PyQt5.QtGui import QColor
+from PyQt5.QtWidgets import QVBoxLayout, QLabel, QPushButton, QHBoxLayout, \
+    QMessageBox, QTextEdit
 
 from sympy import S, solve, gcd
 from sympy.core.sympify import SympifyError

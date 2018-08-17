@@ -24,9 +24,10 @@
 from functools import partial
 import re
 
-from PyQt4.QtGui import (QCheckBox, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit,
-                         QGroupBox)
-from PyQt4.QtCore import pyqtSignal
+from PyQt5.QtWidgets import QCheckBox, QLabel, QLineEdit, QGroupBox, \
+    QVBoxLayout, QHBoxLayout
+from PyQt5.QtCore import pyqtSignal
+
 
 from ...GUI.menu import MenuBar
 from ...GUI.panel import Panel_API_graphique

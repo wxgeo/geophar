@@ -25,9 +25,9 @@
 
 #from functools import partial
 
-from PyQt4.QtGui import (QWidget, QTabWidget, QCheckBox, QGroupBox,
-                         QVBoxLayout, QLabel, QHBoxLayout, QComboBox,
-                         QLayout, QLineEdit)
+from PyQt5.QtWidgets import (QWidget, QTabWidget, QCheckBox, QGroupBox,
+                             QVBoxLayout, QLabel, QHBoxLayout, QComboBox,
+                             QLayout, QLineEdit)
 
 
 class CstmPanel(QWidget):

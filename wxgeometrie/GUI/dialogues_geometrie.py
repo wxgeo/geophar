@@ -24,9 +24,11 @@
 from operator import attrgetter
 from functools import partial
 
-from PyQt4.QtGui import (QDialog, QVBoxLayout, QHBoxLayout, QFrame, QLabel,
-                         QLineEdit, QPushButton, QMenu, QCursor)
-from PyQt4.QtCore import Qt, QSize
+from PyQt5.QtGui import QCursor
+from PyQt5.QtWidgets import QDialog, QFrame, QLabel, QLineEdit, QPushButton,\
+    QMenu, QVBoxLayout, QHBoxLayout
+from PyQt5.QtCore import Qt, QSize
+
 
 from .qtlib import MultipleChoiceDialog
 from ..pylib import regsub

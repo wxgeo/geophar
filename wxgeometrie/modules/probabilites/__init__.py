@@ -23,7 +23,8 @@
 
 import re
 
-from PyQt4.QtGui import QVBoxLayout, QLabel, QPushButton, QHBoxLayout, QMessageBox, QTextEdit
+from PyQt5.QtWidgets import QVBoxLayout, QLabel, QPushButton, QHBoxLayout,\
+    QMessageBox, QTextEdit
 
 from ...GUI.menu import MenuBar
 from ...GUI.panel import Panel_API_graphique

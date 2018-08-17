@@ -24,7 +24,7 @@
 import re
 from math import isnan, sqrt, ceil, floor
 
-from PyQt4.QtGui import QVBoxLayout, QLabel, QGroupBox, QHBoxLayout, QComboBox
+from PyQt5.QtWidgets import QVBoxLayout, QLabel, QGroupBox, QHBoxLayout, QComboBox
 
 from numpy import array
 

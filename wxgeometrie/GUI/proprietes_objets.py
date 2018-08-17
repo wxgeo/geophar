@@ -23,12 +23,12 @@
 
 from functools import partial
 
-from PyQt4.QtCore import Qt
-from PyQt4.QtGui import (QDialog, QPushButton, QWidget, QLabel, QGroupBox,
-                         QHBoxLayout, QVBoxLayout, QTabWidget, QColor,
-                         QLineEdit, QComboBox, QCheckBox, QRadioButton,
-                         QSpinBox, QTextEdit, QDoubleSpinBox,
-                         )
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QColor
+from PyQt5.QtWidgets import QDialog, QPushButton, QWidget, QLabel, QGroupBox,\
+    QTabWidget, QLineEdit, QComboBox, QCheckBox, QRadioButton, QSpinBox, \
+    QTextEdit, QDoubleSpinBox, QHBoxLayout, QVBoxLayout
+
 from matplotlib.colors import colorConverter as colorConverter
 
 

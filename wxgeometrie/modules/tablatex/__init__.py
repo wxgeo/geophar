@@ -23,9 +23,8 @@
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 
-from PyQt4.QtGui import (QHBoxLayout, QVBoxLayout, QCheckBox, QPushButton,
-                         QTextEdit, QLineEdit, QLabel, QComboBox, QGroupBox,
-                         QSpinBox)
+from PyQt5.QtWidgets import QCheckBox, QPushButton, QTextEdit, QLineEdit, \
+    QLabel, QComboBox, QGroupBox, QSpinBox, QHBoxLayout, QVBoxLayout
 
 from ...GUI.app import app
 from ...GUI.ligne_commande import LigneCommande

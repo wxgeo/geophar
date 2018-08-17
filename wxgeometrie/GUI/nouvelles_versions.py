@@ -22,8 +22,8 @@
 import webbrowser
 from urllib.request import urlopen
 
-from PyQt4.QtCore import QObject, pyqtSignal
-from PyQt4.QtGui import QMessageBox
+from PyQt5.QtCore import QObject, pyqtSignal
+from PyQt5.QtWidgets import QMessageBox
 
 from ..pylib import print_error
 from .. import param

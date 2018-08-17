@@ -24,9 +24,10 @@
 
 import sys, os, _thread, traceback
 
-from PyQt4.QtGui import (QMainWindow, QApplication, QPlainTextEdit, QIcon, QColor, QPalette,
-                        QLabel, QWidget, QVBoxLayout, QMessageBox, QTextCursor)
-from PyQt4.QtCore import QSize, Qt, pyqtSignal
+from PyQt5.QtGui import QIcon, QColor, QPalette, QTextCursor
+from PyQt5.QtWidgets import QApplication, QMainWindow, QPlainTextEdit, QLabel,\
+    QWidget, QMessageBox, QVBoxLayout
+from PyQt5.QtCore import QSize, Qt, pyqtSignal
 
 from ..pylib import print_error, path2, debug, warning
 from ..API.console import Console

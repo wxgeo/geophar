@@ -22,8 +22,10 @@
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 
-from PyQt4.QtGui import QApplication, QPalette, QColor, QPixmap, QSplashScreen, QIcon
-from PyQt4.QtCore import QLocale, QTranslator, QLibraryInfo, Qt, pyqtSignal
+from PyQt5.QtGui import QPalette, QColor, QPixmap, QIcon
+from PyQt5.QtWidgets import QApplication, QSplashScreen
+from PyQt5.QtCore import QLocale, QTranslator, QLibraryInfo, Qt, pyqtSignal
+
 
 
 class App(QApplication):

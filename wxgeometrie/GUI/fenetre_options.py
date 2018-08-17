@@ -22,10 +22,10 @@
 
 from functools import partial
 
-from PyQt4.QtCore import pyqtSignal
-from PyQt4.QtGui import (QDialog, QTabWidget, QWidget, QVBoxLayout, QGroupBox,
-                         QHBoxLayout, QPushButton, QLabel, QCheckBox, QSpinBox,
-                         QComboBox, QFileDialog, QLineEdit)
+from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtWidgets import QDialog, QTabWidget, QWidget, QGroupBox,\
+    QPushButton, QLabel, QCheckBox, QSpinBox, QComboBox, QFileDialog, \
+    QLineEdit, QVBoxLayout,  QHBoxLayout
 
 from ..param.options import Section, Parametre
 ##from .app import white_palette

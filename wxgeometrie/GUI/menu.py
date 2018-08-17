@@ -25,7 +25,8 @@
 from operator import attrgetter
 from functools import partial
 
-from PyQt4.QtGui import QMenu, QMenuBar, QKeySequence
+from PyQt5.QtWidgets import QMenu, QMenuBar
+from PyQt5.QtGui import QKeySequence
 
 
 

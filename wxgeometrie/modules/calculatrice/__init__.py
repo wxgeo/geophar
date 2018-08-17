@@ -23,13 +23,13 @@
 
 from functools import partial
 
-from PyQt4.QtGui import (QHBoxLayout, QVBoxLayout, QCheckBox, QIcon, QPushButton,
-                         QTextEdit, QMenu, QLabel, QSpinBox, QCursor, QTextCursor,
-                         QToolButton, QWidget, QTabWidget, QGroupBox, QComboBox,
-                         QLineEdit)
-from PyQt4.QtCore import Qt
+from PyQt5.QtGui import QIcon, QCursor, QTextCursor
+from PyQt5.QtWidgets import QCheckBox, QPushButton, QTextEdit, QMenu, QLabel, \
+    QSpinBox, QToolButton, QWidget, QTabWidget, QGroupBox, QComboBox, \
+    QLineEdit, QHBoxLayout, QVBoxLayout
+from PyQt5.QtCore import Qt
 
-from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 
 from ...GUI.ligne_commande import LigneCommande

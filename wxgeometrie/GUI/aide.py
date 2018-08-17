@@ -23,9 +23,10 @@
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 
-from PyQt4.QtGui import (QPushButton, QDialog, QWidget, QVBoxLayout, QHBoxLayout,
-                         QLabel, QPixmap, QTextEdit, QTabWidget)
-from PyQt4.QtCore import Qt
+from PyQt5.QtGui import QPixmap
+from PyQt5.QtWidgets import QPushButton, QDialog, QWidget, QVBoxLayout, \
+    QHBoxLayout, QLabel, QTextEdit, QTabWidget
+from PyQt5.QtCore import Qt
 
 from .. import param
 from ..param import NOMPROG, LOGO

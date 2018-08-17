@@ -21,7 +21,7 @@
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-from PyQt4.QtGui import (QWidget, QLabel, QHBoxLayout)
+from PyQt5.QtWidgets import (QWidget, QLabel, QHBoxLayout)
 
 from ...GUI.barre_outils import BarreOutils
 from ...geolib import Arc_oriente, Arc_points, Point_generique
