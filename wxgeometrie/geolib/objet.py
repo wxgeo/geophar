@@ -1221,7 +1221,7 @@ class Objet(metaclass=ObjetType):
         en interne :
         - les arguments (cf. classe BaseArgument) ont la possibilité
           d'appliquer une fonction personnalisée modifiant la valeur
-          vant qu'elle soit retournée.
+          avant qu'elle soit retournée.
         - les variables ne sont pas renvoyées telles qu'elles, mais on
           renvoie directement leur contenu.
           Ceci permet par exemple d'écrire, pour un point `A`,
@@ -1231,15 +1231,11 @@ class Objet(metaclass=ObjetType):
         objets (parents et enfants), on utilise donc la méthode
         `_arg_raw_value()`.
         """
-        if isinstance(self, G.Variable):
-            assert name == 'contenu'
-            # `Variable.contenu` ne renvoie pas directement à l'argument
-            # mais à un attribut de type `property` de `Variable`.
-            # (Ce méchanisme est *peut-être* à simplifier en définissant une fonction
-            # personnalisée de retour lors de la définition de `contenu`.
-            # Est-ce faisable ??? Pas le temps de me pencher sur la question.)
-            return G.Variable._Variable__contenu.__contenu__[self].objet
         argument = vars(type(self))[name]
+        if not isinstance(argument, BaseArgument):
+            cls = type(self)
+            argument = vars(cls)[f'_{cls.__name__}__{name}']
+            assert isinstance(argument, BaseArgument)
         value = argument.__contenu__[self]
         # Attention, value est une référence à un objet (ou un tuple de
         # références), pas un objet lui-même, sauf s'il s'agit d'un argument
