@@ -182,14 +182,15 @@ def test_is_equation():
 
 
 def test_parse_equation():
+    d = dict(globals())
     s = parse_equation("x=2*y-3")
-    exec(s)
-    assert _.equation == (1, -2, 3)
+    exec(s, d)
+    assert d['_'].equation == (1, -2, 3)
     s = parse_equation("(x-2)**2+(y-3)**2=49")
-    exec(s)
-    assert _.rayon == 7
-    assert _.centre.xy == (2, 3)
+    exec(s, d)
+    assert d['_'].rayon == 7
+    assert d['_'].centre.xy == (2, 3)
     s = parse_equation("y=ln(x)-1")
-    exec(s)
-    assert isinstance(_, Courbe)
+    exec(s, d)
+    assert isinstance(d['_'], Courbe)
 
