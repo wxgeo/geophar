@@ -352,7 +352,9 @@ class Dictionnaire_objets(dict):
                 # sur la feuille. En particulier, pour un polygone, rattacher la feuille
                 # provoque déjà l'enregistrement des sommets sur la feuille, alors que rien
                 # ne garantisse que le polygone lui-même soit enregistré avec succès.
-                self[nom]._update(valeur)
+                # Le paramètre `raw=True` indique que pour une variable, il faut retourner
+                # l'objet `Variable` lui-même, et non sa valeur comme habituellement.
+                self.__getitem(nom, raw=True)._update(valeur)
                 # On quitte, car le nom fait toujours référence au même objet, qui est
                 # déjà enregistré sur la feuille.
                 return
@@ -454,7 +456,7 @@ class Dictionnaire_objets(dict):
 
 
 
-    def __getitem(self, nom):
+    def __getitem(self, nom, raw=False):
         """Usage interne: code commun aux méthodes `.__getitem__()` et `.get()`."""
         # renommage temporaire :
         nom = self.__tmp_dict.get(nom, nom)
@@ -468,7 +470,7 @@ class Dictionnaire_objets(dict):
         elif nom == "_":
             return self.__derniere_valeur()
         value = dict.__getitem__(self, self.__convertir_nom(nom))
-        if isinstance(value, Variable_generique):
+        if isinstance(value, Variable_generique) and not raw:
             return value.val
         return value
 
@@ -477,12 +479,12 @@ class Dictionnaire_objets(dict):
         try:
             return self.__getitem(nom)
         except KeyError:
-            if nom == 'bogu5_123_aTTri8ute' and contexte['afficher_messages']:
-                # PyShell détecté, désactivation des messages d'erreur...
-                contexte['afficher_messages'] = False
-            else:
-                assert 'erreur' in self
-                self.erreur("Objet introuvable sur la feuille : " + nom, KeyError)
+            if nom in ('_ipython_canary_method_should_not_exist_',
+                       'bogu5_123_aTTri8ute', '__dict__'):
+                # Tests effectués par PyShell ou Ipython, ne pas afficher de message.
+                raise
+            assert 'erreur' in self
+            self.erreur("Objet introuvable sur la feuille : " + nom, KeyError)
 
     def get(self, nom, defaut=None):
         try:
