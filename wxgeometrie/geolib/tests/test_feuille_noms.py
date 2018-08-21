@@ -179,7 +179,7 @@ def test_acces_objets():
     exec("b=Vecteur_libre()", o)
     assert("b" in o)
     exec("del b", o)
-    assert("b" not in keys)
+    assert("b" not in o)
 
 
 def test_noms_latex():
