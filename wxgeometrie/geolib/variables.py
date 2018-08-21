@@ -318,7 +318,7 @@ class Mul(Variable_generique):
         Variable_generique.__init__(self, **styles)
 
     def _get_valeur(self):
-        return self.__var1.val*self.__var2.val
+        return self.__var1*self.__var2
 
 
 class Add(Variable_generique):
@@ -333,7 +333,7 @@ class Add(Variable_generique):
         Variable_generique.__init__(self, **styles)
 
     def _get_valeur(self):
-        return self.__var1.val + self.__var2.val
+        return self.__var1 + self.__var2
 
 
 class Variable_affichage(Variable_generique):
