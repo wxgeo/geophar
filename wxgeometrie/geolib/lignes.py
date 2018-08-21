@@ -953,7 +953,7 @@ class Demiplan(Objet_avec_equation):
 
     def _contains(self, M):
         signe = self._signe(M)
-        return  signe == self._signe() or (self.__droite_incluse and abs(signe) < contexte['tolerance'])
+        return  signe == self._signe() or (self.__droite_incluse and M in self.__droite)
 
     def _conditions_existence(self):
         return self.__point not in self.__droite
