@@ -56,12 +56,12 @@ def test_abreviations():
     assert(o.C.z == 2-3j)
     o.C.x = "A.x"
     #print 'o.C.x.val:', o.C.x.val, type(o.C.x.val)
-    assert(isinstance(o.C.x.val, (float, int)))
+    assert(isinstance(o.C.x, (float, int)))
     assert(o.C.x == o.A.x)
     o.A.coordonnees = -11, 3
     assert(o.C.coordonnees[0] == -11)
     o.B.x = "A.x + 1"
-    assert(isinstance(o.B.x.val, (float, int)))
+    assert(isinstance(o.B.x, (float, int)))
     assert(o.B.x == o.A.x + 1)
     o.A.coordonnees = 30, -5
     assert(o.B.coordonnees[0] == 31)
