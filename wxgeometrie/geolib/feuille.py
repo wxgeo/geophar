@@ -457,7 +457,11 @@ class Dictionnaire_objets(dict):
 
 
     def __getitem(self, nom, raw=False):
-        """Usage interne: code commun aux méthodes `.__getitem__()` et `.get()`."""
+        """Usage interne: code commun aux méthodes `.__getitem__()` et `.get()`.
+
+        Le paramètre `raw=True` permet de récupérer les variables elles-mêmes
+        (et non leur contenu).
+        """
         # renommage temporaire :
         nom = self.__tmp_dict.get(nom, nom)
         # (utilisé en cas de chargement d'un fichier ancien lors d'un conflit de nom).
@@ -474,6 +478,9 @@ class Dictionnaire_objets(dict):
             return value.val
         return value
 
+    def get_raw_item(self, nom):
+        "Permet de récupérer les variables elles-mêmes (et non leur contenu)."
+        return self.__getitem(nom, raw=True)
 
     def __getitem__(self, nom):
         try:

@@ -113,7 +113,7 @@ class Variable(Variable_generique):
             liste = re.split(self.__re, valeur)
             ensemble = set()
             for i in range(1, len(liste), 2):
-                obj = self.feuille.objets[liste[i]]
+                obj = self.feuille.objets.get_raw_item(liste[i])
                 if isinstance(obj, Objet):
                     liste[i] = obj
                     ensemble.add(obj)

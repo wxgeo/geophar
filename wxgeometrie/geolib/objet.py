@@ -165,6 +165,8 @@ class Verrou(object):
 
     def __exit__(self, type, value, traceback):
         self._compteur -= 1
+        # On s'assure qu'on est sorti du verrou principal (en cas de
+        # verrous imbriqués).
         if not self._compteur:
             for objet in self._a_rafraichir:
                 objet.perime(_first_call=False)
