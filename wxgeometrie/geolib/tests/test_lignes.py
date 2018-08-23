@@ -219,12 +219,12 @@ def test_Tangente_glisseur_interpolation():
     M = Glisseur_courbe(inter, 2)
     T = Tangente_glisseur_interpolation(inter, M)
     # la tangente doit passer par M par construction
-    assertAlmostEqual(T.xy(M.x.contenu), (M.x.contenu, M.y))
+    assertAlmostEqual(T.xy(M.x), (M.x, M.y))
     # son coef dir doit etre la dérivée sur le glisseur
     assertAlmostEqual((float(-T.a)/float(T.b)),
-                      inter.fonction.derivative(M.x.contenu, 1))
+                      inter.fonction(M.x, 1)) # dérivée première en M.x
     # rebelotte après déplacement du glisseur
     M.x = 1
-    assertAlmostEqual(T.xy(M.x.contenu), (M.x.contenu, M.y))
+    assertAlmostEqual(T.xy(M.x), (M.x, M.y))
     assertAlmostEqual((float(-T.a)/float(T.b)),
-                      inter.fonction.derivative(M.x.contenu, 1))
+                      inter.fonction(M.x, 1))

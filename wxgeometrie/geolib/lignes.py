@@ -1357,6 +1357,8 @@ class Tangente_glisseur_interpolation(Droite_equation):
 
 
     def _get_equation(self):
-        v = self.courbe.fonction.derivative(self.glisseur.x.contenu, 1)
-        self._set_equation(a = -v, b = 1, c = -self.glisseur.y + v*self.glisseur.x.contenu)
+        x, y = self.glisseur.xy
+        # Dérivée en x (le `1` indique que c'est la dérivée première).
+        v = self.courbe.fonction(x, 1)
+        self._set_equation(a = -v, b = 1, c = -y + v*x)
         return Droite_equation._get_equation(self)
