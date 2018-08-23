@@ -1192,7 +1192,7 @@ class Point_interpolation(Point_generique):
     des courbes d'interpolation."""
 
     point = __point = Argument("Point_generique", defaut=Point)
-    derivee = __derivee = Argument("Variable_generique,NoneType", defaut=None)
+    derivee = __derivee = Argument("Variable_generique,None", defaut=None)
 
     @staticmethod
     def _convertir(objet):

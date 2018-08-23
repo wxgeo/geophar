@@ -29,12 +29,13 @@ from numpy import array, arange, append
 try:
     # wxgeometrie can be imported even if scipy is not found.
     # Only Interpolation_polynomiale_par_morceaux will fail.
-    from scipy.interpolate import PiecewisePolynomial
+    from scipy.interpolate import BPoly
     scipy_found = True
 except ImportError:
     scipy_found = False
-    def PiecewisePolynomial(*args, **kw):
-        raise NotImplementedError('Error: scipy library not found !')
+    class BPoly:
+        def from_derivatives(*args, **kw):
+            raise NotImplementedError('Error: scipy library not found !')
 
 from .objet import Ref, Argument, Arguments
 
@@ -320,10 +321,10 @@ class Interpolation_cubique(Interpolation_generique):
 
 class Interpolation_polynomiale_par_morceaux(Interpolation_generique):
     """Une courbe d'interpolation polynomiale par morceaux.
-    Elle utilise l'interpolation par morceau de scipy pour construire la fonction
-    c'est la classe scipy.interpolate.PiecewisePolynomial
+    Elle utilise l'interpolation par morceau de scipy pour construire la fonction,
+    via la méthode scipy.interpolate.BPoly.from_derivatives()
 
-    elle passe par les points (xl, yl) et avec le nombre derive dans derivl à
+    Elle passe par les points (xl, yl) et avec le nombre derive dans derivl à
     l'abscisse xl.
 
     exemple::
@@ -369,14 +370,14 @@ class Interpolation_polynomiale_par_morceaux(Interpolation_generique):
 
     @property
     def fonction(self):
-        """Fonction wrapper vers la fonction de scipy PiecewisePolynomial
+        """Fonction wrapper vers la fonction de scipy BPoly.from_derivatives
 
         """
         pts = self.points_tries
         xl = [P.x for P in pts]
         yl = [P.y for P in pts]
         yl_cum = list(zip(yl, self._derivees()))
-        return PiecewisePolynomial(xl, yl_cum)
+        return BPoly.from_derivatives(xl, yl_cum)
 
 
     def _derivees(self):

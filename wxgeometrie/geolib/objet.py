@@ -414,7 +414,9 @@ class BaseArgument(object):
         # on transforme la chaîne "Ma_classe" en la classe Ma_classe elle-même.
         if isinstance(self.types, str):
             def convert(chaine):
-                if hasattr(G, chaine):
+                if chaine == 'None':
+                    return type(None)
+                elif hasattr(G, chaine):
                     return getattr(G, chaine)
                 elif hasattr(types, chaine):
                     return getattr(types, chaine)

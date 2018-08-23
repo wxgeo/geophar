@@ -21,7 +21,7 @@ from wxgeometrie.geolib import (Glisseur_arc_cercle, Glisseur_cercle, Glisseur_d
                                 Barycentre, Mediatrice, Droite_equation,
                                 Cercle_equation, Polygone, Rotation, Translation,
                                 Vecteur, Vecteur_libre, Representant, Reflexion,
-                                Homothetie, Nuage, Fonction,
+                                Homothetie, Nuage, Fonction, Point_interpolation,
                                 )
 
 def test_Point():
@@ -345,9 +345,12 @@ def test_Glisseur_arc_cercle():
     M.coordonnees = O.coordonnees
     # il faudrait compléter un peu
 
-@XFAIL
+
 def test_Point_interpolation():
-    raise NotImplementedError
+    A = Point(1, 2)
+    P = Point_interpolation(A)
+    assert P.point is A
+    assert P.derivee is None
 
 @XFAIL
 def test_Glisseur_courbe():
