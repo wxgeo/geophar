@@ -168,7 +168,7 @@ class ColorSelecter(QPushButton):
                     border-style:solid; border-width:1px;} \
                     ColorSelecter:disabled {border-color:#AAAAAA #AAAAAA #444444 #444444;} \
                     ColorSelecter:hover { background-color: %s }"
-                    % (color.name(), color.light(125).name()))
+                    % (color.name(), color.lighter(125).name()))
             self.colorSelected.emit(color)
 
 
