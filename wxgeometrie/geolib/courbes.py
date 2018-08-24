@@ -184,7 +184,7 @@ class Courbe(Courbe_generique):
             if not inf_or_nan(y[0]):
                 self._append_point(x[0], y[0])
             return
-        if x[0] in e_cach:
+        if self._extremite_cachee(x[0], e_cach):
             return
         if not(inf_or_nan(y[0]) or inf_or_nan(y[1])):
             if intervalle.inf_inclus:
@@ -201,7 +201,7 @@ class Courbe(Courbe_generique):
     def _creer_fin_morceau(self, x, y, intervalle, e_cach):
         if len(y) <= 1:
             return
-        if x[-1] in e_cach:
+        if self._extremite_cachee(x[-1], e_cach):
             return
         if not(inf_or_nan(y[-1]) or inf_or_nan(y[-2])):
             if intervalle.sup_inclus:
@@ -215,6 +215,9 @@ class Courbe(Courbe_generique):
                     vec = x[-3] - x[-2],  y[-3] - y[-2]
                     self._append_arc(x[-2], y[-2], vec)
 
+    def _extremite_cachee(self, val, e_cach):
+        "Renvoie True si une variable de `e_cach` vaut `val`."
+        return val in [v.val for v in e_cach]
 
     def _append_arc(self, x0, y0, vec):
         if self.style("extremites"):

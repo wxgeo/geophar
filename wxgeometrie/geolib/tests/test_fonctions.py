@@ -45,5 +45,6 @@ def test_intervalle():
     f = Feuille()
     o = f.objets
     g = o.g = Fonction('x^2+2x+1', ']0;5')
-    assert g.style('extremites_cachees') == ([5],)
+    assert g.style('extremites_cachees')[0][0].val == 5 # ([Variable(5)],)
     assert g.ensemble == ']0;5['
+
