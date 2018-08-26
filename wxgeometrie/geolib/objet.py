@@ -823,8 +823,8 @@ class Objet(metaclass=ObjetType):
         # des mises à jour inutiles du cache.
         if self._initialise and not name.startswith('_') and name not in self.__dict__:
             for class_ in type(self).mro():
-                if isinstance(vars(class_).get(name),
-                        (BaseArgument, property, DescripteurFeuille)):
+                if isinstance(vars(class_).get(name, NameError),
+                        (BaseArgument, property, DescripteurFeuille, type(None))):
                     break
             else:
                 if param.debug:
