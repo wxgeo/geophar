@@ -80,11 +80,8 @@ class Decim(Rational):
 
 def _compatible(meth):
     "Modifie la méthode `meth` pour qu'elle prenne en compte le type Decim()."
-    # La méthode doit avoir exactement 2 arguments.
-    # Exemple type : .__add__(self, other).
-    assert meth.__code__.co_argcount == 2
-    def new_meth(self, other):
-        result = meth(self, other)
+    def new_meth(self, other, *args):
+        result = meth(self, other, *args)
         precs = []
         if isinstance(self, Decim):
             precs.append(self.prec)
