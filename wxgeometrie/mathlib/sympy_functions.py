@@ -33,7 +33,7 @@ from sympy import (Basic, expand as expand_, apart, Function, Integer, factorint
                     diff as diff_, divisors as divisors_, cancel, together as together_,
                     limit as limit_, factor as factor_, integrate as integrate_, Sum,
                     sqrtdenest, solve as solve_, product as product_, Matrix,
-                    ZeroMatrix, Identity, FunctionMatrix, Lambda, Dummy)
+                    ZeroMatrix, Identity, FunctionMatrix, Lambda, Dummy, I)
 
 from .custom_objects import Fonction, ProduitEntiers, Decim, \
                             convert2decim
@@ -223,6 +223,14 @@ def product(expression,
             return product_(expression, (Symbol("x"), args[0], args[1]))
     return product_(expression, *args)
 
+def _forme_algebrique(expr):
+    "Renvoie sous forme algébrique si ce n'est pas trop long."
+    a, b = expr.as_real_imag()
+    return a + I*b
+    if algebr.count_ops() <= 1.7*expr.count_ops():
+        return algebr
+    return expr
+
 
 def solve(expression, *variables, **kw):
     ensemble = kw.get("ensemble", "R")
@@ -252,7 +260,9 @@ def solve(expression, *variables, **kw):
         elif ensemble == "N":
             return [solution for solution in solutions if solution.is_integer]
         else:
-            return solutions
+            # On essaie de donner les solutions sous forme algébrique,
+            # si ce n'est pas trop affreux.
+            return [_forme_algebrique(s) for s in solutions]
     else:
         return solve_(expression, variables)
 
