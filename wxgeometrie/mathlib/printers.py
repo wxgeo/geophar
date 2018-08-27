@@ -85,7 +85,7 @@ class MyCustomPrinter(object):
             dico = {}
             for a in expr.atoms():
                 if a.is_Rational and isinstance(a, Decim):
-                    dico[a] = Float(a, prec=60)
+                    dico[a] = Float(a, dps=60)
             expr = expr.subs(dico).subs(Float(1), S.One)
         elif isinstance(expr, (list, tuple)):
             return expr.__class__(conv(item) for item in expr)
@@ -332,7 +332,7 @@ class CustomLatexPrinter(MyCustomPrinter, LatexPrinter):
         return r"\mathrm{Fonction}\, " + expr.__name__
 
     def _print_Decim(self, expr):
-        return self._print_Float(Float(expr, prec=expr.prec))
+        return self._print_Float(Float(expr, dps=expr.prec))
 
     def doprint(self, expr):
         expr = self._convert_Decim(expr)
