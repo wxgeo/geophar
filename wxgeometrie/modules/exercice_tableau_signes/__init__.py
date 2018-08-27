@@ -467,7 +467,7 @@ class ExercicesTableauxSignes(Exercice):
             try:
                 if abs(float(S(attendu) - S(reponse))) < param.tolerance:
                     return True
-            except (SympifyError, ValueError):
+            except (SympifyError, ValueError, TypeError):
                 pass
             except Exception:
                 print_error()
