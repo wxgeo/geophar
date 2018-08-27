@@ -54,6 +54,8 @@ class Decim(Rational):
 
     __slots__ = ['p', 'q', 'prec']
 
+    _op_priority = 10000
+
     @cacheit
     def __new__(cls, p, q=None, prec=15):
         rat = Rational.__new__(cls, p, q)
