@@ -23,7 +23,9 @@
 
 ## Objets complémentaires à ceux de sympy
 
-from sympy import Symbol, Rational, Expr, Integer, Basic
+import threading
+
+from sympy import Symbol, Rational, Expr, Integer, Basic, evaluate
 from sympy.core.cache import cacheit
 from sympy.core.numbers import Infinity
 
@@ -39,7 +41,9 @@ def convert2decim(expr, prec=None):
     for a in expr.atoms():
         if a.is_Rational:
             dico[a] = Decim(a, prec=prec)
-    return expr.subs(dico)
+    with evaluate(False):
+        return expr.subs(dico)
+
 
 
 
@@ -80,28 +84,81 @@ class Decim(Rational):
 # pour renvoyer un objet Decim() si l'un des objets de l'opération
 # est de type Decim.
 
+# La difficulté est que sympy à chaque calcul effectue des simplifications
+# ou des calculs intermédiaires qui remplacent les objets `Decim` par
+# des objets `Rational`.
+# Il faut donc convertir à la fin de l'opération les objets `Rational`
+# en objets `Decim` (qui sont en fait des rationnels s'affichant sous
+# forme décimale).
+# On hacke donc les méthodes opératoires (__add__, __mul__, ...)
+# de `Rational`, pour effectuer cette conversion à la fin.
+# Comme les opérations provoquent souvent un grand nombre d'appels
+# récursifs en interne dans `sympy`, on implémente un gestionnaire de
+# contexte qui permet de savoir si on est dans le calcul principal
+# où dans un sous-calcul (appel récursif).
+# On effectue la conversion `Rational` -> `Decim` uniquement à la fin
+# du calcul principal, et non dans les appels récursifs.
+# Ceci permet d'optimiser le temps de calcul.
+
+
+class CallContext:
+    calls = {} # {thread_id: integer}
+    prec = {} # {thread_id: integer}
+    def __enter__(self):
+        id = threading.get_ident()
+        if id not in self.calls:
+            self.calls[id] = 0
+            self.prec[id] = float('-inf')
+        self.calls[id] += 1
+        return self
+
+    def __exit__(self, type, value, traceback):
+        id = threading.get_ident()
+        self.calls[id] -= 1
+        if self.calls[id] == 0:
+            self.prec[id] = float('-inf')
+
+    def add_prec(self, val):
+        id = threading.get_ident()
+        self.prec[id] = max(val, self.prec[id])
+
+    def get_prec(self):
+        id = threading.get_ident()
+        return (self.prec[id] if self.prec[id] > float('-inf') else None)
+
+    def is_first_call(self):
+        id = threading.get_ident()
+        return self.calls[id] == 1
+
+
+
 def _compatible(meth):
     "Modifie la méthode `meth` pour qu'elle prenne en compte le type Decim()."
     def new_meth(self, other, *args):
-        result = meth(self, other, *args)
-        precs = []
-        if isinstance(self, Decim):
-            precs.append(self.prec)
-        if isinstance(other, Decim):
-            precs.append(other.prec)
-        prec = max((prec for prec in precs if prec is not None), default=None)
-        if prec is not None:
-            if isinstance(result, Rational):
-                result = Decim(result, prec=prec)
-            else:
-                result = convert2decim(result, prec=prec)
-        return result
+        with CallContext() as call_context:
+            result = meth(self, other, *args)
+            precs = []
+            if isinstance(self, Decim):
+                call_context.add_prec(self.prec)
+                # ~ assert call_context.get_prec() is not None
+            if isinstance(other, Decim):
+                call_context.add_prec(other.prec)
+                # ~ assert call_context.get_prec() is not None
+
+            prec = call_context.get_prec()
+            if prec is not None and call_context.is_first_call():
+                if isinstance(result, Rational):
+                    result = Decim(result, prec=prec)
+                else:
+                    result = convert2decim(result, prec=prec)
+            return result
     return new_meth
 
 for _name in ('__add__', '__radd__', '__sub__', '__mul__', '__div__',
                      '__rdiv__', '__pow__', '__rpow__', '__mod__', '__rmod__',
                      '_eval_power', '__truediv__'):
     setattr(Rational, _name, _compatible(getattr(Rational, _name)))
+    setattr(Integer, _name, _compatible(getattr(Integer, _name)))
 
 del _name, _compatible
 
