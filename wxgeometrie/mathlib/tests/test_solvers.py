@@ -104,3 +104,7 @@ def test_issue_306():
     assert_positif(x + sqrt(x**2 - 5), '[sqrt(5);+oo[')
     assert_positif(x - sqrt(x**2 - 5), '[sqrt(5);+oo[')
 
+def test_poly3():
+    sols = resoudre('5 + 1500/x**2 - 2*(1500*x + 100)/x**3=0', ensemble='R')
+    # 3 solutions
+    assert len(sols.intervalles) == 3

@@ -252,7 +252,7 @@ def solve(expression, *variables, **kw):
                     solutions_reelles.append(solution)
                 elif solution.is_real is None:
                     real, imag = solution.as_real_imag()
-                    if abs(imag) < 10**-200:
+                    if abs(imag.evalf(n=200)) < 1e-150:
                         solutions_reelles.append(real)
             return solutions_reelles
         elif ensemble == "Q":
