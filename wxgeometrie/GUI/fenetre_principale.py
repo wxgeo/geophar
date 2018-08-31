@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------##
 #              WxGeometrie               #
@@ -23,13 +22,14 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-import sys, os, thread, traceback
+import sys, os, _thread, traceback
 
-from PyQt4.QtGui import (QMainWindow, QApplication, QPlainTextEdit, QIcon, QColor, QPalette,
-                        QLabel, QWidget, QVBoxLayout, QMessageBox, QTextCursor)
-from PyQt4.QtCore import QSize, Qt, pyqtSignal
+from PyQt5.QtGui import QIcon, QColor, QPalette, QTextCursor
+from PyQt5.QtWidgets import QApplication, QMainWindow, QPlainTextEdit, QLabel,\
+    QWidget, QMessageBox, QVBoxLayout
+from PyQt5.QtCore import QSize, Qt, pyqtSignal
 
-from ..pylib import uu, print_error, path2, debug, warning
+from ..pylib import print_error, path2, debug, warning
 from ..API.console import Console
 from ..API.sauvegarde import FichierSession
 from ..API.parametres import sauvegarder_module
@@ -51,7 +51,7 @@ class PyOnDemandOutputWindow(QPlainTextEdit):
     def write(self, s):
         self.show()
         self.moveCursor(QTextCursor.End)
-        self.insertPlainText(s.decode(param.encodage)) # again assuming QPlainTextEdit
+        self.insertPlainText(s) # again assuming QPlainTextEdit
 
 
 
@@ -74,13 +74,13 @@ class FenetrePrincipale(QMainWindow):
 
 
         # À créer avant les onglets
-        self.fenetre_sortie = PyOnDemandOutputWindow(title=u"%s - messages."
+        self.fenetre_sortie = PyOnDemandOutputWindow(title="%s - messages."
                                                              % NOMPROG)
         self.fenetre_sortie.setWindowIcon(
-                            QIcon(path2(u"%/wxgeometrie/images/icone_log.svg")))
+                            QIcon(path2("%/wxgeometrie/images/icone_log.svg")))
         self.fichier_log = fichier_log
 
-        self.setWindowIcon(QIcon(path2(u"%/wxgeometrie/images/icone.svg")))
+        self.setWindowIcon(QIcon(path2("%/wxgeometrie/images/icone.svg")))
         self.barre = self.statusBar()
         self.barre_dte = QLabel(self)
 #        self.barre_dte.setText(
@@ -88,8 +88,8 @@ class FenetrePrincipale(QMainWindow):
 
 
 
-        self.message(u"  Bienvenue !", 1)
-        self.message(NOMPROG + u" version " + param.version)
+        self.message("  Bienvenue !", 1)
+        self.message(NOMPROG + " version " + param.version)
 
         #Ligne de commande de débogage
         self.ligne_commande = LigneCommande(self, 300, action=self.executer_commande,
@@ -137,7 +137,7 @@ class FenetrePrincipale(QMainWindow):
                 self.onglets.ouvrir(url.toLocalFile())
 
     def afficher_ligne_commande(self, afficher=None):
-        u"Afficher ou non la ligne de commande."
+        "Afficher ou non la ligne de commande."
         if afficher is not None:
             if isinstance(afficher, bool):
                 param.ligne_commande = afficher
@@ -150,7 +150,7 @@ class FenetrePrincipale(QMainWindow):
 
 
     def mode_debug(self, debug=None):
-        u"Passer en mode déboguage."
+        "Passer en mode déboguage."
         if debug is not None:
             if isinstance(debug, bool):
                 param.debug = debug
@@ -172,22 +172,22 @@ class FenetrePrincipale(QMainWindow):
     def titre(self, texte=None):
         titre = NOMPROG
         if texte:
-            titre += ' - ' + uu(texte)
+            titre += ' - ' + texte
         self.setWindowTitle(titre)
 
 
     def executer_commande(self, commande, **kw):
         try:
             self.console.executer(commande)
-            self.message(u"Commande interne exécutée.")
+            self.message("Commande interne exécutée.")
             self.ligne_commande.clear()
         except Exception:
-            self.message(u"Commande incorrecte.")
+            self.message("Commande incorrecte.")
             if param.debug:
                 raise
 
     def plein_ecran(self):
-        u"Bascule en mode plein écran <-> mode normal."
+        "Bascule en mode plein écran <-> mode normal."
         self.setWindowState(self.windowState()^Qt.WindowFullScreen)
 
     def show(self):
@@ -213,8 +213,8 @@ class FenetrePrincipale(QMainWindow):
                     test = hasattr(panel, 'canvas') and hasattr(panel.canvas, 'setUpdatesEnabled')
                     if test:
                         panel.canvas.setUpdatesEnabled(False)
-                    reponse = QMessageBox.question(self, u'Quitter %s ?' %NOMPROG,
-                                               u'Voulez-vous quitter %s ?' %NOMPROG,
+                    reponse = QMessageBox.question(self, 'Quitter %s ?' %NOMPROG,
+                                               'Voulez-vous quitter %s ?' %NOMPROG,
                                                QMessageBox.Yes | QMessageBox.No,
                                                QMessageBox.Yes)
                     if test:
@@ -240,14 +240,14 @@ class FenetrePrincipale(QMainWindow):
             except Exception:
                 try:
                     print_error()
-                    QMessageBox.warning(self, u"Erreur lors de la fermeture du programme", traceback.format_exc())
+                    QMessageBox.warning(self, "Erreur lors de la fermeture du programme", traceback.format_exc())
                 except UnicodeError:
-                    QMessageBox.warning(self, u"Erreur lors de la fermeture du programme", "Impossible d'afficher l'erreur.")
+                    QMessageBox.warning(self, "Erreur lors de la fermeture du programme", "Impossible d'afficher l'erreur.")
         sys.stdout = sys.__stdout__
         sys.stderr = sys.__stderr__
         if hasattr(self, "fenetre_sortie"):
             self.fenetre_sortie.close()
-        print "On ferme !"
+        print("On ferme !")
 
 
     def restart(self):

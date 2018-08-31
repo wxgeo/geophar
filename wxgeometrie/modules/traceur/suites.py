@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------#######
 #                    Suites                   #
@@ -22,10 +21,8 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-from PyQt4.QtGui import (QPushButton, QWidget, QLabel, QSpinBox,
-                         QHBoxLayout, QVBoxLayout,
-                         QLineEdit, QComboBox, QFrame,
-                         )
+from PyQt5.QtWidgets import QPushButton, QWidget, QLabel, QSpinBox, \
+    QLineEdit, QComboBox, QFrame, QHBoxLayout, QVBoxLayout
 
 from ...GUI.qtlib import MyMiniFrame
 from ...geolib import Point, Segment, Droite
@@ -34,31 +31,31 @@ from ...pylib import eval_safe
 
 class CreerSuite(MyMiniFrame):
     def __init__(self, parent):
-        MyMiniFrame.__init__(self, parent, u"Représenter une suite")
+        MyMiniFrame.__init__(self, parent, "Représenter une suite")
         ##self.SetExtraStyle(wx.WS_EX_BLOCK_EVENTS )
         self.parent = parent
         self._param_ = self.parent._param_
         ##p = self.panel = QWidget(self)
 
         self.sizer = sizer = QVBoxLayout()
-        sizer.addWidget(QLabel(u"Choisissez le mode de génération de la suite :"))
+        sizer.addWidget(QLabel("Choisissez le mode de génération de la suite :"))
         self.mode = QComboBox()
-        self.mode.addItems([u"u(n+1)=f(u(n))", u"u(n)=f(n)"])
+        self.mode.addItems(["u(n+1)=f(u(n))", "u(n)=f(n)"])
         self.mode.setCurrentIndex(0)
         self.mode.currentIndexChanged.connect(self.EvtChoixMode)
         sizer.addWidget(self.mode)
 
         f = QHBoxLayout()
-        f.addWidget(QLabel(u"Choisissez la fonction f :"))
+        f.addWidget(QLabel("Choisissez la fonction f :"))
         self.fonction = QComboBox()
-        self.fonction.addItems(["Y" + str(i+1) for i in xrange(self.parent.nombre_courbes)])
+        self.fonction.addItems(["Y" + str(i+1) for i in range(self.parent.nombre_courbes)])
         self.fonction.setCurrentIndex(0)
         self.fonction.currentIndexChanged.connect(self.EvtChoixFonction)
         f.addWidget(self.fonction)
         sizer.addLayout(f)
 
         start = QHBoxLayout()
-        start.addWidget(QLabel(u"Commencer pour n ="))
+        start.addWidget(QLabel("Commencer pour n ="))
         self.n0 = QSpinBox()
         self.n0.setRange(0, 1000000)
         self.n0.setValue(0)
@@ -66,7 +63,7 @@ class CreerSuite(MyMiniFrame):
         sizer.addLayout(start)
 
         terme = QHBoxLayout()
-        self.label_init = QLabel(u"Terme initial :")
+        self.label_init = QLabel("Terme initial :")
         terme.addWidget(self.label_init)
         self.un0 =  QLineEdit("1")
         self.un0.setMinimumWidth(100)
@@ -78,12 +75,12 @@ class CreerSuite(MyMiniFrame):
         ##sizer.addWidget(wx.StaticLine(p, -1, style=wx.LI_HORIZONTAL), 0, wx.GROW|wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5)
 
         nbr = QHBoxLayout()
-        nbr.addWidget(QLabel(u"Construire les"))
+        nbr.addWidget(QLabel("Construire les"))
         self.termes = QSpinBox()
         self.termes.setRange(0, 100)
         self.termes.setValue(5)
         nbr.addWidget(self.termes)
-        nbr.addWidget(QLabel(u"premiers termes."))
+        nbr.addWidget(QLabel("premiers termes."))
         sizer.addLayout(nbr)
 
         ligne = QFrame()
@@ -93,9 +90,9 @@ class CreerSuite(MyMiniFrame):
 
         #p.SetSizer(sizer)
         boutons = QHBoxLayout()
-        fermer = QPushButton(u"Fermer")
+        fermer = QPushButton("Fermer")
         boutons.addWidget(fermer)
-        lancer = QPushButton(u"Créer")
+        lancer = QPushButton("Créer")
         boutons.addWidget(lancer)
         fermer.clicked.connect(self.close)
         lancer.clicked.connect(self.Creer)
@@ -122,7 +119,7 @@ class CreerSuite(MyMiniFrame):
         i = self.fonction.currentIndex()
         nom_courbe = 'Cf' + str(i + 1)
 
-        if objets.has_key(nom_courbe):
+        if nom_courbe in objets:
             courbe = objets[nom_courbe]
             fonction = courbe.fonction
         elif self.parent.boites[i].text():
@@ -131,7 +128,7 @@ class CreerSuite(MyMiniFrame):
             fonction = courbe.fonction
         else:
             # TODO: afficher un vrai message d'erreur
-            raise KeyError,  "courbe inexistante : %s" %nom_courbe
+            raise KeyError("courbe inexistante : %s" %nom_courbe)
 
 
         if self.mode.currentIndex() == 0: # cas des suites définies par récurrence
@@ -144,7 +141,7 @@ class CreerSuite(MyMiniFrame):
             M.label("$u_%s$" %(n0))
 #            self.parent.suites["u"] = [d, M]
 
-            for i in xrange(self.termes.value() - 1):
+            for i in range(self.termes.value() - 1):
                 # (Attention, ça ne va pas marcher pour les fonctions définies par morceau)
                 u1 = fonction(u0)
                 N = Point(u0, u1, visible=self._param_.afficher_points_de_construction)
@@ -174,7 +171,7 @@ class CreerSuite(MyMiniFrame):
         else:   # suites définies explicitement
             n0 = self.n0.value()
 #            self.parent.suites[u"u"] = []
-            for i in xrange(n0, n0 + self.termes.value()):
+            for i in range(n0, n0 + self.termes.value()):
                 yi = fonction(i)
                 M = Point(i, 0)
                 M.label(str(i))
@@ -203,5 +200,5 @@ class CreerSuite(MyMiniFrame):
 
 
     def EvtChoixFonction(self, index):
-        for i in xrange(self.parent.nombre_courbes):
+        for i in range(self.parent.nombre_courbes):
             self.parent.boites[i].setChecked(i==index)

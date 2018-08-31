@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 #    WxGeometrie
 #    Dynamic geometry, graph plotter, and more for french mathematic teachers.
@@ -23,9 +22,9 @@ from .. import param # parametres du programme
 
 #from fonctions import * # librairie regroupant diverses fonctions "maison"
 #from infos import * # librairie servant a generer des infos sur la configuration (utile pour le debugage)
-from .fonctions import uu, is_in, WeakList, print_error, property2, str3, \
-                      CompressedList, rstrip_, str2, no_twin, warning, \
-                      CustomWeakKeyDictionary, debug, no_argument, path2, \
+from .fonctions import is_in, WeakMultiSet, print_error, property2, \
+                      CompressedList, rstrip_, no_twin, warning, \
+                      debug, no_argument, path2, \
                       removeend, advanced_split, regsub, split_around_parenthesis,\
                       msplit, OrderedDict, find_closing_bracket
 # outils pour gerer la securite lors d'execution de code (tache delicate !)
@@ -33,7 +32,7 @@ from .securite import eval_safe, eval_restricted
 #import bugs_report
 #import erreurs
 #import rapport
-from generic_wrapper import GenericWrapper
+from .generic_wrapper import GenericWrapper
 
 from .decorator import decorator
 
@@ -41,7 +40,7 @@ import numpy
 
 
 def fullrange(a, b, pas):
-    u'''Comme range(), mais avec des flottants, et contient en dernière valeur 'b'.
+    '''Comme range(), mais avec des flottants, et contient en dernière valeur 'b'.
 
     Équivalent de numpy.append(numpy.arrange(a, b, pas), b).'''
     return numpy.append(numpy.arange(a, b, pas), b)

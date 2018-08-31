@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ######################################
 #
@@ -35,8 +34,6 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 from locale import getdefaultlocale
 from math import pi
-
-python_min = (2, 6) # version minimale requise
 
 # debuguage (affichage des erreurs + diverses infos)
 debug = True
@@ -75,11 +72,6 @@ style_Qt = None
 # jeu de caractère à utiliser
 encodage = getdefaultlocale()[1] or "utf8"
 
-# Utiliser pysco si disponible (JIT compiler qui accélère le code python)
-# True -> tout compiler : psyco.full()
-# None -> compilation optimisée : psyco.profile()
-# False -> ne pas essayer d'importer psyco
-charger_psyco = False
 
 # Modules activés par défaut
 modules_par_defaut = (
@@ -205,7 +197,7 @@ points_deplacables = {
     "couleur": "r",
     "niveau": 10,
     "fixe": False,
-    "sous-categorie": u"points déplaçables",
+    "sous-categorie": "points déplaçables",
     }
 segments = {
     "couleur": "g",
@@ -324,7 +316,7 @@ polygones = {
     "niveau": 0.1,
     "hachures": types_de_hachures[0],
     "categorie": "surfaces",
-    "sous-categorie": u"polygones",
+    "sous-categorie": "polygones",
     }
 cotes = {
     "couleur": "y",
@@ -345,7 +337,7 @@ polyedres = {
     "niveau": 0,
     "hachures": types_de_hachures[0],
     "categorie": "surfaces",
-    "sous-categorie": u"polyèdres",
+    "sous-categorie": "polyèdres",
     }
 aretes = {
     "couleur": "y",
@@ -416,7 +408,7 @@ labels = {
     "mode": 'rien',
     "fixe": False,
     "categorie": "textes",
-    "sous-categorie": u"étiquettes",
+    "sous-categorie": "étiquettes",
     "niveau": 7,
     "alignement_vertical": "bottom",
     "alignement_horizontal": "left",

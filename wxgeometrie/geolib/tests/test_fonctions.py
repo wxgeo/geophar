@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 from pytest import XFAIL
 
@@ -11,7 +10,7 @@ _VAL0 = -5.156557933
 
 @XFAIL
 def test_Fonction():
-    u"Test sans feuille."
+    "Test sans feuille."
     g = Fonction('2x+7')
     assert g(17) == 41
     # La fonction n'est compilée que s'il y a une feuille.
@@ -46,5 +45,6 @@ def test_intervalle():
     f = Feuille()
     o = f.objets
     g = o.g = Fonction('x^2+2x+1', ']0;5')
-    assert g.style('extremites_cachees') == ([5],)
+    assert g.style('extremites_cachees')[0][0].val == 5 # ([Variable(5)],)
     assert g.ensemble == ']0;5['
+

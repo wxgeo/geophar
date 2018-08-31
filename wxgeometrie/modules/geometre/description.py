@@ -6,8 +6,8 @@
 # defaut : par défaut, le module est-il installé ou non ?
 
 description = {
-"titre":                    u"Géométrie dynamique",
-"description":              u"Création et manipulation de figures géométriques dans le plan.",
-"groupe":                   u"Modules",
+"titre":                    "Géométrie dynamique",
+"description":              "Création et manipulation de figures géométriques dans le plan.",
+"groupe":                   "Modules",
 "defaut":  True,
 }

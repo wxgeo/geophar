@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division
 
 import os, sys, subprocess
 
@@ -31,7 +30,7 @@ EXCLURE = {'dirs': ['sympy', 'sympy_OLD', 'developpeurs', 'doc', 'exemples',
 CODECS = ('utf-8', 'utf8', 'ascii')
 
 def command(string, quiet=True):
-    u"Execute command in shell."
+    "Execute command in shell."
     out = subprocess.Popen(string, shell=True, stdout=subprocess.PIPE,
                            stderr=subprocess.STDOUT).stdout
     output = out.read()
@@ -39,14 +38,14 @@ def command(string, quiet=True):
         sys.stdout.write(output)
     out.close()
     if not quiet:
-        print "Commande '%s' executee." % string
-    return output
+        print("Commande '%s' executee." % string)
+    return output.decode()
 
 def verifier(fichier):
     # On vérifie que le fichier est bien déclaré en utf-8
     with open(fichier, 'rU') as f:
         s = f.read(1000)
-        pos = (22 if s.startswith('#!/usr/bin/env python') else 0)
+        pos = (22 if s.startswith('#!/usr/bin/env python3') else 0)
         if not s.startswith(START, pos):
             return [fichier]
     # On vérifie qu'il est réellement en utf-8 (ou en ascii)
@@ -64,7 +63,7 @@ def skip(path):
 
 #@XFAIL
 def test_entetes():
-    u"On teste que les fichiers soient bien tous declarés en utf-8."
+    "On teste que les fichiers soient bien tous declarés en utf-8."
     bad_files = []
     for root, dirs, files in os.walk(WXGEODIR):
         if not skip(root):
@@ -72,7 +71,7 @@ def test_entetes():
                 if filename.endswith('.py') and filename not in EXCLURE['files']:
                     bad_files.extend(verifier(os.path.join(root, filename)))
     if bad_files:
-        print(u'\n\nEn-tête ou encodage incorrect : ')
+        print('\n\nEn-tête ou encodage incorrect : ')
         for fichier in bad_files:
             print('* ' + fichier)
     assert not bad_files

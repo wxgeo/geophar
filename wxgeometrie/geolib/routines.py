@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------#######
 #                        Geolib                     #
@@ -37,6 +36,32 @@ from ..mathlib.printers import custom_str
 
 
 
+def confondus(M, N):
+    try:
+        (xM, yM), (xN, yN) = M, N
+    except Exception:
+        return False
+    eps = contexte['tolerance']
+    return abs(xN - xM) < eps and abs(yM - yN) < eps
+
+
+def distincts(M, N):
+    try:
+        (xM, yM), (xN, yN) = M, N
+    except Exception:
+        return False
+    eps = contexte['tolerance']
+    return abs(xN - xM) > eps or abs(yM - yN) > eps
+
+
+def distincts2a2(*points):
+    for i, M in enumerate(points):
+        for N in points[i + 1:]:
+            if not distincts(M, N):
+                return False
+    return True
+
+
 def radian(val):
     unite = contexte['unite_angle']
     if unite == 'd':
@@ -50,7 +75,7 @@ def radian(val):
 ## Fonctions rapides destinées essentiellement à géolib
 
 def produit_scalaire(u, v):
-    u"""Calcule le produit scalaire des vecteurs u et v.
+    """Calcule le produit scalaire des vecteurs u et v.
     u et v doivent être de type list, tuple, array, ou geolib.Vecteur."""
     return sum(i*j for i, j in zip(u ,v))
 
@@ -62,7 +87,7 @@ def produit_scalaire(u, v):
 #    return clog(complex(*v)/complex(*u)).imag
 
 def angle_vectoriel(u, v):
-    u"""Renvoie une mesure sur ]-pi;pi] de l'angle formé par les vecteurs u et v.
+    """Renvoie une mesure sur ]-pi;pi] de l'angle formé par les vecteurs u et v.
     u et v doivent être de type list, tuple, array, ou geolib.Vecteur, et de dimension 2.
 
     Version compatible avec sympy."""
@@ -74,33 +99,33 @@ def angle_vectoriel(u, v):
 
 
 def norme(x, y):
-    u"Implémentation rapide de la norme d'un vecteur."
-    if isinstance(x, (int, float, long)) or isinstance(y, (int, float, long)):
+    "Implémentation rapide de la norme d'un vecteur."
+    if isinstance(x, (int, float)) or isinstance(y, (int, float)):
         return hypot(x, y)
     return u_sqrt(x**2 + y**2)
 
 
 
 def distance(A, B):
-    u"Distance entre les points A et B."
+    "Distance entre les points A et B."
     xA, yA = A
     xB,  yB = B
     return norme(xA - xB, yA - yB)
 
 def carre_distance(A, B):
-    u"Carré de la distance entre les points A et B."
+    "Carré de la distance entre les points A et B."
     xA, yA = A
     xB, yB = B
     return (xB - xA)**2+(yB - yA)**2
 
 def vect(A, B):
-    u"Coordonnées du vecteur A>B."
+    "Coordonnées du vecteur A>B."
     xA, yA = A
     xB, yB = B
     return xB - xA, yB - yA
 
 def det(vec1, vec2):
-    u"Déterminant de deux vecteurs du plan."
+    "Déterminant de deux vecteurs du plan."
     x1, y1 = vec1
     x2, y2 = vec2
     return x1*y2 - x2*y1
@@ -136,7 +161,7 @@ def racines(a, b, c, exact=False):
 
 
 def point_dans_polygone(couple, polygone):
-    u"""Détermine si un point est à l'intérieur d'un polygone.
+    """Détermine si un point est à l'intérieur d'un polygone.
     D'après un algorithme de Paul Bourke."""
     x, y = couple
     dedans = False
@@ -155,7 +180,7 @@ def point_dans_polygone(couple, polygone):
 
 
 def enveloppe_convexe(*points):
-    u"""Donne l'enveloppe convexe d'un ensemble de points.
+    """Donne l'enveloppe convexe d'un ensemble de points.
     D'après Dinu C. Gherman (Andrew's Monotone Chain Algorithm)."""
     def det(p, q, r):
         return (q[0]*r[1] + p[0]*q[1] + r[0]*p[1]) - (q[0]*p[1] + r[0]*q[1] + p[0]*r[1])
@@ -183,7 +208,7 @@ def enveloppe_convexe(*points):
 
 
 def point_dans_enveloppe_convexe(point, polygone):
-    u"""Détermine si un point est à l'intérieur de l'enveloppe convexe d'un polygone."""
+    """Détermine si un point est à l'intérieur de l'enveloppe convexe d'un polygone."""
     def det(p, q, r):
         return (q[0]*r[1] + p[0]*q[1] + r[0]*p[1]) - (q[0]*p[1] + r[0]*q[1] + p[0]*r[1])
 
@@ -254,7 +279,7 @@ def distance_point_ellipse(centre, rx, ry, point):
 
 
 def carre_distance_point_ellipse(centre, rx, ry, point, epsilon = None):
-    u"""Distance approchée entre un point et une ellipse orientée selon les axes.
+    """Distance approchée entre un point et une ellipse orientée selon les axes.
 
     Algorithme naïf, d'après moi-même. ;-)"""
     if epsilon is None:
@@ -304,12 +329,12 @@ def direction_droite(pi, pj, pk):
 
 
 def trigshift(t, a = 0):
-    u"Retourne le représentant de t[2pi] situé dans l'intervalle [a; a+2pi[."
+    "Retourne le représentant de t[2pi] situé dans l'intervalle [a; a+2pi[."
     return t + 2*pi*ceil((a - t)/(2*pi))
 
 
 def distance_segment(M, A, B, d):
-    u"""Teste si la distance entre le point M et le segment [AB] est inférieure à d.
+    """Teste si la distance entre le point M et le segment [AB] est inférieure à d.
 
     M, A et B sont des couples de réels, et d un réel.
     Cf. "distance_point_segment.odt" dans "developpeurs/maths/".
@@ -338,7 +363,7 @@ def distance_segment(M, A, B, d):
 # ----------------------
 
 def nchiffres(x, n = 1):
-    u"""Arrondi x en fournissant n chiffres significatifs.
+    """Arrondi x en fournissant n chiffres significatifs.
 
     >>> from wxgeometrie.geolib.routines import nchiffres
     >>> nchiffres(2345, 2)
@@ -353,7 +378,7 @@ def nchiffres(x, n = 1):
 TRAILING_ZEROS = re.compile(r"\.[0-9]*0+(?![0-9])")
 
 def strip_trailing_zeros(s):
-    u""""Supprime tous les zeros inutiles des nombres flottants.
+    """"Supprime tous les zeros inutiles des nombres flottants.
 
     >>> from wxgeometrie.geolib.routines import strip_trailing_zeros
     >>> strip_trailing_zeros("4.0000")
@@ -378,7 +403,7 @@ def nice_display(x):
 
 
 def arrondir(x):
-    u"""Arrondi le nombre : un seul chiffre significatif, compris entre 1 et 5.
+    """Arrondi le nombre : un seul chiffre significatif, compris entre 1 et 5.
     Transforme automatiquement le nombre en entier selon le cas."""
     n = nchiffres(x, sqrt(.5))
     if int(n) == n:
@@ -387,7 +412,7 @@ def arrondir(x):
 
 
 def arrondir_1_2_5(x):
-    u"""Arrondit x à un nombre de la forme k*10^p, avec k dans {1, 2, 5},
+    """Arrondit x à un nombre de la forme k*10^p, avec k dans {1, 2, 5},
     et p entier relatif.
 
     >>> from wxgeometrie.geolib.routines import arrondir_1_2_5
@@ -416,7 +441,7 @@ def arrondir_1_2_5(x):
 
 
 def arrondir_1_25_5(x):
-    u"""Arrondit x à un nombre de la forme k*10^p, avec k dans {1, 2.5, 5},
+    """Arrondit x à un nombre de la forme k*10^p, avec k dans {1, 2.5, 5},
     et p entier relatif.
 
     >>> from wxgeometrie.geolib.routines import arrondir_1_25_5
@@ -446,7 +471,7 @@ def arrondir_1_25_5(x):
 
 
 def formatage(eqn):
-    u"""Améliore l'affichage des équations.
+    """Améliore l'affichage des équations.
 
     >>> from wxgeometrie.geolib.routines import formatage
     >>> formatage('1 x + -1/3 y + 1 = 0')
@@ -469,7 +494,7 @@ def formatage(eqn):
 
 
 def nice_str(x):
-    u"""Convertit en chaîne de caractères les objets mathématiques.
+    """Convertit en chaîne de caractères les objets mathématiques.
 
     Améliore le formatage de ces objets:
       * Supprime les 0 inutiles.

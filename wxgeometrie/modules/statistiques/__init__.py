@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
-from __future__ import with_statement
 
 ##-------------------------------------------#######
 #                   Statistiques                   #
@@ -26,7 +24,7 @@ from __future__ import with_statement
 import re
 from math import isnan, sqrt, ceil, floor
 
-from PyQt4.QtGui import QVBoxLayout, QLabel, QGroupBox, QHBoxLayout, QComboBox
+from PyQt5.QtWidgets import QVBoxLayout, QLabel, QGroupBox, QHBoxLayout, QComboBox
 
 from numpy import array
 
@@ -35,10 +33,10 @@ from ...GUI.panel import Panel_API_graphique
 from .experience import LancerDes, Sondage, ExperienceFrame, DIC
 from .onglets_internes import OngletsStatistiques
 from ...geolib.routines import nice_display, arrondir_1_2_5 as arrondir
-from ...pylib import property2, uu, regsub, advanced_split, print_error, eval_restricted
+from ...pylib import property2, regsub, advanced_split, print_error, eval_restricted
 from ... import param
 
-__doc__ = u"""
+__doc__ = """
 Module Statistiques:
 Calculs de moyenne, variance, quantiles sur des séries de données avec modèle
  linéaire si besoin.
@@ -60,7 +58,7 @@ def catch_errors(function):
 
 
 class Classe(tuple):
-    u"""Un intervalle de type [a;b[.
+    """Un intervalle de type [a;b[.
 
     Pour les calculs, les classes sont approximées par leur centre de classe.
     """
@@ -69,7 +67,6 @@ class Classe(tuple):
 
     def __str__(self):         return "[%s ; %s[" % (self[0], self[-1])
     def __repr__(self):        return str(self)
-    def __unicode__(self):     return uu(str(self))
     def __int__(self):         return int(self.milieu())
     def __add__(self, y):      return self.milieu() + y
     def __mul__(self, y):      return self.milieu()*y
@@ -89,7 +86,7 @@ class Classe(tuple):
     def __ge__(self, y):       return self.milieu() >= y
     def __lt__(self, y):       return self.milieu() < y
     def __le__(self, y):       return self.milieu() <= y
-    def __nonzero__(self):     return self.milieu() != 0
+    def __bool__(self):     return self.milieu() != 0
 
 
     def amplitude(self):
@@ -107,20 +104,20 @@ class StatMenuBar(MenuBar):
         self.ajouter("Fichier", ["nouveau"], ["ouvrir"], ["ouvrir ici"], None,
                     ["enregistrer"], ["enregistrer_sous"], ["exporter"], None,
                     ['session'], None,
-                    ["imprimer"], [u"presse-papier"], None, ["proprietes"], None,
+                    ["imprimer"], ["presse-papier"], None, ["proprietes"], None,
                     self.panel.doc_ouverts, None, ["fermer"], ["quitter"])
         self.ajouter("Editer", ["annuler"], ["refaire"], ["modifier"], ["supprimer"])
         self.ajouter("creer")
         self.ajouter("Affichage", ["onglet"], ["plein_ecran"], None, ["barre_outils"],
                      ["console_geolib"], None, ["zoom_texte"], ["zoom_ligne"],
                      ["zoom_general"])
-        self.ajouter("Outils", [u"Expérience", u"Simuler une expérience.",
+        self.ajouter("Outils", ["Expérience", "Simuler une expérience.",
                                 "Alt+Ctrl+E", self.panel.creer_experience],
-                [u"Lancers de dés", u"Simuler des lancers d'un ou de plusieurs dés.",
+                ["Lancers de dés", "Simuler des lancers d'un ou de plusieurs dés.",
                  "Ctrl+Shift+D", self.panel.creer_lancer_des],
-                [u"Sondage", u"Simuler un sondage simple.", "Ctrl+Shift+S",
+                ["Sondage", "Simuler un sondage simple.", "Ctrl+Shift+S",
                  self.panel.creer_sondage], None, ["options"])
-        self.ajouter(u"avance1")
+        self.ajouter("avance1")
         self.ajouter("?")
 
 
@@ -128,16 +125,16 @@ class StatMenuBar(MenuBar):
 
 class Statistiques(Panel_API_graphique):
 
-    titre = u"Statistiques" # Donner un titre a chaque module
+    titre = "Statistiques" # Donner un titre a chaque module
 
     types_diagrammes = ('barres', 'batons', 'histogramme', 'cumul_croissant',
                         'cumul_decroissant', 'bandes', 'circulaire',
                         'semi-circulaire', 'boite')
-    noms_diagrammes = [u"diagramme en barres", u"diagramme en batons",
-                       u"histogramme", u"effectifs cumulés croissants",
-                       u"effectifs cumulés décroissants", u"diagramme en bandes",
-                       u"diagramme circulaire", u"diagramme semi-circulaire",
-                       u"diagramme en boite"]
+    noms_diagrammes = ["diagramme en barres", "diagramme en batons",
+                       "histogramme", "effectifs cumulés croissants",
+                       "effectifs cumulés décroissants", "diagramme en bandes",
+                       "diagramme circulaire", "diagramme semi-circulaire",
+                       "diagramme en boite"]
     _graph = None
 
     def __init__(self, *args, **kw):
@@ -164,7 +161,7 @@ class Statistiques(Panel_API_graphique):
 
         self.entrees.addStretch()
 
-        self.entrees.addWidget(QLabel(u" Mode graphique :"))
+        self.entrees.addWidget(QLabel(" Mode graphique :"))
 
         self.choix = QComboBox()
         self.choix.addItems(self.noms_diagrammes)
@@ -177,7 +174,7 @@ class Statistiques(Panel_API_graphique):
 
         #self.entrees.Add(wx.StaticText(self, -1, ""))
 
-        box = QGroupBox(u"Mesures")
+        box = QGroupBox("Mesures")
         bsizer = QVBoxLayout()
         box.setLayout(bsizer)
 
@@ -200,11 +197,11 @@ class Statistiques(Panel_API_graphique):
         self._ecart_type.setMinimumWidth(100)
 
         bsizer.addWidget(self._effectif_total)
-        bsizer.addWidget(QLabel(u"<b>Tendance centrale</b>"))
+        bsizer.addWidget(QLabel("<b>Tendance centrale</b>"))
         bsizer.addWidget(self._moyenne)
         bsizer.addWidget(self._mediane)
         bsizer.addWidget(self._mode)
-        bsizer.addWidget(QLabel(u"<b>Dispersion</b>"))
+        bsizer.addWidget(QLabel("<b>Dispersion</b>"))
         bsizer.addWidget(self._decile1)
         bsizer.addWidget(self._quartile1)
         bsizer.addWidget(self._quartile3)
@@ -260,7 +257,7 @@ class Statistiques(Panel_API_graphique):
         self.actualiser()
 
     def _recuperer_classes(self):
-        u"Récupère la liste des classes depuis le champ de texte correspondant."
+        "Récupère la liste des classes depuis le champ de texte correspondant."
         self._classes = []
         classes = self.onglets_bas.tab_donnees.classes.text()
         if param.separateur_decimal == ',':
@@ -279,7 +276,7 @@ class Statistiques(Panel_API_graphique):
 
 
     def _recuperer_valeurs(self):
-        u"Récupère le dictionnaire des valeurs et des effectifs associés depuis le champ de texte correspondant."
+        "Récupère le dictionnaire des valeurs et des effectifs associés depuis le champ de texte correspondant."
         # On peut saisir plusieurs séries (pour les comparer).
         # self._donnees est une liste de dictionnaire de valeurs (un par série).
         self._donnees = []
@@ -347,10 +344,10 @@ class Statistiques(Panel_API_graphique):
             self.calculer()
             if afficher:
                 self.affiche()
-            self.canvas.message(u"Graphique fini.")
+            self.canvas.message("Graphique fini.")
 
         except:
-            self.canvas.message(u"Impossible de construire le graphique.")
+            self.canvas.message("Impossible de construire le graphique.")
             print_error()
 
 
@@ -358,21 +355,21 @@ class Statistiques(Panel_API_graphique):
         e = self.effectif_total()
         if isinstance(e, float) and e == int(e):
             e = int(e)
-        self._effectif_total.setText(u"<i>Effectif total: %s</i>" % e)
-        self._moyenne.setText(u"Moyenne: %s" % self.moyenne())
-        self._mediane.setText(u"Médiane: %s" % self.mediane())
-        self._mode.setText(u"Mode: %s" % self.mode())
-        self._decile1.setText(u"D<sub>1</sub>: %s" % self.tile(10, 1))
+        self._effectif_total.setText("<i>Effectif total: %s</i>" % e)
+        self._moyenne.setText("Moyenne: %s" % self.moyenne())
+        self._mediane.setText("Médiane: %s" % self.mediane())
+        self._mode.setText("Mode: %s" % self.mode())
+        self._decile1.setText("D<sub>1</sub>: %s" % self.tile(10, 1))
         Q1 = self.quartile(1)
-        self._quartile1.setText(u"Q<sub>1</sub>: %s" % Q1)
+        self._quartile1.setText("Q<sub>1</sub>: %s" % Q1)
         Q3 = self.quartile(3)
-        self._quartile3.setText(u"Q<sub>3</sub>: %s" % Q3)
-        self._decile9.setText(u"D<sub>9</sub>: %s" % self.tile(10, 9))
-        ecart = ('Calcul impossible.' if isinstance(Q1, basestring) else Q3 - Q1)
-        self._interquartile.setText(u"Q<sub>3</sub> - Q<sub>1</sub>: %s" % ecart)
-        self._etendue.setText(u"Étendue: %s" % self.etendue())
-        self._variance.setText(u"Variance: %s" % self.variance())
-        self._ecart_type.setText(u"Écart-type: %s" % self.ecart_type())
+        self._quartile3.setText("Q<sub>3</sub>: %s" % Q3)
+        self._decile9.setText("D<sub>9</sub>: %s" % self.tile(10, 9))
+        ecart = ('Calcul impossible.' if isinstance(Q1, str) else Q3 - Q1)
+        self._interquartile.setText("Q<sub>3</sub> - Q<sub>1</sub>: %s" % ecart)
+        self._etendue.setText("Étendue: %s" % self.etendue())
+        self._variance.setText("Variance: %s" % self.variance())
+        self._ecart_type.setText("Écart-type: %s" % self.ecart_type())
 
     def ajouter_classes(self, *classes, **kw):
         if not self._classes:
@@ -398,13 +395,13 @@ class Statistiques(Panel_API_graphique):
     # TODO: renommer classes en classes_serie
     @property
     def classes(self):
-        u"Les classes de la série courante."
+        "Les classes de la série courante."
         index = self.index_serie
         if not self._classes or len(self._classes) < index:
             if self._donnees:
                 # Par défaut, si toutes les valeurs entrées sont des classes,
                 # le découpage en classes suit les classes entrées.
-                donnees = self._donnees[index].keys()
+                donnees = list(self._donnees[index].keys())
                 if all(isinstance(x, Classe) for x in donnees):
                     return donnees
             return None
@@ -413,7 +410,7 @@ class Statistiques(Panel_API_graphique):
     # TODO: renommer donnees en donnees_serie
     @property
     def donnees(self):
-        u"Les données de la série courante."
+        "Les données de la série courante."
         if not self._donnees:
             return None
         mode = self.param('mode_effectifs')
@@ -424,7 +421,7 @@ class Statistiques(Panel_API_graphique):
         if mode:
             k = (100 if mode == 1 else 1)
             donnees = donnees.copy()
-            total = sum(donnees.itervalues())
+            total = sum(donnees.values())
             for val in donnees:
                 donnees[val] *= k/total
         return donnees
@@ -442,18 +439,18 @@ class Statistiques(Panel_API_graphique):
 
     def effectif_classe(self, classe):
         a, b = classe
-        return sum(effectif for valeur, effectif in self.donnees.iteritems() if a <= valeur < b)
+        return sum(effectif for valeur, effectif in self.donnees.items() if a <= valeur < b)
 
     def densite_classe(self, classe):
         return self.effectif_classe(classe)/classe.amplitude()
 
 
     def experience(self, formule, n, val_possibles = ()):
-        u"""Réalise 'n' fois l'expérience décrite par 'formule'.
+        """Réalise 'n' fois l'expérience décrite par 'formule'.
         Exemple: self.experience('int(6*rand())+1', 100) simule 100 lancers de dés."""
 
         self.actualiser(False)
-        self.ajouter_valeurs(*[eval(formule, DIC) for i in xrange(n)])
+        self.ajouter_valeurs(*[eval(formule, DIC) for i in range(n)])
         for val in val_possibles:
             self.ajouter_valeur(val, 0)
         self.calculer()
@@ -569,7 +566,7 @@ class Statistiques(Panel_API_graphique):
 
 
     def afficher_message(self, msg):
-        u"Affichage un message précisant pourquoi le graphique ne s'affiche pas."
+        "Affichage un message précisant pourquoi le graphique ne s'affiche pas."
         self.axes(x=False, y=False, classes=None)
         self.canvas.dessiner_texte(0, 0, msg, va='center', ha='center', size=16)
         self.fenetre(-1, 1, -1, 1)
@@ -581,17 +578,17 @@ class Statistiques(Panel_API_graphique):
 
 
     def histogramme(self):
-        u"Construit un histogramme (à ne pas confondre avec le diagramme en barres !)"
+        "Construit un histogramme (à ne pas confondre avec le diagramme en barres !)"
 
         if self.axes(x=True, a=True, classes=True):
-            return u"Définissez des classes.\nExemple : [0;10[ [10;20["
+            return "Définissez des classes.\nExemple : [0;10[ [10;20["
 
         m, M = self.intervalle_classes()
         l = min([classe[1] - classe[0] for classe in self.classes])
         hmax = max([self.densite_classe(classe) for classe in self.classes])
 
         if hmax == 0:
-            return u"Les classes choisies ne contiennent aucune valeur."
+            return "Les classes choisies ne contiennent aucune valeur."
 
         # Réglage de la fenêtre d'affichage
         self.fenetre(m - 0.1*(M-m), M + 0.4*(M-m), -0.1*hmax, 1.1*hmax)
@@ -635,7 +632,7 @@ class Statistiques(Panel_API_graphique):
         self.canvas.dessiner_polygone([x, x + lu, x + lu, x, x],
                     [.5*hmax, .5*hmax, .5*hmax + hu, .5*hmax + hu, .5*hmax], col)
 
-        legende = nice_display(effectif) + " " + (self.legende_a or u"unité")
+        legende = nice_display(effectif) + " " + (self.legende_a or "unité")
 
         if effectif > 1 and not self.legende_a:
             legende += "s"
@@ -644,13 +641,13 @@ class Statistiques(Panel_API_graphique):
 
 
     def courbe_effectifs(self, mode=1):
-        u"""
+        """
         Courbe des effectifs cumulés croissants si mode = 1, décroissants si mode = -1.
         """
         if self.axes(x=True, y=True, classes=True):
-            return u"Définissez des classes.\nExemple : [0;10[ [10;20["
+            return "Définissez des classes.\nExemple : [0;10[ [10;20["
 
-        donnees_triees = sorted(self.donnees.iteritems())
+        donnees_triees = sorted(self.donnees.items())
 
         l = min([classe[1] - classe[0] for classe in self.classes])
         m, M = self.intervalle_classes()
@@ -693,16 +690,16 @@ class Statistiques(Panel_API_graphique):
         if not legende_y:
             mode = self.param('mode_effectifs')
             if mode == 0:
-                legende_y = u"Effectifs cumulés"
+                legende_y = "Effectifs cumulés"
             elif mode == 1:
-                legende_y = u"Pourcentages cumulés"
+                legende_y = "Pourcentages cumulés"
             else:
-                legende_y = u"Fréquences cumulées"
+                legende_y = "Fréquences cumulées"
         self.canvas.dessiner_texte(m + dx, 1.1*hmax - dy, legende_y, va='top')
 
 
     def quantile_plot(self, classe, y, a, couleur='r', style='-'):
-        u"""
+        """
         Trace le a-quantile
 
         @type classe: classe
@@ -731,7 +728,7 @@ class Statistiques(Panel_API_graphique):
 
 
     def select_classe(self, liste, a, mode=1):
-        u"""
+        """
         selectionne la classe contenant le a-quantile
 
         @type a: real
@@ -761,7 +758,7 @@ class Statistiques(Panel_API_graphique):
                     return (c, v)
 
     def diagramme_barre(self, ratio=.7):
-        u"""Diagramme en barres.
+        """Diagramme en barres.
 
         Essentiellement pertinent pour des séries qualitatives.
 
@@ -772,7 +769,7 @@ class Statistiques(Panel_API_graphique):
         if self.axes(y=True, legende_x=True):
             return
 
-        donnees_triees = sorted(self.donnees.iteritems())
+        donnees_triees = sorted(self.donnees.items())
 
         lmax = 100./len(donnees_triees)
         l = ratio*lmax
@@ -801,11 +798,11 @@ class Statistiques(Panel_API_graphique):
         if not legende_y:
             mode = self.param('mode_effectifs')
             if mode == 0:
-                legende_y = u"Effectifs"
+                legende_y = "Effectifs"
             elif mode == 1:
-                legende_y = u"Pourcentages"
+                legende_y = "Pourcentages"
             else:
-                legende_y = u"Fréquences"
+                legende_y = "Fréquences"
         self.canvas.dessiner_texte(15*self.canvas._coeff(0), 1.15*hmax - 5*self.canvas._coeff(1), legende_y, va = "top")
 
         # les donnees sont affichees entre 0 et 100 en abscisse
@@ -813,12 +810,12 @@ class Statistiques(Panel_API_graphique):
 
 
     def diagramme_baton(self, largeur=1):
-        u"""Diagramme en batons (séries quantitatives discrètes).
+        """Diagramme en batons (séries quantitatives discrètes).
 
         `largeur` est la demi-largeur d'un bâton, en pixels."""
 
         if not all(hasattr(val, '__float__') for val in self.donnees):
-            return u"La série doit être à valeurs numériques."
+            return "La série doit être à valeurs numériques."
 
         if self.axes(x=True, y=True):
             return
@@ -846,7 +843,7 @@ class Statistiques(Panel_API_graphique):
         e = largeur*self.canvas._coeff(0)
 
         i = 0
-        for val, eff in self.donnees.iteritems():
+        for val, eff in self.donnees.items():
             couleur = 'k' if self.param('hachures') else self.couleurs[(i - 1)%len(self.couleurs)]
             self.canvas.dessiner_polygone([val - e, val - e, val + e, val + e], [0, eff, eff, 0], couleur)
             i+=1
@@ -859,11 +856,11 @@ class Statistiques(Panel_API_graphique):
         if not legende_y:
             mode = self.param('mode_effectifs')
             if mode == 0:
-                legende_y = u"Effectifs"
+                legende_y = "Effectifs"
             elif mode == 1:
-                legende_y = u"Pourcentages"
+                legende_y = "Pourcentages"
             else:
-                legende_y = u"Fréquences"
+                legende_y = "Fréquences"
         self.canvas.dessiner_texte(m + 15*self.canvas._coeff(0), 1.1*hmax - 5*self.canvas._coeff(1),
                                     legende_y, va = "top")
 
@@ -871,7 +868,7 @@ class Statistiques(Panel_API_graphique):
 
 
     def diagramme_bande(self):
-        u"""Diagramme en bande."""
+        """Diagramme en bande."""
 
         if self.axes():
             return
@@ -884,7 +881,7 @@ class Statistiques(Panel_API_graphique):
         self.graduations(0, 0)
 
 
-        for valeur, effectif in sorted(self.donnees.iteritems()):
+        for valeur, effectif in sorted(self.donnees.items()):
             l = effectif*l_unite
             if self.param('hachures'):
                 self.canvas.dessiner_polygone([x, x, x + l, x + l, x], [0, 1, 1, 0, 0],
@@ -947,10 +944,10 @@ class Statistiques(Panel_API_graphique):
             self.index_serie = 0
 
     def _diagramme_boite(self, xmin, xmax, afficher_extrema=True):
-        u"Appelé aussi diagramme à moustache."
+        "Appelé aussi diagramme à moustache."
 
         if not all(hasattr(val, '__float__') for val in self.donnees):
-            return u"La série doit être à valeurs numériques."
+            return "La série doit être à valeurs numériques."
 
         if self.axes(x=True):
             return
@@ -1033,23 +1030,23 @@ class Statistiques(Panel_API_graphique):
     @catch_errors
     def effectif_total(self):
         # Effectifs bruts (non convertis en fréquences, quel que soit le mode).
-        return sum(self.donnees_brutes.itervalues())
+        return sum(self.donnees_brutes.values())
 
     def total(self):
-        u"Retourne soit l'effectif total, soit 100, soit 1, selon les paramètres en cours."
-        return sum(self.donnees.itervalues())
+        "Retourne soit l'effectif total, soit 100, soit 1, selon les paramètres en cours."
+        return sum(self.donnees.values())
 
     @catch_errors
     def mode(self):
         m = max(self.donnees.values())
-        v = [str(val) for val, effectif in self.donnees.iteritems() if effectif == m]
+        v = [str(val) for val, effectif in self.donnees.items() if effectif == m]
         if len(v) > 2:
             v = v[:2] + ["..."]
         return " ; ".join(v)
 
     @catch_errors
     def moyenne(self):
-        u"""Moyenne de la série.
+        """Moyenne de la série.
 
         Si les données de la série sont regroupées par classes, chaque classe
         est remplacée par son centre de classe, pour calculer une approximation
@@ -1080,7 +1077,7 @@ class Statistiques(Panel_API_graphique):
 
     @catch_errors
     def mediane(self):
-        u"""Correspond à la 'valeur du milieu' quand on ordonne les données.
+        """Correspond à la 'valeur du milieu' quand on ordonne les données.
 
         Précisement, la définition retenue ici est la suivante :
         * si l'effectif total est impair, la médiane est la valeur centrale ;
@@ -1092,7 +1089,7 @@ class Statistiques(Panel_API_graphique):
         somme = 0
         old_val = None
         objectif = self.effectif_total()/2
-        for val, effectif in sorted(self.donnees_brutes.iteritems()):
+        for val, effectif in sorted(self.donnees_brutes.items()):
             somme += effectif
             if somme > objectif:
                 if isinstance(val, Classe):
@@ -1109,14 +1106,14 @@ class Statistiques(Panel_API_graphique):
                             return (old_val + val)/2
                         except TypeError:
                             print_error()
-                            return u"Calcul impossible."
+                            return "Calcul impossible."
                 return val
             old_val = val
-        return u"Calcul impossible."
+        return "Calcul impossible."
 
     @catch_errors
     def tile(self, k = 4, i = 1):
-        u"""
+        """
         Renvoie la valeur x de la série telle que au moins i/k des données de la série
         soient inférieures ou égales à x.
 
@@ -1127,7 +1124,7 @@ class Statistiques(Panel_API_graphique):
         somme = 0
         objectif = i/k*self.effectif_total()
         # objectif : position du quartile au sein de la série.
-        for val, effectif in sorted(self.donnees_brutes.iteritems()):
+        for val, effectif in sorted(self.donnees_brutes.items()):
             somme += effectif
             if somme >= objectif:
                 if isinstance(val, Classe):
@@ -1142,7 +1139,7 @@ class Statistiques(Panel_API_graphique):
 
 
     def quartile(self, i = 1):
-        u"""
+        """
         Donne Qi, le ième quartile.
         Qi est le plus petit element de la serie statistique tel qu'au moins
         i*25% des données soient inférieures ou égales à Qi.
@@ -1154,7 +1151,7 @@ class Statistiques(Panel_API_graphique):
 
 
     def decile(self, i = 1):
-        u"""
+        """
         Donne Di, le ième décile.
         Di est le plus petit element de la serie statistique tel qu'au moins
         i*10% des données soient inférieures ou égales à Di.
@@ -1167,7 +1164,7 @@ class Statistiques(Panel_API_graphique):
 
 
     def centile(self, i = 1):
-        u"""
+        """
         Donne Ci, le ième centile.
         Ci est le plus petit element de la serie statistique tel qu'au moins
         i% des données soient inférieures ou égales à Ci.
@@ -1194,7 +1191,7 @@ class Statistiques(Panel_API_graphique):
 
     def _ouvrir(self, fgeo):
         Panel_API_graphique._ouvrir(self, fgeo)
-        if fgeo.contenu.has_key("Diagramme"):
+        if "Diagramme" in fgeo.contenu:
             diagramme = fgeo.contenu["Diagramme"][0]
             serie = diagramme["serie"][0]
             valeurs = serie["valeurs"][0]
@@ -1222,7 +1219,7 @@ class Statistiques(Panel_API_graphique):
             self.onglets_bas.tab_graduation.origine_y.setText(origine_y)
             self.onglets_bas.tab_donnees.valeurs.setText(valeurs)
             self.onglets_bas.tab_donnees.classes.setText(classes)
-            print('mode_graphique', mode_graphique)
+            print(('mode_graphique', mode_graphique))
             self.graph = mode_graphique
 
         self.actualiser()

@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 from pytest import XFAIL
 
@@ -19,7 +18,7 @@ def test_Courbe():
     c2 = Courbe(A, B, C, D, E)
     try:
         import scipy
-        assert isinstance(c2, Interpolation_polynomiale_par_morceaux)
+        assert isinstance(c2, Interpolation_polynomiale_par_morceaux), type(c2)
     except ImportError:
         assert isinstance(c2, Interpolation_lineaire)
 

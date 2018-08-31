@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
-from __future__ import with_statement
 
 ##--------------------------------------#######
 #                   Objet                     #
@@ -23,17 +21,17 @@ from __future__ import with_statement
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-import re, math, types
-from types import FunctionType, BuiltinFunctionType, TypeType
+import re, types
+from types import FunctionType, BuiltinFunctionType
+from weakref import WeakValueDictionary, WeakSet, WeakKeyDictionary
 
 import numpy
 
 from sympy import I, pi as PI, Basic, Integer
 
-from ..mathlib.internal_objects import Reel
 # à intégrer dans geolib ??
-from ..pylib import property2, uu, str2, print_error, \
-                    is_in, WeakList, CustomWeakKeyDictionary, warning
+from ..pylib import property2, print_error, \
+                    is_in, WeakMultiSet, warning
 from ..mathlib.parsers import mathtext_parser
 from .routines import nice_display
 ##from .formules import Formule
@@ -52,7 +50,7 @@ G = _()
 
 
 
-TYPES_ENTIERS = (long, int, Integer,)
+TYPES_ENTIERS = (int, Integer,)
 TYPES_REELS = TYPES_ENTIERS + (float, Basic, )
 # XXX: Basic n'est pas forcément réel
 
@@ -96,7 +94,7 @@ def issympy(*expressions):
 ############
 
 class Nom(object):
-    u"""Nom d'un objet.
+    """Nom d'un objet.
 
     Affiche le nom de l'objet quand on le met sous forme de chaîne.
 
@@ -132,7 +130,7 @@ class Nom(object):
 
 
 class Verrou(object):
-    u"""Verrouille la mise à jour des objets.
+    """Verrouille la mise à jour des objets.
 
     Pour des raisons d'optimisation, il vaut mieux globaliser la mise à jour des
     objets, autant que possible, plutôt que de faire plusieurs mises à jours
@@ -167,12 +165,14 @@ class Verrou(object):
 
     def __exit__(self, type, value, traceback):
         self._compteur -= 1
+        # On s'assure qu'on est sorti du verrou principal (en cas de
+        # verrous imbriqués).
         if not self._compteur:
             for objet in self._a_rafraichir:
                 objet.perime(_first_call=False)
 
     def update_later(self, objet, actualiser_parents):
-        u"""Indique que l'objet devra être rafraichi lorsque le verrouillage
+        """Indique que l'objet devra être rafraichi lorsque le verrouillage
         prendra fin."""
         if objet not in self._a_rafraichir:
             self._a_rafraichir[objet] = False
@@ -180,14 +180,14 @@ class Verrou(object):
 
     @property
     def locked(self):
-        u"""Indique si le verrouillage est en cours."""
+        """Indique si le verrouillage est en cours."""
         return self._compteur != 0
 
 
 
 
 class Rendu(object):
-    u"""Couche d'abstraction entre l'objet et le canvas.
+    """Couche d'abstraction entre l'objet et le canvas.
 
     Son rôle est de rendre l'objet plus indépendant du canvas, mais aussi de faciliter le débogage,
     en indiquant quel objet a dessiné quoi.
@@ -277,7 +277,7 @@ class Rendu(object):
 
 
 class Cache(object):
-    u"""Un 'dictionnaire' double dont la méthode get est sensiblement modifiée.
+    """Un 'dictionnaire' double dont la méthode get est sensiblement modifiée.
 
     Pour chaque entrée, il y a une valeur en mode exact, et une valeur en
     mode approché.
@@ -314,7 +314,7 @@ class Cache(object):
         return self.__dict[key]
 
     def remove(self, key):
-        u"Note: ne renvoie *PAS* d'erreur si la clé est absente."
+        "Note: ne renvoie *PAS* d'erreur si la clé est absente."
         # Si une des deux valeurs (exacte ou approchée) n'est plus valable,
         # l'autre ne l'est *très* probablement plus non plus.
         self.__exact.pop(key, None)
@@ -327,7 +327,7 @@ class Cache(object):
 
 
 class Ref(object):
-    u"""Conteneur pour un argument d'un objet.
+    """Conteneur pour un argument d'un objet.
 
     Si l'objet est déjà une instance de Reference, alors l'objet est renvoyé directement
     (afin de ne pas créer de conteneur de conteneur !)
@@ -349,7 +349,7 @@ class Ref(object):
             return objet
         instance = object.__new__(cls)
         instance.__objet = objet
-        instance._utilisateurs = WeakList()
+        instance._utilisateurs = WeakSet()
         return instance
 
     @property
@@ -378,19 +378,19 @@ class Ref(object):
                 if isinstance(ancien_objet, Objet):
                     ancien_objet.enfants.remove(user)
                 if isinstance(nouvel_objet, Objet):
-                    nouvel_objet.enfants.append(user)
+                    nouvel_objet.enfants.add(user)
                 # 2. Il faut les mettre à jour (ainsi que leurs héritiers)
                 user.perime()
 
 
 
 class BaseArgument(object):
-    u"""Classe mère des descripteurs 'Argument', 'ArgumentNonModifiable' et 'Arguments'."""
+    """Classe mère des descripteurs 'Argument', 'ArgumentNonModifiable' et 'Arguments'."""
 
     _compteur = 0
 
     def __init__(self, types, get_method=None, set_method=None, defaut=None):
-        self.__contenu__ = CustomWeakKeyDictionary()
+        self.__contenu__ = WeakKeyDictionary()
         cls = self.__class__
         cls._compteur += 1
         self._compteur = cls._compteur
@@ -414,7 +414,9 @@ class BaseArgument(object):
         # on transforme la chaîne "Ma_classe" en la classe Ma_classe elle-même.
         if isinstance(self.types, str):
             def convert(chaine):
-                if hasattr(G, chaine):
+                if chaine == 'None':
+                    return type(None)
+                elif hasattr(G, chaine):
                     return getattr(G, chaine)
                 elif hasattr(types, chaine):
                     return getattr(types, chaine)
@@ -440,7 +442,7 @@ class BaseArgument(object):
         # En effet, la méthode '_convertir()' peut être celle d'une sous-classe du type voulu, et donc ne pas convertir exactement l'objet dans le bon type.
         # Par exemple, pour un Vecteur_libre, c'est la méthode Vecteur_generique._convertir() qui est utilisée ; on obtient donc un objet de type 'Vecteur_generique', mais pas forcément de type 'Vecteur_libre'.
         if not isinstance(objet, self.types):
-            raise TypeError, "%s should be of type %s, and not %s." %(objet, self.types, type(objet))
+            raise TypeError("%s should be of type %s, and not %s." %(objet, self.types, type(objet)))
         return objet
 
 
@@ -451,13 +453,13 @@ class BaseArgument(object):
             # de valeur, et qui ont été initialisés avec une valeur par défaut.
             obj._valeurs_par_defaut = []
         if not isinstance(value, Ref):
-            raise TypeError, "l'argument doit etre encapsule dans un objet 'Ref' lors d'une premiere definition."
+            raise TypeError("l'argument doit etre encapsule dans un objet 'Ref' lors d'une premiere definition.")
         if value.objet is None and self.defaut is not None:
             # Du fait des dépendances circulaires, self.defaut est parfois rentré
             # sous forme de chaine. À la première utilisation, il est converti.
-            if isinstance(self.defaut, basestring):
+            if isinstance(self.defaut, str):
                 self.defaut = eval(self.defaut, G)
-            if isinstance(self.defaut, (FunctionType, BuiltinFunctionType, TypeType)):
+            if isinstance(self.defaut, (FunctionType, BuiltinFunctionType, type)):
                 value._Ref__objet = self.defaut()
             else:
                 value._Ref__objet = self.defaut
@@ -467,22 +469,23 @@ class BaseArgument(object):
         value._changer_objet(self._verifier_type(value.objet), premiere_definition = True)
 #        if isinstance(value.__objet__, Objet) and value.__objet__.__feuille__ is None:
 #            value.__objet__.__feuille__ = obj.__feuille__
-        if not is_in(obj, value._utilisateurs):
-            value._utilisateurs.append(obj)
+        # Nota: inutile de vérifier que l'objet n'y est pas déjà avant de l'ajouter,
+        # vu que _utilisateurs est de type set (WeakSet précisément).
+        value._utilisateurs.add(obj)
         return value
 
     def _redefinir(self, obj, value):
         if isinstance(value, Ref):
-            raise TypeError, "l'argument ne doit pas etre encapsule dans un objet 'Ref' lors d'une redefinition."
+            raise TypeError("l'argument ne doit pas etre encapsule dans un objet 'Ref' lors d'une redefinition.")
         if self.rattachement is not type(obj):
-            raise AttributeError, "on ne peut pas redefinir un argument d'une sous-classe"
+            raise AttributeError("on ne peut pas redefinir un argument d'une sous-classe")
         value = self._verifier_type(value)
         # La première étape, c'est d'éliminer les dépendances circulaires.
         # Par exemple, u = Variable(3); A = Point("u", "2*u"); u("A.x")
         # A deviendrait alors à la fois héritier de u (ie. on a besoin de u pour calculer A), et ancêtre de u (ie. on a besoin de A pour calculer u !)
         if value is obj or is_in(value, obj._heritiers()):
 #            self.erreur(u"Définition circulaire dans %s : l'objet %s se retrouve dépendre de lui-même." %(obj, obj))
-            raise RuntimeError, "Definition circulaire dans %s : l'objet %s se retrouve dependre de lui-meme." %(obj, obj)
+            raise RuntimeError("Definition circulaire dans %s : l'objet %s se retrouve dependre de lui-meme." %(obj, obj))
         # La valeur a été fixée par l'utilisateur, elle n'est donc plus définie par défaut :
         if self.nom in obj._valeurs_par_defaut:
             obj._valeurs_par_defaut.remove(self.nom)
@@ -501,14 +504,20 @@ class BaseArgument(object):
 
     def _get(self, obj, value):
         if self.get_method is not None:
-            return self.get_method(obj, value)
+            value = self.get_method(obj, value)
+        # Pour l'utilisateur final, il est bien plus utile d'obtenir
+        # la valeur de la variable que l'objet variable lui-même.
+        # Par ex., si A est un objet de type `Point`, ceci permet
+        # d'écrire `abs(A.x) == 2` plutôt que `abs(A.x.val) == 2`.
+        if isinstance(value, G.Variable_generique):
+            value = value.val
         return value
 
 
 
 
 class Argument(BaseArgument):
-    u"""Un descripteur pour un argument d'un objet."""
+    """Un descripteur pour un argument d'un objet."""
 
     def __get__(self, obj, type=None):
         if obj is None:
@@ -545,7 +554,7 @@ class Argument(BaseArgument):
 
 
 class ArgumentNonModifiable(BaseArgument):
-    u"""Un descripteur pour un argument non modifiable d'un objet.
+    """Un descripteur pour un argument non modifiable d'un objet.
 
     Note : un argument non modifiable n'est pas encapsulé dans un objet 'Ref'."""
 
@@ -570,7 +579,7 @@ class ArgumentNonModifiable(BaseArgument):
                         if param.verbose:
                             print_error("Conversion impossible :")
         if not isinstance(value, self.types):
-            raise TypeError, "%s should be of type %s, and not %s." %(value, self.types, type(value))
+            raise TypeError("%s should be of type %s, and not %s." %(value, self.types, type(value)))
         if isinstance(value, Objet) and value.feuille is None:
             value.feuille = obj.feuille
         return value
@@ -586,7 +595,7 @@ class ArgumentNonModifiable(BaseArgument):
         value = self._set(obj, value, premiere_definition = True)
         # 1er cas : Redéfinition d'un argument (self.__contenu__ contient déjà une référence à l'instance.
         if is_in(obj, self.__contenu__):
-            raise AttributeError, "Argument non modifiable."
+            raise AttributeError("Argument non modifiable.")
 
         # 2ème cas : Définition d'un nouvel argument
         else:
@@ -595,15 +604,19 @@ class ArgumentNonModifiable(BaseArgument):
 
 
 class Arguments(BaseArgument): # au pluriel !
-    u"""Un descripteur pour une liste d'arguments d'un objet."""
+    """Un descripteur pour une liste d'arguments d'un objet."""
 
 
     def __get__(self, obj, type=None):
         if obj is None:
             return self
-        value = TupleObjets((elt.objet for elt in self.__contenu__[obj]),
-                            objet = obj, arguments = self.__contenu__[obj])
-        return self._get(obj, value)
+
+        values = self._get(obj, [elt.objet for elt in self.__contenu__[obj]])
+        # Pour l'utilisateur final, il est bien plus utile d'obtenir
+        # la valeur de la variable que l'objet variable lui-même.
+        values = ((o.val if isinstance(o, G.Variable_generique) else o)
+                            for o in values)
+        return TupleObjets(values, objet=obj, arguments=self.__contenu__[obj])
 
 
     def __set__(self, obj, value):
@@ -611,7 +624,7 @@ class Arguments(BaseArgument): # au pluriel !
         if is_in(obj, self.__contenu__):
             objets = tuple(self._redefinir(obj, self._set(obj, elt)) for elt in value)
             if len(objets) != len(self.__contenu__[obj]):
-                raise RuntimeError, "Impossible (actuellement) de modifier la taille d'une liste d'arguments."
+                raise RuntimeError("Impossible (actuellement) de modifier la taille d'une liste d'arguments.")
             for elt, objet in zip(self.__contenu__[obj], objets):
                 elt._changer_objet(objet)
 ##            self._rafraichir(obj)
@@ -623,9 +636,8 @@ class Arguments(BaseArgument): # au pluriel !
 
 
 
-
 class TupleObjets(tuple):
-    u"""Un objet tuple personnalisé, destiné à contenir des objets géométriques.
+    """Un objet tuple personnalisé, destiné à contenir des objets géométriques.
 
     Usage interne."""
 
@@ -644,14 +656,13 @@ class TupleObjets(tuple):
 
 
 
-
 class DescripteurFeuille(object):
-    u"""Descripteur gérant l'attribut '.feuille' de la classe 'Objet'.
+    """Descripteur gérant l'attribut '.feuille' de la classe 'Objet'.
 
     Usage interne."""
 
     def __init__(self):
-        self.__contenu__ = CustomWeakKeyDictionary()
+        self.__contenu__ = WeakKeyDictionary()
 
     def __get__(self, obj, type=None):
         if obj is None:
@@ -685,18 +696,22 @@ class DescripteurFeuille(object):
 ## LA CLASSE Objet ET SES HERITIERS DIRECTES
 ##############################
 
-class Objet(object):
-    u"""Un objet géométrique.
+class ObjetType(type):
+    def __call__(cls, *args, **kw):
+        instance = type.__call__(cls, *args, **kw)
+        Objet.identifiers[id(instance)] = instance
+        instance._initialise = True
+        return instance
+
+
+class Objet(metaclass=ObjetType):
+    """Un objet géométrique.
 
     La classe Objet est la classe mère de tous les objets géométriques.
     Note : elle n'est pas utilisable en l'état, mais doit être surclassée.
     """
 
-    class __metaclass__(type):
-        def __call__(cls, *args, **kw):
-            instance = type.__call__(cls, *args, **kw)
-            instance._initialise = True
-            return instance
+    identifiers = WeakValueDictionary()
 
     _noms_arguments = () # cf. geolib/__init__.py
     feuille = DescripteurFeuille()
@@ -775,7 +790,7 @@ class Objet(object):
             self.rendu = Rendu(self)
 
             # GESTION DES DEPENDANCES
-            self.enfants = WeakList()   # lors de sa création, l'objet n'a, lui, aucun vassal (aucun objet ne dépend de lui)
+            self.enfants = WeakMultiSet()   # lors de sa création, l'objet n'a, lui, aucun vassal (aucun objet ne dépend de lui)
             # La création d'une WeakList plutôt que d'une liste permet d'éviter les pertes de mémoire.
             # ATTENTION : ne pas utiliser un objet WeakSet.
             # En effet, il se peut qu'un objet apparaisse plusieurs fois comme vassal, si il apparait plusieurs fois comme argument.
@@ -787,7 +802,7 @@ class Objet(object):
             self._recenser_les_parents()
             # L'objet est un enfant pour chacun de ses parents.
             for parent in self._parents:
-                parent.enfants.append(self)
+                parent.enfants.add(self)
         # ---------------------------------------------------------------------
         # PARTIE 2 de l'initialisation :
         # ce qui suit peut être exécuté plusieurs fois en cas d'initialisations multiples
@@ -796,28 +811,38 @@ class Objet(object):
             self.style(**styles)
 
     def __setattr__(self, name, value):
-        u"""Pour éviter qu'une erreur de frappe (dans la ligne de commande notamment)
-        passe inaperçue, on ne peut pas affecter un attribut s'il n'est pas déclaré
-        auparavant dans la classe."""
-        if self._initialise and not name.startswith('_') and not hasattr(self, name):
-            if param.debug:
-                print(u"Attention: \n \
-                       Les attributs publiques des classes héritant de `Objet` doivent \n \
-                       être initialisés, soit comme attributs de la classe, \n \
-                       soit dans la méthode `__init__` de la classe.\n \
-                       Concrêtement, rajoutez une ligne `%s = None`\n \
-                       au début de la classe `%s`, avec une ligne de\n \
-                       commentaire expliquant le rôle de cet attribut."
-                       % (name, self.__class__.__name__))
-            raise AttributeError, "Attribut " + repr(name) + " doesn't exist."
+        """On ne peut pas créer de nouvel attribut après l'initialisation.
+
+        Pour éviter qu'une erreur de frappe (dans la ligne de commande notamment)
+        passe inaperçue, on ne peut pas affecter un attribut s'il n'est pas créé
+        auparavant dans la phase d'initialisation.
+
+        Ceci ne concerne pas les attributs privés (commençant par `_`).
+        """
+        # Ne pas utiliser hasattr(self, name) qui peut impliquer
+        # des mises à jour inutiles du cache.
+        if self._initialise and not name.startswith('_') and name not in self.__dict__:
+            for class_ in type(self).mro():
+                if isinstance(vars(class_).get(name, NameError),
+                        (BaseArgument, property, DescripteurFeuille, type(None))):
+                    break
+            else:
+                if param.debug:
+                    print("Attention: \n \
+                           Les attributs publiques des classes héritant de `Objet` doivent \n \
+                           être initialisés, soit comme attributs de la classe, \n \
+                           soit dans la méthode `__init__` de la classe.\n \
+                           Concrêtement, rajoutez une ligne `%s = None`\n \
+                           dans la méthode __init__() de la classe `%s`, avec une ligne de\n \
+                           commentaire expliquant le rôle de cet attribut."
+                           % (name, self.__class__.__name__))
+                raise AttributeError("Attribut " + repr(name) + " doesn't exist.")
         object.__setattr__(self, name, value)
 
 
-    def __hash__(self):
-        return id(self)
 
     def _nom_alea(self):
-        u"""Retourne un nom disponible sur la feuille, adapté au type d'objet.
+        """Retourne un nom disponible sur la feuille, adapté au type d'objet.
 
         Ex: M1 pour un point, s1 pour un segment, etc.
         """
@@ -842,7 +867,7 @@ class Objet(object):
 ####################################
 
     def label(self, *args, **kw):
-        u"""Affiche le label (ou etiquette) de l'objet.
+        """Affiche le label (ou etiquette) de l'objet.
 
         Suivant le mode en vigueur, il peut s'agir du nom de l'objet,
         éventuellement formaté en LaTeX, ou d'un texte associé à
@@ -884,7 +909,7 @@ class Objet(object):
 
     @property
     def legende(self):
-        u"""Renvoie le texte brut associé à l'objet.
+        """Renvoie le texte brut associé à l'objet.
 
         Permet d'avoir une interface unique pour les objets avec
         étiquette, et les textes (qui sont eux-mêmes leur propre
@@ -903,7 +928,7 @@ class Objet(object):
 
 
     def style(self, nom_style = None, **kw):
-        u"""Renvoie le ou les styles demandés, ou modifie les styles de l'objet.
+        """Renvoie le ou les styles demandés, ou modifie les styles de l'objet.
 
         :param nom_style: un nom de style, ou une liste de noms de styles.
         :param **kw: sert à modifier des styles.
@@ -927,7 +952,7 @@ class Objet(object):
         """
         if kw:
             if 'label' in kw or 'legende' in kw:
-                raise DeprecationWarning, 'Styles desuets: `legende` et `label`.'
+                raise DeprecationWarning('Styles desuets: `legende` et `label`.')
             ##mode = kw.pop('mode', None)
             ##if mode is not None:
                 ##self.etiquette.style(mode=mode)
@@ -937,8 +962,8 @@ class Objet(object):
                 self.etiquette.figure_perimee()
         if nom_style:
             if 'nom_style' in ('label', 'legende'):
-                raise DeprecationWarning, 'Styles desuets: `legende` et `label`.'
-            if isinstance(nom_style, basestring):
+                raise DeprecationWarning('Styles desuets: `legende` et `label`.')
+            if isinstance(nom_style, str):
                 return self._style.get(nom_style)
             return [self._style.get(nom) for nom in nom_style]
         return self._style
@@ -950,7 +975,7 @@ class Objet(object):
 
     @property
     def mode_affichage(self):
-        u"Assure une interface commune entre les objets avec étiquette et les textes."
+        "Assure une interface commune entre les objets avec étiquette et les textes."
         if self.etiquette is not None:
             return self.etiquette.style('mode')
         return None
@@ -958,11 +983,11 @@ class Objet(object):
 
     def cacher(self):
         self.style(visible = False)
-        self.message(self.nom_complet + u" cach\xe9.")
+        self.message(self.nom_complet + " cach\xe9.")
 
     def voir(self):
         self.style(visible = True)
-        self.message(self.nom_complet + u" visible.")
+        self.message(self.nom_complet + " visible.")
 
     @property2
     def visible(self, val = None):
@@ -978,7 +1003,7 @@ class Objet(object):
         #~ self.style(fixe = False)
 
     def renommer(self, nom, afficher_nom=None, **kw):
-        u"Permet de renommer l'objet, et éventuellement de changer en même temps son style."
+        "Permet de renommer l'objet, et éventuellement de changer en même temps son style."
         nom_actuel = self.nom
         if nom_actuel != nom:
             nom = self.feuille.objets._objet_renommable(self, nom)
@@ -1011,7 +1036,7 @@ class Objet(object):
     nom = property(nom, renommer)
 
     def _creer_nom_latex(self):
-        u"""Renvoie le nom formaté en LaTeX. Ex: M1 -> $M_1$."""
+        """Renvoie le nom formaté en LaTeX. Ex: M1 -> $M_1$."""
         nom = self.nom_corrige.rstrip('_')
         if not nom: # l'objet n'est pas enregistré dans une feuille
             self.nom_latex = ""
@@ -1040,7 +1065,7 @@ class Objet(object):
 
     @property
     def nom_corrige(self):
-        u"""Renvoie le nom en remplaçant, le cas échéant, _prime par un guillemet simple (')."""
+        """Renvoie le nom en remplaçant, le cas échéant, _prime par un guillemet simple (')."""
         return self.nom.replace("_prime", "'")
 
     @property
@@ -1049,7 +1074,7 @@ class Objet(object):
 
     @property
     def definition(self):
-        u"""Définition en français correct de l'objet.
+        """Définition en français correct de l'objet.
 
         Exemple: 'Perpendiculaire à d passant par M'"""
         return self.nom_complet # à surclasser en général
@@ -1067,7 +1092,7 @@ class Objet(object):
 
     @classmethod
     def titre(cls, article = "un", point_final = True):
-        u"""Affichage formaté du type de l'objet... (un peu de grammaire!).
+        """Affichage formaté du type de l'objet... (un peu de grammaire!).
         Article peut être 'un', 'le', ou 'du', l'accord se faisant automatiquement.
         Le formatage est respecté (essayez 'un', 'UN', 'Un').
 
@@ -1080,24 +1105,24 @@ class Objet(object):
         titre = cls.__doc__.split("\n")[0].rstrip(".").lower()
         if point_final: titre += "."
 
-        if not (article.lower() == u"un"):
+        if not (article.lower() == "un"):
             titre = " ".join(titre.split()[1:])
 
-        if article.lower() == u"le":
+        if article.lower() == "le":
             if titre[0] in "aeiouy":
-                titre = u"l'" + titre
+                titre = "l'" + titre
             elif cls.genre() == "m":
-                titre = u"le " + titre
+                titre = "le " + titre
             else:
-                titre = u"la " + titre
+                titre = "la " + titre
 
-        if article.lower() == u"du":
+        if article.lower() == "du":
             if titre[0] in "aeiouy":
-                titre = u"de l'" + titre
+                titre = "de l'" + titre
             elif cls.genre() == "m":
-                titre = u"du " + titre
+                titre = "du " + titre
             else:
-                titre = u"de la " + titre
+                titre = "de la " + titre
 
         if article.istitle():   titre = titre.capitalize()
         if article.isupper():   titre = titre.upper()
@@ -1112,7 +1137,7 @@ class Objet(object):
     @classmethod
     def genre(cls):
         det = cls.__doc__.split()[0]
-        if det.lower() == u"un":
+        if det.lower() == "un":
             return "m"
         else:
             return "f"
@@ -1120,7 +1145,7 @@ class Objet(object):
 
     @property
     def info(self):
-        u"""À surclasser, en donnant une information significative pour l'objet.
+        """À surclasser, en donnant une information significative pour l'objet.
 
         Par exemple, pour un point ou un vecteur, ses coordonnées,
         pour un segment, sa longueur, pour un polygone, son aire...
@@ -1132,7 +1157,7 @@ class Objet(object):
 ###########################"
 
     def _recenser_les_parents(self):
-        u"""Met à jour l'ensemble des parents (ancêtres directs),
+        """Met à jour l'ensemble des parents (ancêtres directs),
         c-à-d. l'ensemble des objets dont dépend *directement* l'objet.
 
         L'ensemble est mis en cache dans self._parents.
@@ -1150,7 +1175,7 @@ class Objet(object):
         self._modifier_hierarchie()
 
     def _ancetres(self):
-        u"""Retourne l'ensemble des ancêtres de l'objet.
+        """Retourne l'ensemble des ancêtres de l'objet.
 
         Les ancêtres sont tous les objets dont dépend (même indirectement) l'objet.
 
@@ -1164,7 +1189,7 @@ class Objet(object):
 
 
     def _heritiers(self):
-        u"""Retourne l'ensemble des héritiers de l'objet.
+        """Retourne l'ensemble des héritiers de l'objet.
 
         Les héritiers sont tous les objets qui dépendent de cet objet.
 
@@ -1184,7 +1209,7 @@ class Objet(object):
         self._hierarchie = valeur
         # Il peut arriver (très rarement) que self.enfants soit modifié
         # en même temps. Mieux vaut donc transformer self.enfants en tuple.
-        for obj in tuple(self.enfants):
+        for obj in set(self.enfants):
             obj._modifier_hierarchie()
 
 
@@ -1192,6 +1217,39 @@ class Objet(object):
     def _hierarchie_et_nom(self): # pour classer les objets
         return (self._hierarchie, self.nom)
 
+    def _arg_raw_value(self, name):
+        """Pour la plupart des usages, on effectue simplement `o.name`
+        pour obtenir la valeur de l'argument nommé `name` de l'objet `o`.
+
+        Cependant, la valeur qu'on obtient n'est pas forcément celle stockée
+        en interne :
+        - les arguments (cf. classe BaseArgument) ont la possibilité
+          d'appliquer une fonction personnalisée modifiant la valeur
+          avant qu'elle soit retournée.
+        - les variables ne sont pas renvoyées telles qu'elles, mais on
+          renvoie directement leur contenu.
+          Ceci permet par exemple d'écrire, pour un point `A`,
+          `abs(A.x) == 2`.
+        Lorsqu'en interne, on souhaite accéder directement aux arguments
+        bruts, par exemple pour mettre à jour les dépendances entre les
+        objets (parents et enfants), on utilise donc la méthode
+        `_arg_raw_value()`.
+        """
+        argument = vars(type(self))[name]
+        if not isinstance(argument, BaseArgument):
+            cls = type(self)
+            argument = vars(cls)[f'_{cls.__name__}__{name}']
+            assert isinstance(argument, BaseArgument)
+        value = argument.__contenu__[self]
+        # Attention, value est une référence à un objet (ou un tuple de
+        # références), pas un objet lui-même, sauf s'il s'agit d'un argument
+        # non modifiable (auquel cas, l'objet n'est pas encapsulé dans Ref).
+        if isinstance(argument, ArgumentNonModifiable):
+            return value
+        if isinstance(value, tuple):
+            return tuple(elt.objet for elt in value)
+        else:
+            return value.objet
 
     @property
     def _iter_arguments(self):
@@ -1199,15 +1257,15 @@ class Objet(object):
 
         L'ordre des arguments est respecté.
         """
-        return iter((arg,  getattr(self, arg)) for arg in self._noms_arguments)
+        return iter((arg, self._arg_raw_value(arg)) for arg in self._noms_arguments)
 
     @property
     def _arguments(self):
-        return dict((arg,  getattr(self, arg)) for arg in self._noms_arguments)
+        return dict((arg, self._arg_raw_value(arg)) for arg in self._noms_arguments)
 
 
     def _set_feuille(self):
-        u"""Actions à effectuer lorsque l'objet est rattaché à une feuille.
+        """Actions à effectuer lorsque l'objet est rattaché à une feuille.
 
         ::note::
 
@@ -1221,7 +1279,7 @@ class Objet(object):
         """
 
     def _update(self, objet):
-        u"""Indique dans quelles conditions un objet peut-être mis à jour.
+        """Indique dans quelles conditions un objet peut-être mis à jour.
 
         Ceci est utilisé par exemple quand, dans une feuille, on exécute
         une instruction du style `A = Point(2, 3)` et que le point A existe déjà.
@@ -1235,7 +1293,7 @@ class Objet(object):
 
 
     def on_register(self):
-        u"""Actions à effectuer lorsque l'objet est enregistré dans la feuille.
+        """Actions à effectuer lorsque l'objet est enregistré dans la feuille.
 
         ::note::
 
@@ -1297,18 +1355,18 @@ class Objet(object):
         if self.feuille:
             self.feuille.message(message)
         else:
-            print message
+            print(message)
 
     def erreur(self, message):
         if self.feuille is not None:
             self.feuille.erreur(message)
         else:
-            raise RuntimeError, str2(message)
+            raise RuntimeError(message)
 
 
     @staticmethod
     def souffler():
-        u"""Indique au système qu'il faut exécuter les évènements en attente.
+        """Indique au système qu'il faut exécuter les évènements en attente.
 
         Ceci est utile en particulier pour rafraîchir l'affichage dans une
         boucle, lorsque geolib est appelé depuis une interface graphique.
@@ -1336,13 +1394,13 @@ class Objet(object):
 
 
     def _creer_figure(self):
-        u"""Cette fonction est à surclasser pour les objets ayant une
+        """Cette fonction est à surclasser pour les objets ayant une
         représentation graphique.
         Sinon, l'objet sera invisible (exemple: `geolib.Variable`)."""
         return NotImplemented
 
     def figure_perimee(self):
-        u"""Indique que la figure doit être rafraichie.
+        """Indique que la figure doit être rafraichie.
 
         Est appelé directement lorsque le style de l'objet est modifié, mais
         pas ses arguments. (Par ex., le point change de couleur, mais pas de
@@ -1356,7 +1414,7 @@ class Objet(object):
 
     @property
     def figure(self):
-        u"""La représentation graphique associée à l'objet.
+        """La représentation graphique associée à l'objet.
 
         La figure est une liste d'objets graphiques pour matplotlib :
         tous les items de la liste sont du type `matplotlib.artist.Artist`.
@@ -1402,11 +1460,11 @@ class Objet(object):
         self._trace_y = []
 
     def _creer_trace(self):
-        u"Méthode à surclasser."
+        "Méthode à surclasser."
         pass
 
     def en_gras(self, valeur = True):
-        u"""Met en valeur un objet.
+        """Met en valeur un objet.
 
         Typiquement, il s'agit d'un objet sélectionné.
 
@@ -1457,7 +1515,7 @@ class Objet(object):
 
 
     def distance_inf(self, x, y, d):
-        u"Teste si la distance (à l'ecran, en pixels) entre l'objet et (x, y) est inférieure à d."
+        "Teste si la distance (à l'ecran, en pixels) entre l'objet et (x, y) est inférieure à d."
         if hasattr(self, "_distance_inf") and self.existe:
             with contexte(exact = False):
                 return self._distance_inf(x, y, d)
@@ -1487,7 +1545,7 @@ class Objet(object):
 
 
     def _conditions_existence(self):
-        u"""Conditions spécifiques pour que l'objet existe, à definir pour chaque objet.
+        """Conditions spécifiques pour que l'objet existe, à definir pour chaque objet.
 
         Exemple: la mediatrice de [AB] existe ssi A != B.
         """
@@ -1517,7 +1575,7 @@ class Objet(object):
 ###################
 
     def __contains__(self, y):
-        with contexte(exact = False):
+        with contexte(exact=False):
             return self._contains(y)
 
     def _contains(self, y):
@@ -1525,27 +1583,27 @@ class Objet(object):
 
 
     def supprimer(self):
-        u"""Supprime l'objet de la feuille."""
+        """Supprime l'objet de la feuille."""
         # Le nom doit être récupéré AVANT la suppression.
         nom = self.nom
         nom_complet = self.nom_complet
         if self.feuille and nom in self.feuille.objets._suppression_impossible:
-            self.erreur(u"%s est protégé." %nom_complet)
+            self.erreur("%s est protégé." %nom_complet)
         else:
             self._supprime()
             if self.feuille:
                 self.feuille.affichage_perime()
-            self.message(u"%s supprimé." %nom_complet)
+            self.message("%s supprimé." %nom_complet)
 
 
     def _supprime(self):
         for parent in self._parents:
             # Pour chaque parent, l'objet est supprimé de la liste des enfants.
             # (Les "parents" sont les objets dont il dépend.)
-            parent.enfants.remove_all(self)
+            parent.enfants.remove_completely(self)
             # NB: `remove_all()` ne génère jamais d'erreur, même si self n'est
             # pas dans la WeakList (contrairement au `.remove()` d'une liste).
-        for heritier in list(self.enfants):
+        for heritier in set(self.enfants):
             try:
                 heritier._supprime()
             except KeyError:
@@ -1560,7 +1618,7 @@ class Objet(object):
 
 
     def __repr__(self, styles=True):
-        u"""Méthode utilisée pour obtenir une forme évaluable de l'objet.
+        """Méthode utilisée pour obtenir une forme évaluable de l'objet.
 
         Attention, le résultat n'est pas forcément très lisible !
 
@@ -1604,21 +1662,21 @@ class Objet(object):
 
 
     def __str__(self):
-        u"Méthode utilisée pour l'affichage (ne retourne pas les styles)."
+        "Méthode utilisée pour l'affichage (ne retourne pas les styles)."
         def formater(objet):
             if isinstance(objet, Objet):
                 if self.feuille and self.feuille.contient_objet(objet):
                     return objet.nom
             if isinstance(objet, (list, tuple)):
                 return "[" + ", ".join(formater(item) for item in objet) + "]"
-            return unicode(objet)
+            return str(objet)
 
-        return uu(self.classe() + "(" + ", ".join(key + " = " + formater(val)
-                                 for key, val in self._iter_arguments) + ")")
+        return self.classe() + "(" + ", ".join(key + " = " + formater(val)
+                                 for key, val in self._iter_arguments) + ")"
 
 
     def sauvegarder(self):
-        u"""Retourne le code python nécessaire pour générer l'objet.
+        """Retourne le code python nécessaire pour générer l'objet.
 
         Cette méthode est utilisée par la feuille pour sauvegarder son contenu.
 
@@ -1627,7 +1685,7 @@ class Objet(object):
         return "%s = %s" % (self.nom, repr(self))
 
     def _definition(self):
-        u"""Utilisé pour afficher la définition actuelle de l'objet avant de le redéfinir.
+        """Utilisé pour afficher la définition actuelle de l'objet avant de le redéfinir.
 
         L'affichage est compact (styles, etc. non affichés).
         """
@@ -1656,7 +1714,7 @@ class Objet(object):
 
 
     def copier_style(self, objet=None, **kw):
-        u"""Applique le style de 'objet' à l'objet (self).
+        """Applique le style de 'objet' à l'objet (self).
 
         Si les objets sont de type différent, seuls certains styles communs entrent en compte.
 
@@ -1685,8 +1743,8 @@ class Objet(object):
         style = self.style()
         a_copier = (objet.style().copy() if objet is not None else {})
         a_copier.update(**kw)
-        for key, value in a_copier.iteritems():
-            if style.has_key(key):
+        for key, value in a_copier.items():
+            if key in style:
                 if key in param.styles_a_signification_variable:
                     #print "clef:", key, style["categorie"], objet.style("categorie")
                     if style["categorie"] == a_copier["categorie"]:
@@ -1708,7 +1766,7 @@ class Objet(object):
 
 
     def perime(self, _first_call=True):
-        u"""Marquer l'objet comme à actualiser.
+        """Marquer l'objet comme à actualiser.
 
         * indique que les coordonnées/valeurs de l'objet et des ses héritiers
           doivent être recalculées,
@@ -1739,7 +1797,7 @@ class Objet(object):
 
 
 class Objet_avec_coordonnees(Objet):
-    u"""Un objet ayant des coordonnées (ex: points, vecteurs, ...).
+    """Un objet ayant des coordonnées (ex: points, vecteurs, ...).
 
     Usage interne : permet aux objets en héritant d'offrir un accès facile
     pour l'utilisateur final aux coordonnées via __call__."""
@@ -1756,18 +1814,18 @@ class Objet_avec_coordonnees(Objet):
             elif len(args) == 2:
                 self.coordonnees = args
             else:
-                raise TypeError, "Trop d'arguments."
+                raise TypeError("Trop d'arguments.")
         return self.coordonnees
 
     def __iter__(self): # definit tuple(objet) si l'objet renvoie des coordonnees
         if self.existe:
             return iter(self.coordonnees)
-        raise TypeError, str2(u"Conversion impossible, l'objet n'est pas defini.")
+        raise TypeError("Conversion impossible, l'objet n'est pas defini.")
 
 
     @property
     def info(self):
-        return ''.join((self.nom_complet, u" de coordonnées (",
+        return ''.join((self.nom_complet, " de coordonnées (",
                         nice_display(self.x), " ; ", nice_display(self.y), ")"))
 
     @property
@@ -1814,7 +1872,7 @@ class Objet_avec_coordonnees(Objet):
 
 
 class Objet_avec_coordonnees_modifiables(Objet_avec_coordonnees):
-    u"""Un objet ayant des coordonnées (ex: points libres, vecteurs libres, textes...).
+    """Un objet ayant des coordonnées (ex: points libres, vecteurs libres, textes...).
 
     Usage interne."""
 
@@ -1847,7 +1905,7 @@ class Objet_avec_coordonnees_modifiables(Objet_avec_coordonnees):
 
 
     def _get_coordonnees(self):
-        return self.__x.valeur, self.__y.valeur
+        return self.__x, self.__y
 
 
     def _set_coordonnees(self, x = None, y = None):
@@ -1871,13 +1929,13 @@ class Objet_avec_coordonnees_modifiables(Objet_avec_coordonnees):
         elif i == 1:
             self.__y = valeur
         else:
-            raise IndexError, "L'objet n'a que deux coordonnees."
+            raise IndexError("L'objet n'a que deux coordonnees.")
 
 
 
 
 class Objet_avec_equation(Objet):
-    u"""Un objet contenant une équation (ex: droites, ...).
+    """Un objet contenant une équation (ex: droites, ...).
 
     Usage interne : permet aux objets en héritant d'offrir un accès facile pour l'utilisateur final à cette valeur via __call__."""
 
@@ -1895,7 +1953,7 @@ class Objet_avec_equation(Objet):
     def __iter__(self): # definit tuple(objet) si l'objet renvoie une équation
         if self.existe:
             return iter(self.equation)
-        raise TypeError, str2(u"Conversion impossible, l'objet n'est pas defini.")
+        raise TypeError("Conversion impossible, l'objet n'est pas defini.")
 
     @property
     def equation_approchee(self):
@@ -1917,7 +1975,7 @@ class Objet_avec_equation(Objet):
 
 
 class Objet_avec_valeur(Objet):
-    u"""Un objet contenant une valeur numérique (ex: angles, variables, ...).
+    """Un objet contenant une valeur numérique (ex: angles, variables, ...).
 
     Usage interne : permet aux objets en héritant d'offrir un accès facile
     pour l'utilisateur final à cette valeur via __call__.
@@ -1957,146 +2015,134 @@ class Objet_avec_valeur(Objet):
 
 
 
+#~ class Objet_numerique(Reel, Objet_avec_valeur):
+    #~ "Ensemble de méthodes propres aux angles, aux variables, et autres objets numériques."
 
-class Objet_numerique(Reel, Objet_avec_valeur):
-    u"Ensemble de méthodes propres aux angles, aux variables, et autres objets numériques."
+    #~ _style_defaut = {} # en cas d'héritage multiple, cela évite que le style de Objet efface d'autres styles
 
-    _style_defaut = {} # en cas d'héritage multiple, cela évite que le style de Objet efface d'autres styles
+    #~ def __init__(self, *args, **kw):
+        #~ Objet.__init__(self, *args, **kw)
 
-    def __init__(self, *args, **kw):
-        Objet.__init__(self, *args, **kw)
+    #~ def __float__(self):
+        #~ return float(self.val)
 
-    def __float__(self):
-        return float(self.val)
+    #~ def __int__(self):
+        #~ return int(self.val)
 
-    def __int__(self):
-        return int(self.val)
+    #~ ## -- code généré automatiquement -- (cf. creer_operations.py)
 
-    ## -- code généré automatiquement -- (cf. creer_operations.py)
+    #~ def __add__(self, y):
+        #~ if isinstance(y, Objet_numerique):
+            #~ return self.val + y.val
+        #~ return self.val + y
 
-    def __add__(self, y):
-        if isinstance(y, Objet_numerique):
-            return self.val + y.val
-        return self.val + y
+    #~ def __radd__(self, y):
+        #~ return y + self.val
 
-    def __radd__(self, y):
-        return y + self.val
+    #~ def __iadd__(self, y):
+        #~ self.val = self.val + (y.val if isinstance(y, Objet_numerique) else y)
+        #~ return self
 
-    def __iadd__(self, y):
-        self.val = self.val + (y.val if isinstance(y, Objet_numerique) else y)
-        return self
+    #~ def __sub__(self, y):
+        #~ if isinstance(y, Objet_numerique):
+            #~ return self.val - y.val
+        #~ return self.val - y
 
-    def __sub__(self, y):
-        if isinstance(y, Objet_numerique):
-            return self.val - y.val
-        return self.val - y
+    #~ def __rsub__(self, y):
+        #~ return y - self.val
 
-    def __rsub__(self, y):
-        return y - self.val
+    #~ def __isub__(self, y):
+        #~ self.val = self.val - (y.val if isinstance(y, Objet_numerique) else y)
+        #~ return self
 
-    def __isub__(self, y):
-        self.val = self.val - (y.val if isinstance(y, Objet_numerique) else y)
-        return self
+    #~ def __mul__(self, y):
+        #~ if isinstance(y, Objet_numerique):
+            #~ return self.val * y.val
+        #~ return self.val * y
 
-    def __mul__(self, y):
-        if isinstance(y, Objet_numerique):
-            return self.val * y.val
-        return self.val * y
+    #~ def __rmul__(self, y):
+        #~ return y * self.val
 
-    def __rmul__(self, y):
-        return y * self.val
+    #~ def __imul__(self, y):
+        #~ self.val = self.val * (y.val if isinstance(y, Objet_numerique) else y)
+        #~ return self
 
-    def __imul__(self, y):
-        self.val = self.val * (y.val if isinstance(y, Objet_numerique) else y)
-        return self
+    #~ def __div__(self, y):
+        #~ if isinstance(y, Objet_numerique):
+            #~ return self.val / y.val
+        #~ return self.val / y
 
-    def __div__(self, y):
-        if isinstance(y, Objet_numerique):
-            return self.val / y.val
-        return self.val / y
+    #~ def __rdiv__(self, y):
+        #~ return y / self.val
 
-    def __rdiv__(self, y):
-        return y / self.val
+    #~ def __idiv__(self, y):
+        #~ self.val = self.val / (y.val if isinstance(y, Objet_numerique) else y)
+        #~ return self
 
-    def __idiv__(self, y):
-        self.val = self.val / (y.val if isinstance(y, Objet_numerique) else y)
-        return self
+    #~ def __truediv__(self, y):
+        #~ if isinstance(y, Objet_numerique):
+            #~ return self.val / y.val
+        #~ return self.val / y
 
-    def __truediv__(self, y):
-        if isinstance(y, Objet_numerique):
-            return self.val / y.val
-        return self.val / y
+    #~ def __rtruediv__(self, y):
+        #~ return y / self.val
 
-    def __rtruediv__(self, y):
-        return y / self.val
+    #~ def __itruediv__(self, y):
+        #~ self.val = self.val / (y.val if isinstance(y, Objet_numerique) else y)
+        #~ return self
 
-    def __itruediv__(self, y):
-        self.val = self.val / (y.val if isinstance(y, Objet_numerique) else y)
-        return self
+    #~ def __pow__(self, y):
+        #~ if isinstance(y, Objet_numerique):
+            #~ return self.val ** y.val
+        #~ return self.val ** y
 
-    def __pow__(self, y):
-        if isinstance(y, Objet_numerique):
-            return self.val ** y.val
-        return self.val ** y
+    #~ def __rpow__(self, y):
+        #~ return y ** self.val
 
-    def __rpow__(self, y):
-        return y ** self.val
+    #~ def __ipow__(self, y):
+        #~ self.val = self.val ** (y.val if isinstance(y, Objet_numerique) else y)
+        #~ return self
 
-    def __ipow__(self, y):
-        self.val = self.val ** (y.val if isinstance(y, Objet_numerique) else y)
-        return self
+    #~ def __mod__(self, y):
+        #~ if isinstance(y, Objet_numerique):
+            #~ return self.val % y.val
+        #~ return self.val % y
 
-    def __mod__(self, y):
-        if isinstance(y, Objet_numerique):
-            return self.val % y.val
-        return self.val % y
+    #~ def __rmod__(self, y):
+        #~ return y % self.val
 
-    def __rmod__(self, y):
-        return y % self.val
+    #~ def __imod__(self, y):
+        #~ self.val = self.val % (y.val if isinstance(y, Objet_numerique) else y)
+        #~ return self
 
-    def __imod__(self, y):
-        self.val = self.val % (y.val if isinstance(y, Objet_numerique) else y)
-        return self
+    #~ def __floordiv__(self, y):
+        #~ if isinstance(y, Objet_numerique):
+            #~ return self.val // y.val
+        #~ return self.val // y
 
-    def __floordiv__(self, y):
-        if isinstance(y, Objet_numerique):
-            return self.val // y.val
-        return self.val // y
+    #~ def __rfloordiv__(self, y):
+        #~ return y // self.val
 
-    def __rfloordiv__(self, y):
-        return y // self.val
+    #~ def __ifloordiv__(self, y):
+        #~ self.val = self.val // (y.val if isinstance(y, Objet_numerique) else y)
+        #~ return self
 
-    def __ifloordiv__(self, y):
-        self.val = self.val // (y.val if isinstance(y, Objet_numerique) else y)
-        return self
+    #~ ## -- fin du code généré automatiquement --
 
-    ## -- fin du code généré automatiquement --
+    #~ def __abs__(self):
+        #~ return abs(self.val)
 
-    def __abs__(self):
-        return abs(self.val)
+    #~ def __neg__(self):
+        #~ return 0 - self
 
-    def __neg__(self):
-        return 0 - self
+    #~ def __eq__(self, y):
+        #~ return self.val == y
 
-#    def __pos__(self):
-#        return 0 + self
+    #~ def __bool__(self):
+        #~ return self != 0
 
-    def __eq__(self, y):
-        return self.val == y
-##        return hasattr(y, "__float__") and abs(float(self) - float(y)) < param.tolerance
-
-#    def __ne__(self, y):
-#        return not self == y
-
-    def __nonzero__(self):
-        return self != 0
-
-    def __gt__(self, y):
-        return self.val > y
-##        return hasattr(y, "__float__") and float(self) > float(y)
-
-#    def __ge__(self, y):
-#        return self > y or self == y
+    #~ def __gt__(self, y):
+        #~ return self.val > y
 
 
 

@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
-from __future__ import with_statement
 
 ##--------------------------------------########
 #                Exercice : Trigonométrie      #
@@ -28,8 +26,9 @@ from random import randint, choice
 from itertools import chain
 from functools import partial
 
-from PyQt4.QtGui import (QVBoxLayout, QLabel, QPushButton, QHBoxLayout,
-                         QMessageBox, QTextEdit, QColor, QToolTip, QCursor)
+from PyQt5.QtGui import QColor, QToolTip, QCursor
+from PyQt5.QtWidgets import QVBoxLayout, QLabel, QPushButton, QHBoxLayout, \
+    QMessageBox, QTextEdit
 
 from sympy import S, solve, gcd, simplify
 from sympy.core.sympify import SympifyError
@@ -52,22 +51,22 @@ class TabMenuBar(MenuBar):
     def __init__(self, panel):
         MenuBar.__init__(self, panel)
 
-        self.ajouter(u"Fichier", [u"Recommencer", u"Recommencer au niveau 0.", u"Ctrl+N", panel.reinitialiser],
-                    [u"ouvrir"],
-                    [u"enregistrer"], [u"enregistrer_sous"], [u"exporter"],
-                    [u"exporter&sauver"], None, [u"imprimer"], [u"presse-papier"],
-                    None, [u"proprietes"], None, ["fermer"], ["quitter"])
-        self.ajouter(u"Editer", ["annuler"], ["refaire"], ["modifier"], ["supprimer"])
-        self.ajouter(u"Affichage", ["onglet"], ["plein_ecran"], None, ["zoom_texte"], ["zoom_ligne"], ["zoom_general"])
-        self.ajouter(u"Outils", [u"options"])
-        self.ajouter(u"avance1")
-        self.ajouter(u"?")
+        self.ajouter("Fichier", ["Recommencer", "Recommencer au niveau 0.", "Ctrl+N", panel.reinitialiser],
+                    ["ouvrir"],
+                    ["enregistrer"], ["enregistrer_sous"], ["exporter"],
+                    ["exporter&sauver"], None, ["imprimer"], ["presse-papier"],
+                    None, ["proprietes"], None, ["fermer"], ["quitter"])
+        self.ajouter("Editer", ["annuler"], ["refaire"], ["modifier"], ["supprimer"])
+        self.ajouter("Affichage", ["onglet"], ["plein_ecran"], None, ["zoom_texte"], ["zoom_ligne"], ["zoom_general"])
+        self.ajouter("Outils", ["options"])
+        self.ajouter("avance1")
+        self.ajouter("?")
 
 
 
 class ExercicesTrigonometrie(Panel_API_graphique):
 
-    titre = u"Trigonométrie" # Donner un titre a chaque module
+    titre = "Trigonométrie" # Donner un titre a chaque module
 
     def __init__(self, *args, **kw):
         Panel_API_graphique.__init__(self, *args, **kw)
@@ -84,7 +83,7 @@ class ExercicesTrigonometrie(Panel_API_graphique):
         self.entrees.addWidget(self.felicitations)
 
         self.entrees.addSpacing(30)
-        self.btn_niveau = QPushButton(u"Niveau suivant", self)
+        self.btn_niveau = QPushButton("Niveau suivant", self)
         self.btn_niveau.clicked.connect(self.niveau_suivant)
         self.entrees.addWidget(self.btn_niveau)
         self.entrees.addSpacing(50)
@@ -99,7 +98,7 @@ class ExercicesTrigonometrie(Panel_API_graphique):
 
     def reinitialiser(self):
         if param.debug:
-            print(u'Module %s: réinitialisation...' % self.nom)
+            print('Module %s: réinitialisation...' % self.nom)
         self.score = 0
         self.niveau = 0
         self.erreurs = 0
@@ -144,7 +143,7 @@ class ExercicesTrigonometrie(Panel_API_graphique):
     # ------------------------------------------------------
 
     def cercle_trigo(self):
-        u"""Construction d'un cercle trigonométrique.
+        """Construction d'un cercle trigonométrique.
         """
         obj = self.feuille_actuelle.objets
         obj['O'] = O = Point(0, 0, fixe=True)
@@ -166,13 +165,13 @@ class ExercicesTrigonometrie(Panel_API_graphique):
         else:
             reponse = ('y=%s*x+%s' % self.eq_reduite(pointA, pointB))
         xmin, xmax, ymin, ymax = self.canvas.fenetre
-        print 'Fenetre::', self.canvas.fenetre, '--', xmin, ymin
+        print('Fenetre::', self.canvas.fenetre, '--', xmin, ymin)
         champ = Champ('', xmin, ymin, fond=True, couleur_fond='#ffffb5',
-                    prefixe=(ur"Dans le repère $(O;\,\vec\imath,\,\vec\jmath)$, "
-                             u"la droite $(AB)$ a pour équation "),
+                    prefixe=(r"Dans le repère $(O;\,\vec\imath,\,\vec\jmath)$, "
+                             "la droite $(AB)$ a pour équation "),
                     alignement_horizontal='left', alignement_vertical='bottom',
                     attendu=reponse)
-        print 'xy::', champ.xy
+        print('xy::', champ.xy)
         champ.valider = self.valider_eq
         champ.evt_valider = self.compter_points
         self.feuille_actuelle.objets['champ1'] = champ
@@ -210,7 +209,7 @@ class ExercicesTrigonometrie(Panel_API_graphique):
 
 
     def niveau4(self):
-        u"""Droite horizontale."""
+        """Droite horizontale."""
         yA = self.relatif(7)
         while True:
             xA = self.relatif(7)
@@ -221,7 +220,7 @@ class ExercicesTrigonometrie(Panel_API_graphique):
 
 
     def niveau5(self):
-        u"""Droite verticale."""
+        """Droite verticale."""
         xA = self.relatif(7)
         while True:
             yA = self.relatif(7)
@@ -235,7 +234,7 @@ class ExercicesTrigonometrie(Panel_API_graphique):
         """Droite oblique ne coupant pas l'axe des ordonnées sur une
         graduation ; il faut donc calculer (ou deviner) l'ordonnée
         à l'origine."""
-        for i in xrange(1000):
+        for i in range(1000):
             while True:
                 xA = self.relatif(n)
                 xB = self.relatif(n)
@@ -248,7 +247,7 @@ class ExercicesTrigonometrie(Panel_API_graphique):
                     break
             # On calcule l'ordonnée à l'origine (sous forme de fraction sympy).
             a, b = self.eq_reduite((xA, yA), (xB, yB))
-            print b
+            print(b)
             if b.q not in (1, 2):
                 # Le dénominateur de l'ordonnée à l'origine ne doit pas être 1 ou 2.
                 break
@@ -259,7 +258,7 @@ class ExercicesTrigonometrie(Panel_API_graphique):
         self.canvas.ratio = 4
         self.canvas.quadrillages = (((.25, 1), ':', 0.5, 'k'),)
         self.canvas.fenetre = -4.5, 4.5, -10, 8
-        print self.canvas.fenetre
+        print(self.canvas.fenetre)
         self.niveau6(n=4)
         self.feuille_actuelle.objets['champ1'].y = -9
 
@@ -286,7 +285,7 @@ class ExercicesTrigonometrie(Panel_API_graphique):
 
 
     def eq_reduite(self, A, B):
-        u"""Équation réduite exacte de la droite (AB).
+        """Équation réduite exacte de la droite (AB).
 
         La droite ne doit pas être verticale."""
         xA, yA = A
@@ -302,7 +301,7 @@ class ExercicesTrigonometrie(Panel_API_graphique):
     # --------------------------------------------
 
     def niveau8(self):
-        u"""Résolution graphique de système.
+        """Résolution graphique de système.
 
         Construire deux droites d'équations données.
         Lire les coordonnées du point d'intersection."""
@@ -332,7 +331,7 @@ class ExercicesTrigonometrie(Panel_API_graphique):
             if all((A[0] - C[0], A[1] - C[1], B[0] - C[0], B[1] - C[1])):
                 break
         if param.debug:
-            print 'A,B,C:', A, B, C
+            print('A,B,C:', A, B, C)
         # on génère les deux équations de droite
         x = S('x')
         ##def eq_latex(pt1, pt2):
@@ -353,13 +352,13 @@ class ExercicesTrigonometrie(Panel_API_graphique):
 
         xmin, xmax, ymin, ymax = self.canvas.fenetre
 
-        txt = Texte((u"On note $d_1$ la droite d'équation %s, "
-                  u"et $d_2$ la droite d'équation %s.\n"
-                  u"Construire les droites $d_1$ puis $d_2$ dans le repère ci-dessous.")
+        txt = Texte(("On note $d_1$ la droite d'équation %s, "
+                  "et $d_2$ la droite d'équation %s.\n"
+                  "Construire les droites $d_1$ puis $d_2$ dans le repère ci-dessous.")
                   % (eq1, eq2), xmin, ymax, fond=True, couleur_fond='#ffffb5', fixe=True,
                   alignement_horizontal='left', alignement_vertical='top')
         self.feuille_actuelle.objets['txt1'] = txt
-        champ = Champ('', xmin, ymin, prefixe=u"Le couple solution du système est (",
+        champ = Champ('', xmin, ymin, prefixe="Le couple solution du système est (",
                  alignement_vertical='bottom', alignement_horizontal='left',
                  attendu=str(C), fond=True, couleur_fond='#ffffb5', suffixe=')',
                  )
@@ -376,7 +375,7 @@ class ExercicesTrigonometrie(Panel_API_graphique):
 
 
     def verifier_feuille(self, eq1, eq2):
-        print eq1, eq2
+        print(eq1, eq2)
         for nom, eq in (('d1', eq1), ('d2', eq2)):
             if nom in self.feuille_actuelle.objets.noms:
                 d = self.feuille_actuelle.objets[nom]
@@ -392,7 +391,7 @@ class ExercicesTrigonometrie(Panel_API_graphique):
                     if nom == 'd1':
                         msg += ' Construisez maintenant d2.'
                 else:
-                    print self.eq_reduite(*d), eq
+                    print(self.eq_reduite(*d), eq)
                     d.style(couleur='r')
                     # On peut mettre n'importe quoi différent de ok dans
                     # champ, l'idée étant que si la droite est fausse mais
@@ -416,7 +415,7 @@ class ExercicesTrigonometrie(Panel_API_graphique):
 
 
     def ax_b(self):
-        u"Générer une expression sympy de la forme ax+b, avec a, b dans Z."
+        "Générer une expression sympy de la forme ax+b, avec a, b dans Z."
         return self.relatif()*S('x') + self.relatif()
 
 
@@ -426,24 +425,24 @@ class ExercicesTrigonometrie(Panel_API_graphique):
             border-radius: 5px; border-color:%s; background-color: %s }"""
             %(QColor(30, 144, 255).name(), QColor(176, 226, 255).name())
                         )
-        self.panneau.setText((u"<p><b><i>Niveau :</i> %s</b></p>" % self.niveau) +
-                                 (u"<p><b><i>Points :</i> %s</b></p>" % self.score) +
-                                 (u"<p><i>Erreurs :</i> %s</p>" % self.erreurs))
+        self.panneau.setText(("<p><b><i>Niveau :</i> %s</b></p>" % self.niveau) +
+                                 ("<p><b><i>Points :</i> %s</b></p>" % self.score) +
+                                 ("<p><i>Erreurs :</i> %s</p>" % self.erreurs))
         champs = self.feuille_actuelle.objets.lister(type=Champ)
         if champs and all(obj.correct for obj in champs):
             if hasattr(self, 'niveau' + str(self.niveau + 1)):
                 self.btn_niveau.setEnabled(True)
                 self.btn_niveau.setFocus(True)
-                self.felicitations.setText(u'<p><b>Félicitations !</b></p>' +
-                                           u'<p>Passer au niveau %s</p>' %(self.niveau + 1))
+                self.felicitations.setText('<p><b>Félicitations !</b></p>' +
+                                           '<p>Passer au niveau %s</p>' %(self.niveau + 1))
                 self.felicitations.setStyleSheet(
                     """QLabel {background-color: %s; padding: 5px;
                        border-radius: 5px;
                        color:white;}""" %QColor(255, 153, 0).name())
 
             else:
-                self.felicitations.setText(u'<p><b>Félicitations !</b></p>' +
-                                           u'<p>Dernier niveau terminé !</p>')
+                self.felicitations.setText('<p><b>Félicitations !</b></p>' +
+                                           '<p>Dernier niveau terminé !</p>')
                 self.felicitations.setStyleSheet(
                     """QLabel {background-color: %s; padding: 5px; border-radius: 5px;
                     color:white;}""" %QColor(102, 205, 0).name())
@@ -485,17 +484,17 @@ class ExercicesTrigonometrie(Panel_API_graphique):
         return 2*randint(0, 1) - 1
 
     def naturel(self, n=15):
-        u'''Retourne un entier entre 2 et `n`.'''
+        '''Retourne un entier entre 2 et `n`.'''
         return randint(2, n)
 
     def relatif(self, n=15):
-        u'''Retourne un entier entre -`n` et -2, ou entre 2 et `n`.'''
+        '''Retourne un entier entre -`n` et -2, ou entre 2 et `n`.'''
         # signe: 1 ou -1
         signe = 2*randint(0, 1) - 1
         return self.signe()*self.naturel(n)
 
     def rationnel(self, n=7):
-        u'''Retourne un quotient d'entiers.'''
+        '''Retourne un quotient d'entiers.'''
         while True:
             p = self.naturel(n)
             q = self.naturel(n)
@@ -504,7 +503,7 @@ class ExercicesTrigonometrie(Panel_API_graphique):
         return self.signe()*S(p)/S(q)
 
     def couple(self, m=7, n=7):
-        u"""Retourne un couple d'entiers relatifs."""
+        """Retourne un couple d'entiers relatifs."""
         return self.relatif(m), self.relatif(n)
 
     def autocompleter(self):

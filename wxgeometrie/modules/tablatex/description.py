@@ -5,9 +5,13 @@
 # description : description détaillée
 # defaut : par défaut, le module est-il installé ou non ?
 
+
+
+
+
 description = {
-"titre":                    u"Tableaux LaTeX",
-"description":              u"Assistant à la création de tableaux de variations sous LaTeX.",
-"groupe":                   u"Modules",
+"titre":                    "Tableaux LaTeX",
+"description":              "Assistant à la création de tableaux de variations sous LaTeX.",
+"groupe":                   "Modules",
 "defaut":  False,
 }

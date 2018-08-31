@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------##
 #               Console pour geolib               #
@@ -22,7 +21,7 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-from PyQt4.QtGui import QWidget, QVBoxLayout, QLabel
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel
 
 from .app import white_palette
 from .ligne_commande import LigneCommande
@@ -35,7 +34,7 @@ class ConsoleGeolib(QWidget):
         self.parent = parent
         self.setPalette(white_palette)
         vsizer = QVBoxLayout()
-        txt = u"<i>Tapez une commande ci-dessus, puis appuyez sur </i>[<i>Entrée</i>]<i>.</i>"
+        txt = "<i>Tapez une commande ci-dessus, puis appuyez sur </i>[<i>Entrée</i>]<i>.</i>"
         self.resultats = QLabel(txt)
         self.resultats.setMinimumWidth(500)
         self.ligne_commande = LigneCommande(self, longueur=500, action=self.action)

@@ -1,6 +1,5 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------##
 #              WxGeometrie               #
@@ -38,11 +37,12 @@ DEFAULT_EDITOR = 'geany'
 SUPPORTED_EDITORS = ('geany', 'gedit', 'nano', 'vim', 'emacs', 'kate')
 
 def edit(file_and_line, editor=DEFAULT_EDITOR):
-    u"Edit specified file at specified line, with editor."
+    "Edit specified file at specified line, with editor."
 
     file_and_line = file_and_line.strip()
+    #print(repr(file_and_line))
     try:
-        m = re.search('[Ff]ile "?([^"]+[.]py)"?, line ([0-9]+)', file_and_line)
+        m = re.search('[Ff]ile "?([^",]+)"?, line ([0-9]+)', file_and_line)
         if m is None:
             # Format pyflakes
             m = re.search('([^"]+[.]py):([0-9]+)', file_and_line)
@@ -70,11 +70,11 @@ def edit(file_and_line, editor=DEFAULT_EDITOR):
 
 
 def usage():
-    u"Affiche l'aide."
-    print u"""\n    === Usage ===\n
+    "Affiche l'aide."
+    print("""\n    === Usage ===\n
     - Éditer le fichier '~/wxgeometrie/filename.py' à la ligne 257 :
         $ ./tools/edit.py 'File "~/wxgeometrie/filename.py", line 257'
-        """
+        """)
     exit()
 
 

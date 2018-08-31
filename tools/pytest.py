@@ -1,5 +1,9 @@
 """py.test hacks to support XFAIL/XPASS"""
 
+
+
+
+
 # XXX this should be integrated into py.test
 # XXX but we can't force everyone to install py-lib trunk
 
@@ -26,7 +30,7 @@ def raises(ExpectedException, code):
     frame = sys._getframe(1)
     loc = frame.f_locals.copy()
     try:
-        exec code in frame.f_globals, loc
+        exec(code, frame.f_globals, loc)
     except ExpectedException:
         return
     raise AssertionError("DID NOT RAISE")
@@ -132,9 +136,9 @@ else:
             except Outcome:
                 raise   # pass-through test outcome
             except:
-                raise XFail('XFAIL: %s' % func.func_name)
+                raise XFail('XFAIL: %s' % func.__name__)
             else:
-                raise XPass('XPASS: %s' % func.func_name)
+                raise XPass('XPASS: %s' % func.__name__)
 
         if has_functools:
             func_wrapper = functools.update_wrapper(func_wrapper, func)

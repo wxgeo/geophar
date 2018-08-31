@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------#######
-#                   Fonctions                    #
+#                   Fonctions                 #
 ##--------------------------------------#######
 #    WxGeometrie
 #    Dynamic geometry, graph plotter, and more for french mathematic teachers.
@@ -25,7 +24,7 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 # version unicode
 
 import re
-from .objet import Objet_numerique, Objet, contexte, ArgumentNonModifiable, \
+from .objet import Objet, contexte, ArgumentNonModifiable, \
                    Argument, Ref
 
 #from .. import param
@@ -34,8 +33,8 @@ from ..mathlib.intervalles import preformatage_geolib_ensemble, formatage_ensemb
 from ..mathlib.parsers import VAR_NOT_ATTR, traduire_formule
 from .variables import Variable
 
-class Fonction(Objet_numerique):
-    u"""Une fonction.
+class Fonction(Objet):
+    """Une fonction.
 
     Une fonction numérique à une variable; l'argument est une expression sous forme de chaine de caractères.
     Exemple: Fonction('2*x+1', variable = 'x', ensemble = 'R')."""
@@ -46,9 +45,9 @@ class Fonction(Objet_numerique):
     __re = re.compile('(' + VAR_NOT_ATTR + ')')
 
 
-    __expression = Argument("basestring")
-    __ensemble = Argument("basestring")
-    variable = __variable = ArgumentNonModifiable("basestring")
+    __expression = Argument("str")
+    __ensemble = Argument("str")
+    variable = __variable = ArgumentNonModifiable("str")
 
     @property2
     def expression(self, expression = None):
@@ -89,7 +88,7 @@ class Fonction(Objet_numerique):
 
 
     def modifier_expression_et_ensemble(self, expression = None, ensemble = None):
-        u"""Si l'on modifie à la fois l'expression et l'ensemble,
+        """Si l'on modifie à la fois l'expression et l'ensemble,
         il est beaucoup plus rapide d'utiliser cette méthode."""
 #        print "modification!"
         if expression is None:
@@ -134,7 +133,7 @@ class Fonction(Objet_numerique):
 
 
     def _test_dependance_circulaire(self, expression, ensemble, deuxieme_essai = False):
-        u"""Provoque une erreur si l'objet se retrouve dépendre de lui-même avec la nouvelle valeur.
+        """Provoque une erreur si l'objet se retrouve dépendre de lui-même avec la nouvelle valeur.
 
         Retourne deux listes (list) composées alternativement d'instructions et d'objets de la feuille,
         et un ensemble (set) constitué des objets de la feuille mis en jeu dans le code.
@@ -145,22 +144,22 @@ class Fonction(Objet_numerique):
                     liste_expression = re.split(self.__re, expression)
                     liste_ensemble = re.split(self.__re, ensemble)
                     objets = set()
-                    for i in xrange(1, len(liste_expression), 2):
+                    for i in range(1, len(liste_expression), 2):
                         obj = self.feuille.objets[liste_expression[i]]
                         if isinstance(obj, Objet):
                             liste_expression[i] = obj
                             objets.add(obj)
                             if self is obj or is_in(self, obj._ancetres()):
-                                print self,
-                                raise RuntimeError, "Definition circulaire dans %s : l'objet %s se retrouve dependre de lui-meme." %(self, obj)
-                    for i in xrange(1, len(liste_ensemble), 2):
+                                print(self, end=' ')
+                                raise RuntimeError("Definition circulaire dans %s : l'objet %s se retrouve dependre de lui-meme." %(self, obj))
+                    for i in range(1, len(liste_ensemble), 2):
                         obj = self.feuille.objets[liste_ensemble[i]]
                         if isinstance(obj, Objet):
                             liste_ensemble[i] = obj
                             objets.add(obj)
                             if self is obj or is_in(self, obj._ancetres()):
-                                print self,
-                                raise RuntimeError, "Definition circulaire dans %s : l'objet %s se retrouve dependre de lui-meme." %(self, obj)
+                                print(self, end=' ')
+                                raise RuntimeError("Definition circulaire dans %s : l'objet %s se retrouve dependre de lui-meme." %(self, obj))
                     return liste_expression, liste_ensemble, objets
             except KeyError:
                 if deuxieme_essai:
@@ -173,7 +172,7 @@ class Fonction(Objet_numerique):
 
 
     def _compile(self,  liste_expression, liste_ensemble, objets):
-        u"""Compile l'expression stockée dans la variable ; les arguments sont les valeurs retournées par '_test_dependance_circulaire'.
+        """Compile l'expression stockée dans la variable ; les arguments sont les valeurs retournées par '_test_dependance_circulaire'.
 
         La compilation doit toujours avoir lieu à la fin de la procédure de redéfinition de la variable,
         car elle ne doit être exécutée que si la redéfinition de la variable va effectivement avoir lieu,
@@ -188,7 +187,7 @@ class Fonction(Objet_numerique):
             ensembles = self.__ensemble.split("|")
             # TODO: Prévoir le cas où les deux listes ne sont pas de même longueur
             n = min(len(expressions), len(ensembles))
-            for i in xrange(n):
+            for i in range(n):
                 express = traduire_formule(expressions[i], fonctions = self.feuille.objets)
                 # On force ensuite la variable à apparaitre dans l'expression de la formule.
                 # C'est important quand la fonction est constante :
@@ -205,7 +204,7 @@ class Fonction(Objet_numerique):
             self._parents = objets
             self._modifier_hierarchie()
             for objet in self._parents:   # l'objet est vassal de chacun des objets dont il depend
-                objet.enfants.append(self)
+                objet.enfants.add(self)
         else:
             for objet in self._parents:
                 objet.enfants.remove(self)
@@ -230,15 +229,15 @@ class Fonction(Objet_numerique):
 
     @staticmethod
     def _convertir(objet):
-        u"Convertit un objet en fonction."
+        "Convertit un objet en fonction."
         return Fonction(objet)
 
 
     def __call__(self, valeur):
-        for i in xrange(len(self.__unions)):
+        for i in range(len(self.__unions)):
             if valeur in self.__unions[i]:
                 return self.__fonctions[i](valeur)
-        raise ValueError, "math domain error"
+        raise ValueError("math domain error")
 
 
 
@@ -250,4 +249,4 @@ class Fonction(Objet_numerique):
                 objet.feuille = self.feuille
             self.modifier_expression_et_ensemble(objet.expression, objet.ensemble)
         else:
-            raise TypeError, "l'objet n'est pas une fonction."
+            raise TypeError("l'objet n'est pas une fonction.")

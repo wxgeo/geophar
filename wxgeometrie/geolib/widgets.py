@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------#######
 #                  Feuille                                  #
@@ -27,12 +26,12 @@ from random import normalvariate
 
 from .objet import Objet_avec_coordonnees_modifiables, Argument, Ref
 from .textes import Texte_editable_generique, Texte
-from ..pylib import uu, print_error
+from ..pylib import print_error
 from .. import param
 
 
 class Bouton(Texte_editable_generique, Objet_avec_coordonnees_modifiables):
-    u"""Un bouton cliquable.
+    """Un bouton cliquable.
 
     Un bouton avec texte. Typiquement, on lui associe une action
     lorsque l'on clique dessus, via la méthode `onLeftClick`.
@@ -40,13 +39,13 @@ class Bouton(Texte_editable_generique, Objet_avec_coordonnees_modifiables):
 
     _style_defaut = param.boutons
 
-    texte = __texte = Argument("basestring")
+    texte = __texte = Argument("str")
     abscisse = x = __x = Argument("Variable_generique", defaut=0)
     ordonnee = y = __y = Argument("Variable_generique", defaut=0)
 
     def __init__(self, texte=' ', x=None, y=None, **styles):
         x, y, styles = self._recuperer_x_y(x, y, styles)
-        texte = uu(texte)
+        texte = str(texte)
 
         ##if texte != "":
             ##styles["label"] = texte
@@ -165,7 +164,7 @@ class Bouton(Texte_editable_generique, Objet_avec_coordonnees_modifiables):
 
 
 class Champ(Texte):
-    u"""Un champ de texte.
+    """Un champ de texte.
 
     Un champ de texte éditable en double-cliquant dessus.
 
@@ -268,7 +267,7 @@ class Champ(Texte):
         return value
 
 
-    texte = __texte = Argument("basestring", Texte._get_texte, _set_texte)
+    texte = __texte = Argument("str", Texte._get_texte, _set_texte)
     abscisse = x = __x = Argument("Variable_generique", defaut = lambda: normalvariate(0,10))
     ordonnee = y = __y = Argument("Variable_generique", defaut = lambda: normalvariate(0,10))
 
@@ -335,9 +334,9 @@ class Champ(Texte):
         else:
             txt.set(visible=True, x=x, y=y, va='top', ha='left')
             if self.correct:
-                txt.set(text=u'\u2713', color='g') # 263A  00D8
+                txt.set(text='\u2713', color='g') # 263A  00D8
             else:
-                txt.set(text=u'\u2639', color='r') #u'\u26A0'
+                txt.set(text='\u2639', color='r') #u'\u26A0'
             ##if getattr(self, 'evt_valider', None) is not None and lbl != self.__label_old:
                 ##self.evt_valider(champ=self, correct=correct,
                                  ##correct_old=self.__correct_old)

@@ -1,6 +1,4 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------#######
 #   Mathlib 2 (sympy powered) #
@@ -36,44 +34,43 @@ from .custom_objects import Temps, Fonction, ProduitEntiers, Decim
 from . import sympy_functions
 from ..mathlib import end_user_functions
 from ..pylib import print_error, split_around_parenthesis, securite
-from .parsers import simplifier_ecriture, NBR, traduire_formule, NBR_FLOTTANT
+from .parsers import simplifier_ecriture, NBR, traduire_formule, NBR_FLOTTANT, \
+                     extraire_chaines, injecter_chaines
 from .. import param
 
 
 class LocalDict(dict):
-    globals = {}
-##    def __getitem__(self, name):
-##        #~ print "Nom de clef: ", name
-##        #~ print "local: ", self.has_key(name)
-##        #~ print "global: ", self.globals.has_key(name)
-##        if self.has_key(name) or self.globals.has_key(name): # doit renvoyer une KeyError si la clé est dans le dictionnaire global, pour que Python y aille chercher ensuite la valeur associée à la clé
-##            return dict.__getitem__(self, name)
-##        return Symbol(name)
+    def __init__(self, defaut=None):
+        dict.__init__(self)
+        self.defaut = (defaut if defaut is not None else {})
+        self.update(self.defaut)
+
 
     def __missing__(self, key):
         # _59 is an alias for ans(59)
         if key.startswith('_'):
-            if key[1:].isalnum():
-                return self.globals['ans'](int(key[1:]))
+            if key[1:].isnumeric():
+                return self['ans'](int(key[1:]))
             else:
                 if key == len(key)*'_':
-                    return self.globals['ans'](-len(key))
-        return self.globals.get(key, sympy.__dict__.get(key, Symbol(key)))
+                    return self['ans'](-len(key))
+        if key in sympy.__dict__:
+            return sympy.__dict__[key]
+        else:
+            return Symbol(key)
 
     def __setitem__(self, name, value):
         # Pour éviter que l'utilisateur redéfinisse pi, i, e, etc. par mégarde.
-        if self.globals.has_key(name) or (name.startswith('_') and name[1:].isalnum()):
-            raise NameError, "%s est un nom reserve" %name
-        if isinstance(value, str):
-            # exec/eval encodent les chaînes crées en utf8.
-            value = value.decode("utf8").encode(param.encodage)
+        # (Cas particulier: le débugueur winpdb a besoin d'accéder à __builtins__).
+        if (name in self.defaut or (name.startswith('_') and name[1:].isalnum())) and name != '__builtins__':
+            raise NameError("%s est un nom reserve" %name)
         dict.__setitem__(self, name, value)
 
 
 
 
 class Interprete(object):
-    u"""Un interprêteur de commandes mathématiques, avec gestion des sessions.
+    """Un interprêteur de commandes mathématiques, avec gestion des sessions.
 
     Les options sont les suivantes::
 
@@ -115,12 +112,11 @@ class Interprete(object):
                         appliquer_au_resultat=None,
                         ensemble='R'
                         ):
-        # Dictionnaire local (qui contiendra toutes les variables définies par l'utilisateur).
-        self.locals = LocalDict()
-        # Dictionnaire global (qui contient les fonctions, variables et constantes prédéfinies).
-        self.globals = vars(end_user_functions).copy()
-        self.globals.update({
-                "__builtins__": None,
+
+        # Dictionnaire par défaut (qui contient les fonctions, variables et constantes prédéfinies).
+        self.defaut = vars(end_user_functions).copy()
+        self.defaut.update({
+                "__builtins__": {},
                 "Fonction": Fonction,
                 "Matrice": Matrix,
                 "Temps": Temps,
@@ -129,34 +125,34 @@ class Interprete(object):
                 "__sympify__": sympify,
                 "ans": self.ans,
                 "rep": self.ans, # alias en français :)
-                "__vars__": self.vars,
+#                "__vars__": self.vars,
 #                "__decimal__": Decimal,
                 "__decimal__": self._decimal,
-                "__local_dict__": self.locals,
                 "range": numpy.arange,
                 "arange": numpy.arange,
                 "frac": self._frac,
                 "Decim": Decim,
                             })
-        # pour éviter que les procédures de réécriture des formules ne touchent au mots clefs,
-        # on les référence comme fonctions (elles seront inaccessibles, mais ce n'est pas grave).
-        # ainsi, "c and(a or b)" ne deviendra pas "c and*(a or b)" !
-        # self.globals.update({}.fromkeys(securite.keywords_autorises, lambda:None))
 
-        # On importe les fonctions python qui peuvent avoir une utilité éventuelle
-        # (et ne présentent pas de problème de sécurité)
-        a_importer = ['all', 'unicode', 'isinstance', 'dict', 'oct', 'sorted',
-                      'list', 'iter', 'set', 'reduce', 'issubclass', 'getattr',
+        # On importe les fonctions python qui peuvent avoir une utilité éventuelle,
+        # l'idée étant de ne pas encombrer l'espace des noms inutilement.
+        a_importer = ['all', 'isinstance', 'dict', 'oct', 'sorted',
+                      'list', 'iter', 'set', 'issubclass', 'getattr',
                       'hash', 'len', 'frozenset', 'ord', 'filter', 'pow',
-                      'float', 'divmod', 'enumerate', 'basestring', 'zip',
+                      'float', 'divmod', 'enumerate', 'zip',
                       'hex', 'chr', 'type', 'tuple', 'reversed', 'hasattr',
-                      'delattr', 'setattr', 'str', 'int', 'unichr', 'any',
+                      'delattr', 'setattr', 'str', 'int', 'any',
                       'min', 'complex', 'bool', 'max', 'True', 'False']
 
         for nom in a_importer:
-            self.globals[nom] = __builtins__[nom]
+            self.defaut[nom] = __builtins__[nom]
 
-        self.locals.globals = self.globals
+        # Espace de noms de l'interprète (qui contiendra notamment toutes
+        # les variables définies par l'utilisateur).
+        self.vars = LocalDict(self.defaut)
+        # Permet à resoudre() et systeme() d'avoir accès à self.vars.
+        self.vars['__local_dict__'] = self.vars
+        self.defaut['__local_dict__'] = self.vars
 
         self.calcul_exact = calcul_exact
         # afficher les resultats en ecriture scientifique.
@@ -183,20 +179,20 @@ class Interprete(object):
         self.initialiser()
 
     def _decimal(self, nbr, prec=None):
-        u"""Convertit en fraction avec affichage décimal.
+        """Convertit en fraction avec affichage décimal.
         """
         if prec is None:
             prec = self.precision_calcul
         return Decim(nsimplify(nbr, rational=True), prec=prec)
 
     def _frac(self, arg):
-        u"""Convertit en fraction.
+        """Convertit en fraction.
         """
         return frac(arg)
 
 
     def initialiser(self):
-        self.locals.clear()
+        self.clear_state()
         self.derniers_resultats = []
 
 
@@ -215,9 +211,9 @@ class Interprete(object):
             difference = calcul.count(parentheses[0][i])-calcul.count(parentheses[1][i])
             if difference > 0:
                 calcul += difference*parentheses[1][i]
-                self.warning += u" Attention, il manque des parenthèses \"" + parentheses[1][i] + "\"."
+                self.warning += " Attention, il manque des parenthèses \"" + parentheses[1][i] + "\"."
             elif difference < 0:
-                self.warning += u" Attention, il y a des parenthèses \"" + parentheses[1][i] + "\" superflues."
+                self.warning += " Attention, il y a des parenthèses \"" + parentheses[1][i] + "\" superflues."
                 if calcul.endswith(abs(difference)*parentheses[1][i]):
                     calcul = calcul[:difference]
 
@@ -225,13 +221,13 @@ class Interprete(object):
 ##        calcul = calcul.replace("'", "`").replace('"', '``')
 
         if self.verbose:
-            print "Traitement ({[]}) :  ", calcul
+            print("Traitement ({[]}) :  ", calcul)
 
         if calcul and calcul[0] in "><!=^*/%+":
             calcul = "_" + calcul
 
         if self.verbose:
-            print "Traitement ><!=^*/%+ :  ", calcul
+            print("Traitement ><!=^*/%+ :  ", calcul)
 
         if self.formatage_LaTeX and calcul.rstrip().endswith("\\approx"):
             calcul = calcul.rstrip()[:-7] + ">>evalf"
@@ -243,7 +239,7 @@ class Interprete(object):
                 calcul = s + "(" + calcul + ")"
 
         if self.verbose:
-            print "Traitement >> :  ", calcul
+            print("Traitement >> :  ", calcul)
 
         if calcul.startswith('?'):
             calcul = 'aide(%s)' %calcul[1:]
@@ -260,11 +256,13 @@ class Interprete(object):
         if self.appliquer_au_resultat is not None:
             self._executer(self.appliquer_au_resultat)
 
-        self.derniers_resultats.append(self.locals["_"])
+        dernier_resultat = self.vars["_"]
+
+        self.derniers_resultats.append(dernier_resultat)
 
         if not calcul_exact:
-            return self._formater(sympy_functions.evalf(self.locals["_"], self.precision_calcul))
-        return self._formater(self.locals["_"])
+            return self._formater(sympy_functions.evalf(dernier_resultat, self.precision_calcul))
+        return self._formater(dernier_resultat)
 
 
     def _formater(self, valeur):
@@ -286,7 +284,11 @@ class Interprete(object):
                 latex = ''
 
 
-        if self.separateur_decimal != '.' and not isinstance(valeur, basestring):
+        if self.separateur_decimal != '.' and not isinstance(valeur, str):
+            # On détecte les chaînes pour ne pas remplacer à l'intérieur :
+            # on extrait les sous-chaînes pour les garder intact.
+            resultat, sous_chaines_resultat = extraire_chaines(resultat)
+            latex, sous_chaines_latex = extraire_chaines(latex)
             resultat = re.sub(r"[ ]*[,;][ ]*", ' ; ', resultat)
             # Éviter de remplacer \, par \; en LaTex.
             latex = re.sub(r"(?<![\\ ])[ ]*,[ ]*", ';', latex)
@@ -294,10 +296,12 @@ class Interprete(object):
                 return m.group().replace('.', self.separateur_decimal)
             resultat = re.sub(NBR, sep, resultat)
             latex = re.sub(NBR, sep, latex)
-            # TODO: utiliser un parser, pour détecter les chaînes, et ne pas remplacer à l'intérieur.
+            # On réinjecte les sous-chaînes à la fin.
+            resultat = injecter_chaines(resultat, sous_chaines_resultat)
+            latex = injecter_chaines(latex, sous_chaines_latex)
 
-        if isinstance(valeur, basestring):
-            latex = u'\u201C%s\u201D' %valeur
+        if isinstance(valeur, str):
+            latex = '\u201C%s\u201D' %valeur
 
         self.latex_dernier_resultat = latex
         if self.simplifier_ecriture_resultat:
@@ -306,15 +310,18 @@ class Interprete(object):
 
 
     def _traduire(self, formule):
-        variables = self.globals.copy()
-        variables.update(self.locals)
         # La fonction traduire_formule de la librairie formatage permet d'effectuer un certain nombre de conversions.
-        formule = traduire_formule(formule, fonctions = variables,
-                        OOo = self.formatage_OOo,
-                        LaTeX = self.formatage_LaTeX,
-                        simpify = self.simpify,
-                        verbose = self.verbose,
+        if self.verbose or (self.verbose is None and param.debug):
+            print('Avant traduction: %s' % repr(formule))
+        # traduire_formule() fait le tri entre les fonctions et les autres entrées de self.vars.
+        formule = traduire_formule(formule, fonctions=self.vars,
+                        OOo=self.formatage_OOo,
+                        LaTeX=self.formatage_LaTeX,
+                        simpify=self.simpify,
+                        verbose=self.verbose,
                         )
+        if self.verbose or (self.verbose is None and param.debug):
+            print('Après traduction: %s' % repr(formule))
 
         formule = re.sub("(?<![A-Za-z0-9_])(resous|solve)[(]", "resoudre(", formule)
         i = formule.find("resoudre(")
@@ -330,7 +337,7 @@ class Interprete(object):
             formule = ('%s("%s", local_dict=__local_dict__, ensemble=%s)%s'
                        % (deb, bloc[1:-1], repr(self.ensemble), fin))
         if self.verbose or (self.verbose is None and param.debug):
-            print "Debugging resoudre(): ", i, formule
+            print("Debugging resoudre(): ", i, formule)
         formule = re.sub("(?<![A-Za-z0-9_])(factor|factorise)[(]", "factoriser(", formule)
         i = formule.find("factoriser(")
         if i != -1:
@@ -338,7 +345,7 @@ class Interprete(object):
             formule = ('%s(%s, ensemble=%s)'
                        % (deb, bloc[1:-1], repr(self.ensemble)))
         if self.verbose or (self.verbose is None and param.debug):
-            print "Debugging factor(): ", formule
+            print("Debugging factor(): ", formule)
         return formule
 
 
@@ -357,36 +364,30 @@ class Interprete(object):
 
         # dans certains cas, il ne faut pas affecter le résultat à la variable "_" (cela provoquerait une erreur de syntaxe)
         # (Mots clés devant se trouver en début de ligne : dans ce cas, on ne modifie pas la ligne)
-        loc = self.locals
+        vars = self.vars
 
         if securite.expression_affectable(instruction):
             instruction = "_=" + instruction
         else:
-            loc["_"] = None
+            vars["_"] = None
 
         if securite.keywords_interdits_presents(instruction):
             self.warning += ('Les mots-clefs %s sont interdits.'
                                % ', '.join(sorted(securite.keywords_interdits)))
-            raise RuntimeError, "Mots-clefs interdits."
+            raise RuntimeError("Mots-clefs interdits.")
 
         try:
-            exec(instruction, self.globals, loc)
+            exec(instruction, vars)
         except NotImplementedError:
             print_error()
-            loc["_"] = "?"
-        if isinstance(loc["_"], Basic):
-            loc["_"] = loc["_"].subs({1.0: 1, -1.0: -1})
-            if (self.forme_algebrique and loc["_"].is_number):
+            vars["_"] = "?"
+        if isinstance(vars["_"], Basic):
+            vars["_"] = vars["_"].subs({1.0: 1, -1.0: -1})
+            if (self.forme_algebrique and vars["_"].is_number):
                 try:
-                    loc["_"] = loc["_"].expand(complex=True)
+                    vars["_"] = vars["_"].expand(complex=True)
                 except NotImplementedError:
                     print_error()
-
-    def vars(self):
-        dictionnaire = self.globals.copy()
-        dictionnaire.update(self.locals)
-        return dictionnaire
-
 
     def ans(self, n = -1):
         if n >= 0:
@@ -394,31 +395,39 @@ class Interprete(object):
         else:
             n = int(n)
         if self.derniers_resultats: return self.derniers_resultats[n]
-        self.warning += u" Ans(): aucun calcul antérieur."
+        self.warning += " Ans(): aucun calcul antérieur."
         return 0
 
     def clear_state(self):
-        self.locals.clear()
+        self.vars.clear()
+        self.vars.update(self.defaut)
 
     def save_state(self):
         def repr2(expr):
-            if isinstance(expr, (types.BuiltinFunctionType, types.TypeType, types.FunctionType)):
+            if isinstance(expr, (types.BuiltinFunctionType, type, types.FunctionType)):
                 return expr.__name__
             return repr(expr).replace('\n', ' ')
-        variables = '\n'.join(k + ' = ' + repr2(v) for k, v in self.locals.items())
+
+        l = []
+        for k, v in self.vars.items():
+            if k not in self.defaut or self.defaut[k] is not v:
+                l.append(k + ' = ' + repr2(v))
+        variables = '\n'.join(l)
+
         resultats = '\n    '.join(repr(repr2(res)) + ',' for res in self.derniers_resultats)
         return '%s\n\n@derniers_resultats = [\n    %s\n    ]' % (variables, resultats)
 
 
     def load_state(self, state):
         def evaltry(expr):
-            u"Evalue l'expression. En cas d'erreur, intercepte l'erreur et retourne None."
-            #XXX: ne pas remplacer à l'intérieur d'une chaîne.
-            expr = re.sub(NBR_FLOTTANT, (lambda x: "Decim('%s')" % x.group()), expr)
-            name_space = self.globals.copy()
-            name_space.update(self.locals)
+            "Evalue l'expression. En cas d'erreur, intercepte l'erreur et retourne None."
+            # Remplacer 1.23 par Decim('1.23'), sauf à l'intérieur d'une chaîne.
+            chaine, sous_chaines = extraire_chaines(expr)
+            chaine = re.sub(NBR_FLOTTANT, (lambda x: "Decim('%s')" % x.group()), chaine)
+            expr = injecter_chaines(chaine, sous_chaines)
+
             try:
-                return sympify(expr, name_space)
+                return sympify(expr, self.vars.copy())
             except Exception:
                 print("Error: l'expression suivante n'a pu être évaluée par l'interprète: %s." %repr(expr))
                 print_error()
@@ -426,6 +435,6 @@ class Interprete(object):
         self.clear_state()
         etat_brut, derniers_resultats = state.split('@derniers_resultats = ', 1)
         etat = (l.split(' = ', 1) for l in etat_brut.split('\n') if l)
-        self.locals.update((k, evaltry(v)) for k, v in etat)
-        liste_repr = eval(derniers_resultats, self.globals, self.locals)
+        self.vars.update((k, evaltry(v)) for k, v in etat)
+        liste_repr = eval(derniers_resultats, self.vars)
         self.derniers_resultats = [evaltry(s) for s in liste_repr]

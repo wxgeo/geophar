@@ -6,8 +6,8 @@
 # defaut : par défaut, le module est-il installé ou non ?
 
 description = {
-"titre":                    u"Exercices - Tableaux de signes",
-"description":              u"Série de tableaux de signes à remplir.",
-"groupe":                   u"Modules",
+"titre":                    "Exercices - Tableaux de signes",
+"description":              "Série de tableaux de signes à remplir.",
+"groupe":                   "Modules",
 "defaut":  True,
 }

@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
-from __future__ import with_statement
 
 ##---------------------------------------#######
 #                  Backends                    #
@@ -46,7 +44,7 @@ class BackendTikz(object):
         return self._dict_styles_traits.get(style, '')
 
     def _epaisseur(self, value):
-        u'Convertit la largeur de ligne.'
+        'Convertit la largeur de ligne.'
         return str(value/2) + 'pt'
 
     def _couleur(self, couleur):
@@ -73,13 +71,13 @@ class BackendTikz(object):
             options.append(self._arrow)
         if node:
             node = ' node ' + node
-        self._add(r'\draw[%s] %s%s;' % (', '.join(filter(None, options)), path, node))
+        self._add(r'\draw[%s] %s%s;' % (', '.join([_f for _f in options if _f]), path, node))
 
     def exporter(self, feuille, **options):
         deb = r'\begin{tikzpicture}'
         tikz_options = options.get('tikz', {})
         tikz_options['scale'] = options['echelle']
-        deb += '[%s]' % ','.join('%s=%s' %(key, val) for (key, val) in tikz_options.iteritems())
+        deb += '[%s]' % ','.join('%s=%s' %(key, val) for (key, val) in tikz_options.items())
         self._lignes = [deb]
         self._export_repere(feuille)
         for objet in feuille.liste_objets(objets_caches=False, etiquettes=False):
@@ -121,7 +119,7 @@ class BackendTikz(object):
                         node='[left] {$%s$}' % ordonnee)
 
     def _export_Objet(self, objet, **options):
-        print(u"Warning: type d'objet non supporté pour l'instant : "
+        print("Warning: type d'objet non supporté pour l'instant : "
               + str(objet.__class__.__name__))
         return ''
 
@@ -186,8 +184,8 @@ class BackendTikz(object):
                 if symb == '.':
                     self._draw(r'(%s, %s) node {\small$\bullet$}', **courbe.style())
                 else:
-                    print(u"Warning: extrémité de courbe non générée\n"
-                          u"(extrémité de type %s non géré pour l'instant)." % repr(symb))
+                    print("Warning: extrémité de courbe non générée\n"
+                          "(extrémité de type %s non géré pour l'instant)." % repr(symb))
 
     def _export_Vecteur(self, vecteur, **options):
         A, B = vecteur.extremites

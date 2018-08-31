@@ -1,14 +1,15 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 import re
 
 from pytest import XFAIL
 
+from sympy import S
+
 from tools.testlib import assertRaises, assertAlmostEqual, assertEqual
 
 from wxgeometrie.mathlib.interprete import Interprete
-from sympy import S
+from wxgeometrie.mathlib.printers import custom_str
 
 VERBOSE = False
 
@@ -19,12 +20,12 @@ def assert_resultat(s, resultat, latex = None, **parametres):
     if r != resultat:
         i = Interprete(verbose = True, **parametres)
         r, l = i.evaluer(s)
-        print "\nERREUR (" + s + "):\n", r, "\n!=\n",  resultat, '\n'
+        print("\nERREUR (" + s + "):\n", r, "\n!=\n",  resultat, '\n')
     assert(r == resultat)
     if latex is not None:
         latex = "$" + latex + "$"
         if l != latex:
-            print "\nERREUR (" + s + "):\n", l, "\n!=\n",  latex, '\n'
+            print("\nERREUR (" + s + "):\n", l, "\n!=\n",  latex, '\n')
         assert(l == latex)
 
 def assert_resoudre(s, *args, **kw):
@@ -44,18 +45,19 @@ def assert_ecriture_scientifique(s, resultat, latex=None, decimales=3, **paramet
     #~ assert(x == y)
 
 def assertDernier(i, s):
-    assertEqual(str(i.derniers_resultats[-1]), s)
+    assertEqual(custom_str(i.derniers_resultats[-1]), s)
 
-def test_exemples_de_base():
-    # Nombres
+def test_exemples_de_base_nombres():
     assert_resultat('2+2', '4', '4')
     assert_resultat('0,1^10', '1,0*10^-10', r'10^{-10}')
-    # Symboles
+
+def test_exemples_de_base_symboles():
     assert_resultat('pi+1+2pi', '1 + 3 pi', '1 + 3 \\pi')
     assert_resultat('oo+5*oo', '+oo')
     assert_resultat('i**2-i', '-1 - i', '-1 - \\mathrm{i}')
     assert_resultat('5e-3', '-3 + 5 e', '-3 + 5 \\mathrm{e}')
-    # Analyse
+
+def test_exemples_de_base_analyse():
     assert_resultat('limite(x^2-x+3, +oo)', '+oo', '+\\infty')
     assert_resultat('derive(x^2+2x-3)', '2 x + 2', '2 x + 2')
     assert_resultat('integre(2x+7)', 'x^2 + 7 x', 'x^{2} + 7 x')
@@ -66,7 +68,9 @@ def test_exemples_de_base():
     assert_resultat('cos x>>taylor', \
                 '1 - x^2/2 + x^4/24 + O(x^5)', \
                r'1 - \frac{x^{2}}{2} + \frac{x^{4}}{24} + \mathcal{O}\left(x^{5}\right)')
-    # Algèbre
+    assert_resultat('limit(x^2-x, oo)', '+oo', '+\infty')
+
+def test_exemples_de_base_algebre():
     assert_resultat('developpe((x-3)(x+7)(2y+x+5))', \
                                     'x^3 + 2 x^2 y + 9 x^2 + 8 x y - x - 42 y - 105', \
                                     'x^{3} + 2 x^{2} y + 9 x^{2} + 8 x y - x - 42 y - 105')
@@ -90,7 +94,8 @@ def test_exemples_de_base():
     assert_resultat('somme(x^2, x, 1, 7)', '140', '140')
     assert_resultat('product(x^2, (x, 1, 7))', '25401600', '25401600')
     assert_resultat('product(x^2;x;1;7)', '25401600', '25401600')
-    assert_resultat('limit(x^2-x, oo)', '+oo', '+\infty')
+
+def test_exemples_de_base_supplementaires():
     assert_resultat('abs(pi-5)', '-pi + 5', r'- \pi + 5')
     assert_resultat('abs(x-5)', 'abs(x - 5)', r'\left|{x - 5}\right|')
     assert_resultat('i(1+i)', r'-1 + i',  r'-1 + \mathrm{i}')
@@ -117,7 +122,7 @@ def test_ecriture_decimale_periodique():
 
 @XFAIL
 def test_issue_270():
-    u"""Bug 270: les décimaux s'affichent parfois en écriture scientifique.
+    """Bug 270: les décimaux s'affichent parfois en écriture scientifique.
 
     Exemple avec 3 chiffres significatifs:
 
@@ -169,7 +174,6 @@ def test_resoudre():
     assert_resoudre('x^3-30x^2+112=0', '{-6 sqrt(7) + 14 ; 2 ; 14 + 6 sqrt(7)}',
                 r'\left\{- 6 \sqrt{7} + 14\,;\, 2\,;\, 14 + 6 \sqrt{7}\right\}')
     # assert_resoudre(r'ln(x^2)-ln(x+1)>1', ']-1;e/2 - sqrt(4 e + exp(2))/2[U]e/2 + sqrt(4 e + exp(2))/2;+oo[')
-    assert_resoudre(r'ln(x^2)-ln(x+1)>1', ']-1 ; -sqrt(e + 4)exp(1/2)/2 + e/2[U]e/2 + sqrt(e + 4)exp(1/2)/2 ; +oo[')
     assert_resoudre('0.5 exp(-0.5 x + 0.4)=0.5', '{4/5}')
     assert_resoudre('x > 9 et x < 9', '{}', r'\varnothing')
 
@@ -177,8 +181,8 @@ def test_resoudre():
 #TODO: @SLOW wrapper should be defined, and the test only run in some circonstances
 # (for ex, a 'slow' keyword in tools/tests.py arguments)
 def test_longs():
-    # NB: Test très long (15-20 secondes) !
-    pass
+    # NB: Tests relativement longs (> 5 secondes environ)
+    assert_resoudre(r'ln(x^2)-ln(x+1)>1', ']-1 ; -sqrt(e + 4)exp(1/2)/2 + e/2[U]e/2 + sqrt(e + 4)exp(1/2)/2 ; +oo[')
 
 def test_approches():
     assert_approche('pi-1', '2,14159265358979324', '2,14159265358979324')
@@ -217,6 +221,8 @@ def test_session():
 
     # Test des générateurs
     i.evaluer('f(x)=x+3')
+    # La ligne suivante doit simplement s'exécuter sans erreur.
+    i.evaluer('[f for j in range(1, 11)]')
     i.evaluer('[f(j) for j in range(1, 11)]')
     assertDernier(i, '[4, 5, 6, 7, 8, 9, 10, 11, 12, 13]')
     i.evaluer('tuple(i for i in range(7))')
@@ -224,8 +230,8 @@ def test_session():
     i.evaluer('[j for j in range(7)]')
     assertDernier(i, '[0, 1, 2, 3, 4, 5, 6]')
 
-    # _11 is an alias for ans(11)
-    i.evaluer('_11 == _')
+    # _12 is an alias for ans(12)
+    i.evaluer('_12 == _')
     assertDernier(i, 'True')
     i.evaluer('_7')
     assertDernier(i, "2*x - 7")
@@ -239,7 +245,7 @@ def test_session():
 
     # Affichage des chaînes en mode text (et non math)
     i.evaluer('"Bonjour !"')
-    assert i.latex_dernier_resultat == u'\u201CBonjour !\u201D'
+    assert i.latex_dernier_resultat == '\u201CBonjour !\u201D'
 
     # Virgule comme séparateur décimal
     resultat, latex = i.evaluer('1,2')
@@ -253,7 +259,7 @@ def test_session():
     i.evaluer('?aide')
     i.evaluer('aide?')
     i.evaluer('aide(aide)')
-    msg_aide = u"\n== Aide sur aide ==\nRetourne (si possible) de l'aide sur la fonction saisie."
+    msg_aide = "\n== Aide sur aide ==\nRetourne (si possible) de l'aide sur la fonction saisie."
     resultats = i.derniers_resultats
     assert resultats[-3:] == [msg_aide, msg_aide, msg_aide]
 
@@ -289,28 +295,28 @@ def test_issue_185():
     i = Interprete(verbose=VERBOSE)
     i.evaluer("a=1+I")
     i.evaluer("a z")
-    assertDernier(i, 'z*(1 + I)')
+    assertDernier(i, 'z*(1 + i)')
 
 
 def test_issue_206():
     i = Interprete(verbose=VERBOSE)
     etat_interne = \
-u"""_ = 0
+"""_ = 0
 
 @derniers_resultats = [
     're(x)',
     ]"""
     i.load_state(etat_interne)
     i.evaluer("-1+\i\sqrt{3}")
-    assertDernier(i, '-1 + sqrt(3)*I')
+    assertDernier(i, '-1 + sqrt(3)*i')
     i.evaluer('-x**2 + 2*x - 3>>factor')
-    assertDernier(i, '-x**2 + 2*x - 3')
+    assertDernier(i, '-x^2 + 2*x - 3')
 
 
 def test_issue_206_bis():
     i = Interprete(verbose=VERBOSE)
     etat_interne = \
-u"""_ = 0
+"""_ = 0
 
 @derniers_resultats = [
     'Abs(x)',
@@ -323,7 +329,7 @@ u"""_ = 0
 def test_issue_206_ter():
     i = Interprete(verbose=VERBOSE)
     etat_interne = \
-u"""_ = 0
+"""_ = 0
 
 @derniers_resultats = [
     'atan2(x, y)',
@@ -336,7 +342,7 @@ u"""_ = 0
 def test_load_state():
     i = Interprete(verbose=VERBOSE)
     etat_interne = \
-u"""_ = 2/5
+"""_ = 2/5
 
 @derniers_resultats = [
     'x^2',
@@ -346,7 +352,29 @@ u"""_ = 2/5
     i.evaluer('_')
     assertDernier(i, '2/5')
     i.evaluer('_1')
-    assertDernier(i, 'x**2')
+    assertDernier(i, 'x^2')
+
+
+def test_load_state2():
+    i = Interprete(verbose=VERBOSE)
+    etat_interne = \
+"""_ = '2.56'
+
+@derniers_resultats = [
+    "'2.56'",
+    ]"""
+    i.load_state(etat_interne)
+    i.evaluer('_')
+    assertDernier(i, '"2.56"')
+
+
+def test_resolution_avec_fonction():
+    i = Interprete(verbose=VERBOSE)
+    i.evaluer("f(x)=a*x+1")
+    i.evaluer("resoudre(f(3)=7)")
+    res = i.derniers_resultats[-1]
+    # Le type du résultat est actuellement un ensemble, mais cela pourrait changer à l'avenir.
+    assertEqual(res, {S(2)})
 
 
 def test_systeme():
@@ -354,6 +382,7 @@ def test_systeme():
     i.evaluer("g(x)=a x^3+b x^2 + c x + d")
     i.evaluer("resoudre(g(-3)=2 et g(1)=6 et g(5)=3 et g'(1)=0)")
     res = i.derniers_resultats[-1]
+    # Le type du résultat est actuellement un dictionnaire, mais cela pourrait changer à l'avenir.
     assert isinstance(res, dict)
     assertEqual(res, {S('a'): S(1)/128, S('b'): -S(31)/128, S('c'): S(59)/128, S('d'): S(739)/128})
 
@@ -398,14 +427,14 @@ def test_issue_263():
     i.evaluer("A = mat([[1;2];[3;4]])")
     i.evaluer("B = mat(2)")
     i.evaluer("C = A*B")
-    assert 'C' in i.vars()
+    assert 'C' in i.vars
     r, l = i.evaluer("C")
     assertEqual(r, "Matrix([\n[1 ; 2] ; \n[3 ; 4]])")
     etat_interne = i.save_state()
     i.clear_state()
-    assert 'C' not in i.vars()
+    assert 'C' not in i.vars
     i.load_state(etat_interne)
-    assert 'C' in i.vars()
+    assert 'C' in i.vars
     r, l = i.evaluer("C")
     assertEqual(r, "Matrix([\n[1 ; 2] ; \n[3 ; 4]])")
     i.evaluer("A=[[0,1 ; 0,8]; [0,5; 0,5]]")
@@ -437,6 +466,12 @@ def test_issue_278():
     i.evaluer('del delta')
     r, l = i.evaluer('delta')
     assertEqual(r, 'delta')
+
+def test_sous_chaines_intactes():
+    i = Interprete(verbose=VERBOSE)
+    sous_chaine = '1.25;2.36,45'
+    i.evaluer("a='%s'" % sous_chaine)
+    assertEqual(i.vars['_'], sous_chaine)
 
 
 def test_proba_stats_basic_API():

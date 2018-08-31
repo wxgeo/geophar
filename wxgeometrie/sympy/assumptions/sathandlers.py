@@ -1,8 +1,9 @@
 from __future__ import print_function, division
 
-from collections import MutableMapping, defaultdict
+from collections import defaultdict
 
 from sympy.core import (Add, Mul, Pow, Integer, Number, NumberSymbol,)
+from sympy.core.compatibility import MutableMapping
 from sympy.core.numbers import ImaginaryUnit
 from sympy.core.sympify import _sympify
 from sympy.core.rules import Transform
@@ -62,7 +63,7 @@ class UnevaluatedOnFree(BooleanFunction):
             obj.pred = arg
             obj.expr = None
             return obj
-        predicate_args = set([pred.args[0] for pred in applied_predicates])
+        predicate_args = {pred.args[0] for pred in applied_predicates}
         if len(predicate_args) > 1:
             raise ValueError("The AppliedPredicates in arg must be applied to a single expression.")
         obj = BooleanFunction.__new__(cls, arg)
@@ -96,9 +97,9 @@ class AllArgs(UnevaluatedOnFree):
     >>> x, y = symbols('x y')
     >>> a = AllArgs(Q.positive | Q.negative)
     >>> a
-    AllArgs(Or(Q.negative, Q.positive))
+    AllArgs(Q.negative | Q.positive)
     >>> a.rcall(x*y)
-    And(Or(Q.negative(x), Q.positive(x)), Or(Q.negative(y), Q.positive(y)))
+    (Q.negative(x) | Q.positive(x)) & (Q.negative(y) | Q.positive(y))
     """
 
     def apply(self):
@@ -123,9 +124,9 @@ class AnyArgs(UnevaluatedOnFree):
     >>> x, y = symbols('x y')
     >>> a = AnyArgs(Q.positive & Q.negative)
     >>> a
-    AnyArgs(And(Q.negative, Q.positive))
+    AnyArgs(Q.negative & Q.positive)
     >>> a.rcall(x*y)
-    Or(And(Q.negative(x), Q.positive(x)), And(Q.negative(y), Q.positive(y)))
+    (Q.negative(x) & Q.positive(x)) | (Q.negative(y) & Q.positive(y))
     """
 
     def apply(self):
@@ -153,7 +154,7 @@ class ExactlyOneArg(UnevaluatedOnFree):
     >>> a
     ExactlyOneArg(Q.positive)
     >>> a.rcall(x*y)
-    Or(And(Not(Q.positive(x)), Q.positive(y)), And(Not(Q.positive(y)), Q.positive(x)))
+    (Q.positive(x) & ~Q.positive(y)) | (Q.positive(y) & ~Q.positive(x))
     """
     def apply(self):
         expr = self.expr
@@ -293,7 +294,7 @@ fact_registry = ClassFactRegistry()
 
 
 def register_fact(klass, fact, registry=fact_registry):
-    registry[klass] |= set([fact])
+    registry[klass] |= {fact}
 
 
 for klass, fact in [

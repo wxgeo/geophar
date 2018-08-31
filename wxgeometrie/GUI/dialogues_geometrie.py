@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------#######
 #                 Fenetres                              #
@@ -25,9 +24,11 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 from operator import attrgetter
 from functools import partial
 
-from PyQt4.QtGui import (QDialog, QVBoxLayout, QHBoxLayout, QFrame, QLabel,
-                         QLineEdit, QPushButton, QMenu, QCursor)
-from PyQt4.QtCore import Qt, QSize
+from PyQt5.QtGui import QCursor
+from PyQt5.QtWidgets import QDialog, QFrame, QLabel, QLineEdit, QPushButton,\
+    QMenu, QVBoxLayout, QHBoxLayout
+from PyQt5.QtCore import Qt, QSize
+
 
 from .qtlib import MultipleChoiceDialog
 from ..pylib import regsub
@@ -58,7 +59,7 @@ from .. import param
 
 
 def repr_str(chaine):
-    u'Force la chaîne a être représentée entourée de guillemets doubles (").'
+    'Force la chaîne a être représentée entourée de guillemets doubles (").'
     return repr(chaine + "'")[:-2] + '"'
 
 
@@ -72,13 +73,13 @@ class Dialogue(QDialog):
     objet = None # classe associee (utilise pour les boites de dialogue de creation d'objets geometriques)
 
     def __init__(self, parent, titre="", size=None):
-        u"""S'il s'agit d'un dialogue pour la création d'objets,
+        """S'il s'agit d'un dialogue pour la création d'objets,
         le titre par défaut est généré automatiquement à partir de l'attribut de classe 'objet'."""
 
         QDialog.__init__(self, parent)
 
         if self.objet and not titre:
-            titre = u"Créer " + self.objet.titre()
+            titre = "Créer " + self.objet.titre()
         self.setWindowTitle(titre)
 
         if size is not None:
@@ -92,12 +93,12 @@ class Dialogue(QDialog):
 
         if self.objet:
             self.ajoute([("Nom %s : " %self.objet.titre("du", False)), ("nom", 10)],
-                        u"Entrez le nom de l'objet. Exemples : A, AB, Cercle, M2...")
+                        "Entrez le nom de l'objet. Exemples : A, AB, Cercle, M2...")
 
 
 
     def ajoute(self, contenu, aide = ""):
-        u"""Ajoute une ligne de contenu dans la boite de dialogue.
+        """Ajoute une ligne de contenu dans la boite de dialogue.
 
         Format du contenu : ("texte statique",("nom de champ", taille), etc...)
         Exemple : ("entrez l'abscisse :",("absc",10),"cm")
@@ -119,7 +120,7 @@ class Dialogue(QDialog):
 
         self.box = QHBoxLayout()
         for txt in contenu:
-            if isinstance(txt, (str, unicode)):
+            if isinstance(txt, str):
                 # texte statique
                 texte = QLabel(txt)
                 texte.setWhatsThis(aide)
@@ -151,14 +152,14 @@ class Dialogue(QDialog):
             ##btn = wx.ContextHelpButton(self)
             ##self.box.Add(btn)
 
-        btn = QPushButton(u" Créer " if self.objet else u"Enregistrer", clicked=self.accept)
-        btn.setWhatsThis(u"Créer l'objet." if self.objet else u"Enregistrer les modifications.")
+        btn = QPushButton(" Créer " if self.objet else "Enregistrer", clicked=self.accept)
+        btn.setWhatsThis("Créer l'objet." if self.objet else "Enregistrer les modifications.")
         ##btn.SetDefault()
         #XXX: Action à ajouter !!
         self.box.addWidget(btn)
 
-        btn = QPushButton(u"Annuler", clicked=self.close)
-        btn.setWhatsThis(u"Quitter sans rien changer.")
+        btn = QPushButton("Annuler", clicked=self.close)
+        btn.setWhatsThis("Quitter sans rien changer.")
         self.box.addWidget(btn)
 
         self.sizer.addLayout(self.box)
@@ -182,7 +183,7 @@ class Dialogue(QDialog):
 
 
     def right_click(self, type, champ):
-        u"Retourne une fonction qui sera executée lors d'un clic droit sur le champ 'champ'."
+        "Retourne une fonction qui sera executée lors d'un clic droit sur le champ 'champ'."
         champ.setFocus()
         plusieurs = isinstance(type, list)
         if plusieurs:
@@ -217,9 +218,9 @@ class DialoguePoint(Dialogue):
     objet = Point
     def __init__(self, parent):
         Dialogue.__init__(self, parent)
-        self.ajoute([u"Coordonnées du point :"], u"Entrez les coordonnées de votre nouveau point.")
-        self.ajoute([u"Abscisse :", ("x", 10, Variable)], u"Entrez ici l'abscisse du point. Exemple : 3.25")
-        self.ajoute([u"Ordonnée :", ("y", 10, Variable)], u"Entrez ici l'ordonnée du point. Exemple : -5")
+        self.ajoute(["Coordonnées du point :"], "Entrez les coordonnées de votre nouveau point.")
+        self.ajoute(["Abscisse :", ("x", 10, Variable)], "Entrez ici l'abscisse du point. Exemple : 3.25")
+        self.ajoute(["Ordonnée :", ("y", 10, Variable)], "Entrez ici l'ordonnée du point. Exemple : -5")
         self.finalise()
 
 
@@ -228,9 +229,9 @@ class DialogueSegment(Dialogue):
     objet = Segment
     def __init__(self, parent):
         Dialogue.__init__(self, parent)
-        self.ajoute([u"Extrémités du segment :"], u"Entrez les extrémités du nouveau segment.")
-        self.ajoute([u"Premier point :", ("point1", 10, Point_generique)], u"Entrez ici le premier point. Exemple : A")
-        self.ajoute([u"Deuxième point :", ("point2", 10, Point_generique)], u"Entrez ici le deuxième point. Exemple : B")
+        self.ajoute(["Extrémités du segment :"], "Entrez les extrémités du nouveau segment.")
+        self.ajoute(["Premier point :", ("point1", 10, Point_generique)], "Entrez ici le premier point. Exemple : A")
+        self.ajoute(["Deuxième point :", ("point2", 10, Point_generique)], "Entrez ici le deuxième point. Exemple : B")
         self.finalise()
 
 
@@ -239,9 +240,9 @@ class DialogueDroite(Dialogue):
     objet = Droite
     def __init__(self, parent):
         Dialogue.__init__(self, parent)
-        self.ajoute([u"Donnez deux points de la droite :"], u"Définissez la droite en entrant deux points de la droite.")
-        self.ajoute([u"Premier point :", ("point1", 10, Point_generique)], u"Entrez ici le premier point. Exemple : A")
-        self.ajoute([u"Deuxième point :", ("point2", 10, Point_generique)], u"Entrez ici le deuxième point. Exemple : B")
+        self.ajoute(["Donnez deux points de la droite :"], "Définissez la droite en entrant deux points de la droite.")
+        self.ajoute(["Premier point :", ("point1", 10, Point_generique)], "Entrez ici le premier point. Exemple : A")
+        self.ajoute(["Deuxième point :", ("point2", 10, Point_generique)], "Entrez ici le deuxième point. Exemple : B")
         self.finalise()
 
 
@@ -250,9 +251,9 @@ class DialogueDemidroite(Dialogue):
     objet = Demidroite
     def __init__(self, parent):
         Dialogue.__init__(self, parent)
-        self.ajoute([u"Donnez deux points de la demi-droite :"], u"Définissez la demi-droite en entrant son origine, et un autre point.")
-        self.ajoute([u"Origine :", ("origine", 10, Point_generique)], u"Entrez ici son origine. Exemple : A")
-        self.ajoute([u"Deuxième point :", ("point", 10, Point_generique)], u"Entrez ici un deuxième point. Exemple : B")
+        self.ajoute(["Donnez deux points de la demi-droite :"], "Définissez la demi-droite en entrant son origine, et un autre point.")
+        self.ajoute(["Origine :", ("origine", 10, Point_generique)], "Entrez ici son origine. Exemple : A")
+        self.ajoute(["Deuxième point :", ("point", 10, Point_generique)], "Entrez ici un deuxième point. Exemple : B")
         self.finalise()
 
 
@@ -260,9 +261,9 @@ class DialogueVecteur(Dialogue):
     objet = Vecteur
     def __init__(self, parent):
         Dialogue.__init__(self, parent)
-        self.ajoute([u"Extremités du vecteur :"], u"Entrez les extremités du nouveau vecteur.")
-        self.ajoute([u"Point de départ :", ("point1", 10, Point_generique)], u"Entrez ici le premier point. Exemple : A")
-        self.ajoute([u"Point d'arrivée :", ("point2", 10, Point_generique)], u"Entrez ici le deuxieme point. Exemple : B")
+        self.ajoute(["Extremités du vecteur :"], "Entrez les extremités du nouveau vecteur.")
+        self.ajoute(["Point de départ :", ("point1", 10, Point_generique)], "Entrez ici le premier point. Exemple : A")
+        self.ajoute(["Point d'arrivée :", ("point2", 10, Point_generique)], "Entrez ici le deuxieme point. Exemple : B")
         self.finalise()
 
 
@@ -270,9 +271,9 @@ class DialogueVecteurLibre(Dialogue):
     objet = Vecteur_libre
     def __init__(self, parent):
         Dialogue.__init__(self, parent)
-        self.ajoute([u"Coordonnées du vecteur :"], u"Entrez les coordonnées de votre nouveau vecteur.")
-        self.ajoute([u"Abscisse :", ("x", 10, Variable)], u"Entrez ici l'abscisse du vecteur. Exemple : 3.25")
-        self.ajoute([u"Ordonnée :", ("y", 10, Variable)], u"Entrez ici l'ordonnée du vecteur. Exemple : -5")
+        self.ajoute(["Coordonnées du vecteur :"], "Entrez les coordonnées de votre nouveau vecteur.")
+        self.ajoute(["Abscisse :", ("x", 10, Variable)], "Entrez ici l'abscisse du vecteur. Exemple : 3.25")
+        self.ajoute(["Ordonnée :", ("y", 10, Variable)], "Entrez ici l'ordonnée du vecteur. Exemple : -5")
         self.finalise()
 
 
@@ -280,8 +281,8 @@ class DialogueRepresentant(Dialogue):
     objet = Representant
     def __init__(self, parent):
         Dialogue.__init__(self, parent)
-        self.ajoute([u"Créer un représentant du vecteur :", ("vecteur", 10, Vecteur_generique)], u"Entrez ici un nom de vecteur. Exemple : u")
-        self.ajoute([u"ayant pour origine le point :", ("origine", 10, Point_generique)], u"Entrez ici le point origine du vecteur. Exemple : A")
+        self.ajoute(["Créer un représentant du vecteur :", ("vecteur", 10, Vecteur_generique)], "Entrez ici un nom de vecteur. Exemple : u")
+        self.ajoute(["ayant pour origine le point :", ("origine", 10, Point_generique)], "Entrez ici le point origine du vecteur. Exemple : A")
         self.finalise()
 
 
@@ -289,9 +290,9 @@ class DialogueMilieu(Dialogue):
     objet = Milieu
     def __init__(self, parent):
         Dialogue.__init__(self, parent)
-        self.ajoute([u"Construire le milieu des points :"], u"Entrez les extrémités du segment.")
-        self.ajoute([u"Premier point :", ("point1", 10, Point_generique)], u"Entrez ici le premier point. Exemple : A")
-        self.ajoute([u"Deuxième point :", ("point2", 10, Point_generique)], u"Entrez ici le deuxième point. Exemple : B")
+        self.ajoute(["Construire le milieu des points :"], "Entrez les extrémités du segment.")
+        self.ajoute(["Premier point :", ("point1", 10, Point_generique)], "Entrez ici le premier point. Exemple : A")
+        self.ajoute(["Deuxième point :", ("point2", 10, Point_generique)], "Entrez ici le deuxième point. Exemple : B")
         self.finalise()
 
 
@@ -300,9 +301,9 @@ class DialogueBarycentre(Dialogue):
     objet = Barycentre
     def __init__(self, parent):
         Dialogue.__init__(self, parent)
-        self.ajoute([u"Construire le barycentre :"], u"Entrez les points, puis les coefficients.")
-        self.ajoute([u"des points :", ("points", 10)], u"Entrez ici les points séparés par des virgules. Exemple : A,B,C")
-        self.ajoute([u"avec les coefficients :", ("coeffs", 10)], u"Entrez ici les coefficients (de somme non nulle !) séparés par des virgules. Exemple : 5,3,1.5")
+        self.ajoute(["Construire le barycentre :"], "Entrez les points, puis les coefficients.")
+        self.ajoute(["des points :", ("points", 10)], "Entrez ici les points séparés par des virgules. Exemple : A,B,C")
+        self.ajoute(["avec les coefficients :", ("coeffs", 10)], "Entrez ici les coefficients (de somme non nulle !) séparés par des virgules. Exemple : 5,3,1.5")
         self.finalise()
 
     def parametres(self):
@@ -315,9 +316,9 @@ class DialoguePointFinal(Dialogue):
     objet = Point_final
     def __init__(self, parent):
         Dialogue.__init__(self, parent)
-        self.ajoute([u"Construire le point tel qu'on ait :"], u"Entrez la relation vectorielle.")
+        self.ajoute(["Construire le point tel qu'on ait :"], "Entrez la relation vectorielle.")
         self.ajoute([("point1", 2, Point_generique), ">", ("point2", 2, Point_generique), "=", ("relation", 10, Point_generique, 1)], \
-        u"""Entrez ici la relation vectorielle. Exemple, si N est le point à construire :\nA>N = 2 B>C + 5/3 D>E.
+        """Entrez ici la relation vectorielle. Exemple, si N est le point à construire :\nA>N = 2 B>C + 5/3 D>E.
         Attention : le membre de droite ne doit contenir que des points déjà existants.""")
         self.finalise()
 
@@ -340,8 +341,8 @@ class DialogueCercleRayon(Dialogue):
     objet = Cercle_rayon
     def __init__(self, parent):
         Dialogue.__init__(self, parent)
-        self.ajoute([u"Créer un cercle de centre :", ("centre", 5, Point_generique)], u"Entrez ici le centre du cercle. Exemple : M")
-        self.ajoute([u"et de rayon :", ("rayon", 5, Variable)], u"Entrez ici le rayon. Exemple : 3")
+        self.ajoute(["Créer un cercle de centre :", ("centre", 5, Point_generique)], "Entrez ici le centre du cercle. Exemple : M")
+        self.ajoute(["et de rayon :", ("rayon", 5, Variable)], "Entrez ici le rayon. Exemple : 3")
         self.finalise()
 
 
@@ -350,8 +351,8 @@ class DialogueCercle(Dialogue):
     objet = Cercle
     def __init__(self, parent):
         Dialogue.__init__(self, parent)
-        self.ajoute([u"Créer un cercle de centre :", ("centre", 5, Point_generique)], u"Entrez ici le centre du cercle. Exemple : O")
-        self.ajoute([u"auquel appartient :", ("point", 5, Point_generique)], u"Entrez ici un point du cercle. Exemple : M")
+        self.ajoute(["Créer un cercle de centre :", ("centre", 5, Point_generique)], "Entrez ici le centre du cercle. Exemple : O")
+        self.ajoute(["auquel appartient :", ("point", 5, Point_generique)], "Entrez ici un point du cercle. Exemple : M")
         self.finalise()
 
 
@@ -360,8 +361,8 @@ class DialogueCercleDiametre(Dialogue):
     objet = Cercle_diametre
     def __init__(self, parent):
         Dialogue.__init__(self, parent)
-        self.ajoute([u"Donnez un diamètre du cercle :"])
-        self.ajoute([u"Créer un cercle de diamètre : [", ("point1", 5, Point_generique), ("point2", 5, Point_generique), "]"], u"Entrez les extrémités du diamètre. Exemple : A et B")
+        self.ajoute(["Donnez un diamètre du cercle :"])
+        self.ajoute(["Créer un cercle de diamètre : [", ("point1", 5, Point_generique), ("point2", 5, Point_generique), "]"], "Entrez les extrémités du diamètre. Exemple : A et B")
         self.finalise()
 
 
@@ -369,9 +370,9 @@ class DialogueCerclePoints(Dialogue):
     objet = Cercle_points
     def __init__(self, parent):
         Dialogue.__init__(self, parent)
-        self.ajoute([u"Premier point du cercle :", ("point1", 5, Point_generique)], u"Entrez ici un point du cercle. Exemple : A")
-        self.ajoute([u"Deuxième point : ", ("point2", 5, Point_generique)], u"Entrez un 2e point du cercle. Exemple : B")
-        self.ajoute([u"Troisième point : ", ("point3", 5, Point_generique)], u"Entrez ici un 3e point du cercle. Exemple : C")
+        self.ajoute(["Premier point du cercle :", ("point1", 5, Point_generique)], "Entrez ici un point du cercle. Exemple : A")
+        self.ajoute(["Deuxième point : ", ("point2", 5, Point_generique)], "Entrez un 2e point du cercle. Exemple : B")
+        self.ajoute(["Troisième point : ", ("point3", 5, Point_generique)], "Entrez ici un 3e point du cercle. Exemple : C")
         self.finalise()
 
 
@@ -379,9 +380,9 @@ class DialogueArcCercle(Dialogue):
     objet = Arc_cercle
     def __init__(self, parent):
         Dialogue.__init__(self, parent)
-        self.ajoute([u"Centre du cercle :", ("centre", 5, Point_generique)], u"Entrez ici le centre du cercle. Exemple : O")
-        self.ajoute([u"Premier point de l'arc : ", ("point1", 5, Point_generique)], u"Entrez le 1er point de l'arc. L'arc est parcouru dans le sens direct. Exemple A")
-        self.ajoute([u"Deuxième point : ", ("point2", 5, Point_generique)], u"Entrez un 2e point. Il ne sera pas forcément sur l'arc. Exemple : B")
+        self.ajoute(["Centre du cercle :", ("centre", 5, Point_generique)], "Entrez ici le centre du cercle. Exemple : O")
+        self.ajoute(["Premier point de l'arc : ", ("point1", 5, Point_generique)], "Entrez le 1er point de l'arc. L'arc est parcouru dans le sens direct. Exemple A")
+        self.ajoute(["Deuxième point : ", ("point2", 5, Point_generique)], "Entrez un 2e point. Il ne sera pas forcément sur l'arc. Exemple : B")
         self.finalise()
 
 
@@ -389,9 +390,9 @@ class DialogueArcPoints(Dialogue):
     objet = Arc_points
     def __init__(self, parent):
         Dialogue.__init__(self, parent)
-        self.ajoute([u"Premier point de l'arc :", ("point1", 5, Point_generique)], u"Entrez ici une extrémité de l'arc. Exemple : A")
-        self.ajoute([u"Deuxième point : ", ("point2", 5, Point_generique)], u"Entrez un point de l'arc, distinct des extrémités. Exemple : B")
-        self.ajoute([u"Troisième point : ", ("point3", 5, Point_generique)], u"Entrez ici l'autre extrémité de l'arc. Exemple : C")
+        self.ajoute(["Premier point de l'arc :", ("point1", 5, Point_generique)], "Entrez ici une extrémité de l'arc. Exemple : A")
+        self.ajoute(["Deuxième point : ", ("point2", 5, Point_generique)], "Entrez un point de l'arc, distinct des extrémités. Exemple : B")
+        self.ajoute(["Troisième point : ", ("point3", 5, Point_generique)], "Entrez ici l'autre extrémité de l'arc. Exemple : C")
         self.finalise()
 
 
@@ -400,9 +401,9 @@ class DialogueArcOriente(Dialogue):
     objet = Arc_oriente
     def __init__(self, parent):
         Dialogue.__init__(self, parent)
-        self.ajoute([u"Premier point de l'arc :", ("point1", 5, Point_generique)], u"Entrez ici l'origine l'arc orienté. Exemple : A")
-        self.ajoute([u"Deuxième point : ", ("point2", 5, Point_generique)], u"Entrez un point de l'arc, distinct des extrémités. Exemple : B")
-        self.ajoute([u"Troisième point : ", ("point3", 5, Point_generique)], u"Entrez ici le point final de l'arc orienté. Exemple : C")
+        self.ajoute(["Premier point de l'arc :", ("point1", 5, Point_generique)], "Entrez ici l'origine l'arc orienté. Exemple : A")
+        self.ajoute(["Deuxième point : ", ("point2", 5, Point_generique)], "Entrez un point de l'arc, distinct des extrémités. Exemple : B")
+        self.ajoute(["Troisième point : ", ("point3", 5, Point_generique)], "Entrez ici le point final de l'arc orienté. Exemple : C")
         self.finalise()
 
 
@@ -411,8 +412,8 @@ class DialogueDemiCercle(Dialogue):
     objet = Demicercle
     def __init__(self, parent):
         Dialogue.__init__(self, parent)
-        self.ajoute([u"Donnez un diametre du demi-cercle :"])
-        self.ajoute([u"Créer une demi-cercle de diametre : [", ("point1", 5, Point_generique), ("point2", 5, Point_generique), "]"], u"Entrez les extremités du diamètre, dans le sens direct. Exemple : A et B")
+        self.ajoute(["Donnez un diametre du demi-cercle :"])
+        self.ajoute(["Créer une demi-cercle de diametre : [", ("point1", 5, Point_generique), ("point2", 5, Point_generique), "]"], "Entrez les extremités du diamètre, dans le sens direct. Exemple : A et B")
         self.finalise()
 
 
@@ -420,8 +421,8 @@ class DialogueDisque(Dialogue):
     objet = Disque
     def __init__(self, parent):
         Dialogue.__init__(self, parent)
-        self.ajoute([u"Donnez le cercle :"])
-        self.ajoute([u"Créer un disque de circonférence :", ("cercle", 5, Cercle_generique)], u"Entrez le cercle délimitant le disque. Exemple : C")
+        self.ajoute(["Donnez le cercle :"])
+        self.ajoute(["Créer un disque de circonférence :", ("cercle", 5, Cercle_generique)], "Entrez le cercle délimitant le disque. Exemple : C")
         self.finalise()
 
 
@@ -430,8 +431,8 @@ class DialogueParallele(Dialogue):
     objet = Parallele
     def __init__(self, parent):
         Dialogue.__init__(self, parent)
-        self.ajoute([u"Créer la parallèle a :", ("droite", 5, Ligne_generique)], u"Entrez une droite. Exemple : d")
-        self.ajoute([u"Passant par :", ("point", 5, Point_generique)], u"Entrez un point. Exemple : M")
+        self.ajoute(["Créer la parallèle a :", ("droite", 5, Ligne_generique)], "Entrez une droite. Exemple : d")
+        self.ajoute(["Passant par :", ("point", 5, Point_generique)], "Entrez un point. Exemple : M")
         self.finalise()
 
 
@@ -441,8 +442,8 @@ class DialoguePerpendiculaire(Dialogue):
     objet = Perpendiculaire
     def __init__(self, parent):
         Dialogue.__init__(self, parent)
-        self.ajoute([u"Créer la perpendiculaire a :", ("droite", 5, Ligne_generique)], u"Entrez une droite. Exemple : d")
-        self.ajoute([u"Passant par :", ("point", 5, Point_generique)], u"Entrez un point. Exemple : M")
+        self.ajoute(["Créer la perpendiculaire a :", ("droite", 5, Ligne_generique)], "Entrez une droite. Exemple : d")
+        self.ajoute(["Passant par :", ("point", 5, Point_generique)], "Entrez un point. Exemple : M")
         self.finalise()
 
 
@@ -451,7 +452,7 @@ class DialogueMediatrice(Dialogue):
     objet = Mediatrice
     def __init__(self, parent):
         Dialogue.__init__(self, parent)
-        self.ajoute([u"Créer la médiatrice du segment : [", ("point1", 5, Point_generique), ("point2", 5, Point_generique), "]"], u"Entrez les extremites du segment. Exemple : A et B")
+        self.ajoute(["Créer la médiatrice du segment : [", ("point1", 5, Point_generique), ("point2", 5, Point_generique), "]"], "Entrez les extremites du segment. Exemple : A et B")
         self.finalise()
 
 
@@ -460,7 +461,7 @@ class DialogueBissectrice(Dialogue):
     objet = Bissectrice
     def __init__(self, parent):
         Dialogue.__init__(self, parent)
-        self.ajoute([u"Créer la bissectrice de l'angle :", ("point1", 5, Point_generique), ("point2", 5, Point_generique), ("point3", 5, Point_generique)], u"Entrez le nom de l'angle, nommé par 3 points. Exemple : B A C")
+        self.ajoute(["Créer la bissectrice de l'angle :", ("point1", 5, Point_generique), ("point2", 5, Point_generique), ("point3", 5, Point_generique)], "Entrez le nom de l'angle, nommé par 3 points. Exemple : B A C")
         self.finalise()
 
 
@@ -468,8 +469,8 @@ class DialogueTangente(Dialogue):
     objet = Tangente
     def __init__(self, parent):
         Dialogue.__init__(self, parent)
-        self.ajoute([u"Créer la tangente au cercle :", ("cercle", 5, Cercle_generique)], u"Entrez le nom du cercle. Exemple : Cer")
-        self.ajoute([u"Passant par :", ("point", 5)], u"Entrez un point. Exemple : M")
+        self.ajoute(["Créer la tangente au cercle :", ("cercle", 5, Cercle_generique)], "Entrez le nom du cercle. Exemple : Cer")
+        self.ajoute(["Passant par :", ("point", 5)], "Entrez un point. Exemple : M")
         self.finalise()
 
 
@@ -477,7 +478,7 @@ class DialogueInterDroites(Dialogue):
     objet = Intersection_droites
     def __init__(self, parent):
         Dialogue.__init__(self, parent)
-        self.ajoute([u"Créer le point d'intersection des droites :", ("droite1", 5, Ligne_generique), "et", ("droite2", 5, Ligne_generique)], u"Entrez les noms des deux droites. Exemple : d1 et d2 ou (A B) et (C D)")
+        self.ajoute(["Créer le point d'intersection des droites :", ("droite1", 5, Ligne_generique), "et", ("droite2", 5, Ligne_generique)], "Entrez les noms des deux droites. Exemple : d1 et d2 ou (A B) et (C D)")
         self.finalise()
 
 
@@ -485,7 +486,7 @@ class DialogueInterDroiteCercle(Dialogue):
     objet = Intersection_droite_cercle
     def __init__(self, parent):
         Dialogue.__init__(self, parent)
-        self.ajoute([u"Créer un point d'intersection entre :", u"la droite", ("droite", 5, Ligne_generique), u"et le cercle", ("cercle", 5, Cercle_generique)], u"Entrez les noms dela droite, et du cercle. Exemple : AB et Cer")
+        self.ajoute(["Créer un point d'intersection entre :", "la droite", ("droite", 5, Ligne_generique), "et le cercle", ("cercle", 5, Cercle_generique)], "Entrez les noms dela droite, et du cercle. Exemple : AB et Cer")
         self.finalise()
 
 
@@ -493,7 +494,7 @@ class DialogueInterCercles(Dialogue):
     objet = Intersection_cercles
     def __init__(self, parent):
         Dialogue.__init__(self, parent)
-        self.ajoute([u"Créer un point d'intersection des cercles :", ("cercle1", 5, Cercle_generique), "et", ("cercle2", 5, Cercle_generique)], u"Entrez les noms des deux cercles. Exemple : C1 et C2")
+        self.ajoute(["Créer un point d'intersection des cercles :", ("cercle1", 5, Cercle_generique), "et", ("cercle2", 5, Cercle_generique)], "Entrez les noms des deux cercles. Exemple : C1 et C2")
         self.finalise()
 
 
@@ -503,7 +504,7 @@ class DialogueGlisseurDroite(Dialogue):
     objet = Glisseur_droite
     def __init__(self, parent):
         Dialogue.__init__(self, parent)
-        self.ajoute([u"Créer un point sur la droite :", ("droite", 5, Droite_generique)], u"Entrez le nom de la droite. Exemple : d ou (A B)")
+        self.ajoute(["Créer un point sur la droite :", ("droite", 5, Droite_generique)], "Entrez le nom de la droite. Exemple : d ou (A B)")
         self.finalise()
 
 
@@ -513,7 +514,7 @@ class DialogueGlisseurCercle(Dialogue):
     objet = Glisseur_cercle
     def __init__(self, parent):
         Dialogue.__init__(self, parent)
-        self.ajoute([u"Créer un point sur le cercle :", ("cercle", 5, Cercle_generique)], u"Entrez le nom du cercle. Exemple : Cer")
+        self.ajoute(["Créer un point sur le cercle :", ("cercle", 5, Cercle_generique)], "Entrez le nom du cercle. Exemple : Cer")
         self.finalise()
 
 
@@ -523,7 +524,7 @@ class DialogueGlisseurSegment(Dialogue):
     objet = Glisseur_segment
     def __init__(self, parent):
         Dialogue.__init__(self, parent)
-        self.ajoute([u"Créer un point sur le segment :", ("segment", 5, Segment)], u"Entrez le nom du segment. Exemple : s ou [A B]")
+        self.ajoute(["Créer un point sur le segment :", ("segment", 5, Segment)], "Entrez le nom du segment. Exemple : s ou [A B]")
         self.finalise()
 
 
@@ -531,7 +532,7 @@ class DialoguePolygone(Dialogue):
     objet = Polygone
     def __init__(self, parent):
         Dialogue.__init__(self, parent)
-        self.ajoute([u"Créer un polygone de sommets :", ("points", 10, [Point_generique])], u"Entrez les sommets du polygone. Exemple : A,B,C,D")
+        self.ajoute(["Créer un polygone de sommets :", ("points", 10, [Point_generique])], "Entrez les sommets du polygone. Exemple : A,B,C,D")
         self.finalise()
 
     def commande(self): # a cause de l'initialisation speciale de Polygone : __init__(*points)
@@ -541,8 +542,8 @@ class DialoguePolygoneRegulier(Dialogue):
     objet = Polygone_regulier
     def __init__(self, parent):
         Dialogue.__init__(self, parent)
-        self.ajoute([u"Créer un polygone régulier à", ("n", 5), u"sommets."], u"Entrez le nombre de sommets du polygone. Exemple : 7")
-        self.ajoute([u"Premiers sommets", ("point1", 5, Point_generique), "et", ("point2", 5, Point_generique), u"(sens direct)."], u"Entrez le nom de deux sommets consécutifs. Exemple : A et B")
+        self.ajoute(["Créer un polygone régulier à", ("n", 5), "sommets."], "Entrez le nombre de sommets du polygone. Exemple : 7")
+        self.ajoute(["Premiers sommets", ("point1", 5, Point_generique), "et", ("point2", 5, Point_generique), "(sens direct)."], "Entrez le nom de deux sommets consécutifs. Exemple : A et B")
         self.finalise()
 
 
@@ -550,8 +551,8 @@ class DialoguePolygoneRegulierCentre(Dialogue):
     objet = Polygone_regulier_centre
     def __init__(self, parent):
         Dialogue.__init__(self, parent)
-        self.ajoute([u"Créer un polygone régulier à", ("n", 5), u"sommets."], u"Entrez le nombre de sommets du polygone. Exemple : 7")
-        self.ajoute([u"Passant par le sommet", ("sommet", 5, Point_generique), "et de centre", ("centre", 5, Point_generique)], u"Entrez le nom d'un sommet et du centre. Exemple : A et I")
+        self.ajoute(["Créer un polygone régulier à", ("n", 5), "sommets."], "Entrez le nombre de sommets du polygone. Exemple : 7")
+        self.ajoute(["Passant par le sommet", ("sommet", 5, Point_generique), "et de centre", ("centre", 5, Point_generique)], "Entrez le nom d'un sommet et du centre. Exemple : A et I")
         self.finalise()
 
 
@@ -559,14 +560,14 @@ class DialogueParallelogramme(Dialogue):
     objet = Parallelogramme
     def __init__(self, parent):
         Dialogue.__init__(self, parent)
-        self.ajoute([u"Créer un parallélogramme de trois premiers sommets :", ("point1", 5, Point_generique), ",", ("point2", 5, Point_generique), "et", ("point3", 5, Point_generique)], u"Entrez les 3 premiers sommets du parallélogramme (sens direct). Exemple : A,B et C")
+        self.ajoute(["Créer un parallélogramme de trois premiers sommets :", ("point1", 5, Point_generique), ",", ("point2", 5, Point_generique), "et", ("point3", 5, Point_generique)], "Entrez les 3 premiers sommets du parallélogramme (sens direct). Exemple : A,B et C")
         self.finalise()
 
 class DialogueTriangle(Dialogue):
     objet = Triangle
     def __init__(self, parent):
         Dialogue.__init__(self, parent)
-        self.ajoute([u"Créer un triangle de sommets :", ("point1", 5, Point_generique), ",", ("point2", 5, Point_generique), "et", ("point3", 5, Point_generique)], u"Entrez le nom des points. Exemple : A , B et C")
+        self.ajoute(["Créer un triangle de sommets :", ("point1", 5, Point_generique), ",", ("point2", 5, Point_generique), "et", ("point3", 5, Point_generique)], "Entrez le nom des points. Exemple : A , B et C")
         self.finalise()
 
 
@@ -574,7 +575,7 @@ class DialogueCentre(Dialogue):
     objet = Centre
     def __init__(self, parent):
         Dialogue.__init__(self, parent)
-        self.ajoute([u"Créer le centre du cercle :", ("cercle", 5, Cercle_generique)], u"Entrez le nom du cercle. Exemple : Cer")
+        self.ajoute(["Créer le centre du cercle :", ("cercle", 5, Cercle_generique)], "Entrez le nom du cercle. Exemple : Cer")
         self.finalise()
 
 
@@ -582,7 +583,7 @@ class DialogueOrthocentre(Dialogue):
     objet = Orthocentre
     def __init__(self, parent):
         Dialogue.__init__(self, parent)
-        self.ajoute([u"Créer l'orthocentre du triangle :", ("triangle", 5, Triangle)], u"Entrez le nom du triangle. Exemple : ABC")
+        self.ajoute(["Créer l'orthocentre du triangle :", ("triangle", 5, Triangle)], "Entrez le nom du triangle. Exemple : ABC")
         self.finalise()
 
 
@@ -590,7 +591,7 @@ class DialogueCentreGravite(Dialogue):
     objet = Centre_gravite
     def __init__(self, parent):
         Dialogue.__init__(self, parent)
-        self.ajoute([u"Créer le centre de gravité du polygone :", ("polygone", 5, Polygone)], u"Entrez le nom du polygone. Exemple : ABC")
+        self.ajoute(["Créer le centre de gravité du polygone :", ("polygone", 5, Polygone)], "Entrez le nom du polygone. Exemple : ABC")
         self.finalise()
 
 
@@ -598,7 +599,7 @@ class DialogueCentreCercleCirconscrit(Dialogue):
     objet = Centre_cercle_circonscrit
     def __init__(self, parent):
         Dialogue.__init__(self, parent)
-        self.ajoute([u"Créer le centre du cercle circonscrit à :", ("triangle", 5, Triangle)], u"Entrez le nom du triangle. Exemple : ABC")
+        self.ajoute(["Créer le centre du cercle circonscrit à :", ("triangle", 5, Triangle)], "Entrez le nom du triangle. Exemple : ABC")
         self.finalise()
 
 
@@ -606,46 +607,46 @@ class DialogueCentreCercleInscrit(Dialogue):
     objet = Centre_cercle_inscrit
     def __init__(self, parent):
         Dialogue.__init__(self, parent)
-        self.ajoute([u"Créer le centre du cercle inscrit dans :", ("triangle", 5, Triangle)], u"Entrez le nom du triangle. Exemple : ABC")
+        self.ajoute(["Créer le centre du cercle inscrit dans :", ("triangle", 5, Triangle)], "Entrez le nom du triangle. Exemple : ABC")
         self.finalise()
 
 class DialogueAngle(Dialogue):
     objet = Angle
     def __init__(self, parent):
         Dialogue.__init__(self, parent)
-        self.ajoute([u"Créer l'angle :", ("point1", 5, Point_generique), ("point2", 5, Point_generique), ("point3", 5, Point_generique)], u"Entrez les trois sommets de l'angle. Exemple : A B C")
+        self.ajoute(["Créer l'angle :", ("point1", 5, Point_generique), ("point2", 5, Point_generique), ("point3", 5, Point_generique)], "Entrez les trois sommets de l'angle. Exemple : A B C")
         self.finalise()
 
 class DialogueAngleOriente(Dialogue):
     objet = Angle_oriente
     def __init__(self, parent):
         Dialogue.__init__(self, parent)
-        self.ajoute([u"Créer l'angle :", ("point1", 5, Point_generique), ("point2", 5, Point_generique), ("point3", 5, Point_generique)], u"Entrez les trois sommets de l'angle. Exemple : A B C")
+        self.ajoute(["Créer l'angle :", ("point1", 5, Point_generique), ("point2", 5, Point_generique), ("point3", 5, Point_generique)], "Entrez les trois sommets de l'angle. Exemple : A B C")
         self.finalise()
 
 class DialogueAngleLibre(Dialogue):
     objet = Angle_libre
     def __init__(self, parent):
         Dialogue.__init__(self, parent)
-        self.ajoute([u"Valeur de l'angle :", ("valeur", 5)], u"Entrez la valeur en degré ou en radian de l'angle. Exemple : pi/2, 15°")
-        self.ajoute([u"Unité (facultatif) :", ("unite", 5)], u"Entrez éventuellement l'unité. Exemple : r, d, g (degré, radian ou grad). Radian par défaut.")
+        self.ajoute(["Valeur de l'angle :", ("valeur", 5)], "Entrez la valeur en degré ou en radian de l'angle. Exemple : pi/2, 15°")
+        self.ajoute(["Unité (facultatif) :", ("unite", 5)], "Entrez éventuellement l'unité. Exemple : r, d, g (degré, radian ou grad). Radian par défaut.")
         self.finalise()
 
     def commande(self): # gestion du symbole "°"
         valeur = self.champ("valeur").strip()
-        if valeur.endswith(u"°"):
+        if valeur.endswith("°"):
             valeur = valeur[:-1]
             unite = "'d'"
         else:
             unite = repr(self.champ("unite").lower().strip())
-        return u"%s=Angle_libre(%s, %s)" %(self.champ("nom"), valeur, unite)
+        return "%s=Angle_libre(%s, %s)" %(self.champ("nom"), valeur, unite)
 
 
 class DialogueAngleVectoriel(Dialogue):
     objet = Angle_vectoriel
     def __init__(self, parent):
         Dialogue.__init__(self, parent)
-        self.ajoute([u"Créer l'angle : (", ("vecteur1", 5, Vecteur_generique), ",", ("vecteur2", 5, Vecteur_generique), ")"], u"Entrez les 2 vecteurs. Exemple : u et v, ou A>B et C>D")
+        self.ajoute(["Créer l'angle : (", ("vecteur1", 5, Vecteur_generique), ",", ("vecteur2", 5, Vecteur_generique), ")"], "Entrez les 2 vecteurs. Exemple : u et v, ou A>B et C>D")
         self.finalise()
 
 
@@ -653,10 +654,10 @@ class DialogueTexte(Dialogue):
     objet = Texte
     def __init__(self, parent):
         Dialogue.__init__(self, parent)
-        self.ajoute([u"Texte :", ("texte", 10)], u"Entrez ici le texte. Exemple : Bonjour!")
-        self.ajoute([u"Coordonnées du texte :"], u"Entrez les coordonnées de votre nouveau texte.")
-        self.ajoute([u"Abscisse :", ("x", 10)], u"Entrez ici l'abscisse du texte. Exemple : 3.25")
-        self.ajoute([u"Ordonnee :", ("y", 10)], u"Entrez ici l'ordonnée du texte. Exemple : -5")
+        self.ajoute(["Texte :", ("texte", 10)], "Entrez ici le texte. Exemple : Bonjour!")
+        self.ajoute(["Coordonnées du texte :"], "Entrez les coordonnées de votre nouveau texte.")
+        self.ajoute(["Abscisse :", ("x", 10)], "Entrez ici l'abscisse du texte. Exemple : 3.25")
+        self.ajoute(["Ordonnee :", ("y", 10)], "Entrez ici l'ordonnée du texte. Exemple : -5")
         self.finalise()
 
     def commande(self): # Le champ texte doit etre converti...
@@ -667,25 +668,25 @@ class DialogueRotation(Dialogue):
     objet = Rotation
     def __init__(self, parent):
         Dialogue.__init__(self, parent)
-        self.ajoute([u"Créer la rotation d'angle ", ("angle", 5, Angle_generique), " et de centre ", ("centre", 5, Point_generique)], u"Entrez l'angle. Exemple : a, 60°, pi/2. Puis le centre. Exemple : A")
-        self.ajoute([u"Unité :", ("unite", 5)], u"Entrez éventuellement l'unité. Exemple : r, d, g (degré, radian ou grad). Radian par défaut.")
+        self.ajoute(["Créer la rotation d'angle ", ("angle", 5, Angle_generique), " et de centre ", ("centre", 5, Point_generique)], "Entrez l'angle. Exemple : a, 60°, pi/2. Puis le centre. Exemple : A")
+        self.ajoute(["Unité :", ("unite", 5)], "Entrez éventuellement l'unité. Exemple : r, d, g (degré, radian ou grad). Radian par défaut.")
         self.finalise()
 
     def commande(self): # gestion du symbole "°"
         angle = self.champ("angle").strip()
-        if angle.endswith(u"°"):
+        if angle.endswith("°"):
             angle = angle[:-1]
             unite = "'d'"
         else:
             unite = self.champ("unite")
-        return u"%s=Rotation(%s, %s, %s)" %(self.champ("nom"), self.champ("centre"), angle, unite)
+        return "%s=Rotation(%s, %s, %s)" %(self.champ("nom"), self.champ("centre"), angle, unite)
 
 class DialogueSymetrieCentrale(Dialogue):
     objet = Symetrie_centrale
     def __init__(self, parent):
         Dialogue.__init__(self, parent)
-        self.ajoute([u"Créer la symétrie de centre : ", ("centre", 5, Point_generique)],
-                    u"Entrez un point. Exemple : A")
+        self.ajoute(["Créer la symétrie de centre : ", ("centre", 5, Point_generique)],
+                    "Entrez un point. Exemple : A")
         #self.ajoute([u"Unité :", ("unite", 5)], u"Entrez éventuellement l'unité. Exemple : r, d, g (degré, radian ou grad). Radian par défaut.")
         self.finalise()
 
@@ -694,7 +695,7 @@ class DialogueTranslation(Dialogue):
     objet = Translation
     def __init__(self, parent):
         Dialogue.__init__(self, parent)
-        self.ajoute([u"Créer la translation de vecteur : ", ("vecteur", 5, Vecteur_generique)], u"Entrez un vecteur. Exemple : u, (1, 0), A>B")
+        self.ajoute(["Créer la translation de vecteur : ", ("vecteur", 5, Vecteur_generique)], "Entrez un vecteur. Exemple : u, (1, 0), A>B")
         self.finalise()
 
 
@@ -702,7 +703,7 @@ class DialogueReflexion(Dialogue):
     objet = Reflexion
     def __init__(self, parent):
         Dialogue.__init__(self, parent)
-        self.ajoute([u"Créer la réflexion d'axe : ", ("droite", 5, Ligne_generique)], u"Entrez l'axe de la symétrie. Exemple : d, (A B)")
+        self.ajoute(["Créer la réflexion d'axe : ", ("droite", 5, Ligne_generique)], "Entrez l'axe de la symétrie. Exemple : d, (A B)")
         self.finalise()
 
 
@@ -710,9 +711,9 @@ class DialogueHomothetie(Dialogue):
     objet = Homothetie
     def __init__(self, parent):
         Dialogue.__init__(self, parent)
-        self.ajoute([u"Créer l'homothétie de centre : ", ("centre", 5, Point_generique),
-                        u" et de rapport ", ("rapport", 5, Variable)],
-                    u"Entrez un point (exemple: A) et un nombre (exemple: k, 3).")
+        self.ajoute(["Créer l'homothétie de centre : ", ("centre", 5, Point_generique),
+                        " et de rapport ", ("rapport", 5, Variable)],
+                    "Entrez un point (exemple: A) et un nombre (exemple: k, 3).")
         self.finalise()
 
 
@@ -720,10 +721,10 @@ class DialogueInterpolationLineaire(Dialogue):
     objet = Interpolation_lineaire
     def __init__(self, parent):
         Dialogue.__init__(self, parent)
-        self.ajoute([u"Interpoler linéairement les points :", ("points", 20, [Point_generique])],
-                    u"Entrez les points par lesquels la courbe doit passer. Exemple: A,B,C,D,E")
-        self.ajoute([u"Extrémités comprises :", ("debut", 5), ("fin", 5)],
-                    u"Indiquez si l'extrémité de début et de fin sont comprises. Exemple: o (ou oui), n (ou non)")
+        self.ajoute(["Interpoler linéairement les points :", ("points", 20, [Point_generique])],
+                    "Entrez les points par lesquels la courbe doit passer. Exemple: A,B,C,D,E")
+        self.ajoute(["Extrémités comprises :", ("debut", 5), ("fin", 5)],
+                    "Indiquez si l'extrémité de début et de fin sont comprises. Exemple: o (ou oui), n (ou non)")
         self.finalise()
 
     def commande(self): # a cause de l'initialisation speciale de Polygone : __init__(*points)
@@ -745,10 +746,10 @@ class DialogueInterpolationQuadratique(Dialogue):
     objet = Interpolation_quadratique
     def __init__(self, parent):
         Dialogue.__init__(self, parent)
-        self.ajoute([u"Interpolation quadratique des points :", ("points", 20, [Point_generique])],
-                    u"Entrez les points par lesquels la courbe doit passer. Exemple: A,B,C,D,E")
-        self.ajoute([u"Extrémités comprises :", ("debut", 5), ("fin", 5)],
-                    u"Indiquez si l'extrémité de début et de fin sont comprises. Exemple: o (ou oui), n (ou non)")
+        self.ajoute(["Interpolation quadratique des points :", ("points", 20, [Point_generique])],
+                    "Entrez les points par lesquels la courbe doit passer. Exemple: A,B,C,D,E")
+        self.ajoute(["Extrémités comprises :", ("debut", 5), ("fin", 5)],
+                    "Indiquez si l'extrémité de début et de fin sont comprises. Exemple: o (ou oui), n (ou non)")
         self.finalise()
 
     def commande(self): # a cause de l'initialisation speciale de Polygone : __init__(*points)
@@ -770,19 +771,19 @@ class DialogueVariable(Dialogue):
     objet = Variable
     def __init__(self, parent):
         Dialogue.__init__(self, parent)
-        self.ajoute([u"Créer la variable de valeur : ", ("contenu", 15, Objet)],
-                    u"Entrez une valeur, entre guillemets pour une valeur 'liée' (consultez l'aide). Exemple : 'A.x+1'")
+        self.ajoute(["Créer la variable de valeur : ", ("contenu", 15, Objet)],
+                    "Entrez une valeur, entre guillemets pour une valeur 'liée' (consultez l'aide). Exemple : 'A.x+1'")
         self.finalise()
 
 class DialogueImage(Dialogue):
     def __init__(self, parent):
-        Dialogue.__init__(self, parent, u"Créer l'image d'un objet par une transformation")
-        self.ajoute([u"Nom de l'objet image : ", ("nom", 15, Objet)],
-                    u"Entrez le nom de l'objet que vous voulez créer. Exemple : M, d.")
-        self.ajoute([u"Objet de départ : ", ("objet", 15, Objet)],
-                    u"Entrez le nom de l'antécédent. Exemple : A, d, [A B]")
-        self.ajoute([u"Transformation : ", ("transformation", 15, Objet)],
-                    u"Entrez la transformation (rotation, symétrie, etc...). Exemple : r, Rotation(O,pi/2)")
+        Dialogue.__init__(self, parent, "Créer l'image d'un objet par une transformation")
+        self.ajoute(["Nom de l'objet image : ", ("nom", 15, Objet)],
+                    "Entrez le nom de l'objet que vous voulez créer. Exemple : M, d.")
+        self.ajoute(["Objet de départ : ", ("objet", 15, Objet)],
+                    "Entrez le nom de l'antécédent. Exemple : A, d, [A B]")
+        self.ajoute(["Transformation : ", ("transformation", 15, Objet)],
+                    "Entrez la transformation (rotation, symétrie, etc...). Exemple : r, Rotation(O,pi/2)")
         self.finalise()
 
     def commande(self):
@@ -792,16 +793,16 @@ class DialogueImage(Dialogue):
 
 class DialogueFenetre(Dialogue):
     def __init__(self, parent):
-        Dialogue.__init__(self, parent, u"Régler la fenêtre d'affichage")
+        Dialogue.__init__(self, parent, "Régler la fenêtre d'affichage")
         fen = self.onglet_actuel.canvas.fenetre
-        self.ajoute([u"Entrez les valeurs extrémales de la fenêtre d'affichage."])
-        self.ajoute([u"Xmin :", ("xmin", 10, None, 1, round(fen[0], 4))], u"Abscisse minimale. Exemple : -5")
-        self.ajoute([u"Xmax :", ("xmax", 10, None, 1, round(fen[1], 4))], u"Abscisse maximale. Exemple : 5")
-        self.ajoute([u"Ymin :", ("ymin", 10, None, 1, round(fen[2], 4))], u"Ordonnée minimale. Exemple : -5")
-        self.ajoute([u"Ymax :", ("ymax", 10, None, 1, round(fen[3], 4))], u"Ordonnée maximale. Exemple : 5")
+        self.ajoute(["Entrez les valeurs extrémales de la fenêtre d'affichage."])
+        self.ajoute(["Xmin :", ("xmin", 10, None, 1, round(fen[0], 4))], "Abscisse minimale. Exemple : -5")
+        self.ajoute(["Xmax :", ("xmax", 10, None, 1, round(fen[1], 4))], "Abscisse maximale. Exemple : 5")
+        self.ajoute(["Ymin :", ("ymin", 10, None, 1, round(fen[2], 4))], "Ordonnée minimale. Exemple : -5")
+        self.ajoute(["Ymax :", ("ymax", 10, None, 1, round(fen[3], 4))], "Ordonnée maximale. Exemple : 5")
         self.finalise()
-        btn = QPushButton(u"Défaut", clicked=self.restaurer)
-        btn.setWhatsThis(u"Restaurer le réglage par défaut de la fenêtre.")
+        btn = QPushButton("Défaut", clicked=self.restaurer)
+        btn.setWhatsThis("Restaurer le réglage par défaut de la fenêtre.")
         self.box.addWidget(btn)
         ##self.sizer.Fit(self)
 
@@ -825,14 +826,14 @@ class DialogueFenetre(Dialogue):
 class SupprimerObjet(MultipleChoiceDialog):
     def __init__(self, parent):
         liste = parent.onglet_actuel.feuille_actuelle.inventaire()
-        MultipleChoiceDialog.__init__(self, parent, u"Supprimer", u"Sélectionnez les objets à supprimer :", liste)
+        MultipleChoiceDialog.__init__(self, parent, "Supprimer", "Sélectionnez les objets à supprimer :", liste)
         ##self.resize(QSize(250, 400))
 
 
 class EditerObjet(MultipleChoiceDialog):
     def __init__(self, parent):
         liste = parent.onglet_actuel.feuille_actuelle.inventaire()
-        MultipleChoiceDialog.__init__(self, parent, u"Editer", u"Sélectionnez les objets à éditer :", liste)
+        MultipleChoiceDialog.__init__(self, parent, "Editer", "Sélectionnez les objets à éditer :", liste)
         ##self.resize(QSize(250, 400))
 
 

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
@@ -24,15 +24,10 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-# choisit comme répertoire courant le repertoire d'execution du script (pour Linux)
+# choisit comme rÃ©pertoire courant le repertoire d'execution du script (pour Linux)
 from codecs import getwriter
 import sys, os
 from os.path import dirname, realpath
-
-if sys.platform == 'win32':
-    sys.stdout = getwriter('cp850')(sys.stdout)
-else:
-    sys.stdout = getwriter('utf8')(sys.stdout)
 
 if getattr(sys, 'frozen', False):
     application_path = dirname(sys.executable)

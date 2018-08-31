@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------#######
 #                   Objets                    #
@@ -75,7 +74,7 @@ from .routines import radian
 
 
 class Transformation_generique(Objet):
-    u"""Une transformation.
+    """Une transformation.
 
     La classe mère de toutes les transformations (usage interne)."""
     def __init__(self, **styles):
@@ -93,12 +92,12 @@ class Transformation_generique(Objet):
                 return self.__call__(objet.objet)
         elif hasattr(objet, "image_par"):
             return objet.image_par(self)
-        raise NotImplementedError,  "L'image de %s par %s n'est pas definie." %(objet.nom_complet, self.nom_complet)
+        raise NotImplementedError("L'image de %s par %s n'est pas definie." %(objet.nom_complet, self.nom_complet))
 
 
 
 class Rotation(Transformation_generique):
-    u"""Une rotation.
+    """Une rotation.
 
     Une rotation définie par son centre, et un angle en radian (r), grad (g) ou degré (d).
     L'unité par défaut est le radian."""
@@ -162,7 +161,7 @@ class Rotation(Transformation_generique):
 
 
 class Translation(Transformation_generique):
-    u"""Une translation.
+    """Une translation.
 
     Une translation définie par un vecteur."""
 
@@ -178,13 +177,13 @@ class Translation(Transformation_generique):
     def _convertir(objet):
         if isinstance(objet, Vecteur_generique):
             return Translation(objet)
-        raise TypeError, "%s must be of type 'Vecteur_generique'." %objet
+        raise TypeError("%s must be of type 'Vecteur_generique'." % objet)
 
 
 
 
 class Reflexion(Transformation_generique):
-    u"""Une symétrie axiale.
+    """Une symétrie axiale.
 
     Une symétrie axiale (réflexion) définie par une droite."""
 
@@ -205,7 +204,7 @@ class Reflexion(Transformation_generique):
 
 
 class Homothetie(Transformation_generique):
-    u"""Une homothétie.
+    """Une homothétie.
 
     Une homothétie définie par son centre et son rapport."""
 
@@ -229,7 +228,7 @@ class Homothetie(Transformation_generique):
 
 
 class Symetrie_centrale(Homothetie):
-    u"""Une symétrie centrale.
+    """Une symétrie centrale.
 
     Une symétrie centrale définie par un point."""
 

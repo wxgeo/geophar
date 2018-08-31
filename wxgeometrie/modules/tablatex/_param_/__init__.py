@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
+
+
+
 
 # copie automatique de chaque resultat dans le presse-papier
 copie_automatique = False

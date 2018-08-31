@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------#######
 #                 Sauvegarde                  #
@@ -25,7 +24,7 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 from xml.dom.minidom import parseString
 from xml.parsers.expat import ExpatError
 import tarfile, os, zipfile, re
-from cStringIO import StringIO
+from io import BytesIO
 
 from .filtres import filtre_versions_anterieures
 from ..pylib import print_error, eval_safe, removeend
@@ -38,7 +37,7 @@ from .. import param
 
 
 class FichierGEO(object):
-    u"""Classe utilisée pour manipuler un fichier .geo.
+    """Classe utilisée pour manipuler un fichier .geo.
 
     On peut aussi utiliser le DOM XML, mais les spécifications du format de fichier .geo
     sont plus restreintes, et cette classe offre une surcouche au DOM XML pour un accès plus simple."""
@@ -65,7 +64,7 @@ class FichierGEO(object):
     @property
     def version(self):    return self.infos['version']
     @property
-    def data(self):     return self.exporter().encode(self.encoding)
+    def data(self):     return self.exporter()
 
 
     def importer(self, texte):
@@ -76,7 +75,7 @@ class FichierGEO(object):
 
             # 1er cas: contenu vide -> assimile a du texte.
             if not node.childNodes:
-                return u""
+                return ""
 
             # 2eme cas: le contenu est purement du texte.
             if not "Element" in [subnode.__class__.__name__ for subnode in node.childNodes]:
@@ -88,7 +87,7 @@ class FichierGEO(object):
             for elt in node.childNodes:
                 if elt.__class__.__name__ == "Element":
                     contenu = contenu_node(elt)
-                    if dico.has_key(elt.nodeName):
+                    if elt.nodeName in dico:
                         dico[elt.nodeName] += [contenu]
                     else:
                         dico[elt.nodeName] = [contenu]
@@ -115,7 +114,7 @@ class FichierGEO(object):
             for balise in dictionnaire:
                 for elt in dictionnaire[balise]:
                     texte += "<%s>\n" %balise
-                    if isinstance(elt, (str, unicode)):
+                    if isinstance(elt, str):
                         texte += elt.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").strip("\n") + "\n"
                     elif isinstance(elt, dict):
                         texte += convertir_contenu(elt)
@@ -123,29 +122,29 @@ class FichierGEO(object):
 
             return texte
 
-        texte = u"<?xml version='1.0' encoding='%s'?>\n" %self.encoding
-        texte += u"<Document type='%s' version='%s' module='%s'>\n" %(self.type, self.version, self.module)
+        texte = "<?xml version='1.0' encoding='%s'?>\n" %self.encoding
+        texte += "<Document type='%s' version='%s' module='%s'>\n" %(self.type, self.version, self.module)
         texte += convertir_contenu(self.contenu)
-        texte += u"</Document>"
+        texte += "</Document>"
         return texte
 
 
     def ajouter(self, nom, racine = None, contenu = None):
-        u"""Ajoute une ou plusieurs nouvelle(s) node(s) nommée(s) 'nom' à 'racine', leur contenu étant donné par 'contenu'.
+        """Ajoute une ou plusieurs nouvelle(s) node(s) nommée(s) 'nom' à 'racine', leur contenu étant donné par 'contenu'.
         Renvoie le contenu, ou la nouvelle racine crée (si le contenu était vide)."""
         if racine is None:
             racine = self.contenu
         if contenu is None:
             contenu = {}
 
-        if not racine.has_key(nom):
+        if nom not in racine:
             racine[nom] = []
         racine[nom].append(contenu)
         return contenu
 
 
-    def ecrire(self, path, zip = False):
-        u"""Ecrit dans un fichier dont l'adresse est donnée par 'path'.
+    def ecrire(self, path, compressed=False):
+        """Ecrit dans un fichier dont l'adresse est donnée par 'path'.
 
         L'encodage est fixé par 'self.encoding'.
         Eventuellement, le contenu peut-être compressé au format zip."""
@@ -155,71 +154,64 @@ class FichierGEO(object):
         rep = os.path.split(path)[0]
         if not os.path.exists(rep):
             os.makedirs(rep)
-        try:
-            if zip:
-                f = zipfile.ZipFile(path, "w", zipfile.ZIP_DEFLATED)
+        if zip:
+            with zipfile.ZipFile(path, "w", zipfile.ZIP_DEFLATED) as f:
                 f.writestr("content.geo", contenu)
-            else:
-                f = open(path, "w")
+        else:
+            with open(path, "w", encoding=self.encoding) as f:
                 f.write(contenu)
-        finally:
-            if f is not None:
-                f.close()
 
 
-    def ouvrir(self, path, zip = None):
-        u"""Retourne un objet FichierGEO à partir du fichier dont l'adresse est donnée par 'path'.
+    def ouvrir(self, path, compressed=None):
+        """Retourne un objet FichierGEO à partir du fichier dont l'adresse est donnée par 'path'.
 
         Si l'attribut 'zip' n'est pas fixé, la détection est automatique."""
 
-        f = None
         if not os.path.exists(path):
             if param.debug:
                 print('Incorrect path: ' + repr(path))
-            return None, u"Le fichier n'existe pas."
+            return None, "Le fichier n'existe pas."
+
+        if compressed is None:
+            compressed = zipfile.is_zipfile(path)
+
         try:
-            f = open(path, "rU")
+            if compressed:
+                with zipfile.ZipFile(path, "r") as f:
+                    texte = f.read("content.geo").decode('utf8')
+            else:
+                with open(path, "r", encoding=self.encoding) as f:
+                    texte = f.read()
         except IOError:
             print_error()
-            return None, u"L'accès au fichier a été refusé."
+            return None, "L'accès au fichier a été refusé."
         except UnicodeError:
             print_error()
-            return None, u"Caractères non reconnus."
+            return None, "Caractères non reconnus."
         except Exception:
             print_error()
-            return None, u"Impossible d'ouvrir le fichier."
-        try:
-            texte = f.read()
-        finally:
-            f.close()
-        try:
-            parseString(texte)
-        except ExpatError:
-            try:
-                f = zipfile.ZipFile(path, "r")
-                texte = f.read("content.geo")
-            finally:
-                f.close()
+            return None, "Impossible d'ouvrir le fichier."
+
         self.importer(texte)
 
         version = self.version_interne()
 
         # Filtre d'import pour les versions antérieures
-        print(u'Test de la version du fichier...')
+        print('Test de la version du fichier...')
         if version < self.version_interne(param.version):
-            print(u"Ce fichier a été créé avec une ancienne version du logiciel (%s)."
-                      u" Conversion en cours..." % '.'.join(str(n) for n in version))
+            print("Ce fichier a été créé avec une ancienne version du logiciel (%s)."
+                      " Conversion en cours..." % '.'.join(str(n) for n in version))
             filtre_versions_anterieures(self, version)
 
         rep, fich = os.path.split(path)
         self.infos['repertoire'] = rep
         self.infos['nom'] = removeend(fich, ".geo", ".geoz") # nom sans l'extension
 
-        return self, u"Le fichier %s a bien été ouvert." %path
+        return self, "Le fichier %s a bien été ouvert." %path
 
 
     def version_interne(self, version = None):
-        u"""Renvoie le numéro de version sous forme d'une liste, ex: [12, 4, 1] pour la version 12.4.1.
+        """Renvoie le numéro de version sous forme d'une liste, ex: [12, 4, 1] pour la version 12.4.1.
 
         Par défaut, le numéro de version est celui du logiciel ayant servi à créer le fichier.
         """
@@ -251,7 +243,7 @@ class FichierGEO(object):
 
 
 def ouvrir_fichierGEO(path):
-    u"Alias de 'FichierGEO().ouvrir(path)'."
+    "Alias de 'FichierGEO().ouvrir(path)'."
     return FichierGEO().ouvrir(path)
 
 
@@ -279,14 +271,15 @@ class FichierSession(object):
         rep = os.path.split(path)[0]
         if not os.path.exists(rep):
             os.makedirs(rep)
-        tar = tarfile.open(path, mode = 'w:' + ('gz' if compresser else ''))
 
-        def _ajouter(titre, data):
+        def _ajouter(titre, content):
             info = tarfile.TarInfo(titre)
+            data = content.encode('utf8')
             info.size = len(data)
-            tar.addfile(info, StringIO(data))
+            tar.addfile(info, BytesIO(data))
 
-        try:
+        mode = 'w:' + ('gz' if compresser else '')
+        with tarfile.open(path, mode=mode) as tar:
             fichier_info = FichierGEO(type = 'Session WxGeometrie', module = 'main')
             for key, val in self.infos.items():
                 fichier_info.ajouter(key, None, repr(val))
@@ -294,8 +287,6 @@ class FichierSession(object):
             for module, fichiers in self.fichiers.items():
                 for i, fichier in enumerate(fichiers):
                     _ajouter(module + str(i) + '.geo', fichier.data)
-        finally:
-            tar.close()
 
 
     def ouvrir(self, path):
@@ -305,9 +296,8 @@ class FichierSession(object):
         try:
             for member_info in tar.getmembers():
                 nom = member_info.name
-                f = tar.extractfile(member_info)
-                data = f.read()
-                f.close()
+                with tar.extractfile(member_info) as f:
+                    data = f.read().decode('utf8')
                 fichier = FichierGEO().importer(data)
                 if nom == 'session.info':
                     for key in fichier.contenu:

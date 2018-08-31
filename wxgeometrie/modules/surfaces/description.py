@@ -6,8 +6,8 @@
 # defaut : par défaut, le module est-il installé ou non ?
 
 description = {
-"titre":                    u"Traceur de surfaces",
-"description":              u"Traceur de surfaces (encore rudimentaire).",
-"groupe":                   u"Modules",
+"titre":                    "Traceur de surfaces",
+"description":              "Traceur de surfaces (encore rudimentaire).",
+"groupe":                   "Modules",
 "defaut":  True,
 }

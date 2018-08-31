@@ -439,7 +439,7 @@ class DiagramGrid(object):
         aspects of layout.  For triangles with only simple morphisms
         in the edge, this assures that triangles with all three edges
         visible will get typeset after triangles with less visible
-        edges, which sometimes minimises the necessity in diagonal
+        edges, which sometimes minimizes the necessity in diagonal
         arrows.  For triangles with composite morphisms in the edges,
         this assures that objects connected with shorter morphisms
         will be laid out first, resulting the visual proximity of
@@ -725,7 +725,7 @@ class DiagramGrid(object):
                 def good_triangle(tri):
                     objs = DiagramGrid._triangle_objects(tri)
                     return obj in objs and \
-                        placed_objects & (objs - set([obj])) == set()
+                        placed_objects & (objs - {obj}) == set()
 
                 tris = [tri for tri in triangles if good_triangle(tri)]
                 if not tris:
@@ -1065,7 +1065,7 @@ class DiagramGrid(object):
         grid = _GrowableGrid(1, 1)
         grid[0, 0] = root
 
-        placed_objects = set([root])
+        placed_objects = {root}
 
         def place_objects(pt, placed_objects):
             """

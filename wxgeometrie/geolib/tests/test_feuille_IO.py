@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
-from __future__ import with_statement
 
 import re
 from math import cos, pi, e, sqrt
@@ -161,7 +159,7 @@ def test_redefinir():
     f.objets.AB = Segment(A, B)
     f.objets.AB.redefinir('Vecteur(A, B)')
     assert isinstance(f.objets.AB, Vecteur)
-    assert f.objets.AB == Vecteur(A, B)
+    assert f.objets.AB.egale(Vecteur(A, B))
     f.objets.txt = Texte('Hello', 2, 3)
     f.objets.txt.redefinir("Texte('Bonjour', 1, 4)")
     assert isinstance(f.objets.txt, Texte)
@@ -174,7 +172,7 @@ def test_sauvegarde_label():
     f1.objets.A = (1, 2)
     A = f1.objets.A
     A.etiquette.style(couleur="b")
-    legende = u"Pour qui sont ces serpents qui sifflent sur nos têtes."
+    legende = "Pour qui sont ces serpents qui sifflent sur nos têtes."
     A.label(legende)
     assertEqual(A.etiquette.style("couleur"), "b")
     assertEqual(A.label(), legende)

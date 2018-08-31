@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------##
 #              WxGeometrie               #
@@ -22,10 +21,10 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-from PyQt4.QtGui import QDialog, QDialogButtonBox
+from PyQt5.QtWidgets import QDialog, QDialogButtonBox
 
-from reperage_ui import Ui_DialogReperage
-from calibrage_ui import Ui_DialogCalibrage
+from .reperage_ui import Ui_DialogReperage
+from .calibrage_ui import Ui_DialogCalibrage
 
 from .. import param
 
@@ -89,8 +88,8 @@ class DialogReperage(QDialog, Ui_DialogReperage):
 
 
     def remplir_champs(self, **champs):
-        for nom, valeur in champs.iteritems():
-            string = (str(valeur) if not isinstance(valeur, basestring) else valeur)
+        for nom, valeur in champs.items():
+            string = (str(valeur) if not isinstance(valeur, str) else valeur)
             if isinstance(valeur, float):
                 if string.endswith('.0'):
                     string = string[:-2]
@@ -151,17 +150,17 @@ class DialogReperage(QDialog, Ui_DialogReperage):
 
         ratio = (cm_per_unit_x/cm_per_unit_y if self.rapport.isChecked() else None)
 
-        commande = (u"repere = %s\n"
-                    u"gradu = %s\n"
-                    u"fenetre = %s\n"
-                    u"ratio = %s"
+        commande = ("repere = %s\n"
+                    "gradu = %s\n"
+                    "fenetre = %s\n"
+                    "ratio = %s"
                     ) % (repere, gradu, fenetre, ratio)
 
         self.canvas.executer(commande)
 
 
     def restaurer(self):
-        u"Remet les valeurs par défaut dans les champs."
+        "Remet les valeurs par défaut dans les champs."
         self.remplir_champs(repere_O=param.repere[0],
                             repere_I=param.repere[1],
                             repere_J=param.repere[2],

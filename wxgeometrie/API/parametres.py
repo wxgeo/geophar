@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##########################################################################
 #
@@ -25,13 +24,13 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import time
-from types import NoneType
+NoneType = type(None)
 
 from . import sauvegarde
 from ..pylib import print_error, eval_safe
 from .. import param
 
-types_supportes = (int, long, str, unicode, float, bool, NoneType, list, tuple, dict)
+types_supportes = (int, str, float, bool, NoneType, list, tuple, dict)
 
 # TO DO (?) :
 # - rajouter le support des types array et complex dans securite.eval_safe
@@ -40,7 +39,7 @@ types_supportes = (int, long, str, unicode, float, bool, NoneType, list, tuple, 
 
 
 def sauvegarder_module(module, nom = "main"):
-    u"""Renvoie le contenu d'un module sous forme d'un fichier XML.
+    """Renvoie le contenu d'un module sous forme d'un fichier XML.
 
     Au lieu du module lui-même, 'module' peut être un dictionnaire
     correspondant au dictionnaire du module (éventuellement modifié).
@@ -59,7 +58,7 @@ def sauvegarder_module(module, nom = "main"):
 
 
 def actualiser_module(module, fichier):
-    u"Rafraichit le contenu d'un module à partir d'un fichier XML."
+    "Rafraichit le contenu d'un module à partir d'un fichier XML."
     fgeo, msg = sauvegarde.ouvrir_fichierGEO(fichier)
     if fgeo is not None:
         parametres = fgeo.contenu["Parametres"][-1]
@@ -67,7 +66,7 @@ def actualiser_module(module, fichier):
             for key in parametres:
                 setattr(module, key, eval_safe(parametres[key][-1]))
         except:
-            print module, key
+            print("Module %s: impossible de lire le paramètre %s !" % (module, repr(key)))
             print_error()
 
 

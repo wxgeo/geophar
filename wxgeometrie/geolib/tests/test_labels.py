@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 from pytest import XFAIL
 
@@ -12,9 +11,9 @@ def test_Label_point():
     A = rand_pt()
     B = rand_pt()
     A.label("Position de l'hirondelle d'Afrique.")
-    B.label(u"Position de l'hirondelle européenne.")
+    B.label("Position de l'hirondelle européenne.")
     assert(A.label() == "Position de l'hirondelle d'Afrique.")
-    assert(B.label() == u"Position de l'hirondelle européenne.")
+    assert(B.label() == "Position de l'hirondelle européenne.")
     A.label(mode='nom')
     assert A.mode_affichage == 'nom'
     assert(A.label() == '')
@@ -67,7 +66,7 @@ def test_Label_angle():
     raise NotImplementedError
 
 def test_latex_incorrect():
-    u"On teste le comportement en cas de code LaTeX incorrect."
+    "On teste le comportement en cas de code LaTeX incorrect."
     A = rand_pt()
     A.label('2$')
     assertEqual(A.label(), r'2\$')
@@ -78,7 +77,7 @@ def test_latex_incorrect():
     A.label('2$')
 
 def test_changement_mode():
-    u"Test pour les issues FS#240 et FS#266."
+    "Test pour les issues FS#240 et FS#266."
     A = rand_pt()
     f = Feuille()
     f.objets.A = A

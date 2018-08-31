@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------#######
 #                Objets CALC                  #
@@ -106,7 +105,7 @@ MATRICE = r"\[ ?(%s ?, ?)*(%s) ?\]" % (LISTE_SIMPLE, LISTE_SIMPLE)
 
 
 def _simplifier(formule):
-    u"""Suppressions d'espaces inutiles."""
+    """Suppressions d'espaces inutiles."""
 #    formule = formule.strip()
     # - un seul caractère d'espacement
 #    formule = regsub("[ ]+", formule, " ")
@@ -116,7 +115,7 @@ def _simplifier(formule):
     return formule
 
 def _arguments_latex(chaine, nbr_arguments = 2):
-    u"""Renvoie les arguments d'une commande LaTeX (ainsi que le reste de la chaîne).
+    """Renvoie les arguments d'une commande LaTeX (ainsi que le reste de la chaîne).
 
     >>> from wxgeometrie.mathlib.parsers import _arguments_latex
     >>> _arguments_latex('2{x+1}+4', 2)
@@ -127,14 +126,14 @@ def _arguments_latex(chaine, nbr_arguments = 2):
     liste = []
     while len(liste) < nbr_arguments:
         if not chaine:
-            raise TypeError, "Il manque des arguments."
+            raise TypeError("Il manque des arguments.")
         if chaine[0] != "{":
             liste.append(chaine[0])
             chaine = chaine[1:]
         else:
             l = split_around_parenthesis(chaine, 0, "{")
             if len(l) != 3:
-                raise TypeError, "Arguments mal formes: il manque des '}'."
+                raise TypeError("Arguments mal formes: il manque des '}'.")
             liste.append(l[1])
             chaine = l[2]
     liste.append(chaine)
@@ -142,7 +141,7 @@ def _arguments_latex(chaine, nbr_arguments = 2):
 
 
 def _convertir_latex_frac(chaine):
-    u"""Convertit \frac{a}{b}, \dfrac{a}{b} et \tfrac{a}{b} en ((a)/(b)).
+    """Convertit \frac{a}{b}, \dfrac{a}{b} et \tfrac{a}{b} en ((a)/(b)).
 
     >>> from wxgeometrie.mathlib.parsers import _convertir_latex_frac
     >>> _convertir_latex_frac('3+\dfrac{1}{2x+1}+5x+1')
@@ -169,7 +168,7 @@ def _ajouter_mult_manquants(formule, fonctions = (), verbose = None, mots_cles =
         fonctions = [key for key, val in fonctions.items() if hasattr(val, "__call__") and not isinstance(val, Expr)]
 
     if verbose:
-        print '1', formule
+        print('1', formule)
 
     # Le code qui suit remplace les expressions style 3x ou 2.5cos(x) par 3*x et 2.5*cos(x).
     formule = regsub(NBR + "[ ]?(?=[a-zA-Z_])", formule, lambda s: s.rstrip() + '*')
@@ -179,7 +178,7 @@ def _ajouter_mult_manquants(formule, fonctions = (), verbose = None, mots_cles =
     formule = formule.replace(")(",")*(")
 
     if verbose:
-        print '2', formule
+        print('2', formule)
 
     # Si a, b, c... ne sont pas des fonctions, on remplace "a(" par "a*(", etc...
     def f1(s):
@@ -196,14 +195,14 @@ def _ajouter_mult_manquants(formule, fonctions = (), verbose = None, mots_cles =
     formule = regsub("[.]?" + NBR_OR_VAR + "[ ]?(?=[(])", formule, f1)
 
     if verbose:
-        print '3', formule
+        print('3', formule)
 
     # "f x" devient "f(x)" si f est une fonction, "f*x" sinon ;
     # de même, "f 2.5" devient "f(2.5)" si f est une fonction, et "f*2.5" sinon.
     # (Si f est un mot-clé (if, then, else, for...), on n'y touche pas.)
     def f2(s):
         l = s.split()
-        if l[0] in mots_cles:
+        if any((elt in mots_cles) for elt in l):
             return s
         elif l[0] in fonctions:
             return l[0] + "(" + l[1] + ")"
@@ -217,7 +216,7 @@ def _ajouter_mult_manquants(formule, fonctions = (), verbose = None, mots_cles =
         i += 1
 
     if verbose:
-        print '4', formule
+        print('4', formule)
 
     # On remplace ")x" par ")*x"
     formule = regsub("[)][ ]?\w", formule, lambda s: s[0] + '*' + s[-1])
@@ -237,7 +236,7 @@ def _convertir_separateur_decimal(s):
 
 
 def extraire_chaines(chaine):
-    u"""Extrait les chaînes de caractères trouvées dans `chaine`.
+    """Extrait les chaînes de caractères trouvées dans `chaine`.
 
     Chaque chaîne interne est remplacée par <@> (et le symbole @ lui-même
     est remplacé par @@).
@@ -265,7 +264,7 @@ def extraire_chaines(chaine):
 
     chaine = chaine.replace('@', '@@')
 
-    for i in xrange(10000):
+    for i in range(10000):
         if mode is None:
             # On recherche le début de la chaîne interne.
             debut1 = chaine.find("'", position)
@@ -357,18 +356,18 @@ def traduire_formule(formule='', fonctions=(), OOo=True, LaTeX=True,
 
 
     if verbose:
-        print '0', formule
+        print('0', formule)
 
     # Différentes façons de rentrer les puissances :
-    formule = formule.replace("^", "**").replace(u'²',"**2").replace(u'³',"**3")
-    formule = formule.replace(u'\u2074',"**4").replace(u'\u2075',"**5").replace(u'\u2076',"**6")
-    formule = formule.replace(u'\u2077',"**7").replace(u'\u2078',"**8").replace(u'\u2079',"**9")
+    formule = formule.replace("^", "**").replace('²',"**2").replace('³',"**3")
+    formule = formule.replace('\u2074',"**4").replace('\u2075',"**5").replace('\u2076',"**6")
+    formule = formule.replace('\u2077',"**7").replace('\u2078',"**8").replace('\u2079',"**9")
 
     # Caractères unicode.
     # Soustraction: remplace le tiret long en '-'.
-    formule = formule.replace(u'\u2013', "-").replace(u'\u2212', "-")
+    formule = formule.replace('\u2013', "-").replace('\u2212', "-")
     # Division et multiplication
-    formule = formule.replace(u"\u00D7", "*").replace(u"\u00F7", "/")
+    formule = formule.replace("\u00D7", "*").replace("\u00F7", "/")
 
 
     # Conversion écriture décimale infinie périodique -> fraction
@@ -396,7 +395,7 @@ def traduire_formule(formule='', fonctions=(), OOo=True, LaTeX=True,
     formule = formule.replace("+)", ",'+')").replace("-)", ",'-')")
 
     # conversion degrés -> radians
-    formule = formule.replace(u'°', '*pi/180')
+    formule = formule.replace('°', '*pi/180')
 
     if OOo:
         # Gestion des matrices.
@@ -456,7 +455,7 @@ def traduire_formule(formule='', fonctions=(), OOo=True, LaTeX=True,
         formule = regsub("\Wsup\W", formule, lambda s: (s[0] + '**' + s[-1]).strip())
         formule = formule.replace('infinity', 'oo')
 
-    # Conversion des | | **nom imbriqués** en abs().
+    # Conversion des | | **non imbriqués** en abs().
     # NB: il est impossible de convertir des | | imbriqués, car certaines
     # expressions sont ambigues, par exemple |x|y|z| peut être compris comme
     # abs(x)*y*abs(z) ou abs(x*abs(y)*z).
@@ -465,7 +464,7 @@ def traduire_formule(formule='', fonctions=(), OOo=True, LaTeX=True,
     formule = _ajouter_mult_manquants(formule, fonctions = fonctions, verbose = verbose, mots_cles = mots_cles)
 
     if verbose:
-        print '5', formule
+        print('5', formule)
 
     # n! devient factoriel(n).
     formule = regsub("\w+[!]", formule, (lambda s: 'factoriel(%s)' % s[:-1]))
@@ -476,7 +475,7 @@ def traduire_formule(formule='', fonctions=(), OOo=True, LaTeX=True,
                        lambda s: 'binomial(%s)' % ",".join(s[1:-1].split()))
 
     if verbose:
-        print '6', formule
+        print('6', formule)
 
     # f' devient derivee(f), f'' devient derivee(derivee(f)), etc.
     def prime2derivee(s):
@@ -488,7 +487,7 @@ def traduire_formule(formule='', fonctions=(), OOo=True, LaTeX=True,
     formule = formule.replace("`", "'")
 
     if verbose:
-        print '7', formule
+        print('7', formule)
 
     if simpify:
         def transformer(chaine):
@@ -533,7 +532,7 @@ def simplifier_ecriture(formule):
 
 
 def _fast_closing_bracket_search(string, start=0):
-    u"""Recherche rudimentaire de la parenthèse fermante correspondante.
+    """Recherche rudimentaire de la parenthèse fermante correspondante.
 
     Les parenthèses imbriquées sont gérées, mais pas la détection des chaînes de
     caractères qui peuvent fausser les résultats.
@@ -554,7 +553,7 @@ def _fast_closing_bracket_search(string, start=0):
         j = string.find(')', k)
         if i == j == -1:
             # Plus aucune parenthèse.
-            raise ValueError, "No matching parenthesis, or string doesn't start with `(`."
+            raise ValueError("No matching parenthesis, or string doesn't start with `(`.")
         elif i < j and i != -1:
             # La 1ère parenthèse rencontrée est ouvrante `(`.
             level += 1
@@ -568,7 +567,7 @@ def _fast_closing_bracket_search(string, start=0):
 
 
 def _fast_opening_bracket_search(string):
-    u"""Recherche rudimentaire de la parenthèse ouvrante correspondante.
+    """Recherche rudimentaire de la parenthèse ouvrante correspondante.
 
     Puisqu'on cherche la parenthèse ouvrante, la recherche s'effectue donc
     de droite à gauche.
@@ -591,7 +590,7 @@ def _fast_opening_bracket_search(string):
         j = string.rfind(')', None, k)
         if i == j == -1:
             # Plus aucune parenthèse.
-            raise ValueError, "No matching parenthesis, or string doesn't end with `)`."
+            raise ValueError("No matching parenthesis, or string doesn't end with `)`.")
         elif i > j:
             # La 1ère parenthèse rencontrée est ouvrante `(`.
             level -= 1
@@ -605,7 +604,7 @@ def _fast_opening_bracket_search(string):
 
 
 def _strip_parenthesis(string):
-    u"""Supprime les parenthèses autour de l'expression, si elles correspondent."""
+    """Supprime les parenthèses autour de l'expression, si elles correspondent."""
     while string and string[0] == '(':
         if _fast_closing_bracket_search(string) == len(string):
             string = string[1:-1]
@@ -615,7 +614,7 @@ def _strip_parenthesis(string):
 
 
 def _rechercher_numerateur(chaine):
-    u"""Part de la fin de la chaîne, et remonte la chaîne pour chercher
+    """Part de la fin de la chaîne, et remonte la chaîne pour chercher
     le plus grand groupe possible pouvant correspondre à un numérateur.
 
     Retourne la position du début du numérateur dans la chaîne.
@@ -657,7 +656,7 @@ def _rechercher_numerateur(chaine):
 
 
 def _rechercher_denominateur(chaine):
-    u"""Part de la fin de la chaîne, et remonte la chaîne pour chercher
+    """Part de la fin de la chaîne, et remonte la chaîne pour chercher
     le plus grand groupe possible pouvant correspondre à un numérateur.
 
     Retourne la position du début du numérateur dans la chaîne.
@@ -731,7 +730,7 @@ def _convertir_en_latex(chaine):
         while '/' in chaine:
             securite -= 1
             if securite < 0:
-                raise RuntimeError, "Boucle probablement infinie."
+                raise RuntimeError("Boucle probablement infinie.")
             i = chaine.find("/")
             # Début de la fraction
             deb = _rechercher_numerateur(chaine[:i])
@@ -810,7 +809,7 @@ def _convertir_en_latex(chaine):
 
 
 def convertir_en_latex(chaine, mode='$'):
-    u"""Convertit une chaine représentant un calcul en Python, en du code LaTeX.
+    """Convertit une chaine représentant un calcul en Python, en du code LaTeX.
 
     modes actuels: '$', None
 
@@ -825,7 +824,7 @@ def convertir_en_latex(chaine, mode='$'):
 
 
 def latex2mathtext(chaine):
-    u"""Convertit la chaîne pour qu'elle puisse être affichée par mathtext.
+    """Convertit la chaîne pour qu'elle puisse être affichée par mathtext.
 
     Matplotlib offre 2 possibilités pour l'affichage de chaînes LaTeX :
 
@@ -863,7 +862,7 @@ def mathtext_parser(txt):
 
 
 def tex_dollars(txt):
-    u"Rajoute des $ si l'expression LaTeX ainsi obtenue est correcte."
+    "Rajoute des $ si l'expression LaTeX ainsi obtenue est correcte."
     try:
         mathtext_parser('$' + txt + '$')
         return '$' + txt + '$'

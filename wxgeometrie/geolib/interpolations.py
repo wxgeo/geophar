@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------#######
 #                   Interpolation                    #
@@ -30,12 +29,13 @@ from numpy import array, arange, append
 try:
     # wxgeometrie can be imported even if scipy is not found.
     # Only Interpolation_polynomiale_par_morceaux will fail.
-    from scipy.interpolate import PiecewisePolynomial
+    from scipy.interpolate import BPoly
     scipy_found = True
 except ImportError:
     scipy_found = False
-    def PiecewisePolynomial(*args, **kw):
-        raise NotImplementedError, 'Error: scipy library not found !'
+    class BPoly:
+        def from_derivatives(*args, **kw):
+            raise NotImplementedError('Error: scipy library not found !')
 
 from .objet import Ref, Argument, Arguments
 
@@ -49,7 +49,7 @@ from .. import param
 
 
 class Interpolation_generique(Courbe_generique):
-    u"""Classe mère de toutes les interpolations."""
+    """Classe mère de toutes les interpolations."""
 
     points = __points = Arguments("Point_generique")
 
@@ -109,7 +109,7 @@ class Interpolation_generique(Courbe_generique):
 
 
 class Interpolation_lineaire(Interpolation_generique):
-    u"""Une interpolation linéaire.
+    """Une interpolation linéaire.
 
     Interpolation entre les points donnés par des segments joints (courbe de classe C0).
     """
@@ -131,7 +131,7 @@ class Interpolation_lineaire(Interpolation_generique):
         style = self.style("style")
         epaisseur = self.style("epaisseur")
         if not self._representation:
-            self._representation = [self.rendu.ligne() for i in xrange(n + 1)]
+            self._representation = [self.rendu.ligne() for i in range(n + 1)]
 
         self._xarray = array([])
         self._yarray = array([])
@@ -141,7 +141,7 @@ class Interpolation_lineaire(Interpolation_generique):
 
         pas = self.canvas.pas()
 
-        for i in xrange(n - 1):
+        for i in range(n - 1):
             plot = self._representation[i]
             x1, y1 = self.__points[i].coordonnees
             x2, y2 = self.__points[i+1].coordonnees
@@ -178,7 +178,7 @@ class Interpolation_lineaire(Interpolation_generique):
 
 
 class Interpolation_quadratique(Interpolation_generique):
-    u"""Une interpolation quadratique.
+    """Une interpolation quadratique.
 
     Interpolation des points donnés par une courbe polynomiale par morceaux, et de classe C1.
     Pour chaque morceau, x(t)=at²+bt+c et y(t)=dt²+et+f, où t appartient à [0;1].
@@ -201,7 +201,7 @@ class Interpolation_quadratique(Interpolation_generique):
         style = self.style("style")
         epaisseur = self.style("epaisseur")
         if not self._representation:
-            self._representation = [self.rendu.ligne() for i in xrange(n + 1)]
+            self._representation = [self.rendu.ligne() for i in range(n + 1)]
 
         self._xarray = array([])
         self._yarray = array([])
@@ -211,7 +211,7 @@ class Interpolation_quadratique(Interpolation_generique):
 
         pas = self.canvas.pas()
         t = fullrange(0, 1, pas)
-        for i in xrange(n - 1):
+        for i in range(n - 1):
             plot = self._representation[i]
             x0, y0 = self.__points[i].coordonnees
             x1, y1 = self.__points[i+1].coordonnees
@@ -237,7 +237,7 @@ class Interpolation_quadratique(Interpolation_generique):
 
 
 class Interpolation_cubique(Interpolation_generique):
-    u"""Une interpolation cubique.
+    """Une interpolation cubique.
 
     Interpolation des points donnés par une courbe polynomiale par morceaux, de vecteur tangent horizontal aux sommets, et de classe C1 en général (ie. si x_n!=x_{n-1}).
     Pour chaque morceau, x(t)=at^3+bt^2+ct+d et y(t)=et^3+ft^2+gt+h, où t appartient à [0;1], et y'(0)=y'(1)=0.
@@ -264,7 +264,7 @@ class Interpolation_cubique(Interpolation_generique):
         if courbure is None:
             courbure = 1
         if not self._representation:
-            self._representation = [self.rendu.ligne() for i in xrange(n + 1)]
+            self._representation = [self.rendu.ligne() for i in range(n + 1)]
 
         self._xarray = array([])
         self._yarray = array([])
@@ -274,7 +274,7 @@ class Interpolation_cubique(Interpolation_generique):
 
         pas = self.canvas.pas()
         t = fullrange(0, 1, pas)
-        for i in xrange(n - 1):
+        for i in range(n - 1):
             plot = self._representation[i]
             x0, y0 = self.__points[i].coordonnees
             x1, y1 = self.__points[i+1].coordonnees
@@ -290,7 +290,7 @@ class Interpolation_cubique(Interpolation_generique):
                     dy0 = dy1
             if i < n - 2:
                 x2, y2 = self.__points[i+2].coordonnees
-                if cmp(y0, y1) == cmp(y1, y2):
+                if (y0 > y1) is (y1 > y2):
                     dy1 = y2 - y0
                     dx1 = x2 - x0
                 else:
@@ -320,11 +320,11 @@ class Interpolation_cubique(Interpolation_generique):
 
 
 class Interpolation_polynomiale_par_morceaux(Interpolation_generique):
-    u"""Une courbe d'interpolation polynomiale par morceaux.
-    Elle utilise l'interpolation par morceau de scipy pour construire la fonction
-    c'est la classe scipy.interpolate.PiecewisePolynomial
+    """Une courbe d'interpolation polynomiale par morceaux.
+    Elle utilise l'interpolation par morceau de scipy pour construire la fonction,
+    via la méthode scipy.interpolate.BPoly.from_derivatives()
 
-    elle passe par les points (xl, yl) et avec le nombre derive dans derivl à
+    Elle passe par les points (xl, yl) et avec le nombre derive dans derivl à
     l'abscisse xl.
 
     exemple::
@@ -370,14 +370,14 @@ class Interpolation_polynomiale_par_morceaux(Interpolation_generique):
 
     @property
     def fonction(self):
-        """Fonction wrapper vers la fonction de scipy PiecewisePolynomial
+        """Fonction wrapper vers la fonction de scipy BPoly.from_derivatives
 
         """
         pts = self.points_tries
         xl = [P.x for P in pts]
         yl = [P.y for P in pts]
-        yl_cum = zip(yl, self._derivees())
-        return PiecewisePolynomial(xl, yl_cum)
+        yl_cum = list(zip(yl, self._derivees()))
+        return BPoly.from_derivatives(xl, yl_cum)
 
 
     def _derivees(self):
@@ -415,7 +415,7 @@ class Interpolation_polynomiale_par_morceaux(Interpolation_generique):
 
 
     def _strategie_pente_moyenne(self, A, B, C):
-        u"""La pente en B est celle de la droite (AC).
+        """La pente en B est celle de la droite (AC).
 
         Stratégie simple et qui donne un rendu assez esthétique en pratique.
         """
@@ -424,7 +424,7 @@ class Interpolation_polynomiale_par_morceaux(Interpolation_generique):
         return dy/dx if dx else 0
 
     def _strategie_pente_minimale(self, A, B, C):
-        u"""Pente la plus faible entre celle de (AB) et celle de (BC).
+        """Pente la plus faible entre celle de (AB) et celle de (BC).
 
         On prend la pente la plus faible, de façon à être sûr
         qu'à gauche et à droite du point considéré, la courbe d'interpolation
@@ -445,7 +445,7 @@ class Interpolation_polynomiale_par_morceaux(Interpolation_generique):
         return der1 if abs(der1) < abs(der2) else der2
 
     def _strategie_moyenne_gauche_droite(self, A, B, C):
-        u"""
+        """
         Moyenne de la pente moyenne à gauche et de la pente moyenne à droite.
 
         Stratégie peu concluante en pratique.
@@ -480,7 +480,7 @@ class Interpolation_polynomiale_par_morceaux(Interpolation_generique):
         style = self.style("style")
         epaisseur = self.style("epaisseur")
         if not self._representation:
-            self._representation = [self.rendu.ligne() for i in xrange(3)]
+            self._representation = [self.rendu.ligne() for i in range(3)]
 
         if n < 2:
             return

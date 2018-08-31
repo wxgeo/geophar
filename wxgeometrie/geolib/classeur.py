@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------#######
 #        Gestionnaire de feuilles             #
@@ -27,7 +26,7 @@ from .feuille import Feuille
 
 
 class Classeur(list):
-    u"Gestionnaire de feuilles."
+    "Gestionnaire de feuilles."
 
     # Indique si le contenu du classeur a été modifié depuis la dernière sauvegarde de *session*
     modifie = False

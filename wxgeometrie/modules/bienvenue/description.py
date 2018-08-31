@@ -5,9 +5,13 @@
 # description : description détaillée
 # defaut : par défaut, le module est-il installé ou non ?
 
+
+
+
+
 description = {
-"titre":                    u"Bienvenue !",
-"description":              u"Écran d'accueil.",
-"groupe":                   u"Modules",
+"titre":                    "Bienvenue !",
+"description":              "Écran d'accueil.",
+"groupe":                   "Modules",
 "defaut":  True,
 }

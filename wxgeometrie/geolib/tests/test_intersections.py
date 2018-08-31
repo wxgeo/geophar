@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 #from tools.testlib import assertAlmostEqual
 from wxgeometrie.geolib.tests.geotestlib import rand_dte, rand_pt
@@ -39,9 +38,9 @@ def test_Intersection_droite_cercle():
     assert(not Intersection_droite_cercle(d1, c1).existe)
     C(-5.675, 4.95)
     I = Intersection_droite_cercle(d1, c1, True)
-    assert(I == (-4.87791007862, 4.51908023858))
+    assert I.egal((-4.87791007862, 4.51908023858))
     J = Intersection_droite_cercle(d1, c1, False)
-    assert(J == (0.0201000262814, 1.87113640036))
+    assert J.egal((0.0201000262814, 1.87113640036))
 
 
 
@@ -52,12 +51,12 @@ def test_Intersection_cercles():
     C = Point(2.1875, 1.35416666667)
     c2 = Cercle(C,B)
     D = Intersection_cercles(c2, c1, False)
-    assert(D == (-1.9466976004889973, 2.6017297602107377))
-    assert(Intersection_cercles(c2, c1, True) == B)
-    assert(Droite(A, C) == Mediatrice(B, D))
+    assert D.egale((-1.9466976004889973, 2.6017297602107377))
+    assert Intersection_cercles(c2, c1, True).egale(B)
+    assert Droite(A, C).confondu(Mediatrice(B, D))
 
 def test_intersection_et_feuille():
-    u"""On teste que par défaut, le deuxième d'intersection soit différent du premier."""
+    """On teste que par défaut, le deuxième d'intersection soit différent du premier."""
     f = Feuille()
     f.objets._ = Point(-5.11060948081, 0.144469525959)
     f.objets._ = Point(-3.97291196388, 0.794582392777)

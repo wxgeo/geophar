@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------#######
 #                Graphes                  #
@@ -31,7 +30,7 @@ import collections, copy
 from sympy import oo, Matrix
 from ..pylib import OrderedDict, advanced_split
 
-class GraphError(StandardError):
+class GraphError(Exception):
     pass
 
 # http://www.chansonsdewallonie.be/PAGES/COULEURS/CouleursTeintes.htm
@@ -57,7 +56,7 @@ def colors():
 
 
 class Graph(dict):
-    u"""A graph representation.
+    """A graph representation.
 
     Graph are stored as a dictionary:
     >>> from wxgeometrie.mathlib.graphes import Graph
@@ -85,7 +84,7 @@ class Graph(dict):
 
     def __init__(self, dictionary = (), oriented = False, labels=None):
         # Ex: {"A": {"B":[1], "C":[2, 5]}, "B": {}, "C": {"A": [2], "C": [1]}}
-        if isinstance(dictionary, basestring):
+        if isinstance(dictionary, str):
             dictionary = self._convert_input(dictionary)
         elif not isinstance(dictionary, dict):
             dictionary = dict.fromkeys(dictionary, {})
@@ -125,7 +124,7 @@ class Graph(dict):
                     else:
                         node2, distance = edge, '1'
                     node2 = node2.strip()
-                    if not dic[node].has_key(node2):
+                    if node2 not in dic[node]:
                         dic[node][node2] = []
                     dic[node][node2].append(float(distance) if '.' in distance else int(distance))
                     #TODO: support exact calculus
@@ -183,7 +182,7 @@ class Graph(dict):
         return copy.deepcopy(dict(self))
 
     def adjacents(self, node1, node2):
-        return self[node1].has_key(node2) or self[node2].has_key(node1)
+        return node2 in self[node1] or node1 in self[node2]
 
     @property
     def connected(self):
@@ -272,7 +271,7 @@ class Graph(dict):
 
 
     def coloring(self, *first_nodes):
-        u"""Graph colorization using Welsh & Powell algorithm.
+        """Graph colorization using Welsh & Powell algorithm.
 
         By default, nodes are sorted according to their degrees, but you can also
         choose manually the first nodes to be visited.
@@ -312,7 +311,7 @@ class Graph(dict):
         return code
 
     def shortest_path(self, start, end):
-        u"Implementation of Dijkstra-Moore algorithm."
+        "Implementation of Dijkstra-Moore algorithm."
         # current node
         current = start
         # Nodes which have been already visited, but still not archived:
@@ -334,7 +333,7 @@ class Graph(dict):
                     elif new_distance == distance:
                         visited[neighbor][1].append(current)
             current = min(visited.items(), key = lambda x:x[1][0])[0]
-        if visited.has_key(current):
+        if current in visited:
             archived[current] = visited.pop(current)
             in_progress = set([(current,)])
             final_paths = set()
@@ -358,8 +357,8 @@ class Graph(dict):
             nodes = sorted(self)
         else:
             if set(nodes) != set(self):
-                raise ValueError, "Nodes do not match."
-        code = u"On applique l'algorithme de Moore-Dijkstra~:\n\n"
+                raise ValueError("Nodes do not match.")
+        code = "On applique l'algorithme de Moore-Dijkstra~:\n\n"
         code += r'\begin{tabular}{|*{%s}{c|}}\hline' %len(self)
         code += '\n' + '&'.join(('$%s$' %node) for node in nodes) + r'\\\hline\hline' + '\n'
         # current node
@@ -410,7 +409,7 @@ class Graph(dict):
 
         code += '&'.join(format(node) for node in nodes) + r'\\\hline' + '\n'
         code += '\\end{tabular}\n'
-        if visited.has_key(current):
+        if current in visited:
             archived[current] = visited.pop(current)
             in_progress = set([(current,)])
             final_paths = set()
@@ -428,7 +427,7 @@ class Graph(dict):
         paths = ', '.join('$' + '-'.join(path) + '$' for path in final_paths)
         plur1 = ('x' if len(final_paths) > 1 else '')
         plur2 = ('s' if len(final_paths) > 1 else '')
-        code += u"""
+        code += """
 La distance minimale entre le sommet $%(start)s$ et le sommet $%(end)s$ est de $%(distance)s$.
 Cela correspond au%(plur1)s chemin%(plur2)s %(paths)s.
 """ %locals()

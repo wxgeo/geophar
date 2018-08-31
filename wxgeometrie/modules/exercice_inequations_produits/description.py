@@ -5,9 +5,13 @@
 # description : description détaillée
 # defaut : par défaut, le module est-il installé ou non ?
 
+
+
+
+
 description = {
-"titre":                    u"Exercices - Inéquations produits et quotients",
-"description":              u"Résolution d'inéquations à l'aide de tableaux de signes.",
-"groupe":                   u"Modules en construction",
+"titre":                    "Exercices - Inéquations produits et quotients",
+"description":              "Résolution d'inéquations à l'aide de tableaux de signes.",
+"groupe":                   "Modules en construction",
 "defaut":  True,
 }

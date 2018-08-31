@@ -1,6 +1,4 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------#######
 #           Mathlib 2 (sympy powered)         #
@@ -37,7 +35,7 @@ from .custom_objects import Decim
 
 
 class MyCustomPrinter(object):
-    u"""Personnalisation du printer de sympy.
+    """Personnalisation du printer de sympy.
 
     * implémentation de méthodes génériques pour gérer les objets Decim.
     * changement de l'ordre de recherche des méthodes d'impression :
@@ -87,16 +85,16 @@ class MyCustomPrinter(object):
             dico = {}
             for a in expr.atoms():
                 if a.is_Rational and isinstance(a, Decim):
-                    dico[a] = Float(a, prec=60)
+                    dico[a] = Float(a, dps=60)
             expr = expr.subs(dico).subs(Float(1), S.One)
         elif isinstance(expr, (list, tuple)):
             return expr.__class__(conv(item) for item in expr)
         elif isinstance(expr, dict):
-            return dict((conv(key), conv(val)) for key, val in expr.iteritems())
+            return dict((conv(key), conv(val)) for key, val in expr.items())
         return expr
 
     def _float_evalf(self, expr):
-        u"Évalue le flottant en respectant le réglage du printer (nombre de décimales)."
+        "Évalue le flottant en respectant le réglage du printer (nombre de décimales)."
         if self._settings['mode_scientifique']:
             decimales = self._settings['decimales_sci'] + 1
         else:
@@ -121,9 +119,9 @@ class CustomStrPrinter(MyCustomPrinter, StrPrinter):
         StrPrinter.__init__(self, settings)
 
     def _print_str(self, expr):
-        return '"%s"' % expr.replace('"', r'\"')
-
-    def _print_unicode(self, expr):
+        # Ne pas utiliser repr(), car on veut tjs avoir des guillemets doubles
+        # à l'extérieur de la chaîne (pour éviter les confusions avec le ' de
+        # la dérivée).
         return '"%s"' % expr.replace('"', r'\"')
 
     def _print_Exp1(self, expr):
@@ -188,7 +186,7 @@ class CustomStrPrinter(MyCustomPrinter, StrPrinter):
     def doprint(self, expr):
         # Mieux vaut faire la substitution une seule fois dès le départ.
         expr = self._convert_Decim(expr)
-        return StrPrinter.doprint(self, expr) if not isinstance(expr, unicode) else expr
+        return StrPrinter.doprint(self, expr)
 
 def custom_str(expr, **settings):
     return CustomStrPrinter(settings).doprint(expr)
@@ -331,10 +329,10 @@ class CustomLatexPrinter(MyCustomPrinter, LatexPrinter):
         return self._do_exponent(tex, exp)
 
     def _print_function(self, expr):
-        return r"\mathrm{Fonction}\, " + expr.func_name
+        return r"\mathrm{Fonction}\, " + expr.__name__
 
     def _print_Decim(self, expr):
-        return self._print_Float(Float(expr, prec=expr.prec))
+        return self._print_Float(Float(expr, dps=expr.prec))
 
     def doprint(self, expr):
         expr = self._convert_Decim(expr)

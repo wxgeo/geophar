@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 from random import random
 
 from tools.testlib import assertAlmostEqual, assertEqual, randint, assertRaises
 from wxgeometrie.geolib import (Objet, Objet_avec_coordonnees, Objet_avec_equation,
                                 Objet_avec_coordonnees_modifiables, Objet_avec_valeur,
-                                Objet_numerique
                                )
 
 
@@ -17,7 +15,6 @@ def test_Objet():
     O = Objet_avec_coordonnees_modifiables()
     O = Objet_avec_equation()
     O = Objet_avec_valeur()
-    O = Objet_numerique()
     # Les attributs publiques doivent être déclarés:
     try:
         O.attribut_bidon = None

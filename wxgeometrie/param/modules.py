@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ######################################
 #
@@ -28,12 +27,13 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 ######################################
 
 import os
+from runpy import run_path
 
 from .parametres import modules_par_defaut
 
 # Modules a importer
 # ----------------
-_skip_dir = ('OLD',)
+_skip_dir = ('OLD', '__pycache__')
 _modules_dir = os.path.normpath(os.path.join(__file__, '..', '..', 'modules'))
 
 def _detecter_modules():
@@ -49,24 +49,24 @@ def _detecter_modules():
                     compile(nom + '=0', '', 'single') # On teste si le nom est valide
                     try:
                         d = {}
-                        execfile(description_file, d)
+                        d = run_path(description_file, d)
                         if d['description']['groupe'] != "Modules":
                             # Sert à désactiver les modules en construction.
                             continue
                         descriptions[nom] = d['description']
                         modules.append(nom)
                     except:
-                        err(nom, u"fichier '%s' incorrect" %description_file)
+                        err(nom, "fichier '%s' incorrect" %description_file)
                 except Exception:
-                    err(nom, u"nom de module invalide")
+                    err(nom, "nom de module invalide")
             else:
-                err(nom, u"fichier 'description.py' introuvable")
+                err(nom, "fichier 'description.py' introuvable")
     return modules, descriptions
 
 try:
     modules, descriptions_modules = _detecter_modules()
 except OSError:
-    print(u"Warning: impossible de détecter les modules (répertoire '%s') !" % _modules_dir)
+    print("Warning: impossible de détecter les modules (répertoire '%s') !" % _modules_dir)
     modules = []
     descriptions_modules = {}
 

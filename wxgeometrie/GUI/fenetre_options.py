@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 #    WxGeometrie
 #    Dynamic geometry, graph plotter, and more for french mathematic teachers.
@@ -23,10 +22,10 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 from functools import partial
 
-from PyQt4.QtCore import pyqtSignal
-from PyQt4.QtGui import (QDialog, QTabWidget, QWidget, QVBoxLayout, QGroupBox,
-                         QHBoxLayout, QPushButton, QLabel, QCheckBox, QSpinBox,
-                         QComboBox, QFileDialog, QLineEdit)
+from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtWidgets import QDialog, QTabWidget, QWidget, QGroupBox,\
+    QPushButton, QLabel, QCheckBox, QSpinBox, QComboBox, QFileDialog, \
+    QLineEdit, QVBoxLayout,  QHBoxLayout
 
 from ..param.options import Section, Parametre
 ##from .app import white_palette
@@ -60,28 +59,28 @@ class FenetreOptions(QDialog):
                         if isinstance(parametre, Parametre):
                             psizer = self.ajouter_parametre(parametre, panel, sizer)
                             bsizer.addLayout(psizer)
-                        elif isinstance(parametre, basestring):
+                        elif isinstance(parametre, str):
                             bsizer.addWidget(QLabel(parametre))
                         else:
-                            raise NotImplementedError, repr(type(elt))
+                            raise NotImplementedError(repr(type(elt)))
                     bsizer.addSpacing(3)
                     sizer.addWidget(box)
                 elif isinstance(elt, Parametre):
                     psizer = self.ajouter_parametre(elt, panel, sizer)
                     sizer.addLayout(psizer)
-                elif isinstance(elt, basestring):
+                elif isinstance(elt, str):
                     sizer.addWidget(QLabel(elt))
                 else:
-                    raise NotImplementedError, repr(type(elt))
+                    raise NotImplementedError(repr(type(elt)))
 
             boutons = QHBoxLayout()
-            ok = QPushButton(u'OK', clicked=self.ok)
+            ok = QPushButton('OK', clicked=self.ok)
             boutons.addWidget(ok)
 
-            defaut = QPushButton(u"Défaut", clicked=self.defaut)
+            defaut = QPushButton("Défaut", clicked=self.defaut)
             boutons.addWidget(defaut)
 
-            annuler = QPushButton(u"Annuler", clicked=self.close)
+            annuler = QPushButton("Annuler", clicked=self.close)
             boutons.addWidget(annuler)
             sizer.addStretch()
             sizer.addLayout(boutons)
@@ -102,7 +101,7 @@ class FenetreOptions(QDialog):
 
         if type_ is bool:
             widget = QCheckBox(parametre.texte, panel)
-        elif type_ in (file, str):
+        elif type_ in (open, str):
             widget = QLineEdit(panel)
             widget.setMinimumWidth(200)
         elif isinstance(type_, tuple):
@@ -112,14 +111,14 @@ class FenetreOptions(QDialog):
             widget = QComboBox(panel)
             widget.addItems(type_)
         else:
-            print type_
+            print(type_)
             raise NotImplementedError
         self.widgets[parametre.nom] = widget
         widget.parametre = parametre
         self.set_value(widget, parametre.valeur)
         psizer.addWidget(widget)
-        if type_ is file:
-            parcourir = QPushButton(u'Parcourir', clicked=partial(self.parcourir, widget))
+        if type_ is open:
+            parcourir = QPushButton('Parcourir', clicked=partial(self.parcourir, widget))
             psizer.addWidget(parcourir)
         return psizer
 
@@ -127,37 +126,37 @@ class FenetreOptions(QDialog):
         type_ = widget.parametre.type
         if type_ is bool:
             widget.setChecked(valeur)
-        elif type_ in (file, str):
+        elif type_ in (open, str):
             widget.setText(valeur)
         elif isinstance(type_, tuple):
             widget.setValue(valeur)
         elif isinstance(type_, list):
             widget.setCurrentIndex(widget.findText(valeur))
         else:
-            print type_
+            print(type_)
             raise NotImplementedError
 
     def get_value(self, widget):
         type_ = widget.parametre.type
         if type_ is bool:
             return widget.isChecked()
-        elif type_ in (file, str):
+        elif type_ in (open, str):
             return widget.text()
         elif isinstance(type_, tuple):
             return widget.value()
         elif isinstance(type_, list):
             return widget.currentText()
         else:
-            print type_
+            print(type_)
             raise NotImplementedError
 
     def defaut(self):
-        for widget in self.widgets.itervalues():
+        for widget in self.widgets.values():
             self.set_value(widget, widget.parametre.defaut)
 
     def ok(self):
         modifs = set()
-        for widget in self.widgets.itervalues():
+        for widget in self.widgets.values():
             new_val = self.get_value(widget)
             if new_val != widget.parametre.valeur:
                 widget.parametre.valeur = new_val
@@ -166,6 +165,6 @@ class FenetreOptions(QDialog):
         self.close()
 
     def parcourir(self, widget):
-        widget.setText(QFileDialog.getExistingDirectory(self, u"Choisissez un répertoire :",
+        widget.setText(QFileDialog.getExistingDirectory(self, "Choisissez un répertoire :",
                                                  widget.text(),
                                                  QFileDialog.ShowDirsOnly))

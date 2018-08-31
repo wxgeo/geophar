@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------#######
 #                 Geometre                    #
@@ -27,7 +26,7 @@ from collections import defaultdict
 from random import randint
 from itertools import count
 
-from PyQt4.QtGui import QInputDialog, QLineEdit
+from PyQt5.QtWidgets import QInputDialog, QLineEdit
 
 from sympy import latex
 
@@ -41,37 +40,37 @@ from ...geolib import Arc_oriente
 class GraphesMenuBar(MenuBar):
     def __init__(self, panel):
         MenuBar.__init__(self, panel)
-        self.ajouter(u"Fichier", [u"nouveau"], [u"ouvrir"], [u"ouvrir ici"], None,
-                    [u"enregistrer"], [u"enregistrer_sous"], [u"exporter"],
-                    [u"exporter&sauver"], None,
-                    ['session'], None, [u"imprimer"], [u"presse-papier"],
-                    None, [u"proprietes"], None, self.panel.doc_ouverts, None,
-                    [u"fermer"], [u"quitter"])
-        self.ajouter(u"Editer", [u"annuler"], [u"refaire"], [u"modifier"], [u"supprimer"])
-        self.ajouter(u"creer")
+        self.ajouter("Fichier", ["nouveau"], ["ouvrir"], ["ouvrir ici"], None,
+                    ["enregistrer"], ["enregistrer_sous"], ["exporter"],
+                    ["exporter&sauver"], None,
+                    ['session'], None, ["imprimer"], ["presse-papier"],
+                    None, ["proprietes"], None, self.panel.doc_ouverts, None,
+                    ["fermer"], ["quitter"])
+        self.ajouter("Editer", ["annuler"], ["refaire"], ["modifier"], ["supprimer"])
+        self.ajouter("creer")
         self.ajouter("affichage")
         self.ajouter("autres")
-        self.ajouter(u"Outils",
+        self.ajouter("Outils",
 #                        [u"Créer le graphe", u"(Entrée à supprimer).", "Ctrl+E", self.panel.creer_graphe],
-                        [u"Colorier le graphe", u"Coloriage par l'algorithme de Welsh & Powell.", None, self.panel.colorier],
-                        [u"Latex -> Presse-papier",
-                            [u"Dijkstra", u"Recherche d'un trajet minimal entre deux points.", None, self.panel.latex_Dijkstra],
-                            [u"Welsh & Powell", u"Coloriage par l'algorithme de Welsh & Powell.", None, self.panel.latex_WelshPowell],
-                            [u"Matrice", u"Matrice du graphe.", None, self.panel.latex_matrix],
-                            [u"Matrice (poids)", u"Matrice de graphe pondéré.", None, self.panel.latex_matrix_poids],
+                        ["Colorier le graphe", "Coloriage par l'algorithme de Welsh & Powell.", None, self.panel.colorier],
+                        ["Latex -> Presse-papier",
+                            ["Dijkstra", "Recherche d'un trajet minimal entre deux points.", None, self.panel.latex_Dijkstra],
+                            ["Welsh & Powell", "Coloriage par l'algorithme de Welsh & Powell.", None, self.panel.latex_WelshPowell],
+                            ["Matrice", "Matrice du graphe.", None, self.panel.latex_matrix],
+                            ["Matrice (poids)", "Matrice de graphe pondéré.", None, self.panel.latex_matrix_poids],
                             ],
-                        [u"options"],
+                        ["options"],
                         )
 ##        self.ajouter(u"Avancé", [u"historique"], [u"securise"], [u"ligne_commande"], [u"debug"])
-        self.ajouter(u"avance1")
-        self.ajouter(u"?")
+        self.ajouter("avance1")
+        self.ajouter("?")
 
 
 
 
 class Graphes(Panel_API_graphique):
 
-    titre = u"Graphes" # Donner un titre à chaque module
+    titre = "Graphes" # Donner un titre à chaque module
     #_param_ = _param_
 
     def __init__(self, *args, **kw):
@@ -156,8 +155,8 @@ class Graphes(Panel_API_graphique):
             end = max(self.graph.nodes)
         if ask:
             while True:
-                txt, ok = QInputDialog.getText(self, u"Précisez le départ et l'arrivée.",
-                        u"Entrez le sommet de départ et le sommet d'arrivée (séparés par un espace).",
+                txt, ok = QInputDialog.getText(self, "Précisez le départ et l'arrivée.",
+                        "Entrez le sommet de départ et le sommet d'arrivée (séparés par un espace).",
                         QLineEdit.Normal, '%s %s' % (start, end))
                 if not ok:
                     return
@@ -187,7 +186,7 @@ class Graphes(Panel_API_graphique):
         self.code_copie()
 
     def code_copie(self):
-        self.canvas.message(u"Code LaTeX copié dans le presse-papier.")
+        self.canvas.message("Code LaTeX copié dans le presse-papier.")
 
     def correspondance_noms_etiquette(self):
         # On utilise les étiquettes si elles ne sont pas vides.

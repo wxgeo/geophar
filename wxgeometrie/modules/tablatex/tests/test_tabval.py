@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
+
+
+
 
 from wxgeometrie.modules.tablatex.tests.tabtestlib import assert_tableau
 from wxgeometrie.modules.tablatex.tabval import tabval

@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------#######
 #                   Objets                    #
@@ -46,7 +45,7 @@ from .. import param
 
 
 class Cote(Segment):
-    u"""Un coté.
+    """Un coté.
 
     Un coté d'un polygone, reliant le point numero 'n' au point numero 'n + 1'.
     Note: n commence à 0.
@@ -88,7 +87,7 @@ class Cote(Segment):
         Objet._modifier_hierarchie(self, self.__polygone._hierarchie + (self.__n + N + 2)/(2*N + 2))
 
     def supprimer(self):
-        u"""Supprime le polygone auquel appartient le côté.
+        """Supprime le polygone auquel appartient le côté.
 
         ..note::
             Il n'y a aucun intérêt à supprimer uniquement le côté
@@ -110,7 +109,7 @@ class Cote(Segment):
 
 
 class Sommet(Point_generique):
-    u"""Un sommet.
+    """Un sommet.
 
     Le nième sommet d'un polygone.
 
@@ -167,7 +166,7 @@ class Sommet(Point_generique):
         Objet._modifier_hierarchie(self, poly._hierarchie + (self.__n + 1)/(2*N + 2))
 
     def _lier_sommet(self, point):
-        u"""Lie le sommet à un point, en le rendant déplaçable."""
+        """Lie le sommet à un point, en le rendant déplaçable."""
         self._point_lie = point
         self.style(couleur = "m")
 
@@ -177,7 +176,7 @@ class Sommet(Point_generique):
     _deplacable = _modifiable = property(_deplacable, _deplacable)
 
     def supprimer(self):
-        u"""Supprime le polygone auquel appartient le sommet.
+        """Supprime le polygone auquel appartient le sommet.
 
         .. note::
             Il n'y a aucun intérêt à supprimer uniquement le sommet
@@ -188,7 +187,7 @@ class Sommet(Point_generique):
 
 
 class Polygone_generique(Objet):
-    u"""Un polygone générique.
+    """Un polygone générique.
 
     Classe mère de tous les polygones."""
 
@@ -203,12 +202,12 @@ class Polygone_generique(Objet):
         self.__centre = Barycentre(*(Point_pondere(point, 1) for point in points))
         Objet.__init__(self, **styles)
         self.etiquette = Label_polygone(self)
-        self.__sommets = tuple(Sommet(self, i) for i in xrange(n))
-        self.__cotes = tuple(Cote(self, i) for i in xrange(n))
+        self.__sommets = tuple(Sommet(self, i) for i in range(n))
+        self.__cotes = tuple(Cote(self, i) for i in range(n))
 
 
     def _affecter_coordonnees_par_defaut(self, points):
-        u"""Affecte aux points des coordonnées par défaut.
+        """Affecte aux points des coordonnées par défaut.
 
        Les coordonnées aléatoires sont générées manière à ce que le polygone
        ait peu de chance d'être croisé, et occupe une bonne partie de la fenêtre d'affichage."""
@@ -232,14 +231,14 @@ class Polygone_generique(Objet):
                             uniform(pi/2, pi),
                             uniform(pi, 3*pi/2),
                             uniform(3*pi/2, 2*pi)]
-            liste_t += [uniform(0, 2*pi) for i in xrange(len(points) - 4)]
+            liste_t += [uniform(0, 2*pi) for i in range(len(points) - 4)]
         for (k, t, pt) in zip(liste_k, liste_t, points):
             pt._Point__x = x0 + k*cos(t)
             pt._Point__y = y0 + k*sin(t)
 
 
     def on_register(self):
-        u"""Enregistre les côtés et les sommets du polygone dans la feuille lors
+        """Enregistre les côtés et les sommets du polygone dans la feuille lors
         de l'enregistrement du polygone."""
         # On enregistre tous les côtés dans la feuille.
         for cote in self.__cotes:
@@ -308,7 +307,7 @@ class Polygone_generique(Objet):
 
     @property
     def inscrit(self):
-        u"Le polygone est-il inscrit dans un cercle ?"
+        "Le polygone est-il inscrit dans un cercle ?"
         raise NotImplementedError
 
     @property
@@ -372,14 +371,14 @@ class Polygone_generique(Objet):
 
     @property
     def aire(self):
-        u"""D'après David Chandler, Area of a general polygon.
+        """D'après David Chandler, Area of a general polygon.
         http://www.davidchandler.com/AreaOfAGeneralPolygon.pdf"""
 
         if self.existe:
             points = self.__points
             xy = [pt.coordonnees for pt in (points + (points[0],))]
             s1 = s2 = 0
-            for i in xrange(len(points)):
+            for i in range(len(points)):
                 s1 += xy[i][0]*xy[i+1][1]
                 s2 += xy[i][1]*xy[i+1][0]
             return abs(s1 - s2)/2
@@ -387,7 +386,7 @@ class Polygone_generique(Objet):
 
     @property
     def info(self):
-        return self.nom_complet + u" d'aire " + str(self.aire)
+        return self.nom_complet + " d'aire " + str(self.aire)
 
     @property
     def perimetre(self):
@@ -406,7 +405,7 @@ class Polygone_generique(Objet):
 
 
 class Polygone(Polygone_generique):
-    u"""Un polygone.
+    """Un polygone.
 
     Un polygone défini par ses sommets."""
 
@@ -460,7 +459,7 @@ class Polygone(Polygone_generique):
             if isinstance(points[0], (list, tuple)):
                 points = tuple(points[0])
             elif isinstance(points[0], TYPES_ENTIERS):
-                points = tuple(Point() for i in xrange(points[0]))
+                points = tuple(Point() for i in range(points[0]))
                 self._points_crees_automatiquement = True
         self.__points = points = tuple(Ref(obj) for obj in points)
         Polygone_generique.__init__(self, *points, **styles)
@@ -479,7 +478,7 @@ class Polygone(Polygone_generique):
 
 
 class Triangle(Polygone_generique):
-    u"""Un triangle."""
+    """Un triangle."""
 
     point1 = __point1 = Argument("Point_generique", defaut = Point)
     point2 = __point2 = Argument("Point_generique", defaut = Point)
@@ -511,7 +510,7 @@ class Triangle(Polygone_generique):
 
     @property
     def inscrit(self):
-        u"Le polygone est-il inscrit dans un cercle ?"
+        "Le polygone est-il inscrit dans un cercle ?"
         return True
 
     @property
@@ -525,7 +524,7 @@ class Triangle(Polygone_generique):
 
 
 class Quadrilatere(Polygone_generique):
-    u"""Un quadrilatère."""
+    """Un quadrilatère."""
 
     point1 = __point1 = Argument("Point_generique", defaut = Point)
     point2 = __point2 = Argument("Point_generique", defaut = Point)
@@ -579,7 +578,7 @@ class Quadrilatere(Polygone_generique):
 
 
 class Pentagone(Polygone_generique):
-    u"""Un pentagone."""
+    """Un pentagone."""
 
     point1 = __point1 = Argument("Point_generique", defaut = Point)
     point2 = __point2 = Argument("Point_generique", defaut = Point)
@@ -599,7 +598,7 @@ class Pentagone(Polygone_generique):
 
 
 class Hexagone(Polygone_generique):
-    u"""Un hexagone."""
+    """Un hexagone."""
 
     point1 = __point1 = Argument("Point_generique", defaut = Point)
     point2 = __point2 = Argument("Point_generique", defaut = Point)
@@ -621,7 +620,7 @@ class Hexagone(Polygone_generique):
 
 
 class Heptagone(Polygone_generique):
-    u"""Un heptagone."""
+    """Un heptagone."""
 
     point1 = __point1 = Argument("Point_generique", defaut = Point)
     point2 = __point2 = Argument("Point_generique", defaut = Point)
@@ -645,7 +644,7 @@ class Heptagone(Polygone_generique):
 
 
 class Octogone(Polygone_generique):
-    u"""Un octogone."""
+    """Un octogone."""
 
     point1 = __point1 = Argument("Point_generique", defaut = Point)
     point2 = __point2 = Argument("Point_generique", defaut = Point)
@@ -671,7 +670,7 @@ class Octogone(Polygone_generique):
 
 
 class Parallelogramme(Quadrilatere):
-    u"""Un parallélogramme."""
+    """Un parallélogramme."""
 
     point1 = __point1 = Argument("Point_generique", defaut = Point)
     point2 = __point2 = Argument("Point_generique", defaut = Point)
@@ -688,7 +687,7 @@ class Parallelogramme(Quadrilatere):
 
 
 class Sommet_rectangle(Point_generique):
-    u"""Un sommet d'un rectangle.
+    """Un sommet d'un rectangle.
 
     (Usage interne)."""
 
@@ -735,7 +734,7 @@ class Sommet_rectangle(Point_generique):
 
 
 class Rectangle(Parallelogramme):
-    u"""Un rectangle."""
+    """Un rectangle."""
 
     point1 = __point1 = Argument("Point_generique", defaut = Point)
     point2 = __point2 = Argument("Point_generique", defaut = Point)
@@ -751,7 +750,7 @@ class Rectangle(Parallelogramme):
 
 
 class Losange(Parallelogramme):
-    u"""Un losange."""
+    """Un losange."""
 
     point1 = __point1 = Argument("Point_generique", defaut = Point)
     point2 = __point2 = Argument("Point_generique", defaut = Point)
@@ -772,7 +771,7 @@ class Losange(Parallelogramme):
 
 
 class Polygone_regulier_centre(Polygone_generique):
-    u"""Un polygone régulier.
+    """Un polygone régulier.
 
     Un polygone régulier défini par son centre, un sommet, et le nombre de côtés."""
 
@@ -800,7 +799,7 @@ class Polygone_regulier_centre(Polygone_generique):
             n = 3 + abs(int(normalvariate(0,4)))
         # il ne faut pas utiliser de référence (Ref), car n n'est pas modifiable :
         self.__n = n
-        points = (Rotation(centre, '2*pi*' + str(i) + '/' + str(n), unite='r')(sommet) for i in xrange(1, n))
+        points = (Rotation(centre, '2*pi*' + str(i) + '/' + str(n), unite='r')(sommet) for i in range(1, n))
         Polygone_generique.__init__(self, sommet, *points, **styles)
 
 
@@ -810,7 +809,7 @@ class Polygone_regulier_centre(Polygone_generique):
 
 
 class Triangle_equilateral_centre(Triangle):
-    u"""Un triangle équilatéral.
+    """Un triangle équilatéral.
 
     Un triangle équilatéral défini par son centre et un sommet."""
 
@@ -829,7 +828,7 @@ class Triangle_equilateral_centre(Triangle):
 
 
 class Carre_centre(Quadrilatere):
-    u"""Un carré.
+    """Un carré.
 
     Un carré défini par son centre et un sommet."""
 
@@ -852,7 +851,7 @@ class Carre_centre(Quadrilatere):
 
 
 class Polygone_regulier(Polygone_generique):
-    u"""Un polygone régulier.
+    """Un polygone régulier.
 
     Un polygone régulier défini par deux points consécutif (sens direct)."""
 
@@ -885,7 +884,7 @@ class Polygone_regulier(Polygone_generique):
         # croissait alors exponentiellement avec i (elle doublait à chaque itération) !
         points = [point1, point2, point3]
         self.__centre = centre = Point_equidistant(point1, point2, point3)
-        for i in xrange(3, n):
+        for i in range(3, n):
             angle = '2*pi*' + str(i) + '/' + str(n)
             points.append(Rotation(centre, angle, unite='r')(point1))
         Polygone_generique.__init__(self, *points, **styles)
@@ -897,7 +896,7 @@ class Polygone_regulier(Polygone_generique):
 
 
 class Triangle_equilateral(Triangle):
-    u"""Un triangle équilatéral.
+    """Un triangle équilatéral.
 
     Un triangle équilatéral défini par deux points consécutif (sens direct)."""
 
@@ -915,7 +914,7 @@ class Triangle_equilateral(Triangle):
 
 
 class Carre(Quadrilatere):
-    u"""Un carré.
+    """Un carré.
 
     Un carré défini par deux points consécutif (sens direct)."""
 
@@ -931,7 +930,7 @@ class Carre(Quadrilatere):
 
 
 class Sommet_triangle_isocele(Point_generique):
-    u"""Un sommet d'un triangle isocèle.
+    """Un sommet d'un triangle isocèle.
 
     Le 3e sommet du triangle isocele (un des sommets de la base).
     (Usage interne)."""
@@ -976,7 +975,7 @@ class Sommet_triangle_isocele(Point_generique):
 
 
 class Triangle_isocele(Triangle):
-    u"""Un triangle isocèle.
+    """Un triangle isocèle.
 
     Un triangle isocèle défini par son sommet principal, un autre sommet, et son angle principal (sens direct)."""
 
@@ -994,7 +993,7 @@ class Triangle_isocele(Triangle):
 
 
 class Sommet_triangle_rectangle(Point_generique):
-    u"""Un sommet d'un triangle rectangle.
+    """Un sommet d'un triangle rectangle.
 
     Le sommet opposé à l'hypothénuse du triangle rectangle.
     (Usage interne)."""
@@ -1041,7 +1040,7 @@ class Sommet_triangle_rectangle(Point_generique):
 
 
 class Triangle_rectangle(Triangle):
-    u"""Un triangle rectangle.
+    """Un triangle rectangle.
 
     Un triangle rectangle défini par les extrémités de son hypothénuse (sens direct), et un de ses angles aigus."""
 
@@ -1062,7 +1061,7 @@ class Triangle_rectangle(Triangle):
 
 
 class Triangle_isocele_rectangle(Triangle):
-    u"""Un triangle isocèle rectangle.
+    """Un triangle isocèle rectangle.
 
     Un triangle isocèle rectangle défini par les extrémités de son hypothénuse (sens direct)."""
 
@@ -1078,7 +1077,7 @@ class Triangle_isocele_rectangle(Triangle):
 
 
 class PrevisualisationPolygone(Polygone_generique):
-    u"""Une forme de polygone utilisée uniquement pour la prévisualisation.
+    """Une forme de polygone utilisée uniquement pour la prévisualisation.
 
     Usage interne."""
 
@@ -1089,7 +1088,7 @@ class PrevisualisationPolygone(Polygone_generique):
         for pt in self.__points:
             pt.enfants.remove(self)
         for pt in points:
-            pt.enfants.append(self)
+            pt.enfants.add(self)
         # NOTE: self.__points doit être de type tuple et surtout pas liste
         # (une éventuelle modification de la liste ne gererait pas correctement les vassaux)
         self.__points = points

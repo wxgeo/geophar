@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
-from __future__ import with_statement
 
 #    WxGeometrie
 #    Dynamic geometry, graph plotter, and more for french mathematic teachers.
@@ -21,7 +19,7 @@ from __future__ import with_statement
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import time
-from ..pylib import uu, print_error
+from ..pylib import print_error
 from .. import param
 
 class Rapport(list):
@@ -46,9 +44,9 @@ class Rapport(list):
 
     def append(self, valeur):
         if param.debug:
-            print ''
-            print valeur
-            print ''
+            print('')
+            print(valeur)
+            print('')
         list.append(self, valeur)
         if len(self) > self.frequence_archivage:
             self.archiver()
@@ -59,21 +57,21 @@ class Rapport(list):
             self.archiver()
 
     def _contenu(self):
-        u"Récupère le contenu récent (c-à-d. non archivé)."
+        "Récupère le contenu récent (c-à-d. non archivé)."
         return '\n'.join(self) + '\n'
 
     def archiver(self):
-        u"Copie les derniers enregistrements vers le fichier log."
+        "Copie les derniers enregistrements vers le fichier log."
         if self.fichier_log is not None:
-            with open(self.fichier_log, 'a') as f:
-                f.write(uu(self._contenu()).encode('utf8'))
+            with open(self.fichier_log, 'a', 'utf8') as f:
+                f.write(self._contenu())
                 self[:] = []
 
     def contenu(self):
-        u"Récupère le contenu complet, y compris ce qui a déjà été archivé."
+        "Récupère le contenu complet, y compris ce qui a déjà été archivé."
         if self.fichier_log is None:
             return self._contenu()
         else:
             self.archiver()
-            with open(self.fichier_log, 'r') as f:
-                return uu(f.read())
+            with open(self.fichier_log, 'r', 'utf8') as f:
+                return f.read()

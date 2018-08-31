@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------#######
 #                  Variable                   #
@@ -26,15 +25,15 @@ import re, time
 
 from sympy import Symbol, Basic, sympify
 
-from .objet import Ref, Argument, Objet, Objet_numerique, TYPES_REELS,\
+from .objet import Ref, Argument, Objet, Objet_avec_valeur, TYPES_REELS,\
                    contexte
 from ..pylib import property2, print_error, fullrange, is_in
 from ..mathlib.parsers import VAR_NOT_ATTR, NBR_SIGNE
 from .. import param
 
 
-class Variable_generique(Objet_numerique):
-    u"""Une variable générique.
+class Variable_generique(Objet_avec_valeur):
+    """Une variable générique.
 
     Usage interne : la classe mère pour tous les types de variables."""
 
@@ -46,14 +45,14 @@ class Variable_generique(Objet_numerique):
 
     @staticmethod
     def _convertir(objet):
-        u"Convertit un objet en variable."
+        "Convertit un objet en variable."
 ##        if isinstance(objet, Variable):   #  Inutile (?)
 ##            return objet.copy()
         return Variable(objet)
 
 
 class Variable(Variable_generique):
-    u"""Une variable libre.
+    """Une variable libre.
 
     Une variable numérique ; l'argument peut être un nombre, ou une expression sous forme de chaine de caractères.
     Exemple: Variable(17.5), Variable('AB.longeur+1').
@@ -76,7 +75,7 @@ class Variable(Variable_generique):
             if value._Variable__fonction is None:
                 return value.contenu
             return value.val
-        elif isinstance(value, basestring):
+        elif isinstance(value, str):
             value = value.replace(" ","")
             # Si c'est un nombre:
             if not "." in value:
@@ -90,11 +89,11 @@ class Variable(Variable_generique):
                 value = eval(value, {})
         elif isinstance(value, Basic):
             if not value.is_real:
-                raise RuntimeError, "La variable doit etre reelle."
+                raise RuntimeError("La variable doit etre reelle.")
         return value
 
 
-    __contenu = Argument(TYPES_REELS + (basestring,), None,  _set_contenu, defaut = 0)
+    __contenu = Argument(TYPES_REELS + (str,), None,  _set_contenu, defaut = 0)
 
     def __init__(self, contenu = 0, **styles):
         Variable_generique.__init__(self,  **styles)
@@ -103,30 +102,30 @@ class Variable(Variable_generique):
         self.__contenu = contenu = Ref(contenu)
 
     def _test_dependance_circulaire(self, valeur):
-        u"""Provoque une erreur si l'objet se retrouve dépendre de lui-même avec la nouvelle valeur.
+        """Provoque une erreur si l'objet se retrouve dépendre de lui-même avec la nouvelle valeur.
 
         Retourne une liste composée alternativement d'instructions et d'objets de la feuille,
         et un ensemble constitué des objets de la feuille mis en jeu dans le code.
         (... à documenter ...)"""
         if isinstance(valeur, Variable):
             valeur = valeur.contenu
-        if isinstance(valeur, basestring) and self.feuille is not None:
+        if isinstance(valeur, str) and self.feuille is not None:
             liste = re.split(self.__re, valeur)
             ensemble = set()
-            for i in xrange(1, len(liste), 2):
-                obj = self.feuille.objets[liste[i]]
+            for i in range(1, len(liste), 2):
+                obj = self.feuille.objets.get_raw_item(liste[i])
                 if isinstance(obj, Objet):
                     liste[i] = obj
                     ensemble.add(obj)
                     if self is obj or is_in(self, obj._ancetres()):
-                        print self,
-                        raise RuntimeError, "Definition circulaire dans %s : l'objet %s se retrouve dependre de lui-meme." %(self, obj)
+                        print(self, end=' ')
+                        raise RuntimeError("Definition circulaire dans %s : l'objet %s se retrouve dependre de lui-meme." %(self, obj))
             return liste, ensemble
         return None, None
 
 
     def _compile(self,  liste, ensemble):
-        u"""Compile l'expression stockée dans la variable ; les arguments sont les valeurs retournées par '_test_dependance_circulaire'.
+        """Compile l'expression stockée dans la variable ; les arguments sont les valeurs retournées par '_test_dependance_circulaire'.
 
         La compilation doit toujours avoir lieu à la fin de la procédure de redéfinition de la variable,
         car elle ne doit être exécutée que si la redéfinition de la variable va effectivement avoir lieu,
@@ -141,7 +140,7 @@ class Variable(Variable_generique):
             self._parents = ensemble
             self._modifier_hierarchie()
             for objet in self._parents:   # l'objet est vassal de chacun des objets dont il depend
-                objet.enfants.append(self)
+                objet.enfants.add(self)
         else:
             for objet in self._parents:
                 objet.enfants.remove(self)
@@ -186,7 +185,7 @@ class Variable(Variable_generique):
 
     @property
     def _type(self):
-        return isinstance(self.__contenu, basestring) and "compose" or "simple"
+        return isinstance(self.__contenu, str) and "compose" or "simple"
 
     def _recenser_les_parents(self):
 #        warning("'_recenser_les_ancetres' n'a aucun effet pour une variable.")
@@ -201,14 +200,14 @@ class Variable(Variable_generique):
                     self.__val_cache = self.__val_cache.val
             except Exception:
                 if param.verbose:
-                    print_error(u"Impossible de déterminer la valeur de la variable " + self.nom + repr(self))
+                    print_error("Impossible de déterminer la valeur de la variable " + self.nom + repr(self))
                 return False
         else:
             self.__val_cache = self.contenu
         try:
             self.__val_cache_approche = float(self.__val_cache)
         except TypeError:
-            print_error(u"Variable de type incorrect.")
+            print_error("Variable de type incorrect.")
             return False
         return True
 
@@ -216,8 +215,8 @@ class Variable(Variable_generique):
     def __str__(self):
         return str(self.contenu)
 
-    def __repr__(self, styles=True):
-        return repr(self.contenu)
+    #~ def __repr__(self, styles=True):
+        #~ return repr(self.contenu)
 
     def _definition(self):
         if self._type == "compose":
@@ -238,7 +237,7 @@ class Variable(Variable_generique):
             else:
                 self.val = objet.val
         else:
-            raise TypeError, "l'objet n'est pas une variable."
+            raise TypeError("l'objet n'est pas une variable.")
 
 
 
@@ -282,7 +281,7 @@ class Variable(Variable_generique):
 
 
 class Rayon(Variable_generique):
-    u"""Le rayon d'un cercle.
+    """Le rayon d'un cercle.
 
     >>> from wxgeometrie.geolib import Cercle, Rayon
     >>> c = Cercle((0, 0), 1)
@@ -308,7 +307,7 @@ class Rayon(Variable_generique):
 
 
 class Mul(Variable_generique):
-    u"""Le produit de deux variables."""
+    """Le produit de deux variables."""
 
     __var1 = var1 = Argument(Variable_generique)
     __var2 = var2 = Argument(Variable_generique)
@@ -319,11 +318,11 @@ class Mul(Variable_generique):
         Variable_generique.__init__(self, **styles)
 
     def _get_valeur(self):
-        return self.__var1.val*self.__var2.val
+        return self.__var1*self.__var2
 
 
 class Add(Variable_generique):
-    u"""La somme de deux variables."""
+    """La somme de deux variables."""
 
     __var1 = var1 = Argument(Variable_generique)
     __var2 = var2 = Argument(Variable_generique)
@@ -334,11 +333,11 @@ class Add(Variable_generique):
         Variable_generique.__init__(self, **styles)
 
     def _get_valeur(self):
-        return self.__var1.val + self.__var2.val
+        return self.__var1 + self.__var2
 
 
 class Variable_affichage(Variable_generique):
-    u"""La classe mère des paramètres d'affichage (xmin, xmax, ...)"""
+    """La classe mère des paramètres d'affichage (xmin, xmax, ...)"""
     parametre = NotImplemented
 
     # Inutile de les enregistrer sur la feuille, puisqu'elles ne font que
@@ -347,7 +346,7 @@ class Variable_affichage(Variable_generique):
     _enregistrer_sur_la_feuille = False
 
     def _get_valeur(self):
-        u"""Retourne la valeur du paramètre d'affichage (xmin ou xmax ou ...)
+        """Retourne la valeur du paramètre d'affichage (xmin ou xmax ou ...)
 
         Si un canvas est défini, la valeur retournée est prise sur le canvas,
         sinon, elle est récupérée depuis la feuille.
@@ -372,27 +371,27 @@ class Variable_affichage(Variable_generique):
 
 
 class XMinVar(Variable_affichage):
-    u"""Le minimum de la fenêtre en abscisse."""
+    """Le minimum de la fenêtre en abscisse."""
     parametre = 'xmin'
 
 
 class XMaxVar(Variable_affichage):
-    u"""Le maximum de la fenêtre en abscisse."""
+    """Le maximum de la fenêtre en abscisse."""
     parametre = 'xmax'
 
 
 class YMinVar(Variable_affichage):
-    u"""Le minimum de la fenêtre en ordonnée."""
+    """Le minimum de la fenêtre en ordonnée."""
     parametre = 'ymin'
 
 
 class YMaxVar(Variable_affichage):
-    u"""Le maximum de la fenêtre en ordonnée."""
+    """Le maximum de la fenêtre en ordonnée."""
     parametre = 'ymax'
 
 
 class Pixel_unite(Variable_generique):
-    u"""Correspond à un pixel."""
+    """Correspond à un pixel."""
 
     # Inutile d'enregistrer ces variables sur la feuille, puisqu'elles ne font que
     # pointer vers le canvas.
@@ -409,7 +408,7 @@ class Pixel_unite(Variable_generique):
 
 
 class Dpx(Pixel_unite):
-    u"""Un pixel unité en abscisse."""
+    """Un pixel unité en abscisse."""
 
     def _get_valeur(self):
         if self.feuille:
@@ -417,7 +416,7 @@ class Dpx(Pixel_unite):
 
 
 class Dpy(Pixel_unite):
-    u"""Un pixel unité en ordonnée."""
+    """Un pixel unité en ordonnée."""
 
     def _get_valeur(self):
         if self.feuille:

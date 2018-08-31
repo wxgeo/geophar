@@ -1,5 +1,4 @@
 # -*- coding: iso-8859-1 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 from random import random, randint as _randint
 from os.path import split, realpath, abspath
@@ -42,20 +41,21 @@ def assertNotAlmostEqual(x, y):
     # TODO: define test for tuple
     TEST = abs(y - x) > EPSILON
     if not TEST:
-        print x,  "==",  y
+        print(x,  "==",  y)
     assert TEST
 
-def assertEqual(x, y):
-    def yellow(s):
-        return '\033[0;33m' + s + '\033[0m'
+def _yellow(s):
+    return '\033[0;33m' + s + '\033[0m'
+
+def assertEqual(x, y, additionnal_msg=None, _raise=True):
     if x != y:
         rx = repr(x)
         ry = repr(y)
-        if isinstance(x, basestring) and isinstance(y, basestring):
+        if isinstance(x, str) and isinstance(y, str):
             for i in range(min(len(rx), len(ry))):
                 if rx[i] != ry[i]:
                     break
-            ry = ry[:i] + yellow(ry[i:])
+            ry = ry[:i] + _yellow(ry[i:])
 
         print('''
 --------------
@@ -64,11 +64,22 @@ def assertEqual(x, y):
 %s
 -> Expected:
 %s
---------------
-''' %(rx, ry))
-    assert (x == y)
+--------------''' %(rx, ry))
+        if additionnal_msg is not None:
+            print(additionnal_msg)
+        if _raise:
+            assert False
+        return False
+    return True
 
 assertEq = assertEqual
+
+def assertEqualAny(result, list_of_acceptable_results, _raise=True):
+    l = list_of_acceptable_results
+    if all((result != r) for r in l):
+        msg = ('Other accepted results: %s' % l[1:] if len(l) > 1 else None)
+        return assertEqual(result, l[0], additionnal_msg=msg, _raise=_raise)
+    return True
 
 def assertRaises(error, f, *args, **kw):
     try:
@@ -76,4 +87,4 @@ def assertRaises(error, f, *args, **kw):
     except Exception as e:
         assert type(e) == error
     else:
-        raise AssertionError, '%s should be raised.' %type(e).__name__
+        raise AssertionError('%s should be raised.' %type(e).__name__)

@@ -1,6 +1,4 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------##
 #              WxGeometrie            #
@@ -41,7 +39,7 @@ def _err(msg, *msgs):
 def mode_script(input = None, output = None):
     try:
         if input is None:
-            input = raw_input(u'Adresse du fichier de script ou du fichier .geo :')
+            input = input('Adresse du fichier de script ou du fichier .geo :')
 
         if input.endswith('.geo') or input.endswith('.geoz'):
             fgeo, message = ouvrir_fichierGEO(input)
@@ -50,7 +48,7 @@ def mode_script(input = None, output = None):
             try:
                 commandes = fgeo.contenu["Figure"][0]
             except KeyError:
-                return  _err(u"Le fichier '%s' ne comporte pas de figure." %input)
+                return  _err("Le fichier '%s' ne comporte pas de figure." %input)
 
         else:
             try:
@@ -58,7 +56,7 @@ def mode_script(input = None, output = None):
                     commandes = f.read()
             except IOError:
                 print_error()
-                return _err(u"Fichier introuvable: '%s'" % input)
+                return _err("Fichier introuvable: '%s'" % input)
 
         feuille = Feuille()
         canvas = Canvas(feuille = feuille)
@@ -67,18 +65,18 @@ def mode_script(input = None, output = None):
             feuille.charger(commandes)
         except Exception:
             print_error()
-            return _err(u"Commandes incorrectes", commandes)
+            return _err("Commandes incorrectes", commandes)
 
         if output is None:
-            output = raw_input(u'Adresse du fichier de sortie (png/svg/...) :')
+            output = input('Adresse du fichier de sortie (png/svg/...) :')
 
         try:
-            print canvas.fenetre
+            print(canvas.fenetre)
             canvas.exporter(output, echelle = param.echelle_cm)
         except IOError:
             print_error()
-            return _err(u"Impossible d'exporter dans '%s'. Vérifiez les permissions ou l'espace disque." % output)
+            return _err("Impossible d'exporter dans '%s'. Vérifiez les permissions ou l'espace disque." % output)
 
     except Exception:
         print_error()
-        return _err(u"Erreur d'exécution du mode script.")
+        return _err("Erreur d'exécution du mode script.")

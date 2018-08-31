@@ -6,8 +6,8 @@
 # defaut : par défaut, le module est-il installé ou non ?
 
 description = {
-"titre":                    u"Exercices - Trigonométrie",
-"description":              u"Repérage sur le cercle, cosinus et sinus remarquables.",
-"groupe":                   u"Modules en construction",
+"titre":                    "Exercices - Trigonométrie",
+"description":              "Repérage sur le cercle, cosinus et sinus remarquables.",
+"groupe":                   "Modules en construction",
 "defaut":  True,
 }

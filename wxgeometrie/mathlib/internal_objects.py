@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------#######
 #               Objets mathlib                #
@@ -28,7 +27,7 @@ UfuncType = type(numpy.absolute)
 fonctions_numpy = [key for key, val in numpy.__dict__.items() if type(val) == UfuncType]
 
 class ObjetMathematique(object):
-    u"Classe mère de la plupart des objets mathématiques."
+    "Classe mère de la plupart des objets mathématiques."
 
     def __lt__(self, y):
         return not self >= y
@@ -42,7 +41,7 @@ class ObjetMathematique(object):
     def __ne__(self, y):
         return not self.__eq__(y)
 
-    def __nonzero__(self): # la valeur logique de l'objet (la doc officielle est fausse ??)
+    def __bool__(self): # la valeur logique de l'objet (la doc officielle est fausse ??)
         return self != 0    # utilisée dans un test "if" par exemple.
 
     def __truediv__(self, y):
@@ -61,19 +60,10 @@ class ObjetMathematique(object):
 
     def __pos__(self):      return self
 
-    def __cmp__(self, y):
-        if hasattr(self, "__gt__") and isinstance(y, (ObjetMathematique, float, int, long)):
-            if self > y:
-                return 1
-            elif self < y:
-                return -1
-            else:
-                return 0
-        return NotImplemented
 
 
 class Reel(ObjetMathematique):
-    u"""Classe mère pour les objets mathématiques supportant les fonctions usuelles.
+    """Classe mère pour les objets mathématiques supportant les fonctions usuelles.
     Permet de leur appliquer les opérations mathématiques de pylab."""
 
     for nom in fonctions_numpy:

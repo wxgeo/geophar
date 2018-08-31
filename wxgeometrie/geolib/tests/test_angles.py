@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 from random import random
 import math
@@ -47,17 +46,17 @@ def test_Angle_libre():
     assertAlmostEqual(math.cos(a.val), math.cos(x))
     assertAlmostEqual(math.tan(a.val), math.tan(x))
     y = x*180/math.pi
-    a = Angle_libre(y, u"°")
+    a = Angle_libre(y, "°")
     assertAlmostEqual(a.deg, y)
     assertAlmostEqual(a.grad, x*200/math.pi)
     assertAlmostEqual(a.rad, x)
     assertNotAlmostEqual(a.val, a.deg)
-    assertAlmostEqual(u_sin(a), math.sin(x))
-    assertAlmostEqual(u_cos(a), math.cos(x))
-    assertAlmostEqual(u_tan(a), math.tan(x))
+    assertAlmostEqual(u_sin(a.val), math.sin(x))
+    assertAlmostEqual(u_cos(a.val), math.cos(x))
+    assertAlmostEqual(u_tan(a.val), math.tan(x))
     a.style(unite="g")
     assertNotAlmostEqual(a.val, a.grad)
-    b = Angle_libre(u"45°")
+    b = Angle_libre("45°")
     assertAlmostEqual(b.rad, math.pi/4)
     f = Feuille()
     f.objets.A = Point(40, 20)
@@ -88,11 +87,11 @@ def test_contexte_degre():
         assertAlmostEqual(eval(repr(b)).deg, 30)
 
 def test_info():
-    a = Angle_libre(u"30°")
+    a = Angle_libre("30°")
     assert str(a.deg) == '30'
     with contexte(unite_angle='d'):
-        assert a.info == u'Angle de valeur 30°'
+        assert a.info == 'Angle de valeur 30°'
     with contexte(unite_angle='r'):
-        assert a.info == u'Angle de valeur pi/6 rad'
+        assert a.info == 'Angle de valeur pi/6 rad'
     with contexte(unite_angle='g'):
-        assert a.info == u'Angle de valeur 100/3 grad'
+        assert a.info == 'Angle de valeur 100/3 grad'

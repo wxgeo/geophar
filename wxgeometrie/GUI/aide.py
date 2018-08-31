@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 
 ##--------------------------------------#######
@@ -24,9 +23,10 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 
-from PyQt4.QtGui import (QPushButton, QDialog, QWidget, QVBoxLayout, QHBoxLayout,
-                         QLabel, QPixmap, QTextEdit, QTabWidget)
-from PyQt4.QtCore import Qt
+from PyQt5.QtGui import QPixmap
+from PyQt5.QtWidgets import QPushButton, QDialog, QWidget, QVBoxLayout, \
+    QHBoxLayout, QLabel, QTextEdit, QTabWidget
+from PyQt5.QtCore import Qt
 
 from .. import param
 from ..param import NOMPROG, LOGO
@@ -42,14 +42,14 @@ from .app import app, white_palette
 class Informations(QDialog):
     def __init__(self, parent):
         QDialog.__init__(self, parent)
-        self.setWindowTitle(u"Configuration systeme")
+        self.setWindowTitle("Configuration systeme")
         self.setPalette(white_palette)
 
         panel = QWidget(self)
 
         panelSizer = QVBoxLayout()
 
-        textes = informations_configuration().split(u"\n")
+        textes = informations_configuration().split("\n")
 
         for i, texte in enumerate(textes):
             if texte.startswith("+ "):
@@ -58,9 +58,9 @@ class Informations(QDialog):
         panelSizer.addWidget(t)
 
 
-        btnOK = QPushButton(u"OK", panel)
+        btnOK = QPushButton("OK", panel)
         btnOK.clicked.connect(self.close)
-        btnCopier = QPushButton(u"Copier", panel)
+        btnCopier = QPushButton("Copier", panel)
         btnCopier.clicked.connect(self.copier)
 
         sizer = QHBoxLayout()
@@ -94,17 +94,17 @@ class APropos(QWidget):
         sizer.addWidget(logo, 0, Qt.AlignCenter)
 
         date = "/".join(str(n) for n in reversed(param.date_version))
-        textes = [u"<b>%s version %s</b>" % (NOMPROG, param.version)]
-        textes.append(u"<i>Version publiée le " + date + "</i>")
+        textes = ["<b>%s version %s</b>" % (NOMPROG, param.version)]
+        textes.append("<i>Version publiée le " + date + "</i>")
         textes.append('')
-        textes.append(u"« Le couteau suisse du prof de maths »")
+        textes.append("« Le couteau suisse du prof de maths »")
         textes.append('')
         textes.append("<img src='%s'> <b>%s est un \
                     <a href='http://fr.wikipedia.org/wiki/Logiciel_libre'> \
                     logiciel libre</a></b>"
                     %(path2('%/wxgeometrie/images/copyleft.png'), NOMPROG))
-        textes.append(u"Vous pouvez l'utiliser et le modifier selon les termes de la GNU Public License v2.")
-        textes.append(u"<i>Copyleft 2005-%s Nicolas Pourcelot (wxgeo@users.sourceforge.net)</i>"
+        textes.append("Vous pouvez l'utiliser et le modifier selon les termes de la GNU Public License v2.")
+        textes.append("<i>Copyleft 2005-%s Nicolas Pourcelot (wxgeo@users.sourceforge.net)</i>"
                             % ANNEE)
         textes.append('')
         label = QLabel('<br>'.join(textes))
@@ -123,8 +123,8 @@ class Licence(QWidget):
         sizer = QVBoxLayout()
 
         texte = QTextEdit(self)
-        with open(path2("%/wxgeometrie/doc/license.txt"), "r") as f:
-            msg = f.read().decode("utf8")
+        with open(path2("%/wxgeometrie/doc/license.txt"), "r", encoding="utf8") as f:
+            msg = f.read()
         texte.setPlainText(msg)
         texte.setMinimumHeight(500)
         texte.setReadOnly(True)
@@ -145,9 +145,9 @@ class Notes(QWidget):
         sizer = QVBoxLayout()
 
         texte = QTextEdit(self)
-        with open(path2("%/wxgeometrie/doc/changelog.txt"), "r") as f:
-            msg = f.read().decode("utf8").replace('\n', '<br>')
-        titre = u"<b>Changements apportés par la version courante (%s) :</b>" % param.version
+        with open(path2("%/wxgeometrie/doc/changelog.txt"), 'r', encoding='utf8') as f:
+            msg = f.read().replace('\n', '<br>')
+        titre = "<b>Changements apportés par la version courante (%s) :</b>" % param.version
         msg = '<br>'.join((titre, '', msg))
         texte.setHtml(msg)
         texte.setMinimumHeight(500)
@@ -168,7 +168,7 @@ class Credits(QWidget):
 
         sizer = QVBoxLayout()
         texte = \
-        u"""<h3>Contributeurs :</h3>
+        """<h3>Contributeurs :</h3>
         <p><i>Les personnes suivantes ont contribué au code de %(NOMPROG)s</i></p>
         <ul>
         <li><i>Boris Mauricette</i> : statistiques, interpolation (2011-2012)</li>
@@ -216,10 +216,10 @@ class Credits(QWidget):
 class OngletsAbout(QTabWidget):
     def __init__(self, parent):
         QTabWidget.__init__(self, parent)
-        self.addTab(APropos(parent), u'À propos')
-        self.addTab(Licence(parent), u'Licence')
-        self.addTab(Notes(parent), u'Notes de version')
-        self.addTab(Credits(parent), u'Crédits')
+        self.addTab(APropos(parent), 'À propos')
+        self.addTab(Licence(parent), 'Licence')
+        self.addTab(Notes(parent), 'Notes de version')
+        self.addTab(Credits(parent), 'Crédits')
         self.setTabPosition(QTabWidget.South)
         self.setStyleSheet("""
         QTabBar::tab:selected {
@@ -249,7 +249,7 @@ class OngletsAbout(QTabWidget):
 class About(QDialog):
     def __init__(self, parent):
         QDialog.__init__(self, parent)
-        self.setWindowTitle(u"A propos de " + NOMPROG)
+        self.setWindowTitle("A propos de " + NOMPROG)
         self.setPalette(white_palette)
         ##self.setWindowFlags(Qt.Dialog|Qt.FramelessWindowHint|Qt.X11BypassWindowManagerHint)
         sizer = QVBoxLayout()

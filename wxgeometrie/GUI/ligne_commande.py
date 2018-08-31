@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------##
 #               Widget LigneCommande              #
@@ -22,12 +21,13 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-from PyQt4.QtCore import Qt
-from PyQt4.QtGui import QWidget, QHBoxLayout, QLineEdit, QLabel, QPushButton
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QHBoxLayout, QWidget, QLineEdit, QLabel, QPushButton
+
 
 
 class LigneCommande(QWidget):
-    u"""Un TextCtrl muni d'un historique et associé à un bouton pour valider.
+    """Un TextCtrl muni d'un historique et associé à un bouton pour valider.
 
     On peut personnaliser le texte du bouton (via `texte="Mon texte"`),
     ou même directement le bouton, en utilisant `bouton=...`.
@@ -101,7 +101,7 @@ class LigneCommande(QWidget):
 
     def valider(self, **kw):
         # kw: shift|alt|meta|control=True|False'
-        commande = unicode(self.text())
+        commande = str(self.text())
         self.position = None
         if commande:
             self.historique.append(commande)

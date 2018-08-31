@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 
 calcul_exact = True    # gerer les fractions et les racines de maniere exacte si possible.

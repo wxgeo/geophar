@@ -37,7 +37,7 @@ else:
     moduleName = "%s__main__" % name
 
 code = importer.get_code(moduleName)
-exec code in m.__dict__
+exec(code, m.__dict__)
 
 versionInfo = sys.version_info[:3]
 if versionInfo >= (2, 5, 0) and versionInfo <= (2, 6, 4):

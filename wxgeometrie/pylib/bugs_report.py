@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 #    WxGeometrie
 #    Dynamic geometry, graph plotter, and more for french mathematic teachers.
@@ -19,17 +18,16 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-import urllib
+import urllib.request, urllib.parse
 import cgi
 
 from .. import param
 from .infos import informations_configuration
-from .fonctions import uu
 
 def rapporter(titre='', auteur='', email='', description='', historique='',
               log='', config='', fichier=''):
     parametres = param.__dict__.copy()
-    parametres.pop("__builtins__", None)
+    parametres.pop("__builtins__", {})
     parametres = "\n".join(str(key) + " = " + repr(val) for key, val in parametres.items())
 
     data = {
@@ -46,16 +44,16 @@ def rapporter(titre='', auteur='', email='', description='', historique='',
     }
     for key, value in data.items():
 #        data[key] = zlib.compress(uu(value.replace("\n", "\n<br>\n")).encode("utf-8"), 9).replace("\x01", "\x01\x03").replace("\x00", "\x01\x02") # php n'aime pas les caractères nuls dans une chaîne semble-t-il...
-        data[key] = cgi.escape(uu(value)).replace("\n", "\n<br>\n").encode("iso-8859-1", 'xmlcharrefreplace')
+        data[key] = cgi.escape(value).replace("\n", "\n<br>\n").encode("iso-8859-1", 'xmlcharrefreplace')
     msg = 'Erreur inconnue.'
     try:
-        filename, headers = urllib.urlretrieve("http://wxgeo.free.fr/wordpress/contact")
+        filename, headers = urllib.request.urlretrieve("http://wxgeo.free.fr/wordpress/contact")
         with open(filename) as f:
             adresse = f.read(300)
-        remote = urllib.urlopen(adresse, urllib.urlencode(data))
+        remote = urllib.request.urlopen(adresse, urllib.parse.urlencode(data))
         msg = remote.read()
         remote.close()
-        return True, uu(msg)
+        return True, msg
     except Exception:
         # XXX: print_error() is not thread safe.
-        return False, uu(msg)
+        return False, msg

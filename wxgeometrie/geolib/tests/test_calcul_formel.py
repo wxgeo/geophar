@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 from numpy import array
 
@@ -77,7 +76,7 @@ def test_Segment():
 
 def test_eqn_formatee():
     c = Cercle(('1/2', '2/3'), 'sqrt(2)')
-    assert c.equation_formatee == u'x\xb2 + y\xb2 - x - 4/3 y - 47/36 = 0'
+    assert c.equation_formatee == 'x\xb2 + y\xb2 - x - 4/3 y - 47/36 = 0'
     d = Droite(('0','0'),('1','1'))
     assert d.equation_formatee == '-x + y = 0'
     e=Droite(('1', '0'), ('2/3','1'))

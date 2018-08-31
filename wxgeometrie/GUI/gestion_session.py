@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------##
 #              WxGeometrie               #
@@ -26,9 +25,9 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 import os, re
 from time import sleep
 
-from PyQt4.QtCore import pyqtSignal, QObject
+from PyQt5.QtCore import pyqtSignal, QObject
 
-from ..pylib import uu, print_error, path2, debug, warning
+from ..pylib import print_error, path2, debug, warning
 from ..API.sauvegarde import FichierSession
 from ..API.parametres import sauvegarder_module
 from .. import param
@@ -86,7 +85,7 @@ class GestionnaireSession(QObject):
             for onglet in self.onglets:
                 onglet.modifie = False
         session.ecrire(lieu, compresser = True)
-        print(u"Session sauvée : (%s)" % lieu)
+        print("Session sauvée : (%s)" % lieu)
 
 
     def charger_session(self, lieu=None, reinitialiser=True, activer_modules=True):
@@ -100,7 +99,7 @@ class GestionnaireSession(QObject):
                     # Le dernier fichier correspond à la session courante.
                     name = names[-2]
             except IndexError:
-                print(u"Warning: impossible de trouver la session précédente !")
+                print("Warning: impossible de trouver la session précédente !")
                 return
             lieu = self._session_path(name)
         session = FichierSession().ouvrir(lieu)
@@ -119,7 +118,7 @@ class GestionnaireSession(QObject):
 
 
     def fermer(self):
-        u"""Ferme proprement le gestionnaire de session.
+        """Ferme proprement le gestionnaire de session.
 
         * La session en cours et les préférences sont sauvegardées.
         * Les anciens fichiers de sessions sont supprimés s'ils deviennent trop
@@ -145,7 +144,7 @@ class GestionnaireSession(QObject):
                 try:
                     onglet.sauver_preferences()
                 except:
-                    debug(u"Fermeture incorrecte de l'onglet : ", uu(str(onglet)))
+                    debug("Fermeture incorrecte de l'onglet : ", str(onglet))
                     raise
         else:
             # La préférence 'sauver_preferences' doit être sauvée dans tous les cas,

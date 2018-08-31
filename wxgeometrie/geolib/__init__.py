@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 #    WxGeometrie
 #    Dynamic geometry, graph plotter, and more for french mathematic teachers.
@@ -58,7 +57,7 @@ from .objet import (Nom, Rendu, Cache, Ref, BaseArgument, Argument,
                     ArgumentNonModifiable, Arguments, TupleObjets,
                     DescripteurFeuille, Objet, Objet_avec_coordonnees,
                     Objet_avec_coordonnees_modifiables, Objet_avec_equation,
-                    Objet_avec_valeur, Objet_numerique, G, TYPES_NUMERIQUES
+                    Objet_avec_valeur, G, TYPES_NUMERIQUES
                     )
 from .points import (Point_generique, Point, Point_pondere, Barycentre, Milieu,
                     Point_final, Point_translation, Point_rotation,
@@ -101,12 +100,13 @@ from .vecteurs import (Vecteur_generique, Vecteur, Vecteur_libre,
                     )
 from .widgets import Bouton, Champ
 
+_objs = list(vars().values())
 
-for _obj in vars().values():
+for _obj in _objs:
     if isinstance(_obj, type) and issubclass(_obj, Objet):
         prefixe = "_" + _obj.__name__ + "__"
         _noms_arguments = []
-        for key, value in vars(_obj).iteritems():
+        for key, value in vars(_obj).items():
             if isinstance(value, BaseArgument) and key.startswith(prefixe):
                 # Chaque argument récupère son nom...
                 value.nom = key
@@ -123,7 +123,7 @@ for _obj in vars().values():
         # tuple pour éviter des bugs (partage d'1 même liste entre plusieurs classes par ex.)
         _obj._noms_arguments = tuple(key for compteur, key in _noms_arguments)
 
-del _obj
+del _obj, _objs
 
 G.__dict__.update(locals())
 vecteur_unite = G.vecteur_unite = Vecteur_libre(1, 0)

@@ -1,7 +1,5 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
-from __future__ import with_statement, print_function
 
 #    WxGeometrie
 #    Dynamic geometry, graph plotter, and more for french mathematic teachers.
@@ -24,7 +22,7 @@ from __future__ import with_statement, print_function
 
 import os, sys, stat
 from os.path import join, expanduser, isdir
-from scriptlib import command, cd, cp
+from .scriptlib import command, cd, cp
 
 _module_path = os.path.split(os.path.realpath(sys._getframe().f_code.co_filename))[0]
 
@@ -46,7 +44,7 @@ locations = {
 # Choix du mode d'installation (local ou global).
 
 while True:
-    choice = raw_input('Installer pour tous les utilisateurs (o/N) ?')
+    choice = input('Installer pour tous les utilisateurs (o/N) ?')
     if choice in ('n', 'N', ''):
         choice = 'local'
         break
@@ -61,7 +59,7 @@ while True:
         choice = 'root'
         break
     else:
-        print(u"Réponse incorrecte (tapez 'o' ou 'N').")
+        print("Réponse incorrecte (tapez 'o' ou 'N').")
 
 
 for loc in locations:
@@ -111,7 +109,7 @@ command(update_mime)
 cd(_module_path)
 
 with open('linux-uninstall.py', 'w') as f:
-    f.write('#!/usr/bin/env python\n')
+    f.write('#!/usr/bin/env python3\n')
     f.write('# -*- coding: utf-8 -*-\n')
     f.write('from scriptlib import *\n')
     f.write('rm(%s)\n' % repr(join(locations['desktop_path'], 'geophar.desktop')))
@@ -125,5 +123,5 @@ with open('linux-uninstall.py', 'w') as f:
 
 os.chmod('linux-uninstall.py', stat.S_IRWXU)
 
-print(u"=== L'installation est terminée. ===")
-print(u"Un fichier linux-uninstall.py a été généré.")
+print("=== L'installation est terminée. ===")
+print("Un fichier linux-uninstall.py a été généré.")

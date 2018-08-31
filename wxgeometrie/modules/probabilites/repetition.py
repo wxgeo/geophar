@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
-from __future__ import with_statement
 
 ##--------------------------------------#######
 #                Probabilités                 #
@@ -23,7 +21,7 @@ from __future__ import with_statement
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-from PyQt4.QtGui import QDialog
+from PyQt5.QtWidgets import QDialog
 
 from sympy import S
 from sympy.core.sympify import SympifyError
@@ -33,7 +31,7 @@ from ...geolib.routines import nice_str
 
 
 def repetition_experiences(_profondeur=3, _numeroter=True, evts=[], probas=[]):
-    u"""Génère le code d'un arbre de probabilités correspondant à la répétition
+    """Génère le code d'un arbre de probabilités correspondant à la répétition
     d'expériences aléatoires identiques et indépendantes.
     Typiquement, un schéma de Bernoulli.
 
@@ -82,7 +80,7 @@ def repetition_experiences(_profondeur=3, _numeroter=True, evts=[], probas=[]):
         suffixe = ('_' + str(niveau) if _numeroter else '')
         for i in range(len(lines), 0, -1):
             if lines[i - 1].startswith((niveau - 1)*'>'):
-                for evt, proba in reversed(zip(evts, probas)):
+                for evt, proba in reversed(list(zip(evts, probas))):
                     #~ proba = nice_str(proba) if proba != '' else ''
                     lines.insert(i, prefixe + evt + suffixe + ':' + proba)
             assert len(lines) < 10000

@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------#######
 #                   Interpolation                    #
@@ -22,7 +21,7 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-from itertools import izip,chain
+from itertools import chain
 from numpy import isnan, isinf, sign, arange, inf, append
 
 from sympy import oo
@@ -40,7 +39,7 @@ def inf_or_nan(x):
 
 
 class Courbe_generique(Objet):
-    u"""Classe mère de toutes les courbes."""
+    """Classe mère de toutes les courbes."""
 
     _affichage_depend_de_la_fenetre = True
     _style_defaut = param.courbes
@@ -75,7 +74,7 @@ class Courbe_generique(Objet):
 
 
 class Courbe(Courbe_generique):
-    u"""Une courbe de fonction.
+    """Une courbe de fonction.
 
     L'expression doit être donnée en fonction de 'x'.
     Exemple : '2x^2-1/x+1'
@@ -108,7 +107,7 @@ class Courbe(Courbe_generique):
 #        derniere_fonction = None
 #        ancien_x = None
 #        ancien_y = None
-        for fonction, union, e_cach in izip(self.__fonction._Fonction__fonctions,
+        for fonction, union, e_cach in zip(self.__fonction._Fonction__fonctions,
                                                        self.__fonction._Fonction__unions,
                                                        self.__fonction.style('extremites_cachees')):
             for intervalle in union.intervalles:
@@ -140,15 +139,15 @@ class Courbe(Courbe_generique):
                         if ancien_intervalle is None:
                             self._creer_debut_morceau(x, y, intervalle, e_cach)
                         else:
-                            print intervalle, y[0], abs(y[0] - ancien_y[-1]), abs(x[0] - ancien_x[-1]), contexte['tolerance'] , pas
+                            print(intervalle, y[0], abs(y[0] - ancien_y[-1]), abs(x[0] - ancien_x[-1]), contexte['tolerance'] , pas)
                             fusion = abs(x0 - ancien_xN) < contexte['tolerance'] \
                                     and (abs(y0 - ancien_yN) < contexte['tolerance']  or (isnan(y0) and isnan(ancien_yN)))
                             if fusion:
                                 #Fusion
-                                print 'Fusion', y0
+                                print('Fusion', y0)
                                 if isnan(y0):
-                                    print u'Fusion avancée'
-                                    for i in xrange(10, 70, 10):
+                                    print('Fusion avancée')
+                                    for i in range(10, 70, 10):
                                         try:
                                             val1 = ancienne_fonction(ancien_xN - 8**(-i))
                                             val2 = ancienne_fonction(x0 + 8**(-i))
@@ -162,7 +161,7 @@ class Courbe(Courbe_generique):
                                     else:
                                         fusion = False
                                 elif not(ancien_intervalle.sup_inclus or intervalle.inf_inclus):
-                                    print 'Fusion classique'
+                                    print('Fusion classique')
                                     self._append_point(x[0], y[0], plein = False)
 
                             if not fusion:
@@ -185,7 +184,7 @@ class Courbe(Courbe_generique):
             if not inf_or_nan(y[0]):
                 self._append_point(x[0], y[0])
             return
-        if x[0] in e_cach:
+        if self._extremite_cachee(x[0], e_cach):
             return
         if not(inf_or_nan(y[0]) or inf_or_nan(y[1])):
             if intervalle.inf_inclus:
@@ -202,7 +201,7 @@ class Courbe(Courbe_generique):
     def _creer_fin_morceau(self, x, y, intervalle, e_cach):
         if len(y) <= 1:
             return
-        if x[-1] in e_cach:
+        if self._extremite_cachee(x[-1], e_cach):
             return
         if not(inf_or_nan(y[-1]) or inf_or_nan(y[-2])):
             if intervalle.sup_inclus:
@@ -216,6 +215,9 @@ class Courbe(Courbe_generique):
                     vec = x[-3] - x[-2],  y[-3] - y[-2]
                     self._append_arc(x[-2], y[-2], vec)
 
+    def _extremite_cachee(self, val, e_cach):
+        "Renvoie True si une variable de `e_cach` vaut `val`."
+        return val in [v.val for v in e_cach]
 
     def _append_arc(self, x0, y0, vec):
         if self.style("extremites"):
@@ -231,7 +233,7 @@ class Courbe(Courbe_generique):
 
 
     def _supprimer_valeurs_extremes(self, x, y, fonction, i, j):
-        u"""Lorsque les valeurs aux bornes sont indéterminées (NaN), infinies (+/-Inf)
+        """Lorsque les valeurs aux bornes sont indéterminées (NaN), infinies (+/-Inf)
         ou très éloignées de zéro (2e200), on cherche à les convertir en une valeur
         raisonnable pour la fenêtre d'affichage.
 
@@ -263,7 +265,7 @@ class Courbe(Courbe_generique):
         infini = False
         xi_infini = None
 
-        for xi, yi in izip(xk, yk):
+        for xi, yi in zip(xk, yk):
             if infini:
                 if not inf_or_nan(yi):
                     y_finis.append(yi)
@@ -285,7 +287,7 @@ class Courbe(Courbe_generique):
 
 
     def _rogner_valeur(self, y0):
-        u"Remplace -inf et +inf par des valeurs numériques dépassant la fenêtre."
+        "Remplace -inf et +inf par des valeurs numériques dépassant la fenêtre."
         if isnan(y0):
             return y0
         xmin, xmax, ymin, ymax = self.feuille.fenetre
@@ -329,7 +331,7 @@ class Courbe(Courbe_generique):
         filtre = (xm < xarray) & (xarray < xM)
         xa, ya = self.feuille.coo2pix(xarray[filtre], self.yarray[filtre])
         A = None
-        for x, y in izip(xa, ya):
+        for x, y in zip(xa, ya):
             B = A
             A = x, y
             if distance_segment(P, A, B, d):
@@ -339,7 +341,7 @@ class Courbe(Courbe_generique):
 
     @staticmethod
     def _convertir(objet):
-        u"Convertit un objet en fonction."
+        "Convertit un objet en fonction."
         return NotImplemented
 
     def _update(self, objet):
@@ -348,4 +350,4 @@ class Courbe(Courbe_generique):
         if isinstance(objet, Courbe):
             self.fonction = objet.fonction
         else:
-            raise TypeError, "L'objet n'est pas une courbe."
+            raise TypeError("L'objet n'est pas une courbe.")

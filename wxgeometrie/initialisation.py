@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 #    WxGeometrie
 #    Dynamic geometry, graph plotter, and more for french mathematic teachers.
@@ -30,27 +29,27 @@ EMPLACEMENT = dirname(dirname(realpath(sys._getframe().f_code.co_filename)))
 if getattr(sys, '_launch_geophar', False):
     from .arguments import lire_arguments, traiter_arguments
 
-    options, arguments = lire_arguments()
+    arguments = lire_arguments()
 
 
     # Le splash screen doit être affiché le plus tôt possible.
     # Par contre, il ne doit pas être affiché si le fichier est importé simplement
     # comme module.
-    if not (options.script or options.lister_modules):
+    if not (arguments.script or arguments.lister_modules):
         try:
             from .GUI.app import app, splash
 
             splash_screen = splash(normpath(EMPLACEMENT + '/wxgeometrie/images/logo6-1.png'))
             # .showMessage() doit être appelé pour que le splash screen apparaisse.
             # cf. https://bugreports.qt-project.org/browse/QTBUG-24910
-            splash_screen.showMessage(u'Chargement en cours...')
-            print(u"Démarrage GUI...")
+            splash_screen.showMessage('Chargement en cours...')
+            print("Démarrage GUI...")
         except ImportError:
-            # Il manque très probablement PyQt4, un message d'erreur sera affiché
+            # Il manque très probablement PyQt5, un message d'erreur sera affiché
             # un peu plus loin lors de la vérification des modules.
             splash_screen = None
 
-    parametres_additionnels, arguments, options = traiter_arguments(options, arguments)
+    parametres_additionnels, arguments, options = traiter_arguments(arguments)
 
     from . import param
     # Attention, les paramètres importés explicitement ici dans l'espace des noms
@@ -61,7 +60,7 @@ if getattr(sys, '_launch_geophar', False):
     # car alors, ``$ geophar -b`` ne prendrait pas en compte le ``-b``
     # lors de l'initialisation.
     from .param import dependances, NOMPROG, NOMPROG2, LOGO, plateforme, GUIlib
-    from .pylib.fonctions import path2, uu, str3
+    from .pylib.fonctions import path2
 
     # Résolution de l'écran en dpi (remarque : 1 inch = 2.54 cm)
     param.dpi_ecran = (app.desktop().physicalDpiX() + app.desktop().physicalDpiY())/2
@@ -88,7 +87,7 @@ if getattr(sys, '_launch_geophar', False):
         app.nom(NOMPROG)
         if param.style_Qt:
             app.setStyle(param.style_Qt)
-        app.icone(u"%/wxgeometrie/images/icone.ico")
+        app.icone("%/wxgeometrie/images/icone.ico")
 
     #def my_excepthook(exc_type, exc_obj, exc_tb):
     #    u"""Affiche l'erreur sans interrompre le programme.
@@ -107,7 +106,7 @@ if getattr(sys, '_launch_geophar', False):
 
     class SortieTemporaire(list):
         def write(self, chaine):
-            self.append(uu(chaine).encode(param.encodage))
+            self.append(chaine)
 
 
     class SortiesMultiples(object):
@@ -118,17 +117,11 @@ if getattr(sys, '_launch_geophar', False):
             self.total = 0
 
         def write(self, chaine):
-            uni = uu(chaine)
-            chaine = uni.encode(param.encodage)
-    #        default_out = (sys.__stdout__ if not param.py2exe else sys.py2exe_stderr)
-            # Sous Windows, l'encodage se fait en cp1252, sauf dans console où cp850 est utilisé !
-    #        default_out.write(chaine if plateforme != 'Windows' else uni.encode('cp850'))
-            # Sous Windows, l'encodage se fait en cp1252, sauf dans console où cp850 est utilisé !
-            sys.__stdout__.write(chaine if plateforme != 'Windows' else uni.encode('cp850'))
+            sys.__stdout__.write(chaine)
 
             self.total += len(chaine)
             if self.total - len(chaine) < param.taille_max_log <= self.total:
-                chaine = u"Sortie saturée !".encode(param.encodage)
+                chaine = "Sortie saturée !"
             for sortie in self.obligatoires:
                 sortie.write(chaine)
             if param.debug:
@@ -158,12 +151,12 @@ if getattr(sys, '_launch_geophar', False):
         try:
             if not os.path.isdir(emplacement):
                 os.makedirs(emplacement)
-                print(u'Création du répertoire : ' + emplacement)
+                print('Création du répertoire : ' + emplacement)
         except IOError:
-            print(u"Impossible de créer le répertoire %s !" %emplacement)
+            print("Impossible de créer le répertoire %s !" %emplacement)
             print('%s: %s' % sys.exc_info()[:2])
         except Exception:
-            print(u'Erreur inattendue lors de la création du répertoire %s.' %emplacement)
+            print('Erreur inattendue lors de la création du répertoire %s.' %emplacement)
             print('%s: %s' % sys.exc_info()[:2])
 
 
@@ -180,12 +173,12 @@ if getattr(sys, '_launch_geophar', False):
         sys.stderr = sys.__stderr__
         raise
 
-    log_filename = path2(param.emplacements['log'] + u"/messages.log")
+    log_filename = path2(param.emplacements['log'] + "/messages.log")
     if param.enregistrer_messages and isinstance(sys.stdout, SortiesMultiples):
         try:
             sys.stdout.facultatives.append(SortieTemporaire())
             fichier_log = open(log_filename, 'w')
-            fichier_log.write(NOMPROG.encode(param.encodage) + " version " + param.version + '\n')
+            fichier_log.write(NOMPROG + " version " + param.version + '\n')
             fichier_log.write(time.strftime("%d/%m/%Y - %H:%M:%S") + '\n')
             sys.stdout.obligatoires.append(fichier_log)
         except IOError:
@@ -206,24 +199,13 @@ if getattr(sys, '_launch_geophar', False):
     try:
         # à faire avant d'importer API
         if param.verbose:
-            print u'Arguments de la ligne de commande :', parametres_additionnels, arguments
+            print('Arguments de la ligne de commande :', parametres_additionnels, arguments)
             if options.script:
-                print u"--- Mode script activé. ---"
+                print("--- Mode script activé. ---")
 
         if param.frozen:
-            print sys.path
+            print(sys.path)
             sys.path.extend(('library.zip\\matplotlib', 'library.zip\\' + GUIlib))
-
-        if param.charger_psyco is not False:
-            try:
-                import psyco
-                if param.charger_psyco is True:
-                    psyco.full()
-                else:
-                    psyco.profile()
-            except ImportError:
-                pass
-
 
 
         def initialiser():
@@ -238,12 +220,12 @@ if getattr(sys, '_launch_geophar', False):
                 open(path_lock, 'w').close()
                 param.ecriture_possible = True
             except IOError:
-                print(u"Warning: impossible de créer le fichier '%s'." %path_lock)
+                print("Warning: impossible de créer le fichier '%s'." %path_lock)
                 param.ecriture_possible = False
 
             # On sauvegarde la valeur des paramètres par défaut.
             copie = param.__dict__.copy()
-            copie.pop("__builtins__", None)
+            copie.pop("__builtins__", {})
             setattr(param, "_parametres_par_defaut", copie)
 
             # Mise à jour des paramètres en fonction des préférences de l'utilisateur.
@@ -252,7 +234,7 @@ if getattr(sys, '_launch_geophar', False):
             try:
                 if os.path.exists(path) and param.charger_preferences:
                     if param.verbose:
-                        print(u"Chargement des préférences...")
+                        print("Chargement des préférences...")
                     # On charge les préférences de l'utilisateur depuis parametres.xml.
                     a_verifier = dict((dicname, getattr(param, dicname)) for dicname in param.a_mettre_a_jour)
                     actualiser_module(param, path)
@@ -260,7 +242,7 @@ if getattr(sys, '_launch_geophar', False):
                     # (en cas de changement de version du programme par exemple).
                     # Cela concerne en particulier les dictionnaires, qui peuvent gagner de nouvelles clés.
                     for dicname in param.a_mettre_a_jour:
-                        for key, val in a_verifier[dicname].iteritems():
+                        for key, val in a_verifier[dicname].items():
                             getattr(param, dicname).setdefault(key, val)
                     # Mise à jour du contexte de geolib:
                     for parametre in ('decimales', 'unite_angle', 'tolerance'):
@@ -274,7 +256,7 @@ if getattr(sys, '_launch_geophar', False):
                 from .GUI.mode_script import mode_script
                 msg = mode_script(options.input, options.output)
                 if msg:
-                    print msg
+                    print(msg)
 
             else:
                 # param._restart est mis à True si l'application doit être redémarrée.
@@ -305,13 +287,13 @@ if getattr(sys, '_launch_geophar', False):
                         # (options.restaurer est utilisé quand on redémarre l'application)
                         try:
                             if crash:
-                                print(NOMPROG + u" n'a pas été fermé correctement.\n"
+                                print(NOMPROG + " n'a pas été fermé correctement.\n"
                                       "Tentative de restauration de la session en cours...")
                             # En général, ne pas activer automatiquement tous les modules
                             # de la session précédente, mais seulement ceux demandés.
                             frame.gestion.charger_session(activer_modules=crash)
                         except:
-                            print(u"Warning: La session n'a pas pu être restaurée.")
+                            print("Warning: La session n'a pas pu être restaurée.")
                             print_error()
                     frame.show()
                     if param.debug:
@@ -334,10 +316,10 @@ if getattr(sys, '_launch_geophar', False):
                 args = [sys.executable, sys.argv[0], '--restaurer']
                 # Nota: execv() a une syntaxe étrange : le nom de la commande lancée
                 # (ie. sys.executable) doit réapparaître au début de la liste des arguments.
-                print(u"\n=======================")
-                print(u"Redémarrage en cours...")
+                print("\n=======================")
+                print("Redémarrage en cours...")
                 print(' '.join(args))
-                print(u"=======================\n")
+                print("=======================\n")
                 os.execv(sys.executable, args)
 
     except Exception: # do *NOT* catch SystemExit ! ("wxgeometrie -h" use it)

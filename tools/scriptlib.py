@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
-from __future__ import with_statement
 
 ######################################
 #
@@ -56,12 +54,12 @@ def rm(*paths, **kw):
     quiet = kw.get('quiet', False)
     recursive = kw.get('recursive', False)
     if recursive:
-        cwd = os.getcwdu()
+        cwd = os.getcwd()
         listcwd = os.listdir('.')
     for path in paths:
         pths = glob.glob(norm(path))
         if not (pths or quiet or recursive):
-            print "Warning: %s not found, couldn't be removed." %path
+            print("Warning: %s not found, couldn't be removed." % path)
         for pth in pths:
             if os.path.isfile(pth):
                 os.remove(pth)
@@ -80,7 +78,7 @@ def rmdir(*paths, **kw):
     for path in paths:
         pths = glob.glob(norm(path))
         if not (pths or quiet):
-            print "Warning: %s not found, couldn't be removed." %path
+            print("Warning: %s not found, couldn't be removed." % path)
         for pth in pths:
             if os.path.isdir(pth):
                 shutil.rmtree(norm(pth))
@@ -92,12 +90,12 @@ def cd(path):
     return os.chdir(norm(path))
 
 def command(string, quiet=False):
-    out = subprocess.Popen(string, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).stdout
+    out = subprocess.Popen(string, shell=True, universal_newlines=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).stdout
     output = out.read()
     sys.stdout.write(output)
     out.close()
     if not quiet:
-        print "Commande '%s' executee." %string
+        print("Command '%s' was executed." % string)
     return output
 
 def zip7(string):
@@ -113,7 +111,7 @@ def append(srcs, dst):
                 dest.write(source.read())
 
 def pause(string = "\n-- pause --\n"):
-    raw_input(string)
+    input(string)
 
 def ls(path = '.'):
     if '*' in path:

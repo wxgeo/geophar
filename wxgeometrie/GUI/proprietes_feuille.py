@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------#######
 #        Proprietes de la feuille             #
@@ -22,10 +21,9 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-from PyQt4.QtGui import (QWidget, QTabWidget, QGridLayout, QLabel, QLineEdit,
-                         QPushButton, QVBoxLayout, QTextEdit, QDialog, QGroupBox)
+from PyQt5.QtWidgets import QWidget, QTabWidget, QGridLayout, QLabel, \
+    QLineEdit, QPushButton, QTextEdit, QDialog, QGroupBox, QVBoxLayout
 
-from ..pylib import uu
 
 
 class ProprietesDescription(QWidget):
@@ -36,31 +34,31 @@ class ProprietesDescription(QWidget):
         gbs = QGridLayout()
         gbs.setSpacing(10)
 
-        gbs.addWidget(QLabel(u"Titre : "), 1, 1)
+        gbs.addWidget(QLabel("Titre : "), 1, 1)
         self.titre = titre = QLineEdit(self)
         titre.setText(self.feuille.infos("titre"))
         titre.setMinimumWidth(300)
         gbs.addWidget(titre, 1, 2)
 
-        gbs.addWidget(QLabel(u"Auteur : "), 2, 1)
+        gbs.addWidget(QLabel("Auteur : "), 2, 1)
         self.auteur = auteur = QLineEdit(self)
         auteur.setText(self.feuille.infos("auteur"))
         auteur.setMinimumWidth(300)
         gbs.addWidget(auteur, 2, 2)
 
-        gbs.addWidget(QLabel(u"Version : "), 3, 1)
+        gbs.addWidget(QLabel("Version : "), 3, 1)
         self.version = version = QLineEdit(self)
         version.setText(self.feuille.infos("version"))
         version.setMinimumWidth(300)
         gbs.addWidget(version, 3, 2)
 
-        gbs.addWidget(QLabel(u"Resumé : "), 4, 1)
+        gbs.addWidget(QLabel("Resumé : "), 4, 1)
         self.resume = resume = QTextEdit(self)
         resume.setPlainText(self.feuille.infos("resume"))
         resume.setMinimumSize(300, 50)
         gbs.addWidget(resume, 4, 2)
 
-        gbs.addWidget(QLabel(u"Notes : "), 5, 1)
+        gbs.addWidget(QLabel("Notes : "), 5, 1)
         self.notes = notes = QTextEdit(self)
         notes.setPlainText(self.feuille.infos("notes"))
         notes.setMinimumSize(300, 100)
@@ -68,10 +66,10 @@ class ProprietesDescription(QWidget):
 
         boutons = QGridLayout()
         boutons.setSpacing(10)
-        ok = QPushButton(u'OK', clicked=self.ok)
-        appliquer = QPushButton(u"Appliquer", clicked=self.appliquer)
-        effacer = QPushButton(u"Effacer", clicked=self.effacer)
-        annuler = QPushButton(u"Annuler", clicked=self.parent.parent.close)
+        ok = QPushButton('OK', clicked=self.ok)
+        appliquer = QPushButton("Appliquer", clicked=self.appliquer)
+        effacer = QPushButton("Effacer", clicked=self.effacer)
+        annuler = QPushButton("Annuler", clicked=self.parent.parent.close)
 
         boutons.addWidget(ok, 1, 0)
         boutons.addWidget(appliquer, 1, 1)
@@ -109,12 +107,12 @@ class ProprietesStatistiques(QWidget):
 
         sizer = QVBoxLayout()
         encadre = QVBoxLayout()
-        encadre_box = QGroupBox(u"Informations sur " + uu(self.feuille.nom) + " :")
+        encadre_box = QGroupBox("Informations sur " + self.feuille.nom + " :")
         encadre_box.setLayout(encadre)
         sizer.addWidget(encadre_box)
-        encadre.addWidget(QLabel(u"Date de création :  " + uu(self.feuille.infos("creation"))))
-        encadre.addWidget(QLabel(u"Dernière modification :  " + uu(self.feuille.infos("modification"))))
-        encadre.addWidget(QLabel(u"Nombre d'objets :  " + str(len(self.feuille.liste_objets(True)))))
+        encadre.addWidget(QLabel("Date de création :  " + self.feuille.infos("creation")))
+        encadre.addWidget(QLabel("Dernière modification :  " + self.feuille.infos("modification")))
+        encadre.addWidget(QLabel("Nombre d'objets :  " + str(len(self.feuille.liste_objets(True)))))
         sizer.addStretch()
         self.setLayout(sizer)
 
@@ -126,9 +124,9 @@ class OngletsProprietesFeuille(QTabWidget):
         self.feuille = parent.feuille
         QTabWidget.__init__(self, parent)
         self.description = ProprietesDescription(self)
-        self.addTab(self.description, u"Description")
+        self.addTab(self.description, "Description")
         self.statistiques = ProprietesStatistiques(self)
-        self.addTab(self.statistiques, u"Statistiques")
+        self.addTab(self.statistiques, "Statistiques")
 
 
 
@@ -136,7 +134,7 @@ class OngletsProprietesFeuille(QTabWidget):
 class ProprietesFeuille(QDialog):
     def __init__(self, parent, feuille):
         QDialog.__init__(self, parent)
-        self.setWindowTitle(u"Propriétés de " + uu(feuille.nom))
+        self.setWindowTitle("Propriétés de " + feuille.nom)
         self.parent = parent
         self.feuille = feuille
         self.fenetre_principale = self.parent.window()

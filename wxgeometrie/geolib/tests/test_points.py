@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 from random import random
 
@@ -22,7 +21,7 @@ from wxgeometrie.geolib import (Glisseur_arc_cercle, Glisseur_cercle, Glisseur_d
                                 Barycentre, Mediatrice, Droite_equation,
                                 Cercle_equation, Polygone, Rotation, Translation,
                                 Vecteur, Vecteur_libre, Representant, Reflexion,
-                                Homothetie, Nuage, Fonction,
+                                Homothetie, Nuage, Fonction, Point_interpolation,
                                 )
 
 def test_Point():
@@ -164,7 +163,7 @@ def test_Projete_arc_cercle():
     M.coordonnees = -17.826266675199999, 11.760911186
     assert(type(P.coordonnees) is tuple)
     assertAlmostEqual(A.coordonnees, P.coordonnees)
-    assertEqual(A, P)
+    assert A.confondu(P)
 
 def test_Projete_segment():
     s = Segment(rand_pt(), rand_pt())
@@ -226,7 +225,7 @@ def test_Centre_cercle_circonscrit():
     A, B, C = rand_pt(), rand_pt(), rand_pt()
     p = Polygone(A, B, C)
     O= Centre_cercle_circonscrit(p)
-    assert(O == Point_equidistant(A, B, C))
+    assert(O.confondu(Point_equidistant(A, B, C)))
 
 def test_Centre_cercle_inscrit():
     A, B, C = rand_pt(), rand_pt(), rand_pt()
@@ -346,9 +345,12 @@ def test_Glisseur_arc_cercle():
     M.coordonnees = O.coordonnees
     # il faudrait compléter un peu
 
-@XFAIL
+
 def test_Point_interpolation():
-    raise NotImplementedError
+    A = Point(1, 2)
+    P = Point_interpolation(A)
+    assert P.point is A
+    assert P.derivee is None
 
 @XFAIL
 def test_Glisseur_courbe():
@@ -378,7 +380,7 @@ def test_NuageFonction():
     assert (2, 2**2+3) in m
 
 def test_Centre_alias():
-    u"Centre et Centre_gravite sont interchangeables."
+    "Centre et Centre_gravite sont interchangeables."
     A = rand_pt()
     B = rand_pt()
     C = rand_pt()

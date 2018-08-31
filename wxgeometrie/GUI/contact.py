@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
+ # 1/2 == .5 (par defaut, 1/2 == 0)
+
+
+
 
 ##--------------------------------------#######
 #                 Contact                     #
@@ -24,12 +27,14 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 import sys
 from webbrowser import open_new_tab
-from urllib import urlencode
+from urllib.parse import urlencode
 
-from PyQt4.QtCore import pyqtSignal
-from PyQt4.QtGui import (QHBoxLayout, QVBoxLayout, QCheckBox, QPushButton, QDialog,
-                         QTextEdit, QLineEdit, QLabel, QComboBox, QGroupBox,
-                         QMessageBox, QWidget,)
+from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtWidgets import QCheckBox, QPushButton, QDialog, QTextEdit, \
+    QLineEdit, QLabel, QComboBox, QGroupBox, QMessageBox, QWidget,\
+    QHBoxLayout, QVBoxLayout
+
+
 from .. import param
 from ..pylib import path2
 from ..pylib.bugs_report import rapporter
@@ -40,13 +45,13 @@ from ..pylib.infos import informations_configuration
 
 
 class Contact(QDialog):
-    u"Formulaire utilisé pour contacter l'auteur et rapporter les bogues."
+    "Formulaire utilisé pour contacter l'auteur et rapporter les bogues."
 
-    sent = pyqtSignal(bool, unicode)
+    sent = pyqtSignal(bool, str)
 
     def __init__(self, parent):
         QDialog.__init__(self, parent)
-        self.setWindowTitle(u"Contacter l'auteur")
+        self.setWindowTitle("Contacter l'auteur")
         self.setPalette(white_palette)
 
         self.parent = parent
@@ -55,17 +60,17 @@ class Contact(QDialog):
 
         panelSizer = QVBoxLayout()
 
-        avant_propos = QLabel(u"""<i>Afin d'améliorer le fonctionnement de WxGéométrie,
+        avant_propos = QLabel("""<i>Afin d'améliorer le fonctionnement de WxGéométrie,
 vous êtes invités à signaler tout problème rencontré.</i>""", panel)
         panelSizer.addWidget(avant_propos)
         panelSizer.addSpacing(5)
 
         rapport = QVBoxLayout()
-        rapport_box = QGroupBox(u"Rapport d'incident", panel)
+        rapport_box = QGroupBox("Rapport d'incident", panel)
         rapport_box.setLayout(rapport)
         self.titre = titre = QLineEdit(panel)
         titre.setMinimumWidth(200)
-        titre.setText(u"Résumé")
+        titre.setText("Résumé")
         titre.selectAll()
         rapport.addWidget(titre)
 
@@ -73,11 +78,11 @@ vous êtes invités à signaler tout problème rencontré.</i>""", panel)
         self.modules = modules = QComboBox(panel)
         modules.addItems([parent.onglet(md).titre for md in param.modules if hasattr(self.parent.onglet(md), "titre")])
         modules.setCurrentIndex(self.parent.currentIndex())
-        sizer.addWidget(QLabel(u"Module concerné :", panel))
+        sizer.addWidget(QLabel("Module concerné :", panel))
         sizer.addWidget(modules)
         rapport.addLayout(sizer)
 
-        rapport.addWidget(QLabel(u"Description du problème :", panel))
+        rapport.addWidget(QLabel("Description du problème :", panel))
         self.commentaire = commentaire = QTextEdit(panel)
         commentaire.setMinimumSize(200, 150)
         rapport.addWidget(commentaire)
@@ -85,23 +90,23 @@ vous êtes invités à signaler tout problème rencontré.</i>""", panel)
         panelSizer.addWidget(rapport_box)
 
         sizer = QHBoxLayout()
-        coordonnees_box = QGroupBox(u"Vos coordonnées (recommandées)", panel)
+        coordonnees_box = QGroupBox("Vos coordonnées (recommandées)", panel)
         coordonnees_box.setLayout(sizer)
-        sizer.addWidget(QLabel(u"Nom :", panel))
+        sizer.addWidget(QLabel("Nom :", panel))
         self.nom = nom = QLineEdit(panel)
         nom.setMinimumWidth(100)
         sizer.addWidget(nom)
-        sizer.addWidget(QLabel(u" E-mail :"))
+        sizer.addWidget(QLabel(" E-mail :"))
         self.mail = mail = QLineEdit(panel)
         mail.setMinimumWidth(100)
         sizer.addWidget(mail)
 
         panelSizer.addWidget(coordonnees_box)
 
-        btnOK = QPushButton(u"Envoyer", panel)
-        btnOK.setToolTip(u"Envoyer les informations.")
-        btnCancel = QPushButton(u"Annuler", panel)
-        btnCancel.setToolTip(u"Quitter sans rien envoyer.")
+        btnOK = QPushButton("Envoyer", panel)
+        btnOK.setToolTip("Envoyer les informations.")
+        btnCancel = QPushButton("Annuler", panel)
+        btnCancel.setToolTip("Quitter sans rien envoyer.")
 
         sizer = QHBoxLayout()
         sizer.addWidget(btnOK)
@@ -131,7 +136,7 @@ vous êtes invités à signaler tout problème rencontré.</i>""", panel)
             histo = "Impossible de recuperer l'historique du module (%s)." % e
 
         sys.stdout.flush()
-        filename = path2(param.emplacements['log'] + u"/messages.log")
+        filename = path2(param.emplacements['log'] + "/messages.log")
         try:
             file = open(filename, 'r')
             msg = file.read()
@@ -171,17 +176,18 @@ vous êtes invités à signaler tout problème rencontré.</i>""", panel)
             # Fonction mail() de PHP très probablement bloquée par Free.
             success = False
         if success:
-            QMessageBox.information(self, u"Message envoyé", u"Le message a été envoyé avec succès. Merci !")
+            QMessageBox.information(self, "Message envoyé", "Le message a été envoyé avec succès. Merci !")
             self.close()
         else:
-            QMessageBox.warning(self, u"Connexion impossible.",
-                    u"Impossible d'envoyer le message !\nVous allez être redirigé vers le tracker de bug.")
+            QMessageBox.warning(self, "Connexion impossible.",
+                    "Impossible d'envoyer le message !\nVous allez être redirigé vers le tracker de bug.")
             self.show()
             # On tente de se connecter directement au tracker.
             # (Le navigateur par défaut est susceptible d'avoir des paramètres proxy correctement renseignés).
 
-            data = urlencode({'item_summary': unicode(self.titre.text()).encode('utf8'),
-                            'detailed_desc': unicode(self.commentaire.toPlainText()).encode('utf8'),
-                            'anon_email': unicode(self.mail.text()).encode('utf8')})
+            data = urlencode({'item_summary': self.titre.text(),
+                            'detailed_desc': self.commentaire.toPlainText(),
+                            'anon_email': self.mail.text()},
+                            encoding='utf8')
             open_new_tab("http://wxgeo.free.fr/tracker/?do=newtask&project=1&" + data)
 

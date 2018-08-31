@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------##
 #               Barre d'outils pour la géométrie               #
@@ -22,7 +21,7 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-from PyQt4.QtGui import (QWidget, QLabel, QHBoxLayout)
+from PyQt5.QtWidgets import (QWidget, QLabel, QHBoxLayout)
 
 from ...GUI.barre_outils import BarreOutils
 from ...geolib import Arc_oriente, Arc_points, Point_generique
@@ -41,8 +40,8 @@ class BarreOutilsExEqDte(BarreOutils):
 
         self.sizer.addStretch()
 
-        self.sizer.addWidget(QLabel(u"Utilisez cette barre d'outils pour construire les droites (dans le bon ordre).<br>"
-                       u"<i>Remarque :</i> pour créer une droite, il vous faudra deux points à coordonnées <i>entières</i>."))
+        self.sizer.addWidget(QLabel("Utilisez cette barre d'outils pour construire les droites (dans le bon ordre).<br>"
+                       "<i>Remarque :</i> pour créer une droite, il vous faudra deux points à coordonnées <i>entières</i>."))
 
         self.sizer.addStretch()
         self.setLayout(self.sizer)
@@ -50,9 +49,9 @@ class BarreOutilsExEqDte(BarreOutils):
 
 
     def creer_boutons(self):
-        self.add("F1", (u"Pointeur", u"fleche4", u"Déplacer ou modifier un objet.", self.curseur)).select()
-        self.add("F3", (u"Droite", u"droite2", u"Créer une droite.", self.droite))
-        self.add("F4", (u"Gommer", u"gomme", u"Supprimer des objets.", self.gomme))
+        self.add("F1", ("Pointeur", "fleche4", "Déplacer ou modifier un objet.", self.curseur)).select()
+        self.add("F3", ("Droite", "droite2", "Créer une droite.", self.droite))
+        self.add("F4", ("Gommer", "gomme", "Supprimer des objets.", self.gomme))
 
 
     def rafraichir(self):

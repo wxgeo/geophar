@@ -1,6 +1,4 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------#######
 #           Mathlib 2 (sympy powered)         #
@@ -35,7 +33,7 @@ from sympy import (Basic, expand as expand_, apart, Function, Integer, factorint
                     diff as diff_, divisors as divisors_, cancel, together as together_,
                     limit as limit_, factor as factor_, integrate as integrate_, Sum,
                     sqrtdenest, solve as solve_, product as product_, Matrix,
-                    ZeroMatrix, Identity, FunctionMatrix, Lambda, Dummy)
+                    ZeroMatrix, Identity, FunctionMatrix, Lambda, Dummy, I)
 
 from .custom_objects import Fonction, ProduitEntiers, Decim, \
                             convert2decim
@@ -58,7 +56,7 @@ def expand(expression, variable = None):
 
 
 def evalf(expression, precision=60):
-    u"""Evalue l'expression en respectant sa structure.
+    """Evalue l'expression en respectant sa structure.
 
     Par exemple, un polynôme factorisé reste factorisé après évaluation.
 
@@ -90,9 +88,9 @@ def evalf(expression, precision=60):
 
 
 def factor(expression, variable = None, ensemble = None, decomposer_entiers = True):
-    if isinstance(expression, (int, long, Integer)):
+    if isinstance(expression, (int, Integer)):
         if decomposer_entiers:
-            return ProduitEntiers(*factorint(expression).iteritems())
+            return ProduitEntiers(*factorint(expression).items())
         else:
             return expression
 
@@ -225,6 +223,14 @@ def product(expression,
             return product_(expression, (Symbol("x"), args[0], args[1]))
     return product_(expression, *args)
 
+def _forme_algebrique(expr):
+    "Renvoie sous forme algébrique si ce n'est pas trop long."
+    a, b = expr.as_real_imag()
+    return a + I*b
+    if algebr.count_ops() <= 1.7*expr.count_ops():
+        return algebr
+    return expr
+
 
 def solve(expression, *variables, **kw):
     ensemble = kw.get("ensemble", "R")
@@ -246,7 +252,7 @@ def solve(expression, *variables, **kw):
                     solutions_reelles.append(solution)
                 elif solution.is_real is None:
                     real, imag = solution.as_real_imag()
-                    if abs(imag) < 10**-200:
+                    if abs(imag.evalf(n=200)) < 1e-150:
                         solutions_reelles.append(real)
             return solutions_reelles
         elif ensemble == "Q":
@@ -254,7 +260,9 @@ def solve(expression, *variables, **kw):
         elif ensemble == "N":
             return [solution for solution in solutions if solution.is_integer]
         else:
-            return solutions
+            # On essaie de donner les solutions sous forme algébrique,
+            # si ce n'est pas trop affreux.
+            return [_forme_algebrique(s) for s in solutions]
     else:
         return solve_(expression, variables)
 
@@ -279,11 +287,11 @@ def simplifier_racines(expression):
     except Exception:
         # sqrtdenest() renvoie assez souvent des erreurs.
         if param.debug:
-            print "Warning: error occured during expression denesting:", expression
+            print("Warning: error occured during expression denesting:", expression)
         return expression
 
 def mat(*args):
-    u"""Crée une matrice.
+    """Crée une matrice.
 
     * Si une liste est donné en argument, la liste est convertie en matrice::
 
@@ -351,11 +359,11 @@ def mat(*args):
         return Matrix(FunctionMatrix(args[0], args[1], Lambda((li, co), expr)))
 
 def transpose(M):
-  u"Transposée de la matrice M."
+  "Transposée de la matrice M."
   return M.T
 
 def det(M):
-  u"Déterminant de la matrice M."
+  "Déterminant de la matrice M."
   return M.det()
 
 def valeurs_propres(M):

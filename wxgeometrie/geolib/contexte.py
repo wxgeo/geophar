@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------#######
 #                        Geolib                     #
@@ -27,7 +26,7 @@ from .. import param
 
 
 class Contexte(dict):
-    u"""Gestionnaire de contexte.
+    """Gestionnaire de contexte.
 
     Exemple d'usage:
     >>> from wxgeometrie.geolib.contexte import Contexte
@@ -53,13 +52,13 @@ class Contexte(dict):
     def __getitem__(self, key):
         # On cherche d'abord dans les contextes locaux (en commençant par le dernier)
         for dico in reversed(self.__local_dicts):
-            if dico.has_key(key):
+            if key in dico:
                 return dico[key]
-        if dict.has_key(self, key):
+        if key in self:
             return dict.__getitem__(self, key)
         elif self.__parent is not None:
             return self.__parent[key]
-        raise KeyError, key
+        raise KeyError(key)
 
     def get(self, key, default=None):
         try:
@@ -68,14 +67,14 @@ class Contexte(dict):
             return default
 
     def new(self):
-        u"""Crée un nouveau contexte-fils, qui hérite de celui-ci.
+        """Crée un nouveau contexte-fils, qui hérite de celui-ci.
 
         Toutes les clés non trouvées du contexte-fils sont ensuite
         cherchées dans le contexte père."""
         return self.__class__(parent=self)
 
     def __call__(self, **kw):
-        u"""Cette méthode ne doit *JAMAIS* être appelée en dehors d'un contexte 'with'.
+        """Cette méthode ne doit *JAMAIS* être appelée en dehors d'un contexte 'with'.
 
         Exemple d'usage:
         >>> from wxgeometrie.geolib.contexte import Contexte

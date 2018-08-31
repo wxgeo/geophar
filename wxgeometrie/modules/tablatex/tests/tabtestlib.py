@@ -1,25 +1,35 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
-def assert_tableau(func, chaine, code_latex, **options):
-    code = func(chaine, **options)
-    if code != code_latex:
-        print "-------"
-        print "ERREUR:"
-        print "Actually result is:"
-        print code
-        print "While expected output was:"
-        print code_latex
-        for i, car in enumerate(code):
-            if i >= len(code_latex):
-                print 'Output too long:'
-                print code[i:]
+
+def _yellow(s):
+    return '\033[0;33m' + s + '\033[0m'
+
+def _green(s):
+    return '\033[0;32m' + s + '\033[0m'
+
+
+def assert_tableau(func, chaine, attendu, **options):
+    resultat = func(chaine, **options)
+    if resultat != attendu:
+        print("-------")
+        for i in range(min(len(resultat), len(attendu))):
+            if resultat[i] != attendu[i]:
                 break
-            elif code_latex[i] != car:
-                print 'Difference:'
-                print 'char number:', i
-                print 'result:', repr(code[i:i+10])
-                print 'expected:', repr(code_latex[i:i+10])
-                break
-        print "-------"
-    assert (code == code_latex)
+        resultat = resultat[:i] + _yellow(resultat[i:])
+        attendu = attendu[:i] + _green(attendu[i:])
+        print("ERREUR:")
+        print("Expected output was:")
+        print(attendu)
+        print("While actual result is:")
+        print(resultat)
+        #~ if i >= len(attendu):
+            #~ print('Output too long:')
+            #~ print(resultat[i:])
+        #~ else:
+            #~ print('Difference:')
+            #~ print('char number:', i)
+            #~ print('result:', repr(resultat[i:i+10]))
+            #~ print('expected:', repr(attendu[i:i+10]))
+        print("-------")
+    assert (resultat == attendu)
+

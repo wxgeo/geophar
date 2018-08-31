@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
-from __future__ import with_statement
 
 import re
 from math import cos, pi, e, sqrt
@@ -46,7 +44,7 @@ def test_variables_composees_2():
     f.objets.M6(-1.86605080831, 3.25173210162)
     f.objets.M6.renommer('B', afficher_nom=True)
     f.objets.M6 = Point(2.91916859122, 3.5103926097)
-    f.objets.M6.label(u'B.x', mode='formule')
+    f.objets.M6.label('B.x', mode='formule')
     f.objets.B(-1.18244803695, 1.25635103926)
     f.objets.M6.supprimer()
     f.objets.B(-2.21709006928, 2.64203233256)
@@ -93,11 +91,11 @@ def test_formules():
     o = f.objets
     o.A = Point(e, 3)
     o.M = Point()
-    o.M.label(u'{1/ln(A.x) + A.y}', mode='formule')
+    o.M.label('{1/ln(A.x) + A.y}', mode='formule')
 
     # Détails d'implémentation (peut être modifié par la suite)
     assert o.M.mode_affichage == 'formule'
-    assertEqual(o.M.etiquette.texte, u'{1/ln(A.x)+A.y}')
+    assertEqual(o.M.etiquette.texte, '{1/ln(A.x)+A.y}')
     assert isinstance(o.M.etiquette.formule, Formule)
 
     # Par contre, ceci doit rester valable quelle que soit l'implémentation !
@@ -184,14 +182,15 @@ def test_is_equation():
 
 
 def test_parse_equation():
+    d = dict(globals())
     s = parse_equation("x=2*y-3")
-    exec(s)
-    assert _.equation == (1, -2, 3)
+    exec(s, d)
+    assert d['_'].equation == (1, -2, 3)
     s = parse_equation("(x-2)**2+(y-3)**2=49")
-    exec(s)
-    assert _.rayon == 7
-    assert _.centre.xy == (2, 3)
+    exec(s, d)
+    assert d['_'].rayon == 7
+    assert d['_'].centre.xy == (2, 3)
     s = parse_equation("y=ln(x)-1")
-    exec(s)
-    assert isinstance(_, Courbe)
+    exec(s, d)
+    assert isinstance(d['_'], Courbe)
 

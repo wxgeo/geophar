@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------#######
 #                    Filtres                    #
@@ -22,7 +21,7 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-__doc__ = u"""Gère l'import de fichiers de versions antérieures de WxGéométrie.
+__doc__ = """Gère l'import de fichiers de versions antérieures de WxGéométrie.
 
 À terme, on devrait aussi pouvoir importer ou exporter des fichiers Géogébra par exemple.
 """
@@ -31,16 +30,16 @@ import re
 
 
 def filtre_versions_anterieures(fgeo, version):
-    if fgeo.contenu.has_key("Affichage"):
+    if "Affichage" in fgeo.contenu:
         if fgeo.contenu["Affichage"]:
             parametres = fgeo.contenu["Affichage"][0]
             # 0.109
             if version < [0, 109]:
                 parametres["taille"][0] = parametres["taille"][0][:-1] + ', "|":8}'
 
-    if fgeo.contenu.has_key("Figure"):
+    if "Figure" in fgeo.contenu:
         figures = fgeo.contenu["Figure"]
-        for i in xrange(len(figures)):
+        for i in range(len(figures)):
             # 0.106
             if version < [0, 106]:
                 figures[i] = figures[i].replace("'label': None, ", "'label': '', 'legende': 1, ")
@@ -48,10 +47,10 @@ def filtre_versions_anterieures(fgeo, version):
             # 0.108
             if version < [0, 108]:
                 lignes = figures[i].split("\n")
-                reg = re.compile(u"[A-Za-z_][A-Za-z_0-9]*[=](Point|Intersection|Glisseur|Projete|Barycentre|Milieu|Centre|Orthocentre)")
+                reg = re.compile("[A-Za-z_][A-Za-z_0-9]*[=](Point|Intersection|Glisseur|Projete|Barycentre|Milieu|Centre|Orthocentre)")
                 for j in range(len(lignes)):
                     if not re.match(reg, lignes[j]):
-                        lignes[j] = lignes[j].replace(u"'legende': 1", u"'legende': 2")
+                        lignes[j] = lignes[j].replace("'legende': 1", "'legende': 2")
                 figures[i] = "\n".join(lignes)
 
             # 0.120 alpha 1
@@ -114,7 +113,7 @@ def filtre_versions_anterieures(fgeo, version):
             # t, x, y sont maintenant des noms réservés pour un usage futur.
             if version < [0, 120, -2, 6]:
                 lignes = figures[i].split("\n")
-                for num_ligne in xrange(len(lignes)):
+                for num_ligne in range(len(lignes)):
                     if len(lignes[num_ligne]) > 1 and lignes[num_ligne][0] in "txy" and lignes[num_ligne][1] in "=.":
                         lignes[num_ligne] = "Objet_" + lignes[num_ligne]
                 figures[i] = "\n".join(lignes)
@@ -159,7 +158,7 @@ def filtre_versions_anterieures(fgeo, version):
                                   'Point_reflexion', 'Polygone_regulier_centre',
                                   'Point_rotation', 'Point_droite',
                                   'Interpolation_cubique', 'Interpolation_lineaire',
-                                  'Hexagone', 'Sommet', 'Objet_numerique',
+                                  'Hexagone', 'Sommet',
                                   'Centre_gravite', 'Glisseur_vecteur',
                                   'Intersection_generique', 'PointTangence',
                                   'Mediatrice', 'Rectangle', 'Objet', 'Bissectrice',
@@ -279,7 +278,7 @@ def filtre_versions_anterieures(fgeo, version):
                                                     ".style(mode = %s)" % repr(new))
 
     if version < [13, 1]:
-        if fgeo.contenu.has_key("Diagramme") and fgeo.module == "statistiques":
+        if "Diagramme" in fgeo.contenu and fgeo.module == "statistiques":
             diag = fgeo.contenu["Diagramme"][0]
             origine = diag.setdefault("origine", [{}])[0]
             origine.setdefault('x', [''])
@@ -304,7 +303,7 @@ def filtre_versions_anterieures(fgeo, version):
             except ValueError:
                 pass
 
-    if fgeo.contenu.has_key("Courbe") and fgeo.module == 'traceur':
+    if "Courbe" in fgeo.contenu and fgeo.module == 'traceur':
         courbes = fgeo.contenu["Courbe"]
         figures = fgeo.contenu["Figure"]
         for i, courbe in enumerate(courbes):

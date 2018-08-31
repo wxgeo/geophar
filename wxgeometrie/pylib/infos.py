@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 
 ##--------------------------------------#######
@@ -28,12 +27,13 @@ import matplotlib
 import os
 import platform
 import locale
-import PyQt4.QtCore as qt
+import PyQt5.QtCore as qt
 
 try:
+    # infos.py helps debuging, so should almost never fail.
     from ..param import NOMPROG, encodage
 except Exception:
-    NOMPROG = u"Logiciel"
+    NOMPROG = "Logiciel"
     encodage = "utf8"
 
 class dossier(object):
@@ -44,18 +44,18 @@ class dossier(object):
         l = []
         l.append("+ " + self.titre + ":")
         if hasattr(self, "version"):
-            l.append(u"     Version: " + self.version)
+            l.append("     Version: " + self.version)
         for key in self.__dict__:
             if key not in ("titre", "version"):
                 content = getattr(self, key)
-                if not isinstance(content, unicode):
-                    if isinstance(content, str):
-                        content = unicode(content, encodage, errors="replace")
+                if not isinstance(content, str):
+                    if isinstance(content, bytes):
+                        content = str(content, encodage, errors="replace")
                     else:
                         # If content isn't a string, specifying encodage raises an error.
-                        content = unicode(content)
-                l.append(u"     %s:  %s" %(key.capitalize(), content))
-        return u"\n".join(l) + u"\n\n"
+                        content = str(content)
+                l.append("     %s:  %s" %(key.capitalize(), content))
+        return "\n".join(l) + "\n\n"
 
 
 
@@ -99,7 +99,7 @@ def informations_configuration():
     dossier_local.encodage = locale.getpreferredencoding()
 
     dossier_python = dossier("Python")
-    dossier_python.encodage = sys.getdefaultencoding() + u" / Noms de fichiers: " + sys.getfilesystemencoding()
+    dossier_python.encodage = sys.getdefaultencoding() + " / Noms de fichiers: " + sys.getfilesystemencoding()
     dossier_python.version = sys.version
     dossier_python.executable = sys.executable
 
@@ -110,8 +110,8 @@ def informations_configuration():
 
 
     dossier_pyqt = dossier("PyQt")
-    dossier_pyqt.portage = u"PyQt %s (%s) %s bits" %(qt.PYQT_VERSION_STR, qt.PYQT_VERSION, qt.QSysInfo.WordSize)
-    dossier_pyqt.version = u'Qt %s (%s)' %(qt.QT_VERSION_STR, qt.QT_VERSION)
+    dossier_pyqt.portage = "PyQt %s (%s) %s bits" %(qt.PYQT_VERSION_STR, qt.PYQT_VERSION, qt.QSysInfo.WordSize)
+    dossier_pyqt.version = 'Qt %s (%s)' %(qt.QT_VERSION_STR, qt.QT_VERSION)
 
     dossier_matplotlib = dossier("Matplolib")
     dossier_matplotlib.version = matplotlib.__version__
@@ -130,26 +130,6 @@ def informations_configuration():
     except:
         dossier_sympy.version = "?"
 
-    dossier_psyco = dossier("Psyco")
-    try:
-        import psyco
-        dossier_psyco.version = ".".join(str(elt) for elt in psyco.version_info)
-        try:
-            from .. import param
-            if param.charger_psyco is False:
-                dossier_psyco.utilisation = u"unused"
-            elif param.charger_psyco is None:
-                dossier_psyco.utilisation = u"profile"
-            elif param.charger_psyco is True:
-                dossier_psyco.utilisation = u"full"
-            else:
-                dossier_psyco.utilisation = u"inconnue"
-        except ImportError:
-            dossier_psyco.utilisation = u"?"
-    except ImportError:
-        dossier_psyco.version = u"Psyco non trouve."
-    except Exception:
-        dossier_psyco.version = u"#ERREUR#"
 
     dossier_wxgeometrie = dossier(NOMPROG)
     try:
@@ -157,10 +137,9 @@ def informations_configuration():
         dossier_wxgeometrie.version = param.version
         dossier_wxgeometrie.session = param.ID
     except Exception:
-        dossier_wxgeometrie.version = u"?"
-        dossier_wxgeometrie.session = u"?"
+        dossier_wxgeometrie.version = "?"
+        dossier_wxgeometrie.session = "?"
 
     return (dossier_os.contenu() + dossier_local.contenu() + dossier_python.contenu()
                                 + dossier_pyqt.contenu() + dossier_matplotlib.contenu()
-                                + dossier_sympy.contenu() + dossier_psyco.contenu()
-                                + dossier_wxgeometrie.contenu())
+                                + dossier_sympy.contenu() + dossier_wxgeometrie.contenu())

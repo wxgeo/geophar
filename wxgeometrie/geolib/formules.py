@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------#######
 #                  Formule                    #
@@ -27,7 +26,6 @@ from weakref import ref
 
 from .routines import nice_display
 
-from ..pylib import uu
 from .. import param
 
 class Formule(object):
@@ -41,7 +39,7 @@ class Formule(object):
     def _set_feuille(self, value):
         self.__feuille = value
         liste = self._contenu[:]
-        for i in xrange(1, len(liste), 2):
+        for i in range(1, len(liste), 2):
             self._contenu[i].feuille = value
 
     feuille = property(_get_feuille, _set_feuille)
@@ -62,12 +60,12 @@ class Formule(object):
         else:
             liste = re.split("([{][^}]+[}])", chaine)
 
-        for i in xrange(1, len(liste), 2):
+        for i in range(1, len(liste), 2):
             cache = liste[i][1:-1] # "{A.x}" -> "A.x"
             var = liste[i] = Variable(cache)
             var._cache_formule = cache
 
-            var.enfants.append(parent if parent.etiquette is None
+            var.enfants.add(parent if parent.etiquette is None
                                       else parent.etiquette)
 ##            # on va maintenant redéfinir la méthode affiche de toutes les variables de la formule :
               # au lieu d'être inactive, la méthode affiche va actualiser l'affichage de l'objet contenant la formule.
@@ -98,16 +96,16 @@ class Formule(object):
 
     def __repr__(self):
         liste = self._contenu[:]
-        for i in xrange(1, len(liste), 2):
+        for i in range(1, len(liste), 2):
             if liste[i].val is not None:
                 liste[i]._cache_formule = str(liste[i])
             liste[i] = "{" + liste[i]._cache_formule + "}"
-        return repr(uu("".join(liste)))
+        return repr("".join(liste))
 
 
-    def __unicode__(self):
+    def __str__(self):
         liste = self._contenu[:]
-        for i in xrange(1, len(liste), 2):
+        for i in range(1, len(liste), 2):
             if liste[i].val is None:
                 s = self._caractere_erreur
             else:
@@ -115,8 +113,5 @@ class Formule(object):
             #~ if s == "None":
                 #~ s = "<?>"
             liste[i] = s
-        return uu("".join(liste))
+        return "".join(liste)
 
-
-    def __str__(self):
-        return unicode(self).encode(param.encodage)

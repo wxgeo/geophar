@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
-from __future__ import with_statement
 
 #    WxGeometrie
 #    Dynamic geometry, graph plotter, and more for french mathematic teachers.
@@ -21,13 +19,16 @@ from __future__ import with_statement
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import re
-from cStringIO import StringIO
+from io import StringIO
 from functools import partial
 
-from PyQt4.QtCore import Qt, QTimer
-from PyQt4.QtGui import QCursor, QImage
+from PyQt5.QtCore import Qt, QTimer
+from PyQt5.QtGui import QCursor, QImage
+
 from numpy import array
-from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, FigureCanvasQTAggBase
+from matplotlib.backends.backend_qt5 import FigureCanvasQT
+from matplotlib.backends.backend_agg import FigureCanvasAgg
 
 from ..API.canvas import Canvas
 from .app import app
@@ -44,7 +45,7 @@ from ..geolib.objet import Objet
 #~ from ..geolib.constantes import NOM
 
 class MiniEditeur:
-    u"""Le mini éditeur de texte permet de taper du texte directement
+    """Le mini éditeur de texte permet de taper du texte directement
     dans le canevas, sans utiliser une boîte de dialogue.
     Il est utilisé lorsqu'on crée un texte avec la souris,
     ou lorsqu'on crée un objet géométrique (point, cercle...) qu'on
@@ -56,12 +57,12 @@ class MiniEditeur:
 
 
     def init(self, objet, mode = 0):
-        u"""Edition d'un nouvel objet.
+        """Edition d'un nouvel objet.
         mode = 0: édition du nom de l'objet
         mode = 1: édition de l'étiquette de l'objet"""
         if not self.actif:
             if param.debug:
-                print(u"Éditeur fermé (%s)." %objet.nom)
+                print("Éditeur fermé (%s)." %objet.nom)
             return
         self.close() # finalise l'éventuelle édition en cours
         self.texte = ""
@@ -77,7 +78,7 @@ class MiniEditeur:
             self.objet.etiquette.label_temporaire = txt
 
     def display(self):
-        u"Affiche le texte en train d'être écrit."
+        "Affiche le texte en train d'être écrit."
         self._display(self.texte)
 
     def cancel(self):
@@ -111,18 +112,18 @@ class MiniEditeur:
                     self.mode = 1 # label
                 if self.mode:
                     self.objet.label(self.texte)
-                    panel.action_effectuee(u"%s.label(%s)" %(nom, repr(self.texte)))
+                    panel.action_effectuee("%s.label(%s)" %(nom, repr(self.texte)))
                 else:
                     self.objet.renommer(self.texte, afficher_nom=True)
-                    panel.action_effectuee(u"%s.renommer(%s, afficher_nom=True)" % (nom, repr(self.texte)))
+                    panel.action_effectuee("%s.renommer(%s, afficher_nom=True)" % (nom, repr(self.texte)))
                     canvas.detecter()
             except RuntimeError: # on reste en mode edition
                 if not param.nom_multiple:
                     self.display()
                     raise
                 self.objet.label(self.texte) # par défaut, si A est réattribué à un point, il sera traité comme étiquette.
-                panel.action_effectuee(u"%s.label(%s)" %(nom, repr(self.texte)))
-                canvas.message(u"Attention : ce nom est déjà attribué.")
+                panel.action_effectuee("%s.label(%s)" %(nom, repr(self.texte)))
+                canvas.message("Attention : ce nom est déjà attribué.")
             except:
                 self.display()
                 raise
@@ -157,7 +158,7 @@ class MiniEditeur:
         # return None si non actif
 
     def close(self):
-        u"Ferme l'éditeur. Ne renvoie pas d'erreur s'il est déjà fermé."
+        "Ferme l'éditeur. Ne renvoie pas d'erreur s'il est déjà fermé."
         if self:
             try:
                 self.ok()
@@ -166,7 +167,7 @@ class MiniEditeur:
                 print_error()
 
 
-    def __nonzero__(self):
+    def __bool__(self):
         return self.objet is not None
 
 
@@ -176,14 +177,24 @@ class MiniEditeur:
 
 class QtCanvas(FigureCanvasQTAgg, Canvas):
     def __init__(self, parent, fixe = False):
-        u"Si fixe = True, l'utilisateur ne peut pas zoomer ou recadrer la fenêtre d'affichage avec la souris."
+        "Si fixe = True, l'utilisateur ne peut pas zoomer ou recadrer la fenêtre d'affichage avec la souris."
 
         self.parent = parent
         # fenetre_principale>onglets>panel>canvas
         self.fenetre_principale = self.parent.parent.parent
+
         # initialisation dans cet ordre (self.figure doit être défini pour initialiser FigureCanvas)
         Canvas.__init__(self, couleur_fond = self.param("couleur_fond"))
-        FigureCanvasQTAgg.__init__(self, self.figure)
+        FigureCanvasQT.__init__(self, figure=self.figure)
+
+        # From matplotlib/backends/backend_qt5agg.py
+        # Calling FigureCanvasQTAggBase.__init__() directly results in a strange error.
+        self.setAttribute(Qt.WA_OpaquePaintEvent)
+        self._agg_draw_pending = False
+        self._bbox_queue = []
+        self._drawRect = None
+
+        FigureCanvasAgg.__init__(self, figure=self.figure)
 
         ##if param.plateforme == "Linux":
             ##self.SetSize(wx.Size(10, 10))
@@ -247,14 +258,14 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
 
 
     def activer_affichage(self):
-        u"""Activer l'affichage.
+        """Activer l'affichage.
 
         Cette méthode est appelée lorsque l'onglet devient actif."""
         self._timer.start()
 
 
     def desactiver_affichage(self):
-        u"""Désactiver l'affichage.
+        """Désactiver l'affichage.
 
         Cette méthode est appelée lorsque  l'onglet devient inactif.
         Cela évite de solliciter le processeur pour rien."""
@@ -269,7 +280,7 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
         return self.parent.param(*args, **kw)
 
     def message(self, txt, lieu=0, temporaire=True):
-        u"""Affiche un message dans la barre d'état.
+        """Affiche un message dans la barre d'état.
 
         Par défaut, le message est temporaire, c'est-à-dire qu'il sera effacé
         dès que l'utilisateur bougera la souris, pour laisser la place au
@@ -299,7 +310,7 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
 
 
     def _affiche_module(self):
-        u"Affichage spécifique au module en cours."
+        "Affichage spécifique au module en cours."
         self.parent._affiche()
 
     def exporter(self, *args, **kw):
@@ -327,7 +338,7 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
 ###############################
 
     def coordonnees(self, event, dx = 0, dy = 0):
-        u"""Renvoie les coordonnées correspondant à l'évènement, converties en coordonnées de la feuille.
+        """Renvoie les coordonnées correspondant à l'évènement, converties en coordonnées de la feuille.
         Si [Maj] est enfoncée, les coordonnées sont arrondies à la graduation la plus proche.
         dx et dy correspondent au décalage entre les coordonnées de l'objet, et le point où on l'a saisit.
         (Par exemple, un texte n'est pas forcément saisi au niveau de son point d'ancrage).
@@ -342,7 +353,7 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
 
 
     def interagir(self, fonction, aide = None, fonction_bis = None):
-        u"""Permet l'interaction du canevas avec un module externe.
+        """Permet l'interaction du canevas avec un module externe.
 
         À chaque clic de souris, la fonction indiquée est appelée, avec
         un certains nombre de paramètres comme arguments :
@@ -407,7 +418,7 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
             self.message('')
 
     def detecter(self, position = None):
-        u"""Détecte les objets à proximité de la position indiquée.
+        """Détecte les objets à proximité de la position indiquée.
         Typiquement, on utilise self.detecter(lieu(event))."""
 
         self.redetecter = False
@@ -432,7 +443,7 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
                         self.selections.append(obj)
                 except:
                     print_error()
-                    self.message(u"Erreur: les coordonnées de %s sont incalculables." %obj.nom)
+                    self.message("Erreur: les coordonnées de %s sont incalculables." %obj.nom)
             proximite = len(self.selections)
             if proximite:
                 self.select = self.selections[0]
@@ -457,7 +468,7 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
 
 
     def test_mode(self, event):
-        u"""Retourne le mode ('defaut', 'select' ou 'zoom').
+        """Retourne le mode ('defaut', 'select' ou 'zoom').
 
         La méthode `.test_mode()` ne tient pas seulement compte de self.mode,
         mais aussi des touches pressées (CTRL, ALT...), et de self.fixe."""
@@ -477,8 +488,8 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
 
 
     def wheelEvent(self, event):
-        u"Gestion du zoom par la roulette de la souris."
-        pas = event.delta()/120.
+        "Gestion du zoom par la roulette de la souris."
+        pas = event.angleDelta().y()/120.
         if ctrl_down(event):
             # Grossir textes et lignes (ne pas changer la fenêtre).
             if pas > 0:
@@ -499,7 +510,7 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
                 self.parent.action_effectuee("zoom_out", signature = 'zoom_out')
 
     def _detecter_coin_actif(self, event):
-        u"""Retourne le coin du rectangle de sélection situé sous le pointeur de la souris.
+        """Retourne le coin du rectangle de sélection situé sous le pointeur de la souris.
 
         Retourne None si la souris ne pointe pas sur un coin."""
         px, py = lieu(event)
@@ -575,7 +586,7 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
                                     break
                             except:
                                 print_error()
-                                self.message(u"Erreur: impossible de trouver l'étiquette de %s.." % objet.nom)
+                                self.message("Erreur: impossible de trouver l'étiquette de %s.." % objet.nom)
                 if self.etiquette_selectionnee:
                     self.setCursor(Qt.PointingHandCursor)
                     self.etiquette_selectionnee(*self.coordonnees(event, *self.decalage_coordonnees))
@@ -632,9 +643,9 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
         def ajuste():
             self.action_en_cours = 'edit_select'
             self.coin_actif = None
-            self._message_precedent = self.message(u'Sélectionnez un coin '
-                          u'pour étendre la sélection (ESC pour annuler, '
-                          u'clic-droit pour exporter/éditer).', temporaire=False)
+            self._message_precedent = self.message('Sélectionnez un coin '
+                          'pour étendre la sélection (ESC pour annuler, '
+                          'clic-droit pour exporter/éditer).', temporaire=False)
 
 
         def exporte():
@@ -650,18 +661,18 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
                 self.exporter(filename, zone = (x0, x1, y0, y1))
                 actuelle.sauvegarde["export"] = filename
 
-        menu = PopUpMenu(u"Zone sélectionnée", self, 'crayon')
-        action = menu.addAction(u'Ajuster la sélection')
+        menu = PopUpMenu("Zone sélectionnée", self, 'crayon')
+        action = menu.addAction('Ajuster la sélection')
         action.triggered.connect(ajuste)
 
-        action = menu.addAction(u'Exporter la zone comme image')
+        action = menu.addAction('Exporter la zone comme image')
         action.triggered.connect(exporte)
 
         if objets_dans_la_zone:
             categories = ['tous'] + sorted(set(objet.style("categorie") for objet in objets_dans_la_zone))
 
             def objets(categorie='tous'):
-                u"Retourne uniquement les objets de la zone sélectionnée d'une catégorie donnée."
+                "Retourne uniquement les objets de la zone sélectionnée d'une catégorie donnée."
                 if categorie == 'tous':
                     return (obj for obj in objets_dans_la_zone)
                 else:
@@ -670,20 +681,20 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
 
             def supprimer(categorie='tous'):
                 noms = ','.join(obj.nom for obj in objets(categorie))
-                self.executer(u'supprimer(%s)' % noms)
+                self.executer('supprimer(%s)' % noms)
 
             def masquer(categorie='tous'):
                 with self.geler_affichage(actualiser=True):
                     for objet in objets(categorie):
-                        self.executer(u"%s.cacher()" % objet.nom)
+                        self.executer("%s.cacher()" % objet.nom)
 
             def editer(categorie='tous'):
                 win = Proprietes(self, list(objets(categorie)))
                 win.show()
 
-            for title, func in ((u"Supprimer les objets", supprimer),
-                                  (u'Masquer les objets', masquer),
-                                  (u'Éditer les objets', editer)):
+            for title, func in (("Supprimer les objets", supprimer),
+                                  ('Masquer les objets', masquer),
+                                  ('Éditer les objets', editer)):
                 submenu = menu.addMenu(title)
                 for categorie in categories:
                     action = submenu.addAction(categorie.capitalize())
@@ -780,7 +791,7 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
     def onLeftUp(self, event):
         if self.etiquette_selectionnee:
             x, y = self.etiquette_selectionnee.coordonnees
-            self.parent.action_effectuee(u"%s.etiquette(%s, %s)" %(self.etiquette_selectionnee.parent.nom, x, y))
+            self.parent.action_effectuee("%s.etiquette(%s, %s)" %(self.etiquette_selectionnee.parent.nom, x, y))
             self.etiquette_selectionnee = None
             return
 
@@ -817,7 +828,7 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
 
         if self.action_en_cours == 'shift':
             self.interrompre_action_en_cours()
-            self.parent.action_effectuee(u"fenetre = " + str(self.fenetre))
+            self.parent.action_effectuee("fenetre = " + str(self.fenetre))
 
 
     def editer(self, mode = 0):
@@ -835,12 +846,12 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
         txt = event.text()
         modifiers = event.modifiers()
         accept = True
-        debug(u"key: ", key)
+        debug("key: ", key)
         if key == Qt.Key_Delete and self.select:
             if shift_down(event):
-                self.executer(u"%s.cacher()" %self.select.nom)
+                self.executer("%s.cacher()" %self.select.nom)
             else:
-                self.executer(u"%s.supprimer()" %self.select.nom)
+                self.executer("%s.supprimer()" %self.select.nom)
         elif key in (Qt.Key_Return, Qt.Key_Enter) and self.editeur.objet is not self.select:
             self.editer(shift_down(event))
         elif self.editeur and not self.editeur.key(key, txt, modifiers):
@@ -850,7 +861,7 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
             if self.action_en_cours is not None:
                 self.interrompre_action_en_cours()
             elif self.interaction:
-                print "ESCAPE !"
+                print("ESCAPE !")
                 self.interaction(special="ESC")
                 accept = True
 
@@ -872,5 +883,5 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
 
     def leaveEvent(self, event):
         # self.execute_on_idle(
-        self.feuille_actuelle.objets_en_gras
+        #self.feuille_actuelle.met_objets_en_gras
         FigureCanvasQTAgg.leaveEvent(self, event)

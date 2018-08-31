@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 #    WxGeometrie
 #    Dynamic geometry, graph plotter, and more for french mathematic teachers.
@@ -20,7 +19,7 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 
-import optparse, os, sys
+import argparse, os, sys
 
 from .version import NOMPROG2, version
 nomprog = NOMPROG2.lower()
@@ -36,7 +35,7 @@ nomprog = NOMPROG2.lower()
 #     NOMPROG2, version = .split(' version ')
 
 def lire_arguments():
-    u"""On récupère les options éventuelles passées au programme.
+    """On récupère les options éventuelles passées au programme.
 
     -a ou --all : essaie de détecter tous les modules possibles pour les intégrer au démarrage
     ex: python wxgeometrie.pyw --all monfichier1.geo monfichier2.geo
@@ -49,32 +48,33 @@ def lire_arguments():
     Retour : (options, args)
     """
 
-    parser = optparse.OptionParser(prog = NOMPROG2, usage = "usage: %prog [options] [fichiers...]",
-                                   version = "%prog " + version,
-                                   description = NOMPROG2 + """ est un logiciel de mathematiques de niveau lycee.
+    parser = argparse.ArgumentParser(prog=NOMPROG2, usage="usage: %prog [options] [fichiers...]",
+                                   description=NOMPROG2 + """ est un logiciel de mathematiques de niveau lycee.
                                                     Il permet notamment de faire de la geometrie dynamique et du calcul formel.""")
-    parser.add_option("-a", "--all", action = "store_true", help="detecter tous les modules presents et les integrer au demarrage")
-    parser.add_option("-m", "--modules", help="specifier les modules a charger. ex: %s -m traceur,calculatrice" %nomprog)
-    parser.add_option("-l", "--lister-modules", action = "store_true", help="affiche la liste des modules disponibles.")
-    parser.add_option("-d", "--defaut", action = "store_true", help="utiliser les parametres par defaut, sans tenir compte des preferences")
-    parser.add_option("-n", "--nouveau", action = "store_true", help="ouvrir une nouvelle session vierge")
-    parser.add_option("--restaurer", action = "store_true", help="restaurer ponctuellement la session precedente.")
-    parser.add_option("-b", "--debug", action = "store_true", help="afficher les eventuels messages d'erreurs lors de l'execution")
-    parser.add_option("--nodebug", action = "store_true", help="ne pas afficher les messages d'erreurs lors de l'execution")
-    parser.add_option("-w", "--warning", action = "store_true", help="afficher les eventuels avertissements lors de l'execution")
-    parser.add_option("--nowarning", action = "store_true", help="ne pas afficher les avertissements lors de l'execution")
-    parser.add_option("-p", "--parametres", help="modifier les parametres. ex: %s -p 'tolerance=0.001;version=\"1.0\"'" %nomprog)
-    parser.add_option("-r", "--recompile", action = "store_true", help="supprimer recursivement tous les fichiers .pyc, pour obliger python a recompiler tous les fichiers sources au demarrage.")
-    parser.add_option("-s", "--script", action = "store_true", help="passer en mode script (ie. sans interface graphique). Ex: %s -s -i mon_script.txt -o mon_image.png" %nomprog)
-    parser.add_option("-i", "--input", help="(mode script) fichier contenant le script de construction de figure, ou fichier .geo.")
-    parser.add_option("-o", "--output", help="(mode script) fichier image. L'extension determine le type de fichier.")
+    parser.add_argument("filenames", metavar='FILENAME', nargs='*')
+    parser.add_argument("-a", "--all", action="store_true", help="detecter tous les modules presents et les integrer au demarrage")
+    parser.add_argument("-m", "--modules", help="specifier les modules a charger. ex: %s -m traceur,calculatrice" %nomprog)
+    parser.add_argument("-l", "--lister-modules", action="store_true", help="affiche la liste des modules disponibles.")
+    parser.add_argument("-d", "--defaut", action="store_true", help="utiliser les parametres par defaut, sans tenir compte des preferences")
+    parser.add_argument("-n", "--nouveau", action="store_true", help="ouvrir une nouvelle session vierge")
+    parser.add_argument("--restaurer", action="store_true", help="restaurer ponctuellement la session precedente.")
+    parser.add_argument("-b", "--debug", action="store_true", help="afficher les eventuels messages d'erreurs lors de l'execution")
+    parser.add_argument("--nodebug", action="store_true", help="ne pas afficher les messages d'erreurs lors de l'execution")
+    parser.add_argument("-w", "--warning", action="store_true", help="afficher les eventuels avertissements lors de l'execution")
+    parser.add_argument("--nowarning", action="store_true", help="ne pas afficher les avertissements lors de l'execution")
+    parser.add_argument("-p", "--parametres", help="modifier les parametres. ex: %s -p 'tolerance=0.001;version=\"1.0\"'" %nomprog)
+    parser.add_argument("-r", "--recompile", action="store_true", help="supprimer recursivement tous les fichiers .pyc, pour obliger python a recompiler tous les fichiers sources au demarrage.")
+    parser.add_argument("-s", "--script", action="store_true", help="passer en mode script (ie. sans interface graphique). Ex: %s -s -i mon_script.txt -o mon_image.png" %nomprog)
+    parser.add_argument("-i", "--input", help="(mode script) fichier contenant le script de construction de figure, ou fichier .geo.")
+    parser.add_argument("-o", "--output", help="(mode script) fichier image. L'extension determine le type de fichier.")
+    parser.add_argument('--version', action='version', version=version)
 
     return parser.parse_args()
 
 
 
-def traiter_arguments(options, args):
-    u"""Modification des paramètres en fonction des arguments passés.
+def traiter_arguments(args):
+    """Modification des paramètres en fonction des arguments passés.
 
     Le traitement des arguments est séparé de leur lecture,
     afin que le splash screen puisse être affiché le plus tôt possible."""
@@ -82,55 +82,55 @@ def traiter_arguments(options, args):
 
     parametres_additionnels = {}
 
-    if options.defaut:
+    if args.defaut:
         param.charger_preferences = False
 
-    if options.lister_modules:
-        print(u"\nListe des modules détectés :\n----------------------------")
-        print '  '.join(param.modules)
+    if args.lister_modules:
+        print("\nListe des modules détectés :\n----------------------------")
+        print('  '.join(param.modules))
         exit()
 
-    if options.modules:
+    if args.modules:
         # Les séparateurs acceptés entre les noms de modules sont , et ;
-        if ',' in options.modules:
-            a_activer = options.modules.split(',')
+        if ',' in args.modules:
+            a_activer = args.modules.split(',')
         else:
-            a_activer = options.modules.split(';')
+            a_activer = args.modules.split(';')
         parametres_additionnels["modules_actifs"] = dict((module, (module in a_activer)) for module in param.modules)
 
-    if options.all:
+    if args.all:
         parametres_additionnels["modules_actifs"] = dict.fromkeys(param.modules, True)
 
-    if options.debug:
+    if args.debug:
         parametres_additionnels["debug"] = True
 
-    if options.nodebug:
+    if args.nodebug:
         parametres_additionnels["debug"] = False
 
-    if options.warning:
+    if args.warning:
         parametres_additionnels["warning"] = True
 
-    if options.nowarning:
+    if args.nowarning:
         parametres_additionnels["warning"] = False
 
-    if options.parametres:
-        for parametre in options.parametres.split(";"):
+    if args.parametres:
+        for parametre in args.parametres.split(";"):
             try:
                 nom, valeur = parametre.split("=", 1)
                 parametres_additionnels[nom] = eval(valeur) # pas sensass question sécurité... :-( (?)
             except Exception:
                 #raise
-                print "Erreur: Parametre incorrect :", parametre
-                print sys.exc_info()[0].__name__, ": ", sys.exc_info()[1]
+                print("Erreur: Parametre incorrect :", parametre)
+                print(sys.exc_info()[0].__name__, ": ", sys.exc_info()[1])
 
-    if options.recompile:
-        for root, dirs, files in os.walk(os.getcwdu()):
+    if args.recompile:
+        for root, dirs, files in os.walk(os.getcwd()):
             for file in files:
                 if file.endswith(".pyc"):
                     os.remove(os.path.join(root,file))
 
-    if (options.input or options.output) and not options.script:
-        print("Warning: options --input et --output incorrectes en dehors du mode script.\n"
+    if (args.input or args.output) and not args.script:
+        print("Warning: args --input et --output incorrectes en dehors du mode script.\n"
               "Exemple d'utilisation correcte : %s -s -i mon_script.txt -o mon_image.png." %nomprog)
 
     arguments = []
@@ -138,15 +138,16 @@ def traiter_arguments(options, args):
     # Sous les Unix-like, les espaces dans les noms de fichiers sont mal gérés par python semble-t-il.
     # Par exemple, "mon fichier.geo" est coupé en "mon" et "fichier.geo"
     complet = True
-    for arg in args:
+    for arg in args.filenames:
         if complet:
             arguments.append(arg)
         else:
             arguments[-1] += " " + arg
         complet = arg.endswith(".geo") or arg.endswith(".geoz")
+    del args.filenames
 
     for nom in parametres_additionnels:
         if not hasattr(param, nom):
-            print(u"Attention: Paramètre inconnu : " + nom)
+            print("Attention: Paramètre inconnu : " + nom)
 
-    return parametres_additionnels, arguments, options
+    return parametres_additionnels, arguments, args

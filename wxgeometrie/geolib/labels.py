@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
-from __future__ import with_statement
 
 ##--------------------------------------#######
 #                   Labels                    #
@@ -36,7 +34,7 @@ from ..pylib import property2
 
 
 class Label_generique(Texte_editable_generique):
-    u"""Un label (étiquette accolée à l'objet)
+    """Un label (étiquette accolée à l'objet)
 
     Le label est crée automatiquement lors de la création de l'objet.
     Le label n'est pas un 'vrai' objet, il n'est pas enregistré sur la feuille."""
@@ -46,7 +44,7 @@ class Label_generique(Texte_editable_generique):
     _utiliser_coordonnees_approchees = True
 
     __parent = parent = Argument(Objet)
-    __texte = texte = Argument("unicode", _get_texte, _set_texte)
+    __texte = texte = Argument("str", _get_texte, _set_texte)
 
     def __init__(self, parent, texte='', **styles):
         self.__texte = texte = Ref(texte)
@@ -84,7 +82,7 @@ class Label_generique(Texte_editable_generique):
         raise NotImplementedError    # sera implemente differemment pour chaque type de label
 
     def _creer_trace(self):
-        u"Pas de trace pour les étiquettes."
+        "Pas de trace pour les étiquettes."
         pass
 
     def figure_perimee(self):
@@ -132,7 +130,7 @@ class Label_generique(Texte_editable_generique):
     y = __y
 
     def angle(self):
-        u"""L'angle d'affichage du texte.
+        """L'angle d'affichage du texte.
 
         Pour les objets qui ont une pente (droites, segments), si
         style('angle') == 'auto', alors l'angle retourné est celui correspondant
@@ -151,7 +149,7 @@ class Label_generique(Texte_editable_generique):
         return angle
 
     def alignement_vertical(self):
-        u"""L'alignement vertical du texte ('top', 'bottom' ou 'center').
+        """L'alignement vertical du texte ('top', 'bottom' ou 'center').
 
         Pour les objets qui ont une pente (droites, segments), si
         style('alignement_vertical') == 'auto', alors l'alignement retourné est
@@ -166,12 +164,12 @@ class Label_generique(Texte_editable_generique):
 
 
 class Label_point(Label_generique):
-    u"L'étiquette d'un point."
+    "L'étiquette d'un point."
 
     _style_defaut = {'mode': 'nom'}
 
     __parent = parent = Argument('Point_generique')
-    __texte = texte = Argument("unicode", _get_texte, _set_texte)
+    __texte = texte = Argument("str", _get_texte, _set_texte)
 
     def __init__(self, parent, texte='', **styles):
         self.__texte = texte = Ref(texte)
@@ -205,7 +203,7 @@ class Label_point(Label_generique):
 
 
 class Label_glisseur(Label_generique):
-    u"""Classe mère de tous les labels utilisant un objet glisseur.
+    """Classe mère de tous les labels utilisant un objet glisseur.
 
     `classe` doit contenir le type de glisseur utilisé.
     """
@@ -213,7 +211,7 @@ class Label_glisseur(Label_generique):
     glisseur = NotImplemented
 
     __parent = parent = Argument(Objet)
-    __texte = texte = Argument("unicode", _get_texte, _set_texte)
+    __texte = texte = Argument("str", _get_texte, _set_texte)
 
     def __init__(self, parent, texte='', **styles):
         self.__texte = texte = Ref(texte)
@@ -246,12 +244,12 @@ class Label_glisseur(Label_generique):
 
 
 class Label_segment(Label_glisseur):
-    u"""L'étiquette d'un segment."""
+    """L'étiquette d'un segment."""
 
     glisseur = Glisseur_segment
 
     __parent = parent = Argument('Segment')
-    __texte = texte = Argument("unicode", _get_texte, _set_texte)
+    __texte = texte = Argument("str", _get_texte, _set_texte)
 
     def __init__(self, parent, texte='', **styles):
         self.__texte = texte = Ref(texte)
@@ -260,12 +258,12 @@ class Label_segment(Label_glisseur):
 
 
 class Label_vecteur(Label_glisseur):
-    u"""L'étiquette d'un vecteur."""
+    """L'étiquette d'un vecteur."""
 
     glisseur = Glisseur_vecteur
 
     __parent = parent = Argument('Vecteur_generique')
-    __texte = texte = Argument("unicode", _get_texte, _set_texte)
+    __texte = texte = Argument("str", _get_texte, _set_texte)
 
     def __init__(self, parent, texte='', **styles):
         self.__texte = texte = Ref(texte)
@@ -274,12 +272,12 @@ class Label_vecteur(Label_glisseur):
 
 
 class Label_droite(Label_glisseur):
-    u"""L'étiquette d'une droite."""
+    """L'étiquette d'une droite."""
 
     glisseur = Glisseur_droite
 
     __parent = parent = Argument('Droite_generique')
-    __texte = texte = Argument("unicode", _get_texte, _set_texte)
+    __texte = texte = Argument("str", _get_texte, _set_texte)
 
     def __init__(self, parent, texte='', **styles):
         self.__texte = texte = Ref(texte)
@@ -293,7 +291,7 @@ class Label_demidroite(Label_glisseur):
     glisseur = Glisseur_demidroite
 
     __parent = parent = Argument('Demidroite')
-    __texte = texte = Argument("unicode", _get_texte, _set_texte)
+    __texte = texte = Argument("str", _get_texte, _set_texte)
 
     def __init__(self, parent, texte='', **styles):
         self.__texte = texte = Ref(texte)
@@ -308,7 +306,7 @@ class Label_cercle(Label_glisseur):
     glisseur = Glisseur_cercle
 
     __parent = parent = Argument('Cercle_generique')
-    __texte = texte = Argument("unicode", _get_texte, _set_texte)
+    __texte = texte = Argument("str", _get_texte, _set_texte)
 
     def __init__(self, parent, texte='', **styles):
         self.__texte = texte = Ref(texte)
@@ -322,7 +320,7 @@ class Label_arc_cercle(Label_glisseur):
     glisseur = Glisseur_arc_cercle
 
     __parent = parent = Argument('Arc_generique')
-    __texte = texte = Argument("unicode", _get_texte, _set_texte)
+    __texte = texte = Argument("str", _get_texte, _set_texte)
 
     def __init__(self, parent, texte='', **styles):
         self.__texte = texte = Ref(texte)
@@ -337,11 +335,11 @@ class Label_arc_cercle(Label_glisseur):
 
 
 class Label_polygone(Label_generique):
-    u"L'étiquette d'un polygone."
+    "L'étiquette d'un polygone."
 
     __parent = parent = Argument('Polygone_generique')
 
-    __texte = texte = Argument("unicode", _get_texte, _set_texte)
+    __texte = texte = Argument("str", _get_texte, _set_texte)
 
     def __init__(self, parent, texte='', **styles):
         self.__texte = texte = Ref(texte)
@@ -372,14 +370,14 @@ class Label_polygone(Label_generique):
 
 
 class Label_angle(Label_generique):
-    u"L'étiquette d'un angle."
+    "L'étiquette d'un angle."
 
     _style_defaut = {'_rayon_': param.codage["rayon"] + 20,
                      'alignement_vertical': 'center',
                      'alignement_horizontal': 'center',}
 
     __parent = parent = Argument("Angle_generique")
-    __texte = texte = Argument("unicode", _get_texte, _set_texte)
+    __texte = texte = Argument("str", _get_texte, _set_texte)
 
     def __init__(self, parent, texte='', **styles):
         self.__texte = texte = Ref(texte)
@@ -396,7 +394,7 @@ class Label_angle(Label_generique):
         i = (1, 0)
         a = angle_vectoriel(i, u)
         b = angle_vectoriel(i, v)
-        if parent.sens == u"non défini" and parent._sens() < 0:
+        if parent.sens == "non défini" and parent._sens() < 0:
             a, b = b, a
         if b < a:
             b += 2*pi
@@ -419,7 +417,7 @@ class Label_angle(Label_generique):
                 i = (1, 0)
                 a = angle_vectoriel(i, u)
                 b = angle_vectoriel(i, v)
-                if parent.sens == u"non défini" and parent._sens() < 0:
+                if parent.sens == "non défini" and parent._sens() < 0:
                     a, b = b, a
                 c = angle_vectoriel(i, (-rx, -ry))
                 if a != b:

@@ -1,2 +1,2 @@
-from search import gs
-import scriptlib
+from .search import gs
+from . import scriptlib

@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
-from __future__ import with_statement
 
 #    WxGeometrie
 #    Dynamic geometry, graph plotter, and more for french mathematic teachers.
@@ -36,7 +34,7 @@ from matplotlib.axes import Axes
 from numpy import array, arange, concatenate, cos as ncos, sin as nsin
 from math import cos, sin, atan2, pi, hypot, sqrt, atan
 
-from ..pylib import fullrange, is_in, uu, warning, print_error
+from ..pylib import fullrange, is_in, warning, print_error
 from ..mathlib.parsers import tex_dollars
 from .. import param
 
@@ -59,7 +57,7 @@ class ArcDeCercle(Line2D):
     _parametres = ('x', 'y', 'vecteur', 'taille')
 
     def __init__(self, canvas, **kw):
-        u"""Affiche un petit demi-cercle d'orientation choisie.
+        """Affiche un petit demi-cercle d'orientation choisie.
 
         Par ex, pour le vecteur (1,0), ie. ->, l'arc est orienté comme ceci: (
         Pour le vecteur (-1,0), ie. <-, l'arc est orienté comme ceci: ).
@@ -93,7 +91,7 @@ class ArcDeCercle(Line2D):
     def set(self, **kw):
         maj = kw.pop('maj', True)
         for nom in self._parametres:
-            if kw.has_key(nom):
+            if nom in kw:
                 setattr(self, nom, kw.pop(nom))
         if kw:
             Line2D.set(self, **kw)
@@ -124,7 +122,7 @@ class LigneDecoree(LineCollection):
     def set(self, **kw):
         maj = kw.pop('maj', True)
         for nom in self._parametres:
-            if kw.has_key(nom):
+            if nom in kw:
                 setattr(self, nom, kw.pop(nom))
         if kw:
             LineCollection.set(self, **kw)
@@ -173,7 +171,7 @@ class Fleche(FlecheGenerique):
     xy1 = (1, 1)
 
     def __init__(self, canvas, **kw):
-        u"""Une flêche (éventuellement double).
+        """Une flêche (éventuellement double).
 
         En plus des styles de matplotlib.collections.LineCollection,
         les styles suivants sont définis:
@@ -193,15 +191,15 @@ class Fleche(FlecheGenerique):
         lignes = [(xy0, xy1)]
         k = self.position
         dxdy = xy1 - xy0
-        lignes.append(zip(*self._pointe((1 - k)*xy0 + k*xy1, -dxdy)))
+        lignes.append(list(zip(*self._pointe((1 - k)*xy0 + k*xy1, -dxdy))))
         if self.double:
-            lignes.append(zip(*self._pointe(k*xy0 + (1 - k)*xy1, dxdy)))
+            lignes.append(list(zip(*self._pointe(k*xy0 + (1 - k)*xy1, dxdy))))
         self._maj(lignes)
 
 
 
 class FlecheCourbe(FlecheGenerique):
-    u"""Une flêche (éventuellement double) en forme d'arc de cercle.
+    """Une flêche (éventuellement double) en forme d'arc de cercle.
 
     En plus des styles de matplotlib.collections.LineCollection,
     les styles suivants sont définis:
@@ -228,7 +226,7 @@ class FlecheCourbe(FlecheGenerique):
         r = self.rayon
         a, b = self.intervalle
         t = fullrange(a, b, self.canvas.pas())
-        lignes = [zip(x + r*ncos(t), y + r*nsin(t))]
+        lignes = [list(zip(x + r*ncos(t), y + r*nsin(t)))]
 
         k = self.position
         sens = self.sens
@@ -240,7 +238,7 @@ class FlecheCourbe(FlecheGenerique):
         y0 = y + r*sin(c)
         # Vecteur normal au rayon
         dxdy = ((y0 - y, x - x0) if sens == 1 else (y - y0, x0 - x))
-        lignes.append(zip(*self._pointe((x0, y0), dxdy)))
+        lignes.append(list(zip(*self._pointe((x0, y0), dxdy))))
 
         if self.double:
             c = k*a + (1 - k)*b
@@ -249,14 +247,14 @@ class FlecheCourbe(FlecheGenerique):
             y0 = y + r*sin(c)
             # Vecteur normal au rayon
             dxdy = ((y - y0, x0 - x) if sens == 1 else (y0 - y, x - x0))
-            lignes.append(zip(*self._pointe((x0, y0), dxdy)))
+            lignes.append(list(zip(*self._pointe((x0, y0), dxdy))))
 
         self._maj(lignes)
 
 
 
 class Codage(LigneDecoree):
-    u'''Objet graphique servant à coder les segments et arcs de même longueur.
+    '''Objet graphique servant à coder les segments et arcs de même longueur.
 
         Paramètres:
         * taille: taille du symbole (en pixels).
@@ -300,7 +298,7 @@ class Codage(LigneDecoree):
                     x, y = self.position
                     t = fullrange(0, 2*pi, 2./self.taille)
                     r = .7*self.taille
-                    lignes.append(zip(*self.canvas.pix2coo(x + r*ncos(t), y + r*nsin(t))))
+                    lignes.append(list(zip(*self.canvas.pix2coo(x + r*ncos(t), y + r*nsin(t)))))
             elif style.count('/') == len(style):
                 lignes.extend(self._oblique(self.position, self.direction, n=len(style)))
             elif style.count('|') == len(style):
@@ -313,7 +311,7 @@ class Codage(LigneDecoree):
         return lignes
 
     def _oblique(self, xy, dxdy, n=1, sens=1, angle=None):
-        u'''Retourne les coordonnées de n barres obliques, à la position xy.
+        '''Retourne les coordonnées de n barres obliques, à la position xy.
 
         dxdy définit l'orientation des barres.
         S'il y a plusieurs barres, elles seront espacées de 1 épaisseur de ligne.
@@ -342,7 +340,7 @@ class Codage(LigneDecoree):
         obliques = []
         xu = dx/self.hyp
         yu = dy/self.hyp
-        for i in xrange(-n + 1, n, 2):
+        for i in range(-n + 1, n, 2):
             k = (.5*lw + 1.5)*i
             M = self.canvas.pix2coo(xM + k*xu, yM + k*yu)
             N = self.canvas.pix2coo(xN + k*xu, yN + k*yu)
@@ -363,7 +361,7 @@ class Angle(Polygon):
     def set(self, **kw):
         maj = kw.pop('maj', True)
         for nom in self._parametres:
-            if kw.has_key(nom):
+            if nom in kw:
                 setattr(self, nom, kw.pop(nom))
         if kw:
             Polygon.set(self, **kw)
@@ -405,12 +403,12 @@ class Angle(Polygon):
     def arc_angle(self, i=0):
         r = self.rayon
         x0, y0 = self.P
-        return zip(*self.canvas.pix2coo(x0 + (r - 3*i)*self.cost, y0 + (r - 3*i)*self.sint))
+        return list(zip(*self.canvas.pix2coo(x0 + (r - 3*i)*self.cost, y0 + (r - 3*i)*self.sint)))
 
 
 
 class CodageAngle(Codage):
-    u'''Objet graphique servant à coder des angles de même mesure.
+    '''Objet graphique servant à coder des angles de même mesure.
 
     L'objet CodageAngle doit être associé à un objet graphique Angle préexistant.
     Il en partage les propriétés.
@@ -438,7 +436,7 @@ class CodageAngle(Codage):
                  )
         n = self.style.count(')')
         if n > 1:
-            for i in xrange(0, n - 1):
+            for i in range(0, n - 1):
                 lignes.append(self.angle_associe.arc_angle(i=i))
         lignes.extend(self._codage())
         self.set_segments(lignes)
@@ -446,7 +444,7 @@ class CodageAngle(Codage):
 
 
 class DecorationTexte(FancyBboxPatch):
-    u"""Encadrement et fond associé à un texte.
+    """Encadrement et fond associé à un texte.
 
     En cas de zoom sur le texte, la taille du texte change,
     et la taille du cadre est alors automatiquement recalculée
@@ -662,7 +660,7 @@ class AjusterEchelle(object):
                 y *= xscale/yscale
             elif yscale < xscale:
                 x *= yscale/xscale
-            print x,y, x_, y_
+            print(x,y, x_, y_)
 
         # Conversion en inches : 1 inch = 2.54 cm
         x /= 2.54
@@ -724,7 +722,7 @@ class Moteur_graphique(object):
 
 
     def ajouter(self, artiste):
-        u"""Ajoute un artiste (objet graphique de matplotlib) à dessiner.
+        """Ajoute un artiste (objet graphique de matplotlib) à dessiner.
 
         NB: 'artiste' peut aussi être une liste d'artistes, ou une liste de listes..."""
         if isinstance(artiste, (list, tuple)):
@@ -734,7 +732,7 @@ class Moteur_graphique(object):
             self._ajouter_objet(artiste)
 
     def _temp_warning_color(self, kw):
-        u"À supprimer après quelques temps (01/05/2011)."
+        "À supprimer après quelques temps (01/05/2011)."
         if 'couleur' in kw:
             kw['color'] = kw.pop('couleur')
             warning("Utiliser desormais 'color' au lieu de 'couleur'.", level=1)
@@ -758,7 +756,7 @@ class Moteur_graphique(object):
         self._temp_warning_color(kw)
         if pixel:
             x, y = self.canvas.pix2coo(x, y)
-        polygone = Polygon(zip(x, y), **kw)
+        polygone = Polygon(list(zip(x, y)), **kw)
 #        if self.canvas.transformation is not None:
 #            x, y = zip(*(zip(x, y)*self.canvas.transformation).array)
         return polygone
@@ -770,11 +768,11 @@ class Moteur_graphique(object):
         return self._ajouter_objet(self.polygone(x, y, pixel, facecolor=facecolor, **kw))
 
 
-    def texte(self, x=0, y=0, txt=u'hello !', pixel=False, **kw):
+    def texte(self, x=0, y=0, txt='hello !', pixel=False, **kw):
         if pixel:
             x, y = self.canvas.pix2coo(x, y)
-        if not isinstance(txt, unicode):
-            txt = unicode(txt, param.encodage)
+        if not isinstance(txt, str):
+            txt = str(txt, param.encodage)
         kw.setdefault('family', 'serif')
         texte = Text(x, y, txt, **kw)
         texte.figure = self.canvas.figure # texte must have access to figure.dpi
@@ -782,7 +780,7 @@ class Moteur_graphique(object):
 #            x, y = ((x, y)*self.canvas.transformation).array[0]
         return texte
 
-    def ajouter_texte(self, x=0, y=0, txt=u'hello !', pixel=False, **kw):
+    def ajouter_texte(self, x=0, y=0, txt='hello !', pixel=False, **kw):
         return self._ajouter_objet(self.texte(x, y, txt, pixel, **kw))
 
 
@@ -793,7 +791,7 @@ class Moteur_graphique(object):
         return self._ajouter_objet(self.arc(x, y, vecteur, color, **kw))
 
     def point(self, x, y, plein=True, **kw):
-        u"Un petit cercle, vide ou plein."
+        "Un petit cercle, vide ou plein."
         assert isinstance(plein, bool), str(type(plein)) # Changement d'API
         self._temp_warning_color(kw)
         if 'taille' in kw:
@@ -970,7 +968,7 @@ class Moteur_graphique(object):
 
 
     def _convertir_zone(self, zone):
-        u"Conversion de la zone: coordonnées -> inches"
+        "Conversion de la zone: coordonnées -> inches"
         x0, x1, y0, y1 = zone
         l, h = self.canvas.figure.get_size_inches()
         fenetre = self.canvas.fenetre
@@ -984,12 +982,12 @@ class Moteur_graphique(object):
         y0, y1 = max(0, min(y0, y1)), min(h, max(y0, y1))
 
         if x1 <= x0 or y1 <= y0:
-            raise RuntimeError, "Erreur: image de dimensions nulles !"
+            raise RuntimeError("Erreur: image de dimensions nulles !")
         return Bbox(((x0, y0), (x1, y1)))
 
 
     def exporter(self, fichier, format=None, dpi=None, zone=None, echelle=None, taille=None, keep_ratio=False):
-        u"Exporter la figure."
+        "Exporter la figure."
         with self.canvas.geler_affichage(seulement_en_apparence=True, actualiser=False):
             # (Nota: le réglage de la fenêtre ne sert en fait qu'en l'absence de GUI.)
             self._regler_fenetre()
@@ -1015,7 +1013,7 @@ class Moteur_graphique(object):
 
 
     def restaurer_dessin(self):
-        u'''Restaure le dernier dessin.'''
+        '''Restaure le dernier dessin.'''
         self._restaurer(self._dernier_dessin)
         self.canvas.blit(self.axes.bbox)
 
@@ -1028,7 +1026,7 @@ class Moteur_graphique(object):
 
 
     def _effacer_artistes(self):
-        u"Supprime tous les artistes (objets graphiques de matplotlib)."
+        "Supprime tous les artistes (objets graphiques de matplotlib)."
         dico = self._dico_artistes()
         self.axes.artists = []
         self.axes.lines = []
@@ -1041,7 +1039,7 @@ class Moteur_graphique(object):
 
 
     def _restaurer_artistes(self, dictionnaire):
-        u"Restaure les artistes précédemment supprimés."
+        "Restaure les artistes précédemment supprimés."
         dico = self._dico_artistes()
         self.axes.__dict__.update(dictionnaire)
         return dico
@@ -1068,7 +1066,7 @@ class Moteur_graphique(object):
 
 
     def _dessine_axe(self, num = 0, nbr_axes = 1):
-        u"Dessine l'axe des abscisses (num = 0) ou des ordonnées (num = 1)."
+        "Dessine l'axe des abscisses (num = 0) ou des ordonnées (num = 1)."
 
         #un = nbr_axes == 1              # un seul axe
         #x = num == 0; y = not x         # axe des abscisses / des ordonnees
@@ -1177,7 +1175,7 @@ class Moteur_graphique(object):
 
 
     def _quadriller(self, hauteur = 3, pas = (None, None), style = None, epaisseur = 1, couleur = "k"):
-        u"""Crée des graduations ou un quadrillage (si hauteur = None).
+        """Crée des graduations ou un quadrillage (si hauteur = None).
         Si pas[0] = 0 (respectivement, pas[1] = 0), les graduations seront
         uniquement horizontales (respectivement verticales)."""
 
@@ -1262,7 +1260,7 @@ class Moteur_graphique(object):
 
 
     def _info_artiste(self, artiste):
-        u"""Retourne des informations permettant éventuellement de
+        """Retourne des informations permettant éventuellement de
         repérer visuellement l'artiste."""
         infos = {}
         infos['parent'] = getattr(getattr(artiste, '_cree_par', None), 'info', None)
@@ -1271,7 +1269,7 @@ class Moteur_graphique(object):
             infos['color'] = artiste.get_color()
             infos['size'] = artiste.get_size()
         elif isinstance(artiste, Line2D):
-            infos['xy'] = zip(artiste.get_xdata(), artiste.get_ydata())
+            infos['xy'] = list(zip(artiste.get_xdata(), artiste.get_ydata()))
             if len(infos['xy']) > 1:
                 infos['color'] = artiste.get_color()
             else:
@@ -1283,40 +1281,40 @@ class Moteur_graphique(object):
             infos['xy'] = artiste.get_verts()
             infos['edge-color'] = artiste.get_edgecolor()
             infos['face-color'] = artiste.get_edgecolor()
-        infos_as_str = ', '.join([key + '=' + uu(val) for key, val in infos.iteritems()])
+        infos_as_str = ', '.join([key + '=' + str(val) for key, val in infos.items()])
         return artiste.__class__.__name__ + ' (' + str(id(artiste)) + '):\n' + infos_as_str
 
     def infos(self):
-        u"Informations utiles pour le débogage."
-        print "---------------"
+        "Informations utiles pour le débogage."
+        print("---------------")
         print("+ Repere")
         for rubrique in self._artistes_repere:
-            print " -> " + rubrique
+            print(" -> " + rubrique)
             for artiste in self._artistes_repere[rubrique]:
-                print '  * ' + self._info_artiste(artiste)
+                print('  * ' + self._info_artiste(artiste))
         print("+ Objet deplace ?")
-        print getattr(self._dernier_objet_deplace, 'info', 'None')
-        print "+ Objets fixes:"
+        print(getattr(self._dernier_objet_deplace, 'info', 'None'))
+        print("+ Objets fixes:")
         for artiste in self._objets_fixes:
-            print '  * ' + self._info_artiste(artiste)
-        print "+ Objets mobiles:"
+            print('  * ' + self._info_artiste(artiste))
+        print("+ Objets mobiles:")
         for artiste in self._objets_mobiles:
-            print '  * ' + self._info_artiste(artiste)
-        print "+ Autres artistes:"
+            print('  * ' + self._info_artiste(artiste))
+        print("+ Autres artistes:")
         for rubrique in self._artistes_dessin:
-            print " -> " + rubrique
+            print(" -> " + rubrique)
             for artiste in self._artistes_dessin[rubrique]:
                 if not is_in(artiste, self._objets_mobiles) \
                         and not is_in(artiste, self._objets_fixes)\
-                        and not any(is_in(artiste, liste) for liste in self._artistes_repere.itervalues()):
-                    print '  * ' + self._info_artiste(artiste)
-        print "---------------"
+                        and not any(is_in(artiste, liste) for liste in self._artistes_repere.values()):
+                    print('  * ' + self._info_artiste(artiste))
+        print("---------------")
 
     # TESTS pour débogage
     # TODO: avoir une image de référence pour comparer
 
     def _test(self):
-        u"""Test 1.
+        """Test 1.
 
         Barre rouge en travers reliant 2 croix (+)."""
         self.axes.viewLim.set_points(array([[0, 0], [1, 1]]))
@@ -1325,7 +1323,7 @@ class Moteur_graphique(object):
         self.canvas.draw()
 
     def _test2(self):
-        u"""Test 2.
+        """Test 2.
 
         Barre bleue en travers. Un point vert et un rouge (croix +).
         Un point vert en forme de rond (plein).
@@ -1342,7 +1340,7 @@ class Moteur_graphique(object):
         self.canvas.draw()
 
     def _test3(self):
-        u"""Test les flêches de matplotlib.
+        """Test les flêches de matplotlib.
 
         Une flêche verte, et une flêche double rouge, croisées.
         """
@@ -1361,7 +1359,7 @@ class Moteur_graphique(object):
         self.canvas.draw()
 
     def _test4(self):
-        u"""Teste la rapidité du moteur d'affichage.
+        """Teste la rapidité du moteur d'affichage.
 
         Un point rouge est déposé partout où la souris passe.
         Pour que le teste soit fiable, il faut qu'il n'y ait aucun objet
@@ -1392,20 +1390,20 @@ class Moteur_graphique(object):
             m._dernier_dessin = m._en_cache()
             m._effacer_artistes()
         self.canvas.__class__.mouseMoveEvent = mouseMoveEvent
-        print(u"Warning: Redémarrer l'application pour quitter le test.")
+        print("Warning: Redémarrer l'application pour quitter le test.")
 
 
 class ConvertisseurBase(object):
-    u"""Classe générique dont dérivent tous les convertisseurs d'objets matplotlib."""
+    """Classe générique dont dérivent tous les convertisseurs d'objets matplotlib."""
 
 
     def convertir(self, obj, chiffres_significatifs = None):
-        u"Appelle la méthode spécifique à l'objet matplotlib."
+        "Appelle la méthode spécifique à l'objet matplotlib."
         return getattr(self, obj.__class__.__name__)(obj)
 
 
 class ConvertisseurTikz(ConvertisseurBase):
-    u"""Convertit un objet matplotlib en instruction Tikz.
+    """Convertit un objet matplotlib en instruction Tikz.
 
     'cs': nombre de chiffres significatifs à afficher."""
 

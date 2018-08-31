@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------#######
 #                 Fenetres                              #
@@ -23,8 +22,8 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 
-from PyQt4.QtGui import QDialog, QVBoxLayout, QHBoxLayout, QPushButton
-from PyQt4.QtCore import Qt
+from PyQt5.QtWidgets import QDialog, QPushButton, QVBoxLayout, QHBoxLayout
+from PyQt5.QtCore import Qt
 
 from .pythonSTC import PythonSTC
 
@@ -34,7 +33,7 @@ class EditeurPython(PythonSTC):
         self.parent = parent
 
     def keyPressEvent(self, event):
-        print "test!!!"
+        print("test!!!")
         key = event.key()
         if key == Qt.Key_Escape:
             self.parent.close()
@@ -45,7 +44,7 @@ class EditeurPython(PythonSTC):
 
 
 class FenCode(QDialog):
-    u"""Permet d'éditer du code Python.
+    """Permet d'éditer du code Python.
 
     En particulier, permet d'éditer le code de la feuille actuelle."""
     def __init__(self, parent, titre, contenu, fonction_modif):
@@ -61,9 +60,9 @@ class FenCode(QDialog):
         sizer.addWidget(self.texte)
 
         boutons = QHBoxLayout()
-        self.btn_modif = QPushButton(u"Modifier - F5")
+        self.btn_modif = QPushButton("Modifier - F5")
         boutons.addWidget(self.btn_modif)
-        self.btn_esc = QPushButton(u"Annuler - ESC")
+        self.btn_esc = QPushButton("Annuler - ESC")
         boutons.addStretch()
         boutons.addWidget(self.btn_esc)
         sizer.addLayout(boutons)

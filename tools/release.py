@@ -1,7 +1,5 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
-from __future__ import with_statement, print_function
 
 #    WxGeometrie
 #    Dynamic geometry, graph plotter, and more for french mathematic teachers.
@@ -25,8 +23,8 @@ from __future__ import with_statement, print_function
 import os, sys, time, re, types
 from os.path import isfile
 from optparse import OptionParser
-from urllib2 import urlopen
-import scriptlib as s
+from urllib.request import urlopen
+from . import scriptlib as s
 
 _module_path = os.path.split(os.path.realpath(sys._getframe().f_code.co_filename))[0]
 
@@ -58,7 +56,7 @@ parser.add_option("-q", "--quiet",
 (options, args) = parser.parse_args()
 
 def publish(filename, version):
-    u"""Publie le fichier sur sourceforge, et met à jour le fichier distant
+    """Publie le fichier sur sourceforge, et met à jour le fichier distant
     contenant le numéro de la dernière version.
     """
     SOURCEFORGE_CONFIG = 'tools/.sourceforge'
@@ -66,8 +64,8 @@ def publish(filename, version):
         with open(SOURCEFORGE_CONFIG) as _file:
             key = _file.read(1000)
     else:
-        key = raw_input('API-key:')
-    print(u'\nMise en ligne de la version %s (%s)' % (version, filename))
+        key = input('API-key:')
+    print('\nMise en ligne de la version %s (%s)' % (version, filename))
     remote_dir = '/home/frs/project/geophar/Geophar/version_%s' % version
     s.command('ssh wxgeo,geophar@shell.sourceforge.net create')
     s.command('cat %s | ssh wxgeo@shell.sourceforge.net "mkdir -p %s;cat > %s/%s"'
@@ -98,7 +96,7 @@ nom_prog = NOMPROG2.lower()
 if options.publish_only:
     filename = '%s_%s.tar.gz' % (nom_prog, version_precedente)
     publish(filename, version_precedente)
-    print(u'\nTerminé.')
+    print('\nTerminé.')
     sys.exit()
 
 
@@ -143,7 +141,7 @@ else:
     while True:
         modifier = False
         print('\n-------------------')
-        print(u"Version précédente: " + version_precedente)
+        print("Version précédente: " + version_precedente)
         version = test_version(version)
         if version is None:
             print('Numero de version incorrect: ' + args[0])
@@ -152,10 +150,10 @@ else:
             print('Les numeros de version doivent etre croissants: ' + args[0])
             modifier = True
         else:
-            print(u"Nouvelle version: " + version)
+            print("Nouvelle version: " + version)
             if options.quiet:
                 break
-            rep = raw_input(u"Est-ce correct ? [y(es)/n(o)/(q)uit]")
+            rep = input("Est-ce correct ? [y(es)/n(o)/(q)uit]")
             if not rep:
                 continue
             if rep in 'yYoO':
@@ -165,9 +163,9 @@ else:
             elif rep in 'nN':
                 modifier = True
         if modifier:
-            version = raw_input(u"Entrez un nouveau numero de version:")
+            version = input("Entrez un nouveau numero de version:")
 
-print(u'\nCréation de la version ' + version + '...')
+print('\nCréation de la version ' + version + '...')
 
 if not (options.fake or options.archive_only):
     # Mise à jour de version.py
@@ -176,7 +174,7 @@ if not (options.fake or options.archive_only):
 
     # Création du changelog correspondant
     date = time.strftime("%d/%m/%Y")
-    s.command(u'echo "%s version %s\nPubliée le %s\n\n">doc/changelog.txt'
+    s.command('echo "%s version %s\nPubliée le %s\n\n">doc/changelog.txt'
                             % (NOMPROG, version, date))
 
     tags = s.command('git tag', quiet=True).strip().split('\n')
@@ -198,7 +196,7 @@ if not (options.fake or options.archive_only):
 archive_tar = "%s_%s.tar" % (nom_prog, version)
 archive_gz = archive_tar + '.gz'
 
-print(u'\nCréation du paquet...')
+print('\nCréation du paquet...')
 
 # Nettoyage (inutile, sauf plantage précédent)
 s.cd('..')
@@ -235,7 +233,7 @@ s.command('tar -cf %s %s' % (archive_tar, nom_prog))
 s.command('gzip %s' % archive_tar)
 s.mv(archive_gz, options.output)
 
-print(u'\nPaquet créé dans %s.\n' % os.path.abspath(options.output))
+print('\nPaquet créé dans %s.\n' % os.path.abspath(options.output))
 
 # Publie sur sourceforge et met à jour le fichier de version...
 if options.publish:

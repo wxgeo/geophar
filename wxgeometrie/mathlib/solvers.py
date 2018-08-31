@@ -1,6 +1,4 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------#######
 #           Mathlib 2 (sympy powered)         #
@@ -43,7 +41,7 @@ from .. import param
 
 
 def nul(expression, variable=None, intervalle=True, ensemble='R'):
-    u"""Retourne l'ensemble sur lequel une expression à variable réelle est nulle.
+    """Retourne l'ensemble sur lequel une expression à variable réelle est nulle.
 
     :param expression: une expression mathématique
     :type expression: string
@@ -135,7 +133,7 @@ def ensemble_definition(expression, variable = None):
 
 
 def periode(expression, variable=None):
-    u"""Retourne la période minimale de la fonction.
+    """Retourne la période minimale de la fonction.
 
     Si la fonction n'est pas périodique (ou si elle n'est pas encore supportée),
     retourne +oo.
@@ -193,7 +191,7 @@ def periode(expression, variable=None):
 
 
 def positif(expression, variable=None, strict=False, _niveau=0, _changement_variable=None):
-    u"""Retourne l'ensemble sur lequel une expression à variable réelle est positive (resp. strictement positive)."""
+    """Retourne l'ensemble sur lequel une expression à variable réelle est positive (resp. strictement positive)."""
     from .sympy_functions import factor
     # L'étude du signe se fait dans R, on indique donc à sympy que la variable est réelle.
     if variable is None:
@@ -209,7 +207,7 @@ def positif(expression, variable=None, strict=False, _niveau=0, _changement_vari
     if T not in (0, oo):
         ens_def &= Intervalle(0, T)
         if param.debug:
-            print(u'Fonction périodique %s détectée. Résolution sur [0;%s]' % (expression, T))
+            print('Fonction périodique %s détectée. Résolution sur [0;%s]' % (expression, T))
 
     # On remplace sqrt(x^2) par |x|.
     a = Wild('a', exclude=[expression])
@@ -227,7 +225,7 @@ def positif(expression, variable=None, strict=False, _niveau=0, _changement_vari
         expression = factor(expression, variable, "R", decomposer_entiers = False)
     except NotImplementedError:
         if param.debug:
-            print "Warning: Factorisation impossible de ", expression
+            print("Warning: Factorisation impossible de ", expression)
 
     if expression.is_Pow and expression.as_base_exp()[1].is_rational:
         base, p = expression.as_base_exp()
@@ -270,7 +268,7 @@ def positif(expression, variable=None, strict=False, _niveau=0, _changement_vari
     if expression.is_zero is True and not strict: # == 0
         return ens_def
 
-    if isinstance(expression, (int, float, long)):
+    if isinstance(expression, (int, float)):
         if expression > 0 or (expression == 0 and not strict):
             return ens_def
         else:
@@ -564,8 +562,8 @@ def positif(expression, variable=None, strict=False, _niveau=0, _changement_vari
     # été trouvés par solve(), ce qui n'est pas toujours le cas.
     # C'est pourquoi elle est proposée seulement en dernier recours.
     if param.debug:
-        print(u"Warning: résolution par continuité. Les résultats peuvent être\n"
-              u"faux si certaines racines ne sont pas touvées !")
+        print("Warning: résolution par continuité. Les résultats peuvent être\n"
+              "faux si certaines racines ne sont pas touvées !")
 
     racines = nul(expression, variable, intervalle=False)
     solutions = vide
@@ -601,7 +599,7 @@ def positif(expression, variable=None, strict=False, _niveau=0, _changement_vari
 
 
 def resoudre(chaine, variables=(), local_dict=None, ensemble='R'):
-    u"""Résout une équation ou inéquation, rentrée sous forme de chaîne.
+    """Résout une équation ou inéquation, rentrée sous forme de chaîne.
 
 
     """
@@ -610,7 +608,7 @@ def resoudre(chaine, variables=(), local_dict=None, ensemble='R'):
             # sympy se débrouille bien mieux avec des rationnels
             expression = sympify(expression, rational=True)
         else:
-            expression = eval(expression, local_dict.globals, local_dict)
+            expression = eval(expression, local_dict)
             # sympy se débrouille bien mieux avec des rationnels
             expression = floats2rationals(expression)
         return expression
@@ -714,7 +712,7 @@ def resoudre(chaine, variables=(), local_dict=None, ensemble='R'):
         expression = evaluer(gauche + "-(" + droite + ")")
         return nul(expression, variable, ensemble=ensemble)
     else:
-        raise TypeError, "'" + chaine + "' must be an (in)equation."
+        raise TypeError("'" + chaine + "' must be an (in)equation.")
 
 
 def systeme(chaine, variables = (), local_dict = None):
@@ -722,8 +720,8 @@ def systeme(chaine, variables = (), local_dict = None):
     if local_dict is None:
         evaluer = sympify
     else:
-        def evaluer(expression, local_dict = local_dict):
-            return eval(expression, local_dict.globals, local_dict)
+        def evaluer(expression, local_dict=local_dict):
+            return eval(expression, local_dict)
 
     def transformer(eq):
         gauche, droite = eq.split("=")

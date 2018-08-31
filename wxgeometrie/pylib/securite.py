@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##########################################################################
 #
@@ -32,14 +31,16 @@ from ..pylib import advanced_split
 from .. import param
 
 
-def _avertissement(*arg, **kw): print u"Instruction interdite en mode securisé."
+def _avertissement(*arg, **kw):
+    print("Instruction interdite en mode securisé.")
+
 #fonctions_interdites = ["eval", "compile", "execfile", "file", "open", "write", "getattr", "setattr"]
 
-liste_blanche = set(('False', 'None', 'True', 'abs', 'all', 'any', 'basestring', 'bool',  'callable', 'chr', 'close', \
-            'cmp', 'coerce', 'complex', 'dict', 'divmod', 'enumerate', 'filter', 'float', 'frozenset', 'globals', 'hash', 'hex', \
+liste_blanche = set(('False', 'None', 'True', 'abs', 'all', 'any', 'bool',  'callable', 'chr', 'close', \
+            'coerce', 'complex', 'dict', 'divmod', 'enumerate', 'filter', 'float', 'frozenset', 'globals', 'hash', 'hex', \
             'id', 'int', 'isinstance', 'issubclass', 'iter', 'len', 'list', 'locals', 'long', 'map', 'max', 'min', 'object', 'oct', \
-            'ord', 'pow', 'range', 'reduce', 'repr', 'reversed', 'round', 'set', 'slice', 'sorted', 'str', 'sum', \
-            'tuple', 'type', 'unichr', 'unicode', 'xrange', 'zip'\
+            'ord', 'pow', 'range', 'repr', 'reversed', 'round', 'set', 'slice', 'sorted', 'str', 'sum', \
+            'tuple', 'type', 'zip'\
             'IndexError', 'SyntaxError', 'NameError', 'StandardError', 'UnicodeDecodeError', 'RuntimeWarning', \
             'Warning', 'FloatingPointError', 'FutureWarning', 'ImportWarning', 'TypeError', 'KeyboardInterrupt', \
             'UserWarning', 'SystemError', 'BaseException', 'RuntimeError', 'GeneratorExit', 'StopIteration', \
@@ -101,14 +102,13 @@ def expression_affectable(chaine):
 # exec(string, dico)
 
 def eval_restricted(s, dico_perso = None):
-    u"""eval_restricted(s) évalue s dans un contexte vierge et sécurisé.
+    """eval_restricted(s) évalue s dans un contexte vierge et légèrement sécurisé.
 
     Toutes les fonctions disponibles par défaut sont filtrées.
-    L'évalution de chaînes unicodes se fait en utilisant l'encodage système, et non l'utf8.
 
     Note: eval_restricted est le plus securisée possible, mais contrairement
-    à eval_safe, il utilise la fonction eval ; il peut donc y avoir des failles
-    de sécurité. Merci de m'en informer.
+    à eval_safe, il utilise la fonction eval ; il existe donc forcément des
+    failles de sécurité.
     """
     dico = {"rand": module_random.random}
     dico.update(dictionnaire_builtins) # supprime certaines fonctions par defaut (en les redefinissant)
@@ -117,14 +117,12 @@ def eval_restricted(s, dico_perso = None):
         dico.update(dico_perso)
     for module in ("os", "sys", "securite"):
         dico.pop(module, None)
-    if isinstance(s, unicode):
-        s = s.encode(param.encodage)
     return eval(s, dico)
 
 
 def eval_safe(s):
-    u"""eval_safe(repr(x)) retourne x pour les types les plus usuels
-    (int, long, str, unicode, float, bool, None, list, tuple, dict.)
+    """eval_safe(repr(x)) retourne x pour les types les plus usuels
+    (int, str, float, bool, None, list, tuple, dict.)
     Mais aucune évaluation n'est faite, ce qui évite d'éxécuter un code dangereux.
     Le type de s est detecté, et la transformation appropriée appliquée.
 
@@ -137,7 +135,7 @@ def eval_safe(s):
     NB2: eval_safe est récursif (il peut lire des listes de tuples de ...).
 
     NB3: eval_safe est parfaitement securisé, car il ne fait (presque) jamais appel à une instruction eval.
-    Contrairement à la fonction eval_restricted, qui est 'probablement' securisée."""
+    Contrairement à la fonction eval_restricted, qui est 'légèrement' securisée."""
 
     s = s.strip()
 
@@ -154,10 +152,10 @@ def eval_safe(s):
 
     if len(s) > 1 and s[0] == s[-1] and s[0] in ("'", '"'):    # chaine
         # s est évalué dans un contexte parfaitement vierge.
-        return eval(s, {"__builtins__": None}, {"__builtins__": None})
+        return eval(s, {"__builtins__": {}}, {"__builtins__": {}})
 
     if len(s) > 2 and s[0] == "u" and s[1] == s[-1] and s[1] in ("'", '"'): #unicode
-        return eval(s, {"__builtins__": None}, {"__builtins__": None}) # idem
+        return eval(s, {"__builtins__": {}}, {"__builtins__": {}}) # idem
 
     if s == "None":
         return None
@@ -183,4 +181,4 @@ def eval_safe(s):
         return dict
 
 
-    raise TypeError, "types int, str, float, bool, ou None requis (ou liste ou tuple de ces types)"
+    raise TypeError("%s: types int, str, float, bool, ou None requis (ou liste ou tuple de ces types)" % repr(s))

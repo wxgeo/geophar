@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division, absolute_import # 1/2 == .5 (par defaut, 1/2 == 0)
 
 from math import pi, sin, cos, sqrt
 from random import random
@@ -38,7 +37,7 @@ def test_Polygone():
     K = rand_pt()
     p = p0 = Polygone(A, B, C, D, E, F, G, H, I, J, K)
     assert(isinstance(p.etiquette, Label_polygone))
-    assert(p.sommets[0] == A and p.sommets[10] == K)
+    assert p.sommets[0].confondu(A) and p.sommets[10].confondu(K)
     assert(Milieu(B, C) in p.cotes[1])
     assertAlmostEqual(p.centre.coordonnees, Barycentre(A, B, C, D, E, F, G, H, I, J, K).coordonnees)
     # cas particuliers :
@@ -141,7 +140,7 @@ def test_Parallelogramme():
     C = rand_pt()
     p = Parallelogramme(A, B, C)
     D = p.sommets[3]
-    assertEqual(Vecteur(A, B), Vecteur(D, C))
+    assert Vecteur(A, B).egal(Vecteur(D, C))
 
 def test_Rectangle():
     A = rand_pt()
@@ -175,8 +174,8 @@ def test_Polygone_regulier_centre():
     assert(p.centre is O)
     for Mi in p.sommets:
         assertAlmostEqual(Segment(O, Mi).longueur, Segment(O, M).longueur)
-    for i in xrange(10):
-        coeffs = tuple(random() for i in xrange(15))
+    for i in range(10):
+        coeffs = tuple(random() for i in range(15))
         G = Barycentre(*zip(p.sommets, coeffs))
         assert(G in p)
     # cas particuliers :
@@ -194,7 +193,7 @@ def test_Triangle_equilateral_centre():
     assert(p.centre_cercle_circonscrit.existe)
     assert(p.centre_cercle_inscrit.existe)
     assert(p.orthocentre.existe)
-    assert(p.orthocentre == p.centre == p.centre_cercle_circonscrit == p.centre_cercle_inscrit)
+    assert p.orthocentre.confondu(p.centre, p.centre_cercle_circonscrit, p.centre_cercle_inscrit)
 
 def test_Triangle_isocele_rectangle():
     t = Triangle_isocele_rectangle((0, 0), (1, 1))
@@ -215,7 +214,7 @@ def test_Polygone_regulier():
     p = Polygone_regulier(O, M, 15)
     assert(len(p.cotes) == 15)
     assert(p.centre in Mediatrice(O, M))
-    for i in xrange(15):
+    for i in range(15):
         assertAlmostEqual(Segment(p.sommets[i%15], p.sommets[(i+1)%15]).longueur, Segment(p.sommets[(i+2)%15], p.sommets[(i+3)%15]).longueur)
     p = Polygone_regulier(O, M, 3)
     assert(isinstance(p,  Triangle))
@@ -234,15 +233,15 @@ def test_Triangle_equilateral():
     assert(p.centre_cercle_circonscrit.existe)
     assert(p.centre_cercle_inscrit.existe)
     assert(p.orthocentre.existe)
-    assert(p.orthocentre == p.centre == p.centre_cercle_circonscrit == p.centre_cercle_inscrit)
+    assert p.orthocentre.confondu(p.centre, p.centre_cercle_circonscrit, p.centre_cercle_inscrit)
 
 def test_Carre():
     O = rand_pt()
     M = rand_pt()
     p = Carre(O, M)
     A, B, C, D = p.sommets
-    assert(p.centre == Milieu(A, C) == Milieu(B, D))
-    assert(A == O and B == M)
+    assert(p.centre.confondu(Milieu(A, C), Milieu(B, D)))
+    assert(A.confondu(O) and B.confondu(M))
     assert(len(p.cotes) == 4)
     assertAlmostEqual(p.aire,  p.cotes[0].longueur**2)
     # Test redéfinition d'un sommet
@@ -262,7 +261,7 @@ def test_Triangle_isocele():
     a = Angle(B, A, C)
     assertAlmostEqual(a.radian, 2*pi/13)
     assertAlmostEqual(Segment(A, B).longueur, Segment(A, C).longueur)
-    t1 = Triangle_isocele((0, 0), (1, 1), u'90°')
+    t1 = Triangle_isocele((0, 0), (1, 1), '90°')
     assertAlmostEqual(t1.point3.xy, (-1, 1))
     t2 = Triangle_isocele((0, 0), (2, 0), pi/3)
     assertAlmostEqual(t2.point3.xy, (2*cos(pi/3), 2*sin(pi/3)))

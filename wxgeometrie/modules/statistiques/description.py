@@ -5,9 +5,13 @@
 # description : description détaillée
 # defaut : par défaut, le module est-il installé ou non ?
 
+
+
+
+
 description = {
-"titre":                    u"Statistiques",
-"description":              u"Création de diagrammes et d'expériences statistiques.",
-"groupe":                   u"Modules",
+"titre":                    "Statistiques",
+"description":              "Création de diagrammes et d'expériences statistiques.",
+"groupe":                   "Modules",
 "defaut":  True,
 }

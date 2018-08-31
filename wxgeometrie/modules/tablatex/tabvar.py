@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------##
 #              WxGeometrie               #
@@ -34,11 +33,12 @@ from ...mathlib.sympy_functions import solve
 from ...mathlib.intervalles import R, conversion_chaine_ensemble
 from ...mathlib.interprete import Interprete
 from ...mathlib.parsers import VAR
+from ...mathlib.custom_functions import round_afz
 from ... import param
 
 
 def _auto_tabvar(chaine='', derivee=True, limites=True, decimales=3, approche=False, parse_only=False, stretch=True):
-    u"""Génère le code du tableau de variations d'une fonction à variable réelle.
+    """Génère le code du tableau de variations d'une fonction à variable réelle.
 
     On suppose que la fonction est de classe C1 sur tout intervalle ouvert de son
     ensemble de définition.
@@ -51,7 +51,7 @@ def _auto_tabvar(chaine='', derivee=True, limites=True, decimales=3, approche=Fa
     def nice_str2(x):
         if (isinstance(x, (float, Float)) and not isinstance(x, Rational)
                 or approche and x not in (-oo, oo)):
-            x = round(x, decimales)
+            x = round_afz(x, decimales)
         return nice_str(x)
 
     # ------------------------------------------------------
@@ -98,7 +98,7 @@ def _auto_tabvar(chaine='', derivee=True, limites=True, decimales=3, approche=Fa
     if len(variables) > 1:
         # Il est impossible de dresser le tableau de variations avec des
         # variables non définies (sauf cas très particuliers, comme f(x)=a).
-        raise ValueError, "Il y a plusieurs variables dans l'expression !"
+        raise ValueError("Il y a plusieurs variables dans l'expression !")
     elif not variables:
         # Variable par défaut.
         variables = [Symbol('x')]
@@ -127,7 +127,7 @@ def _auto_tabvar(chaine='', derivee=True, limites=True, decimales=3, approche=Fa
     infs = [S(intervalle.inf) for intervalle in ens_def]
 
     def _code_val(x):
-        u"Génère le code correspondant à une valeur `x` remarquable."
+        "Génère le code correspondant à une valeur `x` remarquable."
         if x in ens_def:
             # On calcule simplement f(x).
             fx = nice_str2(expr.subs(var, x))
@@ -156,7 +156,7 @@ def _auto_tabvar(chaine='', derivee=True, limites=True, decimales=3, approche=Fa
             return '(%s;%s)' % (nice_str2(x), fx)
 
     def _code_inter(a, b):
-        u"Retourne les variations entre a et b."
+        "Retourne les variations entre a et b."
         if a == -oo and b == +oo:
             a = b = 0
         elif a == -oo:
@@ -216,7 +216,7 @@ def _auto_tabvar(chaine='', derivee=True, limites=True, decimales=3, approche=Fa
 
 
     if param.debug and param.verbose:
-        print 'Code TABVar:', code
+        print('Code TABVar:', code)
     if parse_only:
         return code
     return tabvar(code, derivee=derivee, stretch=stretch) + '% ' + chaine_initiale + '\n'
@@ -226,7 +226,7 @@ def _auto_tabvar(chaine='', derivee=True, limites=True, decimales=3, approche=Fa
 
 
 def tabvar(chaine="", derivee=True, limites=True, decimales=3, approche=False, stretch=True):
-    u"""Indiquer les variations de la fonction.
+    """Indiquer les variations de la fonction.
 
 Exemples :
 f: (-oo;3) << (1;2;0) << (3;+oo|-oo) << (5;2) >> (+oo;-oo)
@@ -286,7 +286,7 @@ x;\\sqrt{x};(\\sqrt{x})': 0;0;| << +oo;+oo"""
     # ex: "-oo;3 << 1;2 >> 3;-oo|+oo << 5;2 << +oo;+oo" devient
     # ["-oo;3", "<<", "1;2", ">>", "3;-oo|+oo", "<<", "5;2", "<<", "+oo;+oo"]
 
-    sequence = re.split(r"(>>|<<|==|\|\||XX|)", chaine.strip())
+    sequence = re.split(r"(>>|<<|==|\|\||XX)", chaine.strip())
 
     if not sequence[0]:
         # en l'absence d'indication, x varie de -oo...
@@ -351,7 +351,7 @@ x;\\sqrt{x};(\\sqrt{x})': 0;0;| << +oo;+oo"""
 
     # Deuxieme et dernier balayage :
     # on parcourt maintenant la liste pour construire colonne par colonne le tableau de variations.
-    for i in xrange(len(sequence)):
+    for i in range(len(sequence)):
         # on justifie apres chaque etape, ce qui rend une eventuelle relecture du tableau plus agreable
         n = max(len(ligne_variable), len(ligne_derivee), len(ligne_fonction))
         ligne_variable = ligne_variable.ljust(n)

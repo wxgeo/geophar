@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------##
 #              WxGeometrie               #
@@ -28,6 +27,7 @@ from numpy import arange
 
 from .tablatexlib import traduire_latex, maths
 from ...pylib import print_error
+from ...mathlib.custom_functions import round_afz
 from ... import param
 
 def _eval_math(chaine):
@@ -51,7 +51,7 @@ def _auto_tabval(chaine='', formatage_antecedents='VAL', formatage_images='VAL',
     # NOTA: Pour l'instant, seul un intervalle de la forme [a;b] est supporté.
 
     if m is None:
-        raise ValueError, "Format incorrect."
+        raise ValueError("Format incorrect.")
 
     fonction = m.group('fonction')
     intervalle = m.group('intervalle')
@@ -68,13 +68,13 @@ def _auto_tabval(chaine='', formatage_antecedents='VAL', formatage_images='VAL',
     code = "%s:[%s]:%s,%s..%s" % (fonction, precision, a, a + pas, b)
 
     if param.debug and param.verbose:
-        print 'Code TABVal:', code
+        print('Code TABVal:', code)
     return tabval(code, formatage_antecedents=formatage_antecedents, formatage_images=formatage_images) + '% ' + chaine_initiale + '\n'
 
 
 
 def tabval(chaine='', formatage_antecedents='VAL', formatage_images='VAL', precision=0.01):
-    ur"""Syntaxe:
+    r"""Syntaxe:
 fonction: [precision d'arrondi]: 1ere valeur,2e valeur..valeur finale
 
 Exemples:
@@ -184,7 +184,14 @@ valeur du résultat.
                 if evaluation in (maths.num_oo, maths.num_nan, -maths.num_oo, maths.oo, maths.nan, -maths.oo):
                     code_expression += "& $\\times$ "
                 else:
-                    code_expression += '&' + formater(precision*round(evaluation/precision), formatage_images)
+                    # Workaround for a strange Python behaviour:
+                    # In [1]: 0.01*113
+                    # Out[1]: 1.1300000000000001
+                    # In [2]: 113/100.0
+                    # Out[2]: 1.13
+                    inv = (1/precision)
+                    val = round_afz(inv*evaluation)/inv
+                    code_expression += '&' + formater(val, formatage_images)
             except:
                 print_error()
                 code_expression += "& $\\times$ "

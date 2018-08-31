@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
-from __future__ import with_statement
 
 ##########################################
 #            CONSOLE
@@ -50,7 +48,7 @@ class Console:
                   'param': param}
 
     def executer(self, commande):
-        u"La commande est exécutée dans l'espace de nom du panel."
+        "La commande est exécutée dans l'espace de nom du panel."
         commande = commande.strip()
 
         # & est un raccourci pour print
@@ -59,18 +57,18 @@ class Console:
 
         # Les racourcis suivants sont utilisables :
         # Panel actuel :
-        commande = commande.replace(u"!p.", u"panel.")
+        commande = commande.replace("!p.", "panel.")
         # Canvas actuel :
-        commande = commande.replace(u"!c.", u"canvas.")
+        commande = commande.replace("!c.", "canvas.")
         # Feuille utilisée actuellement :
-        commande = commande.replace(u"!f.", u"feuille.")
+        commande = commande.replace("!f.", "feuille.")
         # Objets de la feuille :
-        commande = commande.replace(u"!o.", u"objets.")
-        commande = commande.replace(u"!g.", u"moteur_graphique.")
+        commande = commande.replace("!o.", "objets.")
+        commande = commande.replace("!g.", "moteur_graphique.")
         # Fenêtre principale :
-        commande = commande.replace(u"!m.", u"main.")
+        commande = commande.replace("!m.", "main.")
         # Threads :
-        commande = commande.replace(u"!t", u"print(threads)")
+        commande = commande.replace("!t", "print(threads)")
 
         if commande in ('quit', 'exit', 'close'):
             self.parent.close()
@@ -82,7 +80,8 @@ class Console:
 #        if param.debug:
 #            self.parent.onglets.onglet_actuel.action_effectuee(u"REQUETE CONSOLE:" + commande)
 #            print u"REQUETE CONSOLE:" + commande
-        print(u"REQUETE CONSOLE [" + self.parent.onglets.onglet_actuel.titre + "]:\n>>> " + commande)
+        print("REQUETE CONSOLE [" + self.parent.onglets.onglet_actuel.titre + "]:\n>>> " 
+              + commande)
 
         self.locals.update({'panel': self.parent.onglets.onglet_actuel,
                   'canvas': self.parent.onglets.onglet_actuel.canvas,

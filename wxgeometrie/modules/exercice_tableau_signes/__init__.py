@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
-from __future__ import with_statement
 
 #    .-------------------------------------.
 #    |    Exercices : tableaux de signes   |
@@ -53,7 +51,7 @@ class TabMenuBar(ExerciceMenuBar):
 
 class ExercicesTableauxSignes(Exercice):
 
-    titre = u"Tableaux de signes" # Donner un titre a chaque module
+    titre = "Tableaux de signes" # Donner un titre a chaque module
 
 
     def niveau1(self):
@@ -83,25 +81,25 @@ class ExercicesTableauxSignes(Exercice):
 
     def _sauvegarder(self, fgeo, feuille = None):
         Panel_API_graphique._sauvegarder(self, fgeo, feuille)
-        fgeo.contenu[u"niveau"] = [str(self.niveau)]
-        fgeo.contenu[u"expression"] = [self.raw_expression]
-        fgeo.contenu[u"score"] = [str(self.score)]
-        fgeo.contenu[u"erreurs"] = [str(self.erreurs)]
+        fgeo.contenu["niveau"] = [str(self.niveau)]
+        fgeo.contenu["expression"] = [self.raw_expression]
+        fgeo.contenu["score"] = [str(self.score)]
+        fgeo.contenu["erreurs"] = [str(self.erreurs)]
 
     def _ouvrir(self, fgeo):
         # Il ne doit y avoir qu'une seule feuille ouverte à la fois.
         # XXX: intégrer cette fonctionnalité directement au Panel.
         self.fermer_feuilles()
         Panel_API_graphique._ouvrir(self, fgeo)
-        if fgeo.contenu.has_key(u"expression"):
-            self.generer_expression(expr=fgeo.contenu[u"expression"][0])
+        if "expression" in fgeo.contenu:
+            self.generer_expression(expr=fgeo.contenu["expression"][0])
             ##self.dessiner_tableau()
-        if fgeo.contenu.has_key(u"niveau"):
-            self.niveau = int(fgeo.contenu[u"niveau"][0])
-        if fgeo.contenu.has_key(u"score"):
-            self.score = int(fgeo.contenu[u"score"][0])
-        if fgeo.contenu.has_key(u"erreurs"):
-            self.erreurs = int(fgeo.contenu[u"erreurs"][0])
+        if "niveau" in fgeo.contenu:
+            self.niveau = int(fgeo.contenu["niveau"][0])
+        if "score" in fgeo.contenu:
+            self.score = int(fgeo.contenu["score"][0])
+        if "erreurs" in fgeo.contenu:
+            self.erreurs = int(fgeo.contenu["erreurs"][0])
         self.update_panneau()
 
 
@@ -128,7 +126,7 @@ class ExercicesTableauxSignes(Exercice):
         return str(self.rationnel())
 
     def generer_expression(self, pattern):
-        u"""Génère une expression aléatoire en fonction respectant le format
+        """Génère une expression aléatoire en fonction respectant le format
         en cours.
 
         Si `pattern` est déjà une expression, l'expression retournée
@@ -204,7 +202,7 @@ class ExercicesTableauxSignes(Exercice):
 
         # valeurs remarquables de x
         self.sols = []
-        for sols in self.facteurs_sols.values():
+        for sols in list(self.facteurs_sols.values()):
             self.sols.extend(sols)
         self.sols.sort()
         if param.debug:
@@ -277,8 +275,8 @@ class ExercicesTableauxSignes(Exercice):
         # Consigne
         # --------
 
-        txt = dessiner_texte(10, 10, u"Étudier le signe de l'expression $"
-                                  + expression_latex + u'$ sur $\u211D$.',
+        txt = dessiner_texte(10, 10, "Étudier le signe de l'expression $"
+                                  + expression_latex + '$ sur $\u211D$.',
                                   va='top', weight='bold', backgroundcolor='#ffffb5')
         box = can.txt_box(txt)
         h = 10 + box.height + 4*marge
@@ -287,10 +285,10 @@ class ExercicesTableauxSignes(Exercice):
         # Équations préalables au tableau
         # -------------------------------
 
-        choix = [u'décroissante', u'croissante']
+        choix = ['décroissante', 'croissante']
 
         # On écrit au dessus du tableau les équations à résoudre :
-        for expression, latex in facteurs_latex.items():
+        for expression, latex in list(facteurs_latex.items()):
             # S'il y a des solutions:
             if facteurs_sols[expression]:
                 assert len(facteurs_sols[expression]) == 1, \
@@ -311,15 +309,15 @@ class ExercicesTableauxSignes(Exercice):
                 if facteurs_sympy[expression].has('x'):
                     if not facteurs_diff[expression].has('x'):
                         # C'est une fonction affine.
-                        txt = dessiner_texte(30, h, u'Sur $\u211D$, la fonction affine'
-                                               u' $x\\mapsto %s$ est strictement' %latex)
+                        txt = dessiner_texte(30, h, 'Sur $\u211D$, la fonction affine'
+                                               ' $x\\mapsto %s$ est strictement' %latex)
                         box = can.txt_box(txt)
-                        sens = (u'décroissante' if facteurs_diff[expression] < 0 else u'croissante')
+                        sens = ('décroissante' if facteurs_diff[expression] < 0 else 'croissante')
                         dessiner_champ(35 + box.width, h, ha='left', choix=choix, resultat=sens)
                         h += box.height + 3*marge
                     elif facteurs_sympy[expression].as_base_exp()[1] == 2:
                         # C'est un carré.
-                        txt = dessiner_texte(30, h, u'Sur $\u211D$, un carré est toujours')
+                        txt = dessiner_texte(30, h, 'Sur $\u211D$, un carré est toujours')
                         box = can.txt_box(txt)
                         dessiner_champ(35 + box.width, h, ha='left', resultat='positif')
                         h += box.height + 3*marge
@@ -357,7 +355,7 @@ class ExercicesTableauxSignes(Exercice):
         # "facteur". Par ex, si l'expression est juste 2*x+3.
         print_last_line = self.denominateur or len(self.numerateur) > 1
 
-        textes = ['x'] + facteurs_latex.values()
+        textes = ['x'] + list(facteurs_latex.values())
         if print_last_line:
             textes.append(expression_latex)
 
@@ -402,7 +400,7 @@ class ExercicesTableauxSignes(Exercice):
         n = len(sols)
         largeur_restante = width - 30 - col1 - 2*marge
         largeur_case = largeur_restante/(n + 1)
-        choix = [' ', '0', u'\u2551']
+        choix = [' ', '0', '\u2551']
         for i, sol in enumerate(sols):
             x = col1 + (i + 1)*largeur_case
             dessiner_ligne_v(x, alpha=.15)
@@ -414,7 +412,7 @@ class ExercicesTableauxSignes(Exercice):
                 if sol in facteurs_sols[expr]:
                     resultat = '0'
                     if expr in self.denominateur:
-                        resultat_final = u'\u2551'
+                        resultat_final = '\u2551'
                 else:
                     resultat = ' '
                 ##signe = is sol - 1
@@ -469,7 +467,7 @@ class ExercicesTableauxSignes(Exercice):
             try:
                 if abs(float(S(attendu) - S(reponse))) < param.tolerance:
                     return True
-            except (SympifyError, ValueError):
+            except (SympifyError, ValueError, TypeError):
                 pass
             except Exception:
                 print_error()

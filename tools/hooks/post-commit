@@ -1,0 +1,12 @@
+#!/bin/sh
+echo
+if [ -e .commit ]
+    then
+    rm .commit
+    echo `date "+%Y-%m-%d %H:%M:%S"` > wxgeometrie/.commit_info
+    git describe --long HEAD~1 >> wxgeometrie/.commit_info
+    git log -1 --format="%H" HEAD~1 >> wxgeometrie/.commit_info
+    git add wxgeometrie/.commit_info
+    git commit --amend -C HEAD --no-verify
+fi
+exit

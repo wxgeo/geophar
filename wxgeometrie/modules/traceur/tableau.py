@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 #import param
 #from pylib import *
@@ -34,14 +33,14 @@ class EditorsAndRenderersGrid(gridlib.Grid):
 
 
     def OnKeyDown(self, evt):
-        if evt.KeyCode() <> wx.WXK_DELETE:
+        if evt.KeyCode() != wx.WXK_DELETE:
             evt.Skip()
         else:
-            print self.GetSelectedCells()
+            print(self.GetSelectedCells())
             for couple in self.GetSelectedCells():
                 self.SetCellValue(couple[0], couple[1], "")
-            print self.GetSelectionBlockTopLeft()
-            print self.GetSelectionBlockBottomRight()
+            print(self.GetSelectionBlockTopLeft())
+            print(self.GetSelectionBlockBottomRight())
             for (couple0, couple1) in zip(self.GetSelectionBlockTopLeft(), self.GetSelectionBlockBottomRight()):
                 i0, j0 = couple0
                 i1, j1 = couple1
@@ -63,11 +62,11 @@ class EditorsAndRenderersGrid(gridlib.Grid):
         #print help(event.__class__)
         l = event.GetRow()
         c = event.GetCol()
-        print event.__class__.__name__
-        if c == 0 and l <> 0:
+        print(event.__class__.__name__)
+        if c == 0 and l != 0:
             try:
                 choix_fonction = self.choix.GetValue()
-                if choix_fonction <> self.liste[0]:
+                if choix_fonction != self.liste[0]:
                     i = int(choix_fonction[1:])
                     intervalles = self.intervalles[i].GetValue().split("|")
                     equations = self.equations[i].GetValue().split("|")
