@@ -1,11 +1,98 @@
-Géophar version 16.08.4
-Publiée le 06/11/2016
+Géophar version 18.08
+Publiée le 31/08/2018
 
 
+* Fix import problem in `release.py`.
+* [sympy 1.2] Fix regressions with sympy 1.2.
+* [sympy 1.2] Fix incompatibilities with `Decim` class.
+* Create a `hooks` directory in tools for git hooks.
+* Add pre-commit and post-commit hooks to write commit info in a file.
+* Minor fix in "Exercice X" modules.
+* Add `_op_priority` attribute to class `Decim`. Add failing test.
+* Try to improve formating of complex solutions.
+* [sympy 1.2] Float argument `prec` is deprecated -> `dps` used instead.
+* [sympy 1.2] Replace sympy 1.0 with sympy 1.2.
+* Fix fatal error when sympy 1.2 is used.
+* Fix regression in widget.
+* [Qt5] QColor.light() -> QColor.lighter().
+* [py3] Fix last failing test (involving extremites_cachees in geolib.Function).
+* Adapt to API change in scipy 0.19+
+* [py3] Fix some regressions involving interpolations.
+* [py3] Fix regression in `Variable` (when a variable is linked to another).
+* [py3] Update test concerning `Variable` objects.
+* [py3] Fix test (`exec()` can't modify variables in local scope anymore in python3).
+* [py3] Fix regression when redefining `Variable` objects.
+* Fix bug in `geolib.Demiplan`.
+* [py3] Fix regression in `variables.Add` and `variables.Mul`.
+* [py3] Fix regression in `Objet._arg_raw_value()`.
+* [py3] Small fix in test.
+* Qt4 -> Qt5
+* Use apt (if detected) to install missing modules.
+* Fix indentation (bad geany configuration).
+* Try to use pip to install missing modules.
+* Update dependancies.
+* [py3] file -> open
+* [Framework] Fix regressions in `search.py`.
+* [py3] Fix regression in canvas.
+* [geolib] When accessing `Variable` object, its content is returned directly.
+* [py3] Remove useless `universal_unicode()` function.
+* [geolib] Replace `.__eq__()` with `.egal()` method. Some tests still fail.
+* [geolib] Improve behaviour on python 3. Many tests still fail though.
+* Replace outdated optparse module with argparse.
+* Parse arguments of `tools/search.py` using `argparse`.
+* [geolib] Change internals to make all objects hashable (don't override __eq__)
+* [geolib] `Fonction` is not a subclass of Objet_numerique anymore.
+* Update packages names in debian for dependencies.
+* Version 16.08.4
 * Fix dll issue on Windows.
+* [geolib] Mark section as to be removed later.
+* Add patched rpdb2.py file.
+* [Framework] Don't limit `edit.py` to .py files.
+* [py3][Framework] Fix bug in `search.py` when incorrect encoding was found.
+* [probas] Accept &B syntax (for \overline{B}) more widely.
 * [probas] Accept &B syntax (for \overline{B}) more widely.
 * Version 16.08.3
 * Fix small issue with matplotlib version 1.5 (incorrect LaTeX rendering).
+* [py3] Fix (hopefully all) python 3 related issues in mathlib.
+* Fix small issue with matplotlib version 1.5 (incorrect LaTeX rendering).
+* Remove old unused code.
+* Fix loading of `Inteprete()` sessions whan variables contain strings.
+* [py3] Fix printing of strings in `custom_str()`.
+* Split tests in `test_interprete.py`.
+* [py3] `QsciScintilla.SendScintilla()` needs bytes, not str.
+* Slightly improve file saving and file opening dialog.
+* [py3] Fix encoding management during IO operations.
+* [py3] Decode `urlopen()` data as utf-8.
+* [py3] Use `importlib.import_module()` instead of low-level `__import__()`.
+* [py3] file -> io.IOBase
+* [Py3] Use only unicode (new str) internally, never bytes.
+* [Py3] ewec/eval mecanism has change: __builtins__=None isn't allowed anymore.
+* [Py3] test_entetes pass now.
+* Improve testing framework for solver.
+* [Py3] #!/usr/bin/env python -> #!/usr/bin/env python3
+* [Py3] Some more fixes. Most tests pass in mathlib.
+* [Py3] All tabval tests pass now.
+* [Py3] All tabvar and tabsign tests pass now.
+* [Py3] Ignore __pycache__ in modules folder.
+* [Py3] `cmp()` has been removed as well.
+* [Py3] Remove references to `basestring`, `types.NoneType` removed too.
+* [Py3] Various fixes for python 3. `import wxgeometrie` is now possible.
+* [Py3] Help debuging of weakref.
+* [Py3] run_path() returns a dict on python 3+
+* [Py3] __slots__ behaviour change slightly on python 3+.
+* [Py3] Make a copy of vars() before looping.
+* [Py3] Fix some conversions not done by 2to3
+* [Py3] Remove most use of universal_unicode() function.
+* [Py3] Remove references to unicode().
+* [Py3] Psyco is dead.
+* [Py3] Functions str2() and str3() aren't needed anymore.
+* [Py3] TypeType -> type
+* [Py3] tools/search.py is now working well on Python 3.
+* Correct encoding of geophar.pyw
+* Update all code to python 3 using 2to3 and manual editing for each file.
+* Change min and max python version.
+* Futurize code (step 1).
+* [python2->3] Adopt new `raise...` syntax.
 * `reduce()` is not a builtin function anymore in python3.
 * Code modernization: remove unneeded .keys().
 * Fix errors when accessing polygons properties.
@@ -16,13 +103,3 @@ Publiée le 06/11/2016
 * Fix for windows compilation process.
 * Fix bug in infos() when there were non ascii caracters in geophar path.
 * Workaround for a bug in external library preventing `compilation` on windows.
-* Version 16.08
-* Small fix in mathlib.
-* Update sympy version to 1.0
-* Improve compatibility with sympy 1.0
-* mpmath is now an external dependency.
-* [Graphs] Add support for labels in graph nodes.
-* Import mathlib.mathtext later at startup (so as to display splashscreen earlier).
-* Improve debuging messages in testlib.
-* Fix encoding declaration in geophar.pyw.
-* [FS#319] Patch sympy solver.
