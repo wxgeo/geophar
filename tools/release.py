@@ -24,7 +24,7 @@ import os, sys, time, re, types
 from os.path import isfile
 from optparse import OptionParser
 from urllib.request import urlopen
-from . import scriptlib as s
+import scriptlib as s
 
 _module_path = os.path.split(os.path.realpath(sys._getframe().f_code.co_filename))[0]
 
