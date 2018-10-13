@@ -598,7 +598,7 @@ class Onglets(QTabWidget):
             try:
                 output = StringIO()
                 self.onglet_actuel.canvas.exporter(output, format='svg')
-                svg = QSvgRenderer(QByteArray(output.getvalue()), self)
+                svg = QSvgRenderer(QByteArray(output.getvalue().encode('utf-8')), self)
                 size = svg.defaultSize()
                 size.scale(painter.viewport().size(), Qt.KeepAspectRatio)
                 rect = QRectF(0, 0, size.width(), size.height())
