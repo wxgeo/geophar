@@ -1,7 +1,10 @@
-Géophar version 18.08
-Publiée le 31/08/2018
+Géophar version 18.08.1
+Publiée le 13/10/2018
 
 
+* [py3] Copying figure to clipboard works again.
+* [py3] Fix printing regression.
+* Version 18.08
 * Fix import problem in `release.py`.
 * [sympy 1.2] Fix regressions with sympy 1.2.
 * [sympy 1.2] Fix incompatibilities with `Decim` class.
