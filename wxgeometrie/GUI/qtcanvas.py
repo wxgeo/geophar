@@ -19,7 +19,7 @@
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import re
-from io import StringIO
+from io import BytesIO
 from functools import partial
 
 from PyQt5.QtCore import Qt, QTimer
@@ -318,11 +318,12 @@ class QtCanvas(FigureCanvasQTAgg, Canvas):
             Canvas.exporter(self, *args, **kw)
 
     def as_QImage(self, **kw):
-        output = StringIO()
+        output = BytesIO()
         self.exporter(output, format='png', **kw)
         img = QImage()
         img.loadFromData(output.getvalue(), 'PNG')
         return img
+
 
     def Copy_to_Clipboard(self, **kw):
         app.clipboard().setImage(self.as_QImage(**kw))

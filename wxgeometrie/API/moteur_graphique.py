@@ -998,7 +998,8 @@ class Moteur_graphique(object):
                 with CollecterArtistes(self):
                     with ZoomArtistes(self.axes, self.zoom_texte, self.zoom_ligne):
                         # Export proprement dit:
-                        self.canvas.figure.savefig(fichier, format=format, dpi=dpi, bbox_inches=zone)
+                        self.canvas.figure.savefig(fichier, format=format,
+                                                   dpi=dpi, bbox_inches=zone)
 
 
     def exporter_tikz(self, chiffres_significatifs = 4):
