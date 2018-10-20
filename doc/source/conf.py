@@ -21,7 +21,7 @@ import sys, os
 sys.path.append(os.path.abspath('../..'))
 print('PATH::', os.path.abspath('../..'))
 
-from wxgeometrie.param import version
+from wxgeometrie.version import version
 
 # -- General configuration -----------------------------------------------------
 
