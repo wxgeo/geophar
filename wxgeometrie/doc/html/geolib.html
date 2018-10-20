@@ -1,34 +1,33 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>Textes, labels, étiquettes &mdash; documentation Geophar 14.08.1</title>
-    
-    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <title>Textes, labels, étiquettes &#8212; Documentation Geophar 18.08.1</title>
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '14.08.1',
+        VERSION:     '18.08.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="_static/translations.js"></script>
-    <script type="text/javascript" src="_static/jsMath/easy/load.js"></script>
-    <link rel="top" title="documentation Geophar 14.08.1" href="index.html" /> 
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Recherche" href="search.html" /> 
   </head>
   <body>
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -37,40 +36,40 @@
         <li class="right" >
           <a href="py-modindex.html" title="Index des modules Python"
              >modules</a> |</li>
-        <li><a href="index.html">documentation Geophar 14.08.1</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Documentation Geophar 18.08.1</a> &#187;</li> 
       </ul>
     </div>  
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
-          <div class="body">
+          <div class="body" role="main">
             
   <div class="section" id="textes-labels-etiquettes">
 <h1>Textes, labels, étiquettes<a class="headerlink" href="#textes-labels-etiquettes" title="Lien permanent vers ce titre">¶</a></h1>
 <div class="section" id="presentation">
 <h2>Présentation<a class="headerlink" href="#presentation" title="Lien permanent vers ce titre">¶</a></h2>
 <p>Chaque objet représentable (en gros, tous les objets sauf ceux de type
-<tt class="docutils literal"><span class="pre">Variable_generique</span></tt>) possède une étiquette.</p>
+<code class="docutils literal"><span class="pre">Variable_generique</span></code>) possède une étiquette.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">Une exception notable : les objest de type <tt class="docutils literal"><span class="pre">Texte</span></tt> gèrent eux
+<p class="last">Une exception notable : les objest de type <code class="docutils literal"><span class="pre">Texte</span></code> gèrent eux
 même leur affichage, sans passer par une étiquette.</p>
 </div>
-<p>Cette étiquette permet d&#8217;afficher le nom de l&#8217;objet, ou un commentaire associé
-à l&#8217;objet.
+<p>Cette étiquette permet d’afficher le nom de l’objet, ou un commentaire associé
+à l’objet.
 Éventuellement, ce commentaire peut contenir du code LaTeX, pour sa mise
 en forme:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">wxgeometrie</span> <span class="kn">import</span> <span class="o">*</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">wxgeometrie</span> <span class="k">import</span> <span class="o">*</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">Feuille</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">A</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">objets</span><span class="o">.</span><span class="n">A</span> <span class="o">=</span> <span class="n">Point</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">A</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s">u&quot;bonjour, $</span><span class="se">\\</span><span class="s">alpha_i+</span><span class="se">\\</span><span class="s">beta_j=</span><span class="se">\\</span><span class="s">frac{</span><span class="se">\\</span><span class="s">pi}{2}$ !&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">A</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="sa">u</span><span class="s2">&quot;bonjour, $</span><span class="se">\\</span><span class="s2">alpha_i+</span><span class="se">\\</span><span class="s2">beta_j=</span><span class="se">\\</span><span class="s2">frac{</span><span class="se">\\</span><span class="s2">pi}</span><span class="si">{2}</span><span class="s2">$ !&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">A</span><span class="o">.</span><span class="n">label</span><span class="p">()</span>
 <span class="go">u&#39;bonjour, $\\alpha_i+\\beta_j=\\frac{\\pi}{2}$ !&#39;</span>
 </pre></div>
 </div>
 <p>Il peut aussi contenir des formules interprétées:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">A</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s">u&quot;Mon abscisse est {A.x}, et mon ordonnée est {A.y}.&quot;</span><span class="p">,</span> <span class="n">formule</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">A</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="sa">u</span><span class="s2">&quot;Mon abscisse est </span><span class="si">{A.x}</span><span class="s2">, et mon ordonnée est </span><span class="si">{A.y}</span><span class="s2">.&quot;</span><span class="p">,</span> <span class="n">formule</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">A</span><span class="o">.</span><span class="n">label</span><span class="p">()</span>
 <span class="go">u&#39;Mon abscisse est -1, et mon ordonnée est 5.&#39;</span>
 </pre></div>
@@ -78,57 +77,57 @@ en forme:</p>
 <p>Les portions interprétées doivent être entre accolades.</p>
 </div>
 <div class="section" id="mode-d-affichage-formatage">
-<h2>Mode d&#8217;affichage, formatage<a class="headerlink" href="#mode-d-affichage-formatage" title="Lien permanent vers ce titre">¶</a></h2>
-<p>Il y a 3 modes d&#8217;affichages:</p>
+<h2>Mode d’affichage, formatage<a class="headerlink" href="#mode-d-affichage-formatage" title="Lien permanent vers ce titre">¶</a></h2>
+<p>Il y a 3 modes d’affichages:</p>
 <blockquote>
 <div><ul class="simple">
-<li>NOM : le nom de l&#8217;objet est affiché près de l&#8217;objet (défaut sauf pour les
-objets <tt class="docutils literal"><span class="pre">Texte</span></tt>).</li>
-<li>TEXTE : le commentaire est affiché près de l&#8217;objet (défaut pour les objets
-<tt class="docutils literal"><span class="pre">Texte</span></tt>).</li>
-<li>FORMULE : le commentaire est affiché près de l&#8217;objet, et les sections entre
+<li>NOM : le nom de l’objet est affiché près de l’objet (défaut sauf pour les
+objets <code class="docutils literal"><span class="pre">Texte</span></code>).</li>
+<li>TEXTE : le commentaire est affiché près de l’objet (défaut pour les objets
+<code class="docutils literal"><span class="pre">Texte</span></code>).</li>
+<li>FORMULE : le commentaire est affiché près de l’objet, et les sections entre
 accolades sont interprétées.</li>
 </ul>
 </div></blockquote>
 <p>Il y a également 3 modes de formatage :</p>
 <blockquote>
 <div><ul class="simple">
-<li>RIEN: aucun formatage n&#8217;est appliqué.</li>
+<li>RIEN: aucun formatage n’est appliqué.</li>
 <li>MATH: le texte est supposé être une expression mathématique.
 Il est converti autant que possible en code LaTeX (fractions, etc.)</li>
 <li>CUSTOM: une fonction de formatage personnalisée est appliquée.</li>
 </ul>
 </div></blockquote>
 <div class="admonition warning">
-<p class="first admonition-title">Warning</p>
-<p class="last">Pour l&#8217;instant, le mode CUSTOM n&#8217;est pas supporté.</p>
+<p class="first admonition-title">Avertissement</p>
+<p class="last">Pour l’instant, le mode CUSTOM n’est pas supporté.</p>
 </div>
 </div>
 <div class="section" id="implementation">
 <h2>Implémentation<a class="headerlink" href="#implementation" title="Lien permanent vers ce titre">¶</a></h2>
 <p>Les textes et les étiquettes possèdent un argument <cite>texte</cite>, qui contient le texte
-brut à afficher (après éventuellement interprétation, conversion en LaTeX, ...
-suivant les mode d&#8217;affichage et de formatage).</p>
+brut à afficher (après éventuellement interprétation, conversion en LaTeX, …
+suivant les mode d’affichage et de formatage).</p>
 <p>Ils possèdent également un style <cite>mode</cite> et un style <cite>formatage</cite>.</p>
 <p>Valeurs possibles pour <cite>mode</cite> : NOM, TEXTE, FORMULE.</p>
 <p>Valeurs possibles pour <cite>formatage</cite>: RIEN, MATH.</p>
-<p>Pour plus de facilité, chaque objet possède une méthode <tt class="docutils literal"><span class="pre">.label()</span></tt>.</p>
-<p>Cette méthode permet de modifier simultanément le texte, le mode d&#8217;affichage,
+<p>Pour plus de facilité, chaque objet possède une méthode <code class="docutils literal"><span class="pre">.label()</span></code>.</p>
+<p>Cette méthode permet de modifier simultanément le texte, le mode d’affichage,
 et le formatage du texte.</p>
-<p>Elle retourne un texte prêt à l&#8217;affichage, c&#8217;est-à-dire formaté et/ou interprété
+<p>Elle retourne un texte prêt à l’affichage, c’est-à-dire formaté et/ou interprété
 le cas échéant.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p>L&#8217;utilisation de la méthode <tt class="docutils literal"><span class="pre">Objet.label()</span></tt> permet d&#8217;avoir une
-interface commune aux objets <tt class="docutils literal"><span class="pre">Texte</span></tt> et aux autres objets.</p>
-<p class="last">Il est fortement conseillé d&#8217;utiliser la méthode <tt class="docutils literal"><span class="pre">.label()</span></tt>
-de l&#8217;objet, plutôt que l&#8217;attribut <tt class="docutils literal"><span class="pre">.texte</span></tt> du texte ou de l&#8217;étiquette
-de l&#8217;objet.</p>
+<p>L’utilisation de la méthode <code class="docutils literal"><span class="pre">Objet.label()</span></code> permet d’avoir une
+interface commune aux objets <code class="docutils literal"><span class="pre">Texte</span></code> et aux autres objets.</p>
+<p class="last">Il est fortement conseillé d’utiliser la méthode <code class="docutils literal"><span class="pre">.label()</span></code>
+de l’objet, plutôt que l’attribut <code class="docutils literal"><span class="pre">.texte</span></code> du texte ou de l’étiquette
+de l’objet.</p>
 </div>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">À l&#8217;exception des objets <tt class="docutils literal"><span class="pre">Texte</span></tt>, la méthode <tt class="docutils literal"><span class="pre">Objet.label()</span></tt>
-redirige vers la méthode <tt class="docutils literal"><span class="pre">Label_generique.label()</span></tt> de l&#8217;étiquette.</p>
+<p class="last">À l’exception des objets <code class="docutils literal"><span class="pre">Texte</span></code>, la méthode <code class="docutils literal"><span class="pre">Objet.label()</span></code>
+redirige vers la méthode <code class="docutils literal"><span class="pre">Label_generique.label()</span></code> de l’étiquette.</p>
 </div>
 </div>
 </div>
@@ -136,10 +135,10 @@ redirige vers la méthode <tt class="docutils literal"><span class="pre">Label_g
 <h1>Enfants, parents, ancetres et heritiers<a class="headerlink" href="#enfants-parents-ancetres-et-heritiers" title="Lien permanent vers ce titre">¶</a></h1>
 <div class="section" id="terminologie">
 <h2>Terminologie<a class="headerlink" href="#terminologie" title="Lien permanent vers ce titre">¶</a></h2>
-<p>Au sein d&#8217;une feuille, les objets géométriques dépendent souvent les uns
+<p>Au sein d’une feuille, les objets géométriques dépendent souvent les uns
 des autres.</p>
 <p>Par exemple, considérons le code suivant:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">wxgeometrie</span> <span class="kn">import</span> <span class="o">*</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">wxgeometrie</span> <span class="k">import</span> <span class="o">*</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">A</span> <span class="o">=</span> <span class="n">Point</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">B</span> <span class="o">=</span> <span class="n">Point</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">AB</span> <span class="o">=</span> <span class="n">Segment</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">)</span>
@@ -149,7 +148,7 @@ des autres.</p>
 <p>Le point <cite>M</cite> dépend du segment <cite>AB</cite> : si <cite>AB</cite> est modifiée, les coordonnées
 du point seront adaptées afin que le point reste sur le segment.</p>
 <p>On dit que le point <cite>M</cite> est un <strong>enfant</strong> du segment <cite>AB</cite>.</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">M</span> <span class="ow">in</span> <span class="n">AB</span><span class="o">.</span><span class="n">enfants</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">M</span> <span class="ow">in</span> <span class="n">AB</span><span class="o">.</span><span class="n">enfants</span>
 <span class="go">True</span>
 </pre></div>
 </div>
@@ -160,26 +159,26 @@ conséquent.</p>
 dynamique : si un objet est modifié, il faut que tous les objets
 qui en dépendent soient actualisés (mais seulement eux, pour des raisons
 évidentes de performance).</p>
-<p>Dans le code précédent, le point <cite>A</cite> n&#8217;a qu&#8217;un seul enfant, le segment <cite>AB</cite>,
+<p>Dans le code précédent, le point <cite>A</cite> n’a qu’un seul enfant, le segment <cite>AB</cite>,
 qui a lui-même pour enfant le point <cite>M</cite>.</p>
 <p>Comme <cite>M</cite> dépend, quoique indirectement, du point <cite>A</cite>, on dit que <cite>M</cite>
 est un <strong>héritier</strong> de <cite>A</cite>.</p>
 <p>Le point <cite>A</cite> possède ainsi 2 héritiers : le segment <cite>AB</cite>, et le point <cite>M</cite>.</p>
-<p>À l&#8217;inverse, les <strong>ancêtres</strong> du point <cite>M</cite> sont le segment <cite>AB</cite> (<strong>parent</strong>,
-c&#8217;est-à-dire ancêtre direct) et les points <cite>A</cite> et <cite>B</cite> (ancêtres indirects).</p>
+<p>À l’inverse, les <strong>ancêtres</strong> du point <cite>M</cite> sont le segment <cite>AB</cite> (<strong>parent</strong>,
+c’est-à-dire ancêtre direct) et les points <cite>A</cite> et <cite>B</cite> (ancêtres indirects).</p>
 </div>
 <div class="section" id="id1">
 <h2>Implementation<a class="headerlink" href="#id1" title="Lien permanent vers ce titre">¶</a></h2>
 <p>Les <strong>parents</strong> sont faciles à récupérer, car tous les objets géométriques
 gardent en mémoire leurs arguments de construction.</p>
-<p>On génère la liste des parents d&#8217;un objet_geometrique via la méthode
-<tt class="docutils literal"><span class="pre">Objet._recenser_les_parents()</span></tt>.</p>
+<p>On génère la liste des parents d’un objet_geometrique via la méthode
+<code class="docutils literal"><span class="pre">Objet._recenser_les_parents()</span></code>.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">En principe, cette méthode n&#8217;a pas à être appelée directement.</p>
+<p class="last">En principe, cette méthode n’a pas à être appelée directement.</p>
 </div>
-<p>Le résultat est mis en cache dans l&#8217;attribut <tt class="docutils literal"><span class="pre">._parents</span></tt>:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">AB</span><span class="o">.</span><span class="n">_parents</span> <span class="o">==</span> <span class="nb">set</span><span class="p">([</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">])</span>
+<p>Le résultat est mis en cache dans l’attribut <code class="docutils literal"><span class="pre">._parents</span></code>:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">AB</span><span class="o">.</span><span class="n">_parents</span> <span class="o">==</span> <span class="nb">set</span><span class="p">([</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">])</span>
 <span class="go">True</span>
 </pre></div>
 </div>
@@ -187,9 +186,9 @@ gardent en mémoire leurs arguments de construction.</p>
 <p class="first admonition-title">Note</p>
 <p class="last">le résultat retourné est du type <em>set</em> (ensemble).</p>
 </div>
-<p>Si l&#8217;on souhaite la liste de <em>tous</em> les ancêtres (requête récursive), on utilise
-alors la méthode <tt class="docutils literal"><span class="pre">Objet._ancetres()</span></tt>.</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">AB</span><span class="o">.</span><span class="n">_ancetres</span> <span class="o">==</span> <span class="nb">set</span><span class="p">([</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">A</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">A</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">B</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">B</span><span class="o">.</span><span class="n">y</span><span class="p">])</span>
+<p>Si l’on souhaite la liste de <em>tous</em> les ancêtres (requête récursive), on utilise
+alors la méthode <code class="docutils literal"><span class="pre">Objet._ancetres()</span></code>.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">AB</span><span class="o">.</span><span class="n">_ancetres</span> <span class="o">==</span> <span class="nb">set</span><span class="p">([</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">A</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">A</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">B</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">B</span><span class="o">.</span><span class="n">y</span><span class="p">])</span>
 <span class="go">True</span>
 </pre></div>
 </div>
@@ -200,31 +199,31 @@ automatiquement générées lorsque les points sont créés.</p>
 </div>
 <dl class="docutils">
 <dt>..note:: Les <strong>enfants</strong> sont gardés en mémoire sous forme de <em>weakreferences</em>.</dt>
-<dd>Ainsi, si un objet n&#8217;est plus utilisé, il est automatiquement
+<dd>Ainsi, si un objet n’est plus utilisé, il est automatiquement
 déréférencé des listes des enfants de chacun de ses parents.
 (Cela évite de maintenir en vie dans la mémoire de Python des objets
-« zombie », qui n&#8217;apparaissent plus nul part ailleurs.) <a class="footnote-reference" href="#id3" id="id2">[1]</a></dd>
+« zombie », qui n’apparaissent plus nul part ailleurs.) <a class="footnote-reference" href="#id3" id="id2">[1]</a></dd>
 </dl>
 <table class="docutils footnote" frame="void" id="id3" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
 <tr><td class="label"><a class="fn-backref" href="#id2">[1]</a></td><td>Cela sert notamment pour les objets temporaires ou les intermédiares de
-construction, qui n&#8217;apparaissent pas sur la feuille. Les objets de la
+construction, qui n’apparaissent pas sur la feuille. Les objets de la
 feuille, eux, gèrent proprement leur déréférencement auprès de leurs
-parents lorsqu&#8217;ils sont supprimés, via <cite>Objet.supprimer()</cite>.</td></tr>
+parents lorsqu’ils sont supprimés, via <cite>Objet.supprimer()</cite>.</td></tr>
 </tbody>
 </table>
 </div>
 <div class="section" id="cas-particulier-des-formules">
 <h2>Cas particulier des formules<a class="headerlink" href="#cas-particulier-des-formules" title="Lien permanent vers ce titre">¶</a></h2>
-<p>La <em>légende</em> d&#8217;un objet peut contenir une <em>formule</em>, c&#8217;est à dire une expression
+<p>La <em>légende</em> d’un objet peut contenir une <em>formule</em>, c’est à dire une expression
 qui fait référence à des objets de la feuille (du moins en général), et qui
-sera interprétée au moment de l&#8217;affichage de l&#8217;étiquette de l&#8217;objet <a class="footnote-reference" href="#id5" id="id4">[2]</a>.</p>
+sera interprétée au moment de l’affichage de l’étiquette de l’objet <a class="footnote-reference" href="#id5" id="id4">[2]</a>.</p>
 <table class="docutils footnote" frame="void" id="id5" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id4">[2]</a></td><td>L&#8217;étiquette d&#8217;un objet est un objet spécial, qui est uniquement en charge
-de l&#8217;affichage de sa légende.</td></tr>
+<tr><td class="label"><a class="fn-backref" href="#id4">[2]</a></td><td>L’étiquette d’un objet est un objet spécial, qui est uniquement en charge
+de l’affichage de sa légende.</td></tr>
 </tbody>
 </table>
 <div class="admonition note">
@@ -232,12 +231,12 @@ de l&#8217;affichage de sa légende.</td></tr>
 <p class="last">Les objets <em>Texte</em> peuvent également contenir des formules dans le
 texte à afficher.</p>
 </div>
-<p>Supposons que l&#8217;objet <cite>M</cite> ait pour légende:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="s">u&quot;Le point A a pour coordonnées ({A.x}, {A.y}).&quot;</span>
+<p>Supposons que l’objet <cite>M</cite> ait pour légende:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="sa">u</span><span class="s2">&quot;Le point A a pour coordonnées (</span><span class="si">{A.x}</span><span class="s2">, </span><span class="si">{A.y}</span><span class="s2">).&quot;</span>
 </pre></div>
 </div>
 <p>Alors le point M doit dépendre des deux variables générées par la formule, à
-savoir <cite>Variable(&#8220;A.x&#8221;)</cite> et <cite>Variable(&#8220;A.y&#8221;)</cite>.</p>
+savoir <cite>Variable(«&nbsp;A.x&nbsp;»)</cite> et <cite>Variable(«&nbsp;A.y&nbsp;»)</cite>.</p>
 <p>Par conséquent, ces deux variables doivent être ajoutées aux parents de <cite>M</cite>,
 tant que cette formule est associée au point <cite>M</cite> ; et <cite>M</cite> doit être ajouté
 à la liste des enfants, pour chacune de ces deux variables.</p>
@@ -250,7 +249,7 @@ tant que cette formule est associée au point <cite>M</cite> ; et <cite>M</cite>
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
             <p class="logo"><a href="index.html">
               <img class="logo" src="_static/geophar-icone.png" alt="Logo"/>
@@ -259,7 +258,7 @@ tant que cette formule est associée au point <cite>M</cite> ; et <cite>M</cite>
   <ul>
 <li><a class="reference internal" href="#">Textes, labels, étiquettes</a><ul>
 <li><a class="reference internal" href="#presentation">Présentation</a></li>
-<li><a class="reference internal" href="#mode-d-affichage-formatage">Mode d&#8217;affichage, formatage</a></li>
+<li><a class="reference internal" href="#mode-d-affichage-formatage">Mode d’affichage, formatage</a></li>
 <li><a class="reference internal" href="#implementation">Implémentation</a></li>
 </ul>
 </li>
@@ -271,29 +270,28 @@ tant que cette formule est associée au point <cite>M</cite> ; et <cite>M</cite>
 </li>
 </ul>
 
-  <h3>Cette page</h3>
-  <ul class="this-page-menu">
-    <li><a href="_sources/geolib.txt"
-           rel="nofollow">Montrer la source</a></li>
-  </ul>
-<div id="searchbox" style="display: none">
+  <div role="note" aria-label="source link">
+    <h3>Cette page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/geolib.rst.txt"
+            rel="nofollow">Montrer le code source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
   <h3>Recherche rapide</h3>
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    <p class="searchtip" style="font-size: 90%">
-    Saisissez un mot clef ou un nom de module, classe ou fonction.
-    </p>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -302,12 +300,12 @@ tant que cette formule est associée au point <cite>M</cite> ; et <cite>M</cite>
         <li class="right" >
           <a href="py-modindex.html" title="Index des modules Python"
              >modules</a> |</li>
-        <li><a href="index.html">documentation Geophar 14.08.1</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Documentation Geophar 18.08.1</a> &#187;</li> 
       </ul>
     </div>
-    <div class="footer">
-        &copy; Copyright 2005-2012, N.Pourcelot.
-      Créé avec <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2005-2012, N.Pourcelot.
+      Créé avec <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.7.
     </div>
   </body>
 </html>

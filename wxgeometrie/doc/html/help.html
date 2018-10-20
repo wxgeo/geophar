@@ -1,36 +1,35 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>Manuel de l’utilisateur &mdash; documentation Geophar 14.08.1</title>
-    
-    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <title>Manuel de l’utilisateur &#8212; Documentation Geophar 18.08.1</title>
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '14.08.1',
+        VERSION:     '18.08.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="_static/translations.js"></script>
-    <script type="text/javascript" src="_static/jsMath/easy/load.js"></script>
-    <link rel="top" title="documentation Geophar 14.08.1" href="index.html" />
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Recherche" href="search.html" />
     <link rel="next" title="Manuel du développeur" href="api.html" />
     <link rel="prev" title="Documentation de Geophar" href="index.html" /> 
   </head>
   <body>
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -45,23 +44,23 @@
         <li class="right" >
           <a href="index.html" title="Documentation de Geophar"
              accesskey="P">précédent</a> |</li>
-        <li><a href="index.html">documentation Geophar 14.08.1</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Documentation Geophar 18.08.1</a> &#187;</li> 
       </ul>
     </div>  
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
-          <div class="body">
+          <div class="body" role="main">
             
   <div class="section" id="manuel-de-l-utilisateur">
-<h1><a class="toc-backref" href="#id9">Manuel de l&#8217;utilisateur</a><a class="headerlink" href="#manuel-de-l-utilisateur" title="Lien permanent vers ce titre">¶</a></h1>
+<h1><a class="toc-backref" href="#id9">Manuel de l’utilisateur</a><a class="headerlink" href="#manuel-de-l-utilisateur" title="Lien permanent vers ce titre">¶</a></h1>
 <p><em>Copyright © 2005-2013 Nicolas Pourcelot</em></p>
 <p>Informations complémentaires : <a class="reference external" href="http://">http://</a><a class="reference external" href="http://wxgeo.free.fr">wxgeo.free.fr</a></p>
 <div class="contents topic" id="sommaire">
 <p class="topic-title first"><strong>Sommaire :</strong></p>
 <ul class="simple">
-<li><a class="reference internal" href="#manuel-de-l-utilisateur" id="id9">Manuel de l&#8217;utilisateur</a><ul>
+<li><a class="reference internal" href="#manuel-de-l-utilisateur" id="id9">Manuel de l’utilisateur</a><ul>
 <li><a class="reference internal" href="#licence" id="id10">Licence</a></li>
 <li><a class="reference internal" href="#installation" id="id11">Installation</a><ul>
 <li><a class="reference internal" href="#sous-windows" id="id12">Sous Windows</a></li>
@@ -71,8 +70,8 @@
 </li>
 <li><a class="reference internal" href="#description-des-differents-modules" id="id15">Description des différents modules</a><ul>
 <li><a class="reference internal" href="#pilotage-avec-la-souris" id="id16">Pilotage avec la souris</a></li>
-<li><a class="reference internal" href="#creation-d-objets-via-le-menu-creer" id="id17">Création d&#8217;objets via le menu «Créer»</a></li>
-<li><a class="reference internal" href="#choisir-le-mode-d-affichage-de-l-etiquette-d-un-objet" id="id18">Choisir le mode d&#8217;affichage de l&#8217;étiquette d&#8217;un objet</a></li>
+<li><a class="reference internal" href="#creation-d-objets-via-le-menu-creer" id="id17">Création d’objets via le menu «Créer»</a></li>
+<li><a class="reference internal" href="#choisir-le-mode-d-affichage-de-l-etiquette-d-un-objet" id="id18">Choisir le mode d’affichage de l’étiquette d’un objet</a></li>
 <li><a class="reference internal" href="#la-ligne-de-commande" id="id19">La ligne de commande</a><ul>
 <li><a class="reference internal" href="#le-traceur-de-courbes" id="id20">Le traceur de courbes</a></li>
 <li><a class="reference internal" href="#la-calculatrice" id="id21">La calculatrice</a></li>
@@ -84,7 +83,7 @@
 <li><a class="reference internal" href="#histogrammes" id="id25">Histogrammes :</a></li>
 <li><a class="reference internal" href="#diagrammes-en-boites" id="id26">Diagrammes en boites :</a></li>
 <li><a class="reference internal" href="#pour-aller-plus-loin" id="id27">Pour aller plus loin :</a><ul>
-<li><a class="reference internal" href="#le-generateur-d-arbres-de-probabilites" id="id28">Le générateur d&#8217;arbres de probabilités</a></li>
+<li><a class="reference internal" href="#le-generateur-d-arbres-de-probabilites" id="id28">Le générateur d’arbres de probabilités</a></li>
 <li><a class="reference internal" href="#le-generateur-de-tableaux-latex" id="id29">Le générateur de tableaux LaTeX</a></li>
 </ul>
 </li>
@@ -116,14 +115,14 @@ You should have received a copy of the GNU General Public License along with
 this program; if not, write to the Free Software Foundation, Inc., 51
 Franklin St, Fifth Floor, Boston, MA 02110-1301</em></p>
 <p><em>Ce programme est un logiciel libre; vous pouvez le redistribuer et/ou le
-modifier selon les termes de la GNU General Public Licence telle qu&#8217;elle a
+modifier selon les termes de la GNU General Public Licence telle qu’elle a
 été publiée par la Free Software Foundation; soit la version 2 de la licence,
 ou (au choix) toute version ultérieure.
-Ce programme est distribué dans l&#8217;espoir qu&#8217;il puisse être utile, mais sans
-aucune garantie, pas même la garantie implicite qu&#8217;il puisse etre adapté à un
+Ce programme est distribué dans l’espoir qu’il puisse être utile, mais sans
+aucune garantie, pas même la garantie implicite qu’il puisse etre adapté à un
 usage donné. Pour plus de précisions, lisez la GNU General Public License.
 Vous avez recu en principe une copie de la GNU General Public License en même
-temps que ce programme. Si ce n&#8217;est pas le cas, écrivez a l&#8217;adresse suivante
+temps que ce programme. Si ce n’est pas le cas, écrivez a l’adresse suivante
 : Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 02110-1301</em></p>
 </div>
@@ -135,8 +134,8 @@ temps que ce programme. Si ce n&#8217;est pas le cas, écrivez a l&#8217;adresse
 <p>Une version sans installation est proposée par défaut sous Windows et Mac.
 Son usage est vivement conseillé.</p>
 <p class="last">Cette version peut fonctionner facilement sur une simple clé USB
-ou sur un ordinateur sur lequel on n&#8217;a pas la permission
-d&#8217;installer des programmes.</p>
+ou sur un ordinateur sur lequel on n’a pas la permission
+d’installer des programmes.</p>
 </div>
 <div class="section" id="sous-windows">
 <h3><a class="toc-backref" href="#id12">Sous Windows</a><a class="headerlink" href="#sous-windows" title="Lien permanent vers ce titre">¶</a></h3>
@@ -151,28 +150,37 @@ vous souhaitez extraire le programme.</p>
 </div>
 <div class="section" id="sous-linux">
 <h3><a class="toc-backref" href="#id14">Sous Linux</a><a class="headerlink" href="#sous-linux" title="Lien permanent vers ce titre">¶</a></h3>
-<p>Vous pouvez commencer par tester Géophar sans l&#8217;installer.</p>
-<p>Placez vous dans le répertoire où se trouve l&#8217;archive téléchargée.</p>
+<p>Vous pouvez commencer par tester Géophar sans l’installer.</p>
+<p>Placez vous dans le répertoire où se trouve l’archive téléchargée.</p>
 <p>Tapez alors les commandes suivantes dans le terminal :</p>
-<div class="highlight-python"><div class="highlight"><pre>tar -zxvf geophar_*.gz
-cd geophar
-python geophar.pyw
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">tar</span> <span class="o">-</span><span class="n">zxvf</span> <span class="n">geophar_</span><span class="o">*.</span><span class="n">gz</span>
+<span class="n">cd</span> <span class="n">geophar</span>
+<span class="n">python</span> <span class="n">geophar</span><span class="o">.</span><span class="n">pyw</span>
 </pre></div>
 </div>
 <p>Si des librairies manquent, leur installation sera automatiquement proposée.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p>Si vous souhaitez installer Géophar (création d&#8217;un raccourci
+<p>Si vous souhaitez installer Géophar (création d’un raccourci
 sur le bureau, reconnaissance des fichiers .geo, etc.),
 placez vous dans le répertoire où se trouve Géophar.</p>
 <p>Tapez alors la commande suivante dans le terminal :</p>
-<div class="highlight-python"><div class="highlight"><pre>python tools/linux-install.py
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">tools</span><span class="o">/</span><span class="n">linux</span><span class="o">-</span><span class="n">install</span><span class="o">.</span><span class="n">py</span>
 </pre></div>
 </div>
-<p>Vous pourrez ensuite le désinstaller à l&#8217;aide de la commande suivante :</p>
-<div class="last highlight-python"><div class="highlight"><pre>python tools/linux-uninstall.py
+<p>Vous pourrez ensuite le désinstaller à l’aide de la commande suivante :</p>
+<div class="last highlight-default"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">tools</span><span class="o">/</span><span class="n">linux</span><span class="o">-</span><span class="n">uninstall</span><span class="o">.</span><span class="n">py</span>
 </pre></div>
 </div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>Depuis fin 2014, Géophar est également présent dans les dépôts Ubuntu/Debian.</p>
+<p>Pour l’installer, tapez simplement dans le terminal :</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="n">geophar</span>
+</pre></div>
+</div>
+<p class="last">La version installée par cette méthode n’est cependant pas forcément la dernière.</p>
 </div>
 </div>
 </div>
@@ -184,8 +192,8 @@ placez vous dans le répertoire où se trouve Géophar.</p>
 <li>Un traceur de courbes.</li>
 <li>Une calculatrice formelle.</li>
 <li>Un module graphique de statistiques.</li>
-<li>Un générateur d&#8217;arbres de probabilités.</li>
-<li>Un générateur</li>
+<li>Un générateur d’arbres de probabilités.</li>
+<li>Un générateur de tableaux LaTeX (variations, signes…)</li>
 </ul>
 <p>Les autres modules présents sont fournis à titre expérimental, et ne sont donc pas documentés ici.</p>
 <p><em>Note :</em>
@@ -194,14 +202,14 @@ dans le traceur de courbes ; elles sont aussi (en partie) utilisables dans le
 module de statistiques.</p>
 <div class="section" id="pilotage-avec-la-souris">
 <h3><a class="toc-backref" href="#id16">Pilotage avec la souris</a><a class="headerlink" href="#pilotage-avec-la-souris" title="Lien permanent vers ce titre">¶</a></h3>
-<p>Vous pouvez pour l&#8217;instant faire les actions suivantes :</p>
+<p>Vous pouvez pour l’instant faire les actions suivantes :</p>
 <ul class="simple">
 <li>créer une nouvelle feuille</li>
 <li>créer différents types de points, de droites, de cercles, des
-vecteurs, des intersections...</li>
+vecteurs, des intersections…</li>
 <li>modifier les propriétés de ces différents objets (changer leur
-couleur, les masquer...)</li>
-<li>régler la fenêtre d&#8217;affichage</li>
+couleur, les masquer…)</li>
+<li>régler la fenêtre d’affichage</li>
 <li>orthonormaliser le repère</li>
 <li>annuler une ou plusieurs actions</li>
 <li>exporter et sauvegarder la figure</li>
@@ -211,7 +219,7 @@ couleur, les masquer...)</li>
 <li>Laissez enfoncé le <em>bouton droit</em> de la souris pour <em>déplacer la figure</em>.</li>
 <li>La <em>molette</em> de la souris permet de <em>zoomer</em> sur la figure.</li>
 <li>En laissant enfoncée la touche [Ctrl], la molette de la souris permet
-d&#8217;ajuster la taille des textes de la figure.</li>
+d’ajuster la taille des textes de la figure.</li>
 <li>Laissez enfoncée la touche [Ctrl], et le bouton gauche de la souris,
 pour sélectionner une zone et zoomer dessus.</li>
 <li>Vous pouvez déplacer les points libres de la figure avec la souris.</li>
@@ -223,108 +231,108 @@ propriétés</li>
 [Maj] + [Suppr] pour le masquer .</li>
 <li>Si vous créez un point libre en laissant la touche [Maj] enfoncée, le
 point se placera sur le quadrillage.</li>
-<li>Vous pouvez <em>déplacer le nom d&#8217;un point</em> autour de celui-ci en cliquant
+<li>Vous pouvez <em>déplacer le nom d’un point</em> autour de celui-ci en cliquant
 dessus, la touche [Alt] étant enfoncée.
 Vous pouvez également utiliser la touche [Win] (dite aussi touche [Super]).</li>
 </ul>
 <div class="admonition warning">
-<p class="first admonition-title">Warning</p>
+<p class="first admonition-title">Avertissement</p>
 <p class="last">Sous <em>Ubuntu</em>, la touche [Alt] est déjà utilisée pour déplacer la fenêtre.
-Il est conseillé d&#8217;utiliser à la place la touche [Win].
+Il est conseillé d’utiliser à la place la touche [Win].
 On peut aussi modifier ce comportement (dans Système&gt;Préférence&gt;Fenêtres,
-choisir par exemple &#8220;Super&#8221; comme &#8220;touche de mouvement&#8221;).</p>
+choisir par exemple «&nbsp;Super&nbsp;» comme «&nbsp;touche de mouvement&nbsp;»).</p>
 </div>
 </div>
 <div class="section" id="creation-d-objets-via-le-menu-creer">
-<h3><a class="toc-backref" href="#id17">Création d&#8217;objets via le menu «Créer»</a><a class="headerlink" href="#creation-d-objets-via-le-menu-creer" title="Lien permanent vers ce titre">¶</a></h3>
+<h3><a class="toc-backref" href="#id17">Création d’objets via le menu «Créer»</a><a class="headerlink" href="#creation-d-objets-via-le-menu-creer" title="Lien permanent vers ce titre">¶</a></h3>
 <p>Pour la création des objets géométriques, il existe une abondante aide
-contextuelle dans chaque fenêtre de création d&#8217;objet.</p>
-<p>Cliquez sur le point d&#8217;interrogation en haut de la fenêtre, puis sur un
+contextuelle dans chaque fenêtre de création d’objet.</p>
+<p>Cliquez sur le point d’interrogation en haut de la fenêtre, puis sur un
 champ, pour obtenir une aide détaillée.</p>
 <p>En cliquant avec le bouton du milieu de la souris dans un champ, vous ferez
 également apparaitre diverses propositions.</p>
-<p>Vous pouvez utiliser les notations suivantes : <tt class="docutils literal"><span class="pre">[A</span> <span class="pre">B]</span></tt> pour le segment [AB],
-<tt class="docutils literal"><span class="pre">(A</span> <span class="pre">B)</span></tt> pour la droite (AB), <tt class="docutils literal"><span class="pre">A-&gt;B</span></tt> pour le vecteur
-<span class="math">\overrightarrow{AB}</span>, <tt class="docutils literal"><span class="pre">||A-&gt;B||</span></tt> pour sa norme.</p>
+<p>Vous pouvez utiliser les notations suivantes : <code class="docutils literal"><span class="pre">[A</span> <span class="pre">B]</span></code> pour le segment [AB],
+<code class="docutils literal"><span class="pre">(A</span> <span class="pre">B)</span></code> pour la droite (AB), <code class="docutils literal"><span class="pre">A-&gt;B</span></code> pour le vecteur
+<span class="math">\(\overrightarrow{AB}\)</span>, <code class="docutils literal"><span class="pre">||A-&gt;B||</span></code> pour sa norme.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">Remarquez l&#8217;espace entre les lettres « A » et « B » dans les deux premiers cas.</p>
+<p class="last">Remarquez l’espace entre les lettres « A » et « B » dans les deux premiers cas.</p>
 </div>
 </div>
 <div class="section" id="choisir-le-mode-d-affichage-de-l-etiquette-d-un-objet">
-<h3><a class="toc-backref" href="#id18">Choisir le mode d&#8217;affichage de l&#8217;étiquette d&#8217;un objet</a><a class="headerlink" href="#choisir-le-mode-d-affichage-de-l-etiquette-d-un-objet" title="Lien permanent vers ce titre">¶</a></h3>
-<p>Vous remarquerez que chaque objet possède quatre modes d&#8217;affichage : nom,
+<h3><a class="toc-backref" href="#id18">Choisir le mode d’affichage de l’étiquette d’un objet</a><a class="headerlink" href="#choisir-le-mode-d-affichage-de-l-etiquette-d-un-objet" title="Lien permanent vers ce titre">¶</a></h3>
+<p>Vous remarquerez que chaque objet possède quatre modes d’affichage : nom,
 texte, formule, ou aucun.</p>
 <img alt="&quot;Fenêtre de propriété&quot;" class="align-center" src="_images/ptes_objets.png" />
 <p>Que signifient ces 4 modes ?</p>
 <ul>
-<li><p class="first">Mode « Nom » : le nom de l&#8217;objet est affiché.</p>
-<p>Un nom d&#8217;objet doit commencer par une lettre (non accentuée), suivie de
+<li><p class="first">Mode « Nom » : le nom de l’objet est affiché.</p>
+<p>Un nom d’objet doit commencer par une lettre (non accentuée), suivie de
 lettres (non accentuées) et de chiffres.
 Il est forcément unique.
-Certains noms sont réservés (<em>e, pi, x, y, t, i, ...</em> )</p>
+Certains noms sont réservés (<em>e, pi, x, y, t, i, …</em> )</p>
 </li>
 <li><p class="first">Mode « Texte » : un texte est affiché à la place du nom.</p>
-<p>Ce mode permet d&#8217;associer n&#8217;importe quel type de texte à un objet.
+<p>Ce mode permet d’associer n’importe quel type de texte à un objet.
 La syntaxe LATEX est également partiellement supportée, dans ce cas, le texte
 doit être entre $.</p>
 <p><em>Exemple :</em></p>
-<p>« <tt class="docutils literal"><span class="pre">$\alpha_{n}$</span></tt> » pour <span class="math">\alpha_n</span></p>
+<p>« <code class="docutils literal"><span class="pre">$\alpha_{n}$</span></code> » pour <span class="math">\(\alpha_n\)</span></p>
 </li>
 <li><p class="first">Mode « Formule » : le texte affiché est interprété comme une formule.
 On peut aussi mélanger du texte interprété et non interprété, en mettant les
 blocs à interpréter entre { }.</p>
 <p><em>Exemple :</em></p>
-<p>« <tt class="docutils literal"><span class="pre">Le</span> <span class="pre">point</span> <span class="pre">A</span> <span class="pre">a</span> <span class="pre">pour</span> <span class="pre">abscisse</span> <span class="pre">{A.x}</span> <span class="pre">et</span> <span class="pre">pour</span> <span class="pre">ordonnée</span> <span class="pre">{A.y}.</span></tt> »</p>
+<p>« <code class="docutils literal"><span class="pre">Le</span> <span class="pre">point</span> <span class="pre">A</span> <span class="pre">a</span> <span class="pre">pour</span> <span class="pre">abscisse</span> <span class="pre">{A.x}</span> <span class="pre">et</span> <span class="pre">pour</span> <span class="pre">ordonnée</span> <span class="pre">{A.y}.</span></code> »</p>
 </li>
-<li><p class="first">Mode « Aucun » : rien n&#8217;est affiché.</p>
+<li><p class="first">Mode « Aucun » : rien n’est affiché.</p>
 </li>
 </ul>
 </div>
 <div class="section" id="la-ligne-de-commande">
 <h3><a class="toc-backref" href="#id19">La ligne de commande</a><a class="headerlink" href="#la-ligne-de-commande" title="Lien permanent vers ce titre">¶</a></h3>
 <p>Elle permet de créer rapidement des objet géométriques. (Personnellement, je
-l&#8217;utilise fréquemment).</p>
+l’utilise fréquemment).</p>
 <p>Elle fonctionne dans le module géométrie, dans le module traceur, et dans le
 module statistiques.</p>
 <p><em>Utilisation :</em></p>
-<p>Voici quelques exemples qui parleront mieux qu&#8217;un long discours...</p>
+<p>Voici quelques exemples qui parleront mieux qu’un long discours…</p>
 <p><em>Exemples</em></p>
 <ol class="arabic">
-<li><p class="first">« <tt class="docutils literal"><span class="pre">A</span> <span class="pre">=</span> <span class="pre">Point(1,</span> <span class="pre">2)</span></tt> » ou « <tt class="docutils literal"><span class="pre">A</span> <span class="pre">=</span> <span class="pre">(1,</span> <span class="pre">2)</span></tt> »</p>
-<p>Création d&#8217;un point A de coordonnées (1 ; 2).</p>
+<li><p class="first">« <code class="docutils literal"><span class="pre">A</span> <span class="pre">=</span> <span class="pre">Point(1,</span> <span class="pre">2)</span></code> » ou « <code class="docutils literal"><span class="pre">A</span> <span class="pre">=</span> <span class="pre">(1,</span> <span class="pre">2)</span></code> »</p>
+<p>Création d’un point A de coordonnées (1 ; 2).</p>
 </li>
-<li><p class="first">« <tt class="docutils literal"><span class="pre">u</span> <span class="pre">=</span> <span class="pre">Vecteur(1,</span> <span class="pre">2)</span></tt> » ou « <tt class="docutils literal"><span class="pre">u</span> <span class="pre">=</span> <span class="pre">(1,</span> <span class="pre">2)</span></tt> »</p>
-<p>Création d&#8217;un vecteur u de coordonnées (1 ; 2).</p>
+<li><p class="first">« <code class="docutils literal"><span class="pre">u</span> <span class="pre">=</span> <span class="pre">Vecteur(1,</span> <span class="pre">2)</span></code> » ou « <code class="docutils literal"><span class="pre">u</span> <span class="pre">=</span> <span class="pre">(1,</span> <span class="pre">2)</span></code> »</p>
+<p>Création d’un vecteur u de coordonnées (1 ; 2).</p>
 </li>
-<li><p class="first">« <tt class="docutils literal"><span class="pre">AB</span> <span class="pre">=</span> <span class="pre">Segment(A,B)</span></tt> » ou « <tt class="docutils literal"><span class="pre">AB</span> <span class="pre">=</span> <span class="pre">[A</span> <span class="pre">B]</span></tt> »</p>
+<li><p class="first">« <code class="docutils literal"><span class="pre">AB</span> <span class="pre">=</span> <span class="pre">Segment(A,B)</span></code> » ou « <code class="docutils literal"><span class="pre">AB</span> <span class="pre">=</span> <span class="pre">[A</span> <span class="pre">B]</span></code> »</p>
 <p>Création du segment [AB].</p>
-<p><em>Attention à l&#8217;espace entre les lettres dans le deuxième cas.</em></p>
+<p><em>Attention à l’espace entre les lettres dans le deuxième cas.</em></p>
 </li>
-<li><p class="first">« <tt class="docutils literal"><span class="pre">d</span> <span class="pre">=</span> <span class="pre">Droite(A,B)</span></tt> » ou « <tt class="docutils literal"><span class="pre">d</span> <span class="pre">=</span> <span class="pre">(A</span> <span class="pre">B)</span></tt> »</p>
+<li><p class="first">« <code class="docutils literal"><span class="pre">d</span> <span class="pre">=</span> <span class="pre">Droite(A,B)</span></code> » ou « <code class="docutils literal"><span class="pre">d</span> <span class="pre">=</span> <span class="pre">(A</span> <span class="pre">B)</span></code> »</p>
 <p>Création de la droite (AB).</p>
-<p><em>Attention à l&#8217;espace entre les lettres dans le deuxième cas.</em></p>
+<p><em>Attention à l’espace entre les lettres dans le deuxième cas.</em></p>
 </li>
-<li><p class="first">« <tt class="docutils literal"><span class="pre">u</span> <span class="pre">=</span> <span class="pre">Vecteur(A,B)</span></tt> » ou « <tt class="docutils literal"><span class="pre">u</span> <span class="pre">=</span> <span class="pre">A-&gt;B</span></tt> »</p>
-<p>Création du vecteur <span class="math">\overrightarrow{AB}</span>.</p>
+<li><p class="first">« <code class="docutils literal"><span class="pre">u</span> <span class="pre">=</span> <span class="pre">Vecteur(A,B)</span></code> » ou « <code class="docutils literal"><span class="pre">u</span> <span class="pre">=</span> <span class="pre">A-&gt;B</span></code> »</p>
+<p>Création du vecteur <span class="math">\(\overrightarrow{AB}\)</span>.</p>
 </li>
-<li><p class="first">« <tt class="docutils literal"><span class="pre">M</span> <span class="pre">=</span> <span class="pre">C</span> <span class="pre">+</span> <span class="pre">2*A-&gt;B</span></tt> »</p>
-<p>Création du point M vérifiant <span class="math">\overrightarrow{CM}=2\overrightarrow{AB}</span>.</p>
+<li><p class="first">« <code class="docutils literal"><span class="pre">M</span> <span class="pre">=</span> <span class="pre">C</span> <span class="pre">+</span> <span class="pre">2*A-&gt;B</span></code> »</p>
+<p>Création du point M vérifiant <span class="math">\(\overrightarrow{CM}=2\overrightarrow{AB}\)</span>.</p>
 <p><em>Les parenthèses sont obligatoires.</em></p>
 </li>
-<li><p class="first">« <tt class="docutils literal"><span class="pre">fenetre</span> <span class="pre">=</span> <span class="pre">(-10,</span> <span class="pre">10,</span> <span class="pre">-5,</span> <span class="pre">5)</span></tt> »</p>
-<p>Changement de la fenetre d&#8217;affichage (xmin, xmax, ymin, ymax).</p>
-<p><em>Si l&#8217;affichage est en mode orthonormé, la fenêtre sera éventuellement élargie pour respecter cette contrainte.</em></p>
+<li><p class="first">« <code class="docutils literal"><span class="pre">fenetre</span> <span class="pre">=</span> <span class="pre">(-10,</span> <span class="pre">10,</span> <span class="pre">-5,</span> <span class="pre">5)</span></code> »</p>
+<p>Changement de la fenetre d’affichage (xmin, xmax, ymin, ymax).</p>
+<p><em>Si l’affichage est en mode orthonormé, la fenêtre sera éventuellement élargie pour respecter cette contrainte.</em></p>
 </li>
 </ol>
-<p>Les droites, les cercles et les courbes de fonctions peuvent également être créés par la donnée d&#8217;une équation.</p>
+<p>Les droites, les cercles et les courbes de fonctions peuvent également être créés par la donnée d’une équation.</p>
 <p><em>Exemple :</em></p>
-<p>« <tt class="docutils literal"><span class="pre">y</span> <span class="pre">=</span> <span class="pre">2x</span> <span class="pre">+</span> <span class="pre">1</span></tt> », « <tt class="docutils literal"><span class="pre">y</span> <span class="pre">=</span> <span class="pre">ln(x)</span></tt> », « <tt class="docutils literal"><span class="pre">x²</span> <span class="pre">-</span> <span class="pre">6x</span> <span class="pre">+</span> <span class="pre">y²</span> <span class="pre">+</span> <span class="pre">2y</span> <span class="pre">+</span> <span class="pre">5</span> <span class="pre">=</span> <span class="pre">0</span></tt> »</p>
+<p>« <code class="docutils literal"><span class="pre">y</span> <span class="pre">=</span> <span class="pre">2x</span> <span class="pre">+</span> <span class="pre">1</span></code> », « <code class="docutils literal"><span class="pre">y</span> <span class="pre">=</span> <span class="pre">ln(x)</span></code> », « <code class="docutils literal"><span class="pre">x²</span> <span class="pre">-</span> <span class="pre">6x</span> <span class="pre">+</span> <span class="pre">y²</span> <span class="pre">+</span> <span class="pre">2y</span> <span class="pre">+</span> <span class="pre">5</span> <span class="pre">=</span> <span class="pre">0</span></code> »</p>
 <div class="section" id="le-traceur-de-courbes">
 <h4><a class="toc-backref" href="#id20">Le traceur de courbes</a><a class="headerlink" href="#le-traceur-de-courbes" title="Lien permanent vers ce titre">¶</a></h4>
-<p>Vous pouvez pour l&#8217;instant faire les actions suivantes :</p>
+<p>Vous pouvez pour l’instant faire les actions suivantes :</p>
 <ul class="simple">
-<li>régler la fenêtre d&#8217;affichage</li>
+<li>régler la fenêtre d’affichage</li>
 <li>orthonormaliser le repère</li>
 <li>utiliser des objets géométriques</li>
 <li>représenter des suites</li>
@@ -332,28 +340,28 @@ module statistiques.</p>
 <p>Le traceur de courbes supporte les fonctions définies par morceau, continues ou non.</p>
 <p><em>Exemples</em> :</p>
 <ol class="arabic">
-<li><p class="first">Soit la fonction <cite>f</cite>, définie sur <cite>R\{0}</cite> par <tt class="docutils literal"><span class="pre">f(x)=1/x</span></tt>.</p>
+<li><p class="first">Soit la fonction <cite>f</cite>, définie sur <cite>R\{0}</cite> par <code class="docutils literal"><span class="pre">f(x)=1/x</span></code>.</p>
 <p>Remplissez les champs de la manière suivante :</p>
 <img alt="[V] Y1= [ 1/x ] sur [ R-{0} ]" class="align-center" src="_images/inverse.png" />
 <p><em>Commentaires</em> :</p>
 <p>vous remplissez le premier champ avec <cite>1/x</cite> (la fonction), le
-deuxième avec l&#8217;intervalle de définition, c&#8217;est-à-dire <cite>R-{0}</cite>.</p>
+deuxième avec l’intervalle de définition, c’est-à-dire <cite>R-{0}</cite>.</p>
 <img alt="Graphe de la fonction inverse." class="align-center" src="_images/inverse_graphe.png" />
 </li>
-<li><p class="first">Soit la fonction  <cite>f</cite>, définie sur <tt class="docutils literal"><span class="pre">[-2;0[</span></tt> par <tt class="docutils literal"><span class="pre">f(x)</span> <span class="pre">=</span> <span class="pre">-1</span></tt>, et sur <tt class="docutils literal"><span class="pre">[0;1[</span> <span class="pre">U</span> <span class="pre">]2;3]</span></tt> par <tt class="docutils literal"><span class="pre">f(x)</span> <span class="pre">=</span> <span class="pre">x</span></tt>.</p>
+<li><p class="first">Soit la fonction  <cite>f</cite>, définie sur <code class="docutils literal"><span class="pre">[-2;0[</span></code> par <code class="docutils literal"><span class="pre">f(x)</span> <span class="pre">=</span> <span class="pre">-1</span></code>, et sur <code class="docutils literal"><span class="pre">[0;1[</span> <span class="pre">U</span> <span class="pre">]2;3]</span></code> par <code class="docutils literal"><span class="pre">f(x)</span> <span class="pre">=</span> <span class="pre">x</span></code>.</p>
 <p>Remplissez les champs de la manière suivante :</p>
 <img alt="[V] Y2= [ -1|x ] sur [ [-2;0[|[0;1[U]2;3] ]" class="align-center" src="_images/morceaux.png" />
 <p><em>Commentaires</em> :</p>
 <p>On commence par remplir le 1er champ avec la fonction.</p>
-<p>Comme elle est définie par morceaux, on utilise le symbole « | » comme séparateur : ce qui donne <tt class="docutils literal"><span class="pre">-1|x</span></tt>.</p>
-<p>On remplit ensuite le 2e champ avec l&#8217;ensemble de définition.</p>
-<p>Comme elle est définie par morceaux, on utilise là aussi le symbole « | » comme séparateur : ce qui donne <tt class="docutils literal"><span class="pre">[-2;0[|[0;1[U]2;3]</span></tt>.</p>
+<p>Comme elle est définie par morceaux, on utilise le symbole « | » comme séparateur : ce qui donne <code class="docutils literal"><span class="pre">-1|x</span></code>.</p>
+<p>On remplit ensuite le 2e champ avec l’ensemble de définition.</p>
+<p>Comme elle est définie par morceaux, on utilise là aussi le symbole « | » comme séparateur : ce qui donne <code class="docutils literal"><span class="pre">[-2;0[|[0;1[U]2;3]</span></code>.</p>
 <img alt="Graphe d'une fonction affine par morceaux." class="align-center" src="_images/morceaux_graphe.png" />
 </li>
 </ol>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">Pour changer les propriétés d&#8217;une courbe (couleur, style de tracé...), faites un clic droit dessus.</p>
+<p class="last">Pour changer les propriétés d’une courbe (couleur, style de tracé…), faites un clic droit dessus.</p>
 </div>
 </div>
 <div class="section" id="la-calculatrice">
@@ -372,7 +380,7 @@ Elle permet de travailler sur des nombres réels ou complexes, et de faire du ca
 </ul>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">Pour obtenir le résultat d&#8217;un calcul sous forme décimale (calcul
+<p class="last">Pour obtenir le résultat d’un calcul sous forme décimale (calcul
 approché), appuyez sur MAJ+ENTRÉE au lieu de ENTRÉE.</p>
 </div>
 <div class="admonition note">
@@ -384,35 +392,35 @@ dans la zone de saisie, en laissant enfoncée la touche CTRL.</p>
 <p>Des variables peuvent être utilisées pour mémoriser des valeurs, ou définir des fonctions.</p>
 <p><em>Exemples</em>:</p>
 <ul class="simple">
-<li><tt class="docutils literal"><span class="pre">a</span> <span class="pre">=</span> <span class="pre">25+7/4</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">f(x)=2x+17</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">g=f'</span></tt></li>
+<li><code class="docutils literal"><span class="pre">a</span> <span class="pre">=</span> <span class="pre">25+7/4</span></code></li>
+<li><code class="docutils literal"><span class="pre">f(x)=2x+17</span></code></li>
+<li><code class="docutils literal"><span class="pre">g=f'</span></code></li>
 </ul>
 <p>Ici, la fonction <cite>g</cite> est définie comme la dérivée de la fonction <cite>f</cite>.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">Certaines variables sont protégées (i, e ou E, pi, ...).</p>
+<p class="last">Certaines variables sont protégées (i, e ou E, pi, …).</p>
 </div>
 <div class="admonition warning">
-<p class="first admonition-title">Warning</p>
+<p class="first admonition-title">Avertissement</p>
 <p class="last">Par défaut, le séparateur décimal est la virgule.
 Les différents arguments des fonctions sont séparés par des points-virgules
 (ou une virgule et un espace).</p>
 </div>
 <p><em>Exemple</em>:</p>
 <blockquote>
-<div><tt class="docutils literal"><span class="pre">normal(1,2</span> <span class="pre">;</span> <span class="pre">1,7)</span></tt> : probabilité que la variable aléatoire X soit comprise
+<div><code class="docutils literal"><span class="pre">normal(1,2</span> <span class="pre">;</span> <span class="pre">1,7)</span></code> : probabilité que la variable aléatoire X soit comprise
 entre 1,2 et 1,7, lorsque X suit une loi normale N(0;1).</div></blockquote>
 </div>
 <div class="section" id="le-module-statistiques">
 <h4><a class="toc-backref" href="#id22">Le module statistiques</a><a class="headerlink" href="#le-module-statistiques" title="Lien permanent vers ce titre">¶</a></h4>
-<p>Ce module sert essentiellement à tracer des diagrammes, qui n&#8217;existent pas
+<p>Ce module sert essentiellement à tracer des diagrammes, qui n’existent pas
 toujours sur tableur, ou qui y sont incorrectement définis.
-A l&#8217;origine, ma motivation était essentiellement de pouvoir tracer des
-histogrammes, qu&#8217;OpenOffice.org® ou Excel® confondent avec les diagrammes en
+A l’origine, ma motivation était essentiellement de pouvoir tracer des
+histogrammes, qu’OpenOffice.org® ou Excel® confondent avec les diagrammes en
 barre.
 Il fait aussi la différence entre diagrammes en barres et en bâtons
-(contrairement à ce qu&#8217;on peut lire souvent, la différence essentielle n&#8217;est
+(contrairement à ce qu’on peut lire souvent, la différence essentielle n’est
 pas esthétique).</p>
 <p>Voici une présentation des principaux types de graphiques :</p>
 </div>
@@ -420,7 +428,7 @@ pas esthétique).</p>
 <div class="section" id="diagrammes-en-barres">
 <h3><a class="toc-backref" href="#id23">Diagrammes en barres :</a><a class="headerlink" href="#diagrammes-en-barres" title="Lien permanent vers ce titre">¶</a></h3>
 <p><em>Utilisés en particulier pour des séries à caractère qualitatif.</em></p>
-<p><em>Exemple :</em> la répartition des voyelles dans l&#8217;alphabet.</p>
+<p><em>Exemple :</em> la répartition des voyelles dans l’alphabet.</p>
 <p>On sélectionne le mode :</p>
 <img alt="_images/diag_barres0.png" class="align-center" src="_images/diag_barres0.png" />
 <p>On ajoute les valeurs et les effectifs (ou fréquences) qui leur
@@ -428,7 +436,7 @@ correspondent.
 La syntaxe est la suivante : « effectif * valeur » (valeur doit être entre
 guillemets, pour des valeurs non numériques).</p>
 <img alt="_images/diag_barres1.png" class="align-center" src="_images/diag_barres1.png" />
-<p>Il ne reste plus qu&#8217;à compléter la légende :</p>
+<p>Il ne reste plus qu’à compléter la légende :</p>
 <img alt="_images/diag_barres2.png" class="align-center" src="_images/diag_barres2.png" />
 <p>Et à appuyer sur [Entrée] dans un des champs.
 Le résultat est le suivant :</p>
@@ -451,13 +459,13 @@ Le résultat est le suivant :</p>
 <div class="section" id="histogrammes">
 <h3><a class="toc-backref" href="#id25">Histogrammes :</a><a class="headerlink" href="#histogrammes" title="Lien permanent vers ce titre">¶</a></h3>
 <p>Utilisés pour des séries à caractère quantitatif continu.</p>
-<p>On va reprendre l&#8217;exemple précédent, en regroupant les pointures par classe.</p>
+<p>On va reprendre l’exemple précédent, en regroupant les pointures par classe.</p>
 <p>On sélectionne le mode :</p>
 <img alt="_images/histo_0.png" class="align-center" src="_images/histo_0.png" />
 <p>On complète la rubrique « Regroupement par classes ».</p>
 <img alt="_images/histo_1.png" class="align-center" src="_images/histo_1.png" />
-<p>Pour les histogrammes, il n&#8217;y a pas d&#8217;ordonnée, mais il faut préciser la
-nature de l&#8217;unité d&#8217;aire.</p>
+<p>Pour les histogrammes, il n’y a pas d’ordonnée, mais il faut préciser la
+nature de l’unité d’aire.</p>
 <img alt="_images/histo_2.png" class="align-center" src="_images/histo_2.png" />
 <p>Et on appuye sur [Entrée].</p>
 <img alt="_images/histo_3.png" class="align-center" src="_images/histo_3.png" />
@@ -465,7 +473,7 @@ nature de l&#8217;unité d&#8217;aire.</p>
 <div class="section" id="diagrammes-en-boites">
 <h3><a class="toc-backref" href="#id26">Diagrammes en boites :</a><a class="headerlink" href="#diagrammes-en-boites" title="Lien permanent vers ce titre">¶</a></h3>
 <p>Également appelés boîtes à moustache.</p>
-<p>Il est possible depuis peu d&#8217;afficher sur le même axe plusieurs diagrammes en boîtes, pour comparer plusieurs séries.</p>
+<p>Il est possible depuis peu d’afficher sur le même axe plusieurs diagrammes en boîtes, pour comparer plusieurs séries.</p>
 <p>Il suffit de séparer les séries par des <a href="#id3"><span class="problematic" id="id4">|</span></a>.</p>
 <img alt="_images/saisie_donnees_diag_boite.png" class="align-center" src="_images/saisie_donnees_diag_boite.png" />
 <p>Et on appuye sur [Entrée].</p>
@@ -484,26 +492,26 @@ nature de l&#8217;unité d&#8217;aire.</p>
 </li>
 <li><p class="first">La génération de listes est également possible.</p>
 <p>La syntaxe est celle de Python (cf. <a class="reference external" href="http://docs.python.org/tutorial/datastructures.html#list-comprehensions">list comprehensions</a> dans la documentation de Python).</p>
-<p>Essayez par exemple de rentrer cette formule : <tt class="docutils literal"><span class="pre">[(rand(),i)</span> <span class="pre">for</span> <span class="pre">i</span> <span class="pre">in</span> <span class="pre">range(4)]</span></tt>.</p>
+<p>Essayez par exemple de rentrer cette formule : <code class="docutils literal"><span class="pre">[(rand(),i)</span> <span class="pre">for</span> <span class="pre">i</span> <span class="pre">in</span> <span class="pre">range(4)]</span></code>.</p>
 </li>
 <li><p class="first">Dans <cite>Outils</cite>, trois sous-menus permettent de créer des expériences aléatoires.</p>
-<p>En particulier, il est possible de simuler des <strong>lancers de dés</strong>, et des <strong>sondages simples</strong>, avec affichage de l&#8217;intervalle de confiance.</p>
+<p>En particulier, il est possible de simuler des <strong>lancers de dés</strong>, et des <strong>sondages simples</strong>, avec affichage de l’intervalle de confiance.</p>
 <p>Vous pouvez aussi créer votre propre expérience en choisissant <cite>Expérience</cite> dans le menu <cite>Outils</cite>.</p>
-<p>Utilisez alors la fonction <tt class="docutils literal"><span class="pre">alea()</span></tt> pour créer votre propre variable aléatoire.</p>
+<p>Utilisez alors la fonction <code class="docutils literal"><span class="pre">alea()</span></code> pour créer votre propre variable aléatoire.</p>
 <ul class="simple">
-<li>Sans argument, <tt class="docutils literal"><span class="pre">alea()</span></tt> renvoie un nombre décimale entre 0 et 1 (distribution uniforme).</li>
-<li>Avec un argument, <tt class="docutils literal"><span class="pre">alea(n)</span></tt> renvoie un nombre aléatoire entre 0 et l&#8217;entier <tt class="docutils literal"><span class="pre">n</span></tt> (exclu).</li>
+<li>Sans argument, <code class="docutils literal"><span class="pre">alea()</span></code> renvoie un nombre décimale entre 0 et 1 (distribution uniforme).</li>
+<li>Avec un argument, <code class="docutils literal"><span class="pre">alea(n)</span></code> renvoie un nombre aléatoire entre 0 et l’entier <code class="docutils literal"><span class="pre">n</span></code> (exclu).</li>
 </ul>
-<p>Entrez la formule correspondant à la variable aléatoire dans le champ « <em>Experience</em> », et le nombre d&#8217;expériences.</p>
+<p>Entrez la formule correspondant à la variable aléatoire dans le champ « <em>Experience</em> », et le nombre d’expériences.</p>
 <p>Par exemple, on peut simuler de la sorte 6 lancers de dés :</p>
 <img alt="_images/stats_experience.png" class="align-center" src="_images/stats_experience.png" />
-<p>Éventuellement, entrez aussi les valeurs possibles . Pour un lancer de dé par exemple, cela permet d&#8217;afficher en légende 1, 2, 3, 4, 5 et 6, quand bien même aucun « 4 » ne sortirait lors de l&#8217;expérience.</p>
+<p>Éventuellement, entrez aussi les valeurs possibles . Pour un lancer de dé par exemple, cela permet d’afficher en légende 1, 2, 3, 4, 5 et 6, quand bien même aucun « 4 » ne sortirait lors de l’expérience.</p>
 </li>
 </ul>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p>Pour simuler des lancers de dés, mieux vaut utiliser le menu spécialement dédié (quelques optimisations y ont été faites).</p>
-<p class="last">La case « lancer une animation » n&#8217;a pas d&#8217;effet pour l&#8217;instant.</p>
+<p class="last">La case « lancer une animation » n’a pas d’effet pour l’instant.</p>
 </div>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
@@ -511,7 +519,7 @@ nature de l&#8217;unité d&#8217;aire.</p>
 <em>modules/statistiques</em>/, pour y ajouter de nouvelles fonctions.</p>
 </div>
 <div class="section" id="le-generateur-d-arbres-de-probabilites">
-<h4><a class="toc-backref" href="#id28">Le générateur d&#8217;arbres de probabilités</a><a class="headerlink" href="#le-generateur-d-arbres-de-probabilites" title="Lien permanent vers ce titre">¶</a></h4>
+<h4><a class="toc-backref" href="#id28">Le générateur d’arbres de probabilités</a><a class="headerlink" href="#le-generateur-d-arbres-de-probabilites" title="Lien permanent vers ce titre">¶</a></h4>
 <img alt="_images/arbre.png" class="align-center" src="_images/arbre.png" />
 <p>Les arbres de probabilité sont codés de la manière suivante :</p>
 <ul>
@@ -519,30 +527,30 @@ nature de l&#8217;unité d&#8217;aire.</p>
 <p><em>Exemple :</em></p>
 </li>
 </ul>
-<div class="highlight-python"><div class="highlight"><pre>    ||Premier tirage|Deuxième tirage
+<div class="highlight-default"><div class="highlight"><pre><span></span>    <span class="o">||</span><span class="n">Premier</span> <span class="n">tirage</span><span class="o">|</span><span class="n">Deuxième</span> <span class="n">tirage</span>
 
-*(Note : l&#39;ajout de barres verticales supplémentaires (AltGr+6) décale la légende vers la droite.)*
+<span class="o">*</span><span class="p">(</span><span class="n">Note</span> <span class="p">:</span> <span class="n">l</span><span class="s1">&#39;ajout de barres verticales supplémentaires (AltGr+6) décale la légende vers la droite.)*</span>
 </pre></div>
 </div>
 <ul class="simple">
-<li>Les lignes suivantes correspondent à l&#8217;arbre proprement dit.</li>
-<li>Le nombre de &gt; correspond au niveau dans l&#8217;arbre.</li>
-<li>La syntaxe est la suivante : « Nom de l&#8217;évènement » : « Probabilité de l&#8217;évènement »</li>
+<li>Les lignes suivantes correspondent à l’arbre proprement dit.</li>
+<li>Le nombre de &gt; correspond au niveau dans l’arbre.</li>
+<li>La syntaxe est la suivante : « Nom de l’évènement » : « Probabilité de l’évènement »</li>
 </ul>
 <p><em>Exemple :</em></p>
-<div class="highlight-python"><div class="highlight"><pre>omega
-&gt; A:1/4
-&gt;&gt; B:1/5
-&gt;&gt; J:2/5
-&gt;&gt; V:...
-&gt; &amp;A :3/4
-&gt;&gt; B:...
-&gt;&gt; J:...
-&gt;&gt; V:...
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">omega</span>
+<span class="o">&gt;</span> <span class="n">A</span><span class="p">:</span><span class="mi">1</span><span class="o">/</span><span class="mi">4</span>
+<span class="o">&gt;&gt;</span> <span class="n">B</span><span class="p">:</span><span class="mi">1</span><span class="o">/</span><span class="mi">5</span>
+<span class="o">&gt;&gt;</span> <span class="n">J</span><span class="p">:</span><span class="mi">2</span><span class="o">/</span><span class="mi">5</span>
+<span class="o">&gt;&gt;</span> <span class="n">V</span><span class="p">:</span><span class="o">...</span>
+<span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">A</span> <span class="p">:</span><span class="mi">3</span><span class="o">/</span><span class="mi">4</span>
+<span class="o">&gt;&gt;</span> <span class="n">B</span><span class="p">:</span><span class="o">...</span>
+<span class="o">&gt;&gt;</span> <span class="n">J</span><span class="p">:</span><span class="o">...</span>
+<span class="o">&gt;&gt;</span> <span class="n">V</span><span class="p">:</span><span class="o">...</span>
 </pre></div>
 </div>
-<p>Le <strong>symbole &amp;</strong> indique qu&#8217;il s&#8217;agit de l&#8217;évènement contraire : <tt class="docutils literal"><span class="pre">&amp;A</span></tt> est ainsi
-l&#8217;évènement «A barre».</p>
+<p>Le <strong>symbole &amp;</strong> indique qu’il s’agit de l’évènement contraire : <code class="docutils literal"><span class="pre">&amp;A</span></code> est ainsi
+l’évènement «A barre».</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">la syntaxe LaTeX est également acceptée.</p>
@@ -561,22 +569,22 @@ l&#8217;évènement «A barre».</p>
 </div>
 <div class="section" id="tableaux-de-variations">
 <h3><a class="toc-backref" href="#id31">Tableaux de variations</a><a class="headerlink" href="#tableaux-de-variations" title="Lien permanent vers ce titre">¶</a></h3>
-<p>Dans la ligne des options, il est possible de choisir si l&#8217;on veut afficher ou les limites, ainsi que la ligne comportant le signe de la dérivée.</p>
+<p>Dans la ligne des options, il est possible de choisir si l’on veut afficher ou les limites, ainsi que la ligne comportant le signe de la dérivée.</p>
 <img alt="_images/tableaux_latex_options.png" class="align-center" src="_images/tableaux_latex_options.png" />
-<p>Si le logiciel n&#8217;arrive pas à déterminer les variations de la fonction, ou si l&#8217;on souhaite obtenir un tableau donné, il est possible de spécifier manuellement les variations de la fonction.</p>
+<p>Si le logiciel n’arrive pas à déterminer les variations de la fonction, ou si l’on souhaite obtenir un tableau donné, il est possible de spécifier manuellement les variations de la fonction.</p>
 <p><em>Exemple :</em></p>
 <ol class="arabic">
-<li><p class="first"><tt class="docutils literal"><span class="pre">f:</span> <span class="pre">(-oo;-oo)</span> <span class="pre">&lt;&lt;</span> <span class="pre">(5;8)</span> <span class="pre">&gt;&gt;</span> <span class="pre">(+oo;0)</span></tt></p>
+<li><p class="first"><code class="docutils literal"><span class="pre">f:</span> <span class="pre">(-oo;-oo)</span> <span class="pre">&lt;&lt;</span> <span class="pre">(5;8)</span> <span class="pre">&gt;&gt;</span> <span class="pre">(+oo;0)</span></code></p>
 <blockquote>
-<div><p>La fonction <cite>f</cite> a pour limite <cite>-oo</cite> en <cite>-oo</cite>, elle est ensuite croissante jusqu&#8217;en 5 (qui a pour image 8), puis décroissante jusqu&#8217;en <cite>+oo</cite> (limite <cite>0</cite>).</p>
-<p><em>La syntaxe se retient bien si l&#8217;on songe à la courbe de `f` : prosaïquement, on peut dire que la courbe commence au « point de coordonnées (-oo;-oo) », qui est plus bas que le « sommet » de coordonnées (5;8), lui-même plus haut que le « point final de coordonnées (+oo;0) ».</em></p>
-<p>Résultat avec l&#8217;option « dérivée » décochée :</p>
+<div><p>La fonction <cite>f</cite> a pour limite <cite>-oo</cite> en <cite>-oo</cite>, elle est ensuite croissante jusqu’en 5 (qui a pour image 8), puis décroissante jusqu’en <cite>+oo</cite> (limite <cite>0</cite>).</p>
+<p><em>La syntaxe se retient bien si l’on songe à la courbe de `f` : prosaïquement, on peut dire que la courbe commence au « point de coordonnées (-oo;-oo) », qui est plus bas que le « sommet » de coordonnées (5;8), lui-même plus haut que le « point final de coordonnées (+oo;0) ».</em></p>
+<p>Résultat avec l’option « dérivée » décochée :</p>
 <img alt="_images/tabvar_f.png" class="align-center" src="_images/tabvar_f.png" />
 </div></blockquote>
 </li>
-<li><p class="first"><tt class="docutils literal"><span class="pre">g:(-oo;+oo)</span> <span class="pre">&gt;&gt;</span> <span class="pre">(2;3;0)</span> <span class="pre">&gt;&gt;</span> <span class="pre">(4;-oo|+oo)</span> <span class="pre">&gt;&gt;</span> <span class="pre">(10;0|)</span></tt></p>
+<li><p class="first"><code class="docutils literal"><span class="pre">g:(-oo;+oo)</span> <span class="pre">&gt;&gt;</span> <span class="pre">(2;3;0)</span> <span class="pre">&gt;&gt;</span> <span class="pre">(4;-oo|+oo)</span> <span class="pre">&gt;&gt;</span> <span class="pre">(10;0|)</span></code></p>
 <blockquote>
-<div><p>La fonction <cite>g</cite> a pour limite <cite>+oo</cite> en <cite>-oo</cite>, elle est ensuite décroissante jusqu&#8217;en 2 (qui a pour image 3), avec <cite>g&#8217;(2)=0</cite>. Ensuite, elle est de nouveau décroissante jusqu&#8217;en 4, qui est une valeur interdite (limite à gauche <cite>-oo</cite>, et limite à droite <cite>+oo</cite>). Enfin, elle est décroissante jusqu&#8217;à 10 exclu (limite à gauche <cite>0</cite>).</p>
+<div><p>La fonction <cite>g</cite> a pour limite <cite>+oo</cite> en <cite>-oo</cite>, elle est ensuite décroissante jusqu’en 2 (qui a pour image 3), avec <cite>g”(2)=0</cite>. Ensuite, elle est de nouveau décroissante jusqu’en 4, qui est une valeur interdite (limite à gauche <cite>-oo</cite>, et limite à droite <cite>+oo</cite>). Enfin, elle est décroissante jusqu’à 10 exclu (limite à gauche <cite>0</cite>).</p>
 <img alt="_images/tabvar_g.png" class="align-center" src="_images/tabvar_g.png" />
 </div></blockquote>
 </li>
@@ -584,23 +592,23 @@ l&#8217;évènement «A barre».</p>
 </div>
 <div class="section" id="tableaux-de-signes">
 <h3><a class="toc-backref" href="#id32">Tableaux de signes</a><a class="headerlink" href="#tableaux-de-signes" title="Lien permanent vers ce titre">¶</a></h3>
-<p>Dans les options, il est conseillé d&#8217;activer le mode <cite>cellspace</cite>, qui permet d&#8217;améliorer la gestion par LaTeX des espacement lorsque le tableau contient des fractions.
+<p>Dans les options, il est conseillé d’activer le mode <cite>cellspace</cite>, qui permet d’améliorer la gestion par LaTeX des espacement lorsque le tableau contient des fractions.
 Il faut bien sûr que le paquet <cite>cellspace</cite> soit installé au préalable.</p>
 <img alt="_images/cellspace.png" class="align-center" src="_images/cellspace.png" />
-<p>Si le logiciel n&#8217;arrive pas à déterminer le signe de la fonction, ou si l&#8217;on souhaite obtenir un tableau donné, il est possible de spécifier manuellement le signe de la fonction.</p>
+<p>Si le logiciel n’arrive pas à déterminer le signe de la fonction, ou si l’on souhaite obtenir un tableau donné, il est possible de spécifier manuellement le signe de la fonction.</p>
 <p><em>Exemples :</em></p>
 <ol class="arabic">
-<li><p class="first">On entre l&#8217;instruction suivante : « <tt class="docutils literal"><span class="pre">x:-pi;pi</span> <span class="pre">//</span>&nbsp; <span class="pre">sin(x):-pi</span> <span class="pre">--</span> <span class="pre">0</span> <span class="pre">++</span> <span class="pre">pi</span> <span class="pre">//</span>&nbsp; <span class="pre">!cos(x):--</span> <span class="pre">-pi/2</span> <span class="pre">++</span> <span class="pre">pi/2</span> <span class="pre">--</span> <span class="pre">//</span> <span class="pre">tan(x)</span></tt> »</p>
-<p>Les lignes du tableau sont séparées par une double barre oblique : <tt class="docutils literal"><span class="pre">//</span></tt>.</p>
-<p>La première ligne indique la variable et l&#8217;ensemble de définition correspondant.</p>
-<p>Les lignes suivantes correspondent aux différents facteurs du produit ou du quotient. (Pour indiquer qu&#8217;un facteur se situe au dénominateur, il faut le faire commencer par un point d&#8217;exclamation).</p>
-<p>Pour chaque ligne, indiquer le signe (<tt class="docutils literal"><span class="pre">++</span></tt> ou <tt class="docutils literal"><span class="pre">--</span></tt>) puis la valeur pour lequel l&#8217;expression s&#8217;annule, puis de nouveau le signe, etc.</p>
+<li><p class="first">On entre l’instruction suivante : « <code class="docutils literal"><span class="pre">x:-pi;pi</span> <span class="pre">//</span>&#160; <span class="pre">sin(x):-pi</span> <span class="pre">--</span> <span class="pre">0</span> <span class="pre">++</span> <span class="pre">pi</span> <span class="pre">//</span>&#160; <span class="pre">!cos(x):--</span> <span class="pre">-pi/2</span> <span class="pre">++</span> <span class="pre">pi/2</span> <span class="pre">--</span> <span class="pre">//</span> <span class="pre">tan(x)</span></code> »</p>
+<p>Les lignes du tableau sont séparées par une double barre oblique : <code class="docutils literal"><span class="pre">//</span></code>.</p>
+<p>La première ligne indique la variable et l’ensemble de définition correspondant.</p>
+<p>Les lignes suivantes correspondent aux différents facteurs du produit ou du quotient. (Pour indiquer qu’un facteur se situe au dénominateur, il faut le faire commencer par un point d’exclamation).</p>
+<p>Pour chaque ligne, indiquer le signe (<code class="docutils literal"><span class="pre">++</span></code> ou <code class="docutils literal"><span class="pre">--</span></code>) puis la valeur pour lequel l’expression s’annule, puis de nouveau le signe, etc.</p>
 <p>La dernière ligne contient le produit ou le quotient lui-même (elle est générée automatiquement si elle est vide).</p>
 <p>Ici, on obtient le tableau suivant :</p>
 <img alt="_images/tabsigne_tan.png" class="align-center" src="_images/tabsigne_tan.png" />
 <p>..note:</p>
 </li>
-<li><p class="first">« <tt class="docutils literal"><span class="pre">x:-2;2</span> <span class="pre">//</span> <span class="pre">x+1:--</span> <span class="pre">-1</span> <span class="pre">++</span> <span class="pre">//</span> <span class="pre">!x-1:--</span> <span class="pre">1</span> <span class="pre">++</span></tt> »</p>
+<li><p class="first">« <code class="docutils literal"><span class="pre">x:-2;2</span> <span class="pre">//</span> <span class="pre">x+1:--</span> <span class="pre">-1</span> <span class="pre">++</span> <span class="pre">//</span> <span class="pre">!x-1:--</span> <span class="pre">1</span> <span class="pre">++</span></code> »</p>
 <p>Tableau correspondant :</p>
 <img alt="_images/tabsigne_quotient.png" class="align-center" src="_images/tabsigne_quotient.png" />
 </li>
@@ -608,16 +616,16 @@ Il faut bien sûr que le paquet <cite>cellspace</cite> soit installé au préala
 <p>Il est également possible de rentrer des valeurs symboliques.</p>
 <p><em>Exemple :</em></p>
 <blockquote>
-<div><p>« <tt class="docutils literal"><span class="pre">f(x):</span> <span class="pre">--</span> <span class="pre">x_1</span> <span class="pre">++</span> <span class="pre">x_2</span> <span class="pre">--</span></tt> »</p>
-<p>Ici, <span class="math">x_1</span> et <span class="math">x_2</span> sont deux valeurs symboliques.</p>
+<div><p>« <code class="docutils literal"><span class="pre">f(x):</span> <span class="pre">--</span> <span class="pre">x_1</span> <span class="pre">++</span> <span class="pre">x_2</span> <span class="pre">--</span></code> »</p>
+<p>Ici, <span class="math">\(x_1\)</span> et <span class="math">\(x_2\)</span> sont deux valeurs symboliques.</p>
 <p>Tableau correspondant :</p>
 <img alt="_images/tabsigne_polynome.png" class="align-center" src="_images/tabsigne_polynome.png" />
 </div></blockquote>
-<p>Par défaut, ces valeurs symboliques sont placées dans l&#8217;ordre dans lequel elles apparaissent.</p>
+<p>Par défaut, ces valeurs symboliques sont placées dans l’ordre dans lequel elles apparaissent.</p>
 <p>On peut modifier manuellement leur position dans le tableau en leur attributant une valeur numérique.</p>
 <p><em>Exemple :</em></p>
 <blockquote>
-<div><p>« <tt class="docutils literal"><span class="pre">x:-oo;+oo</span> <span class="pre">//</span> <span class="pre">f(x):</span> <span class="pre">--</span> <span class="pre">5</span> <span class="pre">++</span> <span class="pre">//</span> <span class="pre">g(x):</span> <span class="pre">++</span> <span class="pre">\alpha=2,1</span> <span class="pre">--</span></tt>»</p>
+<div><p>« <code class="docutils literal"><span class="pre">x:-oo;+oo</span> <span class="pre">//</span> <span class="pre">f(x):</span> <span class="pre">--</span> <span class="pre">5</span> <span class="pre">++</span> <span class="pre">//</span> <span class="pre">g(x):</span> <span class="pre">++</span> <span class="pre">\alpha=2,1</span> <span class="pre">--</span></code>»</p>
 <p>On indique que α vaut environ 2,1 et doit donc être placé après 5.</p>
 <p>Tableau correspondant~:</p>
 <img alt="_images/tabsigne_alpha.png" class="align-center" src="_images/tabsigne_alpha.png" />
@@ -626,26 +634,26 @@ Il faut bien sûr que le paquet <cite>cellspace</cite> soit installé au préala
 <div class="section" id="tableau-de-valeurs">
 <h3><a class="toc-backref" href="#id33">Tableau de valeurs</a><a class="headerlink" href="#tableau-de-valeurs" title="Lien permanent vers ce titre">¶</a></h3>
 <p>Comme pour les tableaux de variations et de signes, il est possible de générer
-automatiquement le tableau de valeur, en rentrant la fonction, l&#8217;intervalle et
+automatiquement le tableau de valeur, en rentrant la fonction, l’intervalle et
 éventuellement le pas (1 par défaut).</p>
 <p><em>Exemple</em> :</p>
-<p>En saisissant <tt class="docutils literal"><span class="pre">f(x)=x^2</span> <span class="pre">sur</span> <span class="pre">[-3;3]</span> <span class="pre">pas</span> <span class="pre">0,5</span></tt>, on obtient~:</p>
+<p>En saisissant <code class="docutils literal"><span class="pre">f(x)=x^2</span> <span class="pre">sur</span> <span class="pre">[-3;3]</span> <span class="pre">pas</span> <span class="pre">0,5</span></code>, on obtient~:</p>
 <blockquote>
 <div><img alt="_images/tabvalx2.png" class="align-center" src="_images/tabvalx2.png" />
 </div></blockquote>
 <p>Pour obtenir un tableau de valeur plus personnalisé, il faut utiliser la syntaxe avancée.</p>
 <p>Il faut saisir la fonction, les antécédents (séparés par des points-virgules), et (éventuellement) la précision souhaitée.</p>
-<p>La syntaxe est la suivante : <em>fonction: valeur1 ; valeur2 ; valeur3 ; ...</em> ou encore <em>fonction: [precision]: valeur1 ; valeur2 ; valeur3 ; ...</em></p>
-<p>Au lieu d&#8217;entrer les valeurs une par une, il est possible de saisir une plage de valeurs. Par exemple <tt class="docutils literal"><span class="pre">2,3..8</span></tt> donne tous les entiers de 2 à 8, et <tt class="docutils literal"><span class="pre">1,1.1..1.9</span></tt> est équivalent à <tt class="docutils literal"><span class="pre">1</span> <span class="pre">;</span> <span class="pre">1.1</span> <span class="pre">;</span> <span class="pre">1.2</span> <span class="pre">;</span> <span class="pre">1.3</span> <span class="pre">;</span> <span class="pre">1.4</span> <span class="pre">;</span> <span class="pre">1.5</span> <span class="pre">;</span> <span class="pre">1.6</span> <span class="pre">;</span> <span class="pre">1.7</span> <span class="pre">;</span> <span class="pre">1.8</span> <span class="pre">;</span> <span class="pre">1.9</span></tt>.</p>
+<p>La syntaxe est la suivante : <em>fonction: valeur1 ; valeur2 ; valeur3 ; …</em> ou encore <em>fonction: [precision]: valeur1 ; valeur2 ; valeur3 ; …</em></p>
+<p>Au lieu d’entrer les valeurs une par une, il est possible de saisir une plage de valeurs. Par exemple <code class="docutils literal"><span class="pre">2,3..8</span></code> donne tous les entiers de 2 à 8, et <code class="docutils literal"><span class="pre">1,1.1..1.9</span></code> est équivalent à <code class="docutils literal"><span class="pre">1</span> <span class="pre">;</span> <span class="pre">1.1</span> <span class="pre">;</span> <span class="pre">1.2</span> <span class="pre">;</span> <span class="pre">1.3</span> <span class="pre">;</span> <span class="pre">1.4</span> <span class="pre">;</span> <span class="pre">1.5</span> <span class="pre">;</span> <span class="pre">1.6</span> <span class="pre">;</span> <span class="pre">1.7</span> <span class="pre">;</span> <span class="pre">1.8</span> <span class="pre">;</span> <span class="pre">1.9</span></code>.</p>
 <p>Des plages ou valeurs isolées successives doivent être séparées par un point-virgule.</p>
-<p>On peut éventuellement étaler le tableau sur plusieurs lignes, avec un double slash <tt class="docutils literal"><span class="pre">//</span></tt> pour séparer les lignes.</p>
+<p>On peut éventuellement étaler le tableau sur plusieurs lignes, avec un double slash <code class="docutils literal"><span class="pre">//</span></code> pour séparer les lignes.</p>
 <p><em>Exemples :</em></p>
 <ol class="arabic">
-<li><p class="first">Tableau de valeur d&#8217;une fonction de référence : « <tt class="docutils literal"><span class="pre">sin(x):</span> <span class="pre">-5,-4.9..-4</span></tt> ».</p>
+<li><p class="first">Tableau de valeur d’une fonction de référence : « <code class="docutils literal"><span class="pre">sin(x):</span> <span class="pre">-5,-4.9..-4</span></code> ».</p>
 <p>Le résultat est le suivant :</p>
 <img alt="_images/tabval_sin.png" class="align-center" src="_images/tabval_sin.png" />
 </li>
-<li><p class="first">Exemple d&#8217;un tableau coupé en deux : « <tt class="docutils literal"><span class="pre">h(x)=sin(x)+1:</span> <span class="pre">[0.01]:</span> <span class="pre">-5,-4.5..0</span> <span class="pre">//</span> <span class="pre">0,1..3</span> <span class="pre">;</span> <span class="pre">4</span> <span class="pre">;</span> <span class="pre">6</span></tt> »</p>
+<li><p class="first">Exemple d’un tableau coupé en deux : « <code class="docutils literal"><span class="pre">h(x)=sin(x)+1:</span> <span class="pre">[0.01]:</span> <span class="pre">-5,-4.5..0</span> <span class="pre">//</span> <span class="pre">0,1..3</span> <span class="pre">;</span> <span class="pre">4</span> <span class="pre">;</span> <span class="pre">6</span></code> »</p>
 <p>Le résultat est le suivant :</p>
 <img alt="_images/tabval_h.png" class="align-center" src="_images/tabval_h.png" />
 </li>
@@ -657,55 +665,55 @@ automatiquement le tableau de valeur, en rentrant la fonction, l&#8217;intervall
 <p>Un grand nombre de paramètres peuvent être modifiés dans le fichier
 <em>param.py</em> avec un simple éditeur de textes.</p>
 <p><em>Exemple :</em></p>
-<p>Remplacez « <tt class="docutils literal"><span class="pre">affiche_axes</span> <span class="pre">=</span> <span class="pre">True</span></tt> » par « <tt class="docutils literal"><span class="pre">affiche_axes</span> <span class="pre">=</span> <span class="pre">False</span></tt> » pour que les axes
+<p>Remplacez « <code class="docutils literal"><span class="pre">affiche_axes</span> <span class="pre">=</span> <span class="pre">True</span></code> » par « <code class="docutils literal"><span class="pre">affiche_axes</span> <span class="pre">=</span> <span class="pre">False</span></code> » pour que les axes
 ne soient plus affichés par défaut.</p>
-<p>Note : il peut être parfois nécessaire d&#8217;effacer le dossier <em>/preferences</em>
+<p>Note : il peut être parfois nécessaire d’effacer le dossier <em>/preferences</em>
 (qui contient les paramètres de la session précédente) pour que les
 changements soient pris en compte.</p>
 <p>Dans le menu <em>Avancé&gt;Déboguer</em>, sélectionner « <em>Déboguer</em> » pour faire apparaître
-une fenêtre contenant entre autres tous les rapports d&#8217;erreurs.</p>
+une fenêtre contenant entre autres tous les rapports d’erreurs.</p>
 <p>Par ailleurs,
 le répertoire <em>/log</em> contient les fichiers .log générés lors de la dernière
-exécution (actions effectuées, messages d&#8217;erreurs, etc.)</p>
+exécution (actions effectuées, messages d’erreurs, etc.)</p>
 <p><em>Introduction:</em></p>
 <p>La ligne de commande sert essentiellement à débuguer le programme.
-(Ou à réaliser certaines opérations internes, etc...)
-La ligne de commande permet d&#8217;exécuter des instructions Python.</p>
+(Ou à réaliser certaines opérations internes, etc…)
+La ligne de commande permet d’exécuter des instructions Python.</p>
 <p>Précédé du symbole <strong>&amp;</strong>, le résultat de la commande sera affiché dans la
 console.</p>
-<p>(<em>NB</em> : assurez-vous au prélable que l&#8217;option « Déboguer » soit
+<p>(<em>NB</em> : assurez-vous au prélable que l’option « Déboguer » soit
 cochée, dans le menu Avancé&gt;Déboguer).</p>
 <p>Les raccourcis suivants sont disponibles :</p>
 <ul class="simple">
-<li><tt class="docutils literal"><span class="pre">!p.</span></tt> pour  <tt class="docutils literal"><span class="pre">panel.</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">!c.</span></tt> pour <tt class="docutils literal"><span class="pre">canvas.</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">!f.</span></tt> pour <tt class="docutils literal"><span class="pre">feuille.</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">!o.</span></tt> pour <tt class="docutils literal"><span class="pre">objets.</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">!g.</span></tt> pour <tt class="docutils literal"><span class="pre">moteur_graphique.</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">exit</span></tt> pour quitter le logiciel</li>
-<li><tt class="docutils literal"><span class="pre">restart</span></tt> ou <tt class="docutils literal"><span class="pre">!!!</span></tt> pour redémarrer le logiciel</li>
+<li><code class="docutils literal"><span class="pre">!p.</span></code> pour  <code class="docutils literal"><span class="pre">panel.</span></code></li>
+<li><code class="docutils literal"><span class="pre">!c.</span></code> pour <code class="docutils literal"><span class="pre">canvas.</span></code></li>
+<li><code class="docutils literal"><span class="pre">!f.</span></code> pour <code class="docutils literal"><span class="pre">feuille.</span></code></li>
+<li><code class="docutils literal"><span class="pre">!o.</span></code> pour <code class="docutils literal"><span class="pre">objets.</span></code></li>
+<li><code class="docutils literal"><span class="pre">!g.</span></code> pour <code class="docutils literal"><span class="pre">moteur_graphique.</span></code></li>
+<li><code class="docutils literal"><span class="pre">exit</span></code> pour quitter le logiciel</li>
+<li><code class="docutils literal"><span class="pre">restart</span></code> ou <code class="docutils literal"><span class="pre">!!!</span></code> pour redémarrer le logiciel</li>
 </ul>
-<p>Leur maniement nécessite évidemment de bien connaître l&#8217;API de Géophar,
+<p>Leur maniement nécessite évidemment de bien connaître l’API de Géophar,
 et donc de faire un tour dans le code source.</p>
 <p>La commande de redémarrage est utile pour tester rapidement une modification du
 code source.</p>
 <p><strong>Exemples :</strong></p>
 <ol class="arabic">
-<li><p class="first">« <tt class="docutils literal"><span class="pre">print</span> <span class="pre">'hello</span> <span class="pre">world</span> <span class="pre">!'</span></tt> »</p>
-<p>Ceci va afficher &#8216;hello wold !&#8217; sur la console.</p>
-<p><em>NB :</em> « <tt class="docutils literal"><span class="pre">&amp;</span> <span class="pre">'hello</span> <span class="pre">world</span> <span class="pre">!'</span></tt> » produirait le même resultat.</p>
+<li><p class="first">« <code class="docutils literal"><span class="pre">print</span> <span class="pre">'hello</span> <span class="pre">world</span> <span class="pre">!'</span></code> »</p>
+<p>Ceci va afficher “hello wold !” sur la console.</p>
+<p><em>NB :</em> « <code class="docutils literal"><span class="pre">&amp;</span> <span class="pre">'hello</span> <span class="pre">world</span> <span class="pre">!'</span></code> » produirait le même resultat.</p>
 </li>
-<li><p class="first">« <tt class="docutils literal"><span class="pre">print</span> <span class="pre">objets.A</span></tt> »</p>
-<p>Affiche, s&#8217;il existe, l&#8217;objet A dans la console.</p>
-<p><em>NB :</em> Cette commande s&#8217;abrège de même en « <tt class="docutils literal"><span class="pre">&amp;</span> <span class="pre">!o.A</span></tt> ».</p>
+<li><p class="first">« <code class="docutils literal"><span class="pre">print</span> <span class="pre">objets.A</span></code> »</p>
+<p>Affiche, s’il existe, l’objet A dans la console.</p>
+<p><em>NB :</em> Cette commande s’abrège de même en « <code class="docutils literal"><span class="pre">&amp;</span> <span class="pre">!o.A</span></code> ».</p>
 </li>
-<li><p class="first">« <tt class="docutils literal"><span class="pre">.exporter('test.png')</span></tt> »</p>
+<li><p class="first">« <code class="docutils literal"><span class="pre">.exporter('test.png')</span></code> »</p>
 <p>Exporte la figure courante en un fichier <em>test.png</em>.</p>
-<p><em>NB :</em> Forme abrégée : « <tt class="docutils literal"><span class="pre">!p.exporter('test.png')</span></tt> ».</p>
+<p><em>NB :</em> Forme abrégée : « <code class="docutils literal"><span class="pre">!p.exporter('test.png')</span></code> ».</p>
 </li>
-<li><p class="first">« <tt class="docutils literal"><span class="pre">feuille.fenetre</span> <span class="pre">=</span> <span class="pre">(-5,2,-7,3)</span></tt> »</p>
-<p>Change la fenêtre d&#8217;affichage en (-5, 2, -7, 3).</p>
-<p><em>NB :</em> Forme abrégée : « <tt class="docutils literal"><span class="pre">!f.fenetre</span> <span class="pre">=</span> <span class="pre">(-5,2,-7,3)</span></tt> ».</p>
+<li><p class="first">« <code class="docutils literal"><span class="pre">feuille.fenetre</span> <span class="pre">=</span> <span class="pre">(-5,2,-7,3)</span></code> »</p>
+<p>Change la fenêtre d’affichage en (-5, 2, -7, 3).</p>
+<p><em>NB :</em> Forme abrégée : « <code class="docutils literal"><span class="pre">!f.fenetre</span> <span class="pre">=</span> <span class="pre">(-5,2,-7,3)</span></code> ».</p>
 </li>
 </ol>
 </div>
@@ -713,12 +721,12 @@ code source.</p>
 <h2><a class="toc-backref" href="#id35">Comment contribuer ?</a><a class="headerlink" href="#comment-contribuer" title="Lien permanent vers ce titre">¶</a></h2>
 <p><strong>Vous pouvez par exemple :</strong></p>
 <ul>
-<li><p class="first">m&#8217;envoyer un mail à l&#8217;adresse suivante :
+<li><p class="first">m’envoyer un mail à l’adresse suivante :
 <a class="reference external" href="mailto:wxgeo&#37;&#52;&#48;users&#46;sourceforge&#46;net">wxgeo<span>&#64;</span>users<span>&#46;</span>sourceforge<span>&#46;</span>net</a>, en me donnant vos impressions générales.</p>
 </li>
-<li><p class="first">corriger les éventuelles fautes d&#8217;orthographe.</p>
+<li><p class="first">corriger les éventuelles fautes d’orthographe.</p>
 </li>
-<li><p class="first">me signaler les bugs existants sur le <a class="reference external" href="http://wxgeo.free.fr/tracker">tracker</a> (pas besoin de s&#8217;inscrire).</p>
+<li><p class="first">me signaler les bugs existants sur le <a class="reference external" href="http://wxgeo.free.fr/tracker">tracker</a> (pas besoin de s’inscrire).</p>
 </li>
 <li><p class="first">me proposer des corrections de bugs :)</p>
 </li>
@@ -728,28 +736,28 @@ code source.</p>
 </li>
 <li><p class="first"><strong>compléter cette documentation ou créer un tutoriel</strong> (je manque de
 temps pour tout faire !).</p>
-<p>N&#8217;hésitez pas à compléter le <a class="reference external" href="http://www.maths.ac-aix-marseille.fr/webphp/wiki/index.php/Accueil#Aide_WxG.C3.A9om.C3.A9trie.2FG.C3.A9ophar">wiki</a>.</p>
+<p>N’hésitez pas à compléter le <a class="reference external" href="http://www.maths.ac-aix-marseille.fr/webphp/wiki/index.php/Accueil#Aide_WxG.C3.A9om.C3.A9trie.2FG.C3.A9ophar">wiki</a>.</p>
 </li>
 </ul>
-<p>Je suis également ouvert à toute autre contribution, et j&#8217;ai toujours plaisir à travailler en équipe... :-)</p>
+<p>Je suis également ouvert à toute autre contribution, et j’ai toujours plaisir à travailler en équipe… :-)</p>
 <p>Une liste plus complète de suggestions est disponible sur le <a class="reference external" href="http://www.maths.ac-aix-marseille.fr/webphp/wiki/index.php/FAQ">wiki</a>.</p>
 <p><strong>Je recherche en particulier (liste non exhaustive) :</strong></p>
 <ol class="arabic">
-<li><p class="first">des personnes pour m&#8217;aider à maintenir et à améliorer :</p>
+<li><p class="first">des personnes pour m’aider à maintenir et à améliorer :</p>
 <ul>
 <li><p class="first">le fonctionnement sous Linux :</p>
 <ul class="simple">
-<li>retours d&#8217;expérience</li>
+<li>retours d’expérience</li>
 <li>maintenance du paquet .deb existant</li>
 <li>création de paquets .rpm</li>
 <li>guides utilisateurs, etc.</li>
 </ul>
 </li>
-<li><p class="first">le fonctionnement sous MacOs X (je n&#8217;ai pas de Mac)</p>
+<li><p class="first">le fonctionnement sous MacOs X (je n’ai pas de Mac)</p>
 <ul class="simple">
-<li>retours d&#8217;expérience</li>
+<li>retours d’expérience</li>
 <li>tutoriels</li>
-<li>aides à l&#8217;installation</li>
+<li>aides à l’installation</li>
 </ul>
 <p>Jean-Pierre Garcia a commencé un travail en ce sens.</p>
 </li>
@@ -759,7 +767,7 @@ temps pour tout faire !).</p>
 pour WxGéométrie/Géophar.</p>
 <p>Je pense en particulier à des professeurs de mathématiques qui auraient des
 compétences en programmation objet (mais pas nécessairement en Python :
-Python en lui-même s&#8217;apprend très rapidement si l&#8217;on a déjà l&#8217;habitude
+Python en lui-même s’apprend très rapidement si l’on a déjà l’habitude
 de programmer).</p>
 </li>
 <li><p class="first">des personnes pour me faire remonter des rapports de bugs, ou des
@@ -772,16 +780,16 @@ prendre. ;-)</p>
 </div>
 <div class="section" id="remerciements">
 <h2><a class="toc-backref" href="#id36">Remerciements</a><a class="headerlink" href="#remerciements" title="Lien permanent vers ce titre">¶</a></h2>
-<p>Sans prétention d&#8217;exhaustivité, je voudrais remercier :</p>
+<p>Sans prétention d’exhaustivité, je voudrais remercier :</p>
 <ul class="simple">
 <li><strong>Boris Mauricette</strong>, pour avoir contribué au module de Statistiques
-(tracé des quartiles), et à l&#8217;interpolation polynomiale.</li>
+(tracé des quartiles), et à l’interpolation polynomiale.</li>
 <li><strong>Christophe Gragnic</strong>, qui a converti toute la documentation au format
 ReStructuredText.</li>
 <li><strong>Christophe Bal</strong> pour ses commentaires, et pour avoir proposé la
 syntaxe du module de Probabilités.</li>
-<li><strong>Jean-Pierre Garcia</strong> pour avoir écrit un guide d&#8217;installation pour MacOs X.</li>
-<li><strong>Les développeurs de sympy</strong>, avec qui j&#8217;ai toujours eu des échanges
+<li><strong>Jean-Pierre Garcia</strong> pour avoir écrit un guide d’installation pour MacOs X.</li>
+<li><strong>Les développeurs de sympy</strong>, avec qui j’ai toujours eu des échanges
 cordiaux et constructifs, y compris de code.</li>
 </ul>
 <p>Remerciements plus particuliers à <strong>Chris Smith</strong>, <strong>Vinzent Steinberg</strong> et <strong>Aaron Meurer</strong>.</p>
@@ -789,11 +797,11 @@ cordiaux et constructifs, y compris de code.</li>
 <li><strong>Christophe Vrignaud</strong>, qui a développé et maintenu quelques temps le
 module Scicalc pour WxGéométrie.</li>
 <li><strong>Stéphane Clément</strong> a mis a disposition de WxGéométrie puis de Géophar
-le wiki de l&#8217;académie d&#8217;Aix-Marseille.</li>
+le wiki de l’académie d’Aix-Marseille.</li>
 <li>Tous ceux qui ont pris le temps de faire quelques commentaires sur ce
-programme, et m&#8217;ont encouragé à continuer (en particulier dans les
+programme, et m’ont encouragé à continuer (en particulier dans les
 premiers temps : mon frère Thomas, Enzo, Rhydwen Volsik, Robert
-Setif...).</li>
+Setif…).</li>
 <li><strong>François Lermigeaux</strong>, pour les coups de pub occasionnels.</li>
 <li><strong>Georges Khaznadar</strong>, pour ses nombreux conseils concernant Debian.</li>
 <li>Tous ceux qui ont pris le temps de faire des rapports de bugs et des
@@ -807,14 +815,14 @@ retours, en particulier <strong>Dominique Pommier</strong>.</li>
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
             <p class="logo"><a href="index.html">
               <img class="logo" src="_static/geophar-icone.png" alt="Logo"/>
             </a></p>
   <h3><a href="index.html">Table des Matières</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Manuel de l&#8217;utilisateur</a><ul>
+<li><a class="reference internal" href="#">Manuel de l’utilisateur</a><ul>
 <li><a class="reference internal" href="#licence">Licence</a></li>
 <li><a class="reference internal" href="#installation">Installation</a><ul>
 <li><a class="reference internal" href="#sous-windows">Sous Windows</a></li>
@@ -824,8 +832,8 @@ retours, en particulier <strong>Dominique Pommier</strong>.</li>
 </li>
 <li><a class="reference internal" href="#description-des-differents-modules">Description des différents modules</a><ul>
 <li><a class="reference internal" href="#pilotage-avec-la-souris">Pilotage avec la souris</a></li>
-<li><a class="reference internal" href="#creation-d-objets-via-le-menu-creer">Création d&#8217;objets via le menu «Créer»</a></li>
-<li><a class="reference internal" href="#choisir-le-mode-d-affichage-de-l-etiquette-d-un-objet">Choisir le mode d&#8217;affichage de l&#8217;étiquette d&#8217;un objet</a></li>
+<li><a class="reference internal" href="#creation-d-objets-via-le-menu-creer">Création d’objets via le menu «Créer»</a></li>
+<li><a class="reference internal" href="#choisir-le-mode-d-affichage-de-l-etiquette-d-un-objet">Choisir le mode d’affichage de l’étiquette d’un objet</a></li>
 <li><a class="reference internal" href="#la-ligne-de-commande">La ligne de commande</a><ul>
 <li><a class="reference internal" href="#le-traceur-de-courbes">Le traceur de courbes</a></li>
 <li><a class="reference internal" href="#la-calculatrice">La calculatrice</a></li>
@@ -837,7 +845,7 @@ retours, en particulier <strong>Dominique Pommier</strong>.</li>
 <li><a class="reference internal" href="#histogrammes">Histogrammes :</a></li>
 <li><a class="reference internal" href="#diagrammes-en-boites">Diagrammes en boites :</a></li>
 <li><a class="reference internal" href="#pour-aller-plus-loin">Pour aller plus loin :</a><ul>
-<li><a class="reference internal" href="#le-generateur-d-arbres-de-probabilites">Le générateur d&#8217;arbres de probabilités</a></li>
+<li><a class="reference internal" href="#le-generateur-d-arbres-de-probabilites">Le générateur d’arbres de probabilités</a></li>
 <li><a class="reference internal" href="#le-generateur-de-tableaux-latex">Le générateur de tableaux LaTeX</a></li>
 </ul>
 </li>
@@ -860,29 +868,28 @@ retours, en particulier <strong>Dominique Pommier</strong>.</li>
   <h4>Sujet suivant</h4>
   <p class="topless"><a href="api.html"
                         title="Chapitre suivant">Manuel du développeur</a></p>
-  <h3>Cette page</h3>
-  <ul class="this-page-menu">
-    <li><a href="_sources/help.txt"
-           rel="nofollow">Montrer la source</a></li>
-  </ul>
-<div id="searchbox" style="display: none">
+  <div role="note" aria-label="source link">
+    <h3>Cette page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/help.rst.txt"
+            rel="nofollow">Montrer le code source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
   <h3>Recherche rapide</h3>
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    <p class="searchtip" style="font-size: 90%">
-    Saisissez un mot clef ou un nom de module, classe ou fonction.
-    </p>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -897,12 +904,12 @@ retours, en particulier <strong>Dominique Pommier</strong>.</li>
         <li class="right" >
           <a href="index.html" title="Documentation de Geophar"
              >précédent</a> |</li>
-        <li><a href="index.html">documentation Geophar 14.08.1</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Documentation Geophar 18.08.1</a> &#187;</li> 
       </ul>
     </div>
-    <div class="footer">
-        &copy; Copyright 2005-2012, N.Pourcelot.
-      Créé avec <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2005-2012, N.Pourcelot.
+      Créé avec <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.7.
     </div>
   </body>
 </html>
