@@ -80,7 +80,7 @@ class MyFTP(FTP):
             for pth in listdir(lpath):
                 self.copy_r(join(lpath, pth), join(rdest, pth))
         else:
-            with open(lpath) as _file:
+            with open(lpath, 'rb') as _file:
                 print('* %s : %s '
                        % (rdest, self.storbinary('STOR ' + rdest, _file)))
 
