@@ -26,6 +26,10 @@ from os.path import dirname, realpath, normpath
 # Emplacement du module python nommé wxgeometrie
 EMPLACEMENT = dirname(dirname(realpath(sys._getframe().f_code.co_filename)))
 
+# Choix de Qt5.
+# https://stackoverflow.com/questions/52930781/qt-api-environment-variable
+os.environ["QT_API"] = "pyqt5"
+
 if getattr(sys, '_launch_geophar', False):
     from .arguments import lire_arguments, traiter_arguments
 

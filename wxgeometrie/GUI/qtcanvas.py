@@ -26,7 +26,7 @@ from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QCursor, QImage
 
 from numpy import array
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, FigureCanvasQTAggBase
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from matplotlib.backends.backend_qt5 import FigureCanvasQT
 from matplotlib.backends.backend_agg import FigureCanvasAgg
 

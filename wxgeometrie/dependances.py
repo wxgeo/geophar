@@ -175,10 +175,18 @@ def configurer_dependances():
         pass
     import matplotlib
     matplotlib.rcParams['backend'] = 'Qt5Agg'
-    matplotlib.rcParams['backend.qt5'] ='PyQt5'
+    try:
+        # For old versions of matplotlib (version < 3.0)
+        matplotlib.rcParams['backend.qt5'] ='PyQt5'
+    except KeyError:
+        pass
     matplotlib.use(moteur_de_rendu, warn=False)
     matplotlib.rcParams['text.usetex'] = latex
-    matplotlib.rcParams["text.latex.unicode"] = latex_unicode
+    try:
+        # For old versions of matplotlib (version < 3.0)
+        matplotlib.rcParams["text.latex.unicode"] = latex_unicode
+    except KeyError:
+        pass
 
     # A changer *avant* d'importer pylab ?
     matplotlib.rcParams['font.family'] ='serif'
