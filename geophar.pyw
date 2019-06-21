@@ -3,12 +3,12 @@
 from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 
 ##--------------------------------------##
-#              WxGeometrie               #
+#              Geophar                   #
 #              main program              #
 ##--------------------------------------##
-#    WxGeometrie
+#    Geophar/WxGeometrie
 #    Dynamic geometry, graph plotter, and more for french mathematic teachers.
-#    Copyright (C) 2005-2013  Nicolas Pourcelot
+#    Copyright (C) 2005-2019  Nicolas Pourcelot
 #
 #    This program is free software; you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -24,8 +24,8 @@ from __future__ import division # 1/2 == .5 (par defaut, 1/2 == 0)
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-# choisit comme répertoire courant le repertoire d'execution du script (pour Linux)
-from codecs import getwriter
+# On choisit comme répertoire courant le repertoire d'execution du script
+# (utile sous Linux).
 import sys, os
 from os.path import dirname, realpath
 
