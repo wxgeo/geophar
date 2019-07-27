@@ -1,7 +1,12 @@
-Géophar version 18.08.2
-Publiée le 20/10/2018
+Géophar version 18.08.4
+Publiée le 27/07/2019
 
 
+* Improve compatibility with new sympy version.
+* Remove unused import.
+* Small patch following matplotlib API changes.
+* Small fix in doc script for Debian.
+* Version 18.08.2
 * Regenerate documentation with last sphinx tool (1.6.7).
 * [python3] Update the scripts used to build the documentation.
 * Version 18.08.1
