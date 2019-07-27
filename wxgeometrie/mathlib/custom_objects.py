@@ -155,8 +155,10 @@ def _compatible(meth):
     return new_meth
 
 for _name in ('__add__', '__radd__', '__sub__', '__mul__', '__div__',
-                     '__rdiv__', '__pow__', '__rpow__', '__mod__', '__rmod__',
-                     '_eval_power', '__truediv__'):
+              '__rdiv__',
+              #'__pow__', ### in sympy's new version, there are 3 arguments.
+              '__rpow__', '__mod__', '__rmod__',
+              '_eval_power', '__truediv__'):
     setattr(Rational, _name, _compatible(getattr(Rational, _name)))
     setattr(Integer, _name, _compatible(getattr(Integer, _name)))
 
