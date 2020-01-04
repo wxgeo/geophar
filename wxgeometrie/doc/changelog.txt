@@ -1,7 +1,9 @@
-Géophar version 18.08.4
-Publiée le 27/07/2019
+Géophar version 18.08.5
+Publiée le 04/01/2020
 
 
+* Fix major error when saving file.
+* Version 18.08.4
 * Improve compatibility with new sympy version.
 * Remove unused import.
 * Small patch following matplotlib API changes.
