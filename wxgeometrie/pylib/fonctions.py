@@ -146,33 +146,27 @@ def msplit(main_string, list_of_separators):
 
 def removeend(main_string, *substrings):
     "Enlève les éventuelles occurences de substring en fin de chaine."
-    if substrings and True not in (sub == "" for sub in substrings): # pour éviter une éventuelle boucle infinie.
-        test = True
-        while test:
+    if substrings and '' not in substrings: # pour éviter une éventuelle boucle infinie.
+        run = True
+        while run:
+            run = False
             for sub in substrings:
                 if main_string.endswith(sub):
                     main_string =  main_string[:-len(sub)]
-                    test = None
-            if test is None:
-                test = True
-            else:
-                test = False
+                    run = True
     return main_string
 
 
 def removestart(main_string, *substrings):
     "Enlève les éventuelles occurences de substring en début de chaine."
-    if substrings and True not in (sub == "" for sub in substrings): # pour éviter une éventuelle boucle infinie.
-        test = True
-        while test:
+    if substrings and '' not in substrings: # pour éviter une éventuelle boucle infinie.
+        run = True
+        while run:
+            run = False
             for sub in substrings:
                 if main_string.startswith(sub):
                     main_string =  main_string[len(sub):]
-                    test = None
-            if test is None:
-                test = True
-            else:
-                test = False
+                    run = True
     return main_string
 
 

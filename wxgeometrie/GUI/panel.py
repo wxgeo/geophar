@@ -274,7 +274,7 @@ class Panel_API_graphique(Panel_simple):
 
 
 
-    def sauvegarder(self, nom_fichier='', feuille=None):
+    def sauvegarder(self, nom_fichier='', feuille=None, **kw):
         """Sauvegarde la feuille `feuille` à l'emplacement `nom_fichier`.
 
         Par défaut, `feuille` et la feuille courante, et le nom de fichier est
@@ -290,12 +290,12 @@ class Panel_API_graphique(Panel_simple):
         if nom_fichier == '':
             nom_fichier = self.nom_sauvegarde or "sauvegarde"
         if nom_fichier is None:
-            return Panel_simple.sauvegarder(self, nom_fichier, feuille = feuille)
-        Panel_simple.sauvegarder(self, nom_fichier, feuille = feuille)
+            return Panel_simple.sauvegarder(self, nom_fichier, feuille=feuille, **kw)
+        Panel_simple.sauvegarder(self, nom_fichier, feuille=feuille, **kw)
         feuille.modifiee = False
         rep, fich = os.path.split(nom_fichier)
         feuille.sauvegarde["repertoire"] = rep
-        feuille.sauvegarde["nom"] = removeend(fich, ".geo") # nom sans l'extension
+        feuille.sauvegarde["nom"] = removeend(fich, ".geo", '.geoz') # nom sans l'extension
         self.rafraichir_titre()
 
 
