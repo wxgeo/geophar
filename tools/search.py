@@ -166,7 +166,7 @@ def gs(string='', case=True, include_comments=False, comment_marker='#', extensi
 
                         occurences += 1
                         if replace_with is not None:
-                            lignes[-1] = s.replace(string, replace)
+                            lignes[-1] = s.replace(string, replace_with)
                         s = s[:pos] + blue2(s[pos:pos+len(string)]) \
                                     + s[pos+len(string):]
                         results.append("   " + blue('(' + str(n_lignes + 1) + ')')
