@@ -1,7 +1,10 @@
-Géophar version 18.08.5
-Publiée le 04/01/2020
+Géophar version 18.08.6
+Publiée le 08/03/2020
 
 
+* Add missing doc files.
+* Fix replace option in search tool.
+* Version 18.08.5
 * Fix major error when saving file.
 * Version 18.08.4
 * Improve compatibility with new sympy version.
