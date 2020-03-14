@@ -42,8 +42,6 @@ if plateforme == "Darwin":
                        'numpy': 'python3-numpy',
                        'mpmath': 'python3-mpmath',
                        'sip': 'python3-sip',
-                       'PyQt5.Qsci': 'python3-pyqt5.qsci',
-                       'PyQt5.QtSvg': 'python3-pyqt5.qtsvg',
                        }
 else:
         # Les valeurs sont les noms des paquets sous Debian/Ubuntu.
