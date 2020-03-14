@@ -29,22 +29,36 @@ import sys, imp, platform, os, shutil, subprocess
 # ------------------------------------------------------------------------------
 
 from .version import NOMPROG
+plateforme = platform.system() #'Windows' ou 'Linux' ou 'Darwin' par exemple.
 
-# Les valeurs sont les noms des paquets sous Debian/Ubuntu.
-dependances = {'PyQt5': 'python3-pyqt5',
-               'matplotlib': 'python3-matplotlib',
-               'scipy': 'python3-scipy',
-               'numpy': 'python3-numpy',
-               'mpmath': 'python3-mpmath',
-               'sip': 'python3-sip',
-               'PyQt5.Qsci': 'python3-pyqt5.qsci',
-               'PyQt5.QtSvg': 'python3-pyqt5.qtsvg',
-               }
+#Modifications pour la partie installation sous Mac :
+if plateforme == "Darwin":
+        subprocess.run("python3 -m pip install --upgrade pip",shell='true') #Mise à jour de pip obligatoire
+        # Les valeurs sont les noms des paquets sous Mac.
+        dependances = {'Qscintilla':'python3-qscintilla',
+                       'PyQt5': 'python3-pyqt5',
+                       'matplotlib': 'python3-matplotlib',
+                       'scipy': 'python3-scipy',
+                       'numpy': 'python3-numpy',
+                       'mpmath': 'python3-mpmath',
+                       'sip': 'python3-sip',
+                       }
+else:
+        # Les valeurs sont les noms des paquets sous Debian/Ubuntu.
+        dependances = {'PyQt5': 'python3-pyqt5',
+                       'matplotlib': 'python3-matplotlib',
+                       'scipy': 'python3-scipy',
+                       'numpy': 'python3-numpy',
+                       'mpmath': 'python3-mpmath',
+                       'sip': 'python3-sip',
+                       'PyQt5.Qsci': 'python3-pyqt5.qsci',
+                       'PyQt5.QtSvg': 'python3-pyqt5.qtsvg',
+                       }
 
 python_version_min = (3, 5)
 python_version_max = (3, 99)
 
-plateforme = platform.system() #'Windows' ou 'Linux' par exemple.
+
 
 # Paramètres de matplotlib
 # Utiliser une installation LaTeX existante (meilleur rendu mais très lent !)
