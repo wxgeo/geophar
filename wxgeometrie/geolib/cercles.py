@@ -433,7 +433,7 @@ class Arc_oriente(Arc_points):
 
     @property
     def sens(self):
-        if self._sens() is 1:
+        if self._sens() == 1:
             return "direct"
         return "indirect"
 

@@ -615,7 +615,7 @@ class ProprietesAvance(QWidget):
         self.islabel = self.parent.parent.islabel
 
         self.sizer = QVBoxLayout()
-        if len(self.objets) is 1:
+        if len(self.objets) == 1:
             self.objet = self.objets[0]
 
             style = QVBoxLayout()

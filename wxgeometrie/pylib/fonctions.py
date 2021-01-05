@@ -455,7 +455,7 @@ def split_around_parenthesis(main_string, position = 0, leftbracket = "("):
     in_string = False # est-on dans une chaine ?
     in_string_sep = "'" # caractere encadrant la chaine (" ou ')
     position = main_string.find(leftbracket, position)
-    if position is -1:
+    if position == -1:
         return (main_string,)
     parentheses = 1 # tient le compte des parentheses ouvertes non fermees
     rightbracket = {"(": ")", "[": "]", "{": "}"}[leftbracket]
@@ -474,7 +474,7 @@ def split_around_parenthesis(main_string, position = 0, leftbracket = "("):
             parentheses += 1
         elif a == rightbracket and not in_string:
             parentheses -= 1
-            if parentheses is 0:
+            if parentheses == 0:
                 chaine = chaine
                 return (prefixe, leftbracket + chaine[:i + 1], chaine[i + 1:])
     return (main_string,) # aucune parenthese fermante n'a été trouvée pour ce groupe.

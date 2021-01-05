@@ -1516,7 +1516,7 @@ class Feuille(object):
     def coder(self):
         "Codage automatique de la figure (longueurs égales, angles égaux, et angles droits)."
         def test(groupe, liste, i):
-            if len(groupe) is 1:
+            if len(groupe) == 1:
                 groupe[0]["objet"].style(codage = "")
                 return False
             else:
