@@ -1,7 +1,12 @@
-Géophar version 18.08.6
-Publiée le 08/03/2020
+Géophar version 18.08.7
+Publiée le 06/01/2021
 
 
+* Better handling of missing requirements.
+* [python 3.9] Fix SyntaxWarnings (kudos to Georges Khaznadar).
+* Minor change to remove DeprecationWarning from matplotlib.
+* Update `decorator.py` version.
+* Version 18.08.6
 * Add missing doc files.
 * Fix replace option in search tool.
 * Version 18.08.5
