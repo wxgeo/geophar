@@ -36,10 +36,17 @@ dependances = {'PyQt5': 'python3-pyqt5',
                'scipy': 'python3-scipy',
                'numpy': 'python3-numpy',
                'mpmath': 'python3-mpmath',
-               'sip': 'python3-sip',
                'PyQt5.Qsci': 'python3-pyqt5.qsci',
                'PyQt5.QtSvg': 'python3-pyqt5.qtsvg',
                }
+
+
+# Most of the time, the name of the pip package is just the module name.
+# However, those are exceptions:
+pip_packages = {'PyQt5.Qsci': 'Qscintilla',
+               'PyQt5.QtSvg': '', # already included in PyQt5
+               }
+
 
 python_version_min = (3, 5)
 python_version_max = (3, 99)
@@ -90,79 +97,53 @@ def tester_dependances():
         except ImportError:
             modules_manquants.append(module_name)
 
-    if modules_manquants and plateforme == 'Linux' and shutil.which('apt'):
-        paquets = [dependances[module] for module in modules_manquants]
-        for paquet in paquets:
-            msg = "WARNING: Le module %s manque." % paquet
-            deco = len(msg)*'*'
-            print(deco)
-            print(msg)
-            print(deco)
-            print("INSTALLATION via apt install...")
-            subprocess.run(['sudo', 'apt', 'install', paquet])
-        print('Des modules indispensables ont été installés.')
-        print('Redémarrage de Géophar...')
-        os.execv(sys.executable, [sys.executable] + sys.argv)
-        sys.exit()
 
 
     if modules_manquants:
         try:
+            if not sys.stdin.isatty():
+                raise ImportError
+            if input(f"Certaines librairies manquent : {modules_manquants}.\n"
+                      "Voulez-vous les installer automatiquement ? (o/N)"
+                     ).lower() not in ('o', 'oui', 'yes', 'y'):
+                 raise ImportError
             # Try to install missing modules using pip.
-            import pip
-            for module in modules_manquants:
-                pip.main(["install", "--user", module])
-            # This allows the modules to be imported during current python session.
-            # See https://stackoverflow.com/questions/40711133/pip-maininstall-user-not-working.
-            home_folder = os.path.expanduser("~")
-            user_site_packages_folder = "{}/.local/lib/python2.7/site-packages".format(home_folder)
-            if user_site_packages_folder not in sys.path:
-                sys.path.append(user_site_packages_folder)
-            modules_manquants = []
+            pip_modules = [pip_packages.get(module, module) for module in modules_manquants]
+            try:
+                subprocess.check_call([sys.executable, '-m', 'pip', 'install', '--user'] + pip_modules)
+            except subprocess.CalledProcessError:
+                # Maybe we are in a virtual environment, so --user is meaningless ?
+                try:
+                    subprocess.check_call([sys.executable, '-m', 'pip', 'install'] + pip_modules)
+                except subprocess.CalledProcessError:
+                    print("L'installation automatique des modules manquants a échouée.")
+                    raise ImportError
+            print('Des modules indispensables ont été installés.')
+            print('Redémarrage de Géophar...')
+            os.execv(sys.executable, [sys.executable] + sys.argv)
+            sys.exit()
         except ImportError:
-            pass
+            if plateforme == 'Linux' and shutil.which('apt'):
+                paquets = ' '.join(dependances[m] for m in modules_manquants)
+                print(f"""
+[\033[91mERREUR\033[39m] Certains paquets sont manquants : {paquets}.
 
-    # ~ if modules_manquants and plateforme == 'Linux':
-        # ~ paquets = [dependances[module] for module in modules_manquants]
-        # ~ import dbus
-        # ~ try:
-            # ~ bus = dbus.SessionBus()
-            # ~ try:
-                # ~ proxy = bus.get_object('org.freedesktop.PackageKit', '/org/freedesktop/PackageKit')
-                # ~ iface = dbus.Interface(proxy, 'org.freedesktop.PackageKit.Modify')
-                # ~ iface.InstallPackageNames(dbus.UInt32(0), paquets, "show-confirm-search,hide-finished", timeout=10000)
-                # ~ modules_manquants = []
-            # ~ except dbus.DBusException as e:
-                # ~ print('Unable to use PackageKit: %s' % str(e))
-        # ~ except dbus.DBusException as e:
-            # ~ print('Unable to connect to dbus: %s' % str(e))
-
-
-    if modules_manquants:
-        print('** Erreur fatale **\nLes modules suivants sont introuvables !')
-        print('MODULE(S) MANQUANT(S): %s.' % ', '.join(modules_manquants))
+Votre distribution semble être dérivée de Debian ou d'Ubuntu,
+il est possible de remédier à cette situation en lançant la commande :
+----------------------------------------------------------------------
+\033[1m\
+sudo apt update; sudo apt install {paquets}\
+\033[0m
+----------------------------------------------------------------------
+Vous pourrez ensuite relancer Géophar.
+""")
+        else:
+            print('** Erreur fatale **\nLes modules suivants sont introuvables !')
+            print('MODULE(S) MANQUANT(S): %s.' % ', '.join(modules_manquants))
         sys.exit(-1)
 
 
 def configurer_dependances():
-    # ---------------------
-    # Configuration de PyQt
-    # ---------------------
-    # Le module sip doit être importé très tôt, avant Qt bien sûr,
-    # mais bizarrement également avant sympy (depuis sympy 0.7.5 au moins).
-    try:
-        import sip
-        # PyQt new API (PyQt 4.6+)
-        sip.setapi('QDate', 2)
-        sip.setapi('QDateTime', 2)
-        sip.setapi('QString', 2)
-        sip.setapi('QTextStream', 2)
-        sip.setapi('QTime', 2)
-        sip.setapi('QUrl', 2)
-        sip.setapi('QVariant', 2)
-    except ImportError:
-        print("Warning: sip not found.")
-
     import PyQt5
 
     # ---------------------------
@@ -177,11 +158,12 @@ def configurer_dependances():
     matplotlib.rcParams['backend'] = 'Qt5Agg'
     try:
         # For old versions of matplotlib (version < 3.0)
-        matplotlib.rcParams['backend.qt5'] ='PyQt5'
-        matplotlib.rcParams["text.latex.unicode"] = latex_unicode
+        if matplotlib.__version__.split(".")[0] < '3':
+            matplotlib.rcParams['backend.qt5'] ='PyQt5'
+            matplotlib.rcParams["text.latex.unicode"] = latex_unicode
     except KeyError:
         pass
-    matplotlib.use(moteur_de_rendu, warn=False)
+    matplotlib.use(moteur_de_rendu)
     matplotlib.rcParams['text.usetex'] = latex
 
     # A changer *avant* d'importer pylab ?
@@ -191,7 +173,3 @@ def configurer_dependances():
     #matplotlib.rcParams['font.monospace'] ='STIXGeneral'
     matplotlib.rcParams['mathtext.fontset'] ='stix'
 
-
-
-    # import pylab_ as pylab
-    # le fichier pylab_.py est modifie lors d'une "compilation" avec py2exe
