@@ -19,7 +19,9 @@
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import urllib.request, urllib.parse
-import cgi
+import html
+import sys
+import traceback
 
 from .. import param
 from .infos import informations_configuration
@@ -44,16 +46,22 @@ def rapporter(titre='', auteur='', email='', description='', historique='',
     }
     for key, value in data.items():
 #        data[key] = zlib.compress(uu(value.replace("\n", "\n<br>\n")).encode("utf-8"), 9).replace("\x01", "\x01\x03").replace("\x00", "\x01\x02") # php n'aime pas les caractères nuls dans une chaîne semble-t-il...
-        data[key] = cgi.escape(value).replace("\n", "\n<br>\n").encode("iso-8859-1", 'xmlcharrefreplace')
-    msg = 'Erreur inconnue.'
+        data[key] = html.escape(value).replace("\n", "\n<br>\n").encode("iso-8859-1", 'xmlcharrefreplace')
+    msg = 'Erreur.'
     try:
         filename, headers = urllib.request.urlretrieve("http://wxgeo.free.fr/wordpress/contact")
         with open(filename) as f:
             adresse = f.read(300)
-        remote = urllib.request.urlopen(adresse, urllib.parse.urlencode(data))
-        msg = remote.read()
+        remote = urllib.request.urlopen(adresse, urllib.parse.urlencode(data).encode('utf8'))
+        msg = html.unescape(remote.read().decode('utf-8'))
         remote.close()
         return True, msg
-    except Exception:
+    except Exception as e:
         # XXX: print_error() is not thread safe.
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+        msg_err = ''.join(traceback.format_exception(exc_type, exc_value,
+                                          exc_traceback))
+        msg = f'{msg} {msg_err}'
+        # Ne doit pas exister encore quand on quitte la thread semble-t-il.
+        del exc_traceback
         return False, msg
