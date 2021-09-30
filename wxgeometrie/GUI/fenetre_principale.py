@@ -53,7 +53,12 @@ class PyOnDemandOutputWindow(QPlainTextEdit):
         self.moveCursor(QTextCursor.End)
         self.insertPlainText(s) # again assuming QPlainTextEdit
 
-
+    def close(self):
+        try:
+            QPlainTextEdit.close(self)
+        except RuntimeError:
+            # Erreur à la fermeture du programme, quand on ferme toutes les sorties car l'objet Qt n'existe déjà plus.
+            pass
 
 class FenetrePrincipale(QMainWindow):
 
