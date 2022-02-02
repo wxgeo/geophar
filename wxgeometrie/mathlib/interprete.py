@@ -350,6 +350,7 @@ class Interprete(object):
 
 
     def _executer(self, instruction):
+        instruction = instruction.strip()
         # Cas d'une fonction.
         # Exemple: 'f(x,y)=x+y+3' sera traduit en 'f=Fonction((x,y), x+y+3)'
         if re.match("[^=()]+[(][^=()]+[)][ ]*=[^=]", instruction):
@@ -359,6 +360,19 @@ class Interprete(object):
             nom = var[:i]
             variables = var[i:]
             instruction = nom + "=Fonction(" + variables + "," + self._traduire(val) + ")"
+        # Cas d'une matrice.
+        # Exemple : 'mat A = 1 2 3  4 5 6' sera traduit en 'A=mat([[1, 2, 3], [4, 5, 6]])'
+        elif re.match(r"mat\s+\w+\s*=[^=]", instruction):
+            var, val = instruction.split("=", 1)
+            var = var[3:].strip()
+            val = val.strip()
+            # Generate the code for the matrix.
+            matrix = [s.split() for s in re.split(r'\s\s+', val)]
+            def to_str(liste):
+                return "[%s]" % ', '.join(liste)
+            matrix_code = to_str(to_str(line) for line in matrix)
+            instruction = self._traduire(f"{var}=mat({matrix_code})")
+        # Cas général
         else:
             instruction = self._traduire(instruction)
 
