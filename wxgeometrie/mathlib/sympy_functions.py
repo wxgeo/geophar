@@ -344,9 +344,10 @@ def mat(*args):
       [0, 2, 4]
 
 
-    * Dans l'interprete de geophar, on peut utiliser aussi la syntaxe suivante::
+    * Dans l'interprete de geophar, on peut utiliser aussi les syntaxes suivantes::
 
       mat A = 1 2 3  4 5 6  7 8 9
+      mat B = 1&2&3\\4&5&6\\7&8&9
     """
     assert (len(args) < 4), "La fonction mat() prend 3 arguments au maximum."
     if len(args) == 1:

@@ -283,6 +283,16 @@ def test_matrix_special_syntax():
                 '                    [4] ; \\n'
                 '                    [7]])')
 
+def test_matrix_special_syntax_latex():
+    i = Interprete(verbose=VERBOSE)
+    i.evaluer("mat A = 1&2&3\\4&5&6\\7&8&9")
+    i.evaluer(" mat  B=  1\\   0 \\  0  ")
+    resultat, latex = i.evaluer("C=A*B")
+    assertEqual(resultat, 'Matrix([\\n'
+                '                    [1] ; \\n'
+                '                    [4] ; \\n'
+                '                    [7]])')
+
 
 
 def test_issue_sialle1():

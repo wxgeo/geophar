@@ -362,12 +362,26 @@ class Interprete(object):
             instruction = nom + "=Fonction(" + variables + "," + self._traduire(val) + ")"
         # Cas d'une matrice.
         # Exemple : 'mat A = 1 2 3  4 5 6' sera traduit en 'A=mat([[1, 2, 3], [4, 5, 6]])'
+        # La syntaxe 'mat A = 1&2&3\\4&5&6' est aussi supportée.
         elif re.match(r"mat\s+\w+\s*=[^=]", instruction):
             var, val = instruction.split("=", 1)
             var = var[3:].strip()
             val = val.strip()
             # Generate the code for the matrix.
-            matrix = [s.split() for s in re.split(r'\s\s+', val)]
+            if '&' in val:
+                if r"\\" in val:
+                    # mat A = 1 & 2 & 3 \\ 4 & 5 & 6
+                    matrix = [s.split('&') for s in val.split(r'\\')]
+                else:
+                    # mat A = 1 & 2 & 3 \ 4 & 5 & 6
+                    matrix = [s.split('&') for s in val.split('\\')]
+            else:
+                if ";" in val:
+                    # mat A = 1 2 3 ; 4 5 6
+                    matrix = [s.split() for s in val.split(';')]
+                else:
+                    # mat A = 1 2 3  4 5 6
+                    matrix = [s.split() for s in re.split(r'\s\s+', val)]
             def to_str(liste):
                 return "[%s]" % ', '.join(liste)
             matrix_code = to_str(to_str(line) for line in matrix)
