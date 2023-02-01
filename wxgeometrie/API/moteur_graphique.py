@@ -1029,13 +1029,13 @@ class Moteur_graphique(object):
     def _effacer_artistes(self):
         "Supprime tous les artistes (objets graphiques de matplotlib)."
         dico = self._dico_artistes()
-        self.axes.artists = []
-        self.axes.lines = []
-        self.axes.patches = []
-        self.axes.texts = []
-        self.axes.tables = []
-        self.axes.images = []
-        self.axes.collections = []  # collection.Collection instances
+        self.axes.artists.clear()
+        self.axes.lines.clear()
+        self.axes.patches.clear()
+        self.axes.texts.clear()
+        self.axes.tables.clear()
+        self.axes.images.clear()
+        self.axes.collections.clear()  # collection.Collection instances
         return dico
 
 

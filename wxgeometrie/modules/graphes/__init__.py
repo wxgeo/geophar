@@ -110,7 +110,7 @@ class Graphes(Panel_API_graphique):
                 A, B = arete.extremites
                 if sommet is A:
                     d_sommet[B.nom].append(poids(arete))
-            dic[nom(sommet)] = d_sommet
+            dic[sommet.nom] = d_sommet
 
         self.graph = Graph(dic, oriented=bool(aretes_orientees),
                            labels = self.correspondance_noms_etiquette())

@@ -28,11 +28,13 @@ from PyQt5.QtGui import QColor
 from PyQt5.QtWidgets import QLabel, QPushButton, QVBoxLayout, QHBoxLayout
 
 from sympy import S
+
 ##from sympy.core.sympify import SympifyError
 
 from .menu import MenuBar
 from .panel import Panel_API_graphique
 from ..geolib import Champ
+
 ##from ..pylib import print_error
 ##from ..mathlib.parsers import convertir_en_latex, traduire_formule
 from .. import param
@@ -45,27 +47,44 @@ from .. import param
 # - gestion des carrés, des nombres seuls
 
 
-
 class ExerciceMenuBar(MenuBar):
     def __init__(self, panel):
         MenuBar.__init__(self, panel)
 
-        self.ajouter("Fichier", ["Recommencer", "Recommencer au niveau 0.", "Ctrl+N", panel.reinitialiser],
-                    ["ouvrir"],
-                    ["enregistrer"], ["enregistrer_sous"], ["exporter"],
-                    ["exporter&sauver"], None, ["imprimer"], ["presse-papier"],
-                    None, ["proprietes"], None, ["fermer"], ["quitter"])
+        self.ajouter(
+            "Fichier",
+            ["Recommencer", "Recommencer au niveau 0.", "Ctrl+N", panel.reinitialiser],
+            ["ouvrir"],
+            ["enregistrer"],
+            ["enregistrer_sous"],
+            ["exporter"],
+            ["exporter&sauver"],
+            None,
+            ["imprimer"],
+            ["presse-papier"],
+            None,
+            ["proprietes"],
+            None,
+            ["fermer"],
+            ["quitter"],
+        )
         self.ajouter("Editer", ["annuler"], ["refaire"])
-        self.ajouter("Affichage", ["onglet"], ["plein_ecran"], None, ["zoom_texte"], ["zoom_ligne"], ["zoom_general"])
+        self.ajouter(
+            "Affichage",
+            ["onglet"],
+            ["plein_ecran"],
+            None,
+            ["zoom_texte"],
+            ["zoom_ligne"],
+            ["zoom_general"],
+        )
         self.ajouter("Outils", ["options"])
         self.ajouter("avance1")
         self.ajouter("?")
 
 
-
 class Exercice(Panel_API_graphique):
-
-    titre = "Exercice" # À adapter pour chaque module
+    titre = "Exercice"  # À adapter pour chaque module
 
     def __init__(self, *args, **kw):
         Panel_API_graphique.__init__(self, *args, **kw)
@@ -73,11 +92,11 @@ class Exercice(Panel_API_graphique):
         self.entrees = QVBoxLayout()
         self.entrees.addSpacing(30)
 
-        self.panneau = QLabel('')
+        self.panneau = QLabel("")
         self.entrees.addWidget(self.panneau)
 
         self.entrees.addStretch()
-        self.felicitations = QLabel('')
+        self.felicitations = QLabel("")
         self.entrees.addWidget(self.felicitations)
 
         self.entrees.addSpacing(30)
@@ -88,11 +107,10 @@ class Exercice(Panel_API_graphique):
 
         self.sizer = QHBoxLayout()
         self.sizer.addWidget(self.canvas, 1)
-        self.sizer.addLayout(self.entrees, 0.2)
+        self.sizer.addLayout(self.entrees, 0)
         self.finaliser(contenu=self.sizer)
 
         self.reinitialiser()
-
 
     def reinitialiser(self):
         """Revient au 1er niveau, et remet tous les réglages par défaut.
@@ -119,13 +137,11 @@ class Exercice(Panel_API_graphique):
 
         # Réinitialisation du score et retour au niveau 1
         if param.debug:
-            print('Module %s: réinitialisation...' % self.nom)
+            print("Module %s: réinitialisation..." % self.nom)
         self.score = 0
         self.niveau = 0
         self.erreurs = 0
         self.niveau_suivant()
-
-
 
     def niveau_suivant(self, niveau=None):
         # On ferme toutes les feuilles ouvertes (inutile en principe),
@@ -139,52 +155,61 @@ class Exercice(Panel_API_graphique):
             self.niveau = niveau
         if param.debug:
             print("== Niveau %s ==" % self.niveau)
-        getattr(self, 'niveau%s' % self.niveau)()
+        getattr(self, "niveau%s" % self.niveau)()
 
         self.btn_niveau.setEnabled(False)
         self.felicitations.setStyleSheet(
             """QLabel {background-color: white; padding: 5px; border-radius: 5px;
-            color:white;}""")
+            color:white;}"""
+        )
         self.update_panneau()
 
     n = niveau_suivant
-
 
     def update_panneau(self):
         self.panneau.setStyleSheet(
             """QLabel { padding: 10px; border-width: 2px; border-style:solid;
             border-radius: 5px; border-color:%s; background-color: %s }"""
-            %(QColor(30, 144, 255).name(), QColor(176, 226, 255).name())
-                        )
-        self.panneau.setText(("<p><b><i>Niveau :</i> %s</b></p>" % self.niveau) +
-                                 ("<p><b><i>Points :</i> %s</b></p>" % self.score) +
-                                 ("<p><i>Erreurs :</i> %s</p>" % self.erreurs))
+            % (QColor(30, 144, 255).name(), QColor(176, 226, 255).name())
+        )
+        self.panneau.setText(
+            ("<p><b><i>Niveau :</i> %s</b></p>" % self.niveau)
+            + ("<p><b><i>Points :</i> %s</b></p>" % self.score)
+            + ("<p><i>Erreurs :</i> %s</p>" % self.erreurs)
+        )
         champs = self.feuille_actuelle.objets.lister(type=Champ)
         if champs and all(obj.correct for obj in champs):
-            if hasattr(self, 'niveau' + str(self.niveau + 1)):
+            if hasattr(self, "niveau" + str(self.niveau + 1)):
                 self.btn_niveau.setEnabled(True)
                 self.btn_niveau.setFocus(True)
-                self.felicitations.setText('<p><b>Félicitations !</b></p>' +
-                                           '<p>Passer au niveau %s</p>' %(self.niveau + 1))
+                self.felicitations.setText(
+                    "<p><b>Félicitations !</b></p>"
+                    + "<p>Passer au niveau %s</p>" % (self.niveau + 1)
+                )
                 self.felicitations.setStyleSheet(
                     """QLabel {background-color: %s; padding: 5px;
                        border-radius: 5px;
-                       color:white;}""" %QColor(255, 153, 0).name())
+                       color:white;}"""
+                    % QColor(255, 153, 0).name()
+                )
 
             else:
-                self.felicitations.setText('<p><b>Félicitations !</b></p>' +
-                                           '<p>Dernier niveau terminé !</p>')
+                self.felicitations.setText(
+                    "<p><b>Félicitations !</b></p>" + "<p>Dernier niveau terminé !</p>"
+                )
                 self.felicitations.setStyleSheet(
                     """QLabel {background-color: %s; padding: 5px; border-radius: 5px;
-                    color:white;}""" %QColor(102, 205, 0).name())
+                    color:white;}"""
+                    % QColor(102, 205, 0).name()
+                )
 
     ##def _sauvegarder(self, fgeo, feuille = None):
-        ##Panel_API_graphique._sauvegarder(self, fgeo, feuille)
-        ##fgeo.contenu[u"niveau"] = [str(self.niveau)]
-        ##fgeo.contenu[u"expression"] = [self.raw_expression]
-        ##fgeo.contenu[u"score"] = [str(self.score)]
-        ##fgeo.contenu[u"erreurs"] = [str(self.erreurs)]
-##
+    ##Panel_API_graphique._sauvegarder(self, fgeo, feuille)
+    ##fgeo.contenu[u"niveau"] = [str(self.niveau)]
+    ##fgeo.contenu[u"expression"] = [self.raw_expression]
+    ##fgeo.contenu[u"score"] = [str(self.score)]
+    ##fgeo.contenu[u"erreurs"] = [str(self.erreurs)]
+    ##
     def _ouvrir(self, fgeo):
         pass
         ### Il ne doit y avoir qu'une seule feuille ouverte à la fois.
@@ -192,19 +217,18 @@ class Exercice(Panel_API_graphique):
         ##self.fermer_feuilles()
         ##Panel_API_graphique._ouvrir(self, fgeo)
         ##if fgeo.contenu.has_key(u"expression"):
-            ##self.generer_expression(expr=fgeo.contenu[u"expression"][0])
-            ##self.dessiner_tableau()
+        ##self.generer_expression(expr=fgeo.contenu[u"expression"][0])
+        ##self.dessiner_tableau()
         ##if fgeo.contenu.has_key(u"niveau"):
-            ##self.niveau = int(fgeo.contenu[u"niveau"][0])
+        ##self.niveau = int(fgeo.contenu[u"niveau"][0])
         ##if fgeo.contenu.has_key(u"score"):
-            ##self.score = int(fgeo.contenu[u"score"][0])
+        ##self.score = int(fgeo.contenu[u"score"][0])
         ##if fgeo.contenu.has_key(u"erreurs"):
-            ##self.erreurs = int(fgeo.contenu[u"erreurs"][0])
+        ##self.erreurs = int(fgeo.contenu[u"erreurs"][0])
         ##self.update_panneau()
 
     ##def _affiche(self):
-        ##self.dessiner_tableau()
-
+    ##self.dessiner_tableau()
 
     # --------------------------------
     # Génération de nombres aléatoires
@@ -212,29 +236,29 @@ class Exercice(Panel_API_graphique):
 
     @staticmethod
     def signe():
-        return 2*randint(0, 1) - 1
+        return 2 * randint(0, 1) - 1
 
     def naturel(self, n=15):
-        '''Retourne un entier entre 2 et `n`.'''
+        """Retourne un entier entre 2 et `n`."""
         return randint(2, n)
 
     def relatif(self, n=15):
-        '''Retourne un entier entre -`n` et -2, ou entre 2 et `n`.'''
+        """Retourne un entier entre -`n` et -2, ou entre 2 et `n`."""
         # signe: 1 ou -1
-        return self.signe()*self.naturel(n)
+        return self.signe() * self.naturel(n)
 
     def decimal(self, chiffres=2):
-        '''Retourne un nombre décimal, `chiffres` est le nombre de chiffres.'''
-        return  S('%s.%s' % (self.relatif(), self.naturel()))
+        """Retourne un nombre décimal, `chiffres` est le nombre de chiffres."""
+        return S("%s.%s" % (self.relatif(), self.naturel()))
 
     def rationnel(self, n=7):
-        '''Retourne un quotient d'entiers.'''
+        """Retourne un quotient d'entiers."""
         while True:
             p = self.naturel(n)
             q = self.naturel(n)
-            if p%q:
+            if p % q:
                 break
-        return self.signe()*S(p)/S(q)
+        return self.signe() * S(p) / S(q)
 
     def couple(self, m=7, n=7):
         """Retourne un couple d'entiers relatifs."""
@@ -245,11 +269,11 @@ class Exercice(Panel_API_graphique):
         pour pouvoir passer au niveau suivant.
         Essentiellement pour déboguer."""
         ##if self.btn_niveau.isEnabled():
-            ##self.niveau_suivant()
+        ##self.niveau_suivant()
         self.btn_niveau.click()
         for t in self.feuille_actuelle.objets.lister(type=Champ):
-            t.texte = t.style('attendu')
-            t.style(color='g')
+            t.texte = t.style("attendu")
+            t.style(color="g")
         ##self.parent.parent.ligne_commande.setFocus()
 
     a = property(autocompleter)
@@ -261,11 +285,11 @@ class Exercice(Panel_API_graphique):
         return False
 
     def compter_points(self, **kw):
-        if 'correct' in kw and 'correct_old' in kw and 'champ' in kw:
-            champ = kw['champ']
-            if kw['correct']:
-                if not kw['correct_old']:
-                    if not champ.style('choix'):
+        if "correct" in kw and "correct_old" in kw and "champ" in kw:
+            champ = kw["champ"]
+            if kw["correct"]:
+                if not kw["correct_old"]:
+                    if not champ.style("choix"):
                         # C'est plus dur s'il n'y a pas de choix proposé.
                         # On accorde une bonification si le résultat est
                         # un minimum simplifié.
@@ -277,5 +301,5 @@ class Exercice(Panel_API_graphique):
                 self.score -= 1
                 self.erreurs += 1
         if all(obj.correct for obj in self.feuille_actuelle.objets.lister(type=Champ)):
-            self.score += 10*(self.niveau + 1)
+            self.score += 10 * (self.niveau + 1)
         self.update_panneau()

@@ -24,19 +24,25 @@
 
 
 from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import QPushButton, QDialog, QWidget, QVBoxLayout, \
-    QHBoxLayout, QLabel, QTextEdit, QTabWidget
+from PyQt5.QtWidgets import (
+    QPushButton,
+    QDialog,
+    QWidget,
+    QVBoxLayout,
+    QHBoxLayout,
+    QLabel,
+    QTextEdit,
+    QTabWidget,
+)
 from PyQt5.QtCore import Qt
 
 from .. import param
 from ..param import NOMPROG, LOGO
+
 ANNEE = param.date_version[0]
 from ..pylib.infos import informations_configuration
 from ..pylib import path2
 from .app import app, white_palette
-
-
-
 
 
 class Informations(QDialog):
@@ -53,10 +59,9 @@ class Informations(QDialog):
 
         for i, texte in enumerate(textes):
             if texte.startswith("+ "):
-                textes[i] = '<i>' + texte + '</i>'
-        t = QLabel('<br>'.join(textes), panel)
+                textes[i] = "<i>" + texte + "</i>"
+        t = QLabel("<br>".join(textes), panel)
         panelSizer.addWidget(t)
-
 
         btnOK = QPushButton("OK", panel)
         btnOK.clicked.connect(self.close)
@@ -75,7 +80,6 @@ class Informations(QDialog):
         topSizer.addWidget(panel)
 
         self.setLayout(topSizer)
-
 
     def copier(self):
         app.vers_presse_papier(informations_configuration())
@@ -96,18 +100,24 @@ class APropos(QWidget):
         date = "/".join(str(n) for n in reversed(param.date_version))
         textes = ["<b>%s version %s</b>" % (NOMPROG, param.version)]
         textes.append("<i>Version publiée le " + date + "</i>")
-        textes.append('')
+        textes.append("")
         textes.append("« Le couteau suisse du prof de maths »")
-        textes.append('')
-        textes.append("<img src='%s'> <b>%s est un \
+        textes.append("")
+        textes.append(
+            "<img src='%s'> <b>%s est un \
                     <a href='http://fr.wikipedia.org/wiki/Logiciel_libre'> \
                     logiciel libre</a></b>"
-                    %(path2('%/wxgeometrie/images/copyleft.png'), NOMPROG))
-        textes.append("Vous pouvez l'utiliser et le modifier selon les termes de la GNU Public License v2.")
-        textes.append("<i>Copyleft 2005-%s Nicolas Pourcelot (wxgeo@users.sourceforge.net)</i>"
-                            % ANNEE)
-        textes.append('')
-        label = QLabel('<br>'.join(textes))
+            % (path2("%/wxgeometrie/images/copyleft.png"), NOMPROG)
+        )
+        textes.append(
+            "Vous pouvez l'utiliser et le modifier selon les termes de la GNU Public License v2."
+        )
+        textes.append(
+            "<i>Copyleft 2005-%s Nicolas Pourcelot (wxgeo@users.sourceforge.net)</i>"
+            % ANNEE
+        )
+        textes.append("")
+        label = QLabel("<br>".join(textes))
         label.setAlignment(Qt.AlignCenter)
         label.setOpenExternalLinks(True)
 
@@ -130,7 +140,7 @@ class Licence(QWidget):
         texte.setReadOnly(True)
         texte.setLineWrapMode(QTextEdit.NoWrap)
         doc = texte.document()
-        width = doc.idealWidth() + 4*doc.documentMargin()
+        width = int(doc.idealWidth() + 4 * doc.documentMargin())
         texte.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         texte.setMinimumWidth(width)
         sizer.addWidget(texte)
@@ -145,16 +155,18 @@ class Notes(QWidget):
         sizer = QVBoxLayout()
 
         texte = QTextEdit(self)
-        with open(path2("%/wxgeometrie/doc/changelog.txt"), 'r', encoding='utf8') as f:
-            msg = f.read().replace('\n', '<br>')
-        titre = "<b>Changements apportés par la version courante (%s) :</b>" % param.version
-        msg = '<br>'.join((titre, '', msg))
+        with open(path2("%/wxgeometrie/doc/changelog.txt"), "r", encoding="utf8") as f:
+            msg = f.read().replace("\n", "<br>")
+        titre = (
+            "<b>Changements apportés par la version courante (%s) :</b>" % param.version
+        )
+        msg = "<br>".join((titre, "", msg))
         texte.setHtml(msg)
         texte.setMinimumHeight(500)
         texte.setMinimumWidth(300)
         texte.setReadOnly(True)
         doc = texte.document()
-        width = doc.idealWidth() + 4*doc.documentMargin()
+        width = int(doc.idealWidth() + 4 * doc.documentMargin())
         texte.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         texte.setMinimumWidth(width)
         sizer.addWidget(texte)
@@ -167,8 +179,8 @@ class Credits(QWidget):
         self.parent = parent
 
         sizer = QVBoxLayout()
-        texte = \
-        """<h3>Contributeurs :</h3>
+        texte = (
+            """<h3>Contributeurs :</h3>
         <p><i>Les personnes suivantes ont contribué au code de %(NOMPROG)s</i></p>
         <ul>
         <li><i>Boris Mauricette</i> : statistiques, interpolation (2011-2012)</li>
@@ -204,7 +216,9 @@ class Credits(QWidget):
         <p><i>À Sophie, Clémence, Timothée, Olivier.</i></p>
         <p><i>« Il y a des yeux qui reçoivent la lumière, et il y a des yeux qui la donnent. » (Paul Claudel)</i>
         </p>
-        """ % globals()
+        """
+            % globals()
+        )
         label = QLabel(texte)
         label.setOpenExternalLinks(True)
 
@@ -216,12 +230,13 @@ class Credits(QWidget):
 class OngletsAbout(QTabWidget):
     def __init__(self, parent):
         QTabWidget.__init__(self, parent)
-        self.addTab(APropos(parent), 'À propos')
-        self.addTab(Licence(parent), 'Licence')
-        self.addTab(Notes(parent), 'Notes de version')
-        self.addTab(Credits(parent), 'Crédits')
+        self.addTab(APropos(parent), "À propos")
+        self.addTab(Licence(parent), "Licence")
+        self.addTab(Notes(parent), "Notes de version")
+        self.addTab(Credits(parent), "Crédits")
         self.setTabPosition(QTabWidget.South)
-        self.setStyleSheet("""
+        self.setStyleSheet(
+            """
         QTabBar::tab:selected {
         background: white;
         border: 1px solid #C4C4C3;
@@ -243,7 +258,8 @@ class OngletsAbout(QTabWidget):
         border-top-left-radius: 0px;
         border-top-right-radius: 0px;
         }
-        """)
+        """
+        )
 
 
 class About(QDialog):
@@ -259,32 +275,30 @@ class About(QDialog):
         self.setLayout(sizer)
 
 
-
 ##class WhiteScrolledMessageDialog(QDialog):
-    ##def __init__(self, parent, title='', msg = '', width=None):
-        ##QDialog.__init__(self, parent)
-        ##self.setWindowTitle(title)
-        ##self.setPalette(white_palette)
+##def __init__(self, parent, title='', msg = '', width=None):
+##QDialog.__init__(self, parent)
+##self.setWindowTitle(title)
+##self.setPalette(white_palette)
 ##
-        ##sizer = QVBoxLayout()
-        ##self.setLayout(sizer)
+##sizer = QVBoxLayout()
+##self.setLayout(sizer)
 ##
-        ##texte = QTextEdit(self)
-        ##texte.setPlainText(msg)
-        ##texte.setMinimumHeight(500)
-        ##texte.setReadOnly(True)
-        ##if width is None:
-            ##texte.setLineWrapMode(QTextEdit.NoWrap)
-            ##doc = texte.document()
-            ##width = doc.idealWidth() + 4*doc.documentMargin()
-        ##texte.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        ##texte.setMinimumWidth(width)
-        ##sizer.addWidget(texte)
+##texte = QTextEdit(self)
+##texte.setPlainText(msg)
+##texte.setMinimumHeight(500)
+##texte.setReadOnly(True)
+##if width is None:
+##texte.setLineWrapMode(QTextEdit.NoWrap)
+##doc = texte.document()
+##width = doc.idealWidth() + 4*doc.documentMargin()
+##texte.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+##texte.setMinimumWidth(width)
+##sizer.addWidget(texte)
 ##
-        ##boutons = QHBoxLayout()
-        ##boutons.addStretch()
-        ##ok = QPushButton('OK', clicked=self.close)
-        ##boutons.addWidget(ok)
-        ##boutons.addStretch()
-        ##sizer.addLayout(boutons)
-
+##boutons = QHBoxLayout()
+##boutons.addStretch()
+##ok = QPushButton('OK', clicked=self.close)
+##boutons.addWidget(ok)
+##boutons.addStretch()
+##sizer.addLayout(boutons)

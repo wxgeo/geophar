@@ -25,7 +25,7 @@ import keyword, re
 
 import matplotlib
 from matplotlib.mathtext import MathTextParser
-_mathtext_raw_parser = MathTextParser("PS").parse
+_mathtext_raw_parser = MathTextParser("path").parse
 # Si le démarrage est très lent, il se peut que ce soit mathtext
 # qui soit très long à s'importer. Dans ce cas, il faut supprimer le cache :
 # rm -r ~/.cache/matplotlib/
