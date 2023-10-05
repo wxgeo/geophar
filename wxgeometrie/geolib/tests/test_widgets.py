@@ -1,43 +1,51 @@
 # -*- coding: utf-8 -*-
+import os, sys
+TOPDIR = os.path.abspath(os.path.join(os.path.dirname(__file__),"../.."))
+sys.path.insert(0, TOPDIR)
 
-from pytest import XFAIL
+import wx_unittest, unittest
 
-from tools.testlib import rand
+from random import randint, random
 from wxgeometrie.geolib import Champ, Bouton
 
+def rand():
+    return randint(0,50) - randint(0,50) + random()
 
-def test_Champ():
-    champ = Champ('', 4, 3, couleur_fond='#ffffb5',
-                    prefixe=(r"Combien vaut 1+1 ? "),
-                    alignement_horizontal='left', alignement_vertical='bottom',
-                    attendu='2')
-    points = 0
+class TestGeolib(wx_unittest.TestCase):
 
-    def valider(reponse, attendu):
-        return reponse.strip() == attendu
+    def test_Champ(self):
+        champ = Champ('', 4, 3, couleur_fond='#ffffb5',
+                      prefixe=(r"Combien vaut 1+1 ? "),
+                      alignement_horizontal='left',
+                      alignement_vertical='bottom',
+                      attendu='2')
+        points = 0
 
-    def evt_valider(**kw):
-        nonlocal points
-        points = (5 if kw['correct'] else 1)
+        def valider(reponse, attendu):
+            return reponse.strip() == attendu
 
-    champ.valider = valider
-    champ.evt_valider = evt_valider
+        def evt_valider(**kw):
+            nonlocal points
+            points = (5 if kw['correct'] else 1)
 
-    champ.texte = '3'
-    assert champ.label() == "Combien vaut 1+1 ? $3$", champ.label()
-    assert not champ.correct
-    assert points == 1
-    champ.texte = '2'
-    assert champ.label() == "Combien vaut 1+1 ? $2$"
-    assert champ.correct
-    assert points == 5
-    champ.texte = ' 3 '
-    assert not champ.correct
-    assert points == 1
-    champ.texte = ' 2   '
-    assert champ.correct
-    assert points == 5
+        champ.valider = valider
+        champ.evt_valider = evt_valider
 
-@XFAIL
+        champ.texte = '3'
+        self.assertEqual(champ.label(), "Combien vaut 1+1 ? $3$")
+        self.assertFalse(champ.correct)
+        self.assertEqual(points, 1)
+        champ.texte = '2'
+        self.assertEqual(champ.label(), "Combien vaut 1+1 ? $2$")
+        self.assertTrue(champ.correct)
+        self.assertEqual(points, 5)
+        champ.texte = ' 3 '
+        self.assertFalse(champ.correct)
+        self.assertEqual(points, 1)
+        champ.texte = ' 2   '
+        self.assertTrue(champ.correct)
+        self.assertEqual(points, 5)
+
+@unittest.expectedFailure
 def test_Bouton():
     raise NotImplementedError

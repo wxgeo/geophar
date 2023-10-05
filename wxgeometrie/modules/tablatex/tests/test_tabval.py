@@ -1,22 +1,23 @@
 # -*- coding: utf-8 -*-
+import os, sys
+TOPDIR = os.path.abspath(os.path.join(os.path.dirname(__file__),"../../.."))
+sys.path.insert(0, TOPDIR)
 
 
-
-
-from wxgeometrie.modules.tablatex.tests.tabtestlib import assert_tableau
 from wxgeometrie.modules.tablatex.tabval import tabval
 from wxgeometrie import param
 
+import wx_unittest
 
-def assert_tabval(chaine, code_latex, **options):
-    assert_tableau(tabval, chaine, code_latex, **options)
+class ModuleTablatexTest(wx_unittest.TestCase):
+
+    def assert_tabval(self, chaine, code_latex, **options):
+        self.assert_tableau(tabval, chaine, code_latex, **options)
 
 
-
-
-def test_mode_manuel():
-    s = "f(x)=exp(x+1): 0.25: -5, -4..0 ; 0.5 ; 1, 2..6 ; 7, 10..21"
-    tab = \
+    def test_mode_manuel(self, ):
+        s = "f(x)=exp(x+1): 0.25: -5, -4..0 ; 0.5 ; 1, 2..6 ; 7, 10..21"
+        tab = \
 r"""\begin{center}
 \begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|}
 \hline
@@ -28,10 +29,10 @@ $f(x)$ & $0$  & $0$  & $0,25$ & $0,25$ & $1$  & $2,75$ & $4,5$ & $7,5$ & $20$ & 
 \end{center}
 % f(x)=exp(x+1): 0.25: -5, -4..0 ; 0.5 ; 1, 2..6 ; 7, 10..21
 """
-    assert_tabval(s, tab)
+        self.assert_tabval(s, tab)
 
-    s = "f(x)=exp(x+1): [0.25]: -5,-4..0 ; 0.5 ; 1,2..6 ; 7,10..21"
-    tab = \
+        s = "f(x)=exp(x+1): [0.25]: -5,-4..0 ; 0.5 ; 1,2..6 ; 7,10..21"
+        tab = \
 r"""\begin{center}
 \begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|}
 \hline
@@ -43,12 +44,12 @@ $f(x)$ & $0$  & $0$  & $0,25$ & $0,25$ & $1$  & $2,75$ & $4,5$ & $7,5$ & $20$ & 
 \end{center}
 % f(x)=exp(x+1): [0.25]: -5,-4..0 ; 0.5 ; 1,2..6 ; 7,10..21
 """
-    assert_tabval(s, tab)
+        self.assert_tabval(s, tab)
 
 
-def test_coupure():
-    s = "(2x+3)^2:-10..0// 1..10"
-    tab = \
+    def test_coupure(self, ):
+        s = "(2x+3)^2:-10..0// 1..10"
+        tab = \
 r"""\begin{center}
 \begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|c|}
 \hline
@@ -68,12 +69,12 @@ $(2x+3)^2$ & $25$ & $49$ & $81$ & $121$ & $169$ & $225$ & $289$ & $361$ & $441$ 
 \end{center}
 % (2x+3)^2:-10..0// 1..10
 """
-    assert_tabval(s, tab)
+        self.assert_tabval(s, tab)
 
 
-def test_mode_auto():
-    s = r"\frac{x^2}{2} sur [-4;4]"
-    tab = \
+    def test_mode_auto(self, ):
+        s = r"\frac{x^2}{2} sur [-4;4]"
+        tab = \
 r"""\begin{center}
 \begin{tabular}{|c|c|c|c|c|c|c|c|c|c|}
 \hline
@@ -86,10 +87,10 @@ $\frac{x^2}{2}$ & $8$  & $4,5$ & $2$  & $0,5$ & $0$ & $0,5$ & $2$ & $4,5$ & $8$ 
 % \frac{x^2}{2}:[0.01]:-4.0,-3.0..4
 % \frac{x^2}{2} sur [-4;4]
 """
-    assert_tabval(s, tab)
+        self.assert_tabval(s, tab)
 
-    s = r"\frac{x^2}{2} sur [-4;4] pas 0,5"
-    tab = \
+        s = r"\frac{x^2}{2} sur [-4;4] pas 0,5"
+        tab = \
 r"""\begin{center}
 \begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|}
 \hline
@@ -102,14 +103,14 @@ $\frac{x^2}{2}$ & $8$  & $6,13$ & $4,5$ & $3,13$ & $2$  & $1,13$ & $0,5$ & $0,13
 % \frac{x^2}{2}:[0.01]:-4.0,-3.5..4
 % \frac{x^2}{2} sur [-4;4] pas 0,5
 """
-    assert_tabval(s, tab)
+        self.assert_tabval(s, tab)
 
 
-def test_param_separateur_decimal():
-    try:
-        param.separateur_decimal = '.'
-        s = "f(x)=exp(x+1): 0.25: -5, -4..0 ; 0.5 ; 1, 2..6 ; 7, 10..21"
-        tab = \
+    def test_param_separateur_decimal(self, ):
+        try:
+            param.separateur_decimal = '.'
+            s = "f(x)=exp(x+1): 0.25: -5, -4..0 ; 0.5 ; 1, 2..6 ; 7, 10..21"
+            tab = \
 r"""\begin{center}
 \begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|}
 \hline
@@ -121,14 +122,14 @@ $f(x)$ & $0$  & $0$  & $0.25$ & $0.25$ & $1$  & $2.75$ & $4.5$ & $7.5$ & $20$ & 
 \end{center}
 % f(x)=exp(x+1): 0.25: -5, -4..0 ; 0.5 ; 1, 2..6 ; 7, 10..21
 """
-        assert_tabval(s, tab)
-    finally:
-        param.separateur_decimal = ','
+            self.assert_tabval(s, tab)
+        finally:
+            param.separateur_decimal = ','
 
 
-def test_formatage():
-    s = 'x^2:-2..2'
-    tab = \
+    def test_formatage(self, ):
+        s = 'x^2:-2..2'
+        tab = \
 r"""\begin{center}
 \begin{tabular}{|c|c|c|c|c|c|}
 \hline
@@ -140,5 +141,5 @@ $x^2$ & $\color{gray}4$ & $\color{gray}1$ & $\color{gray}0$ & $\color{gray}1$ & 
 \end{center}
 % x^2:-2..2
 """
-    assert_tabval(s, tab, formatage_antecedents=r'\textbf{VAL}',
-                          formatage_images=r'\color{gray}VAL')
+        self.assert_tabval(s, tab, formatage_antecedents=r'\textbf{VAL}',
+                              formatage_images=r'\color{gray}VAL')

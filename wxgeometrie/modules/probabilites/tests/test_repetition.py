@@ -1,24 +1,28 @@
 # -*- coding: utf-8 -*-
+import os, sys
+TOPDIR = os.path.abspath(os.path.join(os.path.dirname(__file__),"../../.."))
+sys.path.insert(0, TOPDIR)
 
 from functools import partial
 
-from tools.testlib import assertEqual
 from wxgeometrie.modules.probabilites.repetition import repetition_experiences as rep
 
+import wx_unittest
 
-def test_repetition_un_niveau():
-    rep1 = partial(rep, 1)
-    s = rep1(evts=['A'], probas=['0,3'])
-    assertEqual(s, '>A_1:0,3\n>&A_1:0,7')
-    s = rep1(evts=['A', 'B', 'C'], probas=['0,3', '0,5', '0,2'])
-    assertEqual(s, '>A_1:0,3\n>B_1:0,5\n>C_1:0,2')
-    s = rep1(evts=['A', 'B', 'C'], probas=['0,1', '0,6'])
-    assertEqual(s, '>A_1:0,1\n>B_1:0,6\n>C_1:0,3')
+class ModulesProbabilitesTest(wx_unittest.TestCase):
+    def test_repetition_un_niveau(self):
+        rep1 = partial(rep, 1)
+        s = rep1(evts=['A'], probas=['0,3'])
+        self.assertEqual(s, '>A_1:0,3\n>&A_1:0,7')
+        s = rep1(evts=['A', 'B', 'C'], probas=['0,3', '0,5', '0,2'])
+        self.assertEqual(s, '>A_1:0,3\n>B_1:0,5\n>C_1:0,2')
+        s = rep1(evts=['A', 'B', 'C'], probas=['0,1', '0,6'])
+        self.assertEqual(s, '>A_1:0,1\n>B_1:0,6\n>C_1:0,3')
 
 
-def test_repetition_plusieurs_niveaux():
-    s = rep(3, evts=['S'], probas=['3/4'])
-    resultat = '''>S_1:3/4
+    def test_repetition_plusieurs_niveaux(self):
+        s = rep(3, evts=['S'], probas=['3/4'])
+        resultat = '''>S_1:3/4
 >>S_2:3/4
 >>>S_3:3/4
 >>>&S_3:1/4
@@ -32,14 +36,14 @@ def test_repetition_plusieurs_niveaux():
 >>&S_2:1/4
 >>>S_3:3/4
 >>>&S_3:1/4'''
-    assertEqual(s, resultat)
+        self.assertEqual(s, resultat)
 
 
-def test_repetition_sans_numeroter():
-    rep2 = partial(rep, 2, False)
+    def test_repetition_sans_numeroter(self):
+        rep2 = partial(rep, 2, False)
 
-    s = rep2(evts=['A', 'B', 'C'], probas=['0,5', '0,3', '0,2'])
-    resultat = '''>A:0,5
+        s = rep2(evts=['A', 'B', 'C'], probas=['0,5', '0,3', '0,2'])
+        resultat = '''>A:0,5
 >>A:0,5
 >>B:0,3
 >>C:0,2
@@ -51,18 +55,18 @@ def test_repetition_sans_numeroter():
 >>A:0,5
 >>B:0,3
 >>C:0,2'''
-    assertEqual(s, resultat)
+        self.assertEqual(s, resultat)
 
-    s = rep2(evts=['&A'], probas=['0,6'])
-    resultat = '''>A:0,4
+        s = rep2(evts=['&A'], probas=['0,6'])
+        resultat = '''>A:0,4
 >>A:0,4
 >>&A:0,6
 >&A:0,6
 >>A:0,4
 >>&A:0,6'''
 
-    s = rep(3, False, evts=['F', 'G'], probas=['', ''])
-    resultat = '''>F:
+        s = rep(3, False, evts=['F', 'G'], probas=['', ''])
+        resultat = '''>F:
 >>F:
 >>>F:
 >>>G:
@@ -76,4 +80,4 @@ def test_repetition_sans_numeroter():
 >>G:
 >>>F:
 >>>G:'''
-    assertEqual(s, resultat)
+        self.assertEqual(s, resultat)

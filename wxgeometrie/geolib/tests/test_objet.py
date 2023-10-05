@@ -1,33 +1,32 @@
 # -*- coding: utf-8 -*-
+import os, sys
+TOPDIR = os.path.abspath(os.path.join(os.path.dirname(__file__),"../.."))
+sys.path.insert(0, TOPDIR)
 
-from random import random
+from random import random, randint
+import wx_unittest
 
-from tools.testlib import assertAlmostEqual, assertEqual, randint, assertRaises
-from wxgeometrie.geolib import (Objet, Objet_avec_coordonnees, Objet_avec_equation,
-                                Objet_avec_coordonnees_modifiables, Objet_avec_valeur,
-                               )
+from wxgeometrie.geolib import (
+    Objet, Objet_avec_coordonnees, Objet_avec_equation,
+    Objet_avec_coordonnees_modifiables, Objet_avec_valeur,
+)
 
+class GeolibTest(wx_unittest.TestCase):
 
+    def test_Objet(self):
+        O = Objet()
+        O = Objet_avec_coordonnees()
+        O = Objet_avec_coordonnees_modifiables()
+        O = Objet_avec_equation()
+        O = Objet_avec_valeur()
 
-def test_Objet():
-    O = Objet()
-    O = Objet_avec_coordonnees()
-    O = Objet_avec_coordonnees_modifiables()
-    O = Objet_avec_equation()
-    O = Objet_avec_valeur()
-    # Les attributs publiques doivent être déclarés:
-    try:
-        O.attribut_bidon = None
-    except AttributeError:
-        # On teste que l'attribut non déclaré ne peut pas être affecté.
-        pass
-    else:
-        assert False
-    # Les attributs publiques doivent être déclarés:
-    try:
-        print(O.attribut_bidon)
-    except AttributeError:
-        # On teste que l'attribut non déclaré ne peut pas être lu.
-        pass
-    else:
-        assert False
+        def attrib1():
+            O.attribut_bidon = None
+            return
+        self.assertRaises(AttributeError, attrib1)
+
+        def attrib2():
+            print(O.attribut_bidon)
+            return
+        self.assertRaises(AttributeError, attrib2)
+

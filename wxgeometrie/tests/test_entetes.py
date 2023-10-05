@@ -1,58 +1,46 @@
 # -*- coding: utf-8 -*-
 
-import os, sys, subprocess
+import os, sys
+import chardet
 
-from pytest import XFAIL
+TOPDIR = os.path.abspath(os.path.join(os.path.dirname(__file__),".."))
+sys.path.insert(0, TOPDIR)
 
-_module_path = os.path.split(os.path.realpath(sys._getframe().f_code.co_filename))[0]
-WXGEODIR = os.path.abspath(_module_path + '/..')
+WXGEODIR = os.path.join(TOPDIR, "wxgeometrie")
 
-from tools.testlib import *
+START = "# -*- coding: utf-8 -*-"
 
-
-#~ START = '''
-#~ # -*- coding: utf-8 -*-
-#~ from __future__ import division, absolute_import, print_function, unicode_literals
-#~ #    WxGeometrie
-#~ #    Dynamic geometry, graph plotter, and more for french mathematic teachers.
-#~ #    Copyright (C) 2005-2013  Nicolas Pourcelot
-#~ '''
-
-
-START = '''# -*- coding: utf-8 -*-
-'''
-
-EXCLURE = {'dirs': ['sympy', 'sympy_OLD', 'developpeurs', 'doc', 'exemples',
-                    'images', 'log', 'preferences', 'session', 'macros', 'OLD'],
-           'files': ['test.py', '__init__.py']
+EXCLURE = {
+    'dirs': [
+        'sympy', 'sympy_OLD', 'developpeurs', 'doc', 'exemples',
+        'images', 'log', 'preferences', 'session', 'macros', 'OLD',
+        'tests',
+    ],
+    'files': [
+        'test.py', '__init__.py', 'decorator.py',
+    ]
            }
 
 CODECS = ('utf-8', 'utf8', 'ascii')
 
-def command(string, quiet=True):
-    "Execute command in shell."
-    out = subprocess.Popen(string, shell=True, stdout=subprocess.PIPE,
-                           stderr=subprocess.STDOUT).stdout
-    output = out.read()
-    if not quiet:
-        sys.stdout.write(output)
-    out.close()
-    if not quiet:
-        print("Commande '%s' executee." % string)
-    return output.decode()
-
 def verifier(fichier):
-    # On vérifie que le fichier est bien déclaré en utf-8
-    with open(fichier, 'rU') as f:
-        s = f.read(1000)
-        pos = (22 if s.startswith('#!/usr/bin/env python3') else 0)
-        if not s.startswith(START, pos):
-            return [fichier]
+    """
+    Vérification de l'encodage d'un fichier et sa déclaration explicite
+    @param fichier un chemin
+    @return un doublon : nom du fichier et message, ou None si tout va bien
+    """
     # On vérifie qu'il est réellement en utf-8 (ou en ascii)
-    mimeinfo = command('file --mime-encoding "%s"' % fichier).strip()
-    if not any(mimeinfo.endswith(codec) for codec in CODECS):
-        return [fichier]
-    return []
+    encoding = None
+    with open(fichier, 'rb') as f:
+        encoding = chardet.detect(f.read()).get("encoding")
+    if encoding not in CODECS:
+        return fichier, f"Le codage « {encoding} » ne figure pas dans {CODECS}"
+    # On vérifie que le fichier est bien déclaré en utf-8
+    with open(fichier, 'r') as f:
+        lines = f.readlines()
+        if not lines[0].startswith(START) and not lines[0].startswith(START):
+            return fichier, "Il manque : " + START
+    return None
 
 def skip(path):
     for directory in EXCLURE['dirs']:
@@ -60,18 +48,23 @@ def skip(path):
             return True
     return False
 
+import wx_unittest, unittest
 
-#@XFAIL
-def test_entetes():
-    "On teste que les fichiers soient bien tous declarés en utf-8."
-    bad_files = []
-    for root, dirs, files in os.walk(WXGEODIR):
-        if not skip(root):
-            for filename in files:
-                if filename.endswith('.py') and filename not in EXCLURE['files']:
-                    bad_files.extend(verifier(os.path.join(root, filename)))
-    if bad_files:
-        print('\n\nEn-tête ou encodage incorrect : ')
-        for fichier in bad_files:
-            print('* ' + fichier)
-    assert not bad_files
+class Test(wx_unittest.TestCase):
+
+    def test_entetes(self):
+        "On teste que les fichiers soient bien tous declarés en utf-8."
+        bad_files = {}
+        for root, dirs, files in os.walk(WXGEODIR):
+            if not skip(root):
+                for filename in files:
+                    if filename.endswith('.py') and \
+                       filename not in EXCLURE['files']:
+                        verif = verifier(os.path.join(root, filename))
+                        if verif is not None:
+                            bad_files[verif[0]] = verif[1]
+        if bad_files:
+            print('\n\nEn-tête ou encodage incorrect : ')
+            for fichier in bad_files:
+                print(f'* {fichier} : {bad_files[fichier]}')
+        self.assertFalse(bad_files)
