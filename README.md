@@ -64,7 +64,7 @@ que tous les tests de régression passent toujours.
 
 Placez vous dans le répertoire de Géophar, et lancez la suite de tests :
 
-    $ python tools/test.py --all
+    $ python3 -m unittest discover -v
 
 
 
