@@ -6,11 +6,11 @@ sys.path.insert(0, TOPDIR)
 from random import random
 import math
 
-import wx_unittest
+import tools.unittest
 from wxgeometrie.geolib.routines import (strip_trailing_zeros,)
 from wxgeometrie.mathlib.universal_functions import sin as u_sin, cos as u_cos, tan as u_tan
 
-class GeolibTest(wx_unittest.TestCase):
+class GeolibTest(tools.unittest.TestCase):
     def test_strip_trailing_zeros(self):
         self.assertEqual(
             strip_trailing_zeros('.0450*1.54556000+4.2003+a.e00+.003+4.000'),

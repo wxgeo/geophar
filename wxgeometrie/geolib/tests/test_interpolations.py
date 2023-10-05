@@ -3,14 +3,14 @@ import os, sys
 TOPDIR = os.path.abspath(os.path.join(os.path.dirname(__file__),"../.."))
 sys.path.insert(0, TOPDIR)
 
-import wx_unittest, unittest
+import tools.unittest, unittest
 
 from wxgeometrie.geolib.tests.geotestlib import rand_pt
 from wxgeometrie.geolib import (Point, Interpolation_polynomiale_par_morceaux,
                                 Glisseur_courbe, Interpolation_lineaire,
                                 Translation,)
 
-class GeolibTest(wx_unittest.TestCase):
+class GeolibTest(tools.unittest.TestCase):
     def test_Interpolation_lineaire(self):
         # cas général : polygone à 11 côtés :
         A = rand_pt()

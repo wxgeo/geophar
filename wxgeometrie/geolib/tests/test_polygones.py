@@ -3,7 +3,7 @@ import os, sys
 TOPDIR = os.path.abspath(os.path.join(os.path.dirname(__file__),"../.."))
 sys.path.insert(0, TOPDIR)
 
-import wx_unittest
+import tools.unittest
 from math import pi, sin, cos, sqrt
 from random import random, randint
 
@@ -19,7 +19,7 @@ from wxgeometrie.geolib import (Point, Polygone, Milieu, Label_polygone, Barycen
                                 Triangle_rectangle, contexte, Sommet, Cote, Feuille,
                                 )
 
-class GeolibTest(wx_unittest.TestCase):
+class GeolibTest(tools.unittest.TestCase):
     # def test_Cote(self):
     #     pass # À ÉCRIRE
     #

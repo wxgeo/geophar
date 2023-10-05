@@ -6,11 +6,11 @@ sys.path.insert(0, TOPDIR)
 from wxgeometrie.mathlib.custom_objects import Decim
 from sympy import Symbol, Rational, S
 
-import wx_unittest
+import tools.unittest
 
 x = Symbol('x')
 
-class MathlibTest(wx_unittest.TestCase):
+class MathlibTest(tools.unittest.TestCase):
 
     def test_Decim(self):
         expr = S.One*Decim('0.3')

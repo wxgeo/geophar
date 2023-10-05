@@ -6,13 +6,13 @@ sys.path.insert(0, TOPDIR)
 from random import random, randint
 from math import pi
 
-import wx_unittest
+import tools.unittest
 from wxgeometrie.geolib import (
     Point, Droite, Droite_equation, Reflexion, Rotation, Translation,
     Homothetie, Symetrie_centrale, Milieu, Mediatrice, Vecteur_libre
 )
 
-class TestGelolib(wx_unittest.TestCase):
+class TestGelolib(tools.unittest.TestCase):
 
     def test_Rotation(self):
         A = Point(1.523, 45.35211)

@@ -7,9 +7,9 @@ sys.path.insert(0, TOPDIR)
 from wxgeometrie.modules.tablatex.tabval import tabval
 from wxgeometrie import param
 
-import wx_unittest
+import tools.unittest
 
-class ModuleTablatexTest(wx_unittest.TestCase):
+class ModuleTablatexTest(tools.unittest.TestCase):
 
     def assert_tabval(self, chaine, code_latex, **options):
         self.assert_tableau(tabval, chaine, code_latex, **options)

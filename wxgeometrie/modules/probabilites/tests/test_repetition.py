@@ -7,9 +7,9 @@ from functools import partial
 
 from wxgeometrie.modules.probabilites.repetition import repetition_experiences as rep
 
-import wx_unittest
+import tools.unittest
 
-class ModulesProbabilitesTest(wx_unittest.TestCase):
+class ModulesProbabilitesTest(tools.unittest.TestCase):
     def test_repetition_un_niveau(self):
         rep1 = partial(rep, 1)
         s = rep1(evts=['A'], probas=['0,3'])

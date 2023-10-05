@@ -6,9 +6,9 @@ sys.path.insert(0, TOPDIR)
 
 from wxgeometrie.modules.tablatex.tabsign import tabsign
 
-import wx_unittest
+import tools.unittest
 
-class ModulesTablatexTest(wx_unittest.TestCase):
+class ModulesTablatexTest(tools.unittest.TestCase):
 
     def assert_tabsign(self, chaine, code_latex, **options):
         self.assert_tableau(tabsign, chaine, code_latex, **options)

@@ -48,9 +48,9 @@ def skip(path):
             return True
     return False
 
-import wx_unittest, unittest
+import tools.unittest, unittest
 
-class Test(wx_unittest.TestCase):
+class Test(tools.unittest.TestCase):
 
     def test_entetes(self):
         "On teste que les fichiers soient bien tous declarés en utf-8."

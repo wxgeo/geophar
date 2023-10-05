@@ -3,7 +3,7 @@ import os, sys
 TOPDIR = os.path.abspath(os.path.join(os.path.dirname(__file__),"../.."))
 sys.path.insert(0, TOPDIR)
 
-import wx_unittest
+import tools.unittest
 from random import random
 from math import sqrt
 
@@ -13,7 +13,7 @@ from wxgeometrie.geolib import (
     Extremite
 )
 
-class TestGeolib(wx_unittest.TestCase):
+class TestGeolib(tools.unittest.TestCase):
 
     def setUp(self):
         pass

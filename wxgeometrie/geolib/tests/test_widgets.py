@@ -3,7 +3,7 @@ import os, sys
 TOPDIR = os.path.abspath(os.path.join(os.path.dirname(__file__),"../.."))
 sys.path.insert(0, TOPDIR)
 
-import wx_unittest, unittest
+import tools.unittest, unittest
 
 from random import randint, random
 from wxgeometrie.geolib import Champ, Bouton
@@ -11,7 +11,7 @@ from wxgeometrie.geolib import Champ, Bouton
 def rand():
     return randint(0,50) - randint(0,50) + random()
 
-class TestGeolib(wx_unittest.TestCase):
+class TestGeolib(tools.unittest.TestCase):
 
     def test_Champ(self):
         champ = Champ('', 4, 3, couleur_fond='#ffffb5',

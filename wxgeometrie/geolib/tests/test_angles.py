@@ -13,9 +13,9 @@ from wxgeometrie.geolib import (
 )
 from wxgeometrie.mathlib.universal_functions import sin as u_sin, cos as u_cos, tan as u_tan
 
-import wx_unittest
+import tools.unittest
 
-class GeolibTest(wx_unittest.TestCase):
+class GeolibTest(tools.unittest.TestCase):
 
     def test_Secteur_angulaire(self):
         u = Vecteur_libre(5.458, -2.546)

@@ -17,9 +17,9 @@ from wxgeometrie.geolib import (
 from wxgeometrie.geolib.routines import nice_display
 from wxgeometrie.geolib.feuille import parse_equation, is_equation
 
-import wx_unittest
+import tools.unittest
 
-class GeolibTest(wx_unittest.TestCase):
+class GeolibTest(tools.unittest.TestCase):
 
     def test_abreviations(self):
         f = Feuille(titre = "Feuille de travail n°1")

@@ -5,11 +5,11 @@ sys.path.insert(0, TOPDIR)
 
 from random import random, randint
 
-import wx_unittest
+import tools.unittest
 from wxgeometrie.geolib import Variable, Formule, XMinVar, XMaxVar, YMinVar, YMaxVar, Feuille
 from wxgeometrie.mathlib.parsers import mathtext_parser
 
-class TestGeolib(wx_unittest.TestCase):
+class TestGeolib(tools.unittest.TestCase):
     # Ce test était surtout utile quand les variables supportaient les opérations mathématiques.
     def test_operations(self):
         for i in range(10):

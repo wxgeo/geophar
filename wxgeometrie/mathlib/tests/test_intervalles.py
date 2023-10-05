@@ -9,9 +9,9 @@ import wxgeometrie.mathlib.intervalles as intervalles
 from wxgeometrie.mathlib.intervalles import Intervalle, Ensemble, \
                                             conversion_chaine_ensemble
 
-import wx_unittest
+import tools.unittest
 
-class MathlibTest(wx_unittest.TestCase):
+class MathlibTest(tools.unittest.TestCase):
 
     def assert_intervalle_preformater(self, x, y):
         y_ = intervalles.preformatage_ensemble(x)

@@ -3,7 +3,7 @@ import os, sys
 TOPDIR = os.path.abspath(os.path.join(os.path.dirname(__file__),"../.."))
 sys.path.insert(0, TOPDIR)
 
-import wx_unittest
+import tools.unittest
 from wxgeometrie.geolib.tests.geotestlib import rand_dte, rand_pt
 from wxgeometrie.geolib import (
     Intersection_droite_cercle, Intersection_cercles,
@@ -12,7 +12,7 @@ from wxgeometrie.geolib import (
     Mediatrice, Segment,
 )
 
-class GeolibTest(wx_unittest.TestCase):
+class GeolibTest(tools.unittest.TestCase):
     def test_Intersection_droites(self):
         d1 = rand_dte()
         d2 = rand_dte()

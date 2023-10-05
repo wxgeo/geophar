@@ -12,9 +12,9 @@ from wxgeometrie.mathlib.printers import custom_str
 
 VERBOSE = False
 
-import wx_unittest, unittest
+import tools.unittest, unittest
 
-class MathlibTest(wx_unittest.TestCase):
+class MathlibTest(tools.unittest.TestCase):
 
     def assert_resultat(self, s, resultat, latex = None, **parametres):
         i = Interprete(verbose=VERBOSE, **parametres)

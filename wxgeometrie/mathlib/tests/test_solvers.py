@@ -7,12 +7,12 @@ from sympy import exp, sqrt, Symbol
 
 from wxgeometrie.mathlib.solvers import resoudre, positif, ensemble_definition
 
-import wx_unittest
+import tools.unittest
 
 def _red(s):
     return '\033[0;31m' + s + '\033[0m'
 
-class MathlibTest(wx_unittest.TestCase):
+class MathlibTest(tools.unittest.TestCase):
     def test_resoudre(self):
         self.assert_resoudre("2*x=0", "{0}")
         self.assert_resoudre("2*x>0", "]0;+oo[")

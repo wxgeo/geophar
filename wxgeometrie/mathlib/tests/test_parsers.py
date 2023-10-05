@@ -23,9 +23,9 @@ liste_fonctions.append("log10")
 liste_fonctions.append("mat")
 liste_fonctions.append('range')
 
-import wx_unittest
+import tools.unittest
 
-class MathlibTest(wx_unittest.TestCase):
+class MathlibTest(tools.unittest.TestCase):
 
     def assert_formule(self, x, y, OOo, LaTeX):
         y_ = traduire_formule(x, fonctions = liste_fonctions, OOo = OOo, LaTeX = LaTeX, verbose = False)

@@ -3,7 +3,7 @@ import os, sys
 TOPDIR = os.path.abspath(os.path.join(os.path.dirname(__file__),"../.."))
 sys.path.insert(0, TOPDIR)
 
-import wx_unittest
+import tools.unittest
 
 from random import randint, random
 from wxgeometrie.geolib import Texte
@@ -11,7 +11,7 @@ from wxgeometrie.geolib import Texte
 def rand():
     return randint(0,50) - randint(0,50) + random()
 
-class GeolibTest(wx_unittest.TestCase):
+class GeolibTest(tools.unittest.TestCase):
     def test_Texte(self):
         t = Texte("spam & eggs", rand(), rand())
         self.assertEqual(t.texte, "spam & eggs")

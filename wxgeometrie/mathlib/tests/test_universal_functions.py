@@ -8,11 +8,11 @@ import numpy
 import sympy
 from wxgeometrie.mathlib.universal_functions import asin, acos, atan
 
-import wx_unittest
+import tools.unittest
 
 x = sympy.Symbol('x')
 
-class MathlibTest(wx_unittest.TestCase):
+class MathlibTest(tools.unittest.TestCase):
     def test_trigo(self):
         # Vérifie que arcsin est correctement implémenté (appel à math, numpy ou
         # sympy suivant le type d'objet).

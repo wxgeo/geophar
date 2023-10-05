@@ -6,7 +6,7 @@ sys.path.insert(0, TOPDIR)
 from math import sqrt, sin, cos
 from random import random
 
-import wx_unittest, unittest
+import tools.unittest, unittest
 
 from wxgeometrie.geolib import (
     Cercle_points, Cercle_diametre, Cercle_rayon, Demicercle,
@@ -15,7 +15,7 @@ from wxgeometrie.geolib import (
     Mediatrice, Arc_cercle, Cercle_equation,
 )
 
-class GeolibTest(wx_unittest.TestCase):
+class GeolibTest(tools.unittest.TestCase):
     def test_Arc_cercle(self):
         A = Point(-1.2561, 45.236)
         B = Point(251.2561, 41.256)

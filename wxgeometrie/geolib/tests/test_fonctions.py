@@ -3,12 +3,12 @@ import os, sys
 TOPDIR = os.path.abspath(os.path.join(os.path.dirname(__file__),"../.."))
 sys.path.insert(0, TOPDIR)
 
-import wx_unittest, unittest
+import tools.unittest, unittest
 from wxgeometrie.geolib import Fonction, Feuille
 
 _VAL0 = -5.156557933
 
-class GeolibTest(wx_unittest.TestCase):
+class GeolibTest(tools.unittest.TestCase):
 
     @unittest.expectedFailure
     def test_Fonction(self):

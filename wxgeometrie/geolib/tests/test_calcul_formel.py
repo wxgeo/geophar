@@ -66,9 +66,9 @@ def assert_eq(*args):
                     print("'%s' equals to '%s', not '%s'." %(arg, repr(val), repr(expected)))
                 assert TEST
 
-import wx_unittest
+import tools.unittest
 
-class GeolibTest(wx_unittest.TestCase):
+class GeolibTest(tools.unittest.TestCase):
 
     def test_Segment(self):
         A = Point('1/2', '3/4')

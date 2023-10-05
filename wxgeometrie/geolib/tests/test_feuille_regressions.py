@@ -6,7 +6,7 @@ sys.path.insert(0, TOPDIR)
 import re
 from math import cos, pi, e, sqrt
 
-import wx_unittest
+import tools.unittest
 from wxgeometrie.geolib.tests.geotestlib import rand_pt
 from wxgeometrie.geolib import (
     Triangle_rectangle, DescripteurFeuille, Point, Segment,
@@ -17,7 +17,7 @@ from wxgeometrie.geolib import (
 from wxgeometrie.geolib.routines import nice_display
 from wxgeometrie.geolib.feuille import parse_equation, is_equation
 
-class GeolibTest(wx_unittest.TestCase):
+class GeolibTest(tools.unittest.TestCase):
     def test_issue_186(self):
         f = Feuille()
         f.executer("c=Cercle")

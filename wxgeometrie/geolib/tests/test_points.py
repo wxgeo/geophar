@@ -3,7 +3,7 @@ import os, sys
 TOPDIR = os.path.abspath(os.path.join(os.path.dirname(__file__),"../.."))
 sys.path.insert(0, TOPDIR)
 
-import wx_unittest, unittest
+import tools.unittest, unittest
 from random import random, randint
 import pytest
 from sympy import sympify as symp
@@ -27,7 +27,7 @@ from wxgeometrie.geolib import (
     Homothetie, Nuage, Fonction, Point_interpolation,
 )
 
-class GeolibTest(wx_unittest.TestCase):
+class GeolibTest(tools.unittest.TestCase):
     def test_Point(self):
         A = Point(1, 2)
         self.assertIsInstance(A.etiquette, Label_point)

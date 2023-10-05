@@ -1,2 +1,1 @@
-from .search import gs
-from . import scriptlib
+# -*- coding: utf-8 -*-

@@ -8,9 +8,9 @@ from sympy import Symbol, sqrt, S, I as i, expand, Integer
 
 x = Symbol('x')
 
-import wx_unittest
+import tools.unittest
 
-class MathlibTest(wx_unittest.TestCase):
+class MathlibTest(tools.unittest.TestCase):
 
     def assert_factor(self,poly, *args, **kw):
         def convert(obj):

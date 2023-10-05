@@ -6,7 +6,7 @@ sys.path.insert(0, TOPDIR)
 from math import sqrt
 from random import random, randint
 
-import wx_unittest
+import tools.unittest
 from wxgeometrie.geolib.tests.geotestlib import rand_pt
 from wxgeometrie.geolib import (
     Tangente, Perpendiculaire, Parallele, Mediatrice,
@@ -21,7 +21,7 @@ from wxgeometrie.geolib import (
     Glisseur_courbe, Tangente_glisseur_interpolation
 )
 
-class GeolibTest(wx_unittest.TestCase):
+class GeolibTest(tools.unittest.TestCase):
 
     def test_Segment(self):
         A = Point(4.5,  7.3)

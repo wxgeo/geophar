@@ -8,7 +8,7 @@ from sympy import (Symbol, exp, solve, limit, S, E, Matrix, Integer, oo,
                     sympify, Float, sqrt,
                     )
 
-import wx_unittest, unittest
+import tools.unittest, unittest
 
 def isDebian():
     issueFile = os.path.join('/etc','issue')
@@ -16,7 +16,7 @@ def isDebian():
 
 # Teste que certains bugs de sympy sont bien ou résolus, ou temporairement patchés
 
-class MathlibTest(wx_unittest.TestCase):
+class MathlibTest(tools.unittest.TestCase):
 
     def test_sympy(self):
         x = Symbol('x', real=True)

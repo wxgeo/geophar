@@ -8,9 +8,9 @@ from wxgeometrie.geolib import (
     Glisseur_courbe, Interpolation_lineaire, Courbe
 )
 
-import wx_unittest
+import tools.unittest
 
-class GeolibTest(wx_unittest.TestCase):
+class GeolibTest(tools.unittest.TestCase):
 
     def test_Courbe(self):
         f = Fonction('1/(x+3)')
