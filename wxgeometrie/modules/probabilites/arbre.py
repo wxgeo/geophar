@@ -93,7 +93,7 @@ def parse_text(text):
         ligne_precedente[colonne] += 1
         for i in xrange(colonne + 1, nbr_colonnes):
             ligne_precedente[i] = -1
-    print arbre
+    print (arbre)
 
     # on parcourt l'arbre pour compter le nombre de ramifications
 

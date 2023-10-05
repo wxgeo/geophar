@@ -26,13 +26,13 @@ import re
 from PyQt5.QtWidgets import QVBoxLayout, QLabel, QPushButton, QHBoxLayout,\
     QMessageBox, QTextEdit
 
-from ...GUI.menu import MenuBar
-from ...GUI.panel import Panel_API_graphique
-from ...GUI.proprietes_objets import Proprietes
-from ...geolib import Segment, Texte, Point
-from ... import param
+from wxgeometrie.GUI.menu import MenuBar
+from wxgeometrie.GUI.panel import Panel_API_graphique
+from wxgeometrie.GUI.proprietes_objets import Proprietes
+from wxgeometrie.geolib import Segment, Texte, Point
+from wxgeometrie import param
 from .repetition import DialogRepetition, repetition_experiences
-from ...mathlib.parsers import VAR
+from wxgeometrie.mathlib.parsers import VAR
 
 
 class ProbaMenuBar(MenuBar):

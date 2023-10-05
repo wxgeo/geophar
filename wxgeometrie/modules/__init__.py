@@ -24,12 +24,12 @@
 import os, sys
 from importlib import import_module
 
-from ..GUI.menu import MenuBar
-from ..GUI.panel import Panel_simple, Panel_API_graphique
-from ..GUI.exercice import Exercice, ExerciceMenuBar
-from ..API.parametres import actualiser_module
-from .. import param
-from ..pylib import print_error, path2
+from wxgeometrie.GUI.menu import MenuBar
+from wxgeometrie.GUI.panel import Panel_simple, Panel_API_graphique
+from wxgeometrie.GUI.exercice import Exercice, ExerciceMenuBar
+from wxgeometrie.API.parametres import actualiser_module
+from wxgeometrie import param
+from wxgeometrie.pylib import print_error, path2
 
 
 def importer_module(nom_module):

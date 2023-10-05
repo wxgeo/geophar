@@ -28,13 +28,13 @@ from sympy import oo, nan, Symbol, Float, Rational
 
 from .tablatexlib import convertir_en_latex, traduire_latex, test_parentheses,\
                          maths, extraire_facteurs, nice_str
-from ...mathlib.sympy_functions import solve
-from ...mathlib.intervalles import R, conversion_chaine_ensemble
-from ...mathlib.solvers import ensemble_definition
-from ...mathlib.interprete import Interprete
-from ...mathlib.parsers import VAR
-from ...mathlib.custom_functions import round_afz
-from ... import param
+from wxgeometrie.mathlib.sympy_functions import solve
+from wxgeometrie.mathlib.intervalles import R, conversion_chaine_ensemble
+from wxgeometrie.mathlib.solvers import ensemble_definition
+from wxgeometrie.mathlib.interprete import Interprete
+from wxgeometrie.mathlib.parsers import VAR
+from wxgeometrie.mathlib.custom_functions import round_afz
+from wxgeometrie import param
 
 def _auto_tabsign(chaine, cellspace=False, decimales=3, approche=False):
     """Génère le code du tableau de signe à partir d'une expression à variable réelle.

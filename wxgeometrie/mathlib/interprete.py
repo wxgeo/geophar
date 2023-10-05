@@ -375,6 +375,13 @@ class Interprete(object):
                 else:
                     # mat A = 1 & 2 & 3 \ 4 & 5 & 6
                     matrix = [s.split('&') for s in val.split('\\')]
+            elif "\\" in val:
+                if r"\\" in val:
+                    # mat A = 1  \\ 2
+                    matrix = [[s.strip()] for s in val.split(r'\\')]
+                else:
+                    # mat A = 1  \ 2
+                    matrix = [[s.strip()] for s in val.split("\\")]
             else:
                 if ";" in val:
                     # mat A = 1 2 3 ; 4 5 6

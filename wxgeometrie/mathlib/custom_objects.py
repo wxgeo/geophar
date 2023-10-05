@@ -154,8 +154,8 @@ def _compatible(meth):
             return result
     return new_meth
 
-for _name in ('__add__', '__radd__', '__sub__', '__mul__', '__div__',
-              '__rdiv__',
+for _name in ('__add__', '__radd__', '__sub__', '__mul__',
+              #'__div__', '__rdiv__', ### in sympy-1.7.1 tose attributes do not exist in Rational, neither in Integer
               #'__pow__', ### in sympy's new version, there are 3 arguments.
               '__rpow__', '__mod__', '__rmod__',
               '_eval_power', '__truediv__'):

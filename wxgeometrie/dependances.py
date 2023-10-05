@@ -63,6 +63,12 @@ moteur_de_rendu = 'Qt5Agg'
 
 
 def tester_dependances():
+    """
+    Cette procédure teste si la liste des dépendances est à jour. Dans le cas
+    contraire, elle émet comme message une suite de commandes que
+    l'utilisateur peut lancer (s'il est administrateur/sudoer) afin de
+    satisfaire la liste des dépendances.
+    """
     if hasattr(sys, 'frozen'):
         # Ne pas faire ces tests avec py2exe/py2app/CxFreeze (non seulement inutiles, mais en plus ils échouent).
         return

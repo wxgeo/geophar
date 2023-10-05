@@ -26,7 +26,7 @@
 from math import floor, log
 
 from sympy import Symbol, Integer, Float, Basic, FunctionClass, I, Mul
-from sympy.core.core import BasicMeta
+# from sympy.core.core import BasicMeta
 from sympy.printing.latex import LatexPrinter
 from sympy.printing.str import StrPrinter
 from sympy.core import S
@@ -68,8 +68,8 @@ class MyCustomPrinter(object):
             # If the printer defines a name for a printing method
             # (Printer.printmethod) and the object knows for itself how it
             # should be printed, use that method.
-            if (self.printmethod and hasattr(expr, self.printmethod)
-                    and not isinstance(expr, BasicMeta)):
+            if (self.printmethod and hasattr(expr, self.printmethod)) :
+                    # and not isinstance(expr, BasicMeta)):
                 return getattr(expr, self.printmethod)(self, *args, **kwargs)
 
             # Unknown object, fall back to the emptyPrinter.

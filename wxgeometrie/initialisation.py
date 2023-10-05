@@ -188,7 +188,7 @@ if getattr(sys, '_launch_geophar', False):
         except IOError:
             fichier_log = None
             param.enregistrer_messages = param.historique_log = False
-            print(traceback.format_exc(sys.exc_info()))
+            print(traceback.format_exc())
             print('Warning: This exception was not raised.')
     else:
         fichier_log = None

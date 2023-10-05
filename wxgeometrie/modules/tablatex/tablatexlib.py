@@ -27,10 +27,10 @@ import numpy
 
 from sympy import oo, nan
 
-from ...mathlib import universal_functions as maths
-from ...mathlib.parsers import traduire_formule, simplifier_ecriture, convertir_en_latex
-from ...pylib import advanced_split
-from ...geolib.routines import nice_str
+from wxgeometrie.mathlib import universal_functions as maths
+from wxgeometrie.mathlib.parsers import traduire_formule, simplifier_ecriture, convertir_en_latex
+from wxgeometrie.pylib import advanced_split
+from wxgeometrie.geolib.routines import nice_str
 
 
 maths.oo = oo

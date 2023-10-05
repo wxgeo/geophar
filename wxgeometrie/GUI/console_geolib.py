@@ -34,7 +34,7 @@ class ConsoleGeolib(QWidget):
         self.parent = parent
         self.setPalette(white_palette)
         vsizer = QVBoxLayout()
-        txt = "<i>Tapez une commande ci-dessus, puis appuyez sur </i>[<i>Entrée</i>]<i>.</i>"
+        txt = "<i>Tapez une commande ci-dessus, puis appuyez sur </i>[<i>Entree</i>]<i>.</i>"
         self.resultats = QLabel(txt)
         self.resultats.setMinimumWidth(500)
         self.ligne_commande = LigneCommande(self, longueur=500, action=self.action)

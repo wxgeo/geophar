@@ -26,13 +26,13 @@
 from PyQt5.QtWidgets import QCheckBox, QPushButton, QTextEdit, QLineEdit, \
     QLabel, QComboBox, QGroupBox, QSpinBox, QHBoxLayout, QVBoxLayout
 
-from ...GUI.app import app
-from ...GUI.ligne_commande import LigneCommande
-from ...GUI.menu import MenuBar
-from ...GUI.panel import Panel_simple
-from ... import param
-from ...pylib import warning, print_error
-from ...pylib.erreurs import message
+from wxgeometrie.GUI.app import app
+from wxgeometrie.GUI.ligne_commande import LigneCommande
+from wxgeometrie.GUI.menu import MenuBar
+from wxgeometrie.GUI.panel import Panel_simple
+from wxgeometrie import param
+from wxgeometrie.pylib import warning, print_error
+from wxgeometrie.pylib.erreurs import message
 from .tabsign import tabsign
 from .tabval import tabval
 from .tabvar import tabvar

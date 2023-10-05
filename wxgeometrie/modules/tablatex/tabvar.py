@@ -28,13 +28,13 @@ import re
 from sympy import oo, limit, Symbol, Float, Rational, Wild, sqrt, S
 
 from .tablatexlib import convertir_en_latex, test_parentheses, nice_str
-from ...mathlib.solvers import ensemble_definition
-from ...mathlib.sympy_functions import solve
-from ...mathlib.intervalles import R, conversion_chaine_ensemble
-from ...mathlib.interprete import Interprete
-from ...mathlib.parsers import VAR
-from ...mathlib.custom_functions import round_afz
-from ... import param
+from wxgeometrie.mathlib.solvers import ensemble_definition
+from wxgeometrie.mathlib.sympy_functions import solve
+from wxgeometrie.mathlib.intervalles import R, conversion_chaine_ensemble
+from wxgeometrie.mathlib.interprete import Interprete
+from wxgeometrie.mathlib.parsers import VAR
+from wxgeometrie.mathlib.custom_functions import round_afz
+from wxgeometrie import param
 
 
 def _auto_tabvar(chaine='', derivee=True, limites=True, decimales=3, approche=False, parse_only=False, stretch=True):

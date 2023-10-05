@@ -29,7 +29,7 @@
 from math import pi
 
 
-# Placez ici les modifications que vous souhaitez apporter au fichier de paramétrage.
+# Placez ici les modifications que vous souhaitez apporter au fichier de parametrage.
 
 debug = False
 #install = True

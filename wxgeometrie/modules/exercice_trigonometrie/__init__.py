@@ -26,9 +26,9 @@ from random import randint, choice
 from itertools import chain
 from functools import partial
 
-from PyQt5.QtGui import QColor, QToolTip, QCursor
+from PyQt5.QtGui import QColor, QCursor
 from PyQt5.QtWidgets import QVBoxLayout, QLabel, QPushButton, QHBoxLayout, \
-    QMessageBox, QTextEdit
+    QMessageBox, QTextEdit, QToolTip
 
 from sympy import S, solve, gcd, simplify
 from sympy.core.sympify import SympifyError

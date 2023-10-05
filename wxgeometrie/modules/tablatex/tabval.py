@@ -26,9 +26,9 @@ import re
 from numpy import arange
 
 from .tablatexlib import traduire_latex, maths
-from ...pylib import print_error
-from ...mathlib.custom_functions import round_afz
-from ... import param
+from wxgeometrie.pylib import print_error
+from wxgeometrie.mathlib.custom_functions import round_afz
+from wxgeometrie import param
 
 def _eval_math(chaine):
     return float(eval(chaine, maths.__dict__))

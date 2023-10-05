@@ -27,7 +27,7 @@ from sympy import S
 from sympy.core.sympify import SympifyError
 
 from .repetition_ui import Ui_DialogRepetition
-from ...geolib.routines import nice_str
+from wxgeometrie.geolib.routines import nice_str
 
 
 def repetition_experiences(_profondeur=3, _numeroter=True, evts=[], probas=[]):

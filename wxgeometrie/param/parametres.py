@@ -34,12 +34,16 @@
 
 from locale import getdefaultlocale
 from math import pi
+import os
 
 # debuguage (affichage des erreurs + diverses infos)
 debug = True
 # Le logiciel est-il installé ?
 # Cela change les répertoires par défaut (session, etc.)
-install = False
+# La formule suivante donne des résultats souvent satifaisants sous
+# Linux, mais sous Windows, ça reste à vérifier
+myPath=os.path.abspath(__file__)
+install = "home" not in myPath and "USERS" not in myPath
 # affichage ou non des avertissements
 warning = debug
 verbose = 1 # 0, 1, 2 ou 3
@@ -626,10 +630,10 @@ except ImportError:
 if install:
     # Les préférences, fichiers log, etc... sont stockés dans le dossier de l'utilisateur.
     # ~ se réfère au répertoire de l'utilisateur (ex: /home/BillG/ sous Linux, ou C:\Documents and Settings\LTorvald\ sous Windows)
-    emplacements.setdefault("log", "~/.geophar/log")
-    emplacements.setdefault("preferences", "~/.geophar/preferences")
-    emplacements.setdefault("macros", "~/.geophar/macros")
-    emplacements.setdefault("session", "~/.geophar/session")
+    emplacements.setdefault("log", "~/.local/share/geophar/log")
+    emplacements.setdefault("preferences", "~/.local/share/geophar/preferences")
+    emplacements.setdefault("macros", "~/.local/share/geophar/macros")
+    emplacements.setdefault("session", "~/.local/share/geophar/session")
 else:
     # Utilisation sans installation. Tout est stocké directement dans le dossier wxgeometrie/.
     # % se réfère au dossier contenant WxGeometrie (indiqué par param.EMPLACEMENT)
