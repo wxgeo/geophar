@@ -22,7 +22,7 @@
 # Ce module sert à tester que toutes les dépendances sont satisfaites,
 # et à y remédier dans le cas contraire (si possible).
 
-import sys, imp, platform, os, shutil, subprocess
+import sys, importlib, platform, os, shutil, subprocess
 
 # ------------------------------------------------------------------------------
 # CONFIGURATION
@@ -61,6 +61,12 @@ moteur_de_rendu = 'Qt5Agg'
 
 # ------------------------------------------------------------------------------
 
+def in_virtual_environment():
+    """Test if python is running inside a virtual environment.
+
+    This is used to adapt pip installation mode.
+    """
+    return sys.prefix != sys.base_prefix
 
 def tester_dependances():
     if hasattr(sys, 'frozen'):
@@ -82,20 +88,9 @@ def tester_dependances():
         sys.exit(-1)
 
     # Test for dependencies:
-    modules_manquants = []
-    for module in dependances:
-        module_name = module
-        try:
-            # imp.find_module() doesn't support submodules.
-            path = None
-            while '.' in module:
-                module, submodule = module.split('.', 1)
-                f, filename, description = imp.find_module(module, path)
-                module = submodule
-                path = [filename]
-            imp.find_module(module, path)
-        except ImportError:
-            modules_manquants.append(module_name)
+    modules_manquants = [
+        module_name for module_name in dependances if importlib.util.find_spec(module_name) is None
+        ]
 
 
 
@@ -108,16 +103,18 @@ def tester_dependances():
                      ).lower() not in ('o', 'oui', 'yes', 'y'):
                  raise ImportError
             # Try to install missing modules using pip.
-            pip_modules = [pip_packages.get(module, module) for module in modules_manquants]
+            pip_modules = list(filter(None, [pip_packages.get(module, module) for module in modules_manquants]))
             try:
-                subprocess.check_call([sys.executable, '-m', 'pip', 'install', '--user'] + pip_modules)
-            except subprocess.CalledProcessError:
-                # Maybe we are in a virtual environment, so --user is meaningless ?
-                try:
+                print("Trying to install following modules using pip: "+ ", ".join(pip_modules))
+                if in_virtual_environment():
+                    # The `--user` flag is meaningless in a virtual environment.
                     subprocess.check_call([sys.executable, '-m', 'pip', 'install'] + pip_modules)
-                except subprocess.CalledProcessError:
-                    print("L'installation automatique des modules manquants a échouée.")
-                    raise ImportError
+                else:
+                    # However, it is cleaner to use it if we are not in a virtual environment.
+                    subprocess.check_call([sys.executable, '-m', 'pip', 'install', '--user'] + pip_modules)
+            except subprocess.CalledProcessError:
+                print("L'installation automatique des modules manquants a échouée.")
+                raise ImportError
             print('Des modules indispensables ont été installés.')
             print('Redémarrage de Géophar...')
             os.execv(sys.executable, [sys.executable] + sys.argv)

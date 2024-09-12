@@ -20,7 +20,7 @@
 
 import time
 t0 = time.time()
-import sys, os, itertools, traceback, imp, subprocess
+import sys, os, itertools, traceback, subprocess
 from os.path import dirname, realpath, normpath
 
 # Emplacement du module python nommé wxgeometrie

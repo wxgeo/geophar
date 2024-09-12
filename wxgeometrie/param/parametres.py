@@ -32,7 +32,7 @@
 # Mais par defaut, une liste n'est pas reellement copiee (il faut faire l2 = l1[:]).
 # Si de plus, on utilise des listes de listes, on a vite fait d'obtenir des bugs etranges...
 
-from locale import getdefaultlocale
+from locale import getencoding
 from math import pi
 
 # debuguage (affichage des erreurs + diverses infos)
@@ -70,7 +70,7 @@ style_Qt = None
 
 
 # jeu de caractère à utiliser
-encodage = getdefaultlocale()[1] or "utf8"
+encodage = getencoding() or "utf8"
 
 
 # Modules activés par défaut
