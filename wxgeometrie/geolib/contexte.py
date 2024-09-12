@@ -34,9 +34,9 @@ class Contexte(dict):
     >>> contexte = Contexte(exact = False, decimales = 7)
     >>> # Contexte local
     >>> with contexte(exact = True):
-    ...     print contexte['exact']
+    ...     print(contexte['exact'])
     True
-    >>> print contexte['exact']
+    >>> print(contexte['exact'])
     False
     """
 
@@ -80,7 +80,7 @@ class Contexte(dict):
         >>> from wxgeometrie.geolib.contexte import Contexte
         >>> contexte = Contexte(exact = False, decimales = 7)
         >>> with contexte(exact = True):
-        ...     print contexte['exact']
+        ...     print(contexte['exact'])
         True
         """
         # On ajoute un contexte local

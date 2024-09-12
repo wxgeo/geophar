@@ -899,7 +899,7 @@ class Objet(metaclass=ObjetType):
 
             >>> D1.label("A a pour abscisse {A.x}.", mode='formule')
             >>> D1.label()
-            u'A a pour abscisse -2,7.'
+            'A a pour abscisse -2,7.'
 
         """
         if self.etiquette is None:
@@ -1098,7 +1098,7 @@ class Objet(metaclass=ObjetType):
 
         >>> from wxgeometrie.geolib.vecteurs import Vecteur_libre
         >>> u = Vecteur_libre()
-        >>> print u.titre()
+        >>> print(u.titre())
         un vecteur libre.
         """
 
@@ -1630,7 +1630,7 @@ class Objet(metaclass=ObjetType):
             >>> A is B
             False
             >>> A == B
-            True
+            False
             >>> A.xy == B.xy
             True
             >>> A.style() == B.style()

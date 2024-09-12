@@ -188,7 +188,7 @@ class Point(Objet_avec_coordonnees_modifiables, Point_generique):
 
     >>> from wxgeometrie.geolib import Point
     >>> A = Point(7, 3)
-    >>> print A
+    >>> print(A)
     Point(x = 7, y = 3)
     """
 

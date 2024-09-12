@@ -367,7 +367,7 @@ def nchiffres(x, n = 1):
 
     >>> from wxgeometrie.geolib.routines import nchiffres
     >>> nchiffres(2345, 2)
-    2300.0
+    2300
     """
     if x:
         k = 10**floor(log10(abs(x))-n+1)
@@ -417,9 +417,9 @@ def arrondir_1_2_5(x):
 
     >>> from wxgeometrie.geolib.routines import arrondir_1_2_5
     >>> arrondir_1_2_5(250)
-    200.0
+    200
     >>> arrondir_1_2_5(4527)
-    5000.0
+    5000
     >>> arrondir_1_2_5(0.0078)
     0.01
     """
@@ -446,9 +446,9 @@ def arrondir_1_25_5(x):
 
     >>> from wxgeometrie.geolib.routines import arrondir_1_25_5
     >>> arrondir_1_25_5(200)
-    250.0
+    250
     >>> arrondir_1_25_5(4527)
-    5000.0
+    5000
     >>> arrondir_1_25_5(0.0078)
     0.01
     """
@@ -459,7 +459,8 @@ def arrondir_1_25_5(x):
         k = 1
     elif k < 3.5355339059327378:
         # 10**((log10(2.5)+log10(5))/2)
-        k = 2.5
+        k = 25
+        p -= 1
     elif k < 7.0710678118654746:
         # 10**((log10(5) + 1)/2)
         k = 5

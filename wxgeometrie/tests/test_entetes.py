@@ -43,7 +43,7 @@ def command(string, quiet=True):
 
 def verifier(fichier):
     # On vérifie que le fichier est bien déclaré en utf-8
-    with open(fichier, 'rU') as f:
+    with open(fichier, 'r') as f:
         s = f.read(1000)
         pos = (22 if s.startswith('#!/usr/bin/env python3') else 0)
         if not s.startswith(START, pos):
