@@ -5,6 +5,9 @@
 # *.[oa]
 # *~
 
+# IDE
+.idea/
+
 # Répertoire de compilations
 
 build/

@@ -22,7 +22,13 @@
 # Ce module sert à tester que toutes les dépendances sont satisfaites,
 # et à y remédier dans le cas contraire (si possible).
 
-import sys, importlib, platform, os, shutil, subprocess
+import sys
+import importlib
+import importlib.util
+import platform
+import os
+import shutil
+import subprocess
 
 # ------------------------------------------------------------------------------
 # CONFIGURATION
