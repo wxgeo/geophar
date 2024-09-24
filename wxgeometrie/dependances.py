@@ -74,6 +74,12 @@ def in_virtual_environment():
     """
     return sys.prefix != sys.base_prefix
 
+def find_spec(module_name):
+    try:
+        return importlib.util.find_spec(module_name)
+    except ModuleNotFoundError:
+        return None
+
 def tester_dependances():
     if hasattr(sys, 'frozen'):
         # Ne pas faire ces tests avec py2exe/py2app/CxFreeze (non seulement inutiles, mais en plus ils échouent).
@@ -95,7 +101,7 @@ def tester_dependances():
 
     # Test for dependencies:
     modules_manquants = [
-        module_name for module_name in dependances if importlib.util.find_spec(module_name) is None
+        module_name for module_name in dependances if find_spec(module_name) is None
         ]
 
 
