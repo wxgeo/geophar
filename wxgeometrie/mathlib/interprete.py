@@ -367,8 +367,10 @@ class Interprete(object):
             var, val = instruction.split("=", 1)
             var = var[3:].strip()
             val = val.strip()
+            if self.verbose:
+                print(f"Matrice détectée : {val!r}.")
             # Generate the code for the matrix.
-            if '&' in val:
+            if '\\' in val:
                 if r"\\" in val:
                     # mat A = 1 & 2 & 3 \\ 4 & 5 & 6
                     matrix = [s.split('&') for s in val.split(r'\\')]

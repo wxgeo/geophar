@@ -68,7 +68,7 @@ def test_exemples_de_base_analyse():
     assert_resultat('cos x>>taylor', \
                 '1 - x^2/2 + x^4/24 + O(x^5)', \
                r'1 - \frac{x^{2}}{2} + \frac{x^{4}}{24} + \mathcal{O}\left(x^{5}\right)')
-    assert_resultat('limit(x^2-x, oo)', '+oo', '+\infty')
+    assert_resultat('limit(x^2-x, oo)', '+oo', r'+\infty')
 
 def test_exemples_de_base_algebre():
     assert_resultat('developpe((x-3)(x+7)(2y+x+5))', \
@@ -88,7 +88,7 @@ def test_exemples_de_base_algebre():
     assert_resultat('factorise(x^2+7x+53)', 'x^2 + 7 x + 53', 'x^{2} + 7 x + 53')
     assert_resultat('factor(exp(x)x^2+2x*exp(x)+exp(x))', \
                                     '(x + 1)^2 exp(x)', \
-                                    '\left(x + 1\\right)^{2} \\mathrm{e}^{x}')
+                                    '\\left(x + 1\\right)^{2} \\mathrm{e}^{x}')
     assert_resultat('evalue(pi-1)', '2,14159265358979324', '2,14159265358979324')
     assert_resultat('somme(x^2, (x, 1, 7))', '140', '140')
     assert_resultat('somme(x^2, x, 1, 7)', '140', '140')
@@ -144,7 +144,7 @@ def test_ensemble_complexe():
     assert r in ('{i ; -i}', '{-i ; i}')
     assert l in (r'$\left\{- \mathrm{i}\,;\,\mathrm{i}\right\}$',
                  r'$\left\{\mathrm{i}\,;\,- \mathrm{i}\right\}$')
-    r, l = i.evaluer("resoudre(2+\i=\dfrac{2\i z}{z-1}")
+    r, l = i.evaluer("resoudre(2+\\i=\\dfrac{2\\i z}{z-1}")
     assertEqual(r, '{3/5 + 4 i/5}')
     assertEqual(l, r'$\left\{\frac{3}{5} + \frac{4}{5} \mathrm{i}\right\}$')
     r, l = i.evaluer("resoudre(x^2=-1 et 2x=-2i")
@@ -285,10 +285,7 @@ def test_matrix_special_syntax_latex():
     i.evaluer("mat A = 1&2&3\\4&5&6\\7&8&9")
     i.evaluer(" mat  B=  1\\   0 \\  0  ")
     resultat, latex = i.evaluer("C=A*B")
-    assertEqual(resultat, 'Matrix([\\n'
-                '                    [1] ; \\n'
-                '                    [4] ; \\n'
-                '                    [7]])')
+    assertEqual(resultat, 'Matrix([\n[1] ; \n[4] ; \n[7]])')
 
 
 
@@ -326,7 +323,7 @@ def test_issue_206():
     're(x)',
     ]"""
     i.load_state(etat_interne)
-    i.evaluer("-1+\i\sqrt{3}")
+    i.evaluer(r"-1+\i\sqrt{3}")
     assertDernier(i, '-1 + sqrt(3)*i')
     i.evaluer('-x**2 + 2*x - 3>>factor')
     assertDernier(i, '-x^2 + 2*x - 3')
@@ -469,7 +466,7 @@ def test_issue_259():
     # sympy 1.0 : '5,28725822993202*10^-16'
     # Wofram Alpha (01/05/2016) : 5/9007199254740992~~5.55112×10^-16
     # On teste que ce soit en gros correct, sans se focaliser sur les décimales.
-    assert re.match("5,[0-9]+\*10\^\-16$", r)
+    assert re.match(r"5,[0-9]+\*10\^\-16$", r)
     assert re.match(r"\$5,[0-9]+[ ]\\cdot[ ]10\^{-16}\$$", l)
     # Second part of the issue (scientific notation handling).
     i.calcul_exact = False

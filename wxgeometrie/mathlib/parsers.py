@@ -141,10 +141,10 @@ def _arguments_latex(chaine, nbr_arguments = 2):
 
 
 def _convertir_latex_frac(chaine):
-    """Convertit \frac{a}{b}, \dfrac{a}{b} et \tfrac{a}{b} en ((a)/(b)).
+    """Convertit \\frac{a}{b}, \\dfrac{a}{b} et \\tfrac{a}{b} en ((a)/(b)).
 
     >>> from wxgeometrie.mathlib.parsers import _convertir_latex_frac
-    >>> _convertir_latex_frac('3+\dfrac{1}{2x+1}+5x+1')
+    >>> _convertir_latex_frac('3+\\dfrac{1}{2x+1}+5x+1')
     '3+((1)/(2x+1))+5x+1'
     """
     for substr in (r"\frac", r"\dfrac", r"\tfrac"):
@@ -862,7 +862,7 @@ def mathtext_parser(txt):
 
 
 def tex_dollars(txt):
-    "Rajoute des $ si l'expression LaTeX ainsi obtenue est correcte."
+    """Rajoute des $ si l'expression LaTeX ainsi obtenue est correcte."""
     try:
         mathtext_parser('$' + txt + '$')
         return '$' + txt + '$'

@@ -163,7 +163,7 @@ def test_mode_LaTeX():
                  "((1+10/100)*(1+5/100)*(1-7/100))**(((1)/(3)))")
     assert_latex("\\text{0.7}\\times (-50)^2-9\\times (-50)+200", "(0.7)*(-50)**2-9*(-50)+200")
     assert_latex("\\ln(2)+\\exp(3)+\\log(\\pi+1)", "ln(2)+exp(3)+log(pi+1)")
-    assert_latex("x\ge1\le3", "x>=1<=3")
+    assert_latex(r"x\ge1\le3", "x>=1<=3")
     assert_latex(r"100\left(\left(1+\dfrac{50}{100}\right)^\frac{1}{10}-1\right)",
                  "100*((1+((50)/(100)))**((1)/(10))-1)")
     assert_latex("M = \\begin{pmatrix}\n0,6 & 0,4\\\\\n0,75& 0,25\\\\\n\\end{pmatrix}",
@@ -184,7 +184,7 @@ def test_NBR():
     assert_not_NBR("5-6")
     assert_not_NBR(".")
     # Regression test for issue FS#252
-    assert_match('\(' + NBR_SIGNE, "(-2.3")
+    assert_match(r'\(' + NBR_SIGNE, "(-2.3")
 
 def test_VAR():
     assert_VAR("Arertytre")
