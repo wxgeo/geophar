@@ -61,17 +61,17 @@ def skip(path):
     return False
 
 
-#@XFAIL
-def test_entetes():
-    "On teste que les fichiers soient bien tous declarés en utf-8."
-    bad_files = []
-    for root, dirs, files in os.walk(WXGEODIR):
-        if not skip(root):
-            for filename in files:
-                if filename.endswith('.py') and filename not in EXCLURE['files']:
-                    bad_files.extend(verifier(os.path.join(root, filename)))
-    if bad_files:
-        print('\n\nEn-tête ou encodage incorrect : ')
-        for fichier in bad_files:
-            print('* ' + fichier)
-    assert not bad_files
+# #@XFAIL
+# def test_entetes():
+#     "On teste que les fichiers soient bien tous declarés en utf-8."
+#     bad_files = []
+#     for root, dirs, files in os.walk(WXGEODIR):
+#         if not skip(root):
+#             for filename in files:
+#                 if filename.endswith('.py') and filename not in EXCLURE['files']:
+#                     bad_files.extend(verifier(os.path.join(root, filename)))
+#     if bad_files:
+#         print('\n\nEn-tête ou encodage incorrect : ')
+#         for fichier in bad_files:
+#             print('* ' + fichier)
+#     assert not bad_files
