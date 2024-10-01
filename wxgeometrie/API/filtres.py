@@ -47,7 +47,7 @@ def filtre_versions_anterieures(fgeo, version):
             # 0.108
             if version < [0, 108]:
                 lignes = figures[i].split("\n")
-                reg = re.compile("[A-Za-z_][A-Za-z_0-9]*[=](Point|Intersection|Glisseur|Projete|Barycentre|Milieu|Centre|Orthocentre)")
+                reg = re.compile("[A-Za-z_][A-Za-z_0-9]*=(Point|Intersection|Glisseur|Projete|Barycentre|Milieu|Centre|Orthocentre)")
                 for j in range(len(lignes)):
                     if not re.match(reg, lignes[j]):
                         lignes[j] = lignes[j].replace("'legende': 1", "'legende': 2")
@@ -65,7 +65,7 @@ def filtre_versions_anterieures(fgeo, version):
                     cer = match_obj.group("cer")
                     deb = match_obj.group("deb")
                     return deb + dte + "," + cer + "," + dte + ".point1 is " + pt
-                figures[i] = re.sub("(?P<deb>Intersection_droite_cercle[(])(?P<dte>[a-zA-Z_]\w*)[,](?P<cer>[A-Za-z_]\w*)[,](?P<pt>[a-zA-Z_]\w*)", corrige1, figures[i])
+                figures[i] = re.sub(r"(?P<deb>Intersection_droite_cercle[(])(?P<dte>[a-zA-Z_]\w*),(?P<cer>[A-Za-z_]\w*),(?P<pt>[a-zA-Z_]\w*)", corrige1, figures[i])
                 figures[i] = figures[i].replace(".ordonnee()", ".ordonnee")\
                                                 .replace(".abscisse()", ".abscisse")\
                                                 .replace(".x()", ".x")\
@@ -81,7 +81,7 @@ def filtre_versions_anterieures(fgeo, version):
                     vec = match_obj.group("vec")
                     pt = match_obj.group("pt")
                     return deb + pt + "," + vec
-                figures[i] = re.sub("(?P<deb>Droite_vectorielle[(])(?P<vec>[a-zA-Z_]\w*)[,](?P<pt>[A-Za-z_]\w*)", corrige2, figures[i])
+                figures[i] = re.sub(r"(?P<deb>Droite_vectorielle[(])(?P<vec>[a-zA-Z_]\w*),(?P<pt>[A-Za-z_]\w*)", corrige2, figures[i])
                 def corrige3(match_obj): #Mediatrice
                     return match_obj.group().replace("objet1=", "point1=")\
                                                             .replace("objet2=", "point2=")\
@@ -100,12 +100,12 @@ def filtre_versions_anterieures(fgeo, version):
                     s = match_obj.group().replace(" ", "")
                     if "points=" in s:
                         s = s.replace("points=", "'points':").replace("coeffs=", "'coeffs':")
-                        m = re.search("(?P<deb>Barycentre[()])(?P<milieu>.*)(?P<fin>[,][*][*].*)", s)
+                        m = re.search("(?P<deb>Barycentre[()])(?P<milieu>.*)(?P<fin>,[*][*].*)", s)
                         return m.group("deb") + "*zip({" + m.group("milieu") \
                                               + "}['points'],{" + m.group("milieu") \
                                               + "}['coeffs'])" + m.group("fin")
                     else:
-                        m = re.search("(?P<deb>Barycentre[()])(?P<milieu>.*)(?P<fin>[,][*][*].*)", s)
+                        m = re.search("(?P<deb>Barycentre[()])(?P<milieu>.*)(?P<fin>,[*][*].*)", s)
                         return m.group("deb") + "*zip(" + m.group("milieu") + ")" + m.group("fin")
                 figures[i] = re.sub("Barycentre[(].*", corrige5, figures[i])
 
@@ -242,9 +242,9 @@ def filtre_versions_anterieures(fgeo, version):
                         m = re.match(r"(\w+) ?=", ligne)
                         if m is not None:
                             nom_obj = m.group(1)
-                            ligne = ("%s\nif %s.etiquette is not None:\n" \
+                            ligne = ("%s\nif %s.etiquette is not None:\n"
                                      "    %s.etiquette.style(mode = %s)"
-                                        % (ligne, nom_obj, nom_obj, mode))
+                                     % (ligne, nom_obj, nom_obj, mode))
                     # A.style('label') -> A.etiquette.texte
                     # On cherche la dernière occurence de `label=...`.
                     match = None
@@ -256,9 +256,9 @@ def filtre_versions_anterieures(fgeo, version):
                         m = re.match(r"(\w+) ?=", ligne)
                         if m is not None:
                             nom_obj = m.group(1)
-                            ligne = ("%s\nif %s.etiquette is not None and %s.__class__.__name__ != 'Texte':\n" \
+                            ligne = ("%s\nif %s.etiquette is not None and %s.__class__.__name__ != 'Texte':\n"
                                      "    %s.etiquette.texte = %s"
-                                        % (ligne, nom_obj, nom_obj, nom_obj, txt))
+                                     % (ligne, nom_obj, nom_obj, nom_obj, txt))
 
                     lignes[j] = ligne
 

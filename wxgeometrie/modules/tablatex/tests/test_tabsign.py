@@ -135,7 +135,7 @@ $\frac{3x-2}{(x-1)^{2}}$ &           & $-$ &       0       & + & \geopharDB{$\fr
 
 
 def test_latex():
-    s = '\dfrac{3x-2}{(x-1)^2}'
+    s = r'\dfrac{3x-2}{(x-1)^2}'
     tab = \
 r'''\providecommand{\geopharDB}[1]{$\left|\vphantom{\text{#1}}\right|$}
 \begin{center}
@@ -156,7 +156,7 @@ $\dfrac{3x-2}{(x-1)^{2}}$ &           & $-$ &       0       & + & \geopharDB{$\d
 '''
     assert_tabsign(s, tab)
 
-    s = "g(x)=\dfrac{-x+1}{\e^{x}}"
+    s = r"g(x)=\dfrac{-x+1}{\e^{x}}"
     tab = \
 r'''\begin{center}
 \begin{tabular}{|c|ccccc|}
@@ -176,7 +176,7 @@ $g(x)$   &           & + &  0  & $-$ &           \\
 '''
     assert_tabsign(s, tab)
 
-    s= "f'(x)=1-\e^{-x+2}"
+    s = r"f'(x)=1-\e^{-x+2}"
     tab = \
 r'''\begin{center}
 \begin{tabular}{|c|ccccc|}
@@ -274,7 +274,7 @@ $u(x)$ & \geopharDB{$u(x)$} &  +  &  0   & $-$ & \geopharDB{$u(x)$} & + &  0  & 
 
 
 def test_issue_173():
-    s = "(1 - x)\e^{ 2x}"
+    s = r"(1 - x)\e^{ 2x}"
     tab = \
 r'''\begin{center}
 \begin{tabular}{|c|ccccc|}
@@ -371,7 +371,7 @@ $f(x)$ &           & + &           \\
 
 
 def test_issue_247():
-    "FS#247 - Accepter la syntaxe suivant : 'f(x): -- -8 ++ -2 -- 5 ++'."
+    """FS#247 - Accepter la syntaxe suivant : 'f(x): -- -8 ++ -2 -- 5 ++'."""
     s = "f(x): -- -8 ++ -2 -- 5 ++"
     tab = \
 r'''\begin{center}

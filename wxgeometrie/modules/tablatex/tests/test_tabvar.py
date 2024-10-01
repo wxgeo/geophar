@@ -205,7 +205,7 @@ f'(x)                                &              &-       &0     &+     & \\
 """
     assert_tabvar(s, tab)
 
-    s = "$f(x)=(2x+3)\e^x$ sur $[0\,;\,+\oo[$"
+    s = r"$f(x)=(2x+3)\e^x$ sur $[0\,;\,+\oo[$"
     tab = \
 r'''\setlength{\TVextraheight}{\baselineskip}
 \[\begin{tabvar}{|C|CCC|}
@@ -281,7 +281,7 @@ r'''\setlength{\TVextraheight}{\baselineskip}
 
 def test_issue_189():
     # Tableaux de signes et de variation avec des décimaux
-    s = 'f(x) = (x -4)\e^{-0,25x+5} sur [4;20]'
+    s = r'f(x) = (x -4)\e^{-0,25x+5} sur [4;20]'
     options = {'derivee': False, 'decimales': 3, 'stretch': False}
     tab = \
 r'''\setlength{\TVextraheight}{\baselineskip}

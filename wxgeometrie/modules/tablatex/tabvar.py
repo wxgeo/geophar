@@ -278,7 +278,7 @@ x;\\sqrt{x};(\\sqrt{x})': 0;0;| << +oo;+oo"""
 
 
     # On élargit un peu la case (pour l'esthétique...)
-    ligne_variable = '\,\,%s\,\,' %  ligne_variable
+    ligne_variable = r'\,\,%s\,\,' % ligne_variable
 
 
     # on découpe la chaîne, en une suite contenant soit les valeurs de x, f(x) (et éventuellement f'(x)),
