@@ -26,7 +26,10 @@ class Quantity(AtomicExpr):
     is_nonzero = True
     _diff_wrt = True
 
-    def __new__(cls, name, abbrev=None, dimension=None, scale_factor=None, **assumptions):
+    def __new__(cls, name, abbrev=None, dimension=None, scale_factor=None,
+                latex_repr=None, pretty_unicode_repr=None,
+                pretty_ascii_repr=None, mathml_presentation_repr=None,
+                **assumptions):
 
         if not isinstance(name, Symbol):
             name = Symbol(name)
@@ -61,6 +64,10 @@ class Quantity(AtomicExpr):
         obj = AtomicExpr.__new__(cls, name, abbrev)
         obj._name = name
         obj._abbrev = abbrev
+        obj._latex_repr = latex_repr
+        obj._unicode_repr = pretty_unicode_repr
+        obj._ascii_repr = pretty_ascii_repr
+        obj._mathml_repr = mathml_presentation_repr
 
         if dimension is not None:
             # TODO: remove after deprecation:
@@ -223,6 +230,13 @@ class Quantity(AtomicExpr):
         else:
             return expr, Dimension(1)
 
+    def _latex(self, printer):
+        if self._latex_repr:
+            return self._latex_repr
+        else:
+            return r'\text{{{}}}'.format(self.args[1] \
+                          if len(self.args) >= 2 else self.args[0])
+
     def convert_to(self, other):
         """
         Convert the quantity to another quantity of same dimensions.
@@ -247,28 +261,3 @@ class Quantity(AtomicExpr):
     def free_symbols(self):
         """Return free symbols from quantity."""
         return self.scale_factor.free_symbols
-
-
-def _Quantity_constructor_postprocessor_Add(expr):
-    # Construction postprocessor for the addition,
-    # checks for dimension mismatches of the addends, thus preventing
-    # expressions like `meter + second` to be created.
-
-    deset = {
-        tuple(sorted(dimsys_default.get_dimensional_dependencies(
-            Dimension(Quantity.get_dimensional_expr(i) if not i.is_number else 1
-        )).items()))
-        for i in expr.args
-        if i.free_symbols == set()  # do not raise if there are symbols
-                    # (free symbols could contain the units corrections)
-    }
-    # If `deset` has more than one element, then some dimensions do not
-    # match in the sum:
-    if len(deset) > 1:
-        raise ValueError("summation of quantities of incompatible dimensions")
-    return expr
-
-
-Basic._constructor_postprocessor_mapping[Quantity] = {
-    "Add" : [_Quantity_constructor_postprocessor_Add],
-}

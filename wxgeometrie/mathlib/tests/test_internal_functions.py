@@ -35,4 +35,5 @@ def test_factor():
     assert_factor(1 + 2*x + 2*x**2 + x**3, x+1, x**2+x+1)
     assert_factor(2*x, 2, x)
     # assert_factor(x**2-i, x+sqrt(2)/2+i*sqrt(2)/2, x-sqrt(2)/2-i*sqrt(2)/2)
-    assert_factor(x**2-i, x + (-1)**(S(1)/4), x - (-1)**(S(1)/4))
+    # assert_factor(x**2-i, x + (-1)**(S(1)/4), x - (-1)**(S(1)/4))
+    assert_factor(x ** 2 - i, x + sqrt(i), x - sqrt(i))

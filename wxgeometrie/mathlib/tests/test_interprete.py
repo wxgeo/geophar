@@ -96,7 +96,7 @@ def test_exemples_de_base_algebre():
     assert_resultat('product(x^2;x;1;7)', '25401600', '25401600')
 
 def test_exemples_de_base_supplementaires():
-    assert_resultat('abs(pi-5)', '-pi + 5', r'- \pi + 5')
+    assert_resultat('abs(pi-5)', '5 - pi', r'5 - \pi')
     assert_resultat('abs(x-5)', 'abs(x - 5)', r'\left|{x - 5}\right|')
     assert_resultat('i(1+i)', r'-1 + i',  r'-1 + \mathrm{i}')
     assert_resultat('i sqrt(3)', r'sqrt(3)i',  r'\sqrt{3} \mathrm{i}')
@@ -171,8 +171,8 @@ def test_resoudre():
                     r'\left]- \frac{1}{3};\frac{2}{3}\right]', formatage_LaTeX=True)
     assert_resoudre('2exp(x)>3', ']-ln(2) + ln(3) ; +oo[')
     #TODO: Rassembler les ln: ]ln(3/2);+oo[
-    assert_resoudre('x^3-30x^2+112=0', '{-6 sqrt(7) + 14 ; 2 ; 14 + 6 sqrt(7)}',
-                r'\left\{- 6 \sqrt{7} + 14\,;\, 2\,;\, 14 + 6 \sqrt{7}\right\}')
+    assert_resoudre('x^3-30x^2+112=0', '{14 - 6 sqrt(7) ; 2 ; 14 + 6 sqrt(7)}',
+                r'\left\{14 - 6 \sqrt{7}\,;\, 2\,;\, 14 + 6 \sqrt{7}\right\}')
     # assert_resoudre(r'ln(x^2)-ln(x+1)>1', ']-1;e/2 - sqrt(4 e + exp(2))/2[U]e/2 + sqrt(4 e + exp(2))/2;+oo[')
     assert_resoudre('0.5 exp(-0.5 x + 0.4)=0.5', '{4/5}')
     assert_resoudre('x > 9 et x < 9', '{}', r'\varnothing')
@@ -206,7 +206,7 @@ def test_session():
     assertDernier(i, "x + 5")
     i.evaluer("f(x, y, z)=2x+3y-z")
     i.evaluer("f(-1, 5, a)")
-    assertDernier(i, "-a + 13")
+    assertDernier(i, "13 - a")
     i.evaluer("f(x)=x^2-7x+3")
     i.evaluer("f'(x)")
     assertDernier(i, "2*x - 7")
@@ -290,9 +290,9 @@ def test_matrix_special_syntax_latex():
 
 
 def test_issue_sialle1():
-    # Problème : Si on tape 1/(1-sqrt(2)), on obtient le résultat 1/-sqrt(2)+1,
+    # Problème : Si on tape 1/(1-sqrt(2)), on obtenait le résultat 1/-sqrt(2)+1,
     # qui est faux (il manque les parenthèses...).
-    assert_resultat("1/(1-sqrt(2))", "1/(-sqrt(2) + 1)")
+    assert_resultat("1/(1-sqrt(2))", "1/(1 - sqrt(2))")
 
 def test_1_pas_en_facteur():
     assert_resultat("together(1/x-.5)", "-(x - 2)/(2 x)", r"- \frac{x - 2}{2 x}")

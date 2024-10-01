@@ -223,7 +223,7 @@ def test_issue_9324_powsimp_on_matrix_symbol():
     M = MatrixSymbol('M', 10, 10)
     expr = powsimp(M, deep=True)
     assert expr == M
-    assert expr.args[0] == 'M'
+    assert expr.args[0] == Symbol('M')
 
 
 def test_issue_6367():
@@ -309,6 +309,10 @@ def test_issue_10195():
     assert powsimp(e_x) == (-1)**(n/2 - Rational(1, 2)) + (-1)**(3*n/2 +
             Rational(1,2))
     assert powsimp((-1)**(3*a/2)) == (-I)**a
+
+def test_issue_15709():
+    assert powsimp(2*3**x/3) == 2*3**(x-1)
+
 
 def test_issue_11981():
     x, y = symbols('x y', commutative=False)

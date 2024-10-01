@@ -62,13 +62,13 @@ def test_polynomes():
 r"""\begin{center}
 \begin{tabular}{|c|ccccccccc|}
 \hline
-$x$                  & $-\infty$ &     & $-6 \sqrt{7}+14$ &   & $2$ &     & $14+6 \sqrt{7}$ &   & $+\infty$ \\
+$x$                  & $-\infty$ &     & $14-6 \sqrt{7}$ &   & $2$ &     & $14+6 \sqrt{7}$ &   & $+\infty$ \\
 \hline
-$f(x)$               &           & $-$ &        0         & + &  0  & $-$ &        0        & + &           \\
+$f(x)$               &           & $-$ &        0        & + &  0  & $-$ &        0        & + &           \\
 \hline
 \end{tabular}
 \end{center}
-% x: -oo;+oo// x^3-30 x^2+112: -- -6*sqrt(7) + 14 ++ 2 -- 14 + 6*sqrt(7) ++ // f(x)
+% x: -oo;+oo// x^3-30 x^2+112: -- 14 - 6*sqrt(7) ++ 2 -- 14 + 6*sqrt(7) ++ // f(x)
 % f(x)=x^3-30x^2+112
 """
     assert_tabsign(s, tab)
@@ -428,13 +428,13 @@ def test_approche():
 r'''\begin{center}
 \begin{tabular}{|c|ccccccc|}
 \hline
-$x$           & $-\infty$ &   & $-\frac{\sqrt{29}}{2}+\frac{3}{2}$ &     & $\frac{3}{2}+\frac{\sqrt{29}}{2}$ &   & $+\infty$ \\
+$x$           & $-\infty$ &   & $\frac{3}{2}-\frac{\sqrt{29}}{2}$ &     & $\frac{3}{2}+\frac{\sqrt{29}}{2}$ &   & $+\infty$ \\
 \hline
-$f(x)$        &           & + &                 0                  & $-$ &                 0                 & + &           \\
+$f(x)$        &           & + &                 0                 & $-$ &                 0                 & + &           \\
 \hline
 \end{tabular}
 \end{center}
-% x: -oo;+oo// x^2-3 x-5: ++ -sqrt(29)/2 + 3/2 -- 3/2 + sqrt(29)/2 ++ // f(x)
+% x: -oo;+oo// x^2-3 x-5: ++ 3/2 - sqrt(29)/2 -- 3/2 + sqrt(29)/2 ++ // f(x)
 % f(x)=x^2-3x-5
 '''
     assert_tabsign(s, tab)

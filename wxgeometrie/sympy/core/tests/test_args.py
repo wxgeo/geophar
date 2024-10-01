@@ -6,15 +6,13 @@
 
 import os
 import re
-import warnings
 import io
 
 from sympy import (Basic, S, symbols, sqrt, sin, oo, Interval, exp, Lambda, pi,
-                   Eq, log)
+                   Eq, log, Function)
 
 from sympy.core.compatibility import range
 from sympy.utilities.pytest import XFAIL, SKIP
-from sympy.utilities.exceptions import SymPyDeprecationWarning
 
 x, y, z = symbols('x,y,z')
 
@@ -75,9 +73,6 @@ def test_all_classes_are_tested():
             if test not in ns:
                 failed.append(module + '.' + name)
 
-    # reset all SymPyDeprecationWarning into errors
-    warnings.simplefilter("error", category=SymPyDeprecationWarning)
-
     assert not failed, "Missing classes: %s.  Please add tests for these to sympy/core/tests/test_args.py." % ", ".join(failed)
 
 
@@ -100,7 +95,7 @@ def test_sympy__assumptions__sathandlers__UnevaluatedOnFree():
     from sympy import Q
     assert _test_args(UnevaluatedOnFree(Q.positive))
     assert _test_args(UnevaluatedOnFree(Q.positive(x)))
-    assert _test_args(UnevaluatedOnFree(Q.positive(x*y)))
+    assert _test_args(UnevaluatedOnFree(Q.positive(x * y)))
 
 def test_sympy__assumptions__sathandlers__AllArgs():
     from sympy.assumptions.sathandlers import AllArgs
@@ -136,6 +131,12 @@ def test_sympy__assumptions__sathandlers__CheckIsPrime():
     # Input must be a number
     assert _test_args(CheckIsPrime(Q.positive))
     assert _test_args(CheckIsPrime(Q.positive(5)))
+
+
+@SKIP("abstract Class")
+def test_sympy__codegen__ast__AssignmentBase():
+    from sympy.codegen.ast import AssignmentBase
+    assert _test_args(AssignmentBase(x, 1))
 
 @SKIP("abstract Class")
 def test_sympy__codegen__ast__AugmentedAssignment():
@@ -668,6 +669,11 @@ def test_sympy__core__numbers__GoldenRatio():
     assert _test_args(GoldenRatio())
 
 
+def test_sympy__core__numbers__TribonacciConstant():
+    from sympy.core.numbers import TribonacciConstant
+    assert _test_args(TribonacciConstant())
+
+
 def test_sympy__core__numbers__Half():
     from sympy.core.numbers import Half
     assert _test_args(Half())
@@ -1027,6 +1033,34 @@ def test_sympy__stats__drv__ConditionalDiscreteDomain():
     X = SingleDiscreteDomain(x, S.Naturals0)
     assert _test_args(ConditionalDiscreteDomain(X, x > 2))
 
+def test_sympy__stats__joint_rv__JointPSpace():
+    from sympy.stats.joint_rv import JointPSpace, JointDistribution
+    assert _test_args(JointPSpace('X', JointDistribution(1)))
+
+def test_sympy__stats__joint_rv__JointRandomSymbol():
+    from sympy.stats.joint_rv import JointRandomSymbol
+    assert _test_args(JointRandomSymbol(x))
+
+def test_sympy__stats__joint_rv__JointDistributionHandmade():
+    from sympy import Indexed
+    from sympy.stats.joint_rv import JointDistributionHandmade
+    x1, x2 = (Indexed('x', i) for i in (1, 2))
+    assert _test_args(JointDistributionHandmade(x1 + x2, S.Reals**2))
+
+
+def test_sympy__stats__joint_rv__MarginalDistribution():
+    from sympy.stats.rv import RandomSymbol
+    from sympy.stats.joint_rv import MarginalDistribution
+    r = RandomSymbol(S('r'))
+    assert _test_args(MarginalDistribution(r, (r,)))
+
+
+def test_sympy__stats__joint_rv__CompoundDistribution():
+    from sympy.stats.joint_rv import CompoundDistribution
+    from sympy.stats.drv_types import PoissonDistribution
+    r = PoissonDistribution(x)
+    assert _test_args(CompoundDistribution(PoissonDistribution(r)))
+
 @SKIP("abstract class")
 def test_sympy__stats__drv__SingleDiscreteDistribution():
     pass
@@ -1077,12 +1111,17 @@ def test_sympy__stats__rv__RandomSymbol():
     assert _test_args(RandomSymbol(x, A))
 
 
+@SKIP("abstract Class")
 def test_sympy__stats__rv__ProductPSpace():
-    from sympy.stats.rv import ProductPSpace
+    pass
+
+
+def test_sympy__stats__rv__IndependentProductPSpace():
+    from sympy.stats.rv import IndependentProductPSpace
     from sympy.stats.crv import SingleContinuousPSpace
     A = SingleContinuousPSpace(x, nd)
     B = SingleContinuousPSpace(y, nd)
-    assert _test_args(ProductPSpace(A, B))
+    assert _test_args(IndependentProductPSpace(A, B))
 
 
 def test_sympy__stats__rv__ProductDomain():
@@ -1402,13 +1441,61 @@ def test_sympy__stats__crv_types__WignerSemicircleDistribution():
     from sympy.stats.crv_types import WignerSemicircleDistribution
     assert _test_args(WignerSemicircleDistribution(1))
 
-def test_sympy__stats__drv_types__PoissonDistribution():
-    from sympy.stats.drv_types import PoissonDistribution
-    assert _test_args(PoissonDistribution(1))
 
 def test_sympy__stats__drv_types__GeometricDistribution():
     from sympy.stats.drv_types import GeometricDistribution
     assert _test_args(GeometricDistribution(.5))
+
+
+def test_sympy__stats__drv_types__LogarithmicDistribution():
+    from sympy.stats.drv_types import LogarithmicDistribution
+    assert _test_args(LogarithmicDistribution(.5))
+
+
+def test_sympy__stats__drv_types__NegativeBinomialDistribution():
+    from sympy.stats.drv_types import NegativeBinomialDistribution
+    assert _test_args(NegativeBinomialDistribution(.5, .5))
+
+
+def test_sympy__stats__drv_types__PoissonDistribution():
+    from sympy.stats.drv_types import PoissonDistribution
+    assert _test_args(PoissonDistribution(1))
+
+
+def test_sympy__stats__drv_types__YuleSimonDistribution():
+    from sympy.stats.drv_types import YuleSimonDistribution
+    assert _test_args(YuleSimonDistribution(.5))
+
+
+def test_sympy__stats__drv_types__ZetaDistribution():
+    from sympy.stats.drv_types import ZetaDistribution
+    assert _test_args(ZetaDistribution(1.5))
+
+
+def test_sympy__stats__joint_rv__JointDistribution():
+    from sympy.stats.joint_rv import JointDistribution
+    assert _test_args(JointDistribution(1, 2, 3, 4))
+
+
+def test_sympy__stats__joint_rv_types__MultivariateNormalDistribution():
+    from sympy.stats.joint_rv_types import MultivariateNormalDistribution
+    assert _test_args(
+        MultivariateNormalDistribution([0, 1], [[1, 0],[0, 1]]))
+
+def test_sympy__stats__joint_rv_types__MultivariateLaplaceDistribution():
+    from sympy.stats.joint_rv_types import MultivariateLaplaceDistribution
+    assert _test_args(MultivariateLaplaceDistribution([0, 1], [[1, 0],[0, 1]]))
+
+
+def test_sympy__stats__joint_rv_types__MultivariateTDistribution():
+    from sympy.stats.joint_rv_types import MultivariateTDistribution
+    assert _test_args(MultivariateTDistribution([0, 1], [[1, 0],[0, 1]], 1))
+
+
+def test_sympy__stats__joint_rv_types__NormalGammaDistribution():
+    from sympy.stats.joint_rv_types import NormalGammaDistribution
+    assert _test_args(NormalGammaDistribution(1, 2, 3, 4))
+
 
 def test_sympy__core__symbol__Dummy():
     from sympy.core.symbol import Dummy
@@ -1490,9 +1577,19 @@ def test_sympy__functions__combinatorial__numbers__euler():
     assert _test_args(euler(x))
 
 
+def test_sympy__functions__combinatorial__numbers__carmichael():
+    from sympy.functions.combinatorial.numbers import carmichael
+    assert _test_args(carmichael(x))
+
+
 def test_sympy__functions__combinatorial__numbers__fibonacci():
     from sympy.functions.combinatorial.numbers import fibonacci
     assert _test_args(fibonacci(x))
+
+
+def test_sympy__functions__combinatorial__numbers__tribonacci():
+    from sympy.functions.combinatorial.numbers import tribonacci
+    assert _test_args(tribonacci(x))
 
 
 def test_sympy__functions__combinatorial__numbers__harmonic():
@@ -2148,6 +2245,10 @@ def test_sympy__functions__special__hyper__HyperRep_sinasin():
     from sympy.functions.special.hyper import HyperRep_sinasin
     assert _test_args(HyperRep_sinasin(x, y))
 
+def test_sympy__functions__special__hyper__appellf1():
+    from sympy.functions.special.hyper import appellf1
+    a, b1, b2, c, x, y = symbols('a b1 b2 c x y')
+    assert _test_args(appellf1(a, b1, b2, c, x, y))
 
 @SKIP("abstract class")
 def test_sympy__functions__special__polynomials__OrthogonalPolynomial():
@@ -2521,6 +2622,14 @@ def test_sympy__matrices__expressions__slice__MatrixSlice():
     assert _test_args(MatrixSlice(X, (0, 2), (0, 2)))
 
 
+def test_sympy__matrices__expressions__applyfunc__ElementwiseApplyFunction():
+    from sympy.matrices.expressions.applyfunc import ElementwiseApplyFunction
+    from sympy.matrices.expressions import MatrixSymbol
+    X = MatrixSymbol("X", x, x)
+    func = Lambda(x, x**2)
+    assert _test_args(ElementwiseApplyFunction(func, X))
+
+
 def test_sympy__matrices__expressions__blockmatrix__BlockDiagMatrix():
     from sympy.matrices.expressions.blockmatrix import BlockDiagMatrix
     from sympy.matrices.expressions import MatrixSymbol
@@ -2557,6 +2666,9 @@ def test_sympy__matrices__expressions__matexpr__Identity():
     from sympy.matrices.expressions.matexpr import Identity
     assert _test_args(Identity(3))
 
+def test_sympy__matrices__expressions__matexpr__GenericIdentity():
+    from sympy.matrices.expressions.matexpr import GenericIdentity
+    assert _test_args(GenericIdentity())
 
 @SKIP("abstract class")
 def test_sympy__matrices__expressions__matexpr__MatrixExpr():
@@ -2567,7 +2679,6 @@ def test_sympy__matrices__expressions__matexpr__MatrixElement():
     from sympy import S
     assert _test_args(MatrixElement(MatrixSymbol('A', 3, 5), S(2), S(3)))
 
-@XFAIL
 def test_sympy__matrices__expressions__matexpr__MatrixSymbol():
     from sympy.matrices.expressions.matexpr import MatrixSymbol
     assert _test_args(MatrixSymbol('A', 3, 5))
@@ -2577,6 +2688,9 @@ def test_sympy__matrices__expressions__matexpr__ZeroMatrix():
     from sympy.matrices.expressions.matexpr import ZeroMatrix
     assert _test_args(ZeroMatrix(3, 5))
 
+def test_sympy__matrices__expressions__matexpr__GenericZeroMatrix():
+    from sympy.matrices.expressions.matexpr import GenericZeroMatrix
+    assert _test_args(GenericZeroMatrix())
 
 def test_sympy__matrices__expressions__matmul__MatMul():
     from sympy.matrices.expressions.matmul import MatMul
@@ -3614,6 +3728,14 @@ def test_sympy__series__sequences__SeqFormula():
     assert _test_args(SeqFormula(x**2, (0, 10)))
 
 
+def test_sympy__series__sequences__RecursiveSeq():
+    from sympy.series.sequences import RecursiveSeq
+    y = Function("y")
+    n = symbols("n")
+    assert _test_args(RecursiveSeq(y(n - 1) + y(n - 2), y, n, (0, 1)))
+    assert _test_args(RecursiveSeq(y(n - 1) + y(n - 2), y, n))
+
+
 def test_sympy__series__sequences__SeqExprOp():
     from sympy.series.sequences import SeqExprOp, sequence
     s1 = sequence((1, 2, 3))
@@ -3643,6 +3765,10 @@ def test_sympy__series__series_class__SeriesBase():
 def test_sympy__series__fourier__FourierSeries():
     from sympy.series.fourier import fourier_series
     assert _test_args(fourier_series(x, (x, -pi, pi)))
+
+def test_sympy__series__fourier__FiniteFourierSeries():
+    from sympy.series.fourier import fourier_series
+    assert _test_args(fourier_series(sin(pi*x), (x, -1, 1)))
 
 
 def test_sympy__series__formal__FormalPowerSeries():
@@ -3749,7 +3875,7 @@ def test_sympy__tensor__tensor__TensAdd():
 
 def test_sympy__tensor__tensor__Tensor():
     from sympy.core import S
-    from sympy.tensor.tensor import TensorIndexType, TensorSymmetry, TensorType, get_symmetric_group_sgs, tensor_indices, TensMul, TIDS
+    from sympy.tensor.tensor import TensorIndexType, TensorSymmetry, TensorType, get_symmetric_group_sgs, tensor_indices, TensMul
     Lorentz = TensorIndexType('Lorentz', dummy_fmt='L')
     a, b = tensor_indices('a,b', Lorentz)
     sym = TensorSymmetry(get_symmetric_group_sgs(1))
@@ -3760,7 +3886,7 @@ def test_sympy__tensor__tensor__Tensor():
 
 def test_sympy__tensor__tensor__TensMul():
     from sympy.core import S
-    from sympy.tensor.tensor import TensorIndexType, TensorSymmetry, TensorType, get_symmetric_group_sgs, tensor_indices, TensMul, TIDS
+    from sympy.tensor.tensor import TensorIndexType, TensorSymmetry, TensorType, get_symmetric_group_sgs, tensor_indices, TensMul
     Lorentz = TensorIndexType('Lorentz', dummy_fmt='L')
     a, b = tensor_indices('a,b', Lorentz)
     sym = TensorSymmetry(get_symmetric_group_sgs(1))
@@ -3768,6 +3894,23 @@ def test_sympy__tensor__tensor__TensMul():
     p = S1('p')
     q = S1('q')
     assert _test_args(3*p(a)*q(b))
+
+
+def test_sympy__tensor__tensor__TensorElement():
+    from sympy.tensor.tensor import TensorIndexType, tensorhead, TensorElement
+    L = TensorIndexType("L")
+    A = tensorhead("A", [L, L], [[1], [1]])
+    telem = TensorElement(A(x, y), {x: 1})
+    assert _test_args(telem)
+
+
+def test_sympy__tensor__toperators__PartialDerivative():
+    from sympy.tensor.tensor import TensorIndexType, tensor_indices, tensorhead
+    from sympy.tensor.toperators import PartialDerivative
+    Lorentz = TensorIndexType('Lorentz', dummy_fmt='L')
+    a, b = tensor_indices('a,b', Lorentz)
+    A = tensorhead("A", [Lorentz], [[1]])
+    assert _test_args(PartialDerivative(A(a), A(b)))
 
 
 def test_as_coeff_add():
@@ -4092,6 +4235,13 @@ def test_sympy__ntheory__residue_ntheory__mobius():
     assert _test_args(mobius(2))
 
 
+def test_sympy__ntheory__generate__primepi():
+    from sympy.ntheory import primepi
+    n = symbols('n')
+    t = primepi(n)
+    assert _test_args(t)
+
+
 def test_sympy__physics__optics__waves__TWave():
     from sympy.physics.optics import TWave
     A, f, phi = symbols('A, f, phi')
@@ -4106,6 +4256,41 @@ def test_sympy__physics__optics__gaussopt__BeamParameter():
 def test_sympy__physics__optics__medium__Medium():
     from sympy.physics.optics import Medium
     assert _test_args(Medium('m'))
+
+
+def test_sympy__codegen__array_utils__CodegenArrayContraction():
+    from sympy.codegen.array_utils import CodegenArrayContraction
+    from sympy import IndexedBase
+    A = symbols("A", cls=IndexedBase)
+    assert _test_args(CodegenArrayContraction(A, (0, 1)))
+
+
+def test_sympy__codegen__array_utils__CodegenArrayDiagonal():
+    from sympy.codegen.array_utils import CodegenArrayDiagonal
+    from sympy import IndexedBase
+    A = symbols("A", cls=IndexedBase)
+    assert _test_args(CodegenArrayDiagonal(A, (0, 1)))
+
+
+def test_sympy__codegen__array_utils__CodegenArrayTensorProduct():
+    from sympy.codegen.array_utils import CodegenArrayTensorProduct
+    from sympy import IndexedBase
+    A, B = symbols("A B", cls=IndexedBase)
+    assert _test_args(CodegenArrayTensorProduct(A, B))
+
+
+def test_sympy__codegen__array_utils__CodegenArrayElementwiseAdd():
+    from sympy.codegen.array_utils import CodegenArrayElementwiseAdd
+    from sympy import IndexedBase
+    A, B = symbols("A B", cls=IndexedBase)
+    assert _test_args(CodegenArrayElementwiseAdd(A, B))
+
+
+def test_sympy__codegen__array_utils__CodegenArrayPermuteDims():
+    from sympy.codegen.array_utils import CodegenArrayPermuteDims
+    from sympy import IndexedBase
+    A = symbols("A", cls=IndexedBase)
+    assert _test_args(CodegenArrayPermuteDims(A, (1, 0)))
 
 
 def test_sympy__codegen__ast__Assignment():
@@ -4336,6 +4521,13 @@ def test_sympy__vector__operators__Curl():
     assert _test_args(Curl(C.i))
 
 
+def test_sympy__vector__operators__Laplacian():
+    from sympy.vector.operators import Laplacian
+    from sympy.vector.coordsysrect import CoordSys3D
+    C = CoordSys3D('C')
+    assert _test_args(Laplacian(C.i))
+
+
 def test_sympy__vector__operators__Divergence():
     from sympy.vector.operators import Divergence
     from sympy.vector.coordsysrect import CoordSys3D
@@ -4397,3 +4589,42 @@ def test_sympy__physics__wigner__Wigner3j():
 def test_sympy__integrals__rubi__symbol__matchpyWC():
     from sympy.integrals.rubi.symbol import matchpyWC
     assert _test_args(matchpyWC(1, True, 'a'))
+
+def test_sympy__integrals__rubi__utility_function__rubi_unevaluated_expr():
+    from sympy.integrals.rubi.utility_function import rubi_unevaluated_expr
+    a = symbols('a')
+    assert _test_args(rubi_unevaluated_expr(a))
+
+def test_sympy__integrals__rubi__utility_function__rubi_exp():
+    from sympy.integrals.rubi.utility_function import rubi_exp
+    assert _test_args(rubi_exp(5))
+
+def test_sympy__integrals__rubi__utility_function__rubi_log():
+    from sympy.integrals.rubi.utility_function import rubi_log
+    assert _test_args(rubi_log(5))
+
+def test_sympy__integrals__rubi__utility_function__Int():
+    from sympy.integrals.rubi.utility_function import Int
+    assert _test_args(Int(5, x))
+
+def test_sympy__integrals__rubi__utility_function__Util_Coefficient():
+    from sympy.integrals.rubi.utility_function import Util_Coefficient
+    a, x = symbols('a x')
+    assert _test_args(Util_Coefficient(a, x))
+
+def test_sympy__integrals__rubi__utility_function__Gamma():
+    from sympy.integrals.rubi.utility_function import Gamma
+    assert _test_args(Gamma(5))
+
+def test_sympy__integrals__rubi__utility_function__Util_Part():
+    from sympy.integrals.rubi.utility_function import Util_Part
+    a, b = symbols('a b')
+    assert _test_args(Util_Part(a + b, 0))
+
+def test_sympy__integrals__rubi__utility_function__PolyGamma():
+    from sympy.integrals.rubi.utility_function import PolyGamma
+    assert _test_args(PolyGamma(1, 1))
+
+def test_sympy__integrals__rubi__utility_function__ProductLog():
+    from sympy.integrals.rubi.utility_function import ProductLog
+    assert _test_args(ProductLog(1))
