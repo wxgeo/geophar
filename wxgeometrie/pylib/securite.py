@@ -90,10 +90,10 @@ keywords_milieu = set(('or', 'and', 'as', 'in'))
 keywords_non_affectables = keywords.difference(keywords_affectables).difference(keywords_milieu)
 
 def keywords_interdits_presents(chaine):
-    return bool(re.search(r'(?<!\w)(' + '|'.join(keywords_interdits) + ')(?!\w)', chaine))
+    return bool(re.search(r'(?<!\w)(' + '|'.join(keywords_interdits) + r')(?!\w)', chaine))
 
 def expression_affectable(chaine):
-    return not bool(re.match('[ ]*(' + '|'.join(keywords_non_affectables) + ')(?!\w)', chaine))
+    return not bool(re.match(' *(' + '|'.join(keywords_non_affectables) + r')(?!\w)', chaine))
 
 
 # Exemple d'usage :
@@ -120,10 +120,11 @@ def eval_restricted(s, dico_perso = None):
     return eval(s, dico)
 
 
+# TODO: utiliser literal_eval() à la place.
 def eval_safe(s):
     """eval_safe(repr(x)) retourne x pour les types les plus usuels
     (int, str, float, bool, None, list, tuple, dict.)
-    Mais aucune évaluation n'est faite, ce qui évite d'éxécuter un code dangereux.
+    Mais aucune évaluation n'est faite, ce qui évite d'exécuter un code dangereux.
     Le type de s est detecté, et la transformation appropriée appliquée.
 
     NB1: eval_safe n'est pas destiné à remplacer eval :
@@ -179,6 +180,5 @@ def eval_safe(s):
         for key, val in liste:
             dict[eval_safe(key)] = eval_safe(val)
         return dict
-
 
     raise TypeError("%s: types int, str, float, bool, ou None requis (ou liste ou tuple de ces types)" % repr(s))

@@ -820,7 +820,7 @@ class Interprete_feuille(object):
         commande = re.sub(r"(%s)[ ]*->[ ]*(%s)" % (VAR, VAR), _vecAB, commande)
 
         # 1,2 ou 1;2 ou 1 2 ou (1,2) ou (1;2) ou (1 2) *uniquement* -> Point(1,2)
-        m = re.match("(\()?(?P<x>%s)[ ]?[;, ][ ]?(?P<y>%s)(?(1)\))$" % (NBR_SIGNE, NBR_SIGNE), commande)
+        m = re.match(r"(\()?(?P<x>%s)[ ]?[;, ][ ]?(?P<y>%s)(?(1)\))$" % (NBR_SIGNE, NBR_SIGNE), commande)
         if m:
             commande = "Point(%(x)s,%(y)s)" % m.groupdict()
 

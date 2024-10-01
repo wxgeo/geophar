@@ -237,7 +237,7 @@ class Angle_oriente(Secteur_angulaire):
 class Angle(Secteur_angulaire):
     """Un angle.
 
-    Un angle non orienté, défini par 3 points A, B, C -> angle /ABC\."""
+    Un angle non orienté, défini par 3 points A, B, C -> angle /ABC\\."""
 
     point1 = __point1 = Argument("Point_generique", defaut = Point)
     point2 = __point2 = Argument("Point_generique", defaut = Point)

@@ -99,7 +99,7 @@ NBR_VIRGULE = "(?:(?<![.A-Za-z0-9_])(?:[0-9]+[,][0-9]+))"
 NBR_OR_VAR = "(?:" + NBR + "|" + VAR + ")"
 NBR_SIGNE_OR_VAR = "(?:" + NBR_SIGNE + "|" + VAR + ")"
 # Liste simple (non imbriquée)
-LISTE_SIMPLE = "\[[^][]+\]"
+LISTE_SIMPLE = r"\[[^][]+\]"
 # Matrice
 MATRICE = r"\[ ?(%s ?, ?)*(%s) ?\]" % (LISTE_SIMPLE, LISTE_SIMPLE)
 
@@ -219,7 +219,7 @@ def _ajouter_mult_manquants(formule, fonctions = (), verbose = None, mots_cles =
         print('4', formule)
 
     # On remplace ")x" par ")*x"
-    formule = regsub("[)][ ]?\w", formule, lambda s: s[0] + '*' + s[-1])
+    formule = regsub(r"[)][ ]?\w", formule, lambda s: s[0] + '*' + s[-1])
     # TODO: traiter le cas des mots-clés
 
     # Cas des mots-clés: on supprime les '*' introduits à tort.
@@ -450,9 +450,9 @@ def traduire_formule(formule='', fonctions=(), OOo=True, LaTeX=True,
         formule = formule.replace("{", "(").replace("}", ")")
         formule = regsub("[ ]?(left|right)[])([]", formule, lambda s: s[-1])
         # De même, les notations "times", "over" et "sup" d'OpenOffice.org sont converties.
-        formule = regsub("\Wtimes\W", formule, lambda s: (s[0] + '*' + s[-1]).strip())
-        formule = regsub("\Wover\W", formule, lambda s: (s[0] + '/' + s[-1]).strip())
-        formule = regsub("\Wsup\W", formule, lambda s: (s[0] + '**' + s[-1]).strip())
+        formule = regsub(r"\Wtimes\W", formule, lambda s: (s[0] + '*' + s[-1]).strip())
+        formule = regsub(r"\Wover\W", formule, lambda s: (s[0] + '/' + s[-1]).strip())
+        formule = regsub(r"\Wsup\W", formule, lambda s: (s[0] + '**' + s[-1]).strip())
         formule = formule.replace('infinity', 'oo')
 
     # Conversion des | | **non imbriqués** en abs().
@@ -467,7 +467,7 @@ def traduire_formule(formule='', fonctions=(), OOo=True, LaTeX=True,
         print('5', formule)
 
     # n! devient factoriel(n).
-    formule = regsub("\w+[!]", formule, (lambda s: 'factoriel(%s)' % s[:-1]))
+    formule = regsub(r"\w+[!]", formule, (lambda s: 'factoriel(%s)' % s[:-1]))
 
 
     # (5 2) devient binomial(5, 2)

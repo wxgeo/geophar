@@ -286,7 +286,7 @@ class CustomLatexPrinter(MyCustomPrinter, LatexPrinter):
         if expr.vide:
             return r"\varnothing"
         tex = r"\cup".join(self._print(intervalle) for intervalle in expr.intervalles)
-        tex = tex.replace(r"\right\}\cup\left\{", "\,;\, ")
+        tex = tex.replace(r"\right\}\cup\left\{", r"\,;\, ")
         return tex
 
     def _print_Mul(self, expr):
@@ -300,7 +300,7 @@ class CustomLatexPrinter(MyCustomPrinter, LatexPrinter):
 
     def _print_set(self, expr):
         if expr:
-            return r'\left\{%s\right\}' % '\,;\,'.join(self._print(val) for val in expr)
+            return r'\left\{%s\right\}' % r'\,;\,'.join(self._print(val) for val in expr)
         return r"\emptyset"
 
     def _print_Intervalle(self, expr):
@@ -319,7 +319,7 @@ class CustomLatexPrinter(MyCustomPrinter, LatexPrinter):
         return r"%s%s;%s%s" % (left, self._print(expr.inf), self._print(expr.sup), right)
 
     def _print_tuple(self, expr):
-        return r"\left(" + ",\,".join(self._print(item) for item in expr) + r"\right)"
+        return r"\left(" + r",\,".join(self._print(item) for item in expr) + r"\right)"
 
     def _print_log(self, expr, exp=None):
         if len(expr.args) == 1 and isinstance(expr.args[0], (Symbol, Integer)):
