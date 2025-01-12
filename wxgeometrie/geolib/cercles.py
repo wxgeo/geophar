@@ -216,7 +216,7 @@ class Arc_generique(Cercle_Arc_generique):
             c = phase(C - O)
             d = phase(D - O)
             if x >= xmax and ymin <= y <= ymax:
-                assert (a <= 0 and b <= 0 and c >= 0 and d >= 0)
+                assert (a <= 0 <= c and b <= 0 and d >= 0)
                 a += 2*pi
                 b += 2*pi
             # On récupère la portion du cercle à afficher :

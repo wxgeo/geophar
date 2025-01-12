@@ -31,6 +31,7 @@ from matplotlib.collections import LineCollection
 from matplotlib.patches import Polygon, Circle, FancyArrowPatch, FancyBboxPatch
 from matplotlib.text import Text
 from matplotlib.axes import Axes
+from matplotlib.artist import Artist
 from numpy import array, arange, concatenate, cos as ncos, sin as nsin
 from math import cos, sin, atan2, pi, hypot, sqrt, atan
 
@@ -1029,13 +1030,13 @@ class Moteur_graphique(object):
     def _effacer_artistes(self):
         "Supprime tous les artistes (objets graphiques de matplotlib)."
         dico = self._dico_artistes()
-        self.axes.artists.clear()
-        self.axes.lines.clear()
-        self.axes.patches.clear()
-        self.axes.texts.clear()
-        self.axes.tables.clear()
-        self.axes.images.clear()
-        self.axes.collections.clear()  # collection.Collection instances
+        self.axes._children.clear()
+        # TODO: essayer d'utiliser l'API officielle de matplotlib,
+        #  sous réserve que les performances restent correctes.
+        #  Il faudrait utiliser ici `self.axes.clear()`,
+        #  mais cela implique pas mal de travail
+        #  (probablement bloquer le rafraichissement de la page le temps que tout se fasse,
+        #  puis utiliser `fig.canvas.draw_idle()` et `fig.canvas.flush_events()`).
         return dico
 
 

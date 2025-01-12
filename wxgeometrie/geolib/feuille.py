@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+import operator
 ##--------------------------------------#######
 #                  Feuille                    #
 ##--------------------------------------#######
@@ -51,6 +51,7 @@ from .points import Point
 from .cercles import Arc_generique
 from .courbes import Courbe
 from .textes import Texte, Texte_generique
+from .routines import produit_scalaire
 ##from .labels import Label_generique
 from .vecteurs import Vecteur_libre
 from .variables import Variable, XMinVar, XMaxVar, YMinVar, YMaxVar, Dpx, Dpy, \
@@ -259,6 +260,8 @@ class Dictionnaire_objets(dict):
         # On ajoute au dictionnaire les fonctions mathématiques courantes
         self.update((key, val) for key, val in mathlib.universal_functions.__dict__.items() \
                     if key[0] != "_" and key != "division")
+
+        self.update(produit_scalaire=produit_scalaire)
 
         self.update(pi = PI, e = E, oo = oo, \
                     Intervalle = Intervalle, Union = Union, \
@@ -1531,7 +1534,7 @@ class Feuille(object):
         objets = self.objets.lister(False, type = (Segment, Arc_generique))
         lignes = [{"longueur": obj._longueur(), "objet": obj} for obj in objets]
         if lignes:
-            lignes.sort() # attention, le classement d'un dictionnaire se fait selon l'ordre alphabétique des clefs
+            lignes.sort(key = operator.itemgetter("longueur"))
             groupe = [lignes[0]]
             i = 1
             for ligne in lignes[1:]:
@@ -1550,7 +1553,7 @@ class Feuille(object):
         objets = self.objets.lister(False, type = Secteur_angulaire)
         angles = [{"angle": obj.val, "objet": obj} for obj in objets]
         if angles:
-            angles.sort() # attention, le classement d'un dictionnaire se fait selon l'ordre alphabétique des clefs
+            angles.sort(key = operator.itemgetter("angle"))
             groupe = [angles[0]]
             i = 2
             for angle in angles[1:]:
