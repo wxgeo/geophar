@@ -93,20 +93,20 @@ if getattr(sys, '_launch_geophar', False):
             app.setStyle(param.style_Qt)
         app.icone("%/wxgeometrie/images/icone.ico")
 
-    #def my_excepthook(exc_type, exc_obj, exc_tb):
-    #    u"""Affiche l'erreur sans interrompre le programme.
-    #    C'est un alias de sys.excepthook, mais qui est plus souple avec les encodages.
-    #    """
-    #    tb = traceback.extract_tb(exc_tb)
-    #    print 'Traceback (most recent call last !)'
-    #    for fichier, ligne, fonction, code in tb:
-    #        print '    File "' + uu(fichier) +'", line ' + unicode(ligne) + ', in ' + uu(fonction)
-    #        if code is not None:
-    #            print '        ' + uu(code)
-    #    print uu(exc_type.__name__) + ": " + uu(exc_obj)
+    def my_excepthook(type_, value, traceback):
+        """Affiche l'erreur sans interrompre le programme.
+        """
+        if issubclass(type_, Exception):
+            try:
+                from PyQt5.QtWidgets import QMessageBox
+                QMessageBox.critical(None, "Something went wrong!", f"{type(value).__name__}: {value}")
+            except (NameError, ImportError):
+                print("Warning: QMessageBox not found!")
+
+            sys.__excepthook__(type_, value, traceback)
 
 
-    #sys.excepthook = my_excepthook
+    sys.excepthook = my_excepthook
 
     class SortieTemporaire(list):
         def write(self, chaine):
